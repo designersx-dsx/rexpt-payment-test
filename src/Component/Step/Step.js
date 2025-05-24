@@ -12,6 +12,8 @@ const Step = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [selectedLang, setSelectedLang] = useState('');
 
+    const totalSlides = 3;
+
     const languages = [
         { name: 'English', flag: '/images/english-flag.png', percentage: '28%', stats: '23/88' },
         { name: 'Spanish', flag: '/images/spanish.png', percentage: '56%', stats: '23/88' },
@@ -22,29 +24,20 @@ const Step = () => {
     ];
 
     const handleNext = () => {
-        if (currentStep < 2) {
+        if (currentStep < totalSlides - 1) {
             sliderRef.current.slickNext();
-            setCurrentStep(prev => prev + 1);
         }
     };
 
     const handleBack = () => {
         if (currentStep > 0) {
             sliderRef.current.slickPrev();
-            setCurrentStep(prev => prev - 1);
         }
     };
 
-    const renderDots = () => (
-        <div className={styles.dotsContainer}>
-            {[0, 1, 2].map(step => (
-                <span
-                    key={step}
-                    className={`${styles.dot} ${currentStep === step ? styles.activeDot : ''}`}
-                />
-            ))}
-        </div>
-    );
+    const handleDotClick = (index) => {
+        sliderRef.current.slickGoTo(index);
+    };
 
     const settings = {
         dots: false,
@@ -54,6 +47,7 @@ const Step = () => {
         slidesToScroll: 1,
         arrows: false,
         swipe: false,
+        beforeChange: (_, next) => setCurrentStep(next),
     };
 
     return (
@@ -91,15 +85,6 @@ const Step = () => {
                                 </label>
                             ))}
                         </div>
-
-
-                        {renderDots()}
-
-                        <div className={styles.footer}>
-                            <div className={styles.nextBtn} onClick={handleNext}>
-                                <img src="/images/nextBtn.png" alt="Next" />
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -109,23 +94,13 @@ const Step = () => {
                         <div className={styles.LogoDiv}>
                             <div className={styles.logo}>
                                 <img src="/images/stepmask.png" alt="stepmask" />
+                                <img src="/images/inlogo.png" alt="inlogo" className={styles.inlogo} />
                             </div>
                             <h2 className={styles.heading}>Agent Gender</h2>
                         </div>
 
                         <div className={styles.grid}>
                             <Step2 onNext={handleNext} onBack={handleBack} />
-                        </div>
-
-                        {renderDots()}
-
-                        <div className={styles.footer}>
-                            <div className={styles.backBtn} onClick={handleBack}>
-                                <img src="/images/backBtn.png" alt="Back" />
-                            </div>
-                            <div className={styles.nextBtn} onClick={handleNext}>
-                                <img src="/images/nextBtn.png" alt="Next" />
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -136,28 +111,31 @@ const Step = () => {
                         <div className={styles.LogoDiv}>
                             <div className={styles.logo}>
                                 <img src="/images/stepmask.png" alt="stepmask" />
+                                <img src="/images/inlogo.png" alt="inlogo" className={styles.inlogo} />
                             </div>
-
-                            <h2 className={styles.heading}>Final Confirmation</h2>
+                            <h2 className={styles.heading}>Agent Name</h2>
                         </div>
 
-                        <div className={styles.grid}>
-                            <Step3 onNext={handleNext} onBack={handleBack} />
-                        </div>
-
-                        {renderDots()}
-
-                        <div className={styles.footer}>
-                            <div className={styles.backBtn} onClick={handleBack}>
-                                <img src="/images/backBtn.png" alt="Back" />
-                            </div>
-                            <div className={styles.nextBtn}>
-                                <img src="/images/nextBtn.png" alt="Next" />
-                            </div>
+                        <div className={styles.grid2}>
+                            <Step3  />
                         </div>
                     </div>
                 </div>
             </Slider>
+
+            {/* === Footer Fixed Pagination === */}
+            <div className={styles.footerFixed}>
+                {currentStep > 0 && (
+                    <button className={styles.navBtn} onClick={handleBack}>
+                        Back
+                    </button>
+                )}
+                {currentStep < totalSlides - 1 && (
+                    <button className={styles.navBtn} onClick={handleNext}>
+                        Next
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
