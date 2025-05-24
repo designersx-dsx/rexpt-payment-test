@@ -38,33 +38,57 @@
 }
 
 .container {
-    width: 320px;
-    margin: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    padding: 20px;
+    gap: 10px;
+    max-width: 360px;
+    margin: 1rem 20px;
 }
 
-.emailInput {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
+.heading {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1d1d1f;
 }
+
+.label {
+    font-weight: 600;
+    color: #2d2d2d;
+    margin-bottom: 4px;
+}
+
+.input {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background-color: #fff;
+    outline: none;
+    transition: border 0.2s ease;
+}
+
+.input::placeholder {
+    color: #a0aec0;
+}
+
+.input:focus {
+    border-color: #805ad5;
+}
+
 
 .codeText {
     font-size: 14px;
     color: #6524EB;
     margin-bottom: 0px;
+    text-align: center;
 }
 
 .otpContainer {
     display: flex;
     gap: 10px;
     justify-content: center;
+    margin-block: 20px;
 }
 
 .otpInput {
@@ -75,10 +99,15 @@
     border: 1px solid #ccc;
     border-radius: 8px;
 }
-.Btn{
-    width: 100%;
+
+.Btn {
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.Btn button{
+
+.Btn button {
     background-color: #6524EB;
     color: #fff;
     border: none;
@@ -86,47 +115,15 @@
     font-size: 19px;
     border-radius: 8px;
     cursor: pointer;
-    width: 100%;
+    width: 90%;
     display: flex;
     justify-content: center;
     margin: 20px 0 20px 0;
 }
 
-.Btn button svg{
+.Btn button svg {
     position: absolute;
-    right: 60px;
-}
-
-
-
-
-
-.divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    margin: 20px 0;
-}
-
-.line {
-    flex: 1;
-    height: 1px;
-    background-color: #e0e0e0;
-    border: none;
-}
-
-.text {
-    margin: 0 10px;
-    font-size: 14px;
-    color: #b0b0b0;
-    white-space: nowrap;
-}
-
-.socialMedia {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    right: 34px;
 }
 
 /* ===== New animation styles ===== */

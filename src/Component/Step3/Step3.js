@@ -4,8 +4,10 @@ import Slider from 'react-slick';
 
 const avatars = [
   { img: 'images/avtar1.png' },
+  { img: 'images/avtar2.png' },
   { img: 'images/avtar1.png' },
-  { img: 'images/avtar1.png' },
+  { img: 'images/avtar2.png' },
+
 ];
 
 const NextArrow = ({ onClick }) => (

@@ -3,16 +3,17 @@ import Slider from 'react-slick';
 import styles from './Step.module.css';
 import Step2 from '../Step2/Step2';
 import Step3 from '../Step3/Step3';
-
+import Step4 from '../Step4/Step4'
+import { useNavigate } from 'react-router-dom';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 const Step = () => {
+    const navigate = useNavigate();
     const sliderRef = useRef(null);
     const [currentStep, setCurrentStep] = useState(0);
     const [selectedLang, setSelectedLang] = useState('');
-
-    const totalSlides = 3;
+    const totalSlides = 4;
 
     const languages = [
         { name: 'English', flag: '/images/english-flag.png', percentage: '28%', stats: '23/88' },
@@ -121,21 +122,45 @@ const Step = () => {
                         </div>
                     </div>
                 </div>
+                   {/* Step 4 */}
+                <div>
+                    <div className={styles.slideContent}>
+                        <div className={styles.LogoDiv}>
+                            <div className={styles.logo}>
+                                <img src="/images/stepmask.png" alt="stepmask" />
+                                <img src="/images/inlogo.png" alt="inlogo" className={styles.inlogo} />
+                            </div>
+                            <h2 className={styles.heading}>Receptionist Type</h2>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Step4  />
+                        </div>
+                    </div>
+                </div>
             </Slider>
 
             {/* === Footer Fixed Pagination === */}
-            <div className={styles.footerFixed}>
-                {currentStep > 0 && (
-                    <button className={styles.navBtn} onClick={handleBack}>
-                        Back
-                    </button>
-                )}
-                {currentStep < totalSlides - 1 && (
-                    <button className={styles.navBtn} onClick={handleNext}>
-                        Next
-                    </button>
-                )}
-            </div>
+         <div className={styles.footerFixed}>
+    {currentStep > 0 && (
+        <button className={styles.navBtn} onClick={handleBack}>
+            Back
+        </button>
+    )}
+    {currentStep < totalSlides - 1 && (
+        <button className={styles.navBtn} onClick={handleNext}>
+            Next
+        </button>
+    )}
+    {currentStep === totalSlides - 1 && (
+        <button
+            className={styles.navBtn}
+            onClick={() => navigate('/about-business')}
+        >
+            Continue
+        </button>
+    )}
+</div>
         </div>
     );
 };
