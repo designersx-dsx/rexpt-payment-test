@@ -1,0 +1,96 @@
+.container {
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  max-width: 400px;
+  margin: auto;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.subtitle {
+  font-size: 18px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.optionList {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: #fff;
+  transition: all 0.3s;
+}
+
+.option:hover {
+  border-color: #c0a9f7;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+
+
+.option span {
+  flex-grow: 1;
+  font-size: 16px;
+}
+
+.inputGroup {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroup label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.inputGroup input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+}
+
+
+
+
+
+
+.Btn{
+    width: 100%;
+}
+.Btn button{
+    background-color: #6524EB;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 19px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 40px 0 20px 0;
+}
+
+.Btn button svg{
+    position: absolute;
+    right: 35px;
+}

@@ -5,7 +5,7 @@ const Details = () => {
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
-        navigate('/steps');
+        navigate('/business-details');
     };
     return (
         <div className={styles.pageEnterAnimation}>

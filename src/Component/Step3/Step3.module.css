@@ -19,8 +19,6 @@
 }
 
 .avatarImage {
-  width: 180px;
-  height: auto;
   display: block;
   margin: 0 auto;
 }
@@ -31,23 +29,12 @@
   right: 10px;
   z-index: 2;
 }
-
-.arrowLeft,
-.arrowRight {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 2rem;
-  border-radius: 50%;
-  padding: 0.5rem;
-  cursor: pointer;
-  z-index: 1;
+.customBtn{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%;
+    width: 100%;
 }
 
-.arrowLeft {
-  left: -40px;
-}
-
-.arrowRight {
-  right: -40px;
-}

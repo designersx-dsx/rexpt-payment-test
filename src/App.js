@@ -5,6 +5,7 @@ import SignUp from './Component/SignUp/SignUp';
 import Details from './Component/Details/Details';
 import Step from './Component/Step/Step';
 import AboutBusiness from './Component/AboutBusiness/AboutBusiness';
+import BusinessDetails from './Component/BusinessDetails/BusinessDetails';
 
 
 function App() {
@@ -17,6 +18,8 @@ function App() {
           <Route path="/details" element={<Details />} />
           <Route path="/steps" element={<Step />} />
           <Route path="/about-business" element={<AboutBusiness/>} />
+          <Route path="/business-details" element={<BusinessDetails/>} />
+
 
 
         </Routes>
