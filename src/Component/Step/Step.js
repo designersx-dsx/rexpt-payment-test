@@ -9,6 +9,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { toast } from 'react-toastify';
 import PopUp from '../Popup/Popup';
+import StepHeader from '../StepHeader/StepHeader';
 
 const Step = () => {
     const navigate = useNavigate();
@@ -135,9 +136,9 @@ const Step = () => {
         if (step4Ref.current) {
             const isValid = step4Ref.current.validate();
             if (isValid) {
-                navigate('/about-business'); // Navigate only if validation passes
+                navigate('/about-business');
             }
-            // else do nothing, the popup will show from the child component
+
         }
     };
     const handleValidationError = ({ type, message }) => {
@@ -145,20 +146,20 @@ const Step = () => {
         setPopupMessage(message);
         setShowPopup(true);
     };
-
+  const stepTitles = [
+    'Agent Language Supported',
+    'Agent Gender',
+    'Agent Name',
+    'Receptionist Type',
+  ];
     return (
         <div className={styles.container}>
+                <StepHeader title={stepTitles[currentStep]} />
             <Slider ref={sliderRef} {...settings}>
                 {/* Step 1 */}
                 <div>
                     <div className={styles.slideContent}>
-                        <div className={styles.LogoDiv}>
-                            <div className={styles.logo}>
-                                <img src="/images/stepmask.png" alt="stepmask" />
-                                <img src="/images/inlogo.png" alt="inlogo" className={styles.inlogo} />
-                            </div>
-                            <h2 className={styles.heading}>Agent Language <br /> Supported</h2>
-                        </div>
+                        {/* <StepHeader title="Agent Language Supported" /> */}
 
                         <div className={styles.grid}>
                             {languages.map((lang, index) => (
@@ -197,58 +198,17 @@ const Step = () => {
 
                 {/* Step 2 */}
                 <div>
-                    <div className={styles.slideContent}>
-                        <div className={styles.LogoDiv}>
-                            <div className={styles.logo}>
-                                <img src="/images/stepmask.png" alt="stepmask" />
-                                <img src="/images/inlogo.png" alt="inlogo" className={styles.inlogo} />
-                            </div>
-                            <h2 className={styles.heading}>Agent Gender</h2>
-                        </div>
-
-
-                        <div className={styles.grid}>
-                            <Step2 ref={step2Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
-
-                        </div>
-                    </div>
+                    <Step2 ref={step2Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
                 </div>
 
                 {/* Step 3 */}
-                <div>
-                    <div className={styles.slideContent}>
-                        <div className={styles.LogoDiv}>
-                            <div className={styles.logo}>
-                                <img src="/images/stepmask.png" alt="stepmask" />
-                                <img src="/images/inlogo.png" alt="inlogo" className={styles.inlogo} />
-                            </div>
-                            <h2 className={styles.heading}>Agent Name</h2>
-                        </div>
-
-                        <div className={styles.grid2}>
-
-                            <Step3 ref={step3Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
-
-                        </div>
-                    </div>
+                <div >
+                    <Step3 ref={step3Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
                 </div>
                 {/* Step 4 */}
-                <div>
-                    <div className={styles.slideContent}>
-                        <div className={styles.LogoDiv}>
-                            <div className={styles.logo}>
-                                <img src="/images/stepmask.png" alt="stepmask" />
-                                <img src="/images/inlogo.png" alt="inlogo" className={styles.inlogo} />
-                            </div>
-                            <h2 className={styles.heading}>Receptionist Type</h2>
-                        </div>
 
-                        <div className={styles.grid2}>
-
-                            <Step4 ref={step4Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
-
-                        </div>
-                    </div>
+                <div >
+                    <Step4 ref={step4Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
                 </div>
             </Slider>
 
@@ -276,7 +236,7 @@ const Step = () => {
             {showPopup && (
                 <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
             )}
-            
+
         </div>
     );
 };

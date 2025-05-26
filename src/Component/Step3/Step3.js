@@ -53,41 +53,55 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     },
   }));
   return (
-    <div className={styles.sliderContainer}>
-      <input type='text' name='agenName' onChange={(e) => setAganentName(e.target.value)} />
-      <h2 className={styles.heading}>Choose Avatar</h2>
+    <>
+   
+       <div className={styles.agentInputBox}>
+          <label className={styles.agentLabel}>Name Your Virtual Agent</label>
+          <input
+            type="text"
+            name="agentName"
+            onChange={(e) => setAganentName(e.target.value)}
+            className={styles.agentInput}
+            placeholder="Ex- Smith, Nova"
+          />
+        </div>
+      <div className={styles.sliderContainer}>
+       
+        <h2 className={styles.heading}>Choose Avatar</h2>
 
-      <Slider ref={sliderRef} {...settings}>
-        {avatars.map((avatar, index) => (
-          <div key={index} className={styles.slide}>
-            <input
-              type="radio"
-              name="avatar"
-              value={index}
-              onChange={() => handleAvatarChange(avatar)}
-              className={styles.radioButton}
-            />
-            <img
-              src={avatar.img}
-              alt={`Avatar ${index + 1}`}
-              className={styles.avatarImage}
-            />
+        <Slider ref={sliderRef} {...settings}>
+          {avatars.map((avatar, index) => (
+            <div key={index} className={styles.slide}>
+              <input
+                type="radio"
+                name="avatar"
+                value={index}
+                onChange={() => handleAvatarChange(avatar)}
+                className={styles.radioButton}
+              />
+              <img
+                src={avatar.img}
+                alt={`Avatar ${index + 1}`}
+                className={styles.avatarImage}
+              />
+            </div>
+          ))}
+        </Slider>
+
+        <div className={styles.customBtn}>
+          <div className={styles.arrowLeft} onClick={() => sliderRef.current.slickPrev()}>
+            <img src="images/sliderleft.png" alt="Previous" />
           </div>
-        ))}
-      </Slider>
+          <div className={styles.arrowRight} onClick={() => {
+            sliderRef.current.slickNext()
+          }}>
+            <img src="images/sliderright.png" alt="Next" />
+          </div>
+        </div>
 
-      <div className={styles.customBtn}>
-        <div className={styles.arrowLeft} onClick={() => sliderRef.current.slickPrev()}>
-          <img src="images/sliderleft.png" alt="Previous" />
-        </div>
-        <div className={styles.arrowRight} onClick={() => {
-          sliderRef.current.slickNext()
-        }}>
-          <img src="images/sliderright.png" alt="Next" />
-        </div>
       </div>
+    </>
 
-    </div>
   );
 });
 
