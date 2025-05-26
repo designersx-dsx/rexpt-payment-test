@@ -29,7 +29,6 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   }, [agentName])
 
   const handleAvatarChange = (avatar) => {
-    console.log('avatar', avatar, agentName)
     setAvatar(avatar?.img)
     sessionStorage.setItem("avatar", avatar.img);
   }

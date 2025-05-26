@@ -25,10 +25,12 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
           <Route path="/steps" element={<Step />} />
+
           <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
           <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           <Route path="/ai-assistant" element={<AiAssistant />} />
+
         </Routes>
         <ToastContainer
           position="top-center"
