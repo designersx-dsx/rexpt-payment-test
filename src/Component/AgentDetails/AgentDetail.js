@@ -77,7 +77,7 @@ const AgentDashboard = () => {
           <div className={` ${styles.stat}  ${styles.Purple}`}><span className={` ${styles.statText}`}>Bookings</span>
             <span className={styles.statDetail}>15</span></div>
 
-          <div className={` ${styles.stat} ${styles.Red}`}><span className={` ${styles.statText} `}>Call Volume</span>
+          <div className={` ${styles.stat} ${styles.Red}`}><span className={` ${styles.statText} `}>Minutes Remaining</span>
             <span className={styles.statDetail}>1257</span></div>
         </div>
 

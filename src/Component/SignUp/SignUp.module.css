@@ -38,7 +38,7 @@
 }
 
 .container {
-    width: 320px;
+    width: 100%;
     margin: auto;
     display: flex;
     flex-direction: column;
@@ -105,6 +105,7 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
+    width: 100%;
     cursor: pointer;display: flex;gap: 10px;align-items: center;justify-content: center;
 }
 
