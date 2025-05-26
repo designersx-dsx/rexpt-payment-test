@@ -10,12 +10,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AgentDetail from './Component/AgentDetails/AgentDetail'
 import AiAssistant from './Component/AiAssistant/AiAssistant';
-
 import BusinessLocation from './Component/BusinessLocation/BusinessLocation';
-
 import SecureRoute from './Pages/SecureRoute'
-
-
+import Dashboard from './Component/Dashboard/Dashboard';
 function App() {
   return (
     <BrowserRouter>
@@ -30,20 +27,15 @@ function App() {
           <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
           <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
-
-          <Route path="/dashboard" element={<Dashboard />}/>
-          <Route path="/home" element={<AgentDetail  />}/>
-           {/* <Route path="/home" element={<Home />} /> */}
-         
-
-
-
-
-          <Route path="/details" element={ <SecureRoute><Details /></SecureRoute>} />
-          <Route path="/steps" element={ <Step />} />
-          <Route path="/about-business" element={ <AboutBusiness />} />
-          <Route path="/business-details" element={ <SecureRoute><BusinessDetails /></SecureRoute>} />
-          <Route path="/business-locations" element={ <SecureRoute><BusinessLocation /></SecureRoute>} />
+          <Route path="/business-locations" element={<SecureRoute><BusinessLocation /></SecureRoute>} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/home" element={<AgentDetail />} />
+          {/* <Route path="/home" element={<Home />} /> */}
+          <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
+          <Route path="/steps" element={<Step />} />
+          <Route path="/about-business" element={<AboutBusiness />} />
+          <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
+          <Route path="/business-locations" element={<SecureRoute><BusinessLocation /></SecureRoute>} />
 
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           <Route path="/ai-assistant" element={<AiAssistant />} />
