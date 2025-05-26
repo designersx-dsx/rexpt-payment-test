@@ -1,9 +1,19 @@
 import React from 'react'
 import styles from './Dashboard.module.css'
 import Footer from '../AgentDetails/Footer/Footer'
+import { useNavigate } from 'react-router-dom';
 
 
 function Dashboard() {
+
+
+
+     const navigate = useNavigate();
+
+  const AgentDetail = () => {
+    navigate('/home'); // Navigate to /about
+  };
+
   return (
     <div>
 
@@ -46,7 +56,7 @@ function Dashboard() {
 
 
 {/* <link to="/agent-detail" className={styles.agentDetails}> */}
-<div className= {` ${styles.LangStyle} ${styles.MiniPlan} `} >
+<div className= {` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={AgentDetail}> 
     <div className={styles.PlanPriceMain}>
     <h3 className={styles.PlanPrice}>MINI PLAN</h3>
 </div>

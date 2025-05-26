@@ -32,6 +32,8 @@ function App() {
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
 
           <Route path="/dashboard" element={<Dashboard />}/>
+          <Route path="/home" element={<AgentDetail  />}/>
+           {/* <Route path="/home" element={<Home />} /> */}
          
 
 
