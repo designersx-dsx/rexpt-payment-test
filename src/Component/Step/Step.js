@@ -136,7 +136,7 @@ const Step = () => {
         if (step4Ref.current) {
             const isValid = step4Ref.current.validate();
             if (isValid) {
-                navigate('/about-business');
+                navigate('/agent-detail');
             }
 
         }

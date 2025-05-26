@@ -20,7 +20,6 @@ const roles = [
 ];
 const Step4 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
-    console.log('selectedRole', selectedRole)
     useEffect(() => {
         sessionStorage.setItem('agentRole', selectedRole)
     }, [selectedRole])
