@@ -76,7 +76,6 @@
     border-color: #805ad5;
 }
 
-
 .codeText {
     font-size: 14px;
     color: #6524EB;
@@ -118,7 +117,8 @@
     width: 90%;
     display: flex;
     justify-content: center;
-    margin: 20px 0 20px 0;
+    margin: 20px 0;
+    position: relative;
 }
 
 .Btn button svg {
@@ -126,8 +126,7 @@
     right: 34px;
 }
 
-/* ===== New animation styles ===== */
-
+/* ===== Enter Animation ===== */
 @keyframes slideUpFadeIn {
     0% {
         opacity: 0;
@@ -140,6 +139,38 @@
     }
 }
 
-.pageEnterAnimation {
+.pageWrapper {
     animation: slideUpFadeIn 0.8s ease forwards;
+}
+
+/* ===== Step-by-step Fade Out (Bottom to Top) ===== */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+}
+
+.fadeOut1 {
+    animation: fadeOut 0.5s ease forwards;
+    animation-delay: 0s;
+}
+
+.fadeOut2 {
+    animation: fadeOut 0.5s ease forwards;
+    animation-delay: 0.3s;
+}
+
+.fadeOut3 {
+    animation: fadeOut 0.5s ease forwards;
+    animation-delay: 0.6s;
+}
+
+.fadeOut4 {
+    animation: fadeOut 0.5s ease forwards;
+    animation-delay: 0.9s;
 }
