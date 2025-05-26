@@ -50,7 +50,7 @@ const PopUp = ({ type, message, onClose = () => { }, onConfirm = () => { } }) =>
         message && (
             <div className={`${styles.overlay} ${show ? styles.fadeIn : styles.fadeOut}`}>
                 <div className={`${styles.popup} ${styles[type]} ${show ? styles.scaleIn : styles.scaleOut}`}>
-                    <img src={getIconPath()} alt={type} className={`${styles.icon} ${styles.animateIcon}`} />
+                    <img src={getIconPath()} alt={type} className={`${styles.icon} ${styles.animateIcon}`} onClick={handleClose} />
                     <p className={styles.message}>{message}</p>
 
                     {type === "confirm" ? (
