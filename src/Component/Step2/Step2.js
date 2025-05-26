@@ -3,7 +3,7 @@ import styles from './Step2.module.css';
 import { getRetellVoices } from '../../Store/apiStore';
 import PopUp from '../Popup/Popup';
 
-const Step2 = forwardRef(({ onNext, onBack }, ref) => {
+const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedVoice, setSelectedVoice] = useState('');
   const [listVoices, setListVoices] = useState([]);
@@ -100,23 +100,22 @@ const Step2 = forwardRef(({ onNext, onBack }, ref) => {
   useImperativeHandle(ref, () => ({
     validate: () => {
       if (!selectedGender) {
-        setShowPopup(true)
-        setPopupType("failed")
-        setPopupMessage("Please select a gender!")
+        onValidationError?.({
+          type: "failed",
+          message: "Please select a gender!"
+        });
         return false;
       }
       if (!selectedVoice || !selectedVoice.voice_name) {
-        setShowPopup(true)
-        setPopupType("failed")
-        setPopupMessage("Please select a voice!")
+        onValidationError?.({
+          type: "failed",
+          message: "Please select a voice!"
+        });
         return false;
       }
       return true;
     },
-    getSelectedData: () => ({
-      gender: selectedGender,
-      voice: selectedVoice,
-    })
+
   }));
   return (
     <>
@@ -226,10 +225,11 @@ const Step2 = forwardRef(({ onNext, onBack }, ref) => {
           ))}
 
         </div>
+      
+      </div>
         {showPopup && (
           <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
         )}
-      </div>
 
     </>
   );

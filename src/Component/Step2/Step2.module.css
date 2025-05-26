@@ -1,9 +1,5 @@
 .container {
     padding: 16px;
-
-    font-family: sans-serif;
-    height: 100vh;
-
 }
 
 .logoWrapper {
@@ -37,7 +33,7 @@
     background: #f7f5ff;
     padding: 12px;
     border-radius: 12px;
-    width: 150px;
+    width:50%;
     position: relative;
     cursor: pointer;
     border: 2px solid transparent;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState ,forwardRef, useImperativeHandle } from 'react'
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react'
 import styles from '../Step4/Step4.module.css'
 import PopUp from '../Popup/Popup';
 const roles = [
@@ -18,29 +18,25 @@ const roles = [
         icon: 'images/technical-receptionist.png',
     },
 ];
-const Step4 =  forwardRef(({ onNext, onBack }, ref) => {
+const Step4 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
-      const [showPopup, setShowPopup] = useState(false);
-      const [popupType, setPopupType] = useState(null);
-      const [popupMessage, setPopupMessage] = useState("");
-    console.log('selectedRole',selectedRole)
-    useEffect(()=>{
-        sessionStorage.setItem('agentRole',selectedRole)
-    },[selectedRole])
-  useImperativeHandle(ref, () => ({
-    validate: () => {
-      if (!selectedRole.trim()) {
-        // Call parent showPopup to show alert
-        if (showPopup) {
-            setShowPopup(true)
-            setPopupType("failed")
-          setPopupMessage('Please select a role!');
-        }
-        return false;
-      }
-      return true;
-    },
-  }));
+    console.log('selectedRole', selectedRole)
+    useEffect(() => {
+        sessionStorage.setItem('agentRole', selectedRole)
+    }, [selectedRole])
+    useImperativeHandle(ref, () => ({
+        validate: () => {
+            if (!selectedRole.trim()) {
+                onValidationError?.({
+                    type: "failed",
+                    message: "Please select a type!"
+                });
+                return false;
+            }
+            return true;
+        },
+    }));
+
     return (
         <div className={styles.container}>
             {roles.map((role, index) => (
@@ -67,9 +63,6 @@ const Step4 =  forwardRef(({ onNext, onBack }, ref) => {
                     <span className={styles.customRadio}></span>
                 </label>
             ))}
-             {showPopup && (
-        <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
-      )}
         </div>
     )
 })

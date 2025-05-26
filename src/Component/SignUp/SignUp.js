@@ -112,7 +112,7 @@ const SignUp = () => {
       </div>
       <div className={styles.Maincontent}>
         <div className={styles.welcomeTitle}>
-          <h1>Welcome Back!</h1>
+          <h1>Log In to your Account</h1>
         </div>
       </div>
       <div className={styles.container}>
