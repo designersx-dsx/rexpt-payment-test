@@ -10,7 +10,7 @@
 
 .logimg {
     position: absolute;
-    top: 10%;
+    top: 15%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
@@ -34,6 +34,7 @@
 .welcomeTitle h1 {
     color: #24252C;
     font-size: 40px;
+    font-weight: 800;
     margin-block: 0px;
 }
 
@@ -106,7 +107,14 @@
     border: none;
     border-radius: 5px;
     width: 100%;
-    cursor: pointer;display: flex;gap: 10px;align-items: center;justify-content: center;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    min-height: 55px;
+    font-size: 19px;
+margin-top: 2rem;
 }
 
 
