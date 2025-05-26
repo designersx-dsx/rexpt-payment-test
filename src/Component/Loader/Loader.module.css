@@ -2,8 +2,8 @@
 .circle {
   border-radius: 50%;
   border-style: solid;
-  border-color: rgba(255, 255, 255, 0.2);
-  border-top-color: #000000;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-top-color: #ffffff;
   animation: spin 1s linear infinite;
 }
 
