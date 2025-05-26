@@ -24,7 +24,7 @@ function AboutBusiness() {
 
     if (files.length === 0) {
       alert("Please select at least one file to upload.");
-      return;
+    //   return;
     }
 
     const mergedUrls=[businessUrl,googleListing]
@@ -46,26 +46,115 @@ function AboutBusiness() {
     files.forEach((file) => {
     formData.append("knowledge_base_files", file);
     });
+    //create knowledge base
+    // try {
+    // const response = await axios.post(
+    //     'https://api.retellai.com/create-knowledge-base',
+    //     formData,
+    //     {
+    //     headers: {
+    //         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+    //         'Content-Type': 'multipart/form-data',
+    //     },
+    //     }
+    // );
 
-        try {
-        const response = await axios.post(
-            'https://api.retellai.com/create-knowledge-base',
-            formData,
-            {
+    // console.log("Upload success:", response);
+    // sessionStorage.setItem("knowledgeBaseId", response.data.knowledge_base_id);
+    // alert("Knowledge base created successfully!");
+    // } catch (error) {
+    // console.error("Upload failed:", error);
+    // alert("Knowledge base creation failed. Please try again.");
+    // }
+
+    // create llm
+const agentConfig = {
+  version: 0,
+  model: "gemini-2.0-flash-lite",
+//   s2s_model: "gpt-4o-realtime",
+  model_temperature: 0,
+  model_high_priority: true,
+  tool_call_strict_mode: true,
+
+  general_prompt: "You are ...",
+
+  general_tools: [
+    {
+      type: "end_call",
+      name: "end_call",
+      description: "End the call with user.",
+    },
+  ],
+
+//   states: [
+//     {
+//       name: "information_collection",
+//       state_prompt:
+//         "You will follow the steps below to collect information...",
+//       edges: [
+//         {
+//           destination_state_name: "appointment_booking",
+//           description: "Transition to book an appointment.",
+//         },
+//       ],
+//       tools: [
+//         {
+//           type: "transfer_call",
+//           name: "transfer_to_support",
+//           description: "Transfer to the support team.",
+//           transfer_destination: {
+//             type: "predefined",
+//             number: "+918054226467", // Replace with actual number
+//           },
+//         },
+//       ],
+//     },
+//     {
+//       name: "appointment_booking",
+//       state_prompt:
+//         "You will follow the steps below to book an appointment...",
+//       tools: [
+//         {
+//           type: "book_appointment_cal",
+//           name: "book_appointment",
+//           description: "Book an annual check up.",
+//           cal_api_key: process.env.REACT_APP_API_CAL_API ||sessionStorage.getItem(cal_api_key), // Replace with actual API key
+//           event_type_id: 2508158 ||sessionStorage.getItem(cal_event_id),                 // Replace with actual event type ID
+//           timezone: "America/Los_Angeles",      // Replace with actual timezone
+//         },
+//       ], 
+//     },
+//   ],
+
+//   starting_state: "information_collection",
+
+  begin_message: `Hey I am a virtual assistant calling from ABC .`,
+
+  default_dynamic_variables: {
+    customer_name: "John Doe",
+  },
+  knowledge_base_ids: [sessionStorage.getItem("knowledgeBaseId")],
+};
+    try {
+        const llmResponse = await axios.post(
+        'https://api.retellai.com/create-retell-llm',
+        agentConfig,
+        {
             headers: {
-                Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+            'Content-Type': 'application/json',
             },
-            }
-        );
-
-        console.log("Upload success:", response);
-        sessionStorage.setItem("knowledgeBaseId", response.data.knowledge_base_id);
-        alert("Knowledge base created successfully!");
-        } catch (error) {
-        console.error("Upload failed:", error);
-        alert("Knowledge base creation failed. Please try again.");
         }
+        );
+        console.log("LLM creation success:", llmResponse);
+        sessionStorage.setItem("llmId", llmResponse.data.llm_id);
+        alert("LLM created successfully!");
+    }
+    catch (error) {
+        console.error("LLM creation failed:", error);
+        alert("LLM creation failed. Please try again.");
+    }
+    // Redirect to the next step or perform any other action
 
   };
 
