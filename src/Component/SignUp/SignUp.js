@@ -31,7 +31,8 @@ const SignUp = () => {
       console.log("response", response);
       if (response?.status === 200) {
         // console.log("OTP Verified successfully");
-
+        console.log(response.data.token, "response")
+        localStorage.setItem("token", response.data.token)
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("OTP Verified successfully!")
@@ -65,11 +66,11 @@ const SignUp = () => {
       console.log("response", response);
       if (response?.status === 200) {
 
-       
+
         setShowPopup(true);
         setPopupType("success");
         setPopupMessage("OTP sent successfully!")
- setOtpSent(true);
+        setOtpSent(true);
       } else {
 
         console.error("Failed to send OTP");
