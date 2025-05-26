@@ -10,13 +10,10 @@ const avatars = [
   { img: 'images/avtar4.png' },
 ];
 
-const Step3 = forwardRef(({ onNext, onBack }, ref) => {
+const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const sliderRef = useRef(null);
   const [agentName, setAganentName] = useState('');
   const [avatar, setAvatar] = useState(null)
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupType, setPopupType] = useState(null);
-  const [popupMessage, setPopupMessage] = useState("");
   const settings = {
     dots: false,
     infinite: true,
@@ -38,17 +35,18 @@ const Step3 = forwardRef(({ onNext, onBack }, ref) => {
   useImperativeHandle(ref, () => ({
     validate: () => {
       if (!agentName.trim()) {
-        setShowPopup(true)
-        setPopupType("failed")
-        setPopupMessage('Please enter agent name!')
+        onValidationError?.({
+          type: "failed",
+          message: "Please enter agent name!"
+        });
 
         return false;
       }
       if (!avatar) {
-        setShowPopup(true)
-        setPopupType("failed")
-        setPopupMessage('Please select an avatar!')
-
+        onValidationError?.({
+          type: "failed",
+          message: "Please select an avatar!"
+        });
         return false;
       }
       return true;
@@ -88,9 +86,7 @@ const Step3 = forwardRef(({ onNext, onBack }, ref) => {
           <img src="images/sliderright.png" alt="Next" />
         </div>
       </div>
-      {showPopup && (
-        <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
-      )}
+
     </div>
   );
 });

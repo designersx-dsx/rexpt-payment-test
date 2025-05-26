@@ -21,8 +21,8 @@ const Step = () => {
     const [popupMessage, setPopupMessage] = useState("");
     console.log('selectedLan,', selectedLang)
     const step2Ref = useRef();
-  const step3Ref = useRef();
-   const step4Ref = useRef();
+    const step3Ref = useRef();
+    const step4Ref = useRef();
     useEffect(() => {
         sessionStorage.setItem("agentLanguage", selectedLang);
         sessionStorage.setItem("agentLanguageCode", selectedLangCode);
@@ -84,21 +84,20 @@ const Step = () => {
     ];
 
     const handleNext = () => {
-        if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
-            return;
-        }
-        if (currentStep === 2 && step3Ref.current && !step3Ref.current.validate()) {
-            return;
-        }
-           if (currentStep === 3 && step4Ref.current && !step4Ref.current.validate()) {
-            return;
-        }
         if (currentStep === 0 && !selectedLang) {
             setShowPopup(true)
             setPopupType("failed")
             setPopupMessage("Please select a language first.")
             return;
         }
+        if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
+            return;
+        }
+        if (currentStep === 2 && step3Ref.current && !step3Ref.current.validate()) {
+            return;
+        }
+
+
         if (currentStep < totalSlides - 1) {
             sliderRef.current.slickNext();
         }
@@ -123,6 +122,20 @@ const Step = () => {
         arrows: false,
         swipe: false,
         beforeChange: (_, next) => setCurrentStep(next),
+    };
+    const handleContinue = () => {
+        if (step4Ref.current) {
+            const isValid = step4Ref.current.validate();
+            if (isValid) {
+                navigate('/about-business'); // Navigate only if validation passes
+            }
+            // else do nothing, the popup will show from the child component
+        }
+    };
+    const handleValidationError = ({ type, message }) => {
+        setPopupType(type);
+        setPopupMessage(message);
+        setShowPopup(true);
     };
 
     return (
@@ -180,7 +193,7 @@ const Step = () => {
                         </div>
 
                         <div className={styles.grid}>
-                            <Step2 ref={step2Ref} onNext={handleNext} onBack={handleBack} />
+                            <Step2 ref={step2Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
                         </div>
                     </div>
                 </div>
@@ -197,7 +210,7 @@ const Step = () => {
                         </div>
 
                         <div className={styles.grid2}>
-                            <Step3   ref={step3Ref} onNext={handleNext} onBack={handleBack} />
+                            <Step3 ref={step3Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
                         </div>
                     </div>
                 </div>
@@ -213,7 +226,7 @@ const Step = () => {
                         </div>
 
                         <div className={styles.grid2}>
-                            <Step4  ref={step4Ref} onNext={handleNext} onBack={handleBack} />
+                            <Step4 ref={step4Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
                         </div>
                     </div>
                 </div>
@@ -234,7 +247,7 @@ const Step = () => {
                 {currentStep === totalSlides - 1 && (
                     <button
                         className={styles.navBtn}
-                        onClick={() => navigate('/about-business')}
+                        onClick={handleContinue}
                     >
                         Continue
                     </button>
