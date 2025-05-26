@@ -1,6 +1,8 @@
 .container {
     padding: 20px;
+
     text-align: center;
+
 
 }
 .LogoDiv {
@@ -42,9 +44,27 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin-top: 20px;
+    padding-right: 10px;
     max-height: 350px;
     overflow: auto;
 }
+
+.grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.grid::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.grid::-webkit-scrollbar-thumb {
+  background-color: #6524EB; 
+  border-radius: 8px;
+}
+
+
+
 
 .card {
     border: 2px solid #ddd;

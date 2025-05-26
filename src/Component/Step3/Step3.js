@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import styles from '../Step3/Step3.module.css';
 import Slider from 'react-slick';
-import PopUp from '../Popup/Popup';
+
 
 const avatars = [
   { img: 'images/avtar1.png' },
   { img: 'images/avtar2.png' },
   { img: 'images/avtar3.png' },
   { img: 'images/avtar4.png' },
+   { img: 'images/avtar5.png' },
 ];
 
 const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
@@ -20,7 +21,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    arrows: false, // hide default arrows since we use custom ones
+    arrows: false, 
   };
 
   useEffect(() => {
@@ -28,7 +29,6 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   }, [agentName])
 
   const handleAvatarChange = (avatar) => {
-    console.log('avatar', avatar, agentName)
     setAvatar(avatar?.img)
     sessionStorage.setItem("avatar", avatar.img);
   }

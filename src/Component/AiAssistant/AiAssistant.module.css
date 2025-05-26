@@ -1,0 +1,68 @@
+.Header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #F5F5F5;
+    padding: 10px;
+}
+
+.waveText {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: 2px;
+    overflow: hidden;
+    user-select: none;
+    text-align: center;
+    margin-block: 1rem;
+
+}
+
+/* Letter wave animation */
+@keyframes wave {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+.waveLetter {
+    display: inline-block;
+    opacity: 0;
+    animation-name: wave;
+    animation-duration: 1.6s;
+    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out;
+    animation-direction: alternate;
+    animation-delay: 0s;
+    /* overridden inline */
+    animation-play-state: running;
+
+    /* Fade in */
+    animation-name: fadeInWave;
+}
+
+@keyframes fadeInWave {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(0) scale(1.1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

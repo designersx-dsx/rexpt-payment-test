@@ -1,0 +1,42 @@
+.footerContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 0px ;
+    margin: 0px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    
+
+    }
+
+/* .footerContainerFix{
+position: fixed;
+    bottom: 0;
+    width: 100%;
+} */
+
+
+.footerIcon{
+    display: flex;
+      padding: 0 0px ;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+    align-items: center;
+     position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.footerIconSide{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.topAddIcon{
+    position: relative;
+    top: -35px;
+}
