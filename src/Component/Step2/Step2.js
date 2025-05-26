@@ -225,10 +225,11 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
           ))}
 
         </div>
+      
+      </div>
         {showPopup && (
           <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
         )}
-      </div>
 
     </>
   );

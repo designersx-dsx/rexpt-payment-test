@@ -84,6 +84,17 @@ const Step = () => {
     ];
 
     const handleNext = () => {
+
+        if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
+            return;
+        }
+        if (currentStep === 2 && step3Ref.current && !step3Ref.current.validate()) {
+            return;
+        }
+        if (currentStep === 3 && step4Ref.current && !step4Ref.current.validate()) {
+            return;
+        }
+
         if (currentStep === 0 && !selectedLang) {
             setShowPopup(true)
             setPopupType("failed")
@@ -109,9 +120,6 @@ const Step = () => {
         }
     };
 
-    const handleDotClick = (index) => {
-        sliderRef.current.slickGoTo(index);
-    };
 
     const settings = {
         dots: false,
@@ -170,8 +178,14 @@ const Step = () => {
                                         }
                                         className={styles.radioInput}
                                     />
-                                    {/* <img src={lang.flag} alt={lang.name} className={styles.flag} /> */}
-                                    <img src={`https://flagcdn.com/w80/${lang.locale?.split('-')[1]?.toLocaleLowerCase()}.png`} alt={lang.name} className={styles.flag} />
+                                    <div className={styles.flagWrapper}>
+                                        <img
+                                            src={`https://flagcdn.com/w80/${lang.locale?.split('-')[1]?.toLowerCase()}.png`}
+                                            alt={lang.name}
+                                            className={styles.flag}
+                                        />
+                                    </div>
+
                                     <p className={styles.langName}>{lang.name}</p>
                                     {/* <p className={styles.stats}>{lang.percentage} · {lang.stats}</p> */}
                                     {selectedLang === lang.name && <span className={styles.langDot}></span>}
@@ -192,8 +206,10 @@ const Step = () => {
                             <h2 className={styles.heading}>Agent Gender</h2>
                         </div>
 
+
                         <div className={styles.grid}>
                             <Step2 ref={step2Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
+
                         </div>
                     </div>
                 </div>
@@ -210,7 +226,9 @@ const Step = () => {
                         </div>
 
                         <div className={styles.grid2}>
+
                             <Step3 ref={step3Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
+
                         </div>
                     </div>
                 </div>
@@ -226,7 +244,9 @@ const Step = () => {
                         </div>
 
                         <div className={styles.grid2}>
+
                             <Step4 ref={step4Ref} onNext={handleNext} onBack={handleBack} onValidationError={handleValidationError} />
+
                         </div>
                     </div>
                 </div>
@@ -256,6 +276,7 @@ const Step = () => {
             {showPopup && (
                 <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
             )}
+            
         </div>
     );
 };
