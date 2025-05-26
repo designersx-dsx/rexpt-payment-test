@@ -147,7 +147,7 @@
 
 .withlogo {
     display: flex;
-    align-items: end;
+    align-items: center;
     gap: 10px;
     justify-content: center;
 }
