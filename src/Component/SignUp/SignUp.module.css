@@ -75,10 +75,12 @@
     border: 1px solid #ccc;
     border-radius: 8px;
 }
-.Btn{
+
+.Btn {
     width: 100%;
 }
-.Btn button{
+
+.Btn button {
     background-color: #6524EB;
     color: #fff;
     border: none;
@@ -92,12 +94,19 @@
     margin: 20px 0 20px 0;
 }
 
-.Btn button svg{
+.Btn button svg {
     position: absolute;
     right: 60px;
 }
 
-
+.Otp {
+    background-color: #6524EB;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
 
 
