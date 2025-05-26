@@ -1,3 +1,4 @@
+
 import React from 'react'
 import styles from './Dashboard.module.css'
 import Footer from '../AgentDetails/Footer/Footer'
@@ -8,16 +9,14 @@ function Dashboard() {
 
 
 
+    const navigate = useNavigate();
 
-     const navigate = useNavigate();
+    const AgentDetail = () => {
+        navigate('/home'); // Navigate to /about
+    };
 
-  const AgentDetail = () => {
-    navigate('/home'); // Navigate to /about
-  };
-
-  return (
-    <div>
-
+    return (
+        <div>
 
             <header className={styles.header}>
                 <div className={styles.profileSection}>
@@ -57,23 +56,19 @@ function Dashboard() {
             <div className={styles.main}>
 
 
-
-{/* <link to="/agent-detail" className={styles.agentDetails}> */}
-<div className= {` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={AgentDetail}> 
-    <div className={styles.PlanPriceMain}>
-    <h3 className={styles.PlanPrice}>MINI PLAN</h3>
-</div>
-    <div className={styles.Lang}>
-        <div className={styles.LangItem}>
-            <div className={styles.LangIcon}>
-                <img src="images/SofiaAgent.png" alt="English" />
-                </div>
-            <div className={styles.LangText}>
-                 <h3 className={styles.agentName}>Amelia <span className={styles.activeText}>Active</span></h3>
-            <p className={styles.agentAccent}>English • American Accent</p>
-          
-            </div>
-
+                {/* <link to="/agent-detail" className={styles.agentDetails}> */}
+                <div className={` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={AgentDetail}>
+                    <div className={styles.PlanPriceMain}>
+                        <h3 className={styles.PlanPrice}>MINI PLAN</h3>
+                    </div>
+                    <div className={styles.Lang}>
+                        <div className={styles.LangItem}>
+                            <div className={styles.LangIcon}>
+                                <img src="images/SofiaAgent.png" alt="English" />
+                            </div>
+                            <div className={styles.LangText}>
+                                <h3 className={styles.agentName}>Amelia <span className={styles.activeText}>Active</span></h3>
+                                <p className={styles.agentAccent}>English • American Accent</p>
 
                             </div>
 
