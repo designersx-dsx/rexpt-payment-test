@@ -8,7 +8,7 @@ import AboutBusiness from './Component/AboutBusiness/AboutBusiness';
 import BusinessDetails from './Component/BusinessDetails/BusinessDetails';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import AgentDetail from './Component/AgentDetails/AgentDetail'
 
 function App() {
   return (
@@ -19,23 +19,22 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/details" element={<Details />} />
           <Route path="/steps" element={<Step />} />
-          <Route path="/about-business" element={<AboutBusiness/>} />
-          <Route path="/business-details" element={<BusinessDetails/>} />
-
-
+          <Route path="/about-business" element={<AboutBusiness />} />
+          <Route path="/business-details" element={<BusinessDetails />} />
+          <Route path="/agent-detail" element={<AgentDetail />} />
 
         </Routes>
-        <ToastContainer 
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
       </div>
     </BrowserRouter>
   );

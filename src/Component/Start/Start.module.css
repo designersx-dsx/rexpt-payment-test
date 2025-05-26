@@ -17,226 +17,104 @@
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
 }
-
 .StartMain img:nth-child(1) {
     top: 10%;
     left: 20%;
-    animation: float1 6s infinite;
+    animation: floatTopRight 6s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(2) {
     top: 40%;
     left: 70%;
-    animation: float2 7s infinite;
+    animation: floatBottomLeft 7s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(3) {
     top: 60%;
     left: 10%;
-    animation: float3 5s infinite;
+    animation: floatBottomRight 5s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(4) {
     top: 20%;
     left: 50%;
-    animation: float4 6.5s infinite;
+    animation: floatTopLeft 6.5s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(5) {
     top: 80%;
     left: 30%;
-    animation: float5 5.5s infinite;
+    animation: floatDiagonal 5.5s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(6) {
     top: 25%;
     left: 80%;
-    animation: float6 15s infinite;
+    animation: floatBottomLeft 7.5s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(7) {
     top: 70%;
     left: 60%;
-    animation: float7 12s infinite;
+    animation: floatTopLeft 6s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(8) {
     top: 35%;
     left: 40%;
-    animation: float8 14s infinite;
+    animation: floatTopRight 7s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(9) {
     top: 55%;
     left: 15%;
-    animation: float9 10s infinite;
+    animation: floatBottomRight 6.5s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(10) {
     top: 5%;
     left: 90%;
-    animation: float10 13s infinite;
+    animation: floatDiagonal 5.2s infinite ease-in-out;
 }
 
 .StartMain img:nth-child(11) {
     top: 85%;
     left: 5%;
-    animation: float11 16s infinite;
+    animation: floatTopLeft 7s infinite ease-in-out;
 }
 
-/* Floating animation keyframes */
-@keyframes float1 {
-    0% {
-        transform: translate(0, 0);
-    }
+/* Keyframes for different directions */
 
-    50% {
-        transform: translate(100px, -120px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
+@keyframes floatTopRight {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(150px, -150px); }
+    100% { transform: translate(0, 0); }
 }
 
-@keyframes float2 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(-150px, 100px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
+@keyframes floatBottomLeft {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-150px, 150px); }
+    100% { transform: translate(0, 0); }
 }
 
-@keyframes float3 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(120px, 150px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
+@keyframes floatBottomRight {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(150px, 150px); }
+    100% { transform: translate(0, 0); }
 }
 
-@keyframes float4 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(-100px, -120px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
+@keyframes floatTopLeft {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-150px, -150px); }
+    100% { transform: translate(0, 0); }
 }
 
-@keyframes float5 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(140px, 90px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
-}
-
-@keyframes float6 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(-130px, 110px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
-}
-
-@keyframes float7 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(100px, -150px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
-}
-
-@keyframes float8 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(-120px, 100px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
-}
-
-@keyframes float9 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(90px, 120px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
-}
-
-@keyframes float10 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(-140px, -110px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
-}
-
-@keyframes float11 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(110px, 130px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
+@keyframes floatDiagonal {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(100px, -100px); }
+    50% { transform: translate(-100px, 100px); }
+    75% { transform: translate(80px, 120px); }
+    100% { transform: translate(0, 0); }
 }
 
 .LogoDiv {
