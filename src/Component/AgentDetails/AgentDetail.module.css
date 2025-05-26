@@ -1,5 +1,5 @@
 .container {
-  font-family: sans-serif;
+ 
   padding: 1rem;
   /* max-width: 400px; */
   margin: auto;
@@ -306,9 +306,25 @@ justify-content: center;
     min-width: 153px;
     align-items: center;
     gap: 10px;
-
-
+position: relative;
+background-color: #fff;
 }
+
+
+.managementItem::before {
+      content: '';
+    position: absolute;
+    top: 50%;
+    left: -28px;
+    width: 30px;
+    height: 12px;
+    background-color: #fff;
+    border-radius: 42px;
+    transform: translateY(-50%);
+    z-index: -1;
+    box-shadow: rgba(100, 100, 111, 0.381) 0px 7px 29px 0px;
+  }
+
 
 .managementActions{
 
