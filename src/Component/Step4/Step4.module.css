@@ -22,7 +22,7 @@
 }
 
 .selected {
-  border-color: #4c6fff;
+  border-color: #6524EB;
 }
 
 
@@ -55,7 +55,7 @@
 }
 
 .card.selected .customRadio {
-  border-color: #4c6fff;
-  background-color: #4c6fff;
+  border-color: #6524EB;
+  background-color: #6524EB;
   box-shadow: inset 0 0 0 4px #fff;
 }

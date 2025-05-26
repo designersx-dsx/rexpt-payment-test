@@ -20,7 +20,6 @@ const roles = [
 ];
 const Step4 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
-    console.log('selectedRole', selectedRole)
     useEffect(() => {
         sessionStorage.setItem('agentRole', selectedRole)
     }, [selectedRole])
@@ -38,32 +37,36 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     }));
 
     return (
-        <div className={styles.container}>
-            {roles.map((role, index) => (
-                <label
-                    key={index}
-                    className={`${styles.card} ${selectedRole === role.title ? styles.selected : ''
-                        }`}
-                >
-                    <div className={styles.iconBox}>
-                        <img src={role.icon} alt={role.title} className={styles.icon} />
-                    </div>
-                    <div className={styles.info}>
-                        <p className={styles.title}>{role.title}</p>
-                        <p className={styles.description}>{role.description}</p>
-                    </div>
-                    <input
-                        type="radio"
-                        name="receptionist"
-                        value={role.title}
-                        checked={selectedRole === role.title}
-                        onChange={() => setSelectedRole(role.title)}
-                        className={styles.radio}
-                    />
-                    <span className={styles.customRadio}></span>
-                </label>
-            ))}
-        </div>
+        <>
+
+            <div className={styles.container}>
+                {roles.map((role, index) => (
+                    <label
+                        key={index}
+                        className={`${styles.card} ${selectedRole === role.title ? styles.selected : ''
+                            }`}
+                    >
+                        <div className={styles.iconBox}>
+                            <img src={role.icon} alt={role.title} className={styles.icon} />
+                        </div>
+                        <div className={styles.info}>
+                            <p className={styles.title}>{role.title}</p>
+                            <p className={styles.description}>{role.description}</p>
+                        </div>
+                        <input
+                            type="radio"
+                            name="receptionist"
+                            value={role.title}
+                            checked={selectedRole === role.title}
+                            onChange={() => setSelectedRole(role.title)}
+                            className={styles.radio}
+                        />
+                        <span className={styles.customRadio}></span>
+                    </label>
+                ))}
+            </div>
+        </>
+
     )
 })
 

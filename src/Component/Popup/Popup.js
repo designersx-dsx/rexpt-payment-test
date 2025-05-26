@@ -3,9 +3,30 @@ import styles from './Popup.module.css'
 const PopUp = ({ type, message, onClose = () => { }, onConfirm = () => { } }) => {
     const [show, setShow] = useState(false);
 
-    useEffect(() => {
-        if (message) setShow(true);
+  useEffect(() => {
+        if (message) {
+            setShow(true);
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Cleanup: Restore scroll
+        return () => {
+            document.body.style.overflow = '';
+        };
     }, [message]);
+        // ESC key to close popup
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                handleClose();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     const handleClose = () => {
         setShow(false);
@@ -29,7 +50,7 @@ const PopUp = ({ type, message, onClose = () => { }, onConfirm = () => { } }) =>
         message && (
             <div className={`${styles.overlay} ${show ? styles.fadeIn : styles.fadeOut}`}>
                 <div className={`${styles.popup} ${styles[type]} ${show ? styles.scaleIn : styles.scaleOut}`}>
-                    <img src={getIconPath()} alt={type} className={`${styles.icon} ${styles.animateIcon}`} />
+                    <img src={getIconPath()} alt={type} className={`${styles.icon} ${styles.animateIcon}`} onClick={handleClose} />
                     <p className={styles.message}>{message}</p>
 
                     {type === "confirm" ? (

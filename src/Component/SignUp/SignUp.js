@@ -39,7 +39,7 @@ const SignUp = () => {
 
 
 
-        navigate('/steps');
+        navigate('/details');
       } else {
         console.error("Failed to send OTP");
 

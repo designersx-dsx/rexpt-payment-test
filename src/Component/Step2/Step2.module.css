@@ -1,6 +1,4 @@
-.container {
-    padding: 16px;
-}
+
 
 .logoWrapper {
     display: flex;
@@ -24,7 +22,7 @@
     justify-content: space-between;
     gap: 10px;
     margin-bottom: 24px;
-    
+
 }
 
 .genderCard {
@@ -33,7 +31,7 @@
     background: #f7f5ff;
     padding: 12px;
     border-radius: 12px;
-    width:50%;
+    width: 50%;
     position: relative;
     cursor: pointer;
     border: 2px solid transparent;
@@ -71,14 +69,26 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 3rem;
     max-height: 380px;
     overflow: overlay;
     padding-right: 10px;
 }
+.voiceGrid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.voiceGrid::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.voiceGrid::-webkit-scrollbar-thumb {
+  background-color: #6524EB; 
+  border-radius: 8px;
+}
 
 .voiceCard {
-    background: #f7f5ff;
     padding: 12px;
     border-radius: 12px;
     display: flex;
@@ -87,10 +97,12 @@
     position: relative;
     cursor: pointer;
     border: 2px solid transparent;
+    border-color: #E0E5F2 !important;
+    text-align: center;
 }
 
 .voiceCard.active {
-    border-color: #8b5cf6;
+    border-color: #8b5cf6 !important;
 }
 
 .playIcon {
