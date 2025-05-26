@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState,useRef, use } from 'react';
 import styles from './Step2.module.css';
 import { getRetellVoices } from '../../Store/apiStore';
 
@@ -34,17 +34,19 @@ const Step2 = ({ onNext, onBack }) => {
 
 console.log('selectedGender',selectedGender,selectedVoice)
 
+useEffect(()=>{
+      sessionStorage.setItem("agentVoice",selectedVoice.voice_id);
+},[selectedVoice])
+
 useEffect(() => {
   console.log(selectedGender,listVoices)
   if (listVoices && selectedGender) {
     const filtered = listVoices.filter((voice) =>
       voice.provider=="elevenlabs" && voice.gender === selectedGender?.toLocaleLowerCase()
     );
-
-    // You probably want to do something with `filtered` here, like:
-    console.log("Filtered voices:", filtered);
-    // or set it to state
+    // console.log("Filtered voices:", filtered);
     setFilteredVoices(filtered);
+    sessionStorage.setItem("agentGender",selectedGender);
   }
 }, [selectedGender,listVoices]);
 

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Slider from 'react-slick';
 import styles from './Step.module.css';
 import Step2 from '../Step2/Step2';
@@ -14,7 +14,13 @@ const Step = () => {
     const sliderRef = useRef(null);
     const [currentStep, setCurrentStep] = useState(0);
     const [selectedLang, setSelectedLang] = useState('');
+    const [selectedLangCode, setSelectedLangCode] = useState('');
     console.log('selectedLan,',selectedLang)
+
+    useEffect(()=>{
+       sessionStorage.setItem("agentLanguage", selectedLang);
+       sessionStorage.setItem("agentLanguageCode", selectedLangCode);
+    },[selectedLang])
 
     const totalSlides = 4;
 
@@ -131,7 +137,9 @@ const Step = () => {
                                         name="language"
                                         value={lang.name}
                                         checked={selectedLang === lang.name}
-                                        onChange={() => setSelectedLang(lang.name)}
+                                        onChange={() => {   setSelectedLangCode(lang.locale)
+                                                            setSelectedLang(lang.name)}
+                                                        }
                                         className={styles.radioInput}
                                     />
                                     {/* <img src={lang.flag} alt={lang.name} className={styles.flag} /> */}
