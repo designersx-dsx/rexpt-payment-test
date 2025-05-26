@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from '../Step3/Step3.module.css';
 import Slider from 'react-slick';
 
@@ -11,7 +11,8 @@ const avatars = [
 
 const Step3 = () => {
   const sliderRef = useRef(null);
-
+  const [agentName,setAganentName]=useState(null);
+  const [avatar,setAvatar]=useState(null)
   const settings = {
     dots: false,
     infinite: true,
@@ -20,9 +21,20 @@ const Step3 = () => {
     slidesToScroll: 1,
     arrows: false, // hide default arrows since we use custom ones
   };
+  
+  useEffect(()=>{
+      sessionStorage.setItem("agentName",agentName);
+  },[agentName])
+
+  const handleAvatarChange=(avatar)=>{
+  console.log('avatar',avatar,agentName)
+  setAvatar(avatar?.img)
+  sessionStorage.setItem("avatar",avatar.img);
+  }
 
   return (
     <div className={styles.sliderContainer}>
+      <input type='text' name='agenName' onChange={(e)=>setAganentName(e.target.value)}/>
       <h2 className={styles.heading}>Choose Avatar</h2>
 
       <Slider ref={sliderRef} {...settings}>
@@ -32,6 +44,7 @@ const Step3 = () => {
               type="radio"
               name="avatar"
               value={index}
+              onChange={()=>handleAvatarChange(avatar)}
               className={styles.radioButton}
             />
             <img
@@ -47,7 +60,8 @@ const Step3 = () => {
         <div className={styles.arrowLeft} onClick={() => sliderRef.current.slickPrev()}>
           <img src="images/sliderleft.png" alt="Previous" />
         </div>
-        <div className={styles.arrowRight} onClick={() => sliderRef.current.slickNext()}>
+        <div className={styles.arrowRight} onClick={() =>{
+           sliderRef.current.slickNext()}}>
           <img src="images/sliderright.png" alt="Next" />
         </div>
       </div>
