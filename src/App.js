@@ -14,6 +14,7 @@ import AiAssistant from './Component/AiAssistant/AiAssistant';
 import BusinessLocation from './Component/BusinessLocation/BusinessLocation';
 
 import SecureRoute from './Pages/SecureRoute'
+import Dashboard from './Component/Dashboard/Dashboard';
 
 
 function App() {
@@ -29,7 +30,15 @@ function App() {
           <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
           <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
+
+          <Route path="/dashboard" element={<Dashboard />}/>
+         
+
+
+
+
           <Route path="/ai-assistant" element={<AiAssistant />} />
+
 
         </Routes>
         <ToastContainer
