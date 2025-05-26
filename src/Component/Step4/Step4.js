@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from '../Step4/Step4.module.css'
 const roles = [
     {
@@ -19,6 +19,11 @@ const roles = [
 ];
 const Step4 = () => {
     const [selectedRole, setSelectedRole] = useState('');
+    console.log('selectedRole',selectedRole)
+    useEffect(()=>{
+        sessionStorage.setItem('agentRole',selectedRole)
+    },[selectedRole])
+
     return (
         <div className={styles.container}>
             {roles.map((role, index) => (
