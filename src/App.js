@@ -26,7 +26,7 @@ function App() {
           <Route path="/steps" element={ <Step />} />
           <Route path="/about-business" element={ <AboutBusiness />} />
           <Route path="/business-details" element={ <SecureRoute><BusinessDetails /></SecureRoute>} />
-                <Route path="/business-locations" element={ <SecureRoute><BusinessLocation /></SecureRoute>} />
+          <Route path="/business-locations" element={ <SecureRoute><BusinessLocation /></SecureRoute>} />
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
 
 
