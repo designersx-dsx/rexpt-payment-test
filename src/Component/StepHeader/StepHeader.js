@@ -6,7 +6,7 @@ const StepHeader = ({ title }) => {
         <div className={styles.LogoDiv}>
             <div className={styles.logo}>
                 <svg
-                       className={styles.svgSpin}
+                    className={styles.svgSpin}
                     width="283"
                     height="283"
                     viewBox="0 0 283 283"
@@ -19,7 +19,7 @@ const StepHeader = ({ title }) => {
                             cy="141.5"
                             r="121.5"
                             fill="url(#paint0_linear_119_245)"
-                           className={styles.aiGlow}
+                            className={styles.aiGlow}
                         />
                     </g>
                     <circle cx="141.5" cy="141.5" r="101.504" fill="url(#paint1_linear_119_245)" stroke="white" />
