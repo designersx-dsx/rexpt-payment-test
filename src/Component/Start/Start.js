@@ -37,9 +37,10 @@ function Start() {
                     {/* floating ellipses */}
                     <img src='images/Ellipse 1.png' alt='Ellipse 1' />
                     <img src='images/Ellipse 2.png' alt='Ellipse 2' />
+                    <img src='images/Ellipse 5.png' alt='Ellipse 5' />
                     <img src='images/Ellipse 3.png' alt='Ellipse 3' />
                     <img src='images/Ellipse 4.png' alt='Ellipse 4' />
-                    <img src='images/Ellipse 5.png' alt='Ellipse 5' />
+
                     <img src='images/Ellipse 6.png' alt='Ellipse 6' />
                     <img src='images/Ellipse 7.png' alt='Ellipse 7' />
                     <img src='images/Ellipse 8.png' alt='Ellipse 8' />

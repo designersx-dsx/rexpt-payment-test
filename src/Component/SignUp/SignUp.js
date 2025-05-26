@@ -91,7 +91,7 @@ const SignUp = () => {
           placeholder="Johnvick@gmail.com"
           onChange={(e => setEmail(e.target.value))}
         />
-      <span onClick={handleSendOTP}>send OTP</span>
+      <span className={styles.Otp} onClick={handleSendOTP}>Send OTP</span>
 
         <p className={styles.codeText}>Enter the send code</p>
 
