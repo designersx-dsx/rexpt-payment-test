@@ -18,14 +18,6 @@ const Step = () => {
 
     const totalSlides = 4;
 
-    // const languages = [
-    //     { name: 'English', flag: '/images/english-flag.png', percentage: '28%', stats: '23/88' },
-    //     { name: 'Spanish', flag: '/images/spanish.png', percentage: '56%', stats: '23/88' },
-    //     { name: 'German', flag: '/images/german.png', percentage: '28%', stats: '23/88' },
-    //     { name: 'Italian', flag: '/images/Italian.png', percentage: '56%', stats: '23/88' },
-    //     { name: 'German', flag: '/images/german.png', percentage: '28%', stats: '23/88' },
-    //     { name: 'Italian', flag: '/images/Italian.png', percentage: '56%', stats: '23/88' },
-    // ];
 
         const languages = [
   /* English family */
