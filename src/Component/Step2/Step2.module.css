@@ -1,5 +1,9 @@
 .container {
     padding: 16px;
+
+    font-family: sans-serif;
+    height: 100vh;
+
 }
 
 .logoWrapper {
@@ -24,6 +28,7 @@
     justify-content: space-between;
     gap: 10px;
     margin-bottom: 24px;
+    
 }
 
 .genderCard {
@@ -68,7 +73,7 @@
 
 .voiceGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr; 
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-bottom: 20px;
     max-height: 380px;

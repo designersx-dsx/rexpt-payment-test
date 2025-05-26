@@ -10,6 +10,11 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AgentDetail from './Component/AgentDetails/AgentDetail'
 
+import BusinessLocation from './Component/BusinessLocation/BusinessLocation';
+
+import SecureRoute from './Pages/SecureRoute'
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -17,11 +22,13 @@ function App() {
         <Routes>
           <Route path="/" element={<Start />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/details" element={<Details />} />
-          <Route path="/steps" element={<Step />} />
-          <Route path="/about-business" element={<AboutBusiness />} />
-          <Route path="/business-details" element={<BusinessDetails />} />
-          <Route path="/agent-detail" element={<AgentDetail />} />
+
+          <Route path="/details" element={ <SecureRoute><Details /></SecureRoute>} />
+          <Route path="/steps" element={ <SecureRoute><Step /></SecureRoute>} />
+          <Route path="/about-business" element={ <SecureRoute><AboutBusiness /></SecureRoute>} />
+          <Route path="/business-details" element={ <SecureRoute><BusinessDetails /></SecureRoute>} />
+          <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
+
 
         </Routes>
         <ToastContainer
