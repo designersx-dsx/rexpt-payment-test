@@ -1,7 +1,128 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from '../AboutBusiness/AboutBusiness.module.css'
-
+import axios from 'axios';
 function AboutBusiness() {
+  const [files, setFiles] = useState([]);
+
+      const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+
+    if (selectedFiles.length > 5) {
+      alert("You can only upload a maximum of 5 files.");
+      return;
+    }
+
+    setFiles(selectedFiles);
+  };
+  console.log('files',files)
+
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (files.length === 0) {
+      alert("Please select at least one file to upload.");
+      return;
+    }
+ 
+    const response_engine={
+    type: "retell-llm",
+    llm_id: "llm_caca4d4d26fa18da9c3f1ea3e797" || "llm_377c8c9361d272796c3fbf2cef10"
+    }
+
+ const otherAgentSpecifications = {
+  agent_name: sessionStorage.getItem("agentName"),
+  version: 0,
+  voice_id: sessionStorage.getItem("agentVoice")||"11labs-Adrian",
+  voice_model: "eleven_turbo_v2",
+  fallback_voice_ids: ["openai-Alloy", "deepgram-Varun"],
+  voice_temperature: 1,
+  voice_speed: 1,
+  volume: 1,
+  responsiveness: 1,
+  interruption_sensitivity: 1,
+  enable_backchannel: true,
+  backchannel_frequency: 0.9,
+  backchannel_words: ["yeah", "uh-huh"],
+  reminder_trigger_ms: 10_000,
+  reminder_max_count: 2,
+  ambient_sound: "coffee-shop",
+  ambient_sound_volume: 1,
+  language: sessionStorage.getItem('agentLanguageCode')||"en-US",
+//   webhook_url: "https://webhook-url-here",
+//   boosted_keywords: ["retell", "kroger"],
+  enable_transcription_formatting: true,
+  opt_out_sensitive_data_storage: true,
+  opt_in_signed_url: true,
+//   pronunciation_dictionary: [
+//     {
+//       word: "actually",
+//       alphabet: "ipa",
+//       phoneme: "ˈæktʃuəli"
+//     }
+//   ],
+  normalize_for_speech: true,
+  end_call_after_silence_ms: 600_000,
+  max_call_duration_ms: 3_600_000,
+  enable_voicemail_detection: true,
+  voicemail_message: "Hi, please give us a callback.",
+  voicemail_detection_timeout_ms: 30_000,
+//   post_call_analysis_data: [
+//     {
+//       type: "string",
+//       name: "customer_name",
+//       description: "The name of the customer.",
+//       examples: ["John Doe", "Jane Smith"]
+//     }
+//   ]
+};
+    const finalData={
+        response_engine,
+        // ...otherAgentSpecifications
+        voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+        language: sessionStorage.getItem('agentLanguageCode')||"en-US",
+        agent_name: sessionStorage.getItem("agentName"),
+        language: sessionStorage.getItem('agentLanguageCode')||"en-US",
+
+
+    }
+    const formData = new FormData();
+    console.log('response_engine',response_engine)
+    formData.append('response_engine',response_engine)
+    // Object.entries(otherAgentSpecifications).forEach(([key, value]) => {
+    // if (
+    //     Array.isArray(value) ||
+    //     typeof value === 'object' && value !== null
+    // ) {
+    //     // Convert arrays/objects to JSON string
+    //     formData.append(key, JSON.stringify(value));
+    // } else {
+    //     formData.append(key, value);
+    // }
+    // });
+
+    files.forEach((file, index) => {
+      formData.append(`files`, file); // You can also use `files[]` if API expects an array
+    });
+
+    try {
+      const response = await axios.post(
+        'https://api.retellai.com/create-agent',
+        finalData,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+          },
+        }
+      );
+
+      console.log("Upload success:", response);
+      alert("Agent created successfully!");
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Agent creation failed.");
+    }
+  };
+
     return (
         <div>
             <div className={styles.container}>
@@ -28,7 +149,7 @@ function AboutBusiness() {
 
                     <div className={styles.formGroup}>
                         <label htmlFor="business-name">File Upload</label>
-                        <input type="text" placeholder='Attached file' />
+                        <input type="file" placeholder='Attached file' multiple onChange={handleFileChange}/>
                     </div>
 
                     <div className={styles.formGroup}>
@@ -37,7 +158,7 @@ function AboutBusiness() {
                     </div>
 
                     <div className={styles.Btn} >
-                        <button type="submit">Continue
+                        <button type="submit" onClick={handleSubmit}>Continue
                             <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M14.3379 20.0391C13.9955 20.0391 13.6682 19.9595 13.3564 19.8027C12.9671 19.583 12.6561 19.2358 12.4844 18.8271C12.375 18.5441 12.2041 17.6951 12.2041 17.6797C12.0466 16.8233 11.9545 15.4716 11.9414 13.957L11.9404 13.5752C11.9404 11.9884 12.0329 10.5418 12.1729 9.59863L12.2959 9.01172C12.3641 8.70119 12.4534 8.34754 12.5469 8.16699C12.8892 7.50651 13.5589 7.09766 14.2754 7.09766H14.3379C14.803 7.11311 15.7779 7.5196 15.7861 7.53711C17.3649 8.19953 20.4105 10.1987 21.8174 11.624L22.2266 12.0527C22.3335 12.1686 22.4537 12.3062 22.5283 12.4131C22.7776 12.7433 22.9023 13.152 22.9023 13.5605C22.9023 14.0164 22.7625 14.4404 22.498 14.7871L22.0781 15.2402L21.9834 15.3369C20.707 16.7208 17.3744 18.9841 15.6309 19.6768L15.3672 19.7773C15.0505 19.8909 14.607 20.0265 14.3379 20.0391ZM5.11133 15.2051C4.21635 15.2049 3.49043 14.4721 3.49023 13.5684C3.49023 12.6645 4.21623 11.9309 5.11133 11.9307L9.10156 12.2842C9.80369 12.2844 10.373 12.8593 10.373 13.5684C10.3729 14.2784 9.80358 14.8523 9.10156 14.8525L5.11133 15.2051Z" fill="white" />
                             </svg>
