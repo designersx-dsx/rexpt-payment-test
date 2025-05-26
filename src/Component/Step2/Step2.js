@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } f
 import styles from './Step2.module.css';
 import { getRetellVoices } from '../../Store/apiStore';
 import PopUp from '../Popup/Popup';
-
 const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedVoice, setSelectedVoice] = useState('');
@@ -119,7 +118,9 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   }));
   return (
     <>
+
       <div className={styles.container}>
+      
         {/* <div className={styles.logoWrapper}>
         <img src="/images/stepmask.png" alt="Logo" className={styles.logo} />
       </div>
