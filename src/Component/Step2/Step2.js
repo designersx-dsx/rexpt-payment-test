@@ -3,7 +3,7 @@ import styles from './Step2.module.css';
 import { getRetellVoices } from '../../Store/apiStore';
 import PopUp from '../Popup/Popup';
 const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
-  const [selectedGender, setSelectedGender] = useState('');
+  const [selectedGender, setSelectedGender] = useState('Male');
   const [selectedVoice, setSelectedVoice] = useState('');
   const [listVoices, setListVoices] = useState([]);
   const [filteredVoices, setFilteredVoices] = useState([]);
@@ -25,7 +25,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     const fetchRetellVoiceList = async () => {
       try {
         const voiceResponses = await getRetellVoices();
-        console.log("Voices:", voiceResponses.data);
+     
         setListVoices(voiceResponses.data);
       } catch (error) {
         console.error("Error fetching voices:", error);
@@ -34,14 +34,12 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     fetchRetellVoiceList();
   }, [])
 
-  console.log('selectedGender', selectedGender, selectedVoice)
 
   useEffect(() => {
     sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
   }, [selectedVoice])
 
   useEffect(() => {
-    console.log(selectedGender, listVoices)
     if (listVoices && selectedGender) {
       const filtered = listVoices.filter((voice) =>
         voice.provider == "elevenlabs" && voice.gender === selectedGender?.toLocaleLowerCase()
@@ -120,7 +118,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     <>
 
       <div className={styles.container}>
-      
+
         {/* <div className={styles.logoWrapper}>
         <img src="/images/stepmask.png" alt="Logo" className={styles.logo} />
       </div>
@@ -226,11 +224,11 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
           ))}
 
         </div>
-      
+
       </div>
-        {showPopup && (
-          <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
-        )}
+      {showPopup && (
+        <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
+      )}
 
     </>
   );
