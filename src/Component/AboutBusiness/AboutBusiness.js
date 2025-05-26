@@ -3,7 +3,10 @@ import styles from '../AboutBusiness/AboutBusiness.module.css'
 import axios from 'axios';
 function AboutBusiness() {
   const [files, setFiles] = useState([]);
-
+  const [businessUrl, setBusinessUrl] = useState("");
+  const [googleListing, setGoogleListing] = useState("");
+  const [aboutBusiness, setAboutBusiness] = useState("");
+  const [note, setNote] = useState("");
       const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
@@ -23,104 +26,47 @@ function AboutBusiness() {
       alert("Please select at least one file to upload.");
       return;
     }
- 
-    const response_engine={
-    type: "retell-llm",
-    llm_id: "llm_caca4d4d26fa18da9c3f1ea3e797" || "llm_377c8c9361d272796c3fbf2cef10"
-    }
 
- const otherAgentSpecifications = {
-  agent_name: sessionStorage.getItem("agentName"),
-  version: 0,
-  voice_id: sessionStorage.getItem("agentVoice")||"11labs-Adrian",
-  voice_model: "eleven_turbo_v2",
-  fallback_voice_ids: ["openai-Alloy", "deepgram-Varun"],
-  voice_temperature: 1,
-  voice_speed: 1,
-  volume: 1,
-  responsiveness: 1,
-  interruption_sensitivity: 1,
-  enable_backchannel: true,
-  backchannel_frequency: 0.9,
-  backchannel_words: ["yeah", "uh-huh"],
-  reminder_trigger_ms: 10_000,
-  reminder_max_count: 2,
-  ambient_sound: "coffee-shop",
-  ambient_sound_volume: 1,
-  language: sessionStorage.getItem('agentLanguageCode')||"en-US",
-//   webhook_url: "https://webhook-url-here",
-//   boosted_keywords: ["retell", "kroger"],
-  enable_transcription_formatting: true,
-  opt_out_sensitive_data_storage: true,
-  opt_in_signed_url: true,
-//   pronunciation_dictionary: [
-//     {
-//       word: "actually",
-//       alphabet: "ipa",
-//       phoneme: "ˈæktʃuəli"
-//     }
-//   ],
-  normalize_for_speech: true,
-  end_call_after_silence_ms: 600_000,
-  max_call_duration_ms: 3_600_000,
-  enable_voicemail_detection: true,
-  voicemail_message: "Hi, please give us a callback.",
-  voicemail_detection_timeout_ms: 30_000,
-//   post_call_analysis_data: [
-//     {
-//       type: "string",
-//       name: "customer_name",
-//       description: "The name of the customer.",
-//       examples: ["John Doe", "Jane Smith"]
-//     }
-//   ]
-};
-    const finalData={
-        response_engine,
-        // ...otherAgentSpecifications
-        voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-        language: sessionStorage.getItem('agentLanguageCode')||"en-US",
-        agent_name: sessionStorage.getItem("agentName"),
-        language: sessionStorage.getItem('agentLanguageCode')||"en-US",
+    const mergedUrls=[businessUrl,googleListing]
 
-
-    }
     const formData = new FormData();
-    console.log('response_engine',response_engine)
-    formData.append('response_engine',response_engine)
-    // Object.entries(otherAgentSpecifications).forEach(([key, value]) => {
-    // if (
-    //     Array.isArray(value) ||
-    //     typeof value === 'object' && value !== null
-    // ) {
-    //     // Convert arrays/objects to JSON string
-    //     formData.append(key, JSON.stringify(value));
-    // } else {
-    //     formData.append(key, value);
-    // }
-    // });
-
-    files.forEach((file, index) => {
-      formData.append(`files`, file); // You can also use `files[]` if API expects an array
+    formData.append("knowledge_base_name", "Sample KB");
+    const texts = [
+    {
+        text: "Hello, how are you?",
+        title: "Sample Question",
+    },
+    ];
+    const urls = [
+    "https://www.retellai.com",
+    "https://docs.retellai.com",
+    ];
+    formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+    // formData.append("knowledge_base_texts", JSON.stringify(aboutBusiness));
+    files.forEach((file) => {
+    formData.append("knowledge_base_files", file);
     });
 
-    try {
-      const response = await axios.post(
-        'https://api.retellai.com/create-agent',
-        finalData,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-          },
-        }
-      );
+        try {
+        const response = await axios.post(
+            'https://api.retellai.com/create-knowledge-base',
+            formData,
+            {
+            headers: {
+                Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                'Content-Type': 'multipart/form-data',
+            },
+            }
+        );
 
-      console.log("Upload success:", response);
-      alert("Agent created successfully!");
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Agent creation failed.");
-    }
+        console.log("Upload success:", response);
+        sessionStorage.setItem("knowledgeBaseId", response.data.knowledge_base_id);
+        alert("Knowledge base created successfully!");
+        } catch (error) {
+        console.error("Upload failed:", error);
+        alert("Knowledge base creation failed. Please try again.");
+        }
+
   };
 
     return (
@@ -134,17 +80,17 @@ function AboutBusiness() {
 
                     <div className={styles.formGroup}>
                         <label htmlFor="business-name">URL (Website)</label>
-                        <input type="text" placeholder='https://your website url' />
+                        <input type="text" placeholder='https://your website url' onChange={(e) => setBusinessUrl(e.target.value)}/>
                     </div>
 
                     <div className={styles.formGroup}>
                         <label htmlFor="business-name">Google Listing</label>
-                        <input type="text" placeholder='15' />
+                        <input type="text" placeholder='15'   onChange={(e) => setGoogleListing(e.target.value)}/>
                     </div>
 
                     <div className={styles.formGroup}>
                         <label htmlFor="business-name">More About your Business</label>
-                        <input type="text" placeholder='Describe' />
+                        <input type="text" placeholder='Describe' onChange={(e) => setAboutBusiness(e.target.value)}/>
                     </div>
 
                     <div className={styles.formGroup}>
@@ -154,7 +100,7 @@ function AboutBusiness() {
 
                     <div className={styles.formGroup}>
                         <label htmlFor="business-name">Additional Note</label>
-                        <textarea placeholder='Note' rows="4" cols="50"></textarea>
+                        <textarea placeholder='Note' rows="4" cols="50"  onChange={(e) => setNote(e.target.value)}></textarea>
                     </div>
 
                     <div className={styles.Btn} >
