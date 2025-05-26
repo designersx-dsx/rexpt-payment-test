@@ -18,7 +18,7 @@ const Details = () => {
     const [phone, setPhone] = useState('');
     const token = localStorage.getItem("token")
     const decodeTokenData = decodeToken(token)
-    const userId = decodeTokenData.id
+    const userId = decodeTokenData?.id
     const handleLoginClick = async () => {
         // Validation
         setLoading(true)
@@ -114,9 +114,9 @@ const Details = () => {
                 <button type="submit">
 
                     {loading ? <Loader size={20} /> : (<>Login
-                        <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="..." fill="white" />
-                        </svg></>)}
+                       <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="..." fill="white" />
+                  </svg></>)}
                 </button>
             </div>
             {showPopup && (
