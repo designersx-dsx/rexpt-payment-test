@@ -9,6 +9,7 @@ import BusinessDetails from './Component/BusinessDetails/BusinessDetails';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AgentDetail from './Component/AgentDetails/AgentDetail'
+import BusinessLocation from './Component/BusinessLocation/BusinessLocation';
 
 function App() {
   return (
@@ -21,8 +22,8 @@ function App() {
           <Route path="/steps" element={<Step />} />
           <Route path="/about-business" element={<AboutBusiness />} />
           <Route path="/business-details" element={<BusinessDetails />} />
+          <Route path="/business-location" element={<BusinessLocation />} />
           <Route path="/agent-detail" element={<AgentDetail />} />
-
         </Routes>
         <ToastContainer
           position="top-center"
