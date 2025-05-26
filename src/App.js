@@ -23,10 +23,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Start />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
-          <Route path="/steps" element={<Step />} />
-          <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
-          <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
+
+
+          <Route path="/details" element={ <SecureRoute><Details /></SecureRoute>} />
+          <Route path="/steps" element={ <Step />} />
+          <Route path="/about-business" element={ <AboutBusiness />} />
+          <Route path="/business-details" element={ <SecureRoute><BusinessDetails /></SecureRoute>} />
+          <Route path="/business-locations" element={ <SecureRoute><BusinessLocation /></SecureRoute>} />
+
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           <Route path="/ai-assistant" element={<AiAssistant />} />
         </Routes>

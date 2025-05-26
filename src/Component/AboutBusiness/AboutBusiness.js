@@ -109,9 +109,9 @@ function AboutBusiness() {
       setShowPopup(true);
       setTimeout(() => navigate("/steps"), 1500);
     } catch (error) {
-      console.error("Upload failed:", error);
-      setPopupType("error");
-      setPopupMessage("Knowledge base creation failed. Please try again.");
+      console.error("Upload failed:", error.response.data.message);
+      setPopupType("failed");
+      setPopupMessage(error.response.data.message||"Internal Server Error");
       setShowPopup(true);
     }
 
