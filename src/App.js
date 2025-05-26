@@ -6,6 +6,8 @@ import Details from './Component/Details/Details';
 import Step from './Component/Step/Step';
 import AboutBusiness from './Component/AboutBusiness/AboutBusiness';
 import BusinessDetails from './Component/BusinessDetails/BusinessDetails';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
@@ -23,6 +25,17 @@ function App() {
 
 
         </Routes>
+        <ToastContainer 
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       </div>
     </BrowserRouter>
   );

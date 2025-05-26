@@ -1,13 +1,75 @@
 import React from 'react';
 import styles from "../SignUp/SignUp.module.css";
 import { useNavigate } from 'react-router-dom';
+import { LoginWithEmailOTP, verifyEmailOTP } from '../../Store/apiStore';
+import { toast } from 'react-toastify';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [otpSent, setOtpSent] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
 
-  const handleLoginClick = () => {
-    navigate('/details');
+
+ const handleLoginClick = async() => {
+    const fullOtp = otp.join("");
+    if (fullOtp.length !== 6) {
+      toast.error("Please enter a valid 6-digit OTP.");
+      return;
+    }
+    try {
+        const response=await verifyEmailOTP(email,fullOtp)
+        console.log("response", response);
+        if (response?.status === 200) {
+          console.log("OTP Verified successfully");
+          // alert('OTP Verified successfully!');
+          toast.success("OTP Verified successfully!")
+          navigate('/steps');
+        } else {
+        console.error("Failed to send OTP");
+        toast.error('Failed to send OTP. Please try again.');
+
+        }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      toast.error(error?.response?.data.error ||'Internal Server Error');
+    }
+        
   };
+
+    const handleSendOTP = async() => {
+    // Simulate sending OTP
+    
+    try {
+        const response=await LoginWithEmailOTP(email)
+        console.log("response", response);
+        if (response?.status === 200) {
+          console.log("OTP sent successfully");
+          // alert('OTP sent successfully!');
+          toast.success("OTP sent successfully!")
+          setOtpSent(true);
+        } else {
+        console.error("Failed to send OTP");
+        toast.error('Failed to send OTP. Please try again.');
+        }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      toast.error(error?.response?.data.error ||'Internal Server Error');
+    }
+  } 
+
+  const handleOtpChange = (value, index) => {
+  const newOtp = [...otp];
+  newOtp[index] = value;
+  setOtp(newOtp);
+
+  // Automatically focus next input
+  if (value && index < 5) {
+    const nextInput = document.getElementById(`otp-${index + 1}`);
+    if (nextInput) nextInput.focus();
+  }
+};
+
 
   return (
     <div className={styles.pageEnterAnimation}>
@@ -27,18 +89,24 @@ const SignUp = () => {
           type="email"
           className={styles.emailInput}
           placeholder="Johnvick@gmail.com"
+          onChange={(e => setEmail(e.target.value))}
         />
+      <span onClick={handleSendOTP}>send OTP</span>
 
         <p className={styles.codeText}>Enter the send code</p>
 
-        <div className={styles.otpContainer}>
+            <div className={styles.otpContainer}>
           {[...Array(6)].map((_, i) => (
-            <input key={i} maxLength="1" className={styles.otpInput} />
+          <input
+            key={i}
+            id={`otp-${i}`}
+            maxLength="1"
+            value={otp[i]}
+            onChange={(e) => handleOtpChange(e.target.value, i)}
+            className={styles.otpInput}
+          />          
           ))}
         </div>
-
-
-
 
         <div className={styles.Btn} onClick={handleLoginClick}>
           <button type="submit">Continue
