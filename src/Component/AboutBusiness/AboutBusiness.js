@@ -4,7 +4,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
-
 function AboutBusiness() {
   const [files, setFiles] = useState([]);
   const [businessUrl, setBusinessUrl] = useState("");
@@ -88,9 +87,9 @@ function AboutBusiness() {
       formData.append("knowledge_base_files", file);
     });
     //create knowledge base
-
     try {
       setLoading(true)
+      console.log(process.env.REACT_APP_API_RETELL_API)
       const response = await axios.post(
         "https://api.retellai.com/create-knowledge-base",
         formData,
