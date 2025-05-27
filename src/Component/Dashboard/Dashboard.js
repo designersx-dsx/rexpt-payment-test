@@ -13,9 +13,9 @@ function Dashboard() {
     };
 
     const [openDropdown, setOpenDropdown] = useState(null);
-    const toggleDropdown = (e,id) => {
-          e.preventDefault();
-            e.stopPropagation();
+    const toggleDropdown = (e, id) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (openDropdown === id) {
             setOpenDropdown(null);
         } else {
@@ -43,12 +43,12 @@ function Dashboard() {
                         <img src="images/AgentImage.png" alt="Profile" className={styles.profilePic} />
                     </div>
                     <div>
+                        <p className={styles.greeting}>Hello!</p>
                         <h2 className={styles.name}>John Vick</h2>
                     </div>
                 </div>
                 <div className={styles.notifiMain}>
                     <div className={styles.notificationIcon}>
-
                         <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M10 4.68945C10.4142 4.68945 10.75 5.02524 10.75 5.43945V8.76945C10.75 9.18367 10.4142 9.51945 10 9.51945C9.58579 9.51945 9.25 9.18367 9.25 8.76945V5.43945C9.25 5.02524 9.58579 4.68945 10 4.68945Z" fill="#0A0A0A" fill-opacity="0.9" />
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M2.61001 7.66C2.61001 3.56579 5.9258 0.25 10.02 0.25C14.0946 0.25 17.4289 3.58574 17.44 7.65795L17.44 7.65898V9.76C17.44 10.0064 17.4942 10.3614 17.5969 10.7349C17.6997 11.1089 17.8345 11.441 17.9621 11.6525L17.9628 11.6535L19.2334 13.7746L19.2336 13.7749C20.2082 15.4038 19.4348 17.519 17.6272 18.1215L17.6269 18.1216L17.6267 18.1217C12.693 19.7628 7.35696 19.7628 2.42329 18.1217L2.42306 18.1216L2.42284 18.1215C1.50673 17.8161 0.827321 17.1773 0.523982 16.3562C0.220761 15.5354 0.320841 14.6072 0.815592 13.7763L0.816106 13.7754L2.08724 11.6535L2.08787 11.6525C2.21604 11.4401 2.35075 11.1098 2.45325 10.7381C2.55563 10.3669 2.61001 10.0118 2.61001 9.76V7.66ZM10.02 1.75C6.75423 1.75 4.11001 4.39421 4.11001 7.66V9.76C4.11001 10.1882 4.02439 10.6831 3.89927 11.1369C3.7744 11.5897 3.59436 12.0589 3.37286 12.4263C3.37262 12.4267 3.37239 12.4271 3.37215 12.4275L2.10443 14.5437C2.10428 14.544 2.10413 14.5442 2.10398 14.5445C1.81916 15.0233 1.79933 15.4798 1.93104 15.8363C2.0627 16.1927 2.37329 16.5239 2.89718 16.6985C7.52323 18.2372 12.5268 18.2372 17.1528 16.6985C18.0452 16.401 18.4317 15.3562 17.9464 14.5451L16.6778 12.4275C16.6777 12.4272 16.6775 12.427 16.6774 12.4267C16.4552 12.0583 16.2752 11.5858 16.1506 11.1326C16.0258 10.6786 15.94 10.1836 15.94 9.76V7.66107C15.9306 4.41373 13.2651 1.75 10.02 1.75Z" fill="#0A0A0A" fill-opacity="0.9" />
@@ -66,9 +66,18 @@ function Dashboard() {
                         </svg>
                     </div>
                 </div>
-
             </header>
-
+            <section className={styles.agentCard}>
+                <div className={styles.agentInfo}>
+                    <h2>138</h2>
+                    <img src='svg/total-call.svg' alt='total-call' />
+                </div>
+                <hr />
+                <div className={styles.agentInfo2}>
+                    <h2>26</h2>
+                    <img src='svg/calender-booking.svg' alt='calender-booking' />
+                </div>
+            </section>
 
 
 
@@ -95,7 +104,7 @@ function Dashboard() {
                         </div>
 
 
-                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e,'MiniPlan')}>
+                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'MiniPlan')}>
                             <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="2" cy="2" r="2" fill="black" />
                                 <circle cx="9" cy="2" r="2" fill="black" />
@@ -115,9 +124,9 @@ function Dashboard() {
                     <hr className={styles.agentLine}></hr>
 
                     <div className={styles.LangPara}>
-                        <p className={styles.agentPara}>Unlock More Potentials and get all premium features</p>
+                        <p className={styles.agentPara}>For: <strong>Apollo</strong></p>
                         <div className={styles.VIA}>
-                            <img src="images/VIA_Unconnected.png" alt="VIA" />
+                            <img src="svg/cal-svg.svg" alt="cal-svg" />
                         </div>
 
                     </div>
@@ -140,14 +149,14 @@ function Dashboard() {
                                 <img src="images/SofiaAgent.png" alt="English" />
                             </div>
                             <div className={styles.LangText}>
-                                <h3 className={styles.agentName}>Amelia <span className={styles.activeText}>Active</span></h3>
+                                <h3 className={styles.agentName}>ETHAN <span className={styles.activeText}>Active</span></h3>
                                 <p className={styles.agentAccent}>English • American Accent</p>
 
                             </div>
 
 
                         </div>
-                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e,'ProPlan')}>
+                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'ProPlan')}>
                             <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="2" cy="2" r="2" fill="black" />
                                 <circle cx="9" cy="2" r="2" fill="black" />
@@ -163,9 +172,9 @@ function Dashboard() {
                     </div>
                     <hr className={styles.agentLine}></hr>
                     <div className={styles.LangPara}>
-                        <p className={styles.agentPara}>Unlock More Potentials and get all premium features</p>
+                        <p className={styles.agentPara}>For: <strong>ADV Real Estate</strong></p>
                         <div className={styles.VIA}>
-                            <img src="images/VIA_Unconnected.png" alt="VIA" />
+                         <img src="svg/cal-svg.svg" alt="cal-svg" />
                         </div>
                     </div>
                     <div className={styles.LangButton}>
@@ -193,7 +202,7 @@ function Dashboard() {
                         </div>
 
 
-                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e,'MaxPlan')}>
+                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'MaxPlan')}>
                             <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="2" cy="2" r="2" fill="black" />
                                 <circle cx="9" cy="2" r="2" fill="black" />
@@ -213,9 +222,9 @@ function Dashboard() {
                     <hr className={styles.agentLine}></hr>
 
                     <div className={styles.LangPara}>
-                        <p className={styles.agentPara}>Unlock More Potentials and get all premium features</p>
+                        <p className={styles.agentPara}>For: <strong>VisaPath Solutions</strong></p>
                         <div className={styles.VIA}>
-                            <img src="images/VIA_Unconnected.png" alt="VIA" />
+                             <img src="svg/cal-svg.svg" alt="cal-svg" />
                         </div>
 
                     </div>
@@ -244,11 +253,11 @@ function Dashboard() {
                                 <img src="images/SofiaAgent.png" alt="English" />
                             </div>
                             <div className={styles.LangText}>
-                                <h3 className={styles.agentName}>Amelia <span className={styles.activeText}>Active</span></h3>
+                                <h3 className={styles.agentName}>SOFIA<span className={styles.activeText}>Active</span></h3>
                                 <p className={styles.agentAccent}>English • American Accent</p>
                             </div>
                         </div>
-                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e,'FreePlan')}>
+                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'FreePlan')}>
                             <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="2" cy="2" r="2" fill="black" />
                                 <circle cx="9" cy="2" r="2" fill="black" />
@@ -264,9 +273,9 @@ function Dashboard() {
                     </div>
                     <hr className={styles.agentLine}></hr>
                     <div className={styles.LangPara}>
-                        <p className={styles.agentPara}>Unlock More Potentials and get all premium features</p>
+                    <p className={styles.agentPara}>For: <strong>VDN Solutions</strong></p>
                         <div className={styles.VIA}>
-                            <img src="images/VIA_Unconnected.png" alt="VIA" />
+                             <img src="svg/cal-svg.svg" alt="cal-svg" />
                         </div>
                     </div>
                     <div className={styles.LangButton}>
