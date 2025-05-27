@@ -121,13 +121,13 @@ const Details = () => {
             </div> */}
 
             <div className={`${styles.Btn} ${startExit ? styles.fadeOut1 : ''}`} onClick={handleLoginClick}>
-                <button type="submit">
+                <div type="submit">
 
-                    {loading ? <Loader size={20} /> : (<>Login
-                       <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="..." fill="white" />
-                  </svg></>)}
-                </button>
+                    {loading ? <Loader size={20} /> : (<>  <div className={styles.btnTheme}>
+                                    <img src='images/svg-theme.svg' alt='' />
+                                    <p>Continue</p>
+                                </div></>)}
+                </div>
             </div>
             {showPopup && (
                 <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />

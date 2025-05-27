@@ -6,7 +6,7 @@ import Details from './Component/Details/Details';
 import Step from './Component/Step/Step';
 import AboutBusiness from './Component/AboutBusiness/AboutBusiness';
 import BusinessDetails from './Component/BusinessDetails/BusinessDetails';
-import { ToastContainer } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
 import AgentDetail from './Component/AgentDetails/AgentDetail'
 import AiAssistant from './Component/AiAssistant/AiAssistant';
@@ -34,21 +34,10 @@ function App() {
           <Route path="/about-business" element={<AboutBusiness />} />
           <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
           <Route path="/business-locations" element={<SecureRoute><BusinessLocation /></SecureRoute>} />
-
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           <Route path="/ai-assistant" element={<AiAssistant />} />
         </Routes>
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+      
       </div>
     </BrowserRouter>
   );
