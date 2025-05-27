@@ -406,4 +406,7 @@
     width: 50%;
     justify-content: center;
   }
+  .agentCard hr{
+    height: 80px;
+  }
 }
