@@ -5,6 +5,7 @@ import { LoginWithEmailOTP, verifyEmailOTP } from '../../Store/apiStore';
 import { toast } from 'react-toastify';
 import PopUp from '../Popup/Popup';
 import Loader from '../Loader/Loader';
+
 const SignUp = () => {
   const navigate = useNavigate();
   const [otpSent, setOtpSent] = React.useState(false);
@@ -182,6 +183,8 @@ const SignUp = () => {
           <img src='images/google.png' alt='' />
           <img src='images/apple.png' alt='' />
         </div>
+
+
       </div>
       {showPopup && !isLoading && (
         <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
