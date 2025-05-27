@@ -1,18 +1,37 @@
 
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './Dashboard.module.css'
 import Footer from '../AgentDetails/Footer/Footer'
 import { useNavigate } from 'react-router-dom';
 
 
 function Dashboard() {
-
-
-
     const navigate = useNavigate();
 
-    const AgentDetail = () => {
-        navigate('/home'); // Navigate to /about
+    const handleCardClick = () => {
+        navigate('/home');
+    };
+
+    const [openDropdown, setOpenDropdown] = useState(null);
+    const toggleDropdown = (e,id) => {
+          e.preventDefault();
+            e.stopPropagation();
+        if (openDropdown === id) {
+            setOpenDropdown(null);
+        } else {
+            setOpenDropdown(id);
+        }
+    }
+
+    // Handle clicks on options
+    const handleDelete = (id) => {
+        alert(`Delete clicked for card ${id}`);
+        setOpenDropdown(null);
+    };
+
+    const handleUpgrade = (id) => {
+        alert(`Upgrade clicked for card ${id}`);
+        setOpenDropdown(null);
     };
 
     return (
@@ -51,13 +70,13 @@ function Dashboard() {
             </header>
 
 
-            <h4 className={styles.AlwayTouch}>Always be in touch</h4>
+
 
             <div className={styles.main}>
 
 
                 {/* <link to="/agent-detail" className={styles.agentDetails}> */}
-                <div className={` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={AgentDetail}>
+                <div className={` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={handleCardClick} >
                     <div className={styles.PlanPriceMain}>
                         <h3 className={styles.PlanPrice}>MINI PLAN</h3>
                     </div>
@@ -76,7 +95,7 @@ function Dashboard() {
                         </div>
 
 
-                        <div className={styles.FilterIcon}>
+                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e,'MiniPlan')}>
                             <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="2" cy="2" r="2" fill="black" />
                                 <circle cx="9" cy="2" r="2" fill="black" />
@@ -84,7 +103,12 @@ function Dashboard() {
                             </svg>
 
 
-
+                            {openDropdown === 'MiniPlan' && (
+                                <div className={styles.OptionsDropdown}>
+                                    <div className={styles.OptionItem} onClick={() => handleDelete('MiniPlan')}>Delete</div>
+                                    <div className={styles.OptionItem} onClick={() => handleUpgrade('MiniPlan')}>Upgrade</div>
+                                </div>
+                            )}
                         </div>
 
                     </div>
@@ -100,21 +124,12 @@ function Dashboard() {
 
                     <div className={styles.LangButton}>
                         <div className={styles.AssignNum}> Assign Number</div>
-                        <div className={styles.AssignNum} > Upgrate</div>
                         <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
 
                     </div>
-
-
-
-
-
-
                 </div>
 
                 {/* </link> */}
-
-
                 <div className={` ${styles.LangStyle} ${styles.ProPlan} `}>
                     <div className={styles.PlanPriceMain}>
                         <h3 className={styles.PlanPrice}>PRO PLAN</h3>
@@ -132,42 +147,31 @@ function Dashboard() {
 
 
                         </div>
-
-
-                        <div className={styles.FilterIcon}>
+                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e,'ProPlan')}>
                             <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="2" cy="2" r="2" fill="black" />
                                 <circle cx="9" cy="2" r="2" fill="black" />
                                 <circle cx="16" cy="2" r="2" fill="black" />
                             </svg>
-
-
-
+                            {openDropdown === 'ProPlan' && (
+                                <div className={styles.OptionsDropdown}>
+                                    <div className={styles.OptionItem} onClick={() => handleDelete('ProPlan')}>Delete</div>
+                                    <div className={styles.OptionItem} onClick={() => handleUpgrade('ProPlan')}>Upgrade</div>
+                                </div>
+                            )}
                         </div>
-
                     </div>
                     <hr className={styles.agentLine}></hr>
-
                     <div className={styles.LangPara}>
                         <p className={styles.agentPara}>Unlock More Potentials and get all premium features</p>
                         <div className={styles.VIA}>
                             <img src="images/VIA_Unconnected.png" alt="VIA" />
                         </div>
-
                     </div>
-
                     <div className={styles.LangButton}>
                         <div className={styles.AssignNum}> Assign Number</div>
-                        <div className={styles.AssignNum} > Upgrate</div>
                         <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
-
                     </div>
-
-
-
-
-
-
                 </div>
 
                 <div className={` ${styles.LangStyle} ${styles.Maxplan} `}>
@@ -189,7 +193,7 @@ function Dashboard() {
                         </div>
 
 
-                        <div className={styles.FilterIcon}>
+                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e,'MaxPlan')}>
                             <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="2" cy="2" r="2" fill="black" />
                                 <circle cx="9" cy="2" r="2" fill="black" />
@@ -197,7 +201,12 @@ function Dashboard() {
                             </svg>
 
 
-
+                            {openDropdown === 'MaxPlan' && (
+                                <div className={styles.OptionsDropdown}>
+                                    <div className={styles.OptionItem} onClick={() => handleDelete('MaxPlan')}>Delete</div>
+                                    <div className={styles.OptionItem} onClick={() => handleUpgrade('MaxPlan')}>Upgrade</div>
+                                </div>
+                            )}
                         </div>
 
                     </div>
@@ -213,7 +222,7 @@ function Dashboard() {
 
                     <div className={styles.LangButton}>
                         <div className={styles.AssignNum}> Assign Number</div>
-                        <div className={styles.AssignNum} > Upgrate</div>
+
                         <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
 
                     </div>
@@ -237,60 +246,35 @@ function Dashboard() {
                             <div className={styles.LangText}>
                                 <h3 className={styles.agentName}>Amelia <span className={styles.activeText}>Active</span></h3>
                                 <p className={styles.agentAccent}>English • American Accent</p>
-
                             </div>
-
-
                         </div>
-
-
-                        <div className={styles.FilterIcon}>
+                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e,'FreePlan')}>
                             <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="2" cy="2" r="2" fill="black" />
                                 <circle cx="9" cy="2" r="2" fill="black" />
                                 <circle cx="16" cy="2" r="2" fill="black" />
                             </svg>
-
-
-
+                            {openDropdown === 'FreePlan' && (
+                                <div className={styles.OptionsDropdown}>
+                                    <div className={styles.OptionItem} onClick={() => handleDelete('FreePlan')}>Delete</div>
+                                    <div className={styles.OptionItem} onClick={() => handleUpgrade('FreePlan')}>Upgrade</div>
+                                </div>
+                            )}
                         </div>
-
                     </div>
                     <hr className={styles.agentLine}></hr>
-
                     <div className={styles.LangPara}>
                         <p className={styles.agentPara}>Unlock More Potentials and get all premium features</p>
                         <div className={styles.VIA}>
                             <img src="images/VIA_Unconnected.png" alt="VIA" />
                         </div>
-
                     </div>
-
                     <div className={styles.LangButton}>
                         <div className={styles.AssignNum}> Assign Number</div>
-                        <div className={styles.AssignNum} > Upgrate</div>
                         <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
-
                     </div>
-
-
-
-
-
-
                 </div>
-
-
-
-
-
-
-
-
             </div>
-
-
-
             <Footer />
         </div>
     )

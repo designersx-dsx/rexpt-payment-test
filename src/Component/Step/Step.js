@@ -367,6 +367,8 @@ Let’s begin assisting the customer!
     slidesToScroll: 1,
     arrows: false,
     swipe: false,
+    dots:true,
+    className: styles.slider1,
     beforeChange: (_, next) => setCurrentStep(next),
   };
   const handleContinue = async () => {
@@ -512,7 +514,7 @@ Let’s begin assisting the customer!
     "Receptionist Type",
   ];
   return (
-    <div className={styles.container}>
+    <div className={` ${styles.container} Dotcontrol `}>
       <StepHeader title={stepTitles[currentStep]} />
       <Slider ref={sliderRef} {...settings}>
         {/* Step 1 */}
@@ -598,7 +600,7 @@ Let’s begin assisting the customer!
             Back
           </button>
         )}
-        {currentStep < totalSlides - 1 && (
+        {currentStep < totalSlides - 0 && (
           <button className={styles.navBtn} onClick={handleNext}>
             Next
           </button>
