@@ -36,7 +36,7 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError,loading,setLoading
             return true;
         },
     }));
-console.log("loading", loading)
+// console.log("loading", loading)
     return (
         <>
             <div className={styles.container}>
