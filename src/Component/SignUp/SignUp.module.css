@@ -51,9 +51,10 @@
 .emailInput {
     width: 100%;
     padding: 10px 14px;
-    border: 1px solid #ccc;
+    border: 1px solid #E0E5F2;
     border-radius: 8px;
     font-size: 16px;
+    min-height: 55px;
 }
 
 .codeText {
@@ -114,7 +115,7 @@
     justify-content: center;
     min-height: 55px;
     font-size: 19px;
-margin-top: 2rem;
+    margin-top: 2rem;
 }
 
 
@@ -130,14 +131,14 @@ margin-top: 2rem;
 .line {
     flex: 1;
     height: 1px;
-    background-color: #e0e0e0;
+    background-color: #A3AED0;
     border: none;
 }
 
 .text {
     margin: 0 10px;
-    font-size: 14px;
-    color: #b0b0b0;
+    font-size: 9px;
+    color: #A3AED0;
     white-space: nowrap;
 }
 
