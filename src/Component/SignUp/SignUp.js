@@ -138,7 +138,7 @@ const SignUp = () => {
 
 
             <div className={styles.btnTheme} onClick={handleSendOTP}>
-              <img src='images/svg-theme.svg' alt='' />
+              <img src='svg/svg-theme2.svg' alt='' />
               <p>   {isVerifyingOtp ? (<><Loader size={17} /></>) : "Send OTP"}</p>
             </div>
           </>
