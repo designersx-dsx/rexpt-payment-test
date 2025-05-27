@@ -178,6 +178,7 @@
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.3s ease;
+  display: flex;gap: 15px;
 }
 
 .navBtn:hover {
