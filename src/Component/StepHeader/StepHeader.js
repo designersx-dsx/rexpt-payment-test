@@ -7,8 +7,8 @@ const StepHeader = ({ title }) => {
             <div className={styles.logo}>
                 <svg
                     className={styles.svgSpin}
-                    width="283"
-                    height="283"
+                    width="210"
+                    height="210"
                     viewBox="0 0 283 283"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +52,9 @@ const StepHeader = ({ title }) => {
                         </linearGradient>
                     </defs>
                 </svg>
-                <img src="/images/inlogo.png" alt="inlogo" className={styles.inlogo} />
+                <div className={styles.inlogo}>
+                <img src="/images/inlogo.png" alt="inlogo"  />
+                </div>
             </div>
             <h2 className={styles.heading}>{title}</h2>
         </div>
