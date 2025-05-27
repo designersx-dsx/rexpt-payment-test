@@ -17,13 +17,13 @@ const BusinessDetails = () => {
     const decodeTokenData = decodeToken(token);
     const userId = decodeTokenData?.id;
 
-    
+
 
     const businessTypes = [
-        { type: 'Immigration', icon: 'images/general-receptionist.png' },
-        { type: 'School', icon: 'images/general-receptionist.png' },
-        { type: 'Company', icon: 'images/general-receptionist.png' },
-        { type: 'Other', icon: 'images/general-receptionist.png' },
+        { type: 'Immigration', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
+        { type: 'School', subtype: 'Empowering Future Leaders', icon: 'images/school.png' },
+        { type: 'Hospital', subtype: 'Always ready to assist', icon: 'images/Hospital.png' },
+        { type: 'Other', subtype: 'Always ready to assist', icon: 'images/other.png' },
     ];
 
     const handleLoginClick = () => {
@@ -61,22 +61,33 @@ const BusinessDetails = () => {
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Business Details</h1>
-            <h2 className={styles.subtitle}>Business Type</h2>
+            <h2 className={styles.subtitle}>Select Type</h2>
 
             <div className={styles.optionList}>
                 {businessTypes.map((item, index) => (
                     <label className={styles.option} key={index}>
-                        <div className={styles.icon}>
-                            <img src={item.icon} alt={`${item.type} icon`} className={styles.iconImg} />
+                        <div className={styles.forflex}>
+                            <div className={styles.icon}>
+                                <img src={item.icon} alt={`${item.type} icon`} className={styles.iconImg} />
+                            </div>
+                            <div>
+                                <strong>{item.type}</strong>
+                                <p className={styles.subType}>{item.subtype}</p>
+                            </div>
                         </div>
-                        <span>{item.type}</span>
-                        <input
-                            type="radio"
-                            name="businessType"
-                            value={item.type}
-                            checked={businessType === item.type}
-                            onChange={(e) => setBusinessType(e.target.value)}
-                        />
+
+
+                        <div>
+                            <input
+                                type="radio"
+                                name="businessType"
+                                value={item.type}
+                                checked={businessType === item.type}
+                                onChange={(e) => setBusinessType(e.target.value)}
+                            />
+                        </div>
+
+
                     </label>
                 ))}
             </div>
