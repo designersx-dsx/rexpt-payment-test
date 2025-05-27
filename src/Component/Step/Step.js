@@ -7,11 +7,12 @@ import Step4 from "../Step4/Step4";
 import { useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { toast } from "react-toastify";
 import PopUp from "../Popup/Popup";
 import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
 import Loader from "../Loader/Loader";
+import decodeToken from "../../lib/decodeToken";
+import { createAgent } from "../../Store/apiStore";
 
 const Step = () => {
     const navigate = useNavigate();
@@ -26,6 +27,16 @@ const Step = () => {
     const step2Ref = useRef();
     const step3Ref = useRef();
     const step4Ref = useRef();
+    const token = localStorage.getItem("token") || "";
+    const decodeTokenData = decodeToken(token)
+    const [userId, setUserId] = useState(decodeTokenData?.id || "");
+
+    useEffect(() => {
+        if(token) {
+         setUserId(decodeTokenData.id || "");
+        }
+    }, [token]);
+
     useEffect(() => {
         sessionStorage.setItem("agentLanguage", selectedLang);
         sessionStorage.setItem("agentLanguageCode", selectedLangCode);
@@ -480,13 +491,47 @@ Let’s begin assisting the customer!
                                 },
                             }
                         );
+                        const agentId = response.data.agent_id;
+                        const agentData={
+                            userId: userId,
+                            agent_id: agentId ||sessionStorage.getItem("agentId") ,
+                            knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+                            llmId: sessionStorage.getItem("llmId"),
+                            avatar: sessionStorage.getItem("avatar") || "",
+                            agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                            agentAccent: sessionStorage.getItem("agentVoiceAccent")|| "American",
+                            agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
+                            agentName: sessionStorage.getItem('agentName')||"",
+                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode')||"en-US",
+                            agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
+                            agentGender: sessionStorage.getItem('agentGender')|| "female",
+                            agentPlan: "Plus"||"free",
+                            agentStatus: true
+                        }
 
-                        
-                        setPopupType("success");
-                        setPopupMessage("Agent created successfully!");
-                        setShowPopup(true);
-                        setTimeout(() => navigate("/dashboard"), 1500);
-                        setLoading(false)
+
+                        try {
+                          const response=  await createAgent(agentData);
+                          if(response.status === 200 || response.status === 201) {
+                            sessionStorage.setItem("agentId", response.data.agent_id);
+                            sessionStorage.setItem("agentStatus", true);
+                            setPopupType("success");
+                            setPopupMessage("Agent created successfully!");
+                            setShowPopup(true);
+                            setTimeout(() => navigate("/dashboard"), 1500);
+                            setLoading(false)
+
+                          }
+                        } catch (error) {
+                            console.error("Agent creation failed:", error);
+                            setPopupType("failed");
+                            setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
+                            setShowPopup(true);
+                            setLoading(false)
+                            
+                        }
+                    
+
                     } catch (err) {
                         console.error("Upload failed:", err);
                         setPopupType("failed");
@@ -523,8 +568,6 @@ Let’s begin assisting the customer!
                 {/* Step 1 */}
                 <div>
                     <div className={styles.slideContent}>
-                        {/* <StepHeader title="Agent Language Supported" /> */}
-
                         <div className={styles.grid}>
                             {languages.map((lang, index) => (
                                 <label
@@ -591,6 +634,8 @@ Let’s begin assisting the customer!
                         onNext={handleNext}
                         onBack={handleBack}
                         onValidationError={handleValidationError}
+                        loading={loading}
+                        setLoading={setLoading}
                     />
                 </div>
             </Slider>

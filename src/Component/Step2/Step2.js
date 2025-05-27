@@ -36,7 +36,8 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
 
 
   useEffect(() => {
-    sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
+    sessionStorage.setItem("agentVoice", selectedVoice?.voice_id);
+    sessionStorage.setItem("agentVoiceAccent", selectedVoice?.accent);
   }, [selectedVoice])
 
   useEffect(() => {
