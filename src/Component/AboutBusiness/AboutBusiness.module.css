@@ -65,7 +65,11 @@
     align-items: center;
     justify-content: center;
     margin: 20px 0 20px 0;
+
     min-height: 55px;
+
+    gap: 15px;
+
 }
 
 .Btn button svg {
