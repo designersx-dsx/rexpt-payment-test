@@ -1,0 +1,63 @@
+ body {
+   margin: 0;
+  font-family: "Inter", sans-serif;
+   display: none;
+ }
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+ @media screen and (max-width: 600px) {
+   body {
+     display: block;
+   }
+ }
+ input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #8A2BE2;
+  right: 5px;
+  top: 5px;
+}
+
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: "Lato", sans-serif;
+}
+
+input::placeholder {
+  color: #A3AED0;  
+}
+
+
+
+.Dotcontrol .slick-dots{
+  position: fixed;
+  bottom: 20px;  
+     z-index: 1001;;
+     width: 130px;
+}
+
+.Dotcontrol .slick-dots li button:before {
+font-size: unset;
+width: 8px;
+height: 8px;
+background-color: #EEE6FF;
+border-radius: 20px;
+opacity: 1;
+}
+
+
+.Dotcontrol .slick-dots li.slick-active button:before {
+/* font-size: 20px; */
+width: 23px;
+height: 8px;
+background-color: #6524EB;
+opacity: 1;
+
+
+}

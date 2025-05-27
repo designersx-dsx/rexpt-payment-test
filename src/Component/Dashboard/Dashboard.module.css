@@ -1,0 +1,264 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px 20px 20px;
+    border-radius: 1rem;
+}
+
+.profileSection {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.notifiMain {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notificationIcon {
+    width: 50px;
+    height: 50px;
+    background-color: #F9F9F9;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.agentName {
+    font-size: 22px;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.activeText {
+    font-size: 12px;
+    font-weight: 500;
+    color: #1AA850;
+    position: relative;
+    margin: 0 0 0 15px;
+}
+
+.activeText::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -10px;
+    width: 6px;
+    height: 6px;
+    background-color: #1AA850;
+    border-radius: 50%;
+    transform: translateY(-50%);
+}
+
+.LangItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px 10px 0;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.LangIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 11px;
+    /* background-color: #F9F9F9; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.LangIcon img {
+    width: 100%;
+}
+
+.LangStyle {
+    background-color: #F4F4F4;
+    padding: 20px;
+    border-radius: 18px;
+    margin: 0 20px;
+}
+
+
+.LangStyle.MiniPlan {
+    background-color: #D5F0FF;
+}
+
+.LangStyle.ProPlan {
+    background-color: #FFECE5;
+}
+
+.LangStyle.Maxplan {
+    background-color: #F4DFE1;
+}
+
+
+.LangStyle.MiniPlan .PlanPrice {
+    background-color: #A3DEFF;
+}
+
+.LangStyle.ProPlan .PlanPrice {
+    background-color: #FFD2C1;
+}
+
+.LangStyle.Maxplan .PlanPrice {
+    background-color: #FFBEC4;
+}
+
+
+
+
+
+.FilterIcon {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    background-color: #Fff;
+}
+
+.Lang {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.agentLine {
+    margin: 10px 0;
+    height: 1px;
+    background-color: #fff;
+    /* Red color */
+    border: none;
+}
+
+.VIA {
+    min-width: 83px;
+    min-height: 30px;
+
+    width: 83px;
+    height: 30px;
+}
+
+.VIA img {
+    width: 100%;
+    height: 100%;
+    /* object-fit: cover; */
+}
+
+
+.LangPara {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.agentPara {
+    font-size: 16px;
+    color: #000;
+    font-weight: 300;
+    margin: 0;
+}
+
+.LangButton {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0px 0 0;
+
+}
+
+.AssignNum {
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    color: #000;
+    font-weight: 400;
+}
+
+.minLeft {
+    display: grid;
+    font-size: 22px;
+    color: #000;
+    font-weight: 900;
+
+}
+
+.minLeft span {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.LangStyle .PlanPrice {
+    padding: 2px 20px;
+    width: 115px;
+    height: 22px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
+    background-color: #D6D6D6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 8px 8px;
+}
+
+.PlanPriceMain {
+    display: flex;
+    justify-content: center;
+    margin: -20px 0 0 0;
+}
+
+
+
+
+.main {
+    display: grid;
+    gap: 20px;
+}
+
+.FilterIcon {
+  position: relative;
+  cursor: pointer;
+}
+
+.OptionsDropdown {
+  position: absolute;
+  bottom: 100%;  /* dropdown icon ke upar */
+  right: 0;
+  margin-bottom: 8px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 1000;
+  width: 120px;
+}
+
+.OptionItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.OptionItem:last-child {
+  border-bottom: none;
+}
+
+.OptionItem:hover {
+  background-color: #f0f0f0;
+}
+

@@ -1,0 +1,78 @@
+.container {
+    padding: 0 20px;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.header h1 {
+    font-size: 50px;
+    font-weight: 600;
+    color: #24252C;
+    margin-bottom: 0px;
+    line-height: 50px;
+    margin: 30px 0 30px 0;
+
+}
+
+
+.formGroup {
+    border: 1px solid #E0E5F2;
+    display: grid;
+    min-height: 80px;
+    border-radius: 12px;
+    padding: 10px;
+    min-width: 285px;
+
+}
+
+.formGroup input,
+.formGroup textarea {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 16px;
+    height: 24px;
+    color: #A3AED0;
+}
+
+
+
+
+.formGroup label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #24252C;
+    margin-bottom: 0px;
+
+}
+
+
+.form {
+    display: grid;
+    gap: 20px;
+}
+
+.Btn button {
+    background-color: #6524EB;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 19px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0 20px 0;
+
+    min-height: 55px;
+
+    gap: 15px;
+
+}
+
+.Btn button svg {
+    position: absolute;
+    right: 34px;
+}

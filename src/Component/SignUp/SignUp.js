@@ -1,0 +1,193 @@
+import React, { useState } from 'react';
+import styles from "../SignUp/SignUp.module.css";
+import { useNavigate } from 'react-router-dom';
+import { LoginWithEmailOTP, verifyEmailOTP } from '../../Store/apiStore';
+import { toast } from 'react-toastify';
+import PopUp from '../Popup/Popup';
+import Loader from '../Loader/Loader';
+const SignUp = () => {
+  const navigate = useNavigate();
+  const [otpSent, setOtpSent] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState(null);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isLoading, setLoading] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+
+  const handleLoginClick = async () => {
+    const fullOtp = otp.join("");
+    if (fullOtp.length !== 6) {
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage("Please enter a valid 6-digit OTP.")
+
+      return;
+    }
+    setIsVerifyingOtp(true)
+    try {
+      const response = await verifyEmailOTP(email, fullOtp)
+      console.log("response", response);
+      if (response?.status === 200) {
+        // console.log("OTP Verified successfully");
+        console.log(response.data.token, "response")
+        localStorage.setItem("token", response.data.token)
+        setPopupType("success");
+        setShowPopup(true);
+        setPopupMessage("OTP Verified successfully!")
+
+
+
+        navigate('/details');
+      } else {
+        console.error("Failed to send OTP");
+
+        setPopupType("failed");
+        setShowPopup(true);
+        setPopupMessage("Failed to send OTP. Please try again." || 'Internal Server Error')
+      }
+    } catch (error) {
+      setPopupType("failed");
+      setShowPopup(true);
+      setPopupMessage(error?.response?.data.error || 'Internal Server Error')
+      console.error("Error sending OTP:", error);
+
+    } finally {
+      setIsVerifyingOtp(false)
+    }
+
+  };
+  const handleSendOTP = async () => {
+    // Simulate sending OTP
+    setIsVerifyingOtp(true);
+    try {
+      const response = await LoginWithEmailOTP(email)
+      console.log("response", response);
+      if (response?.status === 200) {
+
+
+        setShowPopup(true);
+        setPopupType("success");
+        setPopupMessage("OTP sent successfully!")
+        setOtpSent(true);
+      } else {
+
+        console.error("Failed to send OTP");
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage("Failed to send OTP. Please try again.")
+      }
+    } catch (error) {
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage(error?.response?.data.error || 'Internal Server Error')
+      console.error("Error sending OTP:", error);
+
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  }
+
+  const handleOtpChange = (value, index) => {
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Automatically focus next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+
+  return (
+    <div className={styles.pageEnterAnimation}>
+      <div className={styles.mask}>
+        <img src='images/Mask.png' alt='Mask.png' />
+      </div>
+      <div className={styles.logimg}>
+        <img className={styles.logo} src='images/Rexpt-Logo.png' alt='Rexpt-Logo' />
+      </div>
+      <div className={styles.Maincontent}>
+        <div className={styles.welcomeTitle}>
+          <h1>Log In to your Account</h1>
+        </div>
+      </div>
+      <div className={styles.container}>
+        {/* Email Input Field */}
+        {!otpSent && (
+          <>
+            <input
+              type="email"
+              className={styles.emailInput}
+              placeholder="Johnvick@gmail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <button className={styles.Otp} onClick={handleSendOTP}>
+
+              {isVerifyingOtp ? (<>Send <Loader size={17} /></>) : "Send OTP"}
+
+
+            </button>
+          </>
+        )}
+
+        {/* OTP Input Fields & Continue Button */}
+        {otpSent && (
+          <>
+            <p className={styles.codeText}>Enter the code sent to your email</p>
+
+            <div className={styles.otpContainer}>
+              {[...Array(6)].map((_, i) => (
+                <input
+                  key={i}
+                  id={`otp-${i}`}
+                  maxLength="1"
+                  value={otp[i]}
+                  onChange={(e) => handleOtpChange(e.target.value, i)}
+                  className={styles.otpInput}
+                />
+              ))}
+            </div>
+
+            <div className={styles.Btn} onClick={handleLoginClick}>
+
+
+              <button type="submit">
+
+                {isVerifyingOtp ? (<>Verify <Loader size={17} /></>) : <> Continue
+                  <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="..." fill="white" />
+                  </svg></>}
+
+
+
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Divider & Social Media Icons */}
+        <div className={styles.divider}>
+          <hr className={styles.line} />
+          <span className={styles.text}>Or continue with</span>
+          <hr className={styles.line} />
+        </div>
+
+        <div className={styles.socialMedia}>
+          <img src='images/facbook.png' alt='' />
+          <img src='images/google.png' alt='' />
+          <img src='images/apple.png' alt='' />
+        </div>
+      </div>
+      {showPopup && !isLoading && (
+        <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
+      )}
+    </div >
+  );
+}
+
+export default SignUp;

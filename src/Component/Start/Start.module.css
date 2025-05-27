@@ -1,0 +1,222 @@
+.StartMain {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.StartMain div {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.StartMain img {
+    position: absolute;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+.StartMain img:nth-child(1) {
+    top: 10%;
+    left: 20%;
+    animation: floatTopRight 6s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(2) {
+    top: 40%;
+    left: 70%;
+    animation: floatBottomLeft 7s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(3) {
+    top: 60%;
+    left: 10%;
+    animation: floatBottomRight 5s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(4) {
+    top: 20%;
+    left: 50%;
+    animation: floatTopLeft 6.5s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(5) {
+    top: 80%;
+    left: 30%;
+    animation: floatDiagonal 5.5s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(6) {
+    top: 25%;
+    left: 80%;
+    animation: floatBottomLeft 7.5s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(7) {
+    top: 70%;
+    left: 60%;
+    animation: floatTopLeft 6s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(8) {
+    top: 35%;
+    left: 40%;
+    animation: floatTopRight 7s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(9) {
+    top: 55%;
+    left: 15%;
+    animation: floatBottomRight 6.5s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(10) {
+    top: 5%;
+    left: 90%;
+    animation: floatDiagonal 5.2s infinite ease-in-out;
+}
+
+.StartMain img:nth-child(11) {
+    top: 85%;
+    left: 5%;
+    animation: floatTopLeft 7s infinite ease-in-out;
+}
+
+/* Keyframes for different directions */
+
+@keyframes floatTopRight {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(150px, -150px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes floatBottomLeft {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-150px, 150px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes floatBottomRight {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(150px, 150px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes floatTopLeft {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-150px, -150px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes floatDiagonal {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(100px, -100px); }
+    50% { transform: translate(-100px, 100px); }
+    75% { transform: translate(80px, 120px); }
+    100% { transform: translate(0, 0); }
+}
+
+.LogoDiv {
+    transition: transform 0.8s ease;
+
+}
+
+.LogoDiv img {
+    width: 300px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 6rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.part {
+    line-height: 10px;
+}
+
+.heading {
+    font-size: 22px;
+    color: #24252C;
+    margin-bottom: 0px;
+}
+
+.withlogo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.with {
+    font-size: 22px;
+    color: #24252C;
+    margin-block: 30px;
+}
+
+.withlogo img {
+    width: 85px;
+}
+
+.desc {
+    line-height: 24px;
+    font-size: 16px;
+    text-align: center;
+    margin-block: 0px;
+    color: #6E6A7C;
+}
+
+.BtnDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    cursor: pointer;
+}
+
+.BtnDiv img {
+    width: 90%;
+}
+
+/* New animation styles for fade outs */
+
+.fadeOutLogo {
+    animation: fadeScaleOut 0.8s forwards;
+}
+
+.fadeOutButton {
+    animation: fadeOut 0.8s forwards;
+}
+
+.fadeOutPart {
+    animation: fadeOut 0.8s forwards;
+}
+
+/* Reusable fadeOut animation */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Scale and fade out for logo */
+@keyframes fadeScaleOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
