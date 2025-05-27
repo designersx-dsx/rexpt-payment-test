@@ -1,6 +1,7 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react'
 import styles from '../Step4/Step4.module.css'
 import PopUp from '../Popup/Popup';
+import AgentCreationLoader from '../Popup/AgentCreationLoader';
 const roles = [
     {
         title: 'General Receptionist',
@@ -18,7 +19,7 @@ const roles = [
         icon: 'images/technical-receptionist.png',
     },
 ];
-const Step4 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
+const Step4 = forwardRef(({ onNext, onBack, onValidationError,loading,setLoading}, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
     useEffect(() => {
         sessionStorage.setItem('agentRole', selectedRole)
@@ -35,12 +36,14 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
             return true;
         },
     }));
-
+console.log("loading", loading)
     return (
         <>
-
             <div className={styles.container}>
-                {roles.map((role, index) => (
+                {loading ?
+                <AgentCreationLoader/>
+                :              
+                roles.map((role, index) => (
                     <label
                         key={index}
                         className={`${styles.card} ${selectedRole === role.title ? styles.selected : ''
@@ -64,6 +67,7 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
                         <span className={styles.customRadio}></span>
                     </label>
                 ))}
+                
             </div>
         </>
 

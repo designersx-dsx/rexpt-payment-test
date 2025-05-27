@@ -17,6 +17,8 @@ const BusinessDetails = () => {
     const decodeTokenData = decodeToken(token);
     const userId = decodeTokenData?.id;
 
+    
+
     const businessTypes = [
         { type: 'Immigration', icon: 'images/general-receptionist.png' },
         { type: 'School', icon: 'images/general-receptionist.png' },

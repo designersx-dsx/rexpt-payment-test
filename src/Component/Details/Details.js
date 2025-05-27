@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect} from 'react';
 import styles from '../Details/Details.module.css';
 import { useNavigate } from 'react-router-dom';
 import PopUp from '../Popup/Popup';
@@ -19,6 +19,15 @@ const Details = () => {
     const token = localStorage.getItem("token")
     const decodeTokenData = decodeToken(token)
     const userId = decodeTokenData?.id
+
+    useEffect(() => {
+        if(sessionStorage.getItem("OwnerDetails")){
+            const ownerDetails = JSON.parse(sessionStorage.getItem("OwnerDetails"));
+            setName(ownerDetails.name || '');
+            setPhone(ownerDetails.phone || '');
+        }
+    }, [])
+
     const handleLoginClick = async () => {
         // Validation
         setLoading(true)
@@ -54,6 +63,7 @@ const Details = () => {
             if (response.status === 200) {
                 console.log(response, "75878543")
                 setStartExit(true);
+                sessionStorage.setItem("OwnerDetails", JSON.stringify({ name, phone }));
                 setTimeout(() => {
                     navigate('/business-details');
                 }, 2000);
