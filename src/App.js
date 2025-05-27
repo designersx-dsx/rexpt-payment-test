@@ -23,7 +23,7 @@ function App() {
           <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
           <Route path="/steps" element={<Step />} />
           <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
-          <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
+          <Route path="/business-details" element={<BusinessDetails />} />
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           <Route path="/business-locations" element={<SecureRoute><BusinessLocation /></SecureRoute>} />
           <Route path="/dashboard" element={<Dashboard />} />
