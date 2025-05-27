@@ -1,10 +1,10 @@
-.container{
+.container {
     padding: 0 20px;
     margin: 0 auto;
     max-width: 600px;
 }
 
-.header h1{
+.header h1 {
     font-size: 50px;
     font-weight: 600;
     color: #24252C;
@@ -15,17 +15,19 @@
 }
 
 
-.formGroup{
+.formGroup {
     border: 1px solid #E0E5F2;
     display: grid;
-    min-height: 58px;
+    min-height: 80px;
     border-radius: 12px;
-    padding: 20px 20px;
+    padding: 10px;
+    min-width: 285px;
 
 }
 
-.formGroup input, .formGroup textarea{
-border: none;
+.formGroup input,
+.formGroup textarea {
+    border: none;
     outline: none;
     background-color: transparent;
     font-size: 16px;
@@ -36,23 +38,21 @@ border: none;
 
 
 
-.formGroup label{
+.formGroup label {
     font-size: 18px;
-;
     font-weight: 600;
     color: #24252C;
     margin-bottom: 0px;
-    line-height: 23px;
-height: 24px;
+
 }
 
 
-.form{
+.form {
     display: grid;
     gap: 20px;
 }
 
-.Btn button{
+.Btn button {
     background-color: #6524EB;
     color: #fff;
     border: none;
@@ -62,12 +62,17 @@ height: 24px;
     cursor: pointer;
     width: 100%;
     display: flex;
+    align-items: center;
     justify-content: center;
     margin: 20px 0 20px 0;
+
+    min-height: 55px;
+
     gap: 15px;
+
 }
 
-.Btn button svg{
+.Btn button svg {
     position: absolute;
     right: 34px;
 }
