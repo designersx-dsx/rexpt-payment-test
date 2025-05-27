@@ -5,9 +5,12 @@ import { LoginWithEmailOTP, verifyEmailOTP } from '../../Store/apiStore';
 import { toast } from 'react-toastify';
 import PopUp from '../Popup/Popup';
 import Loader from '../Loader/Loader';
+import Modal from '../Modal/Modal';
+import Plan from '../Plan/Plan';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const [otpSent, setOtpSent] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
@@ -18,6 +21,7 @@ const SignUp = () => {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
   const handleLoginClick = async () => {
+    console.log('hit')
     const fullOtp = otp.join("");
     if (fullOtp.length !== 6) {
       setShowPopup(true);
@@ -127,12 +131,12 @@ const SignUp = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <button className={styles.Otp} onClick={handleSendOTP}>
-
-              {isVerifyingOtp ? (<>Send <Loader size={17} /></>) : "Send OTP"}
 
 
-            </button>
+            <div className={styles.btnTheme} onClick={handleSendOTP}>
+              <img src='images/svg-theme.svg' alt='' />
+              <p>   {isVerifyingOtp ? (<><Loader size={17} /></>) : "Send OTP"}</p>
+            </div>
           </>
         )}
 
@@ -155,18 +159,13 @@ const SignUp = () => {
             </div>
 
             <div className={styles.Btn} onClick={handleLoginClick}>
-
-
-              <button type="submit">
-
-                {isVerifyingOtp ? (<>Verify <Loader size={17} /></>) : <> Continue
-                  <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="..." fill="white" />
-                  </svg></>}
-
-
-
-              </button>
+              <div type="submit">
+                
+                  <div className={styles.btnTheme}>
+                    <img src='images/svg-theme.svg' alt='' />
+                    <p>{isVerifyingOtp ? (<><Loader size={17} /></>) : 'Continue'}</p>
+                  </div>
+              </div>
             </div>
           </>
         )}
@@ -186,6 +185,9 @@ const SignUp = () => {
 
 
       </div>
+      <Modal isOpen={open} onClose={() => setOpen(false)}>
+        <Plan />
+      </Modal>
       {showPopup && !isLoading && (
         <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
       )}

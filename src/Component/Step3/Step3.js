@@ -55,7 +55,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   return (
     <>
    
-       <div className={styles.agentInputBox}>
+       <div className={styles.agentInputBox} id='sliderstep'>
           <label className={styles.agentLabel}>Name Your Virtual Agent</label>
           <input
             type="text"

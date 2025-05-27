@@ -35,44 +35,42 @@
     color: #A3AED0;
 }
 
-
-
-
 .formGroup label {
     font-size: 18px;
     font-weight: 600;
     color: #24252C;
     margin-bottom: 0px;
-
 }
-
 
 .form {
     display: grid;
     gap: 20px;
 }
 
-.Btn button {
-    background-color: #6524EB;
-    color: #fff;
-    border: none;
-    padding: 12px 20px;
-    font-size: 19px;
-    border-radius: 8px;
-    cursor: pointer;
-    width: 100%;
+.btnTheme {
+    position: relative;
+    color: white;
+    border-radius: 12px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin: 20px 0 20px 0;
-
+    align-items: center;
     min-height: 55px;
-
-    gap: 15px;
-
+    margin-top: 3rem;
 }
 
-.Btn button svg {
+.btnTheme img {
     position: absolute;
-    right: 34px;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.btnTheme p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-weight: 500;
+    font-size: 19px;
 }

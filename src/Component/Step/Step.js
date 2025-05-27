@@ -7,7 +7,6 @@ import Step4 from "../Step4/Step4";
 import { useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { toast } from "react-toastify";
 import PopUp from "../Popup/Popup";
 import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
@@ -481,7 +480,7 @@ Let’s begin assisting the customer!
                             }
                         );
 
-                        
+
                         setPopupType("success");
                         setPopupMessage("Agent created successfully!");
                         setShowPopup(true);
@@ -523,8 +522,6 @@ Let’s begin assisting the customer!
                 {/* Step 1 */}
                 <div>
                     <div className={styles.slideContent}>
-                        {/* <StepHeader title="Agent Language Supported" /> */}
-
                         <div className={styles.grid}>
                             {languages.map((lang, index) => (
                                 <label

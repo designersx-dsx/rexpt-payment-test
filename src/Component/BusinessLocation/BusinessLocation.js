@@ -17,7 +17,7 @@ const BusinessLocation = () => {
   const [popupType, setPopupType] = useState('error');
   const token = localStorage.getItem("token")
   const decodeTokenData = decodeToken(token)
-  const userId = decodeTokenData.id
+  const userId = decodeTokenData?.id
   const handleContinue = async () => {
     if (!state.trim()) {
       setPopupType("failed")
@@ -129,13 +129,13 @@ const BusinessLocation = () => {
           onChange={(e) => setAddress2(e.target.value)}
         />
 
-        <div className={styles.Btn}>
-          <button type="submit" onClick={handleContinue}>
-            Continue
-            <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="..." fill="white" />
-            </svg>
-          </button>
+        <div >
+          <div type="submit" onClick={handleContinue}>
+           <div className={styles.btnTheme}>
+                <img src='images/svg-theme.svg' alt='' />
+                <p>Continue</p>
+            </div>
+          </div>
         </div>
       </div>
 
