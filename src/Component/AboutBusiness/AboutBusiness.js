@@ -131,7 +131,7 @@ function AboutBusiness() {
           <div className={styles.header}>
             <h1>About Your Business</h1>
           </div>
-          <form className={styles.formContainer} onSubmit={handleSubmit}>
+          <form className={styles.formContainer} >
             <div className={styles.form}>
               <div className={styles.formGroup}>
                 <label htmlFor="business-name">URL (Website)</label>
@@ -179,15 +179,16 @@ function AboutBusiness() {
                 ></textarea>
               </div>
               <div >
-                <div type="submit">
+                <div type="submit" onClick={handleSubmit}>
+
+                  <div className={styles.btnTheme} >
+                    <img src='images/svg-theme.svg' alt='' />
+                    {loading ? <>Add <Loader size={20} /></> : <p>Continue</p>
+                    }  </div>
 
 
-                  {loading ? <>Add <Loader size={20} /></> : <>
-                    <div className={styles.btnTheme}>
-                                  <img src='images/svg-theme.svg' alt='' />
-                                  <p>Continue</p>
-                              </div>
-                    </>}
+
+
                 </div>
               </div>
             </div>
