@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef  } from 'react';
 import styles from "../SignUp/SignUp.module.css";
 import { useNavigate } from 'react-router-dom';
 import { LoginWithEmailOTP, verifyEmailOTP } from '../../Store/apiStore';
@@ -15,6 +15,7 @@ const SignUp = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const inputRefs = useRef([]);
 
   const handleLoginClick = async () => {
     const fullOtp = otp.join("");
@@ -36,9 +37,6 @@ const SignUp = () => {
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("OTP Verified successfully!")
-
-
-
         navigate('/details');
       } else {
         console.error("Failed to send OTP");
@@ -101,6 +99,12 @@ const SignUp = () => {
     }
   };
 
+   const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+  };
+
 
   return (
     <div className={styles.pageEnterAnimation}>
@@ -149,6 +153,13 @@ const SignUp = () => {
                   value={otp[i]}
                   onChange={(e) => handleOtpChange(e.target.value, i)}
                   className={styles.otpInput}
+                  onKeyDown={(e) => handleKeyDown(e, i)}
+                  ref={(el) => (inputRefs.current[i] = el)}
+                  onInput={(e) => {
+                        const target = e.target;
+                        target.value = target.value.replace(/[^0-9]/g, ""); 
+                  }}
+
                 />
               ))}
             </div>

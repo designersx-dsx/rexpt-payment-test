@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../BusinessLocation/BusinessLocation.module.css';
 import { useNavigate } from 'react-router-dom';
 import PopUp from '../Popup/Popup'; // import your popup component
@@ -18,6 +18,28 @@ const BusinessLocation = () => {
   const token = localStorage.getItem("token")
   const decodeTokenData = decodeToken(token)
   const userId = decodeTokenData.id
+  const [countryCode, setCountryCode] = useState("us"); // default
+  const [ipData, setIpData] = useState({});
+
+    useEffect(() => {
+    const fetchCountryCode = async () => {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        // console.log("IP Location Data:", data);
+        if (data && data.country_code) {
+          setIpData(data);
+          setCountryCode(data.country_code.toLowerCase());
+        }
+      } catch (err) {
+        console.error("Failed to fetch IP location:", err);
+      }
+    };
+
+    fetchCountryCode();
+  }, []);
+
+
   const handleContinue = async () => {
     if (!state.trim()) {
       setPopupType("failed")
@@ -46,7 +68,7 @@ const BusinessLocation = () => {
 
     // Save to sessionStorage
     sessionStorage.setItem('businessLocation', JSON.stringify({
-      country: 'United States', // static value
+      country:ipData?.country_name || 'United States', // static value
       state,
       city,
       address1,
@@ -85,12 +107,12 @@ const BusinessLocation = () => {
         <div className={styles.countryInput}>
           <div className={styles.countryDiv}>
             <img
-              src="https://flagcdn.com/us.svg"
-              alt="US Flag"
+              src={`https://flagcdn.com/${countryCode}.svg`}
+              alt={`${ipData?.country_name} Flag`}
               className={styles.flag}
             />
           </div>
-          <span>United States</span>
+          <span>{ipData?.country_name}</span>
         </div>
 
         <label className={styles.label}>State</label>
@@ -107,7 +129,7 @@ const BusinessLocation = () => {
           type="text"
           placeholder="City"
           className={styles.input}
-          value={city}
+          value={ city}
           onChange={(e) => setCity(e.target.value)}
         />
 
