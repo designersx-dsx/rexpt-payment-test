@@ -60,6 +60,35 @@ const AgentDashboard = () => {
       </section>
 
       <div className={styles.container}>
+        <div className={styles.businessInfo}>
+          <div className={styles.card1}>
+            <h2>Apollo</h2>
+            <p>Employees 32</p>
+            <div className={styles.health}>
+              <h3>Health <span> /Categories</span></h3>
+            </div>
+
+            <h4>Business Details</h4>
+          </div>
+
+
+
+
+          <div className={styles.card2}>
+            <h2>URL: Apollo.com</h2>
+            <div className={styles.google}>
+              <img src='images/google-icon.png' alt='google-icon' />
+              <p>Apollo Immigra...</p>
+            </div>
+            <div className={styles.address}>
+              <img src='svg/location.svg' alt='location' />
+              <p>Mathura Road,Jasola Vihar, New Delhi – 11..</p>
+            </div>
+ <h4>Knowledge Base</h4>
+          </div>
+         
+        </div>
+
 
         <div className={styles.agentStats}>
 
@@ -93,9 +122,7 @@ const AgentDashboard = () => {
                 </svg>
               </div>
               <p className={styles.managementText}>Edit Agents</p>
-
             </div>
-
             <div className={styles.managementItem}>
               <div className={styles.SvgDesign}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -108,31 +135,18 @@ const AgentDashboard = () => {
                   <path d="M18.7612 7.30469L14.707 7.3057V8.65205L18.7612 8.65138C19.1328 8.65138 19.4344 8.34979 19.4344 7.9782C19.4344 7.60661 19.1328 7.30469 18.7612 7.30469Z" fill="#6524EB" />
                 </svg>
               </div>
-
               <p className={styles.managementText}>Call Setting</p>
-
             </div>
-
             <div className={styles.managementItem}>
               <div className={styles.SvgDesign}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 0C9.62132 0 10.125 0.50368 10.125 1.125V7.875H16.875C17.4963 7.875 18 8.37868 18 9C18 9.62132 17.4963 10.125 16.875 10.125H10.125V16.875C10.125 17.4963 9.62132 18 9 18C8.37868 18 7.875 17.4963 7.875 16.875V10.125H1.125C0.50368 10.125 0 9.62132 0 9C0 8.37868 0.50368 7.875 1.125 7.875H7.875V1.125C7.875 0.50368 8.37868 0 9 0Z" fill="#6524EB" />
                 </svg>
               </div>
-
               <p className={styles.managementText}>Add Voip</p>
-
             </div>
-
-
-
           </div>
-
-
           <AgentAnalysis />
-
-
-
         </section>
 
       </div>

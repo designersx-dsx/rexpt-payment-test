@@ -479,7 +479,7 @@ Let’s begin assisting the customer!
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         agent_name: sessionStorage.getItem("agentName"),
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US"
-                         
+
                     };
 
                     try {
@@ -493,14 +493,14 @@ Let’s begin assisting the customer!
                             }
                         );
                         const agentId = response.data.agent_id;
-                      // Get businessId from sessionStorage
-const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
+                        // Get businessId from sessionStorage
+                        const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
 
-// Convert string to object
-const businessIdObj = JSON.parse(businessIdString);
+                        // Convert string to object
+                        const businessIdObj = JSON.parse(businessIdString);
 
-// Now access the actual ID
-console.log(businessIdObj.businessId, "businessId value");
+                        // Now access the actual ID
+                        console.log(businessIdObj.businessId, "businessId value");
                         const agentData = {
                             userId: userId,
                             agent_id: agentId || sessionStorage.getItem("agentId"),
@@ -516,9 +516,9 @@ console.log(businessIdObj.businessId, "businessId value");
                             agentGender: sessionStorage.getItem('agentGender') || "female",
                             agentPlan: "Plus" || "free",
                             agentStatus: true,
-                            businessId:businessIdObj.businessId,
+                            businessId: businessIdObj.businessId,
                         }
-                        console.log(agentData,"agentData")
+                        console.log(agentData, "agentData")
 
                         try {
                             const response = await createAgent(agentData);
@@ -652,26 +652,24 @@ console.log(businessIdObj.businessId, "businessId value");
 
             {/* === Footer Fixed Pagination === */}
             <div className={styles.footerFixed}>
-                {currentStep > 0 && (
-                    <button className={styles.navBtn} onClick={handleBack}>
-                        Back
-                    </button>
-                )}
-                {currentStep < totalSlides - 1 && (
-                    <button className={styles.navBtn} onClick={handleNext}>
-                        Next
-                    </button>
-                )}
-                {currentStep === totalSlides - 1 && (
-                    <button className={styles.navBtn} onClick={handleContinue}>
-                        {
-                            loading ? <>Add <Loader size={20} /></> : "Continue"
-                        }
-                    </button>
-                )}
+                {/* Step dots */}
+                <div className={styles.stepsIndicator}>
+                    {[...Array(totalSlides)].map((_, idx) => (
+                        <span
+                            key={idx}
+                            className={`${styles.stepDot} ${currentStep === idx ? styles.activeDot : ''}`}
+                            onClick={() => sliderRef.current.slickGoTo(idx)}
+                        />
+                    ))}
+                </div>
+                <div className={styles.navBtn} onClick={handleNext}>
+                    <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                </div>
             </div>
 
-            
+
+
+
             {showPopup && (
                 <PopUp
                     type={popupType}

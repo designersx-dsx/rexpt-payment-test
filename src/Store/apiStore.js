@@ -42,7 +42,15 @@ export const createAgent = async (data) => {
   });
   return res;
 };
-
+export const fetchDashboardDetails = async (userId) => {
+  const res = await api.get(`${API_BASE_URL}/agent/getUserAgentsDetails/${userId}`,{
+  headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  console.log(res,"res")
+  return res.data;
+};
 
 // export const 
 // export const createKnowledgeBase = async (formData) => {

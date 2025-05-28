@@ -23,11 +23,7 @@ const BusinessDetails = () => {
         { type: 'Immigration', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
         { type: 'School', subtype: 'Empowering Future Leaders', icon: 'images/school.png' },
         { type: 'Hospital', subtype: 'Always ready to assist', icon: 'images/Hospital.png' },
-        { type: 'Other', subtype: 'Always ready to assist', icon: 'images/other.png' },
-        { type: 'Immigration', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
-        { type: 'School', subtype: 'Empowering Future Leaders', icon: 'images/school.png' },
-        { type: 'Hospital', subtype: 'Always ready to assist', icon: 'images/Hospital.png' },
-        { type: 'Other', subtype: 'Always ready to assist', icon: 'images/other.png' },
+        { type: 'Other', subtype: 'Always ready to assist', icon: 'images/other.png' }
     ];
 
     const handleLoginClick = () => {
