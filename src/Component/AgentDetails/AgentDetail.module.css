@@ -1,3 +1,8 @@
+.forSticky{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
 .container {
 
   padding: 1rem;
@@ -180,7 +185,6 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 2rem;
 }
 
 .card1 {
@@ -419,8 +423,11 @@
 }
 
 .management {
-  margin-top: 1rem;
+margin-top: 1rem;
+    position: relative;
+    margin-bottom: 5rem;
 }
+
 
 .management h3 {
   font-size: 50px;
