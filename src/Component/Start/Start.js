@@ -51,14 +51,14 @@ function Start() {
 
             <div className={styles.content}>
                 <div className={`${styles.LogoDiv} ${animationStep >= 3 ? styles.fadeOutLogo : ''}`}>
-                    <img src='images/Rexpt-Logo.png' alt='Rexpt-Logo' />
+                    <img src='svg/Rexpt-Logo.svg' alt='Rexpt-Logo' />
                 </div>
 
                 <div className={`${styles.part} ${animationStep >= 2 ? styles.fadeOutPart : ''}`}>
                     <p className={styles.heading}>Launch Your <b>AI Receptionist</b></p>
                     <div className={styles.withlogo}>
                         <p className={styles.with}>with</p>
-                        <p><img src='images/Rexpt-Logo.png' alt='Rexpt-Logo' /></p>
+                        <p><img src='svg/Rexpt-Logo.svg' alt='Rexpt-Logo' /></p>
                     </div>
                     <p className={styles.desc}>
                         Engage leads by voice, automate bookings & reminders, and unlock actionable call analytics—powered by Rexpt.in.

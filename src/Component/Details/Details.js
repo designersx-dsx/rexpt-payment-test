@@ -91,7 +91,7 @@ const Details = () => {
       </div>
 
       <div className={styles.logimg}>
-        <img className={styles.logo} src="images/Rexpt-Logo.png" alt="Rexpt-Logo" />
+        <img className={styles.logo} src="svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
       </div>
 
       <div className={`${styles.Maincontent} ${styles.animate1} ${startExit ? styles.fadeOut3 : ''}`}>

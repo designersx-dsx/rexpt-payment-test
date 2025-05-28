@@ -130,7 +130,7 @@ const SignUp = () => {
           <img src='images/Mask.png' alt='Mask.png' />
         </div>
         <div className={`${styles.logimg} ${styles.animate2}`}>
-          <img className={styles.logo} src='images/Rexpt-Logo.png' alt='Rexpt-Logo' />
+          <img className={styles.logo} src='svg/Rexpt-Logo.svg' alt='Rexpt-Logo' />
         </div>
         <div className={`${styles.Maincontent} ${styles.animate3}`}>
           <div className={styles.welcomeTitle}>
