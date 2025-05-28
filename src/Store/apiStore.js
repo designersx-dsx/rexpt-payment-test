@@ -48,7 +48,6 @@ export const fetchDashboardDetails = async (userId) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(res,"res")
   return res.data;
 };
 

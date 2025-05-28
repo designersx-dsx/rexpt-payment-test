@@ -8,8 +8,7 @@ import decodeToken from '../../lib/decodeToken';
 import Loader from '../Loader/Loader';
 import { useDashboardStore } from '../../Store/agentZustandStore';
 function Dashboard() {
-    const { agents, totalCalls, setDashboardData } = useDashboardStore()
-     const hasFetchedRef = useRef(false)
+ const { agents, totalCalls, hasFetched, setDashboardData,setHasFetched } = useDashboardStore();
     const navigate = useNavigate();
     const handleCardClick = () => {
         navigate('/home');
@@ -21,7 +20,7 @@ function Dashboard() {
     const [loading, setLoading] = useState()
     const [data, setData] = useState(agents)
     const [totalCallsCount, setTotalCallsCount] = useState(totalCalls)
-
+    
     const toggleDropdown = (e, id) => {
         e.preventDefault();
         e.stopPropagation();
@@ -46,33 +45,25 @@ function Dashboard() {
 
 
 
- 
 
   useEffect(() => {
-    const sessionData = sessionStorage.getItem('dashboard-session-storage')
-    const parsedData = sessionData ? JSON.parse(sessionData)?.state : null
-
     const dashboardDetails = async () => {
       try {
         const res = await fetchDashboardDetails(userId)
         console.log("API fetched", res)
         setDashboardData(res.agents, res.total_call || 0)
-        hasFetchedRef.current = true
+        setHasFetched(true)
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
       }
     }
 
-    const shouldFetch =
-      !parsedData ||
-      !Array.isArray(parsedData.agents) ||
-      parsedData.agents.length === 0 ||
-      !parsedData.totalCalls
 
-    if (shouldFetch && !hasFetchedRef.current) {
-      dashboardDetails()
-    }
-  }, [setDashboardData, userId]) // Only run once on initial load
+
+      if (!hasFetched || agents.length === 0) {
+        dashboardDetails()
+        }
+  }, [setDashboardData, userId,hasFetched,agents]) 
 
 
 
@@ -117,7 +108,7 @@ function Dashboard() {
                 </div>
                 <hr />
                 <div className={styles.agentInfo2}>
-                    <h2>26</h2>
+                    <h2>0   </h2>
                     <img src='svg/calender-booking.svg' alt='calender-booking' />
                 </div>
             </section>
@@ -128,7 +119,7 @@ function Dashboard() {
 
 
                 {/* <link to="/agent-detail" className={styles.agentDetails}> */}
-                {data.map((agents) => {
+                {agents.map((agents) => {
                     return (
                         <>
                             <div className={` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={handleCardClick} >
