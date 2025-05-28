@@ -2,22 +2,30 @@ import React, { useEffect, useState } from 'react';
 import styles from './AgentDetail.module.css';
 // import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis';
 import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis'
-import { getTotalBookings } from '../../Store/apiStore';
+import { fetchAgentDetailById, getTotalBookings } from '../../Store/apiStore';
+import { useLocation } from 'react-router-dom';
 
 const AgentDashboard = () => {
    const [totalBookings, setTotalBookings] = useState(null);
-  useEffect(() => {
-  async function fetchBookings() {
-    try {
-      const total = await getTotalBookings(); 
-      console.log('Total bookings API response:', total);
-      setTotalBookings(total.totalBookings);
-    } catch (err) {
-      console.error('Failed to fetch booking info:', err.response || err.message || err);
+  const location = useLocation();
+  const agentDetails = location.state;
+    // console.log('Agent Details:', agentDetails);
+
+  
+ useEffect(() => {
+    const getAgentDetails = async () => {
+      try {
+        const response = await fetchAgentDetailById(agentDetails);
+        console.log('Fetched Agent Details:', response);
+      } catch (err) {
+        console.error('Failed to fetch selected Agent Info', err.response || err.message || err);
+      }
+    };
+
+    if (agentDetails) {
+      getAgentDetails();
     }
-  }
-  fetchBookings();
-}, []);
+  }, [agentDetails]);
 
   return (
     <div >

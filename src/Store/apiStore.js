@@ -74,6 +74,15 @@ export const getCurrentWeekBookingDates = async () => {
   return res.data;
 };
 
+export const fetchAgentDetailById=async(data)=>{
+  const res=await api.post('/agent/fetchAgentDetailsById',data,{
+      headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return res.data;
+}
+
 // export const 
 // export const createKnowledgeBase = async (formData) => {
 //   const res = await api.post('/knowledge-base', formData, {
