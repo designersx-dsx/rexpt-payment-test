@@ -670,6 +670,8 @@ console.log(businessIdObj.businessId, "businessId value");
                     </button>
                 )}
             </div>
+
+            
             {showPopup && (
                 <PopUp
                     type={popupType}
