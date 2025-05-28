@@ -22,7 +22,6 @@ const SignUp = () => {
   const inputRefs = useRef([]);
 
   const handleLoginClick = async () => {
-    console.log('hit')
     const fullOtp = otp.join("");
     if (fullOtp.length !== 6) {
       setShowPopup(true);
@@ -34,10 +33,8 @@ const SignUp = () => {
     setIsVerifyingOtp(true)
     try {
       const response = await verifyEmailOTP(email, fullOtp)
-      console.log("response", response);
+      
       if (response?.status === 200) {
-        // console.log("OTP Verified successfully");
-        console.log(response.data.token, "response")
         localStorage.setItem("token", response.data.token)
         setPopupType("success");
         setShowPopup(true);
@@ -66,10 +63,7 @@ const SignUp = () => {
     setIsVerifyingOtp(true);
     try {
       const response = await LoginWithEmailOTP(email)
-      console.log("response", response);
       if (response?.status === 200) {
-
-
         setShowPopup(true);
         setPopupType("success");
         setPopupMessage("OTP sent successfully!")

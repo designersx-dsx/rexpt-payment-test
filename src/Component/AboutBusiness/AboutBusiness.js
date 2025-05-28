@@ -26,7 +26,6 @@ function AboutBusiness() {
     setFiles(selectedFiles);
   };
 
-  console.log("files", files);
 
   const validateForm = () => {
     if (!businessUrl.trim()) {
@@ -63,7 +62,7 @@ function AboutBusiness() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
-    console.log("businessName", business);
+   
 
     if (!validateForm()) return;
 
@@ -89,7 +88,6 @@ function AboutBusiness() {
     //create knowledge base
     try {
       setLoading(true)
-      console.log(process.env.REACT_APP_API_RETELL_API)
       const response = await axios.post(
         "https://api.retellai.com/create-knowledge-base",
         formData,
@@ -101,7 +99,7 @@ function AboutBusiness() {
         }
       );
 
-      console.log("Upload success:", response);
+     ;
       sessionStorage.setItem(
         "knowledgeBaseId",
         response.data.knowledge_base_id

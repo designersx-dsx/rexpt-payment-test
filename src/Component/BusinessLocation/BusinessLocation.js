@@ -80,8 +80,7 @@ const BusinessLocation = () => {
     const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
     const response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
       userId: userId,
-      businessName: businessDetails.businessName
-      ,
+      businessName: businessDetails?.businessName,
       businessSize: businessDetails.businessSize,
       businessType: businessDetails.businessType,
       address1: locationData.address1,
