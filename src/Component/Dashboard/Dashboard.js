@@ -9,7 +9,7 @@ import Loader from '../Loader/Loader';
 import { useDashboardStore } from '../../Store/agentZustandStore';
 function Dashboard() {
 
- const { agents, totalCalls, hasFetched, setDashboardData,setHasFetched } = useDashboardStore();
+    const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
 
 
     const navigate = useNavigate();
@@ -53,27 +53,27 @@ function Dashboard() {
 
 
 
-  useEffect(() => {
-    const dashboardDetails = async () => {
-      try {
-        const res = await fetchDashboardDetails(userId)
-    
-        setDashboardData(res.agents, res.total_call || 0)
-        setHasFetched(true)
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
-      }
-    }
+    useEffect(() => {
+        const dashboardDetails = async () => {
+            try {
+                const res = await fetchDashboardDetails(userId)
 
-
-
-      if (!hasFetched || agents.length === 0) {
-        dashboardDetails()
+                setDashboardData(res.agents, res.total_call || 0)
+                setHasFetched(true)
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error)
+            }
         }
-  }, [setDashboardData, userId,hasFetched,agents]) 
 
 
-   
+
+        if (!hasFetched || agents.length === 0) {
+            dashboardDetails()
+        }
+    }, [setDashboardData, userId, hasFetched, agents])
+
+
+
 
 
 
@@ -131,7 +131,8 @@ function Dashboard() {
 
                 {agents.map((agents) => {
 
-             
+                    const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
+                    const randomPlan = planStyles[Math.floor(Math.random() * planStyles.length)];
 
                     return (
                         <>
