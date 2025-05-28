@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './AgentDetail.module.css';
 // import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis';
 import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis'
+import { getTotalBookings } from '../../Store/apiStore';
 
 const AgentDashboard = () => {
+   const [totalBookings, setTotalBookings] = useState(null);
+  useEffect(() => {
+  async function fetchBookings() {
+    try {
+      const total = await getTotalBookings(); 
+      console.log('Total bookings API response:', total);
+      setTotalBookings(total.totalBookings);
+    } catch (err) {
+      console.error('Failed to fetch booking info:', err.response || err.message || err);
+    }
+  }
+  fetchBookings();
+}, []);
+
   return (
     <div >
       <header className={styles.header}>
@@ -137,7 +152,7 @@ const AgentDashboard = () => {
               <span className={styles.MinFont}>s</span></span></div>
 
           <div className={` ${styles.stat}  ${styles.Purple}`}><span className={` ${styles.statText}`}>Bookings</span>
-            <span className={styles.statDetail}>15</span></div>
+            <span className={styles.statDetail}>{totalBookings !== null ? totalBookings : 'N/A'}</span></div>
 
           <div className={` ${styles.stat} ${styles.Red}`}><span className={` ${styles.statText} `}>Minutes Remaining</span>
             <span className={styles.statDetail}>1257</span></div>
