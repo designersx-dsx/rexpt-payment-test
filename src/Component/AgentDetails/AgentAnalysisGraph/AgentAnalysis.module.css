@@ -126,3 +126,18 @@
     color: #0F1417 ;
 }
 
+.hasBooking {
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #333333;
+  color: white;
+  cursor: pointer;
+}
+
+.hasBooking .dateName {
+  color: white;
+  text-decoration: none;
+  background-color: transparent;
+}

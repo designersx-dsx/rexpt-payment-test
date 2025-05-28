@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './AgentDetail.module.css';
 // import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis';
 import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis'
+import { getTotalBookings } from '../../Store/apiStore';
 
 const AgentDashboard = () => {
+   const [totalBookings, setTotalBookings] = useState(null);
+  useEffect(() => {
+  async function fetchBookings() {
+    try {
+      const total = await getTotalBookings(); 
+      console.log('Total bookings API response:', total);
+      setTotalBookings(total.totalBookings);
+    } catch (err) {
+      console.error('Failed to fetch booking info:', err.response || err.message || err);
+    }
+  }
+  fetchBookings();
+}, []);
+
   return (
     <div >
       <header className={styles.header}>
@@ -84,35 +99,11 @@ const AgentDashboard = () => {
               <img src='svg/location.svg' alt='location' />
               <p>Mathura Road,Jasola Vihar, New Delhi – 11..</p>
             </div>
- <h4>Knowledge Base</h4>
-          </div>
-         
-        </div>
-
-
-        <div className={styles.agentStats}>
-
-          <div className={` ${styles.stat} ${styles.Yellow}`} >
-            <div className={` ${styles.statText} `}>Total Calls</div>
-            <div className={styles.statDetail}>78</div>
-
+            <h4>Knowledge Base</h4>
           </div>
 
-          <div className={` ${styles.stat} ${styles.blue}`}><span className={` ${styles.statText} `}>Avg. Call Duration</span>
-            <span className={styles.statDetail}>2<span className={styles.MinFont}>m</span>30
-              <span className={styles.MinFont}>s</span></span></div>
-
-          <div className={` ${styles.stat}  ${styles.Purple}`}><span className={` ${styles.statText}`}>Bookings</span>
-            <span className={styles.statDetail}>15</span></div>
-
-          <div className={` ${styles.stat} ${styles.Red}`}><span className={` ${styles.statText} `}>Minutes Remaining</span>
-            <span className={styles.statDetail}>1257</span></div>
         </div>
-
-
-        <section className={styles.management}>
-
-          <div className={styles.managementActions}>
+         <div className={styles.managementActions}>
             <div className={styles.managementItem}>
               <div className={styles.SvgDesign}>
                 <svg width="22" height="25" viewBox="0 0 22 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -146,6 +137,31 @@ const AgentDashboard = () => {
               <p className={styles.managementText}>Add Voip</p>
             </div>
           </div>
+
+        <h1 className={styles.Agenttitle}>Agent Analysis</h1>
+        <div className={styles.agentStats}>
+
+          <div className={` ${styles.stat} ${styles.Yellow}`} >
+            <div className={` ${styles.statText} `}>Total Calls</div>
+            <div className={styles.statDetail}>78</div>
+
+          </div>
+
+          <div className={` ${styles.stat} ${styles.blue}`}><span className={` ${styles.statText} `}>Avg. Call Duration</span>
+            <span className={styles.statDetail}>2<span className={styles.MinFont}>m</span>30
+              <span className={styles.MinFont}>s</span></span></div>
+
+          <div className={` ${styles.stat}  ${styles.Purple}`}><span className={` ${styles.statText}`}>Bookings</span>
+            <span className={styles.statDetail}>{totalBookings !== null ? totalBookings : 'N/A'}</span></div>
+
+          <div className={` ${styles.stat} ${styles.Red}`}><span className={` ${styles.statText} `}>Minutes Remaining</span>
+            <span className={styles.statDetail}>1257</span></div>
+        </div>
+
+
+        <section className={styles.management}>
+
+         
           <AgentAnalysis />
         </section>
 

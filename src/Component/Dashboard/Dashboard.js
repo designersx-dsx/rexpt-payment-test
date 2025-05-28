@@ -8,7 +8,10 @@ import decodeToken from '../../lib/decodeToken';
 import Loader from '../Loader/Loader';
 import { useDashboardStore } from '../../Store/agentZustandStore';
 function Dashboard() {
+
  const { agents, totalCalls, hasFetched, setDashboardData,setHasFetched } = useDashboardStore();
+
+
     const navigate = useNavigate();
     const handleCardClick = () => {
         navigate('/home');
@@ -20,7 +23,10 @@ function Dashboard() {
     const [loading, setLoading] = useState()
     const [data, setData] = useState(agents)
     const [totalCallsCount, setTotalCallsCount] = useState(totalCalls)
-    
+
+    const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
+
+
     const toggleDropdown = (e, id) => {
         e.preventDefault();
         e.stopPropagation();
@@ -46,11 +52,12 @@ function Dashboard() {
 
 
 
+
   useEffect(() => {
     const dashboardDetails = async () => {
       try {
         const res = await fetchDashboardDetails(userId)
-        console.log("API fetched", res)
+    
         setDashboardData(res.agents, res.total_call || 0)
         setHasFetched(true)
       } catch (error) {
@@ -65,6 +72,8 @@ function Dashboard() {
         }
   }, [setDashboardData, userId,hasFetched,agents]) 
 
+
+   
 
 
 
@@ -119,10 +128,14 @@ function Dashboard() {
 
 
                 {/* <link to="/agent-detail" className={styles.agentDetails}> */}
+
                 {agents.map((agents) => {
+
+             
+
                     return (
                         <>
-                            <div className={` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={handleCardClick} >
+                            <div className={` ${styles.LangStyle} ${styles[randomPlan]} `} onClick={handleCardClick} >
                                 <div className={styles.PlanPriceMain}>
                                     <h3 className={styles.PlanPrice}>{agents.plan || "Free Plan"}</h3>
                                 </div>
