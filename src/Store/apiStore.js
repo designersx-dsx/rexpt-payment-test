@@ -7,6 +7,7 @@ const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+     Authorization: `Bearer ${token}`,
   },
 });
 
@@ -33,6 +34,7 @@ export const getRetellVoices = async () => {
 };
 
 export const createAgent = async (data) => {
+  console.log(token)
   const res = await api.post('/agent/createAgent',data,{
   headers: {
       Authorization: `Bearer ${token}`,
@@ -71,6 +73,15 @@ export const getCurrentWeekBookingDates = async () => {
   });
   return res.data;
 };
+
+export const fetchAgentDetailById=async(data)=>{
+  const res=await api.post('/agent/fetchAgentDetailsById',data,{
+      headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return res.data;
+}
 
 // export const 
 // export const createKnowledgeBase = async (formData) => {

@@ -109,35 +109,35 @@ const SignUp = () => {
   return (
     <>
 
-    <div className={styles.StartMain}>
-                    <div>
-                        {/* floating ellipses */}
-                        <img src='images/Ellipse 1.png' alt='Ellipse 1' />
-                        <img src='images/Ellipse 2.png' alt='Ellipse 2' />
-                        <img src='images/Ellipse 5.png' alt='Ellipse 5' />
-                        <img src='images/Ellipse 3.png' alt='Ellipse 3' />
-                        <img src='images/Ellipse 4.png' alt='Ellipse 4' />
-                        <img src='images/Ellipse 6.png' alt='Ellipse 6' />
-                        <img src='images/Ellipse 7.png' alt='Ellipse 7' />
-                        <img src='images/Ellipse 8.png' alt='Ellipse 8' />
-                        <img src='images/Ellipse 9.png' alt='Ellipse 9' />
-                        <img src='images/Ellipse 10.png' alt='Ellipse 10' />
-                        <img src='images/Ellipse 11.png' alt='Ellipse 11' />
-                    </div>
-                </div>
+      <div className={styles.StartMain}>
+        <div>
+          {/* floating ellipses */}
+          <img src='images/Ellipse 1.png' alt='Ellipse 1' />
+          <img src='images/Ellipse 2.png' alt='Ellipse 2' />
+          <img src='images/Ellipse 5.png' alt='Ellipse 5' />
+          <img src='images/Ellipse 3.png' alt='Ellipse 3' />
+          <img src='images/Ellipse 4.png' alt='Ellipse 4' />
+          <img src='images/Ellipse 6.png' alt='Ellipse 6' />
+          <img src='images/Ellipse 7.png' alt='Ellipse 7' />
+          <img src='images/Ellipse 8.png' alt='Ellipse 8' />
+          <img src='images/Ellipse 9.png' alt='Ellipse 9' />
+          <img src='images/Ellipse 10.png' alt='Ellipse 10' />
+          <img src='images/Ellipse 11.png' alt='Ellipse 11' />
+        </div>
+      </div>
       <div className={styles.pageEnterAnimation}>
-        <div className={styles.mask}>
+        <div className={`${styles.mask} ${styles.animate1}`}>
           <img src='images/Mask.png' alt='Mask.png' />
         </div>
-        <div className={styles.logimg}>
-          <img className={styles.logo} src='images/Rexpt-Logo.png' alt='Rexpt-Logo' />
+        <div className={`${styles.logimg} ${styles.animate2}`}>
+          <img className={styles.logo} src='svg/Rexpt-Logo.svg' alt='Rexpt-Logo' />
         </div>
-        <div className={styles.Maincontent}>
+        <div className={`${styles.Maincontent} ${styles.animate3}`}>
           <div className={styles.welcomeTitle}>
             <h1>Log In to your Account</h1>
           </div>
         </div>
-        <div className={styles.container}>
+        <div className={`${styles.container} ${styles.animate4}`}>
           {/* Email Input Field */}
           {!otpSent && (
             <>

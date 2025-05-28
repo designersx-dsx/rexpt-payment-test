@@ -95,7 +95,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
           <div className={styles.arrowRight} onClick={() => {
             sliderRef.current.slickNext()
           }}>
-            <img src="images/sliderright.png" alt="Next" />
+            <img src="/images/sliderRight.png" alt="Next" />
           </div>
         </div>
 
