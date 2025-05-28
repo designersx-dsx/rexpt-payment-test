@@ -11,7 +11,7 @@ const Details = () => {
     const navigate = useNavigate();
     const [startExit, setStartExit] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [popupType, setPopupType] = useState(null);
+    const [popupType, setPopupType] = useState(null); 
     const [popupMessage, setPopupMessage] = useState("");
     const [loading, setLoading] = useState(false)
     const [name, setName] = useState('');
@@ -122,14 +122,11 @@ const Details = () => {
 
       <div className={`${styles.Btn} ${styles.animate3} ${startExit ? styles.fadeOut1 : ''}`} onClick={handleLoginClick}>
         <div type="submit">
-          {loading ? (
-            <Loader size={20} />
-          ) : (
             <div className={styles.btnTheme}>
               <img src="images/svg-theme.svg" alt="" />
-              <p>Continue</p>
+              <p>{loading ? <Loader size={20} /> :'Continue'}</p>
             </div>
-          )}
+         
         </div>
       </div>
 
