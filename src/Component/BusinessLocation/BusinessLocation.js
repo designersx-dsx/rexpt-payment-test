@@ -22,7 +22,7 @@ const BusinessLocation = () => {
   const [countryCode, setCountryCode] = useState("us"); // default
   const [ipData, setIpData] = useState({});
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchCountryCode = async () => {
       try {
         const res = await fetch("https://ipapi.co/json/");
@@ -67,15 +67,16 @@ const BusinessLocation = () => {
       return;
     }
 
-    // Save to sessionStorage
-    sessionStorage.setItem('businessLocation', JSON.stringify({
-      country:ipData?.country_name || 'United States', // static value
+
+ sessionStorage.setItem('businessLocation', JSON.stringify({
+      country: ipData?.country_name || 'United States',
       state,
       city,
       address1,
       address2
-    }));
+     
 
+    }));
     const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
     const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
     const response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
@@ -89,7 +90,16 @@ const BusinessLocation = () => {
       state: locationData.state,
       country: locationData.country,
       zip: locationData.zip
+     
     })
+    let id=response.data.businessId
+     sessionStorage.setItem('businessId', JSON.stringify({
+        businessId: id
+    }));
+   
+    console.log(response.data.businessId, "gjhghgjhg")
+    // Save to sessionStorage
+   
     setPopupType("success")
     setPopupMessage('Business details added successfully');
     setShowPopup(true);
@@ -129,7 +139,7 @@ const BusinessLocation = () => {
           type="text"
           placeholder="City"
           className={styles.input}
-          value={ city}
+          value={city}
           onChange={(e) => setCity(e.target.value)}
         />
 
@@ -153,9 +163,9 @@ const BusinessLocation = () => {
 
         <div >
           <div type="submit" onClick={handleContinue}>
-           <div className={styles.btnTheme}>
-                <img src='images/svg-theme.svg' alt='' />
-                <p>Continue</p>
+            <div className={styles.btnTheme}>
+              <img src='images/svg-theme.svg' alt='' />
+              <p>Continue</p>
             </div>
           </div>
         </div>
