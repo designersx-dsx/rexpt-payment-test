@@ -61,13 +61,14 @@ const AgentCreationLoader = () => {
     height: '300px',
     width: '100%',
     textAlign: 'center',
-    padding: '20px'
+    padding: '40px',
+    marginTop:"5rem"
   };
 
   const textStyle = {
     fontSize: '18px',
     color: '#555',
-    marginTop: '10px'
+    marginTop: '40px'
   };
 
   return (
@@ -76,7 +77,7 @@ const AgentCreationLoader = () => {
         animationData={agentAnimation}
         loop
         autoplay
-        style={{ height: 350, width: 350 }}
+        style={{ height: 450, width: 450 }}
       />
       <p style={textStyle}>Creating your AI Agent...</p>
     </div>

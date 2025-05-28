@@ -662,9 +662,22 @@ Let’s begin assisting the customer!
                         />
                     ))}
                 </div>
-                <div className={styles.navBtn} onClick={handleNext}>
+                {/* <div className={styles.navBtn} onClick={handleNext}>
                     <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
-                </div>
+                </div> */}
+                {currentStep < totalSlides - 1 && (
+                    <button className={styles.navBtn} onClick={handleNext}>
+                        <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                    </button>
+                )}
+                {currentStep === totalSlides - 1 && (
+                    <button className={styles.navBtn} onClick={handleContinue}>
+                        {
+                            loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                        }
+                    </button>
+                )}
+
             </div>
 
 
