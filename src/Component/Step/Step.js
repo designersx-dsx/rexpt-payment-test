@@ -32,8 +32,8 @@ const Step = () => {
     const [userId, setUserId] = useState(decodeTokenData?.id || "");
 
     useEffect(() => {
-        if(token) {
-         setUserId(decodeTokenData.id || "");
+        if (token) {
+            setUserId(decodeTokenData.id || "");
         }
     }, [token]);
 
@@ -478,7 +478,8 @@ Let’s begin assisting the customer!
                         voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         agent_name: sessionStorage.getItem("agentName"),
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                        language: sessionStorage.getItem("agentLanguageCode") || "en-US"
+                         
                     };
 
                     try {
@@ -492,45 +493,54 @@ Let’s begin assisting the customer!
                             }
                         );
                         const agentId = response.data.agent_id;
-                        const agentData={
+                      // Get businessId from sessionStorage
+const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
+
+// Convert string to object
+const businessIdObj = JSON.parse(businessIdString);
+
+// Now access the actual ID
+console.log(businessIdObj.businessId, "businessId value");
+                        const agentData = {
                             userId: userId,
-                            agent_id: agentId ||sessionStorage.getItem("agentId") ,
+                            agent_id: agentId || sessionStorage.getItem("agentId"),
                             knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
                             llmId: sessionStorage.getItem("llmId"),
                             avatar: sessionStorage.getItem("avatar") || "",
                             agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                            agentAccent: sessionStorage.getItem("agentVoiceAccent")|| "American",
+                            agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
                             agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
-                            agentName: sessionStorage.getItem('agentName')||"",
-                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode')||"en-US",
+                            agentName: sessionStorage.getItem('agentName') || "",
+                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
                             agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
-                            agentGender: sessionStorage.getItem('agentGender')|| "female",
-                            agentPlan: "Plus"||"free",
-                            agentStatus: true
+                            agentGender: sessionStorage.getItem('agentGender') || "female",
+                            agentPlan: "Plus" || "free",
+                            agentStatus: true,
+                            businessId:businessIdObj.businessId,
                         }
-
+                        console.log(agentData,"agentData")
 
                         try {
-                          const response=  await createAgent(agentData);
-                          if(response.status === 200 || response.status === 201) {
-                            sessionStorage.setItem("agentId", response.data.agent_id);
-                            sessionStorage.setItem("agentStatus", true);
-                            setPopupType("success");
-                            setPopupMessage("Agent created successfully!");
-                            setShowPopup(true);
-                            setTimeout(() => navigate("/dashboard"), 1500);
-                            setLoading(false)
+                            const response = await createAgent(agentData);
+                            if (response.status === 200 || response.status === 201) {
+                                sessionStorage.setItem("agentId", response.data.agent_id);
+                                sessionStorage.setItem("agentStatus", true);
+                                setPopupType("success");
+                                setPopupMessage("Agent created successfully!");
+                                setShowPopup(true);
+                                setTimeout(() => navigate("/dashboard"), 1500);
+                                setLoading(false)
 
-                          }
+                            }
                         } catch (error) {
                             console.error("Agent creation failed:", error);
                             setPopupType("failed");
                             setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
                             setShowPopup(true);
                             setLoading(false)
-                            
+
                         }
-                    
+
 
                     } catch (err) {
                         console.error("Upload failed:", err);
@@ -660,6 +670,8 @@ Let’s begin assisting the customer!
                     </button>
                 )}
             </div>
+
+            
             {showPopup && (
                 <PopUp
                     type={popupType}

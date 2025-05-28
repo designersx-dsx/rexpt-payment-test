@@ -5,11 +5,12 @@
   z-index: 50;
   display: flex;
   justify-content: center;
-  align-items: center; /* center the modal vertically */
+  align-items: center;
   height: 100vh;
 }
 
 .modalContainer {
+  margin-top: 3rem;
   position: relative;
   width: 90%;
   max-width: 400px;
@@ -25,22 +26,33 @@
   }
 }
 
+.slideDown {
+  animation: slideDown 0.3s ease-in forwards;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+}
+
 .modal {
   background: white;
   padding: 1.5rem;
-  border-top-left-radius: 1.5rem;
-  border-top-right-radius: 1.5rem;
-  border-bottom-left-radius: 2rem;
-  border-bottom-right-radius: 2rem;
-  /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.096); */
+  border-radius: 20px;
   position: relative;
   z-index: 2;
 }
 
-/* Bottom notch */
 .notch {
   position: absolute;
-  bottom: -10px;
+  bottom: -20px;
   left: 60%;
   transform: translateX(-50%) rotate(45deg);
   width: 80px;
@@ -51,7 +63,6 @@
   border-radius: 10px;
 }
 
-/* Close (X) button */
 .closeBtn {
   position: absolute;
   top: 20px;

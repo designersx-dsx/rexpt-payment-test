@@ -190,9 +190,7 @@ const SignUp = () => {
 
 
       </div>
-      <Modal isOpen={open} onClose={() => setOpen(false)}>
-        <Plan />
-      </Modal>
+     
       {showPopup && !isLoading && (
         <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
       )}
