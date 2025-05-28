@@ -85,54 +85,58 @@ const Details = () => {
 
 
     return (
-        <div className={styles.pageWrapper}>
+     <div className={styles.pageWrapper}>
+      <div className={styles.mask}>
+        <img src="images/Mask.png" alt="Mask" />
+      </div>
 
-            <div className={styles.mask}>
-                <img src='images/Mask.png' alt='Mask' />
-            </div>
+      <div className={styles.logimg}>
+        <img className={styles.logo} src="images/Rexpt-Logo.png" alt="Rexpt-Logo" />
+      </div>
 
-            <div className={styles.logimg}>
-                <img className={styles.logo} src='images/Rexpt-Logo.png' alt='Rexpt-Logo' />
-            </div>
-
-
-            <div className={`${styles.Maincontent} ${startExit ? styles.fadeOut3 : ''}`}>
-                <div className={styles.welcomeTitle}>
-                    <h1>Personal Details</h1>
-                </div>
-            </div>
-
-            <div className={`${styles.container} ${startExit ? styles.fadeOut3 : ''}`}>
-                <label className={styles.label}>Name</label>
-                <input type="text" className={styles.input} placeholder="Your name" value={name}
-                    onChange={(e) => setName(e.target.value)} />
-
-                <label className={styles.label}>Phone Number</label>
-                <input type="tel" className={styles.input} placeholder="Phone number" value={phone}
-                    onChange={(e) => setPhone(e.target.value)} />
-            </div>
-
-            {/* <p className={`${styles.codeText} ${startExit ? styles.fadeOut2 : ''}`}>Enter the send code</p> */}
-
-            {/* <div className={`${styles.otpContainer} ${startExit ? styles.fadeOut2 : ''}`}>
-                {[...Array(6)].map((_, i) => (
-                    <input key={i} maxLength="1" className={styles.otpInput} />
-                ))}
-            </div> */}
-
-            <div className={`${styles.Btn} ${startExit ? styles.fadeOut1 : ''}`} onClick={handleLoginClick}>
-                <div type="submit">
-
-                    {loading ? <Loader size={20} /> : (<>  <div className={styles.btnTheme}>
-                                    <img src='images/svg-theme.svg' alt='' />
-                                    <p>Continue</p>
-                                </div></>)}
-                </div>
-            </div>
-            {showPopup && (
-                <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
-            )}
+      <div className={`${styles.Maincontent} ${styles.animate1} ${startExit ? styles.fadeOut3 : ''}`}>
+        <div className={styles.welcomeTitle}>
+          <h1>Personal Details</h1>
         </div>
+      </div>
+
+      <div className={`${styles.container} ${styles.animate2} ${startExit ? styles.fadeOut3 : ''}`}>
+        <label className={styles.label}>Name</label>
+        <input
+          type="text"
+          className={styles.input}
+          placeholder="Your name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <label className={styles.label}>Phone Number</label>
+        <input
+          type="tel"
+          className={styles.input}
+          placeholder="Phone number"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+      </div>
+
+      <div className={`${styles.Btn} ${styles.animate3} ${startExit ? styles.fadeOut1 : ''}`} onClick={handleLoginClick}>
+        <div type="submit">
+          {loading ? (
+            <Loader size={20} />
+          ) : (
+            <div className={styles.btnTheme}>
+              <img src="images/svg-theme.svg" alt="" />
+              <p>Continue</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {showPopup && (
+        <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
+      )}
+    </div>
     );
 };
 
