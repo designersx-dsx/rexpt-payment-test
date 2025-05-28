@@ -21,7 +21,7 @@ const AgentAnalysis = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Agent Analysis</h1>
+    
       <div className={styles.CallFlex}>
       <div className={styles.callVolume}>120 <span>Call Volume</span></div>
       <div className={styles.trend}>Last 7 Days <span className={styles.positive}>+15%</span></div>
