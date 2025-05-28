@@ -10,8 +10,14 @@ import { useDashboardStore } from '../../Store/agentZustandStore';
 function Dashboard() {
     const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
     const navigate = useNavigate();
-    const handleCardClick = () => {
-        navigate('/home');
+    const handleCardClick = (agent) => {
+        // console.log(agent)
+        const agentDetails ={
+            agentId:agent.agent_id,
+            bussinesId:agent.businessId
+        }
+
+         navigate('/home', { state: agentDetails });
     };
     const token = localStorage.getItem("token") || "";
     const decodeTokenData = decodeToken(token)
@@ -112,18 +118,13 @@ function Dashboard() {
             </div>
 
             <div className={styles.main}>
-
-
                 {/* <link to="/agent-detail" className={styles.agentDetails}> */}
-
                 {agents.map((agents) => {
-
                     const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
                     const randomPlan = planStyles[Math.floor(Math.random() * planStyles.length)];
-
                     return (
                         <>
-                            <div className={` ${styles.LangStyle} ${styles[randomPlan]} `} onClick={handleCardClick} >
+                            <div className={` ${styles.LangStyle} ${styles[randomPlan]} `} onClick={()=>handleCardClick(agents)} >
                                 <div className={styles.PlanPriceMain}>
                                     <h3 className={styles.PlanPrice}>{agents.plan || "Free Plan"}</h3>
                                 </div>
@@ -135,7 +136,6 @@ function Dashboard() {
                                         <div className={styles.LangText}>
                                             <h3 className={styles.agentName}>{agents.agentName} <span className={styles.activeText}>Active</span></h3>
                                             <p className={styles.agentAccent}>{agents.agentLanguage} •{agents.agentAccent}</p>
-
                                         </div>
 
 
