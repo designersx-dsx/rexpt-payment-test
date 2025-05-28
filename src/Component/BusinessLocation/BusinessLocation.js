@@ -19,14 +19,25 @@ const BusinessLocation = () => {
   const decodeTokenData = decodeToken(token)
 
   const userId = decodeTokenData.id
-  const [countryCode, setCountryCode] = useState("us"); // default
+  const [countryCode, setCountryCode] = useState(""); // default
   const [ipData, setIpData] = useState({});
+
+  useEffect(()=>{
+    const businessLocation=JSON.parse(sessionStorage.getItem('businessLocation'))
+    if(businessLocation)
+    {   
+      setState(businessLocation.state ||"")
+      setCity(businessLocation.city ||"")
+      setAddress1(businessLocation.address1 ||"")
+      setAddress2(businessLocation.address2 ||"")
+    }
+  },[])
 
   useEffect(() => {
     const fetchCountryCode = async () => {
       try {
-        const res = await fetch("https://ipapi.co/json/");
-        const data = await res.json();
+        const res = await axios.get("https://ipwho.is/");
+        const data = res?.data;
         // console.log("IP Location Data:", data);
         if (data && data.country_code) {
           setIpData(data);
@@ -118,11 +129,11 @@ const BusinessLocation = () => {
           <div className={styles.countryDiv}>
             <img
               src={`https://flagcdn.com/${countryCode}.svg`}
-              alt={`${ipData?.country_name} Flag`}
+              alt={`${ipData?.country} Flag`}
               className={styles.flag}
             />
           </div>
-          <span>{ipData?.country_name}</span>
+          <span>{ipData?.country}</span>
         </div>
 
         <label className={styles.label}>State</label>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../BusinessDetails/BusinessDetails.module.css';
 import { useNavigate } from 'react-router-dom';
 import PopUp from '../Popup/Popup';
@@ -17,7 +17,15 @@ const BusinessDetails = () => {
     const decodeTokenData = decodeToken(token);
     const userId = decodeTokenData?.id;
 
-
+    useEffect(()=>{
+        if(sessionStorage.getItem('businessDetails'))
+        { 
+            const businessDetails=JSON.parse(sessionStorage?.getItem('businessDetails'))
+            setBusinessType(businessDetails?.businessType)
+            setBusinessName(businessDetails?.businessName)
+            setBusinessSize(businessDetails?.businessSize)
+        }
+    },[])
 
     const businessTypes = [
         { type: 'Immigration', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
