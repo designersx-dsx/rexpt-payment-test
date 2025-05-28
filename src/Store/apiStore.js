@@ -1,14 +1,13 @@
 import axios from 'axios';
-
 // Centralized API base URL
-export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 const token = localStorage.getItem('token')||"";
-
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+     Authorization: `Bearer ${token}`,
   },
 });
 
@@ -35,6 +34,7 @@ export const getRetellVoices = async () => {
 };
 
 export const createAgent = async (data) => {
+  console.log(token)
   const res = await api.post('/agent/createAgent',data,{
   headers: {
       Authorization: `Bearer ${token}`,
