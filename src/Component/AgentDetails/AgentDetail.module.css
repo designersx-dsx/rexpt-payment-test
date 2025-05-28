@@ -180,10 +180,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  margin-top: 2rem;
 }
 
 .card1 {
-  border: 1px solid #C8ECFF;
+  border: 2px solid #C8ECFF;
   border-radius: 15px;
   padding: 15px;
   display: flex;
@@ -201,10 +202,11 @@
 
 .card1 p {
   background-color: #B0F3E4;
-  padding: 10px;
+  padding: 6px 12px;
   border-radius: 4px;
   color: #24252C;
   font-size: 14px;
+  width: max-content;
 }
 
 .health {
@@ -212,6 +214,7 @@
   align-items: center;
   padding-bottom: 10px;
   border-bottom: 1px solid #E0E5F2;
+  min-height: 50px;
 }
 
 .card1 h3 {
@@ -233,7 +236,7 @@
 }
 
 .card2 {
-  border: 1px solid #FBB26C;
+  border: 2px solid #FBB26C;
   border-radius: 15px;
   padding: 15px;
   display: flex;
@@ -270,7 +273,7 @@
 
 .address {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   border-bottom: 1px solid #E0E5F2;
   padding-bottom: 10px;
@@ -285,6 +288,13 @@
   font-size: 18px;
   font-weight: 600;
   color: #24252C;
+}
+
+.Agenttitle {
+  font-size: 50px;
+  font-weight: 300;
+  color: #0F1417;
+  margin: 10px 0 20px 0;
 }
 
 .agentStats .stat {
@@ -305,8 +315,11 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 10px;
-  margin: 30px 0 0 0;
+  margin: 15px 0 0 0;
   justify-content: center;
+  overflow-y: scroll;
+  padding-bottom: 15px;
+
 }
 
 .statText {
@@ -405,10 +418,8 @@
   color: white;
 }
 
-
-
 .management {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .management h3 {
@@ -521,4 +532,19 @@
   background: #f4f4f4;
   padding: 1rem;
   border-radius: 1rem;
+}
+
+
+@media (max-width:410px) {
+  .businessInfo {
+    display: grid;
+  }
+
+  .card1 {
+    width: 100%;
+  }
+
+  .card2 {
+    width: 100%;
+  }
 }
