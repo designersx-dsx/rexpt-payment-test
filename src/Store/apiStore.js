@@ -52,6 +52,29 @@ export const fetchDashboardDetails = async (userId) => {
   return res.data;
 };
 
+//Bookings detailes
+
+
+// Get total bookings count
+export const getTotalBookings = async () => {
+  const res = await api.get('/bookings/total', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data; 
+};
+
+// Get booking dates for current week
+export const getCurrentWeekBookingDates = async () => {
+  const res = await api.get('/bookings/current-week-dates', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
+
 // export const 
 // export const createKnowledgeBase = async (formData) => {
 //   const res = await api.post('/knowledge-base', formData, {
