@@ -660,6 +660,8 @@ Let’s begin assisting the customer!
                     </button>
                 )}
             </div>
+
+            
             {showPopup && (
                 <PopUp
                     type={popupType}

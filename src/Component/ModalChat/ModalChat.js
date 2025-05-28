@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import styles from './Modal.module.css';
+import React, { useState, useEffect } from 'react';
+import styles from '../ModalChat/ModalChat.module.css';
 
-const Modal = ({ isOpen, onClose, children }) => {
-  const [shouldRender, setShouldRender] = useState(isOpen);
+const ModalChat = ({ isOpen2, onClose2, children }) => {
+  const [shouldRender, setShouldRender] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen2) {
       setShouldRender(true);
       document.body.style.overflow = 'hidden';
     } else if (shouldRender) {
@@ -16,11 +16,11 @@ const Modal = ({ isOpen, onClose, children }) => {
       const timer = setTimeout(() => {
         setShouldRender(false);
         setIsClosing(false);
-      }, 300); 
+      }, 300);
 
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen2, shouldRender]);
 
   useEffect(() => {
     const escHandler = (e) => {
@@ -33,9 +33,8 @@ const Modal = ({ isOpen, onClose, children }) => {
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
-      setShouldRender(false);
       setIsClosing(false);
-      onClose();
+      onClose2(); // set isOpen2 = false from parent
     }, 300);
   };
 
@@ -49,7 +48,7 @@ const Modal = ({ isOpen, onClose, children }) => {
       >
         <div className={styles.modal}>
           <button className={styles.closeBtn} onClick={handleClose}>
-            <img src='images/cross-icon.png' alt='cross-icon' />
+            <img src="images/cross-icon.png" alt="cross-icon" />
           </button>
           {children}
         </div>
@@ -59,4 +58,4 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
-export default Modal;
+export default ModalChat;

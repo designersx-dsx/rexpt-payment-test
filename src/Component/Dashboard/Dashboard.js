@@ -5,13 +5,13 @@ import Footer from '../AgentDetails/Footer/Footer'
 import { useNavigate } from 'react-router-dom';
 
 
+
 function Dashboard() {
     const navigate = useNavigate();
-
     const handleCardClick = () => {
         navigate('/home');
     };
-
+  
     const [openDropdown, setOpenDropdown] = useState(null);
     const toggleDropdown = (e, id) => {
         e.preventDefault();
@@ -174,7 +174,7 @@ function Dashboard() {
                     <div className={styles.LangPara}>
                         <p className={styles.agentPara}>For: <strong>ADV Real Estate</strong></p>
                         <div className={styles.VIA}>
-                         <img src="svg/cal-svg.svg" alt="cal-svg" />
+                            <img src="svg/cal-svg.svg" alt="cal-svg" />
                         </div>
                     </div>
                     <div className={styles.LangButton}>
@@ -224,7 +224,7 @@ function Dashboard() {
                     <div className={styles.LangPara}>
                         <p className={styles.agentPara}>For: <strong>VisaPath Solutions</strong></p>
                         <div className={styles.VIA}>
-                             <img src="svg/cal-svg.svg" alt="cal-svg" />
+                            <img src="svg/cal-svg.svg" alt="cal-svg" />
                         </div>
 
                     </div>
@@ -273,9 +273,9 @@ function Dashboard() {
                     </div>
                     <hr className={styles.agentLine}></hr>
                     <div className={styles.LangPara}>
-                    <p className={styles.agentPara}>For: <strong>VDN Solutions</strong></p>
+                        <p className={styles.agentPara}>For: <strong>VDN Solutions</strong></p>
                         <div className={styles.VIA}>
-                             <img src="svg/cal-svg.svg" alt="cal-svg" />
+                            <img src="svg/cal-svg.svg" alt="cal-svg" />
                         </div>
                     </div>
                     <div className={styles.LangButton}>
