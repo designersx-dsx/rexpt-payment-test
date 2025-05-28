@@ -1,18 +1,27 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styles from './Dashboard.module.css'
 import Footer from '../AgentDetails/Footer/Footer'
 import { useNavigate } from 'react-router-dom';
-
-
-
+import { fetchDashboardDetails } from '../../Store/apiStore';
+import decodeToken from '../../lib/decodeToken';
+import Loader from '../Loader/Loader';
+import { useDashboardStore } from '../../Store/agentZustandStore';
 function Dashboard() {
+    const { agents, totalCalls, setDashboardData } = useDashboardStore()
+     const hasFetchedRef = useRef(false)
     const navigate = useNavigate();
     const handleCardClick = () => {
         navigate('/home');
     };
-  
+    const token = localStorage.getItem("token") || "";
+    const decodeTokenData = decodeToken(token)
+    const [userId, setUserId] = useState(decodeTokenData?.id || "");
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [loading, setLoading] = useState()
+    const [data, setData] = useState(agents)
+    const [totalCallsCount, setTotalCallsCount] = useState(totalCalls)
+
     const toggleDropdown = (e, id) => {
         e.preventDefault();
         e.stopPropagation();
@@ -33,6 +42,40 @@ function Dashboard() {
         alert(`Upgrade clicked for card ${id}`);
         setOpenDropdown(null);
     };
+
+
+
+
+ 
+
+  useEffect(() => {
+    const sessionData = sessionStorage.getItem('dashboard-session-storage')
+    const parsedData = sessionData ? JSON.parse(sessionData)?.state : null
+
+    const dashboardDetails = async () => {
+      try {
+        const res = await fetchDashboardDetails(userId)
+        console.log("API fetched", res)
+        setDashboardData(res.agents, res.total_call || 0)
+        hasFetchedRef.current = true
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+      }
+    }
+
+    const shouldFetch =
+      !parsedData ||
+      !Array.isArray(parsedData.agents) ||
+      parsedData.agents.length === 0 ||
+      !parsedData.totalCalls
+
+    if (shouldFetch && !hasFetchedRef.current) {
+      dashboardDetails()
+    }
+  }, [setDashboardData, userId]) // Only run once on initial load
+
+
+
 
     return (
         <div>
@@ -69,7 +112,7 @@ function Dashboard() {
             </header>
             <section className={styles.agentCard}>
                 <div className={styles.agentInfo}>
-                    <h2>138</h2>
+                    <h2>{totalCalls}</h2>
                     <img src='svg/total-call.svg' alt='total-call' />
                 </div>
                 <hr />
@@ -85,61 +128,67 @@ function Dashboard() {
 
 
                 {/* <link to="/agent-detail" className={styles.agentDetails}> */}
-                <div className={` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={handleCardClick} >
-                    <div className={styles.PlanPriceMain}>
-                        <h3 className={styles.PlanPrice}>MINI PLAN</h3>
-                    </div>
-                    <div className={styles.Lang}>
-                        <div className={styles.LangItem}>
-                            <div className={styles.LangIcon}>
-                                <img src="images/SofiaAgent.png" alt="English" />
-                            </div>
-                            <div className={styles.LangText}>
-                                <h3 className={styles.agentName}>Amelia <span className={styles.activeText}>Active</span></h3>
-                                <p className={styles.agentAccent}>English • American Accent</p>
-
-                            </div>
-
-
-                        </div>
-
-
-                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'MiniPlan')}>
-                            <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="2" cy="2" r="2" fill="black" />
-                                <circle cx="9" cy="2" r="2" fill="black" />
-                                <circle cx="16" cy="2" r="2" fill="black" />
-                            </svg>
-
-
-                            {openDropdown === 'MiniPlan' && (
-                                <div className={styles.OptionsDropdown}>
-                                    <div className={styles.OptionItem} onClick={() => handleDelete('MiniPlan')}>Delete</div>
-                                    <div className={styles.OptionItem} onClick={() => handleUpgrade('MiniPlan')}>Upgrade</div>
+                {data.map((agents) => {
+                    return (
+                        <>
+                            <div className={` ${styles.LangStyle} ${styles.MiniPlan} `} onClick={handleCardClick} >
+                                <div className={styles.PlanPriceMain}>
+                                    <h3 className={styles.PlanPrice}>{agents.plan || "Free Plan"}</h3>
                                 </div>
-                            )}
-                        </div>
+                                <div className={styles.Lang}>
+                                    <div className={styles.LangItem}>
+                                        <div className={styles.LangIcon}>
+                                            <img src="images/SofiaAgent.png" alt="English" />
+                                        </div>
+                                        <div className={styles.LangText}>
+                                            <h3 className={styles.agentName}>{agents.agentName} <span className={styles.activeText}>Active</span></h3>
+                                            <p className={styles.agentAccent}>{agents.agentLanguage} •{agents.agentAccent}</p>
 
-                    </div>
-                    <hr className={styles.agentLine}></hr>
+                                        </div>
 
-                    <div className={styles.LangPara}>
-                        <p className={styles.agentPara}>For: <strong>Apollo</strong></p>
-                        <div className={styles.VIA}>
-                            <img src="svg/cal-svg.svg" alt="cal-svg" />
-                        </div>
 
-                    </div>
+                                    </div>
 
-                    <div className={styles.LangButton}>
-                        <div className={styles.AssignNum}> Assign Number</div>
-                        <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
 
-                    </div>
-                </div>
+                                    <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'MiniPlan')}>
+                                        <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="2" cy="2" r="2" fill="black" />
+                                            <circle cx="9" cy="2" r="2" fill="black" />
+                                            <circle cx="16" cy="2" r="2" fill="black" />
+                                        </svg>
+
+
+                                        {openDropdown === 'MiniPlan' && (
+                                            <div className={styles.OptionsDropdown}>
+                                                <div className={styles.OptionItem} onClick={() => handleDelete('MiniPlan')}>Delete</div>
+                                                <div className={styles.OptionItem} onClick={() => handleUpgrade('MiniPlan')}>Upgrade</div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                </div>
+                                <hr className={styles.agentLine}></hr>
+
+                                <div className={styles.LangPara}>
+                                    <p className={styles.agentPara}>For: <strong>{agents.business.businessName
+                                    }</strong></p>
+                                    <div className={styles.VIA}>
+                                        <img src="svg/cal-svg.svg" alt="cal-svg" />
+                                    </div>
+
+                                </div>
+
+                                <div className={styles.LangButton}>
+                                    <div className={styles.AssignNum}> Assign Number</div>
+                                    <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> {agents.callSummary.remaining.minutes}</div>
+
+                                </div>
+                            </div></>
+                    )
+                })}
 
                 {/* </link> */}
-                <div className={` ${styles.LangStyle} ${styles.ProPlan} `}>
+                {/* <div className={` ${styles.LangStyle} ${styles.ProPlan} `}>
                     <div className={styles.PlanPriceMain}>
                         <h3 className={styles.PlanPrice}>PRO PLAN</h3>
                     </div>
@@ -181,9 +230,9 @@ function Dashboard() {
                         <div className={styles.AssignNum}> Assign Number</div>
                         <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
                     </div>
-                </div>
+                </div> */}
 
-                <div className={` ${styles.LangStyle} ${styles.Maxplan} `}>
+                {/* <div className={` ${styles.LangStyle} ${styles.Maxplan} `}>
                     <div className={styles.PlanPriceMain}>
                         <h3 className={styles.PlanPrice}>MAX PLAN</h3>
                     </div>
@@ -282,7 +331,7 @@ function Dashboard() {
                         <div className={styles.AssignNum}> Assign Number</div>
                         <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
                     </div>
-                </div>
+                </div> */}
             </div>
             <Footer />
         </div>
