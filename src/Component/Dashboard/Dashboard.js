@@ -8,10 +8,7 @@ import decodeToken from '../../lib/decodeToken';
 import Loader from '../Loader/Loader';
 import { useDashboardStore } from '../../Store/agentZustandStore';
 function Dashboard() {
-
     const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
-
-
     const navigate = useNavigate();
     const handleCardClick = () => {
         navigate('/home');
