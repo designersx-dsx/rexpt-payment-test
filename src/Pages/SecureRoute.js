@@ -24,9 +24,7 @@ const SecureRoute = ({ children }) => {
   }, [token]);
 
   if (isValid === null) return <div>Loading...</div>;
-
-  if (!isValid) return <Navigate to="/signup" />;
-
+  if (isValid === false) return <Navigate to="/" />;
   return children;
 };
 export default SecureRoute

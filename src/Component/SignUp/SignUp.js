@@ -91,7 +91,10 @@ const SignUp = () => {
     setEmailError("");
     setIsVerifyingOtp(true);
     try {
-      const response = await LoginWithEmailOTP(email);
+
+      const response = await LoginWithEmailOTP(email)
+      console.log(response)
+
       if (response?.status === 200) {
         setShowPopup(true);
         setPopupType("success");
