@@ -1,0 +1,91 @@
+.container {}
+
+.imgrex {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.imgrex img {
+    width: 100%;
+    border-radius: 20px;
+    display: block;
+}
+
+
+.greendiv {
+position: absolute;
+    bottom: 3.5rem;
+    left: 49%;
+    transform: translateX(-50%);
+    background-color: #2fb429;
+    border-radius: 30px;
+    padding: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    width: max-content;
+}
+.reddiv {
+position: absolute;
+    bottom: 3.5rem;
+    left: 49%;
+    transform: translateX(-50%);
+    background-color:#1AA82A;
+    border-radius: 30px;
+    padding: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    width: max-content;
+}
+@keyframes vibrationWithPause {
+  0% {
+    transform: translate(0) rotate(0);
+  }
+  13% {
+    transform: translate(-2px, 2px) rotate(-1deg);
+  }
+  26% {
+    transform: translate(-2px, -2px) rotate(1deg);
+  }
+  39% {
+    transform: translate(2px, 2px) rotate(0deg);
+  }
+  52% {
+    transform: translate(2px, -2px) rotate(1deg);
+  }
+  65%, 100% {
+    transform: translate(0) rotate(0);
+  }
+}
+
+.phoneIcon img {
+  width: 35px;
+  height: 28px;
+  animation: vibrationWithPause 2.3s ease-in-out infinite;
+}
+.callText p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 20px;
+    color: white;
+}
+
+.agentTag {
+    font-weight: 700;
+    color: #b3e283;
+    margin-left: 5px;
+}
+
+.callText small {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 3px;
+    color: #d3f4b7;
+}

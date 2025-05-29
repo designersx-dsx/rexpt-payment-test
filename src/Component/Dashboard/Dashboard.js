@@ -8,17 +8,20 @@ import decodeToken from '../../lib/decodeToken';
 import Loader from '../Loader/Loader';
 import { useDashboardStore } from '../../Store/agentZustandStore';
 import OffCanvas from '../OffCanvas/OffCanvas';
+import Modal from '../Modal/Modal';
+import Modal2 from '../Modal2/Modal2';
+import CallTest from '../CallTest/CallTest';
 function Dashboard() {
     const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
     const navigate = useNavigate();
     const handleCardClick = (agent) => {
         // console.log(agent)
-        const agentDetails ={
-            agentId:agent.agent_id,
-            bussinesId:agent.businessId
+        const agentDetails = {
+            agentId: agent.agent_id,
+            bussinesId: agent.businessId
         }
 
-         navigate('/home', { state: agentDetails });
+        navigate('/home', { state: agentDetails });
     };
     const token = localStorage.getItem("token") || "";
     const decodeTokenData = decodeToken(token)
@@ -27,10 +30,11 @@ function Dashboard() {
     const [loading, setLoading] = useState()
     const [data, setData] = useState(agents)
     const [totalCallsCount, setTotalCallsCount] = useState(totalCalls)
-  const [openOffcanvas, setOpenOffcanvas] = useState(false)
+    const [openOffcanvas, setOpenOffcanvas] = useState(false)
+    const [openCallModal, setOpenCallModal] = useState(false);
+    const [isCallActive, setIsCallActive] = useState(false);
+    const [retellWebClient, setRetellWebClient] = useState(null);
     const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
-
-
     const toggleDropdown = (e, id) => {
         e.preventDefault();
         e.stopPropagation();
@@ -40,7 +44,6 @@ function Dashboard() {
             setOpenDropdown(id);
         }
     }
-
     // Handle clicks on options
     const handleDelete = (id) => {
         alert(`Delete clicked for card ${id}`);
@@ -68,20 +71,59 @@ function Dashboard() {
             dashboardDetails()
         }
     }, [setDashboardData, userId, hasFetched, agents])
+    const handleOpencanvas = () => {
+        setOpenOffcanvas(true)
+    }
+    const handleCloseOffcanvas = () => {
+        setOpenOffcanvas(false)
+    }
+    const handleLogout = () => {
+        localStorage.removeItem("token")
+        sessionStorage.clear();
+        window.location.href = '/signup';
+    }
+    const handleOpenCallModal = () => {
+        console.log("Hello")
+        setOpenCallModal(true)
+    }
+    const handleCloseCallModal = () => {
+        setOpenCallModal(false)
+    }
+    const agentId = "agent_2c06a4b2b65b29b1599b459e9e";
 
+    useEffect(() => {
+        const loadRetellClient = async () => {
+            const { RetellWebClient } = await import('https://cdn.jsdelivr.net/npm/retell-client-js-sdk@2.0.7/+esm');
+            const client = new RetellWebClient();
 
-  const handleOpencanvas = () => {
-    setOpenOffcanvas(true)
-  }
-   const handleCloseOffcanvas = () => {
-    setOpenOffcanvas(false)
-  }
-  const handleLogout=()=>{
-    localStorage.removeItem("token")
-    sessionStorage.clear();
-    // navigate("/signup")
-    window.location.href = '/signup';
-  }
+            client.on("call_started", () => setIsCallActive(true));
+            client.on("call_ended", () => setIsCallActive(false));
+
+            setRetellWebClient(client);
+        };
+
+        loadRetellClient();
+    }, []);
+
+    const handleStartCall = async () => {
+        try {
+            const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ agent_id: agentId }),
+            });
+
+            const data = await res.json();
+            await retellWebClient.startCall({ accessToken: data.access_token });
+        } catch (err) {
+            console.error("Error starting call:", err);
+        }
+    };
+
+    const handleEndCall = async () => {
+        if (retellWebClient) await retellWebClient.stopCall();
+    };
+
     return (
         <div>
             <div className={styles.forSticky}>
@@ -135,7 +177,7 @@ function Dashboard() {
                     const randomPlan = planStyles[Math.floor(Math.random() * planStyles.length)];
                     return (
                         <>
-                            <div className={` ${styles.LangStyle} ${styles[randomPlan]} `} onClick={()=>handleCardClick(agents)} >
+                            <div className={` ${styles.LangStyle} ${styles[randomPlan]} `} onClick={() => handleCardClick(agents)} >
                                 <div className={styles.PlanPriceMain}>
                                     <h3 className={styles.PlanPrice}>{agents.plan || "Free Plan"}</h3>
                                 </div>
@@ -165,6 +207,7 @@ function Dashboard() {
                                             <div className={styles.OptionsDropdown}>
                                                 <div className={styles.OptionItem} onClick={() => handleDelete('MiniPlan')}>Delete</div>
                                                 <div className={styles.OptionItem} onClick={() => handleUpgrade('MiniPlan')}>Upgrade</div>
+                                                <div className={styles.OptionItem} onClick={() => handleOpenCallModal()} >Test</div>
                                             </div>
                                         )}
                                     </div>
@@ -189,165 +232,31 @@ function Dashboard() {
                             </div></>
                     )
                 })}
-
-                {/* </link> */}
-                {/* <div className={` ${styles.LangStyle} ${styles.ProPlan} `}>
-                    <div className={styles.PlanPriceMain}>
-                        <h3 className={styles.PlanPrice}>PRO PLAN</h3>
-                    </div>
-                    <div className={styles.Lang}>
-                        <div className={styles.LangItem}>
-                            <div className={styles.LangIcon}>
-                                <img src="images/SofiaAgent.png" alt="English" />
-                            </div>
-                            <div className={styles.LangText}>
-                                <h3 className={styles.agentName}>ETHAN <span className={styles.activeText}>Active</span></h3>
-                                <p className={styles.agentAccent}>English • American Accent</p>
-
-                            </div>
-
-
-                        </div>
-                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'ProPlan')}>
-                            <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="2" cy="2" r="2" fill="black" />
-                                <circle cx="9" cy="2" r="2" fill="black" />
-                                <circle cx="16" cy="2" r="2" fill="black" />
-                            </svg>
-                            {openDropdown === 'ProPlan' && (
-                                <div className={styles.OptionsDropdown}>
-                                    <div className={styles.OptionItem} onClick={() => handleDelete('ProPlan')}>Delete</div>
-                                    <div className={styles.OptionItem} onClick={() => handleUpgrade('ProPlan')}>Upgrade</div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <hr className={styles.agentLine}></hr>
-                    <div className={styles.LangPara}>
-                        <p className={styles.agentPara}>For: <strong>ADV Real Estate</strong></p>
-                        <div className={styles.VIA}>
-                            <img src="svg/cal-svg.svg" alt="cal-svg" />
-                        </div>
-                    </div>
-                    <div className={styles.LangButton}>
-                        <div className={styles.AssignNum}> Assign Number</div>
-                        <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
-                    </div>
-                </div> */}
-
-                {/* <div className={` ${styles.LangStyle} ${styles.Maxplan} `}>
-                    <div className={styles.PlanPriceMain}>
-                        <h3 className={styles.PlanPrice}>MAX PLAN</h3>
-                    </div>
-                    <div className={styles.Lang}>
-                        <div className={styles.LangItem}>
-                            <div className={styles.LangIcon}>
-                                <img src="images/SofiaAgent.png" alt="English" />
-                            </div>
-                            <div className={styles.LangText}>
-                                <h3 className={styles.agentName}>Amelia <span className={styles.activeText}>Active</span></h3>
-                                <p className={styles.agentAccent}>English • American Accent</p>
-
-                            </div>
-
-
-                        </div>
-
-
-                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'MaxPlan')}>
-                            <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="2" cy="2" r="2" fill="black" />
-                                <circle cx="9" cy="2" r="2" fill="black" />
-                                <circle cx="16" cy="2" r="2" fill="black" />
-                            </svg>
-
-
-                            {openDropdown === 'MaxPlan' && (
-                                <div className={styles.OptionsDropdown}>
-                                    <div className={styles.OptionItem} onClick={() => handleDelete('MaxPlan')}>Delete</div>
-                                    <div className={styles.OptionItem} onClick={() => handleUpgrade('MaxPlan')}>Upgrade</div>
-                                </div>
-                            )}
-                        </div>
-
-                    </div>
-                    <hr className={styles.agentLine}></hr>
-
-                    <div className={styles.LangPara}>
-                        <p className={styles.agentPara}>For: <strong>VisaPath Solutions</strong></p>
-                        <div className={styles.VIA}>
-                            <img src="svg/cal-svg.svg" alt="cal-svg" />
-                        </div>
-
-                    </div>
-
-                    <div className={styles.LangButton}>
-                        <div className={styles.AssignNum}> Assign Number</div>
-
-                        <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
-
-                    </div>
-
-
-
-
-
-
-                </div>
-
-                <div className={` ${styles.LangStyle} ${styles.Freeplan} `}>
-                    <div className={styles.PlanPriceMain}>
-                        <h3 className={styles.PlanPrice}>FREE PLAN</h3>
-                    </div>
-                    <div className={styles.Lang}>
-                        <div className={styles.LangItem}>
-                            <div className={styles.LangIcon}>
-                                <img src="images/SofiaAgent.png" alt="English" />
-                            </div>
-                            <div className={styles.LangText}>
-                                <h3 className={styles.agentName}>SOFIA<span className={styles.activeText}>Active</span></h3>
-                                <p className={styles.agentAccent}>English • American Accent</p>
-                            </div>
-                        </div>
-                        <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, 'FreePlan')}>
-                            <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="2" cy="2" r="2" fill="black" />
-                                <circle cx="9" cy="2" r="2" fill="black" />
-                                <circle cx="16" cy="2" r="2" fill="black" />
-                            </svg>
-                            {openDropdown === 'FreePlan' && (
-                                <div className={styles.OptionsDropdown}>
-                                    <div className={styles.OptionItem} onClick={() => handleDelete('FreePlan')}>Delete</div>
-                                    <div className={styles.OptionItem} onClick={() => handleUpgrade('FreePlan')}>Upgrade</div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <hr className={styles.agentLine}></hr>
-                    <div className={styles.LangPara}>
-                        <p className={styles.agentPara}>For: <strong>VDN Solutions</strong></p>
-                        <div className={styles.VIA}>
-                            <img src="svg/cal-svg.svg" alt="cal-svg" />
-                        </div>
-                    </div>
-                    <div className={styles.LangButton}>
-                        <div className={styles.AssignNum}> Assign Number</div>
-                        <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> 217</div>
-                    </div>
-                </div> */}
             </div>
-           
+
             <Footer />
-               {openOffcanvas && <OffCanvas   onClose={handleCloseOffcanvas} isOpen={openOffcanvas} direction="right" width='70%'>
+            {/* OffCanvas */}
+            {openOffcanvas && <OffCanvas onClose={handleCloseOffcanvas} isOpen={openOffcanvas} direction="right" width='70%'>
 
-        <div className='HeaderTop'>
-     
-         <div className={styles.logoutdiv} onClick={handleLogout}>Logout</div>
-        </div>
+                <div className='HeaderTop'>
 
-      
+                    <div className={styles.logoutdiv} onClick={handleLogout}>Logout</div>
+                </div>
+            </OffCanvas>}
+            {/* Modal */}
+            {
+                openCallModal && <Modal2 isOpen={handleOpenCallModal} onClose={handleCloseCallModal}>
+                    {
 
-      </OffCanvas>}
+
+                        <CallTest isCallActive={isCallActive}
+                            onStartCall={handleStartCall}
+                            onEndCall={handleEndCall} />
+
+
+                    }
+                </Modal2>
+            }
         </div>
     )
 }
