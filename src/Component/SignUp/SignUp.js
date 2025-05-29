@@ -16,20 +16,32 @@ const SignUp = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
   const inputRefs = useRef([]);
-
-  const validateEmail = (email) => {
-    if (!email) return "Email is required.";
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return "Please enter a valid email address.";
+const validateEmail = (email) => {
+  if (!email) {
+    if (emailSubmitted) {
+      return "Email is required.";
+    }
     return "";
-  };
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return "Please enter a valid email address.";
+  return "";
+};
 
-  const handleEmailChange = (e) => {
-    const val = e.target.value;
-    setEmail(val);
+
+const handleEmailChange = (e) => {
+  const val = e.target.value;
+  setEmail(val);
+  setEmailTouched(true);
+  if (emailSubmitted) {
     setEmailError(validateEmail(val));
-  };
+  } else {
+    setEmailError("");
+  }
+};
 
   const handleLoginClick = async () => {
     const fullOtp = otp.join("");
@@ -70,11 +82,12 @@ const SignUp = () => {
   };
 
   const handleSendOTP = async () => {
-    const emailValidationMsg = validateEmail(email);
-    if (emailValidationMsg) {
-      setEmailError(emailValidationMsg);
-      return;
-    }
+   setEmailSubmitted(true);
+  const emailValidationMsg = validateEmail(email);
+  setEmailError(emailValidationMsg);
+  if (emailValidationMsg) {
+    return;
+  }
     setEmailError(""); 
     setIsVerifyingOtp(true);
     try {

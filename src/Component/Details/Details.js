@@ -14,10 +14,16 @@ const Details = () => {
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+
   const [nameError, setNameError] = useState('');
   const [phoneError, setPhoneError] = useState('');
+
+  const [nameSubmitted, setNameSubmitted] = useState(false);
+  const [phoneSubmitted, setPhoneSubmitted] = useState(false);
+
   const token = localStorage.getItem('token');
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
@@ -47,26 +53,41 @@ const Details = () => {
     if (!/^\d{10}$/.test(value)) return 'Phone number must be exactly 10 digits.';
     return '';
   };
+
   const handleNameChange = (e) => {
     const val = e.target.value;
     setName(val);
-    setNameError(validateName(val));
+
+    // Show error only if submitted once
+    if (nameSubmitted) {
+      setNameError(validateName(val));
+    } else {
+      setNameError('');
+    }
   };
 
   const handlePhoneChange = (e) => {
     let val = e.target.value.replace(/\D/g, '');
     setPhone(val);
-    setPhoneError(validatePhone(val));
+
+    if (phoneSubmitted) {
+      setPhoneError(validatePhone(val));
+    } else {
+      setPhoneError('');
+    }
   };
 
   const handleLoginClick = async () => {
-    // Validate before submit
+    setNameSubmitted(true);
+    setPhoneSubmitted(true);
+
     const nError = validateName(name);
     const pError = validatePhone(phone);
+
     setNameError(nError);
     setPhoneError(pError);
 
-    if (nError || pError) return; 
+    if (nError || pError) return;
 
     setLoading(true);
 

@@ -20,6 +20,18 @@ const BusinessDetails = () => {
   const [businessSizeError, setBusinessSizeError] = useState('');
   const [businessTypeError, setBusinessTypeError] = useState('');
 
+  // Submission state trackers
+  const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
+  const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
+  const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
+  
+  const businessTypes = [
+    { type: 'Immigration', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
+    { type: 'School', subtype: 'Empowering Future Leaders', icon: 'images/school.png' },
+    { type: 'Hospital', subtype: 'Always ready to assist', icon: 'images/Hospital.png' },
+    { type: 'Other', subtype: 'Always ready to assist', icon: 'images/other.png' },
+  ];
+
   useEffect(() => {
     if (sessionStorage.getItem('businessDetails')) {
       const businessDetails = JSON.parse(sessionStorage?.getItem('businessDetails'));
@@ -28,13 +40,6 @@ const BusinessDetails = () => {
       setBusinessSize(businessDetails?.businessSize);
     }
   }, []);
-
-  const businessTypes = [
-    { type: 'Immigration', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
-    { type: 'School', subtype: 'Empowering Future Leaders', icon: 'images/school.png' },
-    { type: 'Hospital', subtype: 'Always ready to assist', icon: 'images/Hospital.png' },
-    { type: 'Other', subtype: 'Always ready to assist', icon: 'images/other.png' },
-  ];
 
   const containsEmoji = (text) => {
     return /[\p{Emoji_Presentation}\u200d]/u.test(text);
@@ -58,39 +63,60 @@ const BusinessDetails = () => {
   const handleBusinessNameChange = (e) => {
     const val = e.target.value;
     setBusinessName(val);
-    setBusinessNameError(validateBusinessName(val));
+    if (businessNameSubmitted) {
+      setBusinessNameError(validateBusinessName(val));
+    } else {
+      setBusinessNameError('');
+    }
   };
 
   const handleBusinessSizeChange = (e) => {
-    // Only allow digits
     let val = e.target.value.replace(/\D/g, '');
     setBusinessSize(val);
-    setBusinessSizeError(validateBusinessSize(val));
+    if (businessSizeSubmitted) {
+      setBusinessSizeError(validateBusinessSize(val));
+    } else {
+      setBusinessSizeError('');
+    }
+  };
+
+  const handleBusinessTypeChange = (e) => {
+    setBusinessType(e.target.value);
+    if (businessTypeSubmitted) {
+      setBusinessTypeError('');
+    }
   };
 
   const handleLoginClick = () => {
-    // Validate all fields
-    setBusinessTypeError('');
-    setBusinessNameError('');
-    setBusinessSizeError('');
+    // Mark all as submitted to show errors
+    setBusinessTypeSubmitted(true);
+    setBusinessNameSubmitted(true);
+    setBusinessSizeSubmitted(true);
 
+    // Validate all fields
     let hasError = false;
 
     if (!businessType) {
       setBusinessTypeError('Please select a business type.');
       hasError = true;
+    } else {
+      setBusinessTypeError('');
     }
 
     const nameError = validateBusinessName(businessName);
     if (nameError) {
       setBusinessNameError(nameError);
       hasError = true;
+    } else {
+      setBusinessNameError('');
     }
 
     const sizeError = validateBusinessSize(businessSize);
     if (sizeError) {
       setBusinessSizeError(sizeError);
       hasError = true;
+    } else {
+      setBusinessSizeError('');
     }
 
     if (hasError) return;
@@ -131,16 +157,15 @@ const BusinessDetails = () => {
                 name="businessType"
                 value={item.type}
                 checked={businessType === item.type}
-                onChange={(e) => {
-                  setBusinessType(e.target.value);
-                  setBusinessTypeError('');
-                }}
+                onChange={handleBusinessTypeChange}
               />
             </div>
           </label>
         ))}
       </div>
-      {businessTypeError && <p className={styles.inlineError}>{businessTypeError}</p>}
+      {businessTypeSubmitted && businessTypeError && (
+        <p className={styles.inlineError}>{businessTypeError}</p>
+      )}
 
       <div className={styles.inputGroup}>
         <label>Business Name</label>
@@ -151,7 +176,9 @@ const BusinessDetails = () => {
           onChange={handleBusinessNameChange}
           className={businessNameError ? styles.inputError : ''}
         />
-        {businessNameError && <p className={styles.inlineError}>{businessNameError}</p>}
+        {businessNameSubmitted && businessNameError && (
+          <p className={styles.inlineError}>{businessNameError}</p>
+        )}
       </div>
 
       <div className={styles.inputGroup}>
@@ -165,7 +192,9 @@ const BusinessDetails = () => {
           className={businessSizeError ? styles.inputError : ''}
           inputMode="numeric"
         />
-        {businessSizeError && <p className={styles.inlineError}>{businessSizeError}</p>}
+        {businessSizeSubmitted && businessSizeError && (
+          <p className={styles.inlineError}>{businessSizeError}</p>
+        )}
       </div>
 
       <div onClick={handleLoginClick}>

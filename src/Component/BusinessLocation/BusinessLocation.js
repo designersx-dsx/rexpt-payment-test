@@ -19,6 +19,12 @@ const BusinessLocation = () => {
   const [address1Error, setAddress1Error] = useState('');
   const [address2Error, setAddress2Error] = useState('');
 
+  // Submission flags
+  const [stateSubmitted, setStateSubmitted] = useState(false);
+  const [citySubmitted, setCitySubmitted] = useState(false);
+  const [address1Submitted, setAddress1Submitted] = useState(false);
+  const [address2Submitted, setAddress2Submitted] = useState(false);
+
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [popupType, setPopupType] = useState('error');
@@ -27,7 +33,7 @@ const BusinessLocation = () => {
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
 
-  const [countryCode, setCountryCode] = useState(''); // default
+  const [countryCode, setCountryCode] = useState('');
   const [ipData, setIpData] = useState({});
 
   useEffect(() => {
@@ -53,16 +59,13 @@ const BusinessLocation = () => {
         console.error('Failed to fetch IP location:', err);
       }
     };
-
     fetchCountryCode();
   }, []);
 
-  // Emoji detection
   const containsEmoji = (text) => {
     return /[\p{Emoji_Presentation}\u200d]/u.test(text);
   };
 
-  // Basic validation for each field
   const validateState = (value) => {
     if (!value.trim()) return 'State is required.';
     if (containsEmoji(value)) return 'Emojis are not allowed in state.';
@@ -85,8 +88,40 @@ const BusinessLocation = () => {
     return '';
   };
 
+  const handleStateChange = (e) => {
+    const val = e.target.value;
+    setState(val);
+    if (stateSubmitted) setStateError(validateState(val));
+    else setStateError('');
+  };
+
+  const handleCityChange = (e) => {
+    const val = e.target.value;
+    setCity(val);
+    if (citySubmitted) setCityError(validateCity(val));
+    else setCityError('');
+  };
+
+  const handleAddress1Change = (e) => {
+    const val = e.target.value;
+    setAddress1(val);
+    if (address1Submitted) setAddress1Error(validateAddress(val, 'Address line 1'));
+    else setAddress1Error('');
+  };
+
+  const handleAddress2Change = (e) => {
+    const val = e.target.value;
+    setAddress2(val);
+    if (address2Submitted) setAddress2Error(validateAddress(val, 'Address line 2'));
+    else setAddress2Error('');
+  };
+
   const handleContinue = async () => {
-    // Validate all inputs
+    setStateSubmitted(true);
+    setCitySubmitted(true);
+    setAddress1Submitted(true);
+    setAddress2Submitted(true);
+
     const sError = validateState(state);
     const cError = validateCity(city);
     const a1Error = validateAddress(address1, 'Address line 1');
@@ -97,9 +132,8 @@ const BusinessLocation = () => {
     setAddress1Error(a1Error);
     setAddress2Error(a2Error);
 
-    if (sError || cError || a1Error || a2Error) return; 
+    if (sError || cError || a1Error || a2Error) return;
 
-    // Save to session storage
     sessionStorage.setItem(
       'businessLocation',
       JSON.stringify({
@@ -174,10 +208,7 @@ const BusinessLocation = () => {
           placeholder="State"
           className={`${styles.input} ${stateError ? styles.inputError : ''}`}
           value={state}
-          onChange={(e) => {
-            setState(e.target.value);
-            if (stateError) setStateError('');
-          }}
+          onChange={handleStateChange}
         />
         {stateError && <p className={styles.inlineError}>{stateError}</p>}
 
@@ -187,10 +218,7 @@ const BusinessLocation = () => {
           placeholder="City"
           className={`${styles.input} ${cityError ? styles.inputError : ''}`}
           value={city}
-          onChange={(e) => {
-            setCity(e.target.value);
-            if (cityError) setCityError('');
-          }}
+          onChange={handleCityChange}
         />
         {cityError && <p className={styles.inlineError}>{cityError}</p>}
 
@@ -200,10 +228,7 @@ const BusinessLocation = () => {
           placeholder="First Address"
           className={`${styles.input} ${address1Error ? styles.inputError : ''}`}
           value={address1}
-          onChange={(e) => {
-            setAddress1(e.target.value);
-            if (address1Error) setAddress1Error('');
-          }}
+          onChange={handleAddress1Change}
         />
         {address1Error && <p className={styles.inlineError}>{address1Error}</p>}
 
@@ -213,10 +238,7 @@ const BusinessLocation = () => {
           placeholder="Second Address"
           className={`${styles.input} ${address2Error ? styles.inputError : ''}`}
           value={address2}
-          onChange={(e) => {
-            setAddress2(e.target.value);
-            if (address2Error) setAddress2Error('');
-          }}
+          onChange={handleAddress2Change}
         />
         {address2Error && <p className={styles.inlineError}>{address2Error}</p>}
 

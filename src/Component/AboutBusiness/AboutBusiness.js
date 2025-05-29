@@ -18,6 +18,12 @@ function AboutBusiness() {
   const [aboutBusinessError, setAboutBusinessError] = useState("");
   const [filesError, setFilesError] = useState("");
 
+  // Submission flags
+  const [businessUrlSubmitted, setBusinessUrlSubmitted] = useState(false);
+  const [googleListingSubmitted, setGoogleListingSubmitted] = useState(false);
+  const [aboutBusinessSubmitted, setAboutBusinessSubmitted] = useState(false);
+  const [filesSubmitted, setFilesSubmitted] = useState(false);
+
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
@@ -34,65 +40,65 @@ function AboutBusiness() {
     }
 
     setFiles(selectedFiles);
-    if (filesError) setFilesError("");
+    if (filesSubmitted) setFilesError(validateFiles(selectedFiles));
   };
 
-  // Simple URL validation regex
   const isValidUrl = (url) => {
     const pattern = new RegExp(
-      "^(https?:\\/\\/)?" + // protocol optional
-      "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" + // domain
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-      "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" + // port and path
-      "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" + // query string
-      "(\\#[-a-zA-Z\\d_]*)?$",
+      "^(https?:\\/\\/)?" +
+        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
+        "((\\d{1,3}\\.){3}\\d{1,3}))" +
+        "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
+        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
+        "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     );
     return !!pattern.test(url);
   };
 
+  const validateBusinessUrl = (url) => {
+    if (!url.trim()) return "Business URL is required.";
+    if (!isValidUrl(url.trim())) return "Please enter a valid URL.";
+    return "";
+  };
+
+  const validateGoogleListing = (url) => {
+    if (!url.trim()) return "Google Listing URL is required.";
+    if (!isValidUrl(url.trim())) return "Please enter a valid URL.";
+    return "";
+  };
+
+  const validateAboutBusiness = (text) => {
+    if (!text.trim()) return "Business description is required.";
+    return "";
+  };
+
+  const validateFiles = (filesArray) => {
+    if (filesArray.length === 0) return "At least one file must be uploaded.";
+    return "";
+  };
+
   const validateForm = () => {
-    let valid = true;
+    const urlError = validateBusinessUrl(businessUrl);
+    const listingError = validateGoogleListing(googleListing);
+    const aboutError = validateAboutBusiness(aboutBusiness);
+    const fileErr = validateFiles(files);
 
-    if (!businessUrl.trim()) {
-      setBusinessUrlError("Business URL is required.");
-      valid = false;
-    } else if (!isValidUrl(businessUrl.trim())) {
-      setBusinessUrlError("Please enter a valid URL.");
-      valid = false;
-    } else {
-      setBusinessUrlError("");
-    }
+    setBusinessUrlError(urlError);
+    setGoogleListingError(listingError);
+    setAboutBusinessError(aboutError);
+    setFilesError(fileErr);
 
-    if (!googleListing.trim()) {
-      setGoogleListingError("Google Listing URL is required.");
-      valid = false;
-    } else if (!isValidUrl(googleListing.trim())) {
-      setGoogleListingError("Please enter a valid URL.");
-      valid = false;
-    } else {
-      setGoogleListingError("");
-    }
-
-    if (!aboutBusiness.trim()) {
-      setAboutBusinessError("Business description is required.");
-      valid = false;
-    } else {
-      setAboutBusinessError("");
-    }
-
-    if (files.length === 0) {
-      setFilesError("At least one file must be uploaded.");
-      valid = false;
-    } else {
-      setFilesError("");
-    }
-
-    return valid;
+    return !urlError && !listingError && !aboutError && !fileErr;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setBusinessUrlSubmitted(true);
+    setGoogleListingSubmitted(true);
+    setAboutBusinessSubmitted(true);
+    setFilesSubmitted(true);
 
     if (!validateForm()) return;
 
@@ -106,7 +112,7 @@ function AboutBusiness() {
 
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-    // formData.append("knowledge_base_texts", JSON.stringify(aboutBusiness)); // Commented out in original
+    // formData.append("knowledge_base_texts", JSON.stringify(aboutBusiness)); // Optional
 
     files.forEach((file) => {
       formData.append("knowledge_base_files", file);
@@ -160,11 +166,15 @@ function AboutBusiness() {
                   value={businessUrl}
                   onChange={(e) => {
                     setBusinessUrl(e.target.value);
-                    if (businessUrlError) setBusinessUrlError("");
+                    if (businessUrlSubmitted)
+                      setBusinessUrlError(validateBusinessUrl(e.target.value));
                   }}
                 />
+                {businessUrlSubmitted && businessUrlError && (
+                  <p className={styles.inlineError}>{businessUrlError}</p>
+                )}
               </div>
-               {businessUrlError && <p className={styles.inlineError}>{businessUrlError}</p>}
+
               <div className={styles.formGroup}>
                 <label htmlFor="google-listing">Google Listing</label>
                 <input
@@ -174,11 +184,14 @@ function AboutBusiness() {
                   value={googleListing}
                   onChange={(e) => {
                     setGoogleListing(e.target.value);
-                    if (googleListingError) setGoogleListingError("");
+                    if (googleListingSubmitted)
+                      setGoogleListingError(validateGoogleListing(e.target.value));
                   }}
-                /> 
+                />
+                {googleListingSubmitted && googleListingError && (
+                  <p className={styles.inlineError}>{googleListingError}</p>
+                )}
               </div>
-                {googleListingError && <p className={styles.inlineError}>{googleListingError}</p>}
 
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
@@ -189,11 +202,14 @@ function AboutBusiness() {
                   value={aboutBusiness}
                   onChange={(e) => {
                     setAboutBusiness(e.target.value);
-                    if (aboutBusinessError) setAboutBusinessError("");
+                    if (aboutBusinessSubmitted)
+                      setAboutBusinessError(validateAboutBusiness(e.target.value));
                   }}
-                />   
+                />
+                {aboutBusinessSubmitted && aboutBusinessError && (
+                  <p className={styles.inlineError}>{aboutBusinessError}</p>
+                )}
               </div>
-               {aboutBusinessError && <p className={styles.inlineError}>{aboutBusinessError}</p>}
 
               <div className={styles.formGroup}>
                 <label htmlFor="file-upload">File Upload</label>
@@ -203,8 +219,10 @@ function AboutBusiness() {
                   multiple
                   onChange={handleFileChange}
                 />
+                {filesSubmitted && filesError && (
+                  <p className={styles.inlineError}>{filesError}</p>
+                )}
               </div>
-               {filesError && <p className={styles.inlineError}>{filesError}</p>}
 
               <div className={styles.formGroup}>
                 <label htmlFor="additional-note">Additional Note</label>
@@ -217,12 +235,9 @@ function AboutBusiness() {
                   onChange={(e) => setNote(e.target.value)}
                 ></textarea>
               </div>
+
               <div>
-                <button
-                  type="submit"
-                  className={styles.btnTheme}
-                  disabled={loading}
-                >
+                <button type="submit" className={styles.btnTheme} disabled={loading}>
                   <img src="images/svg-theme.svg" alt="" />
                   {loading ? (
                     <>
