@@ -1,6 +1,7 @@
 import axios from 'axios';
 // Centralized API base URL
 export const API_BASE_URL = process.env.REACT_APP_API_URL
+console.log(API_BASE_URL)
 const token = localStorage.getItem('token')||"";
 // Create axios instance
 const api = axios.create({

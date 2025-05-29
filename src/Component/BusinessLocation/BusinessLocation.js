@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../BusinessLocation/BusinessLocation.module.css';
 import { useNavigate } from 'react-router-dom';
-import PopUp from '../Popup/Popup'; // import your popup component
+import PopUp from '../Popup/Popup';
 import axios from 'axios';
 import { API_BASE_URL } from '../../Store/apiStore';
 import decodeToken from '../../lib/decodeToken';
+
 const BusinessLocation = () => {
   const navigate = useNavigate();
   const [state, setState] = useState('');
@@ -12,113 +13,144 @@ const BusinessLocation = () => {
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
 
+  // Inline validation error states
+  const [stateError, setStateError] = useState('');
+  const [cityError, setCityError] = useState('');
+  const [address1Error, setAddress1Error] = useState('');
+  const [address2Error, setAddress2Error] = useState('');
+
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [popupType, setPopupType] = useState('error');
-  const token = localStorage.getItem("token")
-  const decodeTokenData = decodeToken(token)
 
-  const userId = decodeTokenData.id
-  const [countryCode, setCountryCode] = useState(""); // default
+  const token = localStorage.getItem('token');
+  const decodeTokenData = decodeToken(token);
+  const userId = decodeTokenData?.id;
+
+  const [countryCode, setCountryCode] = useState(''); // default
   const [ipData, setIpData] = useState({});
 
-  useEffect(()=>{
-    const businessLocation=JSON.parse(sessionStorage.getItem('businessLocation'))
-    if(businessLocation)
-    {   
-      setState(businessLocation.state ||"")
-      setCity(businessLocation.city ||"")
-      setAddress1(businessLocation.address1 ||"")
-      setAddress2(businessLocation.address2 ||"")
+  useEffect(() => {
+    const businessLocation = JSON.parse(sessionStorage.getItem('businessLocation'));
+    if (businessLocation) {
+      setState(businessLocation.state || '');
+      setCity(businessLocation.city || '');
+      setAddress1(businessLocation.address1 || '');
+      setAddress2(businessLocation.address2 || '');
     }
-  },[])
+  }, []);
 
   useEffect(() => {
     const fetchCountryCode = async () => {
       try {
-        const res = await axios.get("https://ipwho.is/");
+        const res = await axios.get('https://ipwho.is/');
         const data = res?.data;
-        // console.log("IP Location Data:", data);
         if (data && data.country_code) {
           setIpData(data);
           setCountryCode(data.country_code.toLowerCase());
         }
       } catch (err) {
-        console.error("Failed to fetch IP location:", err);
+        console.error('Failed to fetch IP location:', err);
       }
     };
 
     fetchCountryCode();
   }, []);
 
+  // Emoji detection
+  const containsEmoji = (text) => {
+    return /[\p{Emoji_Presentation}\u200d]/u.test(text);
+  };
+
+  // Basic validation for each field
+  const validateState = (value) => {
+    if (!value.trim()) return 'State is required.';
+    if (containsEmoji(value)) return 'Emojis are not allowed in state.';
+    if (/[^a-zA-Z\s.-]/.test(value)) return 'State contains invalid characters.';
+    return '';
+  };
+
+  const validateCity = (value) => {
+    if (!value.trim()) return 'City is required.';
+    if (containsEmoji(value)) return 'Emojis are not allowed in city.';
+    if (/[^a-zA-Z\s.-]/.test(value)) return 'City contains invalid characters.';
+    return '';
+  };
+
+  const validateAddress = (value, fieldName) => {
+    if (!value.trim()) return `${fieldName} is required.`;
+    if (containsEmoji(value)) return `Emojis are not allowed in ${fieldName.toLowerCase()}.`;
+    if (/[^a-zA-Z0-9\s,.\-#/]/.test(value))
+      return `${fieldName} contains invalid characters.`;
+    return '';
+  };
 
   const handleContinue = async () => {
-    if (!state.trim()) {
-      setPopupType("failed")
-      setPopupMessage('Please enter the state.');
-      setShowPopup(true);
-      return;
-    }
-    if (!city.trim()) {
-      setPopupType("failed")
-      setPopupMessage('Please enter the city.');
-      setShowPopup(true);
-      return;
-    }
-    if (!address1.trim()) {
-      setPopupType("failed")
-      setPopupMessage('Please enter address line 1.');
-      setShowPopup(true);
-      return;
-    }
-    if (!address2.trim()) {
-      setPopupType("failed")
-      setPopupMessage('Please enter address line 2.');
-      setShowPopup(true);
-      return;
-    }
+    // Validate all inputs
+    const sError = validateState(state);
+    const cError = validateCity(city);
+    const a1Error = validateAddress(address1, 'Address line 1');
+    const a2Error = validateAddress(address2, 'Address line 2');
 
+    setStateError(sError);
+    setCityError(cError);
+    setAddress1Error(a1Error);
+    setAddress2Error(a2Error);
 
- sessionStorage.setItem('businessLocation', JSON.stringify({
-      country: ipData?.country_name || 'United States',
-      state,
-      city,
-      address1,
-      address2
-     
+    if (sError || cError || a1Error || a2Error) return; 
 
-    }));
-    const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
-    const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-    const response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
-      userId: userId,
-      businessName: businessDetails?.businessName,
-      businessSize: businessDetails.businessSize,
-      businessType: businessDetails.businessType,
-      address1: locationData.address1,
-      address2: locationData.address2,
-      city: locationData.city,
-      state: locationData.state,
-      country: locationData.country,
-      zip: locationData.zip
-     
-    })
-    let id=response.data.businessId
-     sessionStorage.setItem('businessId', JSON.stringify({
-        businessId: id
-    }));
-   
-    console.log(response.data.businessId, "gjhghgjhg")
-    // Save to sessionStorage
-   
-    setPopupType("success")
-    setPopupMessage('Business details added successfully');
-    setShowPopup(true);
-    setTimeout(() => {
-      navigate("/about-business");
-    }, 2000);
+    // Save to session storage
+    sessionStorage.setItem(
+      'businessLocation',
+      JSON.stringify({
+        country: ipData?.country_name || 'United States',
+        state: state.trim(),
+        city: city.trim(),
+        address1: address1.trim(),
+        address2: address2.trim(),
+      })
+    );
 
+    try {
+      const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
+      const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
+
+      const response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
+        userId,
+        businessName: businessDetails?.businessName,
+        businessSize: businessDetails.businessSize,
+        businessType: businessDetails.businessType,
+        address1: locationData.address1,
+        address2: locationData.address2,
+        city: locationData.city,
+        state: locationData.state,
+        country: locationData.country,
+        zip: locationData.zip,
+      });
+
+      const id = response.data.businessId;
+      sessionStorage.setItem(
+        'businessId',
+        JSON.stringify({
+          businessId: id,
+        })
+      );
+
+      setPopupType('success');
+      setPopupMessage('Business details added successfully');
+      setShowPopup(true);
+
+      setTimeout(() => {
+        navigate('/about-business');
+      }, 2000);
+    } catch (error) {
+      setPopupType('failed');
+      setPopupMessage('An error occurred while adding business details.');
+      setShowPopup(true);
+      console.error(error);
+    }
   };
+
   return (
     <div>
       <div className={styles.container}>
@@ -140,42 +172,58 @@ const BusinessLocation = () => {
         <input
           type="text"
           placeholder="State"
-          className={styles.input}
+          className={`${styles.input} ${stateError ? styles.inputError : ''}`}
           value={state}
-          onChange={(e) => setState(e.target.value)}
+          onChange={(e) => {
+            setState(e.target.value);
+            if (stateError) setStateError('');
+          }}
         />
+        {stateError && <p className={styles.inlineError}>{stateError}</p>}
 
         <label className={styles.label}>City</label>
         <input
           type="text"
           placeholder="City"
-          className={styles.input}
+          className={`${styles.input} ${cityError ? styles.inputError : ''}`}
           value={city}
-          onChange={(e) => setCity(e.target.value)}
+          onChange={(e) => {
+            setCity(e.target.value);
+            if (cityError) setCityError('');
+          }}
         />
+        {cityError && <p className={styles.inlineError}>{cityError}</p>}
 
         <label className={styles.label}>Address line 1</label>
         <input
           type="text"
           placeholder="First Address"
-          className={styles.input}
+          className={`${styles.input} ${address1Error ? styles.inputError : ''}`}
           value={address1}
-          onChange={(e) => setAddress1(e.target.value)}
+          onChange={(e) => {
+            setAddress1(e.target.value);
+            if (address1Error) setAddress1Error('');
+          }}
         />
+        {address1Error && <p className={styles.inlineError}>{address1Error}</p>}
 
         <label className={styles.label}>Address line 2</label>
         <input
           type="text"
           placeholder="Second Address"
-          className={styles.input}
+          className={`${styles.input} ${address2Error ? styles.inputError : ''}`}
           value={address2}
-          onChange={(e) => setAddress2(e.target.value)}
+          onChange={(e) => {
+            setAddress2(e.target.value);
+            if (address2Error) setAddress2Error('');
+          }}
         />
+        {address2Error && <p className={styles.inlineError}>{address2Error}</p>}
 
-        <div >
+        <div>
           <div type="submit" onClick={handleContinue}>
             <div className={styles.btnTheme}>
-              <img src='images/svg-theme.svg' alt='' />
+              <img src="images/svg-theme.svg" alt="" />
               <p>Continue</p>
             </div>
           </div>
@@ -183,11 +231,7 @@ const BusinessLocation = () => {
       </div>
 
       {showPopup && (
-        <PopUp
-          type={popupType}
-          message={popupMessage}
-          onClose={() => setShowPopup(false)}
-        />
+        <PopUp type={popupType} message={popupMessage} onClose={() => setShowPopup(false)} />
       )}
     </div>
   );

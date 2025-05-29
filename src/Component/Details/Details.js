@@ -1,4 +1,4 @@
-import React, { useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../Details/Details.module.css';
 import { useNavigate } from 'react-router-dom';
 import PopUp from '../Popup/Popup';
@@ -8,83 +8,96 @@ import decodeToken from '../../lib/decodeToken';
 import Loader from '../Loader/Loader';
 
 const Details = () => {
-    const navigate = useNavigate();
-    const [startExit, setStartExit] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
-    const [popupType, setPopupType] = useState(null); 
-    const [popupMessage, setPopupMessage] = useState("");
-    const [loading, setLoading] = useState(false)
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
-    const token = localStorage.getItem("token")
-    const decodeTokenData = decodeToken(token)
-    const userId = decodeTokenData?.id
+  const navigate = useNavigate();
+  const [startExit, setStartExit] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState(null);
+  const [popupMessage, setPopupMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const token = localStorage.getItem('token');
+  const decodeTokenData = decodeToken(token);
+  const userId = decodeTokenData?.id;
 
-    useEffect(() => {
-        if(sessionStorage.getItem("OwnerDetails")){
-            const ownerDetails = JSON.parse(sessionStorage.getItem("OwnerDetails"));
-            setName(ownerDetails.name || '');
-            setPhone(ownerDetails.phone || '');
-        }
-    }, [])
+  useEffect(() => {
+    if (sessionStorage.getItem('OwnerDetails')) {
+      const ownerDetails = JSON.parse(sessionStorage.getItem('OwnerDetails'));
+      setName(ownerDetails.name || '');
+      setPhone(ownerDetails.phone || '');
+    }
+  }, []);
 
-    const handleLoginClick = async () => {
-        // Validation
-        setLoading(true)
-        if (!name.trim()) {
-            setPopupType('failed');
-            setPopupMessage('Name is required.');
-            setShowPopup(true);
-            setLoading(false)
-            return;
-        }
-        if (!phone.trim()) {
-            setPopupType('failed');
-            setPopupMessage('Phone number is required.');
-            setShowPopup(true);
-            setLoading(false)
-            return;
-        }
-        if (phone.length !== 10) {
-            setPopupType('failed');
-            setPopupMessage('Phone number must be exactly 10 digits.');
-            setShowPopup(true);
-            setLoading(false)
-            return;
-        }
+  const containsEmoji = (text) => {
+    return /[\p{Emoji_Presentation}\u200d]/u.test(text);
+  };
 
-        try {
-            const response = await axios.put(`${API_BASE_URL}/endusers/users/${userId}`, {
-                name,
-                phone,
-            });
+  const validateName = (value) => {
+    if (!value.trim()) return 'Name is required.';
+    if (containsEmoji(value)) return 'Emojis are not allowed in the name.';
+    if (/[^a-zA-Z\s.'-]/.test(value)) return 'Name contains invalid characters.';
+    if (value.trim().length < 2) return 'Name must be at least 2 characters.';
+    return '';
+  };
 
-            if (response.status === 200) {
-                console.log(response, "75878543")
-                setStartExit(true);
-                sessionStorage.setItem("OwnerDetails", JSON.stringify({ name, phone }));
-                setTimeout(() => {
-                    navigate('/business-details');
-                }, 2000);
-            } else {
-                setPopupType('failed');
-                setPopupMessage('Update failed. Please try again.');
-                setShowPopup(true);
-            }
-        } catch (error) {
-            setPopupType('failed');
-            setPopupMessage('An error occurred during update.');
-            setShowPopup(true);
-        } finally {
-            setLoading(false)
-        }
-    };
+  const validatePhone = (value) => {
+    if (!value.trim()) return 'Phone number is required.';
+    if (!/^\d{10}$/.test(value)) return 'Phone number must be exactly 10 digits.';
+    return '';
+  };
+  const handleNameChange = (e) => {
+    const val = e.target.value;
+    setName(val);
+    setNameError(validateName(val));
+  };
 
+  const handlePhoneChange = (e) => {
+    let val = e.target.value.replace(/\D/g, '');
+    setPhone(val);
+    setPhoneError(validatePhone(val));
+  };
 
+  const handleLoginClick = async () => {
+    // Validate before submit
+    const nError = validateName(name);
+    const pError = validatePhone(phone);
+    setNameError(nError);
+    setPhoneError(pError);
 
+    if (nError || pError) return; 
 
-    return (
-     <div className={styles.pageWrapper}>
+    setLoading(true);
+
+    try {
+      const response = await axios.put(`${API_BASE_URL}/endusers/users/${userId}`, {
+        name: name.trim(),
+        phone,
+      });
+
+      if (response.status === 200) {
+        setStartExit(true);
+        sessionStorage.setItem('OwnerDetails', JSON.stringify({ name: name.trim(), phone }));
+        setTimeout(() => {
+          navigate('/business-details');
+        }, 2000);
+      } else {
+        setPopupType('failed');
+        setPopupMessage('Update failed. Please try again.');
+        setShowPopup(true);
+      }
+    } catch (error) {
+      setPopupType('failed');
+      setPopupMessage('An error occurred during update.');
+      setShowPopup(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.pageWrapper}>
       <div className={styles.mask}>
         <img src="images/Mask.png" alt="Mask" />
       </div>
@@ -93,47 +106,61 @@ const Details = () => {
         <img className={styles.logo} src="svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
       </div>
 
-      <div className={`${styles.Maincontent} ${styles.animate1} ${startExit ? styles.fadeOut3 : ''}`}>
+      <div
+        className={`${styles.Maincontent} ${styles.animate1} ${startExit ? styles.fadeOut3 : ''}`}
+      >
         <div className={styles.welcomeTitle}>
           <h1>Personal Details</h1>
         </div>
       </div>
 
-      <div className={`${styles.container} ${styles.animate2} ${startExit ? styles.fadeOut3 : ''}`}>
+      <div
+        className={`${styles.container} ${styles.animate2} ${startExit ? styles.fadeOut3 : ''}`}
+      >
         <label className={styles.label}>Name</label>
         <input
           type="text"
-          className={styles.input}
+          className={`${styles.input} ${nameError ? styles.inputError : ''}`}
           placeholder="Your name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleNameChange}
         />
+        {nameError && <p className={styles.inlineError}>{nameError}</p>}
 
         <label className={styles.label}>Phone Number</label>
         <input
           type="tel"
-          className={styles.input}
+          className={`${styles.input} ${phoneError ? styles.inputError : ''}`}
           placeholder="Phone number"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          maxLength={10}
+          onChange={handlePhoneChange}
+          inputMode="numeric"
         />
+        {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
       </div>
 
-      <div className={`${styles.Btn} ${styles.animate3} ${startExit ? styles.fadeOut1 : ''}`} onClick={handleLoginClick}>
+      <div
+        className={`${styles.Btn} ${styles.animate3} ${startExit ? styles.fadeOut1 : ''}`}
+        onClick={handleLoginClick}
+      >
         <div type="submit">
-            <div className={styles.btnTheme}>
-              <img src="images/svg-theme.svg" alt="" />
-              <p>{loading ? <Loader size={20} /> :'Continue'}</p>
-            </div>
-         
+          <div className={styles.btnTheme}>
+            <img src="images/svg-theme.svg" alt="" />
+            <p>{loading ? <Loader size={20} /> : 'Continue'}</p>
+          </div>
         </div>
       </div>
 
       {showPopup && (
-        <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
+        <PopUp
+          type={popupType}
+          onClose={() => setShowPopup(false)}
+          message={popupMessage}
+        />
       )}
     </div>
-    );
+  );
 };
 
 export default Details;
