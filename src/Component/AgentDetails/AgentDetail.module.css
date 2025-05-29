@@ -555,3 +555,37 @@ margin-top: 1rem;
     width: 100%;
   }
 }
+
+@keyframes shimmer {
+  0% {
+    background-position: -500px 0;
+  }
+  100% {
+    background-position: 500px 0;
+  }
+}
+
+.shimmerContainer {
+  position: relative;
+  overflow: hidden;
+  background: #eee;
+  border-radius: 15px;
+}
+
+.shimmerContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.5) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  animation: shimmer 2s infinite;
+  pointer-events: none;
+  z-index: 10;
+}
