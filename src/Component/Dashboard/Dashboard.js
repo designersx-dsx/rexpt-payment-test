@@ -93,8 +93,9 @@ function Dashboard() {
 
     useEffect(() => {
         const loadRetellClient = async () => {
-            const { RetellWebClient } = await import('https://cdn.jsdelivr.net/npm/retell-client-js-sdk@2.0.7/+esm');
-            const client = new RetellWebClient();
+             const client = new window.RetellWebClient();
+
+          
 
             client.on("call_started", () => setIsCallActive(true));
             client.on("call_ended", () => setIsCallActive(false));
