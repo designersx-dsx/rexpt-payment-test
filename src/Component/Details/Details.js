@@ -54,7 +54,6 @@ const Details = () => {
         }
 
         try {
-            // Example update API call
             const response = await axios.put(`${API_BASE_URL}/endusers/users/${userId}`, {
                 name,
                 phone,
