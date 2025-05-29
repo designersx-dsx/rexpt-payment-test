@@ -1,0 +1,81 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.modalContainer {
+  margin-top: 3rem;
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  animation: slideUp 0.3s ease-out forwards;
+  transform: translateY(100px);
+  opacity: 0;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slideDown {
+  animation: slideDown 0.3s ease-in forwards;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+}
+
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.notch {
+  position: absolute;
+  bottom: -20px;
+  left: 60%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 80px;
+  height: 80px;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  border-radius: 10px;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: #BCBCBC;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.closeBtn:hover {
+  color: #000;
+}
