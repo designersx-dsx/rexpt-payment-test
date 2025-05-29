@@ -19,29 +19,29 @@ const SignUp = () => {
   const [emailTouched, setEmailTouched] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const inputRefs = useRef([]);
-const validateEmail = (email) => {
-  if (!email) {
-    if (emailSubmitted) {
-      return "Email is required.";
+  const validateEmail = (email) => {
+    if (!email) {
+      if (emailSubmitted) {
+        return "Email is required.";
+      }
+      return "";
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return "Please enter a valid email address.";
     return "";
-  }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return "Please enter a valid email address.";
-  return "";
-};
+  };
 
 
-const handleEmailChange = (e) => {
-  const val = e.target.value;
-  setEmail(val);
-  setEmailTouched(true);
-  if (emailSubmitted) {
-    setEmailError(validateEmail(val));
-  } else {
-    setEmailError("");
-  }
-};
+  const handleEmailChange = (e) => {
+    const val = e.target.value;
+    setEmail(val);
+    setEmailTouched(true);
+    if (emailSubmitted) {
+      setEmailError(validateEmail(val));
+    } else {
+      setEmailError("");
+    }
+  };
 
   const handleLoginClick = async () => {
     const fullOtp = otp.join("");
@@ -82,13 +82,13 @@ const handleEmailChange = (e) => {
   };
 
   const handleSendOTP = async () => {
-   setEmailSubmitted(true);
-  const emailValidationMsg = validateEmail(email);
-  setEmailError(emailValidationMsg);
-  if (emailValidationMsg) {
-    return;
-  }
-    setEmailError(""); 
+    setEmailSubmitted(true);
+    const emailValidationMsg = validateEmail(email);
+    setEmailError(emailValidationMsg);
+    if (emailValidationMsg) {
+      return;
+    }
+    setEmailError("");
     setIsVerifyingOtp(true);
     try {
       const response = await LoginWithEmailOTP(email);
@@ -128,11 +128,11 @@ const handleEmailChange = (e) => {
       inputRefs.current[index - 1].focus();
     }
   };
- useEffect(() => {
+  useEffect(() => {
     if (showPopup && popupType === "success" && popupMessage === "OTP sent successfully!") {
       const timer = setTimeout(() => {
         setShowPopup(false);
-      }, 1000); 
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [showPopup, popupType, popupMessage]);
@@ -140,12 +140,6 @@ const handleEmailChange = (e) => {
     <>
       <div className={styles.StartMain}>
         <div>
-
-          <img src="images/Ellipse 1.png" alt="Ellipse 1" />
-          <img src="images/Ellipse 2.png" alt="Ellipse 2" />
-          <img src="images/Ellipse 5.png" alt="Ellipse 5" />
-          <img src="images/Ellipse 3.png" alt="Ellipse 3" />
-          <img src="images/Ellipse 4.png" alt="Ellipse 4" />
           <img src="images/Ellipse 6.png" alt="Ellipse 6" />
           <img src="images/Ellipse 7.png" alt="Ellipse 7" />
           <img src="images/Ellipse 8.png" alt="Ellipse 8" />
@@ -175,9 +169,8 @@ const handleEmailChange = (e) => {
             <>
               <input
                 type="email"
-                className={`${styles.emailInput} ${
-                  emailError ? styles.inputError : ""
-                }`}
+                className={`${styles.emailInput} ${emailError ? styles.inputError : ""
+                  }`}
                 placeholder="Johnvick@gmail.com"
                 value={email}
                 onChange={handleEmailChange}
@@ -272,9 +265,9 @@ const handleEmailChange = (e) => {
           </div>
 
           <div className={styles.socialMedia}>
-            <img src="images/facbook.png" alt="" />
-            <img src="images/google.png" alt="" />
-            <img src="images/apple.png" alt="" />
+            <img src="svg/google.svg" alt="" />
+            <img src="svg/facbook.svg" alt="" />
+            <img src="svg/apple.svg" alt="" />
           </div>
         </div>
 
