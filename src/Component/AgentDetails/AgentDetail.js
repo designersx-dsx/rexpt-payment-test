@@ -16,7 +16,6 @@ const AgentDashboard = () => {
     const getAgentDetails = async () => {
       try {
         const response = await fetchAgentDetailById(agentDetails);
-        console.log('Fetched Agent Details:', response);
       } catch (err) {
         console.error('Failed to fetch selected Agent Info', err.response || err.message || err);
       }
