@@ -4,10 +4,10 @@
     font-weight: 500;
 }
 
-.inputError {
+/* .inputError {
     border-color: #d93025 !important;
     box-shadow: 0 0 5px #d93025;
-}
+} */
 
 /* Optional fadeIn animation */
 @keyframes fadeIn {
@@ -24,8 +24,8 @@
 
 .StartMain {
     position: relative;
-    width: 95vw;
-    height: 20vh;
+    width: 100vw;
+    height: 25vh;
     overflow: hidden;
     background-color: #fff;
 }
@@ -43,7 +43,7 @@
 }
 
 .StartMain img:nth-child(1) {
-    top: 10%;
+    top: 20%;
     left: 20%;
     animation: floatTopRight 6s infinite ease-in-out;
 }
@@ -76,36 +76,6 @@
     top: 25%;
     left: 80%;
     animation: floatBottomLeft 7.5s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(7) {
-    top: 70%;
-    left: 60%;
-    animation: floatTopLeft 6s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(8) {
-    top: 35%;
-    left: 40%;
-    animation: floatTopRight 7s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(9) {
-    top: 55%;
-    left: 15%;
-    animation: floatBottomRight 6.5s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(10) {
-    top: 5%;
-    left: 90%;
-    animation: floatDiagonal 5.2s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(11) {
-    top: 85%;
-    left: 5%;
-    animation: floatTopLeft 7s infinite ease-in-out;
 }
 
 /* Keyframes for different directions */
