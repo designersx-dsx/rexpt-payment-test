@@ -1,7 +1,31 @@
+.inlineError {
+    color: #ff1100;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* .inputError {
+    border-color: #d93025 !important;
+    box-shadow: 0 0 5px #d93025;
+} */
+
+/* Optional fadeIn animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .StartMain {
     position: relative;
-    width: 95vw;
-    height: 20vh;
+    width: 100vw;
+    height: 25vh;
     overflow: hidden;
     background-color: #fff;
 }
@@ -17,8 +41,9 @@
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
 }
+
 .StartMain img:nth-child(1) {
-    top: 10%;
+    top: 20%;
     left: 20%;
     animation: floatTopRight 6s infinite ease-in-out;
 }
@@ -53,68 +78,84 @@
     animation: floatBottomLeft 7.5s infinite ease-in-out;
 }
 
-.StartMain img:nth-child(7) {
-    top: 70%;
-    left: 60%;
-    animation: floatTopLeft 6s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(8) {
-    top: 35%;
-    left: 40%;
-    animation: floatTopRight 7s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(9) {
-    top: 55%;
-    left: 15%;
-    animation: floatBottomRight 6.5s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(10) {
-    top: 5%;
-    left: 90%;
-    animation: floatDiagonal 5.2s infinite ease-in-out;
-}
-
-.StartMain img:nth-child(11) {
-    top: 85%;
-    left: 5%;
-    animation: floatTopLeft 7s infinite ease-in-out;
-}
-
 /* Keyframes for different directions */
 
 @keyframes floatTopRight {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(150px, -150px); }
-    100% { transform: translate(0, 0); }
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(150px, -150px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
 }
 
 @keyframes floatBottomLeft {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(-150px, 150px); }
-    100% { transform: translate(0, 0); }
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-150px, 150px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
 }
 
 @keyframes floatBottomRight {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(150px, 150px); }
-    100% { transform: translate(0, 0); }
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(150px, 150px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
 }
 
 @keyframes floatTopLeft {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(-150px, -150px); }
-    100% { transform: translate(0, 0); }
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-150px, -150px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
 }
 
 @keyframes floatDiagonal {
-    0% { transform: translate(0, 0); }
-    25% { transform: translate(100px, -100px); }
-    50% { transform: translate(-100px, 100px); }
-    75% { transform: translate(80px, 120px); }
-    100% { transform: translate(0, 0); }
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(100px, -100px);
+    }
+
+    50% {
+        transform: translate(-100px, 100px);
+    }
+
+    75% {
+        transform: translate(80px, 120px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
 }
 
 
@@ -132,7 +173,7 @@
     position: absolute;
     top: 15%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) !important;
 }
 
 @keyframes zoomIn {
@@ -152,39 +193,44 @@
 
 .Maincontent {
     padding: 20px;
-}@keyframes slideUpFadeIn {
+}
+
+@keyframes slideUpFadeIn {
   0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
- 
+
 .animate1 {
   animation: slideUpFadeIn 0.6s ease forwards;
   animation-delay: 0.2s;
   opacity: 0;
-} 
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
 
-/* .animate2 {
+.animate2 {
   animation: slideUpFadeIn 0.6s ease forwards;
   animation-delay: 0.5s;
   opacity: 0;
-} */
+}
 
 .animate3 {
-  animation: slideUpFadeIn 0.6s ease forwards;
-  animation-delay: 0.8s;
-  opacity: 0;
+    animation: slideUpFadeIn 0.6s ease forwards;
+    animation-delay: 0.8s;
+    opacity: 0;
 }
 
 .animate4 {
-  animation: slideUpFadeIn 0.6s ease forwards;
-  animation-delay: 1.1s;
-  opacity: 0;
+    animation: slideUpFadeIn 0.6s ease forwards;
+    animation-delay: 1.1s;
+    opacity: 0;
 }
 
 .welcomeTitle h1 {
@@ -339,6 +385,7 @@
     margin-top: 3rem;
     width: 100%;
 }
+
 .btnTheme img {
     position: absolute;
     width: 100%;

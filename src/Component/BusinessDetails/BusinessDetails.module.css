@@ -3,6 +3,17 @@
   max-width: 400px;
   margin: auto;
 }
+.inputError {
+  border-color: #d93025 !important;
+  outline: none;
+}
+
+.inlineError {
+  color: #d93025;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
 
 .title {
   font-size: 40px;

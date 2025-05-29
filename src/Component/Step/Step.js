@@ -452,8 +452,12 @@ Let’s begin assisting the customer!
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
-                    knowledge_base_ids: [sessionStorage.getItem("knowledgeBaseId")],
+                   
                 };
+            const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+            if (knowledgeBaseId) {
+            agentConfig.knowledge_base_ids = [knowledgeBaseId];
+            }
                 try {
                     const llmResponse = await axios.post(
                         "https://api.retellai.com/create-retell-llm",
