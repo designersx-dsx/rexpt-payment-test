@@ -7,17 +7,23 @@ import { useLocation } from 'react-router-dom';
 
 const AgentDashboard = () => {
    const [totalBookings, setTotalBookings] = useState(null);
+   const[loading,setLoading]=useState(true)
+   const [agentData,setAgentData]=useState([])
   const location = useLocation();
   const agentDetails = location.state;
-    // console.log('Agent Details:', agentDetails);
 
   
  useEffect(() => {
     const getAgentDetails = async () => {
       try {
         const response = await fetchAgentDetailById(agentDetails);
+
+        setAgentData(response?.data)
+
       } catch (err) {
         console.error('Failed to fetch selected Agent Info', err.response || err.message || err);
+      }finally{
+        setLoading(false)
       }
     };
 
@@ -26,6 +32,11 @@ const AgentDashboard = () => {
     }
   }, [agentDetails]);
 
+  const withShimmer = (content) =>
+    loading ? <div className={styles.shimmerContainer} style={{minHeight: '150px'}}>{content}</div> : content;
+
+
+  console.log('agentData',agentData)
   return (
     <div >
       <header className={styles.header}>
@@ -59,35 +70,38 @@ const AgentDashboard = () => {
         </div>
 
       </header>
-
+ 
       <section className={styles.agentCard}>
         <div className={styles.agentInfo}>
 
           <div className={styles.agentAvatarContainer}>
-            <img src="images/SofiaAgent.png" alt="Sofia" className={styles.agentAvatar} />
+            <img src={agentData?.agent?.avatar || "images/SofiaAgent.png"} alt="Sofia" className={styles.agentAvatar} style={{objectFit:'unset'}}/>
           </div>
           <div>
-            <h3 className={styles.agentName}>SOFIA <span className={styles.activeText}>Active</span></h3>
-            <p className={styles.agentAccent}>English • American Accent</p>
+            
+            <h3 className={styles.agentName}>{agentData?.agent?.agentName}<span className={styles.activeText}>Active</span></h3>
+            <p className={styles.agentAccent}>{agentData?.agent?.agentLanguage} •{agentData?.agent?.agentAccent}</p>
             <hr className={styles.agentLine}></hr>
 
             <div className={styles.agentDetailsFlex} >
 
-              <p className={styles.agentDetails}>AI Agent Toll Free <strong>1800 123 XXXX</strong></p>
-              <p className={styles.agentDetails}>Agent Code <strong>99213</strong></p>
+              <p className={styles.agentDetails}>AI Agent Toll Free <strong>{agentData?.agent?.voip_numbers ? agentData?.agent?.voip_numbers :'1800 123 XXXX'}</strong></p>
+              <p className={styles.agentDetails}>Agent Code <strong>{agentData?.agent?.agentCode || "NA"}</strong></p>
 
             </div>
           </div>
         </div>
       </section>
-
+  
+ 
       <div className={styles.container}>
         <div className={styles.businessInfo}>
           <div className={styles.card1}>
-            <h2>Apollo</h2>
-            <p>Employees 32</p>
+            <h2>{agentData?.business?.businessName || "NA"}</h2>
+            <p>Employees {agentData?.business?.businessSize || "NA"}</p>
             <div className={styles.health}>
-              <h3>Health <span> /Categories</span></h3>
+              {/* <h3>Health <span> /Categories</span></h3> */}
+              <h3>{agentData?.business?.businessType || "NA"}</h3>
             </div>
 
             <h4>Business Details</h4>
@@ -97,14 +111,44 @@ const AgentDashboard = () => {
 
 
           <div className={styles.card2}>
-            <h2>URL: Apollo.com</h2>
+            <h2>URL:
+              <span style={{ fontSize: '12px' }}>
+            {(() => {
+              const filteredUrls = agentData?.knowledgeBase?.knowledge_base_sources?.filter(
+                src => src?.url && !src.url.includes('google.com')
+              );
+              if (filteredUrls && filteredUrls.length > 0) {
+                return filteredUrls.map((src, index) => (
+                  <div key={index}>{src.url}</div>
+                ));
+              } else {
+                return <div>NA</div>;
+              }
+            })()}
+          </span>
+            </h2>
             <div className={styles.google}>
               <img src='images/google-icon.png' alt='google-icon' />
-              <p>Apollo Immigra...</p>
+                <p>
+              <span style={{ fontSize: '12px' }}>
+                {(() => {
+                  const filteredUrls = agentData?.knowledgeBase?.knowledge_base_sources?.filter(
+                    src => src?.url && src.url.includes('google.com')
+                  );
+                  if (filteredUrls && filteredUrls.length > 0) {
+                    return filteredUrls.map((src, index) => (
+                      <div key={index}>{src.url}</div>
+                    ));
+                  } else {
+                    return <div>NA</div>;
+                  }
+                })()}
+              </span>
+            </p>
             </div>
             <div className={styles.address}>
               <img src='svg/location.svg' alt='location' />
-              <p>Mathura Road,Jasola Vihar, New Delhi – 11..</p>
+              <p>{agentData?.business?.address1 ||""} {agentData?.business?.address2||""},{agentData?.business?.city}, {agentData?.business?.country}</p>
             </div>
             <h4>Knowledge Base</h4>
           </div>
@@ -150,13 +194,29 @@ const AgentDashboard = () => {
 
           <div className={` ${styles.stat} ${styles.Yellow}`} >
             <div className={` ${styles.statText} `}>Total Calls</div>
-            <div className={styles.statDetail}>78</div>
+            <div className={styles.statDetail}>{agentData?.callSummary?.totalCalls||'NA'}</div>
 
           </div>
 
           <div className={` ${styles.stat} ${styles.blue}`}><span className={` ${styles.statText} `}>Avg. Call Duration</span>
-            <span className={styles.statDetail}>2<span className={styles.MinFont}>m</span>30
-              <span className={styles.MinFont}>s</span></span></div>
+          
+            <span className={styles.statDetail}>
+              {agentData?.avgCallTime?.minutes || agentData?.avgCallTime?.seconds ?
+              (
+                <>
+               {agentData?.avgCallTime?.minutes}
+              <span className={styles.MinFont}>m</span>{agentData?.avgCallTime?.seconds}
+              <span className={styles.MinFont}>s</span>
+               </>
+              ):
+              <>
+              NA</>
+              }
+              
+              </span></div>
+             
+
+            
 
           <div className={` ${styles.stat}  ${styles.Purple}`}><span className={` ${styles.statText}`}>Bookings</span>
             <span className={styles.statDetail}>{totalBookings !== null ? totalBookings : 'N/A'}</span></div>
@@ -173,6 +233,8 @@ const AgentDashboard = () => {
         </section>
 
       </div>
+   
+
     </div>
   );
 };

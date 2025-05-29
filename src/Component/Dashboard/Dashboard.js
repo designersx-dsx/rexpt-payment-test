@@ -172,7 +172,7 @@ function Dashboard() {
 
                                 <div className={styles.LangButton}>
                                     <div className={styles.AssignNum}> Assign Number</div>
-                                    <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> {agents.callSummary.remaining.minutes}</div>
+                                    <div className={styles.minLeft}><span className={styles.MinL}>Min Left</span> {agents?.callSummary?.remaining?.minutes}</div>
 
                                 </div>
                             </div></>
