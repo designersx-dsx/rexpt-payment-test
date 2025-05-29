@@ -217,7 +217,6 @@ function AboutBusiness() {
                   onChange={(e) => setNote(e.target.value)}
                 ></textarea>
               </div>
-
               <div>
                 <button
                   type="submit"
