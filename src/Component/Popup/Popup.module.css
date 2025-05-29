@@ -45,7 +45,7 @@
 
 /* Type borders */
 .success {
-  border-top: 5px solid #4caf50;
+  border-top: 5px solid #6524EB;
 }
 
 .failed {
@@ -114,7 +114,7 @@
 }
 
 .confirmBtn {
-  background-color: #4caf50;
+  background-color: #6524EB;
   color: rgb(255, 255, 255);
 }
 

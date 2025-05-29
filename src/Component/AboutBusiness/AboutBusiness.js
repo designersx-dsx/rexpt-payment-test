@@ -183,10 +183,6 @@ function AboutBusiness() {
                     <img src='images/svg-theme.svg' alt='' />
                     {loading ? <>Add <Loader size={20} /></> : <p>Continue</p>
                     }  </div>
-
-
-
-
                 </div>
               </div>
             </div>
