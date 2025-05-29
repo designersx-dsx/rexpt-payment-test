@@ -78,7 +78,9 @@ function Dashboard() {
   }
   const handleLogout=()=>{
     localStorage.removeItem("token")
-    navigate("/signup")
+    sessionStorage.clear();
+    // navigate("/signup")
+    window.location.href = '/signup';
   }
     return (
         <div>
