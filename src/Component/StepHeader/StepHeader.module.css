@@ -7,6 +7,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  
 }
 
 .logo {
@@ -35,26 +36,24 @@
     position: absolute;
     top: 47%;
     left: 50%;
-    width: 50px;
-    height: auto;
+    /* width: 50px;
+    height: auto; */
     pointer-events: none;
     opacity: 0;
     animation: dropInFromTop 1s ease-out forwards;
     animation-delay: 0.4s;
-    width: 50px;
-    height: 52px
+    width: 30px;
+    height: 30px
 }
 
 .inlogo img {
     width: 100%;
 }
 
-.heading {
-    font-size: 35px;
-    font-weight: bold;
-    margin-block: 1rem;
-    padding-bottom: 10px;
+.svgSpin {
+    transform-origin: center;
 }
+
 
 
 /* Glowing pulse animation for circle */
@@ -83,48 +82,47 @@
     transform-origin: center;
 }
 
-
-@keyframes slowSpin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.svgSpin {
-    /* animation: slowSpin 20s linear infinite; */
-    transform-origin: center;
+.logo svg{
+    width: 120px;
+    height: 120px;
 }
 
 
-
-.logo::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(122, 78, 255, 0.3);
-    animation: expand 2s cubic-bezier(.29, 0, 0, 1) infinite;
-    z-index: 0;
+.logo::before,
+.logo::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid rgba(122, 78, 255, 0.5);
+  transform: translate(-50%, -50%) scale(0.4);
+  animation: rippleWave 3s linear infinite;
+  opacity: 1;
+  z-index: 0;
 }
 
-@keyframes expand {
-    0% {
-        transform: scale(1);
-        opacity: 0.6;
-    }
+/* second ripple with delay */
+.logo::after {
+  animation-delay: 1.2s;
+}
 
-    70% {
-        transform: scale(1.2);
-        opacity: 0;
-    }
+@keyframes rippleWave {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
+}
 
-    100% {
-        transform: scale(1.2);
-        opacity: 0;
-    }
+.heading {
+    font-size: 35px;
+    font-weight: bold;
+    margin-block: 5px;
+    padding-bottom: 10px;
 }
