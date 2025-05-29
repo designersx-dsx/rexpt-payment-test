@@ -18,6 +18,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
+
           <Route
             path="/signup"
             element={
@@ -36,6 +37,7 @@ function App() {
           <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
           <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
           <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
+
           <Route path="/business-details" element={<BusinessDetails />} />
           <Route path="/agent-detail" element={<AgentDetail />} />
           <Route path="/business-locations" element={<SecureRoute><BusinessLocation /></SecureRoute>} />
