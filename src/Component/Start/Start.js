@@ -11,17 +11,17 @@ function Start() {
     useEffect(() => {
         if (animationStep === 1) {
             // After button fades (800ms), start part fade
-            const timer = setTimeout(() => setAnimationStep(2), 800);
+            const timer = setTimeout(() => setAnimationStep(2), 250);
             return () => clearTimeout(timer);
         }
         if (animationStep === 2) {
             // After part fades (800ms), start logo fade
-            const timer = setTimeout(() => setAnimationStep(3), 800);
+            const timer = setTimeout(() => setAnimationStep(3), 250);
             return () => clearTimeout(timer);
         }
         if (animationStep === 3) {
             // After logo fades (800ms), navigate
-            const timer = setTimeout(() => navigate('/signup'), 800);
+            const timer = setTimeout(() => navigate('/signup'), 250);
             return () => clearTimeout(timer);
         }
     }, [animationStep, navigate]);
@@ -64,13 +64,16 @@ function Start() {
                         Engage leads by voice, automate bookings & reminders, and unlock actionable call analytics—powered by Rexpt.in.
                     </p>
                 </div>
-
-                <div
-                    className={`${styles.BtnDiv} ${animationStep >= 1 ? styles.fadeOutButton : ''}`}
-                    onClick={handleClick}
-                >
-                    <img src='images/start-btn.png' alt='Start Button' />
+                <div className={styles.parentDiv}>
+                    <div
+                        className={`${styles.BtnDiv} ${animationStep >= 1 ? styles.fadeOutButton : ''}`}
+                        onClick={handleClick}
+                    >
+                        <img src='images/svg-theme.svg' alt='Start Button' />
+                        <p>Lst's Start</p>
+                    </div>
                 </div>
+
             </div>
         </div>
     );
