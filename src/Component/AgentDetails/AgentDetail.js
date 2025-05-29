@@ -160,7 +160,7 @@ const AgentDashboard = () => {
               <span className={styles.MinFont}>s</span></span></div>
 
           <div className={` ${styles.stat}  ${styles.Purple}`}><span className={` ${styles.statText}`}>Bookings</span>
-            <span className={styles.statDetail}>{totalBookings !== null ? totalBookings : 'N/A'}</span></div>
+            <span className={styles.statDetail}>{totalBookings !== null ? totalBookings : '0'}</span></div>
 
           <div className={` ${styles.stat} ${styles.Red}`}><span className={` ${styles.statText} `}>Minutes Remaining</span>
             <span className={styles.statDetail}>1257</span></div>
