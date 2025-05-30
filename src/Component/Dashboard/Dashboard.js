@@ -13,11 +13,12 @@ import Modal2 from '../Modal2/Modal2';
 import CallTest from '../CallTest/CallTest';
 
 import { RetellWebClient } from "retell-client-js-sdk"
-const client = new RetellWebClient();;
+
 
 import useUser  from '../../Store/Context/UserContext';
 
 function Dashboard() {
+    const client = new RetellWebClient();;
     const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
     const navigate = useNavigate();
     const handleCardClick = (agent) => {
