@@ -383,6 +383,17 @@ function Dashboard() {
                   className={styles.FilterIcon}
                   onClick={(e) => toggleDropdown(e, agent.agent_id)}
                 >
+                  <svg
+                    width="18"
+                    height="4"
+                    viewBox="0 0 18 4"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="2" cy="2" r="2" fill="black" />
+                    <circle cx="9" cy="2" r="2" fill="black" />
+                    <circle cx="16" cy="2" r="2" fill="black" />
+                  </svg>
                   {/* Dropdown SVG Icon */}
                   {openDropdown === agent.agent_id && (
                     <div className={styles.OptionsDropdown}>
@@ -404,6 +415,7 @@ function Dashboard() {
                       >
                         Test Call
                       </div>
+                        <div className={styles.OptionItem}  >Widget</div>
                     </div>
                   )}
                 </div>
@@ -603,7 +615,8 @@ function Dashboard() {
                   {eventCreateStatus && (
                     <p
                       style={{
-                        color: eventCreateStatus === "success" ? "green" : "red",
+                        color:
+                          eventCreateStatus === "success" ? "green" : "red",
                         marginTop: "10px",
                         fontWeight: "600",
                       }}
