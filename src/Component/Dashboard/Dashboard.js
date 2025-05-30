@@ -11,9 +11,12 @@ import OffCanvas from '../OffCanvas/OffCanvas';
 import Modal from '../Modal/Modal';
 import Modal2 from '../Modal2/Modal2';
 import CallTest from '../CallTest/CallTest';
+
 import { RetellWebClient } from "retell-client-js-sdk"
 const client = new RetellWebClient();;
-// hello
+
+import useUser  from '../../Store/Context/UserContext';
+
 function Dashboard() {
     const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
     const navigate = useNavigate();
@@ -26,6 +29,8 @@ function Dashboard() {
 
         navigate('/home', { state: agentDetails });
     };
+
+
     const token = localStorage.getItem("token") || "";
     const decodeTokenData = decodeToken(token)
     const [userId, setUserId] = useState(decodeTokenData?.id || "");
@@ -37,8 +42,13 @@ function Dashboard() {
     const [openCallModal, setOpenCallModal] = useState(false);
     const [isCallActive, setIsCallActive] = useState(false);
     const [retellWebClient, setRetellWebClient] = useState(null);
+
     const [agentDetails, setAgentDetails] = useState('')
     const agentId = agentDetails?.agent_id;
+
+    const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
+    const { user, setUser } = useUser();
+
     const toggleDropdown = (e, id) => {
         e.preventDefault();
         e.stopPropagation();
@@ -134,7 +144,7 @@ function Dashboard() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ agent_id: agentId }),
             });
-
+            console.log(res)
             const data = await res.json();
             await retellWebClient.startCall({ accessToken: data.access_token });
         } catch (err) {
@@ -143,7 +153,11 @@ function Dashboard() {
     };
 
     const handleEndCall = async () => {
-        if (retellWebClient) await retellWebClient.stopCall();
+        if (retellWebClient){
+           const response= await retellWebClient.stopCall();
+           console.log('Call end response',response)
+
+        }
     };
 
     return (
@@ -152,11 +166,11 @@ function Dashboard() {
                 <header className={styles.header}>
                     <div className={styles.profileSection}>
                         <div>
-                            <img src="images/AgentImage.png" alt="Profile" className={styles.profilePic} />
+                            <img src={user.profile||"images/AgentImage.png"} alt="Profile" className={styles.profilePic} />
                         </div>
                         <div>
                             <p className={styles.greeting}>Hello!</p>
-                            <h2 className={styles.name}>John Vick</h2>
+                            <h2 className={styles.name}>{user?.name ||""}</h2>
                         </div>
                     </div>
                     <div className={styles.notifiMain}>
@@ -209,8 +223,8 @@ function Dashboard() {
                                             <img src="images/SofiaAgent.png" alt="English" />
                                         </div>
                                         <div className={styles.LangText}>
-                                            <h3 className={styles.agentName}>{agents.agentName} <span className={styles.activeText}>Active</span></h3>
-                                            <p className={styles.agentAccent}>{agents.agentLanguage} •{agents.agentAccent}</p>
+                                            <h3 className={styles.agentName}>{agents?.agentName} <span className={agents?.agentStatus? styles.activeText : styles.InactiveText}>{agents?.agentStatus?"Active":"Inactive"}</span></h3>
+                                            <p className={styles.agentAccent}>{agents?.agentLanguage} •{agents?.agentAccent}</p>
                                         </div>
 
 
