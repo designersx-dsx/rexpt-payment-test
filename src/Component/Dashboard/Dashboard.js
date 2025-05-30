@@ -16,32 +16,30 @@ function Dashboard() {
     useDashboardStore();
   const navigate = useNavigate();
 
-  // User info from context
   const { user } = useUser();
 
-  // Retell Web Client Setup
+  // Retell Web Client states
   const [retellWebClient, setRetellWebClient] = useState(null);
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
 
-  // Cal.com & Event creation state
+  // UserId decoded from token
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
 
+  // Agents and UI states
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
 
-  // Cal Modal & API key state
+  // Cal API modal & event states
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [isApiKeyEditable, setIsApiKeyEditable] = useState(false);
-
-  // Event inputs
   const [eventName, setEventName] = useState("");
   const [eventSlug, setEventSlug] = useState("");
   const [eventLength, setEventLength] = useState("");
@@ -51,16 +49,14 @@ function Dashboard() {
 
   const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
 
-  // Handle Agent Card click navigation
+  // Navigate on agent card click
   const handleCardClick = (agent) => {
-    const agentDetails = {
-      agentId: agent.agent_id,
-      bussinesId: agent.businessId,
-    };
-    navigate("/home", { state: agentDetails });
+    navigate("/home", {
+      state: { agentId: agent.agent_id, bussinesId: agent.businessId },
+    });
   };
 
-  // Open Cal modal & set agent & apiKey
+  // Open Cal modal & set current agent + API key
   const handleCalClick = (agent, e) => {
     e.stopPropagation();
     setSelectedAgent(agent);
@@ -81,37 +77,31 @@ function Dashboard() {
     const response = await fetch(
       `${process.env.REACT_APP_API_BASE_URL}/agent/calapikeys/${userId}`
     );
-    if (!response.ok) {
-      throw new Error("Failed to fetch Cal API keys");
-    }
+    if (!response.ok) throw new Error("Failed to fetch Cal API keys");
     const data = await response.json();
     return data.agents;
   };
 
-  // Initial load from localStorage
+  // Load from localStorage on mount
   useEffect(() => {
     const savedUserId = localStorage.getItem("userId");
     const savedAgents = localStorage.getItem("agents");
-
     if (savedUserId) setUserId(savedUserId);
     if (savedAgents) setLocalAgents(JSON.parse(savedAgents));
   }, []);
 
-  // Fetch dashboard data + merge Cal API keys
+  // Fetch dashboard + merge Cal API keys
   useEffect(() => {
     const fetchAndMergeCalApiKeys = async () => {
       if (!userId) return;
-
       try {
         const res = await fetchDashboardDetails(userId);
         let agentsWithCalKeys = res.agents || [];
-
         const calApiAgents = await fetchCalApiKeys(userId);
         const calApiKeyMap = {};
         calApiAgents.forEach((agent) => {
           calApiKeyMap[agent.agent_id] = agent.calApiKey || null;
         });
-
         agentsWithCalKeys = agentsWithCalKeys.map((agent) => ({
           ...agent,
           calApiKey: calApiKeyMap[agent.agent_id] || null,
@@ -119,7 +109,6 @@ function Dashboard() {
 
         setDashboardData(agentsWithCalKeys, res.total_call || 0);
         setHasFetched(true);
-
         localStorage.setItem("userId", userId);
         localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
         setLocalAgents(agentsWithCalKeys);
@@ -127,13 +116,12 @@ function Dashboard() {
         console.error("Error fetching dashboard data or Cal API keys:", error);
       }
     };
-
     if ((!hasFetched || !localAgents.length) && userId) {
       fetchAndMergeCalApiKeys();
     }
   }, [userId, hasFetched, localAgents.length, setDashboardData, setHasFetched]);
 
-  // Sync localAgents with store agents changes
+  // Sync local agents with store
   useEffect(() => {
     if (agents && agents.length > 0) {
       setLocalAgents(agents);
@@ -141,27 +129,22 @@ function Dashboard() {
     }
   }, [agents]);
 
-  // Submit Cal API key to backend and show event inputs
+  // Submit API key for selected agent
   const handleApiKeySubmit = async () => {
     if (!selectedAgent) return;
-
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ calApiKey: apiKey.trim() }),
         }
       );
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update API key");
       }
-
       alert(`API Key saved successfully for agent ${selectedAgent.agentName}`);
       const updatedAgents = localAgents.map((agent) =>
         agent.agent_id === selectedAgent.agent_id
@@ -176,7 +159,7 @@ function Dashboard() {
     }
   };
 
-  // Create event using Cal API with API key in query param
+  // Create Cal event
   const createCalEvent = async () => {
     if (!apiKey.trim()) {
       alert("API Key is required to create an event.");
@@ -186,29 +169,23 @@ function Dashboard() {
       alert("Please fill all event fields.");
       return;
     }
-
     try {
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
         apiKey.trim()
       )}`;
-
       const response = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: eventName.trim(),
           slug: eventSlug.trim(),
           length: parseInt(eventLength, 10),
         }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to create event");
       }
-
       setEventCreateStatus("success");
       setEventCreateMessage("Event created successfully!");
       setEventName("");
@@ -260,7 +237,7 @@ function Dashboard() {
     window.location.href = "/signup";
   };
 
-  // Retell Web Client init
+  // Retell Web Client initialization
   useEffect(() => {
     const client = new RetellWebClient();
     client.on("call_started", () => setIsCallActive(true));
@@ -268,7 +245,7 @@ function Dashboard() {
     setRetellWebClient(client);
   }, []);
 
-  // Start Call handler
+  // Start call
   const handleStartCall = async () => {
     if (!retellWebClient || !agentDetails) {
       console.error("RetellWebClient or agent details not ready.");
@@ -290,7 +267,7 @@ function Dashboard() {
     }
   };
 
-  // End Call handler
+  // End call
   const handleEndCall = async () => {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
@@ -329,12 +306,11 @@ function Dashboard() {
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon} onClick={handleOpencanvas}>
-              {/* SVG Icon placeholder */}
+              {/* notification icon placeholder */}
             </div>
           </div>
         </header>
 
-        {/* Summary cards */}
         <section className={styles.agentCard}>
           <div className={styles.agentInfo}>
             <h2>{totalCalls || 0}</h2>
@@ -394,7 +370,6 @@ function Dashboard() {
                     <circle cx="9" cy="2" r="2" fill="black" />
                     <circle cx="16" cy="2" r="2" fill="black" />
                   </svg>
-                  {/* Dropdown SVG Icon */}
                   {openDropdown === agent.agent_id && (
                     <div className={styles.OptionsDropdown}>
                       <div
@@ -415,7 +390,7 @@ function Dashboard() {
                       >
                         Test Call
                       </div>
-                        <div className={styles.OptionItem}  >Widget</div>
+                      <div className={styles.OptionItem}>Widget</div>
                     </div>
                   )}
                 </div>
@@ -457,7 +432,7 @@ function Dashboard() {
           );
         })}
 
-        {/* Cal API Key & Event Modal */}
+        {/* Cal API Modal */}
         {isCalModalOpen && (
           <div className={styles.modalBackdrop} onClick={closeModal}>
             <div
@@ -476,7 +451,6 @@ function Dashboard() {
                 </a>
               </p>
 
-              {/* API Key Input */}
               <div
                 style={{
                   display: "flex",
@@ -528,7 +502,6 @@ function Dashboard() {
                 )}
               </div>
 
-              {/* API Key Submit/Cancel Buttons */}
               {!showEventInputs && (
                 <div className={styles.modalButtons}>
                   <button
@@ -547,7 +520,6 @@ function Dashboard() {
                 </div>
               )}
 
-              {/* Event Inputs - shown only after API key saved */}
               {showEventInputs && (
                 <>
                   <div className={styles.createEventSection}>
@@ -611,7 +583,6 @@ function Dashboard() {
                     </button>
                   </div>
 
-                  {/* Event creation status message */}
                   {eventCreateStatus && (
                     <p
                       style={{
