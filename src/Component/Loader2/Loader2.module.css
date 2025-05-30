@@ -1,0 +1,49 @@
+.wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 100px;
+    width: 80px;
+}
+
+.ball {
+    position: absolute;
+    bottom: 10px;
+    display: block;
+    height: 10px;
+    width: 10px;
+    border: 1px solid #6524EB;
+    background-color: #6524EB;
+    border-radius: 50%;
+    animation: bounce 2.5s infinite;
+}
+
+.ball:nth-child(2) {
+    left: 30%;
+    animation-delay: 0.5s;
+}
+
+.ball:nth-child(3) {
+    left: 60%;
+    animation-delay: 1s;
+}
+
+.ball:nth-child(4) {
+    left: 89%;
+    animation-delay: 1.5s;
+}
+
+@keyframes bounce {
+    0% {
+        margin-bottom: 0;
+    }
+
+    50% {
+        margin-bottom: 25px;
+    }
+
+    100% {
+        margin-bottom: 0;
+    }
+}
