@@ -1,7 +1,8 @@
 import React from "react";
 import styles from './CallTest.module.css';
 
-const CallTest = ({ onStartCall, onEndCall, isCallActive, agentDetails }) => {
+const CallTest = ({ onStartCall, onEndCall, isCallActive }) => {
+    const agentDetails = JSON.parse(sessionStorage.getItem("agentDetails"));
     return (
         <div className={styles.container}>
             <div className={styles.imgrex}>
@@ -12,7 +13,10 @@ const CallTest = ({ onStartCall, onEndCall, isCallActive, agentDetails }) => {
                     </div>
                     <div className={styles.callText} onClick={onEndCall}>
                         <p>
-                            Call End <span className={styles.agentTag}>[AGENT]</span>
+                            Call End <span className={styles.agentTag}>{agentDetails.agentName.length > 15
+                                ? agentDetails.agentName.slice(0, 7) + '...'
+                                : agentDetails.agentName
+                            }</span>
                         </p>
                         <small>[BUSINESS NAME] Agent is LIVE</small>
                     </div>
@@ -23,9 +27,19 @@ const CallTest = ({ onStartCall, onEndCall, isCallActive, agentDetails }) => {
                         </div>
                         <div className={styles.callText}>
                             <p>
-                                Call Start <span className={styles.agentTag}>[AGENT]</span>
+                                Call Start <span className={styles.agentTag}>{agentDetails.agentName.length > 15
+                                    ? agentDetails.agentName.slice(0, 7) + '...'
+                                    : agentDetails.agentName
+                                }</span>
                             </p>
-                            <small>[BUSINESS NAME] Agent is LIVE</small>
+                            <small>
+
+
+                                {agentDetails.business.businessName.length > 20
+                                    ? agentDetails.business.businessName.slice(0, 15) + '...'
+                                    : agentDetails.business.businessName
+                                }&nbsp;
+                                Agent is LIVE</small>
                         </div>
                     </div>}
             </div>
