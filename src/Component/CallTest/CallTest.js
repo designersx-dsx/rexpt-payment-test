@@ -1,9 +1,13 @@
-import React from "react";
+import React,{useRef } from "react";
 import styles from './CallTest.module.css';
+// import { AudioVisualizer } from 'react-audio-visualize';
 
 const CallTest = ({ onStartCall, onEndCall, isCallActive }) => {
+//       const [blob, setBlob] = useState<Blob>();
+//   const visualizerRef = useRef<HTMLCanvasElement>(null)
     const agentDetails = JSON.parse(sessionStorage.getItem("agentDetails"));
     return (
+        
         <div className={styles.container}>
             <div className={styles.imgrex}>
                 <img src="images/rex.png" alt="Rex Agent" />

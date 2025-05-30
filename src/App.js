@@ -12,6 +12,7 @@ import AiAssistant from './Component/AiAssistant/AiAssistant';
 import BusinessLocation from './Component/BusinessLocation/BusinessLocation';
 import SecureRoute from './Pages/SecureRoute'
 import Dashboard from './Component/Dashboard/Dashboard';
+import RexAgent from './Component/RexAgent/RexAgent';
 function App() {
   const token = localStorage.getItem('token');
   return (
@@ -45,6 +46,8 @@ function App() {
           <Route path="/home" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
+          <Route path="/rex-agent" element={<RexAgent />} />
+
         </Routes>
 
       </div>
