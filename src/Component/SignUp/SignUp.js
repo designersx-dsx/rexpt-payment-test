@@ -153,6 +153,7 @@ import { useNavigate } from "react-router-dom";
 import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
+import useUser  from "../../Store/Context/UserContext";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -167,8 +168,9 @@ const SignUp = () => {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
-   const [verifiedUser, setVerifiedUser] = useState(false)
+  const [verifiedUser, setVerifiedUser] = useState(false)
   const inputRefs = useRef([]);
+  const { user, setUser } = useUser();
 
 const validateEmail = (email) => {
   if (!email) {
@@ -223,10 +225,20 @@ const handleLoginClick = async () => {
       setPopupType("success");
       setShowPopup(true);
       setPopupMessage("OTP Verified successfully!");
-           if (verifiedUser) {
+        if (verifiedUser) {
+          setUser({
+            name:response?.data?.user?.name||"",
+            profile:response?.data?.user?.profile ||"images/AgentImage.png",
+            subscriptionDetails: {}
+          })
           navigate("/dashboard")
         }
         else {
+            setUser({
+            name:response?.data?.user?.email||"",
+            profile:response?.data?.user?.profile ||"images/AgentImage.png",
+            subscriptionDetails: {}
+          })
           navigate("/details");
         }
     } else {

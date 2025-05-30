@@ -185,7 +185,7 @@ const BusinessDetails = () => {
         <label>Business Size (Number of Emp.)</label>
         <input
           type="text"
-          placeholder="Number of employees"
+          placeholder="Number of employees" 
           value={businessSize}
           onChange={handleBusinessSizeChange}
           maxLength={5}

@@ -143,6 +143,13 @@
     position: relative;
     margin: 0 0 0 15px;
 }
+.InactiveText {
+    font-size: 12px;
+    font-weight: 500;
+    color: #ff1403;
+    position: relative;
+    margin: 0 0 0 15px;
+}
 
 .activeText::after {
     content: '';

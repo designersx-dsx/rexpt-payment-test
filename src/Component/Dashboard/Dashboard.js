@@ -6,38 +6,77 @@ import { fetchDashboardDetails } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import OffCanvas from "../OffCanvas/OffCanvas";
+import { RetellWebClient } from "retell-client-js-sdk";
+import useUser from "../../Store/Context/UserContext";
+import Modal2 from "../Modal2/Modal2";
+import CallTest from "../CallTest/CallTest";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
   const navigate = useNavigate();
 
-  // Decode userId from token once
+  // User info from context
+  const { user } = useUser();
+
+  // Retell Web Client Setup
+  const [retellWebClient, setRetellWebClient] = useState(null);
+  const [isCallActive, setIsCallActive] = useState(false);
+  const [openCallModal, setOpenCallModal] = useState(false);
+  const [agentDetails, setAgentDetails] = useState(null);
+
+  // Cal.com & Event creation state
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
-const [eventName, setEventName] = useState("");
-const [eventSlug, setEventSlug] = useState("");
-const [eventLength, setEventLength] = useState("");
-const [showEventInputs, setShowEventInputs] = useState(false);
-const [eventCreateStatus, setEventCreateStatus] = useState(null);
-const [eventCreateMessage, setEventCreateMessage] = useState("");
   const [userId, setUserId] = useState(userIdFromToken);
+
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
+
+  // Cal Modal & API key state
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [isApiKeyEditable, setIsApiKeyEditable] = useState(false);
+
+  // Event inputs
+  const [eventName, setEventName] = useState("");
+  const [eventSlug, setEventSlug] = useState("");
+  const [eventLength, setEventLength] = useState("");
+  const [showEventInputs, setShowEventInputs] = useState(false);
+  const [eventCreateStatus, setEventCreateStatus] = useState(null);
+  const [eventCreateMessage, setEventCreateMessage] = useState("");
+
+  const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
+
+  // Handle Agent Card click navigation
+  const handleCardClick = (agent) => {
+    const agentDetails = {
+      agentId: agent.agent_id,
+      bussinesId: agent.businessId,
+    };
+    navigate("/home", { state: agentDetails });
+  };
+
+  // Open Cal modal & set agent & apiKey
   const handleCalClick = (agent, e) => {
     e.stopPropagation();
     setSelectedAgent(agent);
     const agentInLocal = localAgents.find((a) => a.agent_id === agent.agent_id);
     setApiKey(agentInLocal?.calApiKey || "");
     setIsApiKeyEditable(false);
+    setShowEventInputs(false);
+    setEventCreateStatus(null);
+    setEventCreateMessage("");
+    setEventName("");
+    setEventSlug("");
+    setEventLength("");
     setIsCalModalOpen(true);
   };
+
+  // Fetch Cal API keys from backend
   const fetchCalApiKeys = async (userId) => {
     const response = await fetch(
       `${process.env.REACT_APP_API_BASE_URL}/agent/calapikeys/${userId}`
@@ -49,6 +88,7 @@ const [eventCreateMessage, setEventCreateMessage] = useState("");
     return data.agents;
   };
 
+  // Initial load from localStorage
   useEffect(() => {
     const savedUserId = localStorage.getItem("userId");
     const savedAgents = localStorage.getItem("agents");
@@ -56,125 +96,137 @@ const [eventCreateMessage, setEventCreateMessage] = useState("");
     if (savedUserId) setUserId(savedUserId);
     if (savedAgents) setLocalAgents(JSON.parse(savedAgents));
   }, []);
+
+  // Fetch dashboard data + merge Cal API keys
   useEffect(() => {
-    const dashboardDetails = async () => {
+    const fetchAndMergeCalApiKeys = async () => {
+      if (!userId) return;
+
       try {
         const res = await fetchDashboardDetails(userId);
-        setDashboardData(res.agents, res.total_call || 0);
+        let agentsWithCalKeys = res.agents || [];
+
+        const calApiAgents = await fetchCalApiKeys(userId);
+        const calApiKeyMap = {};
+        calApiAgents.forEach((agent) => {
+          calApiKeyMap[agent.agent_id] = agent.calApiKey || null;
+        });
+
+        agentsWithCalKeys = agentsWithCalKeys.map((agent) => ({
+          ...agent,
+          calApiKey: calApiKeyMap[agent.agent_id] || null,
+        }));
+
+        setDashboardData(agentsWithCalKeys, res.total_call || 0);
         setHasFetched(true);
 
-        // Save to localStorage
         localStorage.setItem("userId", userId);
-        localStorage.setItem("agents", JSON.stringify(res.agents));
-        setLocalAgents(res.agents);
+        localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
+        setLocalAgents(agentsWithCalKeys);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Error fetching dashboard data or Cal API keys:", error);
       }
     };
 
     if ((!hasFetched || !localAgents.length) && userId) {
-      dashboardDetails();
+      fetchAndMergeCalApiKeys();
     }
-  }, [setDashboardData, userId, hasFetched, localAgents.length]);
+  }, [userId, hasFetched, localAgents.length, setDashboardData, setHasFetched]);
 
+  // Sync localAgents with store agents changes
   useEffect(() => {
     if (agents && agents.length > 0) {
       setLocalAgents(agents);
       localStorage.setItem("agents", JSON.stringify(agents));
     }
   }, [agents]);
-  const handleCardClick = (agent) => {
-    const agentDetails = {
-      agentId: agent.agent_id,
-      bussinesId: agent.businessId,
-    };
-    navigate("/home", { state: agentDetails });
+
+  // Submit Cal API key to backend and show event inputs
+  const handleApiKeySubmit = async () => {
+    if (!selectedAgent) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ calApiKey: apiKey.trim() }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update API key");
+      }
+
+      alert(`API Key saved successfully for agent ${selectedAgent.agentName}`);
+      const updatedAgents = localAgents.map((agent) =>
+        agent.agent_id === selectedAgent.agent_id
+          ? { ...agent, calApiKey: apiKey.trim() }
+          : agent
+      );
+      setLocalAgents(updatedAgents);
+      localStorage.setItem("agents", JSON.stringify(updatedAgents));
+      setShowEventInputs(true);
+    } catch (error) {
+      alert(`Failed to save API Key: ${error.message}`);
+    }
   };
 
- const handleApiKeySubmit = async () => {
-  if (!selectedAgent) return;
+  // Create event using Cal API with API key in query param
+  const createCalEvent = async () => {
+    if (!apiKey.trim()) {
+      alert("API Key is required to create an event.");
+      return;
+    }
+    if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
+      alert("Please fill all event fields.");
+      return;
+    }
 
-  try {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
-      {
-        method: "PUT",
+    try {
+      const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
+        apiKey.trim()
+      )}`;
+
+      const response = await fetch(url, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ calApiKey: apiKey.trim() }),
+        body: JSON.stringify({
+          title: eventName.trim(),
+          slug: eventSlug.trim(),
+          length: parseInt(eventLength, 10),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create event");
       }
-    );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update API key");
+      setEventCreateStatus("success");
+      setEventCreateMessage("Event created successfully!");
+      setEventName("");
+      setEventSlug("");
+      setEventLength("");
+    } catch (error) {
+      setEventCreateStatus("error");
+      setEventCreateMessage(`Error creating event: ${error.message}`);
     }
-
-    alert(`API Key saved successfully for agent ${selectedAgent.agentName}`);
-    const updatedAgents = localAgents.map((agent) =>
-      agent.agent_id === selectedAgent.agent_id
-        ? { ...agent, calApiKey: apiKey.trim() }
-        : agent
-    );
-    setLocalAgents(updatedAgents);
-    localStorage.setItem("agents", JSON.stringify(updatedAgents));
-    setShowEventInputs(true);
-
-  } catch (error) {
-    alert(`Failed to save API Key: ${error.message}`);
-  }
-};
-const createCalEvent = async () => {
-  if (!apiKey.trim()) {
-    alert("API Key is required to create an event.");
-    return;
-  }
-  if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
-    alert("Please fill all event fields.");
-    return;
-  }
-
-  try {
-    // Append apiKey as query param in URL
-    const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(apiKey.trim())}`;
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: eventName.trim(),
-        slug: eventSlug.trim(),
-        length: parseInt(eventLength, 10),
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to create event");
-    }
-
-    setEventCreateStatus("success");
-    setEventCreateMessage("Event created successfully!");
-    // Optionally clear inputs
-    setEventName("");
-    setEventSlug("");
-    setEventLength("");
-  } catch (error) {
-    setEventCreateStatus("error");
-    setEventCreateMessage(`Error creating event: ${error.message}`);
-  }
-};
-
-
-
+  };
 
   const closeModal = () => {
     setIsCalModalOpen(false);
     setApiKey("");
     setSelectedAgent(null);
+    setShowEventInputs(false);
+    setEventCreateStatus(null);
+    setEventCreateMessage("");
   };
 
   const toggleDropdown = (e, id) => {
@@ -199,61 +251,64 @@ const createCalEvent = async () => {
   const handleCloseOffcanvas = () => {
     setOpenOffcanvas(false);
   };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
-    localStorage.removeItem("agents"); 
+    localStorage.removeItem("agents");
     sessionStorage.clear();
     window.location.href = "/signup";
   };
 
-  const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
+  // Retell Web Client init
   useEffect(() => {
-    const fetchAndMergeCalApiKeys = async () => {
-      if (!userId) return;
+    const client = new RetellWebClient();
+    client.on("call_started", () => setIsCallActive(true));
+    client.on("call_ended", () => setIsCallActive(false));
+    setRetellWebClient(client);
+  }, []);
 
-      try {
-        // Fetch dashboard agents and total calls
-        const res = await fetchDashboardDetails(userId);
-        let agentsWithCalKeys = res.agents || [];
-
-        // Fetch Cal API keys from new API
-        const calApiAgents = await fetchCalApiKeys(userId);
-
-        // Map agent_id to calApiKey
-        const calApiKeyMap = {};
-        calApiAgents.forEach((agent) => {
-          calApiKeyMap[agent.agent_id] = agent.calApiKey || null;
-        });
-
-        // Merge calApiKey into agents
-        agentsWithCalKeys = agentsWithCalKeys.map((agent) => ({
-          ...agent,
-          calApiKey: calApiKeyMap[agent.agent_id] || null,
-        }));
-
-        setDashboardData(agentsWithCalKeys, res.total_call || 0);
-        setHasFetched(true);
-
-        localStorage.setItem("userId", userId);
-        localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
-        setLocalAgents(agentsWithCalKeys);
-      } catch (error) {
-        console.error("Error fetching dashboard data or Cal API keys:", error);
-      }
-    };
-
-    if ((!hasFetched || !localAgents.length) && userId) {
-      fetchAndMergeCalApiKeys();
+  // Start Call handler
+  const handleStartCall = async () => {
+    if (!retellWebClient || !agentDetails) {
+      console.error("RetellWebClient or agent details not ready.");
+      return;
     }
-  }, [userId, hasFetched, localAgents.length, setDashboardData, setHasFetched]);
-
-  useEffect(() => {
-    if (agents && agents.length > 0) {
-      setLocalAgents(agents);
-      localStorage.setItem("agents", JSON.stringify(agents));
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agent_id: agentDetails.agent_id }),
+        }
+      );
+      const data = await res.json();
+      await retellWebClient.startCall({ accessToken: data.access_token });
+    } catch (err) {
+      console.error("Error starting call:", err);
     }
-  }, [agents]);
+  };
+
+  // End Call handler
+  const handleEndCall = async () => {
+    if (retellWebClient) {
+      const response = await retellWebClient.stopCall();
+      console.log("Call end response", response);
+    }
+  };
+
+  // Open call modal
+  const handleOpenCallModal = (agent) => {
+    setAgentDetails(agent);
+    sessionStorage.setItem("agentDetails", JSON.stringify(agent));
+    setOpenCallModal(true);
+  };
+
+  // Close call modal
+  const handleCloseCallModal = () => {
+    setOpenCallModal(false);
+  };
 
   return (
     <div>
@@ -262,20 +317,19 @@ const createCalEvent = async () => {
           <div className={styles.profileSection}>
             <div>
               <img
-                src="images/AgentImage.png"
+                src={user?.profile || "images/AgentImage.png"}
                 alt="Profile"
                 className={styles.profilePic}
               />
             </div>
             <div>
               <p className={styles.greeting}>Hello!</p>
-              <h2 className={styles.name}>John Vick</h2>
+              <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
           </div>
           <div className={styles.notifiMain}>
-            {/* Add your notification icons SVG here */}
             <div className={styles.notificationIcon} onClick={handleOpencanvas}>
-              {/* SVG Icon */}
+              {/* SVG Icon placeholder */}
             </div>
           </div>
         </header>
@@ -344,6 +398,12 @@ const createCalEvent = async () => {
                       >
                         Upgrade
                       </div>
+                      <div
+                        className={styles.OptionItem}
+                        onClick={() => handleOpenCallModal(agent)}
+                      >
+                        Test Call
+                      </div>
                     </div>
                   )}
                 </div>
@@ -385,160 +445,193 @@ const createCalEvent = async () => {
           );
         })}
 
-        {/* Modal for API key input */}
-     {isCalModalOpen && (
-  <div className={styles.modalBackdrop} onClick={closeModal}>
-    <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
-      <h2>Connect with Cal</h2>
-      <p>
-        Click on the link to connect with Cal:{" "}
-        <a href="https://cal.com/" target="_blank" rel="noopener noreferrer">
-          https://cal.com/
-        </a>
-      </p>
-
-      {/* API Key Input */}
-      <div
-        style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}
-      >
-        <label htmlFor="apiKey">Enter your API Key:</label>
-        <input
-          id="apiKey"
-          type="text"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          placeholder="API Key"
-          className={styles.modalInput}
-          disabled={!isApiKeyEditable && !!apiKey}
-        />
-        {apiKey && !isApiKeyEditable && (
-          <button
-            type="button"
-            onClick={() => setIsApiKeyEditable(true)}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
-              display: "flex",
-              alignItems: "center",
-            }}
-            title="Edit API Key"
-            aria-label="Edit API Key"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="20"
-              width="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        {/* Cal API Key & Event Modal */}
+        {isCalModalOpen && (
+          <div className={styles.modalBackdrop} onClick={closeModal}>
+            <div
+              className={styles.modalContainer}
+              onClick={(e) => e.stopPropagation()}
             >
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-            </svg>
-          </button>
+              <h2>Connect with Cal</h2>
+              <p>
+                Click on the link to connect with Cal:{" "}
+                <a
+                  href="https://cal.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  https://cal.com/
+                </a>
+              </p>
+
+              {/* API Key Input */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  marginBottom: "16px",
+                }}
+              >
+                <label htmlFor="apiKey">Enter your API Key:</label>
+                <input
+                  id="apiKey"
+                  type="text"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="API Key"
+                  className={styles.modalInput}
+                  disabled={!isApiKeyEditable && !!apiKey}
+                />
+                {apiKey && !isApiKeyEditable && (
+                  <button
+                    type="button"
+                    onClick={() => setIsApiKeyEditable(true)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: 0,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    title="Edit API Key"
+                    aria-label="Edit API Key"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="20"
+                      width="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {/* API Key Submit/Cancel Buttons */}
+              {!showEventInputs && (
+                <div className={styles.modalButtons}>
+                  <button
+                    className={`${styles.modalButton} ${styles.cancel}`}
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={handleApiKeySubmit}
+                    disabled={!apiKey.trim()}
+                  >
+                    {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
+                  </button>
+                </div>
+              )}
+
+              {/* Event Inputs - shown only after API key saved */}
+              {showEventInputs && (
+                <>
+                  <div className={styles.createEventSection}>
+                    <h3>Create Event</h3>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="title">Event Name</label>
+                      <input
+                        id="title"
+                        type="text"
+                        placeholder="Enter event name"
+                        className={styles.modalInput}
+                        value={eventName}
+                        onChange={(e) => setEventName(e.target.value)}
+                      />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="slug">Slug</label>
+                      <input
+                        id="slug"
+                        type="text"
+                        placeholder="Enter slug"
+                        className={styles.modalInput}
+                        value={eventSlug}
+                        onChange={(e) => setEventSlug(e.target.value)}
+                      />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="length">Length (minutes)</label>
+                      <input
+                        id="length"
+                        type="number"
+                        placeholder="Enter length"
+                        className={styles.modalInput}
+                        value={eventLength}
+                        onChange={(e) => setEventLength(e.target.value)}
+                        min="1"
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    className={styles.modalButtons}
+                    style={{ marginTop: "10px" }}
+                  >
+                    <button
+                      className={`${styles.modalButton} ${styles.cancel}`}
+                      onClick={() => setShowEventInputs(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className={`${styles.modalButton} ${styles.submit}`}
+                      onClick={createCalEvent}
+                      disabled={
+                        !eventName.trim() ||
+                        !eventSlug.trim() ||
+                        !eventLength.trim()
+                      }
+                    >
+                      Add Event
+                    </button>
+                  </div>
+
+                  {/* Event creation status message */}
+                  {eventCreateStatus && (
+                    <p
+                      style={{
+                        color: eventCreateStatus === "success" ? "green" : "red",
+                        marginTop: "10px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {eventCreateMessage}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Call Test Modal */}
+        {openCallModal && (
+          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+            <CallTest
+              isCallActive={isCallActive}
+              onStartCall={handleStartCall}
+              onEndCall={handleEndCall}
+            />
+          </Modal2>
         )}
       </div>
 
-      {/* API Key Buttons (Submit / Cancel) */}
-      {!showEventInputs && (
-        <div className={styles.modalButtons}>
-          <button className={`${styles.modalButton} ${styles.cancel}`} onClick={closeModal}>
-            Cancel
-          </button>
-          <button
-            className={`${styles.modalButton} ${styles.submit}`}
-            onClick={handleApiKeySubmit}
-            disabled={!apiKey.trim()}
-          >
-            {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
-          </button>
-        </div>
-      )}
-
-      {/* Event Inputs Section - only show after API key saved */}
-      {showEventInputs && (
-        <>
-          <div className={styles.createEventSection}>
-            <h3>Create Event</h3>
-            <div className={styles.inputGroup}>
-              <label htmlFor="title">Event Name</label>
-              <input
-                id="title"
-                type="text"
-                placeholder="Enter event name"
-                className={styles.modalInput}
-                value={eventName}
-                onChange={(e) => setEventName(e.target.value)}
-              />
-            </div>
-            <div className={styles.inputGroup}>
-              <label htmlFor="slug">Slug</label>
-              <input
-                id="slug"
-                type="text"
-                placeholder="Enter slug"
-                className={styles.modalInput}
-                value={eventSlug}
-                onChange={(e) => setEventSlug(e.target.value)}
-              />
-            </div>
-            <div className={styles.inputGroup}>
-              <label htmlFor="length">Length (minutes)</label>
-              <input
-                id="length"
-                type="number"
-                placeholder="Enter length"
-                className={styles.modalInput}
-                value={eventLength}
-                onChange={(e) => setEventLength(e.target.value)}
-                min="1"
-              />
-            </div>
-          </div>
-
-          <div className={styles.modalButtons} style={{ marginTop: "10px" }}>
-            <button
-              className={`${styles.modalButton} ${styles.cancel}`}
-              onClick={() => setShowEventInputs(false)} // close event inputs but keep modal open
-            >
-              Cancel
-            </button>
-            <button
-              className={`${styles.modalButton} ${styles.submit}`}
-              onClick={createCalEvent}
-              disabled={!eventName.trim() || !eventSlug.trim() || !eventLength.trim()}
-            >
-              Add Event
-            </button>
-          </div>
-
-          {/* Show event creation status */}
-          {eventCreateStatus && (
-            <p
-              style={{
-                color: eventCreateStatus === "success" ? "green" : "red",
-                marginTop: "10px",
-                fontWeight: "600",
-              }}
-            >
-              {eventCreateMessage}
-            </p>
-          )}
-        </>
-      )}
-    </div>
-  </div>
-)}
-
-
-      </div>
-
       <Footer />
+
+      {/* OffCanvas for Logout */}
       {openOffcanvas && (
         <OffCanvas
           onClose={handleCloseOffcanvas}
