@@ -220,7 +220,7 @@ const AgentDashboard = () => {
             <span className={styles.statDetail}>{totalBookings !== null ? totalBookings : '0'}</span></div>
 
           <div className={` ${styles.stat} ${styles.Red}`}><span className={` ${styles.statText} `}>Minutes Remaining</span>
-            <span className={styles.statDetail}>{agentData?.agent?.mins_left}</span></div>
+            <span className={styles.statDetail}>{Math.floor(agentData?.agent?.mins_left/60)}</span></div>
         </div>
 
 

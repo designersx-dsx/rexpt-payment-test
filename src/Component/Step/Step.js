@@ -424,7 +424,7 @@ Let’s begin assisting the customer!
                                     description: "Transfer to the support team.",
                                     transfer_destination: {
                                         type: "predefined",
-                                        number: "+918054226467", // Replace with actual number
+                                        number: "+918054226461", // Replace with actual number
                                     },
                                 },
                             ],
