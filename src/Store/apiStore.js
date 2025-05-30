@@ -61,6 +61,15 @@ export const fetchAgentDetailById=async(data)=>{
   return res.data;
 }
 
+export const EndWebCallUpdateAgentMinutesLeft=async(data)=>{
+  const res=await api.patch(`/agent/updateAgentMinutesLeft`,data,{
+      headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return res;
+}
+
 // export const 
 // export const createKnowledgeBase = async (formData) => {
 //   const res = await api.post('/knowledge-base', formData, {

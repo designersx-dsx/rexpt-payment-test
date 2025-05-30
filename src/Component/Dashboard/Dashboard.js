@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import { useNavigate } from "react-router-dom";
-import { fetchDashboardDetails } from "../../Store/apiStore";
+import { EndWebCallUpdateAgentMinutesLeft, fetchDashboardDetails } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import OffCanvas from "../OffCanvas/OffCanvas";
@@ -23,6 +23,8 @@ function Dashboard() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
+  const [callId,setCallId]=useState(null)
+
 
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
@@ -316,6 +318,7 @@ function Dashboard() {
       );
       const data = await res.json();
       await retellWebClient.startCall({ accessToken: data.access_token });
+      setCallId(data?.call_id)
     } catch (err) {
       console.error("Error starting call:", err);
     }
@@ -324,8 +327,14 @@ function Dashboard() {
   // End call
   const handleEndCall = async () => {
     if (retellWebClient) {
-      const response = await retellWebClient.stopCall();
-      console.log("Call end response", response);
+      try {
+            const response = await retellWebClient.stopCall();
+            const payload={ agentId :agentDetails.agent_id,callId:callId}
+            const DBresponse=await EndWebCallUpdateAgentMinutesLeft(payload)
+        // console.log("Call end response", response,DBresponse);
+      } catch (error) {
+        console.log('something went wrong while end web_call',error)
+      }
     }
   };
 
@@ -479,7 +488,8 @@ function Dashboard() {
                 <div className={styles.AssignNum}>Assign Number</div>
                 <div className={styles.minLeft}>
                   <span className={styles.MinL}>Min Left</span>{" "}
-                  {agent?.callSummary?.remaining?.minutes || 0}
+                  {Math.floor(agent?.mins_left/60 || 0)}
+                  {/* {`${Math.floor(agent?.mins_left/60 || 0)}m ${Math.floor(agent?.mins_left%60 || 0)}s`} */}
                 </div>
               </div>
             </div>

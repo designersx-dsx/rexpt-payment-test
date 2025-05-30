@@ -215,8 +215,8 @@ useEffect(() => {
             <span className={styles.statDetail}>
               {agentData?.avgCallTime?.minutes || agentData?.avgCallTime?.seconds ?
               (
-                <>
-               {agentData?.avgCallTime?.minutes}
+              <>
+              {agentData?.avgCallTime?.minutes}
               <span className={styles.MinFont}>m</span>{agentData?.avgCallTime?.seconds}
               <span className={styles.MinFont}>s</span>
                </>
