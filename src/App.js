@@ -38,10 +38,9 @@ function App() {
           <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
           <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
           <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
-
           <Route path="/business-details" element={<BusinessDetails />} />
           <Route path="/agent-detail" element={<AgentDetail />} />
-          <Route path="/business-locations" element={<SecureRoute><BusinessLocation /></SecureRoute>} />
+          <Route path="/business-locations" element={<BusinessLocation />} />
           <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
           <Route path="/home" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           {/* <Route path="/home" element={<Home />} /> */}
