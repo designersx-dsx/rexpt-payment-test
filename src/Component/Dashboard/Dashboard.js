@@ -129,10 +129,17 @@ function Dashboard() {
     }
   }, [agents]);
 
-  // Submit API key for selected agent
   const handleApiKeySubmit = async () => {
     if (!selectedAgent) return;
+
     try {
+      const agent = JSON.parse(localStorage.getItem("agents")).find(
+        (agent) => agent.agent_id === selectedAgent.agent_id
+      );
+      if (!apiKey.trim() || apiKey.trim() === agent.calApiKey) {
+        alert(`API Key is the same as the current one. No update required.`);
+        return;
+      }
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
         {
@@ -141,11 +148,14 @@ function Dashboard() {
           body: JSON.stringify({ calApiKey: apiKey.trim() }),
         }
       );
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update API key");
       }
+
       alert(`API Key saved successfully for agent ${selectedAgent.agentName}`);
+
       const updatedAgents = localAgents.map((agent) =>
         agent.agent_id === selectedAgent.agent_id
           ? { ...agent, calApiKey: apiKey.trim() }
@@ -159,7 +169,7 @@ function Dashboard() {
     }
   };
 
-  // Create Cal event
+  // Create Cal event and update LLM
   const createCalEvent = async () => {
     if (!apiKey.trim()) {
       alert("API Key is required to create an event.");
@@ -169,10 +179,13 @@ function Dashboard() {
       alert("Please fill all event fields.");
       return;
     }
+
     try {
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
         apiKey.trim()
       )}`;
+
+      // Create event in Cal
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -182,18 +195,59 @@ function Dashboard() {
           length: parseInt(eventLength, 10),
         }),
       });
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("Cal API event creation error:", errorData);
         throw new Error(errorData.message || "Failed to create event");
       }
+      const eventData = await response.json();
+      const eventTypeId = eventData.event_type.id;
+      const agent = JSON.parse(localStorage.getItem("agents")).find(
+        (agent) => agent.agent_id === selectedAgent.agent_id
+      );
+
+      if (!agent) {
+        throw new Error("Selected agent not found.");
+      }
+
+      const { calApiKey, llmId } = agent;
+      const llmUpdateUrl = `https://api.retellai.com/update-retell-llm/${llmId}`;
+      const updateLlmResponse = await fetch(llmUpdateUrl, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+        },
+        body: JSON.stringify({
+          general_tools: [
+            {
+              type: "book_appointment_cal",
+              name: "Appointment_call",
+              cal_api_key: calApiKey,
+              event_type_id: eventTypeId,
+            },
+          ],
+        }),
+      });
+
+      if (!updateLlmResponse.ok) {
+        const errorData = await updateLlmResponse.json();
+        console.error("LLM update error:", errorData);
+        throw new Error(errorData.message || "Failed to update LLM");
+      }
+
+      // If everything is successful
       setEventCreateStatus("success");
-      setEventCreateMessage("Event created successfully!");
+      setEventCreateMessage("Event created and LLM updated successfully!");
       setEventName("");
       setEventSlug("");
       setEventLength("");
     } catch (error) {
       setEventCreateStatus("error");
-      setEventCreateMessage(`Error creating event: ${error.message}`);
+      setEventCreateMessage(
+        `Error creating event and updating LLM: ${error.message}`
+      );
     }
   };
 
@@ -513,7 +567,12 @@ function Dashboard() {
                   <button
                     className={`${styles.modalButton} ${styles.submit}`}
                     onClick={handleApiKeySubmit}
-                    disabled={!apiKey.trim()}
+                    // Disable if empty or same as prefilled key
+                    disabled={
+                      !apiKey.trim() ||
+                      (selectedAgent &&
+                        apiKey.trim() === selectedAgent.calApiKey)
+                    }
                   >
                     {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
                   </button>
@@ -536,11 +595,11 @@ function Dashboard() {
                       />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="slug">Slug</label>
+                      <label htmlFor="slug">Description</label>
                       <input
                         id="slug"
                         type="text"
-                        placeholder="Enter slug"
+                        placeholder="Enter Description"
                         className={styles.modalInput}
                         value={eventSlug}
                         onChange={(e) => setEventSlug(e.target.value)}
