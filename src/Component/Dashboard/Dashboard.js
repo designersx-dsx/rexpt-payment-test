@@ -11,7 +11,12 @@ import OffCanvas from '../OffCanvas/OffCanvas';
 import Modal from '../Modal/Modal';
 import Modal2 from '../Modal2/Modal2';
 import CallTest from '../CallTest/CallTest';
+
+import { RetellWebClient } from "retell-client-js-sdk"
+const client = new RetellWebClient();;
+
 import useUser  from '../../Store/Context/UserContext';
+
 function Dashboard() {
     const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
     const navigate = useNavigate();
@@ -37,8 +42,13 @@ function Dashboard() {
     const [openCallModal, setOpenCallModal] = useState(false);
     const [isCallActive, setIsCallActive] = useState(false);
     const [retellWebClient, setRetellWebClient] = useState(null);
+
+    const [agentDetails, setAgentDetails] = useState('')
+    const agentId = agentDetails?.agent_id;
+
     const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
     const { user, setUser } = useUser();
+
     const toggleDropdown = (e, id) => {
         e.preventDefault();
         e.stopPropagation();
@@ -86,31 +96,48 @@ function Dashboard() {
         sessionStorage.clear();
         window.location.href = '/signup';
     }
-    const handleOpenCallModal = () => {
-        console.log("Hello")
+    const handleOpenCallModal = (data) => {
+        setAgentDetails(data)
+        sessionStorage.setItem("agentDetails", JSON.stringify(data));  // Save as string
+
         setOpenCallModal(true)
     }
     const handleCloseCallModal = () => {
         setOpenCallModal(false)
     }
-    const agentId = "agent_2c06a4b2b65b29b1599b459e9e";
 
     useEffect(() => {
         const loadRetellClient = async () => {
-             const client = new window.RetellWebClient();
-
-          
-
             client.on("call_started", () => setIsCallActive(true));
             client.on("call_ended", () => setIsCallActive(false));
-
             setRetellWebClient(client);
-        };
 
+        };
         loadRetellClient();
     }, []);
 
+    // const handleStartCall = async () => {
+    //     try {
+    //         const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`, {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify({ agent_id: agentId }),
+    //         });
+
+    //         const data = await res.json();
+    //         await retellWebClient.startCall({ accessToken: data.access_token });
+    //     } catch (err) {
+    //         console.error("Error starting call:", err);
+    //     }
+    // };
+
+
     const handleStartCall = async () => {
+        if (!retellWebClient) {
+            console.error("RetellWebClient is not initialized yet.");
+            return;
+        }
+
         try {
             const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`, {
                 method: "POST",
@@ -216,7 +243,8 @@ function Dashboard() {
                                             <div className={styles.OptionsDropdown}>
                                                 <div className={styles.OptionItem} onClick={() => handleDelete('MiniPlan')}>Delete</div>
                                                 <div className={styles.OptionItem} onClick={() => handleUpgrade('MiniPlan')}>Upgrade</div>
-                                                <div className={styles.OptionItem} onClick={() => handleOpenCallModal()} >Test</div>
+                                                <div className={styles.OptionItem} onClick={() => handleOpenCallModal(agents)} >Test</div>
+                                                <div className={styles.OptionItem}  >Widget</div>
                                             </div>
                                         )}
                                     </div>
@@ -254,13 +282,14 @@ function Dashboard() {
             </OffCanvas>}
             {/* Modal */}
             {
-                openCallModal && <Modal2 isOpen={handleOpenCallModal} onClose={handleCloseCallModal}>
+                openCallModal && <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
                     {
 
 
                         <CallTest isCallActive={isCallActive}
                             onStartCall={handleStartCall}
-                            onEndCall={handleEndCall} />
+                            onEndCall={handleEndCall}
+                        />
 
 
                     }
