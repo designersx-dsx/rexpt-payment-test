@@ -5,7 +5,8 @@ import PopUp from '../Popup/Popup';
 import axios from 'axios';
 import { API_BASE_URL } from '../../Store/apiStore';
 import decodeToken from '../../lib/decodeToken';
-
+import { getData } from 'country-list';
+import ReactCountryFlag from "react-country-flag";
 const BusinessLocation = () => {
   const navigate = useNavigate();
   const [state, setState] = useState('');
@@ -24,6 +25,7 @@ const BusinessLocation = () => {
   const [citySubmitted, setCitySubmitted] = useState(false);
   const [address1Submitted, setAddress1Submitted] = useState(false);
   const [address2Submitted, setAddress2Submitted] = useState(false);
+  const [search,setSearch]=useState(null);
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
@@ -184,17 +186,22 @@ const BusinessLocation = () => {
       console.error(error);
     }
   };
-
-
-  const countries = [
-    { code: "us", name: "United States" },
-    { code: "in", name: "India" },
-    { code: "gb", name: "United Kingdom" },
-    { code: "fr", name: "France" },
-    { code: "de", name: "Germany" },
-  ];
+const countries = getData();
+  // console.log('countryList',countries  )
+  // const countries = [
+  //   { code: "us", name: "United States" },
+  //   { code: "in", name: "India" },
+  //   { code: "gb", name: "United Kingdom" },
+  //   { code: "fr", name: "France" },
+  //   { code: "de", name: "Germany" },
+  // ];
   const [selected, setSelected] = useState(countries[0]);
   const [open, setOpen] = useState(false);
+
+  useEffect(()=>{
+   if(countryCode){ const sel=countries.find((country)=>country?.code?.toLocaleLowerCase()==countryCode)
+    setSelected(sel)}
+  },[countryCode])
 
   const handleSelect = (country) => {
     setSelected(country);
@@ -228,11 +235,23 @@ const BusinessLocation = () => {
         >
           <div className={styles.selected}>
             <div className={styles.selectedInfo}>
-              <img
+              {/* <img
                 src={`https://flagcdn.com/w40/${selected.code}.png`}
                 alt=""
                 className={styles.flag}
-              />
+              /> */}
+              <ReactCountryFlag countryCode={selected.code} svg style={{ width: '2em', height: '2em' }} className={styles.flag} />
+                  {/* <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setOpen(true);
+                  }}
+                  placeholder="Type country or initials"
+                  className={styles.input}
+                  onClick={(e) => e.stopPropagation()} // Prevent toggle when clicking input
+                /> */}
               <span>{selected.name}</span>
             </div>
             <span className={styles.arrow}>{open ? <img src='svg/drop-Arrow.svg' /> : <img src='svg/up-arrow.svg' alt='' />}</span>
@@ -246,11 +265,12 @@ const BusinessLocation = () => {
                   onClick={() => handleSelect(country)}
                   className={styles.option}
                 >
-                  <img
+                  {/* <img
                     src={`https://flagcdn.com/w40/${country.code}.png`}
                     alt=""
                     className={styles.flag}
-                  />
+                  /> */}
+                  <ReactCountryFlag countryCode={country.code} svg style={{ width: '2em', height: '2em' }} className={styles.flag}/>
                   <span>{country.name}</span>
                 </li>
               ))}
