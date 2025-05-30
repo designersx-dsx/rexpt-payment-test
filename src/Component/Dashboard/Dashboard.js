@@ -15,7 +15,7 @@ import CallTest from '../CallTest/CallTest';
 import { RetellWebClient } from "retell-client-js-sdk"
 
 
-import useUser  from '../../Store/Context/UserContext';
+import useUser from '../../Store/Context/UserContext';
 
 function Dashboard() {
     const client = new RetellWebClient();;
@@ -154,9 +154,9 @@ function Dashboard() {
     };
 
     const handleEndCall = async () => {
-        if (retellWebClient){
-           const response= await retellWebClient.stopCall();
-           console.log('Call end response',response)
+        if (retellWebClient) {
+            const response = await retellWebClient.stopCall();
+            console.log('Call end response', response)
 
         }
     };
@@ -167,11 +167,11 @@ function Dashboard() {
                 <header className={styles.header}>
                     <div className={styles.profileSection}>
                         <div>
-                            <img src={user.profile||"images/AgentImage.png"} alt="Profile" className={styles.profilePic} />
+                            <img src={user.profile || "images/AgentImage.png"} alt="Profile" className={styles.profilePic} />
                         </div>
                         <div>
                             <p className={styles.greeting}>Hello!</p>
-                            <h2 className={styles.name}>{user?.name ||""}</h2>
+                            <h2 className={styles.name}>{user?.name || ""}</h2>
                         </div>
                     </div>
                     <div className={styles.notifiMain}>
@@ -224,7 +224,7 @@ function Dashboard() {
                                             <img src="images/SofiaAgent.png" alt="English" />
                                         </div>
                                         <div className={styles.LangText}>
-                                            <h3 className={styles.agentName}>{agents?.agentName} <span className={agents?.agentStatus? styles.activeText : styles.InactiveText}>{agents?.agentStatus?"Active":"Inactive"}</span></h3>
+                                            <h3 className={styles.agentName}>{agents?.agentName} <span className={agents?.agentStatus ? styles.activeText : styles.InactiveText}>{agents?.agentStatus ? "Active" : "Inactive"}</span></h3>
                                             <p className={styles.agentAccent}>{agents?.agentLanguage} •{agents?.agentAccent}</p>
                                         </div>
 
@@ -285,13 +285,10 @@ function Dashboard() {
             {
                 openCallModal && <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
                     {
-
-
                         <CallTest isCallActive={isCallActive}
                             onStartCall={handleStartCall}
                             onEndCall={handleEndCall}
                         />
-
 
                     }
                 </Modal2>
