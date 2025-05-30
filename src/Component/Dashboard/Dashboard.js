@@ -13,11 +13,12 @@ import Modal2 from '../Modal2/Modal2';
 import CallTest from '../CallTest/CallTest';
 
 import { RetellWebClient } from "retell-client-js-sdk"
-const client = new RetellWebClient();;
+
 
 import useUser  from '../../Store/Context/UserContext';
 
 function Dashboard() {
+    const client = new RetellWebClient();;
     const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
     const navigate = useNavigate();
     const handleCardClick = (agent) => {
@@ -42,7 +43,7 @@ function Dashboard() {
     const [openCallModal, setOpenCallModal] = useState(false);
     const [isCallActive, setIsCallActive] = useState(false);
     const [retellWebClient, setRetellWebClient] = useState(null);
-
+    const [callId,setCallId]=useState(null)
     const [agentDetails, setAgentDetails] = useState('')
     const agentId = agentDetails?.agent_id;
 
@@ -139,13 +140,16 @@ function Dashboard() {
         }
 
         try {
+            console.log('agentId,',agentId)
             const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ agent_id: agentId }),
             });
-            console.log(res)
+            
             const data = await res.json();
+            console.log('call data',data)
+            setCallId(data?.call_id)
             await retellWebClient.startCall({ accessToken: data.access_token });
         } catch (err) {
             console.error("Error starting call:", err);
@@ -155,7 +159,7 @@ function Dashboard() {
     const handleEndCall = async () => {
         if (retellWebClient){
            const response= await retellWebClient.stopCall();
-           console.log('Call end response',response)
+           console.log('Call end response',response,retellWebClient)
 
         }
     };
@@ -284,14 +288,10 @@ function Dashboard() {
             {
                 openCallModal && <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
                     {
-
-
                         <CallTest isCallActive={isCallActive}
                             onStartCall={handleStartCall}
                             onEndCall={handleEndCall}
                         />
-
-
                     }
                 </Modal2>
             }
