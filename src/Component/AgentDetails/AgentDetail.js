@@ -4,6 +4,7 @@ import styles from './AgentDetail.module.css';
 import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis'
 import { fetchAgentDetailById, getTotalBookings } from '../../Store/apiStore';
 import { useLocation } from 'react-router-dom';
+import useUser  from '../../Store/Context/UserContext';
 
 const AgentDashboard = () => {
    const [totalBookings, setTotalBookings] = useState(null);
@@ -11,7 +12,7 @@ const AgentDashboard = () => {
    const [agentData,setAgentData]=useState([])
   const location = useLocation();
   const agentDetails = location.state;
-
+  const {user,setUser}=useUser();
   
  useEffect(() => {
     const getAgentDetails = async () => {
@@ -42,11 +43,11 @@ const AgentDashboard = () => {
       <header className={styles.header}>
         <div className={styles.profileSection}>
           <div>
-            <img src="images/AgentImage.png" alt="Profile" className={styles.profilePic} />
+            <img src={user.profile||"images/AgentImage.png"} alt="Profile" className={styles.profilePic} />
           </div>
           <div>
             <p className={styles.greeting}>Hello!</p>
-            <h2 className={styles.name}>John Vick</h2>
+            <h2 className={styles.name}>{user?.name||""}</h2>
           </div>
         </div>
         <div className={styles.notifiMain}>
@@ -79,7 +80,7 @@ const AgentDashboard = () => {
           </div>
           <div>
             
-            <h3 className={styles.agentName}>{agentData?.agent?.agentName}<span className={styles.activeText}>Active</span></h3>
+            <h3 className={styles.agentName}>{agentData?.agent?.agentName}<span className={agentData?.agent?.agentStatus ? styles.activeText : styles.InactiveText}>{agentData?.agent?.agentStatus?"Active":"Inactive"}</span></h3>
             <p className={styles.agentAccent}>{agentData?.agent?.agentLanguage} •{agentData?.agent?.agentAccent}</p>
             <hr className={styles.agentLine}></hr>
 
