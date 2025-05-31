@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './AgentAnalysis.module.css';
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { getCurrentWeekBookingDates } from '../../../Store/apiStore';
 
 const data = [
   { name: 'Mon', value: 80 },
@@ -29,22 +28,49 @@ const AgentAnalysis = () => {
   const [bookingDates, setBookingDates] = useState([]);
 
   useEffect(() => {
-    // Generate next 7 days
+    // Generate next 30 days starting today
     const tempDates = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 28; i++) {
       const d = new Date();
       d.setDate(d.getDate() + i);
       tempDates.push(d);
     }
     setDates(tempDates);
+
     async function fetchBookingDates() {
       try {
-        const data = await getCurrentWeekBookingDates();
-        setBookingDates(data.bookingDates || []);
+        // Get calApiKey from localStorage agents array (adjust key name if different)
+        const agents = JSON.parse(localStorage.getItem('agents')) || [];
+        const agentWithCalKey = agents.find(agent => agent.calApiKey);
+        if (!agentWithCalKey) {
+          console.warn('No Cal API Key found in localStorage agents');
+          return;
+        }
+        const calApiKey = agentWithCalKey.calApiKey;
+
+        // Fetch bookings from Cal API
+        const response = await fetch(`https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch bookings from Cal API');
+        }
+        const bookingsData = await response.json();
+
+        // Extract startTime from each booking and convert to 'YYYY-MM-DD' format
+        const bookings = bookingsData.bookings || [];
+        const datesSet = new Set();
+        bookings.forEach(booking => {
+          if (booking.startTime) {
+            const startDateOnly = new Date(booking.startTime).toISOString().slice(0, 10);
+            datesSet.add(startDateOnly);
+          }
+        });
+
+        setBookingDates(Array.from(datesSet));
       } catch (error) {
         console.error('Failed to fetch booking dates:', error);
       }
     }
+
     fetchBookingDates();
   }, []);
 
@@ -95,7 +121,7 @@ const AgentAnalysis = () => {
               const hasBooking = bookingDates.includes(dateStr);
               const isSelected = index === selectedDateIndex;
 
-              // Apply classes based on booking and selection
+              // Decide CSS class based on booking and selection
               const className = isSelected
                 ? styles.selectedDate
                 : hasBooking
@@ -107,6 +133,7 @@ const AgentAnalysis = () => {
                   key={index}
                   className={className}
                   onClick={() => setSelectedDateIndex(index)}
+                  title={hasBooking ? "Booking Exists" : ""}
                 >
                   <div className={styles.dayName}>{weekDaysShort[date.getDay()]}</div>
                   <div className={styles.dateName}>{date.getDate()}</div>

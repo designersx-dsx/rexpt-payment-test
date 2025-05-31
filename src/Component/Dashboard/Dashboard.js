@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import { useNavigate } from "react-router-dom";
-import { fetchDashboardDetails } from "../../Store/apiStore";
+import { EndWebCallUpdateAgentMinutesLeft, fetchDashboardDetails } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import OffCanvas from "../OffCanvas/OffCanvas";
@@ -10,12 +11,11 @@ import { RetellWebClient } from "retell-client-js-sdk";
 import useUser from "../../Store/Context/UserContext";
 import Modal2 from "../Modal2/Modal2";
 import CallTest from "../CallTest/CallTest";
+import WidgetScript from "../Widgets/WidgetScript";
 
 function Dashboard() {
-  const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
-    useDashboardStore();
+  const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
   const navigate = useNavigate();
-
   const { user } = useUser();
 
   // Retell Web Client states
@@ -23,6 +23,7 @@ function Dashboard() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
+  const [openWidgetModal, setOpenWidgetModal] = useState(false);
 
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
@@ -46,7 +47,6 @@ function Dashboard() {
   const [showEventInputs, setShowEventInputs] = useState(false);
   const [eventCreateStatus, setEventCreateStatus] = useState(null);
   const [eventCreateMessage, setEventCreateMessage] = useState("");
-
   const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
 
   // Navigate on agent card click
@@ -287,6 +287,17 @@ function Dashboard() {
     setOpenCallModal(false);
   };
 
+  // Open Widget modal
+  const handleOpenWidgetModal = (agent) => {
+    setOpenWidgetModal(true);
+    setAgentDetails(agent);
+  };
+
+  // Close Widget modal
+  const handleCloseWidgetModal = () => {
+    setOpenWidgetModal(false);
+  };
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -326,8 +337,7 @@ function Dashboard() {
 
       <div className={styles.main}>
         {localAgents.map((agent) => {
-          const randomPlan =
-            planStyles[Math.floor(Math.random() * planStyles.length)];
+          const randomPlan = planStyles[Math.floor(Math.random() * planStyles.length)];
           return (
             <div
               key={agent.agent_id}
@@ -390,7 +400,7 @@ function Dashboard() {
                       >
                         Test Call
                       </div>
-                      <div className={styles.OptionItem}>Widget</div>
+                      <div className={styles.OptionItem} onClick={() => handleOpenWidgetModal(agent)}>Widget</div>
                     </div>
                   )}
                 </div>
@@ -609,6 +619,12 @@ function Dashboard() {
               onStartCall={handleStartCall}
               onEndCall={handleEndCall}
             />
+          </Modal2>
+        )}
+        {/* WidgetModal */}
+        {openWidgetModal && (
+          <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
+            <WidgetScript isAgentDetails={agentDetails} />
           </Modal2>
         )}
       </div>

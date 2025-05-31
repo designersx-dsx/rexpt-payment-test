@@ -6,7 +6,8 @@ import decodeToken from '../../lib/decodeToken';
 
 const BusinessDetails = () => {
   const navigate = useNavigate();
-  const [businessType, setBusinessType] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [businessType, setBusinessType] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [businessSize, setBusinessSize] = useState('');
   const [showPopup, setShowPopup] = useState(false);
@@ -24,12 +25,38 @@ const BusinessDetails = () => {
   const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
   const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
-  
+
   const businessTypes = [
-    { type: 'Immigration', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
-    { type: 'School', subtype: 'Empowering Future Leaders', icon: 'images/school.png' },
-    { type: 'Hospital', subtype: 'Always ready to assist', icon: 'images/Hospital.png' },
-    { type: 'Other', subtype: 'Always ready to assist', icon: 'images/other.png' },
+    { type: 'Restaurant', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
+    { type: 'Real Estate Broker', subtype: 'Your Journey Begins Here', icon: 'images/school.png' },
+    { type: 'Saloon', subtype: 'Your Journey Begins Here', icon: 'images/Hospital.png' },
+    { type: "Doctor's Clinic", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Dentist Office", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Dry Cleaner", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Web Design Agency", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Marketing Agency", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Gym & Fitness Center", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Personal Trainer", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Architect", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Interior Designer", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: " Construction Services", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: " Cleaning/Janitorial Service", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "  Transport Company", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "  Landscaping Company", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "  Insurance Agency", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "  Financial Services", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: " Accounting Services", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: " Car Repair & Garage", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: " Boat Repair & Maintenance", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Property Rental & Leasing Service", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+    { type: "Other Local Business", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
+
+
+
+
+
+
+
   ];
 
   useEffect(() => {
@@ -86,7 +113,13 @@ const BusinessDetails = () => {
       setBusinessTypeError('');
     }
   };
-
+   const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+  const filteredBusinessTypes = businessTypes.filter((item) =>
+    item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.subtype.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const handleLoginClick = () => {
     // Mark all as submitted to show errors
     setBusinessTypeSubmitted(true);
@@ -136,56 +169,80 @@ const BusinessDetails = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Business Details</h1>
-      <h2 className={styles.subtitle}>Select Type</h2>
+     <div className={styles.searchBox}>
+        <span className={styles.searchIcon}>
+          <img src="svg/Search-Icon.svg" alt="Search icon" />
+        </span>
+        <input
+          type="text"
+          placeholder="Quick find Business type"
+          className={styles.searchInput}
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+      </div>
 
       <div className={styles.optionList}>
-        {businessTypes.map((item, index) => (
-          <label className={styles.option} key={index}>
-            <div className={styles.forflex}>
-              <div className={styles.icon}>
-                <img src={item.icon} alt={`${item.type} icon`} className={styles.iconImg} />
+        {filteredBusinessTypes.length > 0 ? (
+          filteredBusinessTypes.map((item, index) => (
+            <label className={styles.option} key={index}>
+              <div className={styles.forflex}>
+                <div className={styles.icon}>
+                  <img
+                    src={item.icon}
+                    alt={`${item.type} icon`}
+                    className={styles.iconImg}
+                  />
+                </div>
+                <div>
+                  <strong>{item.type}</strong>
+                  <p className={styles.subType}>{item.subtype}</p>
+                </div>
               </div>
-              <div>
-                <strong>{item.type}</strong>
-                <p className={styles.subType}>{item.subtype}</p>
-              </div>
-            </div>
 
-            <div>
-              <input
-                type="radio"
-                name="businessType"
-                value={item.type}
-                checked={businessType === item.type}
-                onChange={handleBusinessTypeChange}
-              />
-            </div>
-          </label>
-        ))}
+              <div>
+                <input
+                  type="radio"
+                  name="businessType"
+                  value={item.type}
+                  checked={businessType === item.type}
+                  onChange={handleBusinessTypeChange}
+                />
+              </div>
+            </label>
+          ))
+        ) : (
+          <p className={styles.noItemFound}>No item found</p>
+        )}
       </div>
+
       {businessTypeSubmitted && businessTypeError && (
         <p className={styles.inlineError}>{businessTypeError}</p>
       )}
-
-      <div className={styles.inputGroup}>
-        <label>Business Name</label>
-        <input
-          type="text"
-          placeholder="Your Business name"
-          value={businessName}
-          onChange={handleBusinessNameChange}
-          className={businessNameError ? styles.inputError : ''}
-        />
-        {businessNameSubmitted && businessNameError && (
-          <p className={styles.inlineError}>{businessNameError}</p>
-        )}
+      
+      <div className={styles.labReq} >
+        <div className={styles.inputGroup}>
+          <div className={styles.Dblock} >
+            <label>Business Name</label>
+            <input
+              type="text"
+              placeholder="Your Business name"
+              value={businessName}
+              onChange={handleBusinessNameChange}
+              className={businessNameError ? styles.inputError : ''}
+            />
+            {businessNameSubmitted && businessNameError && (
+              <p className={styles.inlineError}>{businessNameError}</p>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className={styles.inputGroup}>
         <label>Business Size (Number of Emp.)</label>
         <input
           type="text"
-          placeholder="Number of employees" 
+          placeholder="Number of employees"
           value={businessSize}
           onChange={handleBusinessSizeChange}
           maxLength={5}
