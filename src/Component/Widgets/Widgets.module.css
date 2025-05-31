@@ -1,0 +1,112 @@
+.container {
+  max-width: 450px;
+  margin: 30px auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  letter-spacing: 0.05em;
+  color: #222;
+}
+
+.scriptBox {
+  position: relative;
+  background-color: #f9fafb;
+  border: 1px solid #e2e8f0;
+  padding: 20px 25px 40px 25px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: 'Courier New', Courier, monospace;
+  min-height: 110px;
+  box-shadow: inset 0 1px 3px #eaeef3;
+  overflow-wrap: break-word;
+  user-select: text;
+}
+
+.copyButton {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background-color: #2563eb; /* Tailwind's blue-600 */
+  border: none;
+  color: #fff;
+  padding: 7px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(37, 99, 235, 0.5);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.copyButton:hover {
+  background-color: #1e40af; /* blue-800 */
+  box-shadow: 0 5px 12px rgba(30, 64, 175, 0.7);
+}
+
+.copyButton:active {
+  transform: scale(0.95);
+}
+
+.scriptText {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #444;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 15px;
+}
+
+.whatsappBtn,
+.emailBtn {
+  flex: 1;
+  padding: 13px 0;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+  letter-spacing: 0.03em;
+}
+
+.whatsappBtn {
+  background: linear-gradient(45deg, #25d366, #1ebe57);
+}
+
+.whatsappBtn:hover {
+  background: linear-gradient(45deg, #1ebe57, #1aa34a);
+  box-shadow: 0 6px 18px rgba(27, 179, 74, 0.7);
+}
+
+.emailBtn {
+  background: linear-gradient(45deg, #0072c6, #005ea3);
+}
+
+.emailBtn:hover {
+  background: linear-gradient(45deg, #005ea3, #00477b);
+  box-shadow: 0 6px 18px rgba(0, 93, 163, 0.7);
+}
+
+.emailBtn:active,
+.whatsappBtn:active {
+  transform: scale(0.97);
+}

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
@@ -10,12 +11,11 @@ import { RetellWebClient } from "retell-client-js-sdk";
 import useUser from "../../Store/Context/UserContext";
 import Modal2 from "../Modal2/Modal2";
 import CallTest from "../CallTest/CallTest";
+import WidgetScript from "../Widgets/WidgetScript";
 
 function Dashboard() {
-  const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
-    useDashboardStore();
+  const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
   const navigate = useNavigate();
-
   const { user } = useUser();
 
   // Retell Web Client states
@@ -23,8 +23,7 @@ function Dashboard() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
-  const [callId,setCallId]=useState(null)
-
+  const [openWidgetModal, setOpenWidgetModal] = useState(false);
 
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
@@ -48,7 +47,6 @@ function Dashboard() {
   const [showEventInputs, setShowEventInputs] = useState(false);
   const [eventCreateStatus, setEventCreateStatus] = useState(null);
   const [eventCreateMessage, setEventCreateMessage] = useState("");
-
   const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
 
   // Navigate on agent card click
@@ -131,17 +129,10 @@ function Dashboard() {
     }
   }, [agents]);
 
+  // Submit API key for selected agent
   const handleApiKeySubmit = async () => {
     if (!selectedAgent) return;
-
     try {
-      const agent = JSON.parse(localStorage.getItem("agents")).find(
-        (agent) => agent.agent_id === selectedAgent.agent_id
-      );
-      if (!apiKey.trim() || apiKey.trim() === agent.calApiKey) {
-        alert(`API Key is the same as the current one. No update required.`);
-        return;
-      }
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
         {
@@ -150,14 +141,11 @@ function Dashboard() {
           body: JSON.stringify({ calApiKey: apiKey.trim() }),
         }
       );
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update API key");
       }
-
       alert(`API Key saved successfully for agent ${selectedAgent.agentName}`);
-
       const updatedAgents = localAgents.map((agent) =>
         agent.agent_id === selectedAgent.agent_id
           ? { ...agent, calApiKey: apiKey.trim() }
@@ -171,7 +159,7 @@ function Dashboard() {
     }
   };
 
-  // Create Cal event and update LLM
+  // Create Cal event
   const createCalEvent = async () => {
     if (!apiKey.trim()) {
       alert("API Key is required to create an event.");
@@ -181,13 +169,10 @@ function Dashboard() {
       alert("Please fill all event fields.");
       return;
     }
-
     try {
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
         apiKey.trim()
       )}`;
-
-      // Create event in Cal
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -197,59 +182,18 @@ function Dashboard() {
           length: parseInt(eventLength, 10),
         }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Cal API event creation error:", errorData);
         throw new Error(errorData.message || "Failed to create event");
       }
-      const eventData = await response.json();
-      const eventTypeId = eventData.event_type.id;
-      const agent = JSON.parse(localStorage.getItem("agents")).find(
-        (agent) => agent.agent_id === selectedAgent.agent_id
-      );
-
-      if (!agent) {
-        throw new Error("Selected agent not found.");
-      }
-
-      const { calApiKey, llmId } = agent;
-      const llmUpdateUrl = `https://api.retellai.com/update-retell-llm/${llmId}`;
-      const updateLlmResponse = await fetch(llmUpdateUrl, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-        },
-        body: JSON.stringify({
-          general_tools: [
-            {
-              type: "book_appointment_cal",
-              name: "Appointment_call",
-              cal_api_key: calApiKey,
-              event_type_id: eventTypeId,
-            },
-          ],
-        }),
-      });
-
-      if (!updateLlmResponse.ok) {
-        const errorData = await updateLlmResponse.json();
-        console.error("LLM update error:", errorData);
-        throw new Error(errorData.message || "Failed to update LLM");
-      }
-
-      // If everything is successful
       setEventCreateStatus("success");
-      setEventCreateMessage("Event created and LLM updated successfully!");
+      setEventCreateMessage("Event created successfully!");
       setEventName("");
       setEventSlug("");
       setEventLength("");
     } catch (error) {
       setEventCreateStatus("error");
-      setEventCreateMessage(
-        `Error creating event and updating LLM: ${error.message}`
-      );
+      setEventCreateMessage(`Error creating event: ${error.message}`);
     }
   };
 
@@ -318,7 +262,6 @@ function Dashboard() {
       );
       const data = await res.json();
       await retellWebClient.startCall({ accessToken: data.access_token });
-      setCallId(data?.call_id)
     } catch (err) {
       console.error("Error starting call:", err);
     }
@@ -327,14 +270,8 @@ function Dashboard() {
   // End call
   const handleEndCall = async () => {
     if (retellWebClient) {
-      try {
-            const response = await retellWebClient.stopCall();
-            const payload={ agentId :agentDetails.agent_id,callId:callId}
-            const DBresponse=await EndWebCallUpdateAgentMinutesLeft(payload)
-        // console.log("Call end response", response,DBresponse);
-      } catch (error) {
-        console.log('something went wrong while end web_call',error)
-      }
+      const response = await retellWebClient.stopCall();
+      console.log("Call end response", response);
     }
   };
 
@@ -348,6 +285,17 @@ function Dashboard() {
   // Close call modal
   const handleCloseCallModal = () => {
     setOpenCallModal(false);
+  };
+
+  // Open Widget modal
+  const handleOpenWidgetModal = (agent) => {
+    setOpenWidgetModal(true);
+    setAgentDetails(agent);
+  };
+
+  // Close Widget modal
+  const handleCloseWidgetModal = () => {
+    setOpenWidgetModal(false);
   };
 
   return (
@@ -389,8 +337,7 @@ function Dashboard() {
 
       <div className={styles.main}>
         {localAgents.map((agent) => {
-          const randomPlan =
-            planStyles[Math.floor(Math.random() * planStyles.length)];
+          const randomPlan = planStyles[Math.floor(Math.random() * planStyles.length)];
           return (
             <div
               key={agent.agent_id}
@@ -453,7 +400,7 @@ function Dashboard() {
                       >
                         Test Call
                       </div>
-                      <div className={styles.OptionItem}>Widget</div>
+                      <div className={styles.OptionItem} onClick={() => handleOpenWidgetModal(agent)}>Widget</div>
                     </div>
                   )}
                 </div>
@@ -488,8 +435,7 @@ function Dashboard() {
                 <div className={styles.AssignNum}>Assign Number</div>
                 <div className={styles.minLeft}>
                   <span className={styles.MinL}>Min Left</span>{" "}
-                  {Math.floor(agent?.mins_left/60 || 0)}
-                  {/* {`${Math.floor(agent?.mins_left/60 || 0)}m ${Math.floor(agent?.mins_left%60 || 0)}s`} */}
+                  {agent?.callSummary?.remaining?.minutes || 0}
                 </div>
               </div>
             </div>
@@ -577,12 +523,7 @@ function Dashboard() {
                   <button
                     className={`${styles.modalButton} ${styles.submit}`}
                     onClick={handleApiKeySubmit}
-                    // Disable if empty or same as prefilled key
-                    disabled={
-                      !apiKey.trim() ||
-                      (selectedAgent &&
-                        apiKey.trim() === selectedAgent.calApiKey)
-                    }
+                    disabled={!apiKey.trim()}
                   >
                     {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
                   </button>
@@ -605,11 +546,11 @@ function Dashboard() {
                       />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="slug">Description</label>
+                      <label htmlFor="slug">Slug</label>
                       <input
                         id="slug"
                         type="text"
-                        placeholder="Enter Description"
+                        placeholder="Enter slug"
                         className={styles.modalInput}
                         value={eventSlug}
                         onChange={(e) => setEventSlug(e.target.value)}
@@ -678,6 +619,12 @@ function Dashboard() {
               onStartCall={handleStartCall}
               onEndCall={handleEndCall}
             />
+          </Modal2>
+        )}
+        {/* WidgetModal */}
+        {openWidgetModal && (
+          <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
+            <WidgetScript isAgentDetails={agentDetails} />
           </Modal2>
         )}
       </div>
