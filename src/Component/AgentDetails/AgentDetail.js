@@ -4,7 +4,10 @@ import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis'
 import { fetchAgentDetailById } from '../../Store/apiStore';
 
 import { useLocation } from 'react-router-dom';
-import useUser from '../../Store/Context/UserContext';
+
+import useUser  from '../../Store/Context/UserContext';
+import Loader2 from '../Loader2/Loader2';
+
 
 const AgentDashboard = () => {
   const [totalBookings, setTotalBookings] = useState(null);
@@ -12,26 +15,23 @@ const AgentDashboard = () => {
   const [agentData, setAgentData] = useState([])
   const location = useLocation();
   const agentDetails = location.state;
-  const { user, setUser } = useUser();
 
-  useEffect(() => {
-    const getAgentDetailsAndBookings = async () => {
-      try {
-        const response = await fetchAgentDetailById(agentDetails);
-        setAgentData(response?.data);
+  const {user,setUser}=useUser();
+  
+useEffect(() => {
+  const getAgentDetailsAndBookings = async () => {
+    try {
+      const response = await fetchAgentDetailById(agentDetails);
+      setAgentData(response?.data);
+     
+      const calApiKey = response?.data?.agent?.calApiKey;
+      if (calApiKey) {
+        const calResponse = await fetch(
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
+        );
+        if (!calResponse.ok) {
+          throw new Error("Failed to fetch total bookings from Cal.com");
 
-        const calApiKey = response?.data?.agent?.calApiKey;
-        if (calApiKey) {
-          const calResponse = await fetch(
-            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
-          );
-          if (!calResponse.ok) {
-            throw new Error("Failed to fetch total bookings from Cal.com");
-          }
-          const calData = await calResponse.json();
-          setTotalBookings(calData.bookings ? calData.bookings.length : 0);
-        } else {
-          setTotalBookings(0);
         }
       } catch (err) {
         console.error("Failed to fetch data", err.response || err.message || err);
@@ -106,8 +106,13 @@ const AgentDashboard = () => {
               </div>
             </div>
           </div>
-        </section>
-      </div>
+
+        </div>
+      </section>
+  </div>
+      {loading ?
+      <Loader2/>
+      :(
 
       <div className={styles.container}>
         <div className={styles.businessInfo}>
@@ -241,10 +246,12 @@ const AgentDashboard = () => {
         <section className={styles.management}>
 
 
-          <AgentAnalysis />
+         
+          <AgentAnalysis data={agentData?.callSummary?.data}/>
         </section>
 
       </div>
+      )}
 
 
     </div>
