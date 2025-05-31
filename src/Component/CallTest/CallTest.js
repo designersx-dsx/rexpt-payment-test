@@ -5,7 +5,7 @@ const CallTest = ({ onStartCall, onEndCall, isCallActive }) => {
     //       const [blob, setBlob] = useState<Blob>();
     //   const visualizerRef = useRef<HTMLCanvasElement>(null)
     const agentDetails = JSON.parse(sessionStorage.getItem("agentDetails"));
-  
+
 
     return (
 
@@ -23,7 +23,10 @@ const CallTest = ({ onStartCall, onEndCall, isCallActive }) => {
                                 : agentDetails.agentName
                             }</span>
                         </p>
-                        <small>[BUSINESS NAME] Agent is LIVE</small>
+                        <small> {agentDetails?.business?.businessName.length > 10
+                            ? agentDetails?.business?.businessName.slice(0, 15) + '...'
+                            : agentDetails?.business?.businessName
+                        }&nbsp; Agent is LIVE</small>
                     </div>
                 </div> :
                     <div className={styles.greendiv} onClick={onStartCall}>
@@ -47,10 +50,10 @@ const CallTest = ({ onStartCall, onEndCall, isCallActive }) => {
                                 Agent is LIVE</small>
                         </div>
                     </div>}
-                    
+
             </div>
 
- 
+
         </div>
     );
 };
