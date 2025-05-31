@@ -7,6 +7,7 @@ import { API_BASE_URL } from '../../Store/apiStore';
 import decodeToken from '../../lib/decodeToken';
 import { getData } from 'country-list';
 import ReactCountryFlag from "react-country-flag";
+import Loader from '../Loader/Loader';
 const BusinessLocation = () => {
   const countries = getData();
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const BusinessLocation = () => {
   const [city, setCity] = useState('');
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
-
+  const [loading,setLoading]=useState(false)
   // Inline validation error states
   const [stateError, setStateError] = useState('');
   const [cityError, setCityError] = useState('');
@@ -150,6 +151,7 @@ const BusinessLocation = () => {
     );
 
     try {
+      setLoading(true)
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
 
@@ -186,6 +188,8 @@ const BusinessLocation = () => {
       setPopupMessage('An error occurred while adding business details.');
       setShowPopup(true);
       console.error(error);
+    }finally{
+      setTimeout(()=>setLoading(false),1000)
     }
   };
 
@@ -387,7 +391,7 @@ const handleSelect = (country) => {
           <div type="submit" onClick={handleContinue}>
             <div className={styles.btnTheme}>
               <img src="images/svg-theme.svg" alt="" />
-              <p>Continue</p>
+              <p>{loading?<Loader size={20}/>:'Continue'}</p>
             </div>
           </div>
         </div>

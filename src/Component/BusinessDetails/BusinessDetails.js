@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import styles from '../BusinessDetails/BusinessDetails.module.css';
-import { useNavigate } from 'react-router-dom';
-import PopUp from '../Popup/Popup';
-import decodeToken from '../../lib/decodeToken';
+import React, { useEffect, useState } from "react";
+import styles from "../BusinessDetails/BusinessDetails.module.css";
+import { useNavigate } from "react-router-dom";
+import PopUp from "../Popup/Popup";
+import decodeToken from "../../lib/decodeToken";
 
 const BusinessDetails = () => {
   const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [businessType, setBusinessType] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [businessSize, setBusinessSize] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [businessType, setBusinessType] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [businessSize, setBusinessSize] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
-  const [popupMessage, setPopupMessage] = useState('');
-  const token = localStorage.getItem('token');
+  const [popupMessage, setPopupMessage] = useState("");
+  const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
 
-  const [businessNameError, setBusinessNameError] = useState('');
-  const [businessSizeError, setBusinessSizeError] = useState('');
-  const [businessTypeError, setBusinessTypeError] = useState('');
+  const [businessNameError, setBusinessNameError] = useState("");
+  const [businessSizeError, setBusinessSizeError] = useState("");
+  const [businessTypeError, setBusinessTypeError] = useState("");
 
   // Submission state trackers
   const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
@@ -27,41 +27,137 @@ const BusinessDetails = () => {
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
 
   const businessTypes = [
-    { type: 'Restaurant', subtype: 'Your Journey Begins Here', icon: 'images/general.png' },
-    { type: 'Real Estate Broker', subtype: 'Your Journey Begins Here', icon: 'images/school.png' },
-    { type: 'Saloon', subtype: 'Your Journey Begins Here', icon: 'images/Hospital.png' },
-    { type: "Doctor's Clinic", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Dentist Office", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Dry Cleaner", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Web Design Agency", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Marketing Agency", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Gym & Fitness Center", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Personal Trainer", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Architect", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Interior Designer", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: " Construction Services", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: " Cleaning/Janitorial Service", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "  Transport Company", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "  Landscaping Company", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "  Insurance Agency", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "  Financial Services", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: " Accounting Services", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: " Car Repair & Garage", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: " Boat Repair & Maintenance", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Property Rental & Leasing Service", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-    { type: "Other Local Business", subtype: 'Your Journey Begins Here', icon: 'images/other.png' },
-
-
-
-
-
-
-
+    {
+      type: "Restaurant",
+      subtype: "Your Journey Begins Here",
+      icon: "images/general.png",
+    },
+    {
+      type: "Real Estate Broker",
+      subtype: "Your Journey Begins Here",
+      icon: "images/school.png",
+    },
+    {
+      type: "Saloon",
+      subtype: "Your Journey Begins Here",
+      icon: "images/Hospital.png",
+    },
+    {
+      type: "Doctor's Clinic",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Dentist Office",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Dry Cleaner",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Web Design Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Marketing Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Gym & Fitness Center",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Personal Trainer",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Architect",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Interior Designer",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: " Construction Services",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: " Cleaning/Janitorial Service",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "  Transport Company",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "  Landscaping Company",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "  Insurance Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "  Financial Services",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: " Accounting Services",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: " Car Repair & Garage",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: " Boat Repair & Maintenance",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Property Rental & Leasing Service",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+    {
+      type: "Other Local Business",
+      subtype: "Your Journey Begins Here",
+      icon: "images/other.png",
+    },
+  ];
+  const businessSizeOptions = [
+    "1 to 10",
+    "11 to 50",
+    "51 to 100",
+    "101 to 250",
+    "251 to 500",
+    "501 to 1000",
+    "1000+",
   ];
 
   useEffect(() => {
-    if (sessionStorage.getItem('businessDetails')) {
-      const businessDetails = JSON.parse(sessionStorage?.getItem('businessDetails'));
+    if (sessionStorage.getItem("businessDetails")) {
+      const businessDetails = JSON.parse(
+        sessionStorage?.getItem("businessDetails")
+      );
       setBusinessType(businessDetails?.businessType);
       setBusinessName(businessDetails?.businessName);
       setBusinessSize(businessDetails?.businessSize);
@@ -73,19 +169,30 @@ const BusinessDetails = () => {
   };
 
   const validateBusinessName = (value) => {
-    if (!value.trim()) return 'Business name is required.';
-    if (containsEmoji(value)) return 'Emojis are not allowed in business name.';
-    if (/[^a-zA-Z0-9\s.'-]/.test(value)) return 'Business name contains invalid characters.';
-    if (value.trim().length < 2) return 'Business name must be at least 2 characters.';
-    return '';
+    if (!value.trim()) return "Business name is required.";
+    if (containsEmoji(value)) return "Emojis are not allowed in business name.";
+    if (/[^a-zA-Z0-9\s.'-]/.test(value))
+      return "Business name contains invalid characters.";
+    if (value.trim().length < 2)
+      return "Business name must be at least 2 characters.";
+    return "";
   };
 
-  const validateBusinessSize = (value) => {
-    if (!value.trim()) return 'Business size is required.';
-    if (!/^\d+$/.test(value)) return 'Business size must be a positive whole number.';
-    if (parseInt(value, 10) <= 0) return 'Business size must be greater than zero.';
-    return '';
-  };
+const validateBusinessSize = (value) => {
+  if (!value.trim()) return "Business size is required.";
+  console.log(value)
+  const allowedValues = [
+    "1 to 10 employees",
+    "11 to 50 employees",
+    "51 to 100 employees",
+    "101 to 250 employees",
+    "251 to 500 employees",    
+  ];
+  if (!allowedValues.includes(value)) {
+    return "Invalid business size selected.";
+  }
+  return "";
+};
 
   const handleBusinessNameChange = (e) => {
     const val = e.target.value;
@@ -93,32 +200,27 @@ const BusinessDetails = () => {
     if (businessNameSubmitted) {
       setBusinessNameError(validateBusinessName(val));
     } else {
-      setBusinessNameError('');
+      setBusinessNameError("");
     }
   };
 
-  const handleBusinessSizeChange = (e) => {
-    let val = e.target.value.replace(/\D/g, '');
-    setBusinessSize(val);
-    if (businessSizeSubmitted) {
-      setBusinessSizeError(validateBusinessSize(val));
-    } else {
-      setBusinessSizeError('');
-    }
-  };
+ const handleBusinessSizeChange = (e) => {
+  setBusinessSize(e.target.value);
+};
 
   const handleBusinessTypeChange = (e) => {
     setBusinessType(e.target.value);
     if (businessTypeSubmitted) {
-      setBusinessTypeError('');
+      setBusinessTypeError("");
     }
   };
-   const handleSearchChange = (e) => {
+  const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
-  const filteredBusinessTypes = businessTypes.filter((item) =>
-    item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.subtype.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredBusinessTypes = businessTypes.filter(
+    (item) =>
+      item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.subtype.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const handleLoginClick = () => {
     // Mark all as submitted to show errors
@@ -130,10 +232,10 @@ const BusinessDetails = () => {
     let hasError = false;
 
     if (!businessType) {
-      setBusinessTypeError('Please select a business type.');
+      setBusinessTypeError("Please select a business type.");
       hasError = true;
     } else {
-      setBusinessTypeError('');
+      setBusinessTypeError("");
     }
 
     const nameError = validateBusinessName(businessName);
@@ -141,7 +243,7 @@ const BusinessDetails = () => {
       setBusinessNameError(nameError);
       hasError = true;
     } else {
-      setBusinessNameError('');
+      setBusinessNameError("");
     }
 
     const sizeError = validateBusinessSize(businessSize);
@@ -149,7 +251,7 @@ const BusinessDetails = () => {
       setBusinessSizeError(sizeError);
       hasError = true;
     } else {
-      setBusinessSizeError('');
+      setBusinessSizeError("");
     }
 
     if (hasError) return;
@@ -162,14 +264,14 @@ const BusinessDetails = () => {
       businessSize,
     };
 
-    sessionStorage.setItem('businessDetails', JSON.stringify(businessData));
-    navigate('/business-locations');
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+    navigate("/business-locations");
   };
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Business Details</h1>
-     <div className={styles.searchBox}>
+      <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
         </span>
@@ -219,17 +321,17 @@ const BusinessDetails = () => {
       {businessTypeSubmitted && businessTypeError && (
         <p className={styles.inlineError}>{businessTypeError}</p>
       )}
-      
-      <div className={styles.labReq} >
+
+      <div className={styles.labReq}>
         <div className={styles.inputGroup}>
-          <div className={styles.Dblock} >
+          <div className={styles.Dblock}>
             <label>Business Name</label>
             <input
               type="text"
               placeholder="Your Business name"
               value={businessName}
               onChange={handleBusinessNameChange}
-              className={businessNameError ? styles.inputError : ''}
+              className={businessNameError ? styles.inputError : ""}
             />
             {businessNameSubmitted && businessNameError && (
               <p className={styles.inlineError}>{businessNameError}</p>
@@ -239,8 +341,8 @@ const BusinessDetails = () => {
       </div>
 
       <div className={styles.inputGroup}>
-        <label>Business Size (Number of Emp.)</label>
-        <input
+        {/* <label>Business Size (Number of Emp.)</label> */}
+        {/* <input
           type="text"
           placeholder="Number of employees"
           value={businessSize}
@@ -248,12 +350,41 @@ const BusinessDetails = () => {
           maxLength={5}
           className={businessSizeError ? styles.inputError : ''}
           inputMode="numeric"
-        />
-        {businessSizeSubmitted && businessSizeError && (
+        /> */}
+        {/* {businessSizeSubmitted && businessSizeError && (
+          <p className={styles.inlineError}>{businessSizeError}</p>
+        )} */}
+      </div>
+      {/* business size –- now a dropdown */}
+      <div className={styles.inputGroup}>
+        <label>Business Size (Number of Emp.)</label>
+        <select
+          value={businessSize}
+          onChange={handleBusinessSizeChange }
+          className={`${styles.selectInput} ${
+            businessSizeError ? styles.inputError : ""
+          }`}
+        >
+          <option value='1 to 10 employees' className={`${styles.selectOption}`} >
+            {'1 to 10 employees'}
+          </option>
+          <option value='11 to 50 employees' className={`${styles.selectOption}`}>
+            {'10 to 50 employees'}
+          </option>
+          <option value='51 to 100 employees' className={`${styles.selectOption}`}>
+            {'50 to 100 employees'}
+          </option>
+          <option value='101 to 250 employees' className={`${styles.selectOption}`}>
+            {'100 to 250 employees'}
+          </option>
+          <option value='251 to 500 employees' className={`${styles.selectOption}`}>
+            {'250 to 500  employees'}
+          </option>
+        </select>
+         {businessSizeSubmitted && businessSizeError && (
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
-
       <div onClick={handleLoginClick}>
         <div type="submit">
           <div className={styles.btnTheme}>
@@ -264,7 +395,11 @@ const BusinessDetails = () => {
       </div>
 
       {showPopup && (
-        <PopUp type={popupType} onClose={() => setShowPopup(false)} message={popupMessage} />
+        <PopUp
+          type={popupType}
+          onClose={() => setShowPopup(false)}
+          message={popupMessage}
+        />
       )}
     </div>
   );

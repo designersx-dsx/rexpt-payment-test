@@ -441,11 +441,29 @@ function Dashboard() {
                                     </svg>
                                     {openDropdown === agent.agent_id && (
                                         <div className={styles.OptionsDropdown}>
-                                            <div
+                                             <div
                                                 className={styles.OptionItem}
-                                                onClick={() => handleDelete(agent.agent_id)}
+                                                onClick={() => ""}
                                             >
-                                                Delete
+                                                Test Agent
+                                            </div>
+                                             <div
+                                                className={styles.OptionItem}
+                                                onClick={() => ""}
+                                            >
+                                                Integrate
+                                            </div>
+                                             <div
+                                                className={styles.OptionItem}
+                                                onClick={() => ""}
+                                            >
+                                                Call Settings
+                                            </div>
+                                             <div
+                                                className={styles.OptionItem}
+                                                onClick={() => ""}
+                                            >
+                                                Edit Agent
                                             </div>
                                             <div
                                                 className={styles.OptionItem}
@@ -453,6 +471,13 @@ function Dashboard() {
                                             >
                                                 Upgrade
                                             </div>
+                                            <div
+                                                className={styles.OptionItem}
+                                                onClick={() => handleDelete(agent.agent_id)}
+                                            >
+                                                Delete Agent
+                                            </div>
+                                            
                                             <div
                                                 className={styles.OptionItem}
                                                 onClick={() => handleOpenCallModal(agent)}
