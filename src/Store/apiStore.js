@@ -69,6 +69,14 @@ export const EndWebCallUpdateAgentMinutesLeft=async(data)=>{
   })
   return res;
 }
+export const SendScriptToDeveloper=async(data)=>{
+  const res=await api.post(`/agent/sendScriptToEmail`,data,{
+      headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return res;
+}
 
 // export const 
 // export const createKnowledgeBase = async (formData) => {
