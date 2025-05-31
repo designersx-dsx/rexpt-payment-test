@@ -531,6 +531,7 @@ Let’s begin assisting the customer!
                                 setShowPopup(true);
                                 setTimeout(() => navigate("/dashboard"), 1500);
                                 setLoading(false)
+                                sessionStorage.clear()
 
                             }
                         } catch (error) {
