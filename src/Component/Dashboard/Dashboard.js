@@ -1,4 +1,5 @@
 
+
 // import React, { useEffect, useState } from "react";
 // import styles from "./Dashboard.module.css";
 // import Footer from "../AgentDetails/Footer/Footer";
@@ -662,11 +663,15 @@
 
 
 
+
 import React, { useEffect, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import { useNavigate } from "react-router-dom";
-import { EndWebCallUpdateAgentMinutesLeft, fetchDashboardDetails } from "../../Store/apiStore";
+import {
+  EndWebCallUpdateAgentMinutesLeft,
+  fetchDashboardDetails,
+} from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import OffCanvas from "../OffCanvas/OffCanvas";
@@ -675,9 +680,10 @@ import useUser from "../../Store/Context/UserContext";
 import Modal2 from "../Modal2/Modal2";
 import CallTest from "../CallTest/CallTest";
 import WidgetScript from "../Widgets/WidgetScript";
-
+import Popup from "../Popup/Popup";
 function Dashboard() {
-  const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
+  const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
+    useDashboardStore();
   const navigate = useNavigate();
   const { user } = useUser();
 
@@ -712,13 +718,46 @@ function Dashboard() {
   const [eventCreateMessage, setEventCreateMessage] = useState("");
   const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
 
+  //cal
+  const isValidCalApiKey = (key) => key.startsWith("cal_live_");
+  const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
+  const [bookingCount, setBookingCount] = useState(0);
+
+  //pop0up
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success");
+
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     navigate("/home", {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
   };
+  useEffect(() => {
+    const agents = JSON.parse(localStorage.getItem("agents")) || [];
+    const agentWithCalKey = agents.find((agent) => agent.calApiKey);
 
+    if (agentWithCalKey?.calApiKey) {
+      const fetchBookings = async () => {
+        try {
+          const response = await fetch(
+            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+              agentWithCalKey.calApiKey
+            )}`
+          );
+          if (!response.ok) throw new Error("Failed to fetch bookings");
+
+          const data = await response.json();
+          setBookingCount(data.bookings?.length || 0);
+        } catch (error) {
+          console.error("Error fetching booking count:", error);
+          setBookingCount(0);
+        }
+      };
+
+      fetchBookings();
+    }
+  }, []);
   // Open Cal modal & set current agent + API key
   const handleCalClick = (agent, e) => {
     e.stopPropagation();
@@ -795,6 +834,13 @@ function Dashboard() {
   // Submit API key for selected agent
   const handleApiKeySubmit = async () => {
     if (!selectedAgent) return;
+
+    if (!isValidCalApiKey(apiKey.trim())) {
+      setPopupType("failed");
+      setPopupMessage("Invalid API Key! It must start with 'cal_live_'.");
+      return;
+    }
+
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
@@ -804,21 +850,26 @@ function Dashboard() {
           body: JSON.stringify({ calApiKey: apiKey.trim() }),
         }
       );
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update API key");
       }
-      alert(`API Key saved successfully for agent ${selectedAgent.agentName}`);
+
       const updatedAgents = localAgents.map((agent) =>
         agent.agent_id === selectedAgent.agent_id
           ? { ...agent, calApiKey: apiKey.trim() }
           : agent
       );
+
       setLocalAgents(updatedAgents);
       localStorage.setItem("agents", JSON.stringify(updatedAgents));
+
       setShowEventInputs(true);
+      setShowCalKeyInfo(true);
     } catch (error) {
-      alert(`Failed to save API Key: ${error.message}`);
+      setPopupType("failed");
+      setPopupMessage(`Failed to save API Key: ${error.message}`);
     }
   };
 
@@ -849,11 +900,16 @@ function Dashboard() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to create event");
       }
-      setEventCreateStatus("success");
-      setEventCreateMessage("Event created successfully!");
+      setPopupType("success");
+      setPopupMessage("Your Cal event has been created successfully!");
+      setShowCalKeyInfo(false);
+
       setEventName("");
       setEventSlug("");
       setEventLength("");
+      setTimeout(() => {
+        closeModal();
+      }, 1000);
     } catch (error) {
       setEventCreateStatus("error");
       setEventCreateMessage(`Error creating event: ${error.message}`);
@@ -992,7 +1048,7 @@ function Dashboard() {
           </div>
           <hr />
           <div className={styles.agentInfo2}>
-            <h2>0</h2>
+            <h2>{bookingCount}</h2>
             <img src="svg/calender-booking.svg" alt="calender-booking" />
           </div>
         </section>
@@ -1000,7 +1056,8 @@ function Dashboard() {
 
       <div className={styles.main}>
         {localAgents.map((agent) => {
-          const randomPlan = planStyles[Math.floor(Math.random() * planStyles.length)];
+          const randomPlan =
+            planStyles[Math.floor(Math.random() * planStyles.length)];
           return (
             <div
               key={agent.agent_id}
@@ -1063,7 +1120,12 @@ function Dashboard() {
                       >
                         Test Call
                       </div>
-                      <div className={styles.OptionItem} onClick={() => handleOpenWidgetModal(agent)}>Widget</div>
+                      <div
+                        className={styles.OptionItem}
+                        onClick={() => handleOpenWidgetModal(agent)}
+                      >
+                        Widget
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1174,6 +1236,11 @@ function Dashboard() {
                   </button>
                 )}
               </div>
+              {showCalKeyInfo && (
+                <div className={styles.infoBanner}>
+                  Your Cal API key is added. Now create your Cal event.
+                </div>
+              )}
 
               {!showEventInputs && (
                 <div className={styles.modalButtons}>
@@ -1186,7 +1253,7 @@ function Dashboard() {
                   <button
                     className={`${styles.modalButton} ${styles.submit}`}
                     onClick={handleApiKeySubmit}
-                    disabled={!apiKey.trim()}
+                    disabled={!isValidCalApiKey(apiKey.trim())}
                   >
                     {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
                   </button>
@@ -1209,11 +1276,11 @@ function Dashboard() {
                       />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="slug">Slug</label>
+                      <label htmlFor="slug">Description</label>
                       <input
                         id="slug"
                         type="text"
-                        placeholder="Enter slug"
+                        placeholder="Enter Description"
                         className={styles.modalInput}
                         value={eventSlug}
                         onChange={(e) => setEventSlug(e.target.value)}
@@ -1308,6 +1375,13 @@ function Dashboard() {
             </div>
           </div>
         </OffCanvas>
+      )}
+      {popupMessage && (
+        <Popup
+          type={popupType}
+          message={popupMessage}
+          onClose={() => setPopupMessage("")}
+        />
       )}
     </div>
   );

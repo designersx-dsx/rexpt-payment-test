@@ -8,6 +8,7 @@ import decodeToken from '../../lib/decodeToken';
 import { getData } from 'country-list';
 import ReactCountryFlag from "react-country-flag";
 const BusinessLocation = () => {
+  const countries = getData();
   const navigate = useNavigate();
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
@@ -25,7 +26,8 @@ const BusinessLocation = () => {
   const [citySubmitted, setCitySubmitted] = useState(false);
   const [address1Submitted, setAddress1Submitted] = useState(false);
   const [address2Submitted, setAddress2Submitted] = useState(false);
-  const [search,setSearch]=useState(null);
+  const [search,setSearch]=useState('');
+  const [filteredCountries, setFilteredCountries] = useState(countries);
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
@@ -139,8 +141,8 @@ const BusinessLocation = () => {
     sessionStorage.setItem(
       'businessLocation',
       JSON.stringify({
-        country: ipData?.country_name || 'United States',
-        state: state.trim(),
+      country: selected?.name || ipData?.country_name || 'United States',        
+      state: state.trim(),
         city: city.trim(),
         address1: address1.trim(),
         address2: address2.trim(),
@@ -186,7 +188,7 @@ const BusinessLocation = () => {
       console.error(error);
     }
   };
-const countries = getData();
+
   // console.log('countryList',countries  )
   // const countries = [
   //   { code: "us", name: "United States" },
@@ -198,15 +200,36 @@ const countries = getData();
   const [selected, setSelected] = useState(countries[0]);
   const [open, setOpen] = useState(false);
 
-  useEffect(()=>{
-   if(countryCode){ const sel=countries.find((country)=>country?.code?.toLocaleLowerCase()==countryCode)
-    setSelected(sel)}
-  },[countryCode])
 
-  const handleSelect = (country) => {
-    setSelected(country);
+
+useEffect(() => {
+  console.log(search)
+  if (search) {
+    const filtered = countries.filter((country) =>
+      country.name.toLowerCase().includes(search.toLowerCase()) 
+    );
+    setFilteredCountries(filtered);
+  } else {
+    setFilteredCountries(countries);
     setOpen(false);
-  };
+  }
+}, [search, countries]);
+
+const handleSelect = (country) => {
+  setSelected(country);
+  setSearch(country.name); // Autofill input with selected country name
+  setOpen(false);
+};
+ useEffect(() => {
+  if (countryCode) {
+    const sel = countries.find((country) => country?.code?.toLowerCase() === countryCode);
+    if (sel) {
+      setSelected(sel);
+      setSearch(sel.name); // Autofill search input with country name
+
+    }
+  }
+}, [countryCode]);
   return (
     <div>
       <div className={styles.container}>
@@ -225,7 +248,7 @@ const countries = getData();
         </div> */}
 
         {/* Ankush Code Start */}
-        <label className={styles.label}>Country</label>
+        {/* <label className={styles.label}>Country</label>
 
         <div
           className={styles.dropdown}
@@ -235,23 +258,9 @@ const countries = getData();
         >
           <div className={styles.selected}>
             <div className={styles.selectedInfo}>
-              {/* <img
-                src={`https://flagcdn.com/w40/${selected.code}.png`}
-                alt=""
-                className={styles.flag}
-              /> */}
+    
               <ReactCountryFlag countryCode={selected.code} svg style={{ width: '2em', height: '2em' }} className={styles.flag} />
-                  {/* <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setOpen(true);
-                  }}
-                  placeholder="Type country or initials"
-                  className={styles.input}
-                  onClick={(e) => e.stopPropagation()} // Prevent toggle when clicking input
-                /> */}
+      
               <span>{selected.name}</span>
             </div>
             <span className={styles.arrow}>{open ? <img src='svg/drop-Arrow.svg' /> : <img src='svg/up-arrow.svg' alt='' />}</span>
@@ -265,18 +274,60 @@ const countries = getData();
                   onClick={() => handleSelect(country)}
                   className={styles.option}
                 >
-                  {/* <img
-                    src={`https://flagcdn.com/w40/${country.code}.png`}
-                    alt=""
-                    className={styles.flag}
-                  /> */}
+       
                   <ReactCountryFlag countryCode={country.code} svg style={{ width: '2em', height: '2em' }} className={styles.flag}/>
                   <span>{country.name}</span>
                 </li>
               ))}
             </ul>
           )}
-        </div>
+        </div> */}
+        <label className={styles.label}>Country</label>
+<div className={styles.dropdown} tabIndex={0}>
+  <div className={styles.selected}>
+    <div className={styles.selectedInfo}>
+      {selected && (
+        <ReactCountryFlag
+          countryCode={selected.code}
+          svg
+          style={{ width: '2em', height: '2em' }}
+          className={styles.flag}
+        />
+      )}
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => {setSearch(e.target.value);setOpen(true)}}
+        placeholder="Type country or initials"
+        className={styles.input2}
+        onClick={() => setOpen(true)} // Open dropdown on input click
+      />
+    </div>
+  </div>
+  {open && (
+    <ul className={styles.options}>
+      {filteredCountries.length > 0 ? (
+        filteredCountries.map((country) => (
+          <li
+            key={country.code}
+            onClick={() => handleSelect(country)}
+            className={styles.option}
+          >
+            <ReactCountryFlag
+              countryCode={country.code}
+              svg
+              style={{ width: '2em', height: '2em' }}
+              className={styles.flag}
+            />
+            <span>{country.name}</span>
+          </li>
+        ))
+      ) : (
+        <li className={styles.option}>No countries found</li>
+      )}
+    </ul>
+  )}
+</div>
         {/* Ankush Code end */}
         <div className={styles.labReq} >
           <div className={styles.Dblock} >
