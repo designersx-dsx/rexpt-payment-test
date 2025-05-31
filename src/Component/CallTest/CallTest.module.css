@@ -78,7 +78,7 @@ position: absolute;
 
 .agentTag {
     font-weight: 700;
-    color: #b3e283;
+    color: white;
     margin-left: 5px;
 }
 
@@ -87,5 +87,5 @@ position: absolute;
     font-size: 12px;
     font-weight: 400;
     margin-top: 3px;
-    color: #d3f4b7;
+    color: white;
 }
