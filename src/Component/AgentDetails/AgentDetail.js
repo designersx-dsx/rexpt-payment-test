@@ -5,6 +5,7 @@ import { fetchAgentDetailById} from '../../Store/apiStore';
 
 import { useLocation } from 'react-router-dom';
 import useUser  from '../../Store/Context/UserContext';
+import Loader2 from '../Loader2/Loader2';
 
 const AgentDashboard = () => {
    const [totalBookings, setTotalBookings] = useState(null);
@@ -19,7 +20,7 @@ useEffect(() => {
     try {
       const response = await fetchAgentDetailById(agentDetails);
       setAgentData(response?.data);
-
+        console.log(response.data)
       const calApiKey = response?.data?.agent?.calApiKey;
       if (calApiKey) {
         const calResponse = await fetch(
@@ -106,7 +107,9 @@ useEffect(() => {
         </div>
       </section>
   </div>
- 
+      {loading ?
+      <Loader2/>
+      :(
       <div className={styles.container}>
         <div className={styles.businessInfo}>
           <div className={styles.card1}>
@@ -239,11 +242,11 @@ useEffect(() => {
         <section className={styles.management}>
 
          
-          <AgentAnalysis />
+          <AgentAnalysis data={agentData?.callSummary?.data}/>
         </section>
 
       </div>
-   
+      )}
 
     </div>
   );
