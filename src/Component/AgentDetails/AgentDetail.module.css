@@ -129,6 +129,15 @@
   margin: 0 0 0 15px;
 }
 
+.logoutdiv {
+    margin-block: 5rem;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    background-color: #d5d5d5;
+    padding: 13px;
+    cursor: pointer
+}
 .InactiveText {
   font-size: 12px;
   font-weight: 500;
