@@ -1,7 +1,7 @@
 .container {
   max-width: 400px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
 }
@@ -31,7 +31,6 @@
 .title {
   font-size: 30px;
   font-weight: 700;
-  margin-bottom: 1.5rem;
   color: #111;
 }
 
@@ -102,7 +101,7 @@
   justify-content: center;
   align-items: center;
   min-height: 55px;
-  margin-top: 3rem;
+  margin-top: 2rem;
 }
 
 .btnTheme img {
@@ -197,4 +196,11 @@
   color: #555;
   margin-left: auto;
   transition: transform 0.3s ease;
+}
+@media(max-width:375px){
+  
+.title {
+  font-size: 36px;
+
+}
 }
