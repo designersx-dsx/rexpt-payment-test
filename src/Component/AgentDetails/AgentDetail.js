@@ -4,7 +4,10 @@ import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis'
 import { fetchAgentDetailById } from '../../Store/apiStore';
 
 import { useLocation } from 'react-router-dom';
-import useUser from '../../Store/Context/UserContext';
+
+import useUser  from '../../Store/Context/UserContext';
+import Loader2 from '../Loader2/Loader2';
+
 
 const AgentDashboard = () => {
   const [totalBookings, setTotalBookings] = useState(null);
@@ -12,39 +15,42 @@ const AgentDashboard = () => {
   const [agentData, setAgentData] = useState([])
   const location = useLocation();
   const agentDetails = location.state;
-  const { user, setUser } = useUser();
 
-  useEffect(() => {
-    const getAgentDetailsAndBookings = async () => {
-      try {
-        const response = await fetchAgentDetailById(agentDetails);
-        setAgentData(response?.data);
+  const {user,setUser}=useUser();
+  
+useEffect(() => {
+  const getAgentDetailsAndBookings = async () => {
+    try {
+      const response = await fetchAgentDetailById(agentDetails);
+      setAgentData(response?.data);
 
-        const calApiKey = response?.data?.agent?.calApiKey;
-        if (calApiKey) {
-          const calResponse = await fetch(
-            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
-          );
-          if (!calResponse.ok) {
-            throw new Error("Failed to fetch total bookings from Cal.com");
-          }
-          const calData = await calResponse.json();
-          setTotalBookings(calData.bookings ? calData.bookings.length : 0);
-        } else {
-          setTotalBookings(0);
+      const calApiKey = response?.data?.agent?.calApiKey;
+      if (calApiKey) {
+        const calResponse = await fetch(
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
+        );
+        if (!calResponse.ok) {
+          throw new Error("Failed to fetch total bookings from Cal.com");
         }
-      } catch (err) {
-        console.error("Failed to fetch data", err.response || err.message || err);
-        setTotalBookings(0);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    if (agentDetails) {
-      getAgentDetailsAndBookings();
+        const bookingsData = await calResponse.json();
+        setTotalBookings(bookingsData.length); // Or however you want to count bookings
+      } else {
+        setTotalBookings(0); // No API key, so assume 0 bookings
+      }
+    } catch (err) {
+      console.error("Failed to fetch data", err.response || err.message || err);
+      setTotalBookings(0);
+    } finally {
+      setLoading(false);
     }
-  }, [agentDetails]);
+  };
+
+  if (agentDetails) {
+    getAgentDetailsAndBookings();
+  }
+}, [agentDetails]);
+
 
   const withShimmer = (content) =>
     loading ? <div className={styles.shimmerContainer} style={{ minHeight: '150px' }}>{content}</div> : content;
@@ -106,9 +112,13 @@ const AgentDashboard = () => {
               </div>
             </div>
           </div>
-        </section>
-      </div>
 
+       
+      </section>
+  </div>
+      {loading ?
+      <Loader2/>
+      :(
       <div className={styles.container}>
         <div className={styles.businessInfo}>
           <div className={styles.card1}>
@@ -241,10 +251,12 @@ const AgentDashboard = () => {
         <section className={styles.management}>
 
 
-          <AgentAnalysis />
+         
+          <AgentAnalysis data={agentData?.callSummary?.data}/>
         </section>
 
       </div>
+      )}
 
 
     </div>

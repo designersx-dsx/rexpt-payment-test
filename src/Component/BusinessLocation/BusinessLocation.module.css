@@ -51,6 +51,15 @@
   transition: border-color 0.3s ease;
   min-height: 55px;
 }
+.input2{
+  border: none;
+
+
+}
+.input2:focus {
+  border-color:none;
+  outline: none;
+}
 
 .input:focus {
   border-color: #6524EB;

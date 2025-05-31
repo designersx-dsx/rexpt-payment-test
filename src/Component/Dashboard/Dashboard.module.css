@@ -561,7 +561,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   color: #333;
-  border-bottom: 2px solid #6524EB; /* Accent color */
+  border-bottom: 2px solid #6524EB; 
   padding-bottom: 5px;
 }
 
@@ -594,4 +594,14 @@
   border-color: #6524EB;
   outline: none;
   box-shadow: 0 0 5px rgba(101, 36, 235, 0.5);
+}
+.infoBanner {
+  background-color: #f3e8ff;
+  color: #6a0dad;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 14px;
 }
