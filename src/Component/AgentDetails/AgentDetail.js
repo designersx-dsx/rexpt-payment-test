@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styles from './AgentDetail.module.css';
-// import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis';
 import AgentAnalysis from './AgentAnalysisGraph/AgentAnalysis'
-import { fetchAgentDetailById, getTotalBookings } from '../../Store/apiStore';
+import { fetchAgentDetailById} from '../../Store/apiStore';
+
 import { useLocation } from 'react-router-dom';
 import useUser  from '../../Store/Context/UserContext';
 
@@ -14,30 +14,41 @@ const AgentDashboard = () => {
   const agentDetails = location.state;
   const {user,setUser}=useUser();
   
- useEffect(() => {
-    const getAgentDetails = async () => {
-      try {
-        const response = await fetchAgentDetailById(agentDetails);
+useEffect(() => {
+  const getAgentDetailsAndBookings = async () => {
+    try {
+      const response = await fetchAgentDetailById(agentDetails);
+      setAgentData(response?.data);
 
-        setAgentData(response?.data)
-
-      } catch (err) {
-        console.error('Failed to fetch selected Agent Info', err.response || err.message || err);
-      }finally{
-        setLoading(false)
+      const calApiKey = response?.data?.agent?.calApiKey;
+      if (calApiKey) {
+        const calResponse = await fetch(
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
+        );
+        if (!calResponse.ok) {
+          throw new Error("Failed to fetch total bookings from Cal.com");
+        }
+        const calData = await calResponse.json();
+        setTotalBookings(calData.bookings ? calData.bookings.length : 0);
+      } else {
+        setTotalBookings(0);
       }
-    };
-
-    if (agentDetails) {
-      getAgentDetails();
+    } catch (err) {
+      console.error("Failed to fetch data", err.response || err.message || err);
+      setTotalBookings(0);
+    } finally {
+      setLoading(false);
     }
-  }, [agentDetails]);
+  };
+
+  if (agentDetails) {
+    getAgentDetailsAndBookings();
+  }
+}, [agentDetails]);
 
   const withShimmer = (content) =>
     loading ? <div className={styles.shimmerContainer} style={{minHeight: '150px'}}>{content}</div> : content;
 
-
-  console.log('agentData',agentData)
   return (
     <div >
       <header className={styles.header}>
@@ -204,8 +215,8 @@ const AgentDashboard = () => {
             <span className={styles.statDetail}>
               {agentData?.avgCallTime?.minutes || agentData?.avgCallTime?.seconds ?
               (
-                <>
-               {agentData?.avgCallTime?.minutes}
+              <>
+              {agentData?.avgCallTime?.minutes}
               <span className={styles.MinFont}>m</span>{agentData?.avgCallTime?.seconds}
               <span className={styles.MinFont}>s</span>
                </>
@@ -220,7 +231,7 @@ const AgentDashboard = () => {
             <span className={styles.statDetail}>{totalBookings !== null ? totalBookings : '0'}</span></div>
 
           <div className={` ${styles.stat} ${styles.Red}`}><span className={` ${styles.statText} `}>Minutes Remaining</span>
-            <span className={styles.statDetail}>{agentData?.agent?.mins_left}</span></div>
+            <span className={styles.statDetail}>{Math.floor(agentData?.agent?.mins_left/60)}</span></div>
         </div>
 
 

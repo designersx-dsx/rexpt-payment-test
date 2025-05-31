@@ -5,7 +5,8 @@ import PopUp from '../Popup/Popup';
 import axios from 'axios';
 import { API_BASE_URL } from '../../Store/apiStore';
 import decodeToken from '../../lib/decodeToken';
-
+import { getData } from 'country-list';
+import ReactCountryFlag from "react-country-flag";
 const BusinessLocation = () => {
   const navigate = useNavigate();
   const [state, setState] = useState('');
@@ -24,6 +25,7 @@ const BusinessLocation = () => {
   const [citySubmitted, setCitySubmitted] = useState(false);
   const [address1Submitted, setAddress1Submitted] = useState(false);
   const [address2Submitted, setAddress2Submitted] = useState(false);
+  const [search,setSearch]=useState(null);
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
@@ -184,14 +186,34 @@ const BusinessLocation = () => {
       console.error(error);
     }
   };
+const countries = getData();
+  // console.log('countryList',countries  )
+  // const countries = [
+  //   { code: "us", name: "United States" },
+  //   { code: "in", name: "India" },
+  //   { code: "gb", name: "United Kingdom" },
+  //   { code: "fr", name: "France" },
+  //   { code: "de", name: "Germany" },
+  // ];
+  const [selected, setSelected] = useState(countries[0]);
+  const [open, setOpen] = useState(false);
 
+  useEffect(()=>{
+   if(countryCode){ const sel=countries.find((country)=>country?.code?.toLocaleLowerCase()==countryCode)
+    setSelected(sel)}
+  },[countryCode])
+
+  const handleSelect = (country) => {
+    setSelected(country);
+    setOpen(false);
+  };
   return (
     <div>
       <div className={styles.container}>
         <h2 className={styles.title}>Business Location Details</h2>
 
-        <label className={styles.label}>Country</label>
-        <div className={styles.countryInput}>
+ 
+        {/* <div className={styles.countryInput}>
           <div className={styles.countryDiv}>
             <img
               src={`https://flagcdn.com/${countryCode}.svg`}
@@ -200,47 +222,115 @@ const BusinessLocation = () => {
             />
           </div>
           <span>{ipData?.country}</span>
+        </div> */}
+
+        {/* Ankush Code Start */}
+        <label className={styles.label}>Country</label>
+
+        <div
+          className={styles.dropdown}
+          onClick={() => setOpen(!open)}
+          tabIndex={0}
+          onBlur={() => setOpen(false)}
+        >
+          <div className={styles.selected}>
+            <div className={styles.selectedInfo}>
+              {/* <img
+                src={`https://flagcdn.com/w40/${selected.code}.png`}
+                alt=""
+                className={styles.flag}
+              /> */}
+              <ReactCountryFlag countryCode={selected.code} svg style={{ width: '2em', height: '2em' }} className={styles.flag} />
+                  {/* <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setOpen(true);
+                  }}
+                  placeholder="Type country or initials"
+                  className={styles.input}
+                  onClick={(e) => e.stopPropagation()} // Prevent toggle when clicking input
+                /> */}
+              <span>{selected.name}</span>
+            </div>
+            <span className={styles.arrow}>{open ? <img src='svg/drop-Arrow.svg' /> : <img src='svg/up-arrow.svg' alt='' />}</span>
+          </div>
+
+          {open && (
+            <ul className={styles.options}>
+              {countries.map((country) => (
+                <li
+                  key={country.code}
+                  onClick={() => handleSelect(country)}
+                  className={styles.option}
+                >
+                  {/* <img
+                    src={`https://flagcdn.com/w40/${country.code}.png`}
+                    alt=""
+                    className={styles.flag}
+                  /> */}
+                  <ReactCountryFlag countryCode={country.code} svg style={{ width: '2em', height: '2em' }} className={styles.flag}/>
+                  <span>{country.name}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
+        {/* Ankush Code end */}
+        <div className={styles.labReq} >
+          <div className={styles.Dblock} >
+            <label className={styles.label}>State</label>
+            <input
+              type="text"
+              placeholder="State"
+              className={`${styles.input} ${stateError ? styles.inputError : ''}`}
+              value={state}
+              onChange={handleStateChange}
+            /></div>
 
-        <label className={styles.label}>State</label>
-        <input
-          type="text"
-          placeholder="State"
-          className={`${styles.input} ${stateError ? styles.inputError : ''}`}
-          value={state}
-          onChange={handleStateChange}
-        />
-        {stateError && <p className={styles.inlineError}>{stateError}</p>}
+          {stateError && <p className={styles.inlineError}>{stateError}</p>}
+        </div>
+        <div className={styles.labReq} >
+          <div className={styles.Dblock} >
+            <label className={styles.label}>City</label>
+            <input
+              type="text"
+              placeholder="City"
+              className={`${styles.input} ${cityError ? styles.inputError : ''}`}
+              value={city}
+              onChange={handleCityChange}
+            />
+          </div>
+          {cityError && <p className={styles.inlineError}>{cityError}</p>}
+        </div>
+        <div className={styles.labReq} >
+          <div className={styles.Dblock} >
 
-        <label className={styles.label}>City</label>
-        <input
-          type="text"
-          placeholder="City"
-          className={`${styles.input} ${cityError ? styles.inputError : ''}`}
-          value={city}
-          onChange={handleCityChange}
-        />
-        {cityError && <p className={styles.inlineError}>{cityError}</p>}
+            <label className={styles.label}>Address line 1</label>
+            <input
+              type="text"
+              placeholder="First Address"
+              className={`${styles.input} ${address1Error ? styles.inputError : ''}`}
+              value={address1}
+              onChange={handleAddress1Change}
+            />
+          </div>
+          {address1Error && <p className={styles.inlineError}>{address1Error}</p>}
+        </div>
+        <div className={styles.labReq} >
+          <div className={styles.Dblock} >
 
-        <label className={styles.label}>Address line 1</label>
-        <input
-          type="text"
-          placeholder="First Address"
-          className={`${styles.input} ${address1Error ? styles.inputError : ''}`}
-          value={address1}
-          onChange={handleAddress1Change}
-        />
-        {address1Error && <p className={styles.inlineError}>{address1Error}</p>}
-
-        <label className={styles.label}>Address line 2</label>
-        <input
-          type="text"
-          placeholder="Second Address"
-          className={`${styles.input} ${address2Error ? styles.inputError : ''}`}
-          value={address2}
-          onChange={handleAddress2Change}
-        />
-        {address2Error && <p className={styles.inlineError}>{address2Error}</p>}
+            <label className={styles.label}>Address line 2</label>
+            <input
+              type="text"
+              placeholder="Second Address"
+              className={`${styles.input} ${address2Error ? styles.inputError : ''}`}
+              value={address2}
+              onChange={handleAddress2Change}
+            />  </div>
+          {address2Error && <p className={styles.inlineError}>{address2Error}</p>}
+        </div>
 
         <div>
           <div type="submit" onClick={handleContinue}>
