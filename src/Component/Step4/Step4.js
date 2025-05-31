@@ -6,20 +6,20 @@ const roles = [
     {
         title: 'General Receptionist',
         description: 'Always ready to assist',
-        icon: 'images/general-receptionist.png',
+        icon: 'svg/general-receptionist.svg',
     },
     {
         title: 'Sales Receptionist',
         description: 'Boosting your sales calls.',
-        icon: 'images/sales receptionist.png',
+        icon: 'svg/sales receptionist.svg',
     },
     {
         title: 'Technical Receptionist',
         description: 'Smart support at entry.',
-        icon: 'images/technical-receptionist.png',
+        icon: 'svg/technical-receptionist.svg',
     },
 ];
-const Step4 = forwardRef(({ onNext, onBack, onValidationError,loading,setLoading}, ref) => {
+const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoading }, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
     useEffect(() => {
         sessionStorage.setItem('agentRole', selectedRole)
@@ -36,39 +36,39 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError,loading,setLoading
             return true;
         },
     }));
-// console.log("loading", loading)
+    // console.log("loading", loading)
     return (
         <>
             <div className={styles.container}>
                 {
-                // loading ?
-                // <AgentCreationLoader/>
-                // :              
-                roles.map((role, index) => (
-                    <label
-                        key={index}
-                        className={`${styles.card} ${selectedRole === role.title ? styles.selected : ''
-                            }`}
-                    >
-                        <div className={styles.iconBox}>
-                            <img src={role.icon} alt={role.title} className={styles.icon} />
-                        </div>
-                        <div className={styles.info}>
-                            <p className={styles.title}>{role.title}</p>
-                            <p className={styles.description}>{role.description}</p>
-                        </div>
-                        <input
-                            type="radio"
-                            name="receptionist"
-                            value={role.title}
-                            checked={selectedRole === role.title}
-                            onChange={() => setSelectedRole(role.title)}
-                            className={styles.radio}
-                        />
-                        <span className={styles.customRadio}></span>
-                    </label>
-                ))}
-                
+                    // loading ?
+                    // <AgentCreationLoader/>
+                    // :              
+                    roles.map((role, index) => (
+                        <label
+                            key={index}
+                            className={`${styles.card} ${selectedRole === role.title ? styles.selected : ''
+                                }`}
+                        >
+                            <div className={styles.iconBox}>
+                                <img src={role.icon} alt={role.title} className={styles.icon} />
+                            </div>
+                            <div className={styles.info}>
+                                <p className={styles.title}>{role.title}</p>
+                                <p className={styles.description}>{role.description}</p>
+                            </div>
+                            <input
+                                type="radio"
+                                name="receptionist"
+                                value={role.title}
+                                checked={selectedRole === role.title}
+                                onChange={() => setSelectedRole(role.title)}
+                                className={styles.radio}
+                            />
+                            <span className={styles.customRadio}></span>
+                        </label>
+                    ))}
+
             </div>
         </>
 

@@ -38,12 +38,12 @@ function App() {
           <Route path="/signup" element={<SecureRoute><SignUp /></SecureRoute>} />
           <Route path="/details" element={<Details />} />
           <Route path="/steps" element={<Step />} />
-          <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
+          <Route path="/about-business" element={<AboutBusiness />} />
           <Route path="/business-details" element={<BusinessDetails />} />
           <Route path="/agent-detail" element={<AgentDetail />} />
           <Route path="/business-locations" element={<BusinessLocation />} />
           <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
-          <Route path="/home" element={<SecureRoute><AgentDetail /></SecureRoute>} />
+          <Route path="/home" element={<AgentDetail />} />
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<RexAgent />} />

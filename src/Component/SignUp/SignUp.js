@@ -338,7 +338,7 @@ const SignUp = () => {
         </div>
         <div className={`${styles.Maincontent} ${styles.animate3}`}>
           <div className={styles.welcomeTitle}>
-            <h1>Log In to your Account</h1>
+        <h1 >Log In to your Account</h1>
           </div>
         </div>
 

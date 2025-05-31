@@ -1,3 +1,19 @@
+.agenterror {
+  color: #ff1100;
+  font-size: 0.875rem;
+  font-weight: 500;
+  position: absolute;
+}
+
+.labReq {
+  position: relative;
+  width: 100%;
+}
+
+.Dblock {
+  display: grid;
+}
+
 .sliderContainer {
   width: 300px;
   margin: 0 auto;
@@ -9,13 +25,16 @@
   font-size: 2.5rem;
   font-weight: bold;
   margin-block: 1rem;
+  margin-bottom: 10px;
 }
+
 .agentInputBox {
-  border: 1px solid #e2e8f0; 
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 16px 20px;
   max-width: 500px;
   background-color: #fff;
+
 }
 
 .agentLabel {
@@ -36,7 +55,7 @@
 }
 
 .agentInput::placeholder {
-  color: #a0aec0; 
+  color: #a0aec0;
 }
 
 .slide {
@@ -57,17 +76,13 @@
   right: 10px;
   z-index: 2;
 }
-.customBtn{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: absolute;
-    top: 50%;
-    width: 100%;
-}
-@media (max-width:360px){
-  .customBtn{
-    justify-content: space-around;
-  }
-  
+
+.customBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 20px;
+  position: absolute;
+  top: 50%;
+  width: 100%;
 }
