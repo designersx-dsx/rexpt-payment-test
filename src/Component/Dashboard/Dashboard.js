@@ -443,13 +443,13 @@ function Dashboard() {
                                         <div className={styles.OptionsDropdown}>
                                              <div
                                                 className={styles.OptionItem}
-                                                onClick={() => ""}
+                                                onClick={() => handleOpenCallModal(agent)}
                                             >
                                                 Test Agent
                                             </div>
                                              <div
                                                 className={styles.OptionItem}
-                                                onClick={() => ""}
+                                                onClick={() => handleOpenWidgetModal(agent)}
                                             >
                                                 Integrate
                                             </div>
@@ -478,18 +478,17 @@ function Dashboard() {
                                                 Delete Agent
                                             </div>
                                             
-                                            <div
+                                            {/* <div
                                                 className={styles.OptionItem}
-                                                onClick={() => handleOpenCallModal(agent)}
                                             >
                                                 Test Call
-                                            </div>
-                                            <div
+                                            </div> */}
+                                            {/* <div
                                                 className={styles.OptionItem}
                                                 onClick={() => handleOpenWidgetModal(agent)}
                                             >
                                                 Widget
-                                            </div>
+                                            </div> */}
                                         </div>
                                     )}
                                 </div>
