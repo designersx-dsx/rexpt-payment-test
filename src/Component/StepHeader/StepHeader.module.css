@@ -8,17 +8,7 @@
     position: relative;
 }
 
-.pulseRing {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(227, 213, 255, 0.788);
-    animation: pulse-ring 2s ease-out infinite;
-    z-index: 0;
-}
+
 
 .logo {
     position: relative;
@@ -32,15 +22,47 @@
     text-align: center;
 }
 
-@keyframes pulse-ring {
+.ripple {
+    position: absolute;
+    width: 205px;
+    height: 205px;
+    border-radius: 50%;
+    border: 3px solid #a178f5;
+    animation: rippleAnimation 2s ease-out infinite;
+    opacity: 0;
+}
+
+.RipplThree {
+    width: 100%;
+    display: flex
+}
+
+
+.ripple:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.ripple:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.ripple:nth-child(3) {
+    animation-delay: 0.8s;
+}
+
+@keyframes rippleAnimation {
     0% {
-        transform: scale(0.33);
-        opacity: 1;
+        transform: scale(0.6);
+        opacity: 0.6;
     }
 
-    80%,
-    100% {
+    70% {
         transform: scale(1.2);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1.6);
         opacity: 0;
     }
 }

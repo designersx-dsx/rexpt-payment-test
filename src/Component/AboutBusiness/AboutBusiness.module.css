@@ -51,6 +51,12 @@
     color: #24252C;
 }
 
+.formGroup textarea {
+    
+    height: unset !important;
+    
+}
+
 .formGroup label {
     font-size: 18px;
     font-weight: 600;

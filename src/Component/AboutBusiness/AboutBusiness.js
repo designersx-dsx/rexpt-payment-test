@@ -202,7 +202,7 @@ function AboutBusiness() {
               )}
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
-                <input
+                <textarea rows="4" cols="50"
                   id="about-business"
                   type="text"
                   placeholder="Describe"
