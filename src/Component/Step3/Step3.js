@@ -15,14 +15,14 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [agentName, setAgentName] = useState('');
   const [avatar, setAvatar] = useState(null);
   const [agentNameError, setAgentNameError] = useState('');
-  
+
   const settings = {
     dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    arrows: false, 
+    arrows: false,
   };
 
   useEffect(() => {
@@ -34,26 +34,26 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     sessionStorage.setItem("avatar", avatar.img);
   };
 
-useImperativeHandle(ref, () => ({
-  validate: () => {
-    if (!agentName.trim()) {
-      setAgentNameError("Please enter agent name!");
-      return false;  
-    } else {
-      setAgentNameError(""); 
-    }
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      if (!agentName.trim()) {
+        setAgentNameError("Please enter agent name!");
+        return false;
+      } else {
+        setAgentNameError("");
+      }
 
-    if (!avatar) {
-      onValidationError?.({
-        type: "failed",
-        message: "Please select an avatar!"
-      });
-      return false;
-    }
+      if (!avatar) {
+        onValidationError?.({
+          type: "failed",
+          message: "Please select an avatar!"
+        });
+        return false;
+      }
 
-    return true; 
-  },
-}));
+      return true;
+    },
+  }));
 
   const handleAgentNameChange = (e) => {
     const val = e.target.value;
@@ -65,23 +65,26 @@ useImperativeHandle(ref, () => ({
 
   return (
     <>
-      <div className={styles.agentInputBox} id='sliderstep'>
-        <label className={styles.agentLabel}>Name Your Virtual Agent</label>
-        <input
-          type="text"
-          name="agentName"
-          onChange={handleAgentNameChange}
-          className={styles.agentInput}
-          placeholder="Ex- Smith, Nova"
-          value={agentName}
-        />
-       
-      </div>
-       {agentNameError && (
-          <p style={{ color: '#d93025', fontSize: '0.875rem', marginTop: '6px', fontWeight: '500' }}>
+      <div className={styles.labReq} >
+        <div className={styles.agentInputBox} id='sliderstep'>
+          <label className={styles.agentLabel}>Name Your Virtual Agent</label>
+          <div className={styles.Dblock} >
+            <input
+              type="text"
+              name="agentName"
+              onChange={handleAgentNameChange}
+              className={styles.agentInput}
+              placeholder="Ex- Smith, Nova"
+              value={agentName}
+            />
+          </div>
+        </div>
+        {agentNameError && (
+          <p className={styles.agenterror}>
             {agentNameError}
           </p>
         )}
+      </div>
       <div className={styles.sliderContainer}>
         <h2 className={styles.heading}>Choose Avatar</h2>
 
@@ -106,10 +109,10 @@ useImperativeHandle(ref, () => ({
 
         <div className={styles.customBtn}>
           <div className={styles.arrowLeft} onClick={() => sliderRef.current.slickPrev()}>
-            <img src="images/sliderleft.png" alt="Previous" />
+            <img src="svg/sliderleft.svg" alt="Previous" />
           </div>
           <div className={styles.arrowRight} onClick={() => sliderRef.current.slickNext()}>
-            <img src="/images/sliderRight.png" alt="Next" />
+            <img src="svg/sliderRight.svg" alt="Next" />
           </div>
         </div>
       </div>

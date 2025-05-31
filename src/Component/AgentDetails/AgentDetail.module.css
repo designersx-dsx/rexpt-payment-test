@@ -312,8 +312,8 @@
 }
 
 .agentStats .stat {
-  min-width: 90px;
-  max-width: 90px;
+  /* min-width: 90px;
+  max-width: 90px; */
   display: grid;
   border: 1px solid #e0e0e0;
   border-radius: 15px;
@@ -326,13 +326,14 @@
 }
 
 .agentStats {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 10px;
-  margin: 15px 0 0 0;
-  justify-content: center;
-  overflow-y: scroll;
-  padding-bottom: 15px;
+display: grid
+;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+    padding-right: 10px;
+    /* max-height: 500px; */
+    overflow: auto;
 
 }
 
@@ -386,7 +387,7 @@
 .stat.blue {
   background: #BFF7F7;
   color: #000;
-  border: 1px solid #CFBAFF;
+  border: 1px solid #9AF3EF;
 
 }
 
@@ -397,7 +398,7 @@
 }
 
 .stat.Red {
-  background: #FFEBA5;
+  background: #FFCBBE;
   color: #000;
   border: 1px solid #FFA58C;
 
@@ -551,8 +552,13 @@
   border-radius: 1rem;
 }
 
+@media (max-width:370px) {
+  .Agenttitle{
+    font-size: 35px;
+  }
 
-@media (max-width:410px) {
+}
+@media (max-width:320px) {
   .businessInfo {
     display: grid;
     align-items: unset;

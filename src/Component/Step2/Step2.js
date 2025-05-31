@@ -134,9 +134,9 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
 
               <span className={styles.icon}>
                 {gender === 'Male' ? (
-                  <img src="images/male-icon.png" alt="Male Icon" />
+                  <img src="svg/male-icon.svg" alt="Male Icon" />
                 ) : (
-                  <img src="images/female-icon.png" alt="Female Icon" />
+                  <img src="svg/female-icon.svg" alt="Female Icon" />
                 )}
               </span>
               <span>{gender}</span>
