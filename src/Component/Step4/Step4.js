@@ -21,6 +21,8 @@ const roles = [
 ];
 const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoading }, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
+
+
     useEffect(() => {
         sessionStorage.setItem('agentRole', selectedRole)
     }, [selectedRole])
@@ -33,17 +35,15 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoadi
                 });
                 return false;
             }
+
             return true;
         },
     }));
-    // console.log("loading", loading)
     return (
         <>
-            <div className={styles.container}>
+              <div className={`${styles.container} ${loading ? styles.blocked : ''}`}>
                 {
-                    // loading ?
-                    // <AgentCreationLoader/>
-                    // :              
+
                     roles.map((role, index) => (
                         <label
                             key={index}
