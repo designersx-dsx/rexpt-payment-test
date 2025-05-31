@@ -24,6 +24,7 @@ const Step = () => {
     const [popupType, setPopupType] = useState(null);
     const [popupMessage, setPopupMessage] = useState("");
     const [loading, setLoading] = useState(false)
+  
     const step2Ref = useRef();
     const step3Ref = useRef();
     const step4Ref = useRef();
@@ -383,7 +384,6 @@ Let’s begin assisting the customer!
     };
     const handleContinue = async () => {
         if (step4Ref.current) {
-
             const isValid = step4Ref.current.validate();
             if (isValid) {
                 setLoading(true)
@@ -452,12 +452,12 @@ Let’s begin assisting the customer!
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
-                   
+
                 };
-            const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
-            if (knowledgeBaseId) {
-            agentConfig.knowledge_base_ids = [knowledgeBaseId];
-            }
+                const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+                if (knowledgeBaseId) {
+                    agentConfig.knowledge_base_ids = [knowledgeBaseId];
+                }
                 try {
                     const llmResponse = await axios.post(
                         "https://api.retellai.com/create-retell-llm",
@@ -478,7 +478,6 @@ Let’s begin assisting the customer!
                     };
                     const finalAgentData = {
                         response_engine,
-                        // ...otherAgentSpecifications
                         voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         agent_name: sessionStorage.getItem("agentName"),
@@ -518,12 +517,10 @@ Let’s begin assisting the customer!
                             agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
                             agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
                             agentGender: sessionStorage.getItem('agentGender') || "female",
-                            agentPlan:  "free" || "Plus",
+                            agentPlan: "free" || "Plus",
                             agentStatus: true,
                             businessId: businessIdObj.businessId,
                         }
-                        console.log(agentData, "agentData")
-
                         try {
                             const response = await createAgent(agentData);
                             if (response.status === 200 || response.status === 201) {
