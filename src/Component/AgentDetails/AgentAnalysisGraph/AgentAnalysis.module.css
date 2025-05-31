@@ -142,3 +142,107 @@
   text-decoration: none;
   background-color: transparent;
 }
+/* ===== CALENDAR CUSTOM STYLING ===== */
+
+.calendarSection {
+  margin-top: 2rem;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* Base calendar style */
+.react-calendar {
+  width: 100%;
+  max-width: 100%;
+  background: #fdfbff;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.125em;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  color: #6a0dad;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #f3e8ff;
+}
+
+/* Weekdays styling */
+.react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #999;
+  font-size: 0.75rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.react-calendar__month-view__days {
+  gap: 0.25rem;
+}
+
+/* Date cells */
+.react-calendar__tile {
+  background: none;
+  border: none;
+  padding: 0.75rem 0.25rem;
+  text-align: center;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background: #f3e8ff;
+  color: #6a0dad;
+}
+
+.react-calendar__tile--now {
+  background: #ffe0f5;
+  border-radius: 12px;
+  font-weight: bold;
+  color: #6a0dad;
+}
+
+.react-calendar__tile--active {
+  background: #6a0dad;
+  color: white;
+  border-radius: 12px;
+}
+
+/* Booking highlight */
+.bookingHighlight {
+  background: #9e7de9 !important;
+  color: white !important;
+  font-weight: bold;
+  border-radius: 12px;
+}
+
+/* Responsive behavior */
+@media screen and (max-width: 600px) {
+  .react-calendar__tile {
+    padding: 0.5rem 0.15rem;
+    font-size: 0.75rem;
+  }
+}
