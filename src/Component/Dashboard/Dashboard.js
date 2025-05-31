@@ -717,6 +717,7 @@ function Dashboard() {
                     onClose={() => setPopupMessage("")}
                 />
             )}
+                <Footer />
         </div>
     );
 }

@@ -6,6 +6,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../../Store/apiStore';
 import decodeToken from '../../lib/decodeToken';
 import Loader from '../Loader/Loader';
+import useUser from '../../Store/Context/UserContext';
 
 const Details = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Details = () => {
   const token = localStorage.getItem('token');
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
-
+  const { user, setUser } = useUser()
   useEffect(() => {
     if (sessionStorage.getItem('OwnerDetails')) {
       const ownerDetails = JSON.parse(sessionStorage.getItem('OwnerDetails'));
@@ -100,6 +101,7 @@ const Details = () => {
       if (response.status === 200) {
         setStartExit(true);
         sessionStorage.setItem('OwnerDetails', JSON.stringify({ name: name.trim(), phone }));
+        setUser({ name: name })
         setTimeout(() => {
           navigate('/business-details');
         }, 2000);
