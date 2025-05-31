@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 import { API_BASE_URL } from '../Store/apiStore';
+import Loader2 from '../Component/Loader2/Loader2';
 const SecureRoute = ({ children }) => {
   const [isValid, setIsValid] = useState(null);
   const token = localStorage.getItem('token');
@@ -23,7 +24,7 @@ const SecureRoute = ({ children }) => {
     }
   }, [token]);
 
-  if (isValid === null) return <div>Loading...</div>;
+  if (isValid === null) return <div><Loader2/></div>;
   if (isValid === false) return <Navigate to="/" />;
   return children;
 };

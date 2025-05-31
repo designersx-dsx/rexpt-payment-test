@@ -138,28 +138,38 @@ const Details = () => {
       <div
         className={`${styles.container} ${styles.animate2} ${startExit ? styles.fadeOut3 : ''}`}
       >
-        <label className={styles.label}>Name</label>
-        <input
-          type="text"
-          className={`${styles.input} ${nameError ? styles.inputError : ''}`}
-          placeholder="Your name"
-          value={name}
-          onChange={handleNameChange}
-        />
-        {nameError && <p className={styles.inlineError}>{nameError}</p>}
+        <div className={styles.labReq} >
+          <div className={styles.Dblock} >
+            <label className={styles.label}>Name</label>
+            <input
+              type="text"
+              className={`${styles.input} ${nameError ? styles.inputError : ''}`}
+              placeholder="Your name"
+              value={name}
+              onChange={handleNameChange}
+            />
+          </div>
+          {nameError && <p className={styles.inlineError}>{nameError}</p>}
+        </div>
+        <div className={styles.labReq} >
+          <div className={styles.Dblock} >
 
-        <label className={styles.label}>Phone Number</label>
-        <input
-          type="tel"
-          className={`${styles.input} ${phoneError ? styles.inputError : ''}`}
-          placeholder="Phone number"
-          value={phone}
-          maxLength={10}
-          onChange={handlePhoneChange}
-          inputMode="numeric"
-        />
-        {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
+            <label className={styles.label}>Phone Number</label>
+            <input
+              type="tel"
+              className={`${styles.input} ${phoneError ? styles.inputError : ''}`}
+              placeholder="Phone number"
+              value={phone}
+              maxLength={10}
+              onChange={handlePhoneChange}
+              inputMode="numeric"
+            />
+          </div>
+
+          {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
+        </div>
       </div>
+
 
       <div
         className={`${styles.Btn} ${styles.animate3} ${startExit ? styles.fadeOut1 : ''}`}

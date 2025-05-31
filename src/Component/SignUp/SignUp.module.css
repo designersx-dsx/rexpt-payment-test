@@ -2,6 +2,18 @@
     color: #ff1100;
     font-size: 0.875rem;
     font-weight: 500;
+    position: absolute;
+}
+
+
+
+.labReq {
+    position: relative;
+width: 100%;
+}
+
+.Dblock {
+    display: grid;
 }
 
 /* .inputError {
@@ -196,29 +208,30 @@
 }
 
 @keyframes slideUpFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .animate1 {
-  animation: slideUpFadeIn 0.6s ease forwards;
-  animation-delay: 0.2s;
-  opacity: 0;
-  will-change: opacity, transform;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
+    animation: slideUpFadeIn 0.6s ease forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 .animate2 {
-  animation: slideUpFadeIn 0.6s ease forwards;
-  animation-delay: 0.5s;
-  opacity: 0;
+    animation: slideUpFadeIn 0.6s ease forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
 }
 
 .animate3 {
@@ -347,7 +360,7 @@
 .socialMedia {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 1rem;
 }
 
 /* ===== New animation styles ===== */
@@ -370,10 +383,6 @@
     animation: slideUpFadeIn 0.8s ease forwards;
 }
 
-
-
-
-
 .btnTheme {
     position: relative;
     color: white;
@@ -382,7 +391,7 @@
     justify-content: center;
     align-items: center;
     min-height: 55px;
-    margin-top: 3rem;
+    margin-top: 1rem;
     width: 100%;
 }
 
@@ -402,4 +411,9 @@
     font-weight: 500;
     font-size: 19px;
 
+}
+@media (max-width:375px) {
+    .welcomeTitle h1 {
+        font-size: 30px;
+    }
 }

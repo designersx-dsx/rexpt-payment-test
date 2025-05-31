@@ -51,6 +51,7 @@ useEffect(() => {
 
   return (
     <div >
+      <div className={styles.Forsticky}>
       <header className={styles.header}>
         <div className={styles.profileSection}>
           <div>
@@ -87,7 +88,7 @@ useEffect(() => {
         <div className={styles.agentInfo}>
 
           <div className={styles.agentAvatarContainer}>
-            <img src={agentData?.agent?.avatar || "images/SofiaAgent.png"} alt="Sofia" className={styles.agentAvatar} style={{objectFit:'unset'}}/>
+            <img src={agentData?.agent?.avatar || "images/SofiaAgent.png"} alt="Sofia" className={styles.agentAvatar} />
           </div>
           <div>
             
@@ -104,7 +105,7 @@ useEffect(() => {
           </div>
         </div>
       </section>
-  
+  </div>
  
       <div className={styles.container}>
         <div className={styles.businessInfo}>
