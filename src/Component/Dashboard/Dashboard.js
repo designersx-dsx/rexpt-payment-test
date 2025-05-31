@@ -391,7 +391,7 @@ function Dashboard() {
             <div className={styles.main}>
                 {localAgents.map((agent) => {
                     const randomPlan =
-                        planStyles[Math.floor(Math.random() * planStyles.length)];
+                        planStyles["FreePlan"];
                     return (
                         <div
                             key={agent.agent_id}
