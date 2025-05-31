@@ -153,7 +153,7 @@ import { useNavigate } from "react-router-dom";
 import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
-import useUser  from "../../Store/Context/UserContext";
+import useUser from "../../Store/Context/UserContext";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -172,122 +172,122 @@ const SignUp = () => {
   const inputRefs = useRef([]);
   const { user, setUser } = useUser();
 
-const validateEmail = (email) => {
-  if (!email) {
-    if (!emailTouched || emailSubmitted) {
-      return "Email is required.";
+  const validateEmail = (email) => {
+    if (!email) {
+      if (!emailTouched || emailSubmitted) {
+        return "Email is required.";
+      }
+      return "";
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return "Please enter a valid email address.";
     return "";
-  }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return "Please enter a valid email address.";
-  return "";
-};
+  };
 
-const handleEmailChange = (e) => {
-  const val = e.target.value;
-  setEmail(val);
-  setEmailTouched(true);
+  const handleEmailChange = (e) => {
+    const val = e.target.value;
+    setEmail(val);
+    setEmailTouched(true);
 
-  if (showPopup) setShowPopup(false);
+    if (showPopup) setShowPopup(false);
 
-  if (emailSubmitted) {
-    setEmailError(validateEmail(val));
-  } else {
-    setEmailError("");
-  }
-};
+    if (emailSubmitted) {
+      setEmailError(validateEmail(val));
+    } else {
+      setEmailError("");
+    }
+  };
 
-const handleLoginClick = async () => {
-  const emailValidationMsg = validateEmail(email);
-  setEmailError(emailValidationMsg);
+  const handleLoginClick = async () => {
+    const emailValidationMsg = validateEmail(email);
+    setEmailError(emailValidationMsg);
 
-  if (emailValidationMsg) {
-    // Return early, no popup for email validation error
-    return;
-  }
+    if (emailValidationMsg) {
+      // Return early, no popup for email validation error
+      return;
+    }
 
-  const fullOtp = otp.join("");
-  if (fullOtp.length !== 6) {
-    setShowPopup(true);
-    setPopupType("failed");
-    setPopupMessage("Please enter a valid 6-digit OTP.");
-    return;
-  }
-
-  setIsVerifyingOtp(true);
-  try {
-    const response = await verifyEmailOTP(email, fullOtp);
-
-    if (response?.status === 200) {
-      localStorage.setItem("token", response.data.token);
-      sessionStorage.clear();
-      setPopupType("success");
+    const fullOtp = otp.join("");
+    if (fullOtp.length !== 6) {
       setShowPopup(true);
-      setPopupMessage("OTP Verified successfully!");
+      setPopupType("failed");
+      setPopupMessage("Please enter a valid 6-digit OTP.");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    try {
+      const response = await verifyEmailOTP(email, fullOtp);
+
+      if (response?.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        sessionStorage.clear();
+        setPopupType("success");
+        setShowPopup(true);
+        setPopupMessage("OTP Verified successfully!");
         if (verifiedUser) {
           setUser({
-            name:response?.data?.user?.name||"",
-            profile:response?.data?.user?.profile ||"images/AgentImage.png",
+            name: response?.data?.user?.name || "",
+            profile: response?.data?.user?.profile || "images/AgentImage.png",
             subscriptionDetails: {}
           })
           navigate("/dashboard")
         }
         else {
-            setUser({
-            name:response?.data?.user?.email||"",
-            profile:response?.data?.user?.profile ||"images/AgentImage.png",
+          setUser({
+            name: response?.data?.user?.email || "",
+            profile: response?.data?.user?.profile || "images/AgentImage.png",
             subscriptionDetails: {}
           })
           navigate("/details");
         }
-    } else {
+      } else {
+        setPopupType("failed");
+        setShowPopup(true);
+        setPopupMessage("Failed to verify OTP. Please try again.");
+      }
+    } catch (error) {
       setPopupType("failed");
       setShowPopup(true);
-      setPopupMessage("Failed to verify OTP. Please try again.");
+      setPopupMessage(error?.response?.data.error || "Internal Server Error");
+    } finally {
+      setIsVerifyingOtp(false);
     }
-  } catch (error) {
-    setPopupType("failed");
-    setShowPopup(true);
-    setPopupMessage(error?.response?.data.error || "Internal Server Error");
-  } finally {
-    setIsVerifyingOtp(false);
-  }
-};
- const handleSendOTP = async () => {
-  setEmailTouched(true);
-  setEmailSubmitted(true);
-  const emailValidationMsg = validateEmail(email);
-  setEmailError(emailValidationMsg);
+  };
+  const handleSendOTP = async () => {
+    setEmailTouched(true);
+    setEmailSubmitted(true);
+    const emailValidationMsg = validateEmail(email);
+    setEmailError(emailValidationMsg);
 
-  if (emailValidationMsg) {
-    // Return early, no popup
-    return;
-  }
+    if (emailValidationMsg) {
+      // Return early, no popup
+      return;
+    }
 
-  setEmailError("");
-  setIsVerifyingOtp(true);
-  try {
-    const response = await LoginWithEmailOTP(email);
-    if (response?.status === 200) {
-      setVerifiedUser(response.data.verifiedStatus)
-      setShowPopup(true);
-      setPopupType("success");
-      setPopupMessage("OTP sent successfully!");
-      setOtpSent(true);
-    } else {
+    setEmailError("");
+    setIsVerifyingOtp(true);
+    try {
+      const response = await LoginWithEmailOTP(email);
+      if (response?.status === 200) {
+        setVerifiedUser(response.data.verifiedStatus)
+        setShowPopup(true);
+        setPopupType("success");
+        setPopupMessage("OTP sent successfully!");
+        setOtpSent(true);
+      } else {
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage("Failed to send OTP. Please try again.");
+      }
+    } catch (error) {
       setShowPopup(true);
       setPopupType("failed");
-      setPopupMessage("Failed to send OTP. Please try again.");
+      setPopupMessage(error?.response?.data.error || "Internal Server Error");
+    } finally {
+      setIsVerifyingOtp(false);
     }
-  } catch (error) {
-    setShowPopup(true);
-    setPopupType("failed");
-    setPopupMessage(error?.response?.data.error || "Internal Server Error");
-  } finally {
-    setIsVerifyingOtp(false);
-  }
-};
+  };
 
 
   const handleOtpChange = (value, index) => {
@@ -305,11 +305,11 @@ const handleLoginClick = async () => {
       inputRefs.current[index - 1].focus();
     }
   };
- useEffect(() => {
+  useEffect(() => {
     if (showPopup && popupType === "success" && popupMessage === "OTP sent successfully!") {
       const timer = setTimeout(() => {
         setShowPopup(false);
-      }, 1000); 
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [showPopup, popupType, popupMessage]);
@@ -341,20 +341,24 @@ const handleLoginClick = async () => {
             <h1>Log In to your Account</h1>
           </div>
         </div>
+
         <div className={`${styles.container} ${styles.animate4}`}>
           {!otpSent && (
             <>
-              <input
-                type="email"
-                className={`${styles.emailInput} ${emailError ? styles.inputError : ""
-                  }`}
-                placeholder="Johnvick@gmail.com"
-                value={email}
-                onChange={handleEmailChange}
-                required
-              />
-              {emailError && <p className={styles.inlineError}>{emailError}</p>}
-
+              <div className={styles.labReq} >
+                <div className={styles.Dblock} >
+                  <input
+                    type="email"
+                    className={`${styles.emailInput} ${emailError ? styles.inputError : ""
+                      }`}
+                    placeholder="Johnvick@gmail.com"
+                    value={email}
+                    onChange={handleEmailChange}
+                    required
+                  />
+                </div>
+                {emailError && <p className={styles.inlineError}>{emailError}</p>}
+              </div>
               <div className={styles.btnTheme} onClick={handleSendOTP}>
                 <img src="svg/svg-theme2.svg" alt="" />
                 <p>
@@ -396,6 +400,7 @@ const handleLoginClick = async () => {
                   />
                 ))}
               </div> */}
+
               <div className={styles.otpContainer}>
                 {[...Array(6)].map((_, i) => (
                   <input

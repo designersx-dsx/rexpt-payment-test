@@ -6,7 +6,7 @@ const RexAgent = () => {
     const [inCall, setInCall] = useState(false);
 
     const handleOpenModal = () => setIsModalOpen(true);
-    
+
     const handleCloseModal = () => setIsModalOpen(false);
     const handleCallClick = () => setInCall(prev => !prev);
 
@@ -21,7 +21,8 @@ const RexAgent = () => {
                 <div className={styles.dot}></div>
             </div>
 
-            <div className={`${styles.inlogo} ${isModalOpen ? styles.noFloatInlogo : ''}`}>
+
+            <div className={`${styles.inlogo} ${isModalOpen ? styles.noFloatInlogo : ''}`} onClick={handleOpenModal}>
                 <img src='svg/inlogo.svg' alt='inlogo' />
             </div>
 
@@ -35,13 +36,14 @@ const RexAgent = () => {
                         aria-modal="true"
                     >
                         <div className={styles.closeBtn} onClick={handleCloseModal}>
+                            {/* <img src='svg/REX Support2.svg'/> */}
                             ×
                         </div>
                         <div className={styles.container}>
-                            <p className={styles.Powered}>Powered by rexpt.in</p>
+                            <a href='https://www.rexpt.in/' target="_blank" className={styles.Powered}>Powered by rexpt.in</a>
                             <div className={styles.imgrex}>
                                 <img src="images/RexAi.png" alt="Rex Agent" />
-                                 <div className={styles.cornerOverlay}></div>
+                                <div className={styles.cornerOverlay}></div>
                                 <div
                                     className={inCall ? styles.reddiv : styles.greendiv}
                                     onClick={handleCallClick}

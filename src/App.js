@@ -37,7 +37,7 @@ function App() {
           <Route path="/" element={<SecureRoute><Start /></SecureRoute>} />
           <Route path="/signup" element={<SecureRoute><SignUp /></SecureRoute>} />
           <Route path="/details" element={<Details />} />
-          <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
+          <Route path="/steps" element={<Step />} />
           <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
           <Route path="/business-details" element={<BusinessDetails />} />
           <Route path="/agent-detail" element={<AgentDetail />} />
