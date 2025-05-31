@@ -51,7 +51,7 @@
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     /* background: #7b4fdd; */
     background-image: linear-gradient(90deg, #6524EB 100%, #EAE7FF 50%);
     color: white;
