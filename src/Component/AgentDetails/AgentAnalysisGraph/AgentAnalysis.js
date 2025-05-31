@@ -4,15 +4,19 @@ import "react-calendar/dist/Calendar.css";
 import styles from "./AgentAnalysis.module.css";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-const data = [
-  { name: "Mon", value: 80 },
-  { name: "Tue", value: 60 },
-  { name: "Wed", value: 75 },
-  { name: "Thu", value: 65 },
-  { name: "Fri", value: 30 },
-  { name: "Sat", value: 100 },
-  { name: "Sun", value: 70 },
-];
+// const data = [
+//   { name: "Mon", value: 80 },
+//   { name: "Tue", value: 60 },
+//   { name: "Wed", value: 75 },
+//   { name: "Thu", value: 65 },
+//   { name: "Fri", value: 30 },
+//   { name: "Sat", value: 100 },
+//   { name: "Sun", value: 70 },
+// ];
+// const data = Array.from({ length: 30 }, (_, i) => ({
+//   name: `${i + 1}`, // Day of the month as string ("1", "2", ..., "30")
+//   value: Math.floor(Math.random() * 100) + 20, // Sample value between 20–119
+// }));
 
 function formatDateISO(date) {
   const y = date.getFullYear();
@@ -21,10 +25,13 @@ function formatDateISO(date) {
   return `${y}-${m}-${d}`;
 }
 
-const AgentAnalysis = () => {
-  const [bookingDates, setBookingDates] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+const AgentAnalysis = ({data}) => {
+const callVolume = data.reduce((acc, day) => acc + day.calls, 0);
 
+
+ const [bookingDates, setBookingDates] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  // console.log(callVolume)
   useEffect(() => {
     async function fetchBookingDates() {
       try {
@@ -78,7 +85,7 @@ const AgentAnalysis = () => {
     <div className={styles.container}>
       <div className={styles.CallFlex}>
         <div className={styles.callVolume}>
-          120 <span>Call Volume</span>
+          {callVolume} <span>Call Volume</span>
         </div>
         <div className={styles.trend}>
           Last 7 Days <span className={styles.positive}>+15%</span>
@@ -102,7 +109,7 @@ const AgentAnalysis = () => {
           <Tooltip />
           <Line
             type="monotone"
-            dataKey="value"
+            dataKey="calls"
             stroke="#6A0DAD"
             strokeWidth={2}
             dot={false}

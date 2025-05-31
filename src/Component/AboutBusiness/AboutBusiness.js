@@ -147,7 +147,7 @@ function AboutBusiness() {
       setLoading(false);
     }
   };
-  const handleSkip=()=>{
+  const handleSkip = () => {
     navigate("/steps")
   }
   return (
@@ -159,31 +159,35 @@ function AboutBusiness() {
           </div>
           <form className={styles.formContainer} onSubmit={handleSubmit}>
             <div className={styles.form}>
-              <div className={styles.formGroup}>
-                <label htmlFor="business-url">URL (Website)</label>
-                <input
-                  id="business-url"
-                  type="text"
-                  placeholder="https://your website url"
-                  value={businessUrl}
-                  onChange={(e) => {
-                    setBusinessUrl(e.target.value);
-                    if (businessUrlSubmitted)
-                      setBusinessUrlError(validateBusinessUrl(e.target.value));
-                  }}
-                />
-
+               <div className={styles.labReq} >
+                <div className={styles.formGroup}>
+                 
+                 <div className={styles.Dblock} >
+                  <label htmlFor="business-url">URL (Website)</label>
+                    <input
+                      id="https://your website url"
+                      type="text"
+                      placeholder="https://your website url"
+                      value={businessUrl}
+                      onChange={(e) => {
+                        setBusinessUrl(e.target.value);
+                        if (businessUrlSubmitted)
+                          setBusinessUrlError(validateBusinessUrl(e.target.value));
+                      }}
+                    />
+                  </div>
+                </div>
+                {businessUrlSubmitted && businessUrlError && (
+                  <p className={styles.inlineError}>{businessUrlError}</p>
+                )}
               </div>
-              {businessUrlSubmitted && businessUrlError && (
-                <p className={styles.inlineError}>{businessUrlError}</p>
-              )}
 
               <div className={styles.formGroup}>
                 <label htmlFor="google-listing">Google Listing</label>
                 <input
                   id="google-listing"
                   type="text"
-                  placeholder="Url"
+                  placeholder="https://g.co/kgs/zrLgvY9"
                   value={googleListing}
                   onChange={(e) => {
                     setGoogleListing(e.target.value);

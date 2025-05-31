@@ -8,7 +8,18 @@
     color: #d93025;
     font-size: 0.875rem;
     margin-top: 0px;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
+    position: absolute;
+}
+
+
+.labReq {
+    position: relative;
+    width: 100%;
+}
+
+.Dblock {
+    display: grid;
 }
 
 .header h1 {
@@ -17,7 +28,7 @@
     color: #24252C;
     margin-bottom: 0px;
     line-height: 50px;
-    margin: 30px 0 30px 0;
+    margin: 10px 0 10px 0;
 
 }
 
@@ -25,7 +36,7 @@
 .formGroup {
     border: 1px solid #E0E5F2;
     display: grid;
-    min-height: 80px;
+    min-height: 70px;
     border-radius: 12px;
     padding: 10px;
     min-width: 285px;
@@ -38,7 +49,7 @@
     outline: none;
     background-color: transparent;
     font-size: 16px;
-    height: 24px;
+    height: 25px;
     color: #A3AED0;
 }
 
@@ -85,13 +96,16 @@
     font-size: 19px;
 }
 
+.skipButton {
+    text-align: center;
+}
+
 .skipButton button {
-    display: flex;
-    float: right;
+
     border: none;
     background-color: white;
     color: #bebebe;
-    font-size: 16px;
+    font-size: 14px;
 
 
 }
