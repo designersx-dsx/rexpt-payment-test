@@ -23,7 +23,7 @@ useEffect(() => {
     try {
       const response = await fetchAgentDetailById(agentDetails);
       setAgentData(response?.data);
-     
+
       const calApiKey = response?.data?.agent?.calApiKey;
       if (calApiKey) {
         const calResponse = await fetch(
@@ -31,20 +31,26 @@ useEffect(() => {
         );
         if (!calResponse.ok) {
           throw new Error("Failed to fetch total bookings from Cal.com");
-
         }
-      } catch (err) {
-        console.error("Failed to fetch data", err.response || err.message || err);
-        setTotalBookings(0);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    if (agentDetails) {
-      getAgentDetailsAndBookings();
+        const bookingsData = await calResponse.json();
+        setTotalBookings(bookingsData.length); // Or however you want to count bookings
+      } else {
+        setTotalBookings(0); // No API key, so assume 0 bookings
+      }
+    } catch (err) {
+      console.error("Failed to fetch data", err.response || err.message || err);
+      setTotalBookings(0);
+    } finally {
+      setLoading(false);
     }
-  }, [agentDetails]);
+  };
+
+  if (agentDetails) {
+    getAgentDetailsAndBookings();
+  }
+}, [agentDetails]);
+
 
   const withShimmer = (content) =>
     loading ? <div className={styles.shimmerContainer} style={{ minHeight: '150px' }}>{content}</div> : content;
@@ -107,13 +113,12 @@ useEffect(() => {
             </div>
           </div>
 
-        </div>
+       
       </section>
   </div>
       {loading ?
       <Loader2/>
       :(
-
       <div className={styles.container}>
         <div className={styles.businessInfo}>
           <div className={styles.card1}>
