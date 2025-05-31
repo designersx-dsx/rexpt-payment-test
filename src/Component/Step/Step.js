@@ -518,7 +518,7 @@ Let’s begin assisting the customer!
                             agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
                             agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
                             agentGender: sessionStorage.getItem('agentGender') || "female",
-                            agentPlan: "Plus" || "free",
+                            agentPlan:  "free" || "Plus",
                             agentStatus: true,
                             businessId: businessIdObj.businessId,
                         }
