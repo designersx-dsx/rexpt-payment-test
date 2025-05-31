@@ -7,13 +7,12 @@ const WidgetScript = ({ isAgentDetails }) => {
     const scriptRef = useRef(null);
     const [copied, setCopied] = useState(false);
 
-    const scriptText = `<iframe 
-    src="https://rexpt-widget.vercel.app/?agentId=${isAgentDetails.agent_id}" 
-    width="100%" 
-    height="500" 
-    frameborder="0" 
-    allow="microphone; camera">
-  </iframe>`;
+    const scriptText = `
+<body>
+  <div id="rexWidgetContainer"></div>
+   <script id="rex-widget-script" src="https://whimsical-douhua-9d1125.netlify.app/index.js?agentId=agentId=${isAgentDetails.agent_id}"></script>
+</body>
+`;
 
     const handleCopy = () => {
         if (scriptRef.current) {
@@ -25,8 +24,6 @@ const WidgetScript = ({ isAgentDetails }) => {
 
     return (
         <div className={styles.container}>
-
-
             <div className={styles.scriptBox}>
                 <button className={styles.copyButton} onClick={handleCopy}>
                     {copied ? "Copied!" : "Copy"}
@@ -38,8 +35,7 @@ const WidgetScript = ({ isAgentDetails }) => {
             </div>
 
             <div className={styles.actionButtons}>
-                {/* <button className={styles.whatsappBtn}>Send WhatsApp</button> */}
-                <button className={styles.emailBtn}>Send to Email</button>
+                <button className={styles.emailBtn}>Send to developer</button>
             </div>
         </div>
     );
