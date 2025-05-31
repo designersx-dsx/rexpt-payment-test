@@ -13,6 +13,7 @@ import BusinessLocation from './Component/BusinessLocation/BusinessLocation';
 import SecureRoute from './Pages/SecureRoute'
 import Dashboard from './Component/Dashboard/Dashboard';
 import RexAgent from './Component/RexAgent/RexAgent';
+
 function App() {
   const token = localStorage.getItem('token');
   return (
@@ -35,18 +36,18 @@ function App() {
 
           <Route path="/" element={<SecureRoute><Start /></SecureRoute>} />
           <Route path="/signup" element={<SecureRoute><SignUp /></SecureRoute>} />
-          <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
+          <Route path="/details" element={<Details />} />
           <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
           <Route path="/about-business" element={<SecureRoute><AboutBusiness /></SecureRoute>} />
-
           <Route path="/business-details" element={<BusinessDetails />} />
           <Route path="/agent-detail" element={<AgentDetail />} />
-          <Route path="/business-locations" element={<SecureRoute><BusinessLocation /></SecureRoute>} />
+          <Route path="/business-locations" element={<BusinessLocation />} />
           <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
           <Route path="/home" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<RexAgent />} />
+
 
         </Routes>
 

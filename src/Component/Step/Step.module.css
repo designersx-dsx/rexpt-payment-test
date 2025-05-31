@@ -80,7 +80,7 @@
 }
 
 .grid> :nth-last-child(-n+2) {
-  margin-bottom: 3rem;
+  margin-bottom: 5rem;
 }
 
 .card:hover {
