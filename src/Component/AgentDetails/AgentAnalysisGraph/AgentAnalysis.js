@@ -26,9 +26,7 @@ function formatDateISO(date) {
 }
 
 const AgentAnalysis = ({data}) => {
-const callVolume = data.reduce((acc, day) => acc + day.calls, 0);
-
-
+const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
  const [bookingDates, setBookingDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   // console.log(callVolume)
