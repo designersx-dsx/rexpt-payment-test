@@ -70,7 +70,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-bottom: 3rem;
-    max-height: 380px;
+    /* max-height: 380px; */
     overflow: overlay;
     padding-right: 10px;
 }
