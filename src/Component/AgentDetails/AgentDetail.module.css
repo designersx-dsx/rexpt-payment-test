@@ -3,16 +3,27 @@
   top: 0;
   z-index: 1;
 }
-
+.profileBack {
+  display: flex;
+  align-items: anchor-center;
+  justify-content: center;
+  gap: 10px;
+}
 .container {
-
   padding: 1rem;
   /* max-width: 400px; */
   margin: auto;
   color: #333;
 }
-
-
+.AssignNum {
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 16px;
+    color: #000;
+    font-weight: 400;
+    cursor: pointer;
+}
 .profileSection {
   display: flex;
   align-items: center;
@@ -62,7 +73,7 @@
   justify-content: space-between;
   align-items: flex-start;
   /* background: #7b4fdd; */
-  background-image: linear-gradient(90deg, #6524EB 100%, #EAE7FF 50%);
+  background-image: linear-gradient(90deg, #6524eb 100%, #eae7ff 50%);
   color: white;
   padding: 20px 20px 30px 20px;
   border-radius: 2rem 2rem 0px 0px;
@@ -122,23 +133,22 @@
   gap: 0.5rem;
 }
 
-
 .activeText {
   font-size: 12px;
   font-weight: 500;
-  color: #1AA850;
+  color: #1aa850;
   position: relative;
   margin: 0 0 0 15px;
 }
 
 .logoutdiv {
-    margin-block: 5rem;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    background-color: #d5d5d5;
-    padding: 13px;
-    cursor: pointer
+  margin-block: 5rem;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  background-color: #d5d5d5;
+  padding: 13px;
+  cursor: pointer;
 }
 .InactiveText {
   font-size: 12px;
@@ -148,15 +158,14 @@
   margin: 0 0 0 15px;
 }
 
-
 .activeText::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: -10px;
   width: 6px;
   height: 6px;
-  background-color: #1AA850;
+  background-color: #1aa850;
   border-radius: 50%;
   transform: translateY(-50%);
 }
@@ -189,9 +198,6 @@
   font-weight: 400;
 }
 
-
-
-
 .agentDetailsFlex {
   display: flex;
   flex-wrap: wrap;
@@ -206,7 +212,6 @@
   
 }
 
-
 .businessInfo {
   display: flex;
   align-items: center;
@@ -215,7 +220,7 @@
 }
 
 .card1 {
-  border: 2px solid #C8ECFF;
+  border: 2px solid #c8ecff;
   border-radius: 15px;
   padding: 15px;
   display: flex;
@@ -228,14 +233,14 @@
 .card1 h2 {
   font-size: 18px;
   font-weight: 600;
-  color: #24252C;
+  color: #24252c;
 }
 
 .card1 p {
-  background-color: #B0F3E4;
+  background-color: #b0f3e4;
   padding: 6px 12px;
   border-radius: 4px;
-  color: #24252C;
+  color: #24252c;
   font-size: 14px;
   width: max-content;
 }
@@ -244,30 +249,30 @@
   display: flex;
   align-items: center;
   padding-bottom: 10px;
-  border-bottom: 1px solid #E0E5F2;
+  border-bottom: 1px solid #e0e5f2;
   min-height: 50px;
 }
 
 .card1 h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #24252C;
+  color: #24252c;
 }
 
 .card1 h4 {
   font-size: 18px;
   font-weight: 600;
-  color: #24252C;
+  color: #24252c;
 }
 
 .card1 span {
   font-size: 18px;
   font-weight: 300;
-  color: #24252C;
+  color: #24252c;
 }
 
 .card2 {
-  border: 2px solid #FBB26C;
+  border: 2px solid #fbb26c;
   border-radius: 15px;
   padding: 15px;
   display: flex;
@@ -280,13 +285,12 @@
 .card2 h2 {
   font-size: 18px;
   font-weight: 600;
-  color: #24252C;
+  color: #24252c;
 }
 
 .google {
   display: flex;
   align-items: center;
-
 }
 
 .google img {
@@ -294,10 +298,10 @@
 }
 
 .google p {
-  background-color: #B0F3E4;
+  background-color: #b0f3e4;
   padding: 6px 12px;
   border-radius: 4px;
-  color: #24252C;
+  color: #24252c;
   font-size: 14px;
   margin-left: 20px;
 }
@@ -306,25 +310,25 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  border-bottom: 1px solid #E0E5F2;
+  border-bottom: 1px solid #e0e5f2;
   padding-bottom: 10px;
 }
 
 .address p {
   font-size: 14px;
-  color: #24252C;
+  color: #24252c;
 }
 
 .card2 h4 {
   font-size: 18px;
   font-weight: 600;
-  color: #24252C;
+  color: #24252c;
 }
 
 .Agenttitle {
   font-size: 50px;
   font-weight: 300;
-  color: #0F1417;
+  color: #0f1417;
   margin: 10px 0 20px 0;
   text-align: left;
 }
@@ -335,7 +339,6 @@
   display: grid;
   border: 1px solid #e0e0e0;
   border-radius: 15px;
-
 }
 
 .statDetail .MinFont {
@@ -344,6 +347,7 @@
 }
 
 .agentStats {
+
 display: grid
 ;
     grid-template-columns: repeat(4, 1fr);
@@ -352,6 +356,15 @@ display: grid
     padding-right: 10px;
     /* max-height: 500px; */
     overflow: auto;
+
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 10px;
+  padding-right: 10px;
+  /* max-height: 500px; */
+  overflow: auto;
 
 }
 
@@ -377,9 +390,7 @@ display: grid
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
-
 
 .stats {
   display: grid;
@@ -388,7 +399,6 @@ display: grid
   margin-top: 1rem;
 }
 
-
 .stat {
   display: grid !important;
   text-align: center;
@@ -396,54 +406,46 @@ display: grid
 }
 
 .stat.Yellow {
-  background: #FFEBA5;
+  background: #ffeba5;
   color: #000;
-  border: 1px solid #FFE074;
-
+  border: 1px solid #ffe074;
 }
 
 .stat.blue {
-  background: #BFF7F7;
+  background: #bff7f7;
   color: #000;
-  border: 1px solid #9AF3EF;
-
+  border: 1px solid #9af3ef;
 }
 
 .stat.Purple {
-  background: #E2D2FF;
-  border: 1px solid #CFBAFF;
+  background: #e2d2ff;
+  border: 1px solid #cfbaff;
   color: #000;
 }
 
 .stat.Red {
-  background: #FFCBBE;
+  background: #ffcbbe;
   color: #000;
-  border: 1px solid #FFA58C;
-
+  border: 1px solid #ffa58c;
 }
 
 .Yellow .statDetail {
   font-size: 40px !important;
-  background-color: #FFDC6B;
-
+  background-color: #ffdc6b;
 }
 
 .blue .statDetail {
   font-size: 32px !important;
-  background-color: #9AF3EF;
-  ;
-
+  background-color: #9af3ef;
 }
 
 .Purple .statDetail {
-  background-color: #CFBAFF;
-
+  background-color: #cfbaff;
 }
 
 .Red .statDetail {
-  background-color: #FFA58C;
+  background-color: #ffa58c;
 }
-
 
 .statCard {
   border-radius: 1rem;
@@ -457,11 +459,10 @@ display: grid
   margin-bottom: 5rem;
 }
 
-
 .management h3 {
   font-size: 50px;
   font-weight: 300;
-  color: #0F1417;
+  color: #0f1417;
 }
 
 .managementItem {
@@ -476,9 +477,8 @@ display: grid
   background-color: #fff;
 }
 
-
 .managementItem::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: -28px;
@@ -491,9 +491,7 @@ display: grid
   box-shadow: rgba(100, 100, 111, 0.381) 0px 7px 29px 0px;
 }
 
-
 .managementActions {
-
   display: flex;
   overflow: auto;
   gap: 20px;
@@ -503,7 +501,7 @@ display: grid
 
 .managementText {
   font-size: 14px;
-  color: #6524EB;
+  color: #6524eb;
   white-space: nowrap;
 }
 
@@ -570,18 +568,22 @@ display: grid
   border-radius: 1rem;
 }
 
+
 @media (max-width:370px) {
 
   .agentStats {
     grid-template-columns: repeat(2, 1fr);    
 
 }
-  .Agenttitle{
+}
+
+@media (max-width: 370px) {
+  .Agenttitle {
+
     font-size: 35px;
   }
-
 }
-@media (max-width:320px) {
+@media (max-width: 320px) {
   .businessInfo {
     display: grid;
     align-items: unset;
@@ -615,16 +617,18 @@ display: grid
 }
 
 .shimmerContainer::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -150%;
   width: 150%;
   height: 100%;
-  background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
   animation: shimmer 2s infinite;
   pointer-events: none;
   z-index: 10;

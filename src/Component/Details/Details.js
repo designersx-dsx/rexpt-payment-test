@@ -15,7 +15,6 @@ const Details = () => {
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState('');
   const [loading, setLoading] = useState(false);
-
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
 
