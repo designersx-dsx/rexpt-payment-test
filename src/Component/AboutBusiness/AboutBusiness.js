@@ -7,7 +7,7 @@ import Loader from "../Loader/Loader";
 
 function AboutBusiness() {
   const [files, setFiles] = useState([]);
-  const [businessUrl, setBusinessUrl] = useState("");
+  const [businessUrl, setBusinessUrl] = useState("https://");
   const [googleListing, setGoogleListing] = useState("");
   const [aboutBusiness, setAboutBusiness] = useState("");
   const [note, setNote] = useState("");
