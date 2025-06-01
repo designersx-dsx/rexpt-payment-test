@@ -47,12 +47,63 @@ function AboutBusiness() {
   const [popupMessage, setPopupMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSkipConfirm, setShowSkipConfirm] = useState(false);
 const HTTPS_PREFIX  = "https://";
 const PREFIX_LEN    = HTTPS_PREFIX.length;
   const navigate = useNavigate();
+    useEffect(() => {
+  const saved = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+  if (saved.businessUrl) setBusinessUrl(saved.businessUrl);
+  if (saved.googleListing) setGoogleListing(saved.googleListing);
+  if (saved.aboutBusiness) setAboutBusiness(saved.aboutBusiness);
+  if (saved.note) setNote(saved.note);
+
+  // rebuild File objects
+  if (Array.isArray(saved.files) && saved.files.length) {
+    const rebuilt = saved.files.map((d, i) => dataURLtoFile(d, `file${i + 1}`));
+    setFiles(rebuilt);
+  }
+}, []);
+
+useEffect(() => {
+  // Try to get previously stored files
+  const existing = sessionStorage.getItem("aboutBusinessForm");
+  let previousFiles = [];
+
+  if (existing) {
+    try {
+      previousFiles = JSON.parse(existing).files || [];
+    } catch (e) {
+      previousFiles = [];
+    }
+  }
+
+  // Save updated form with preserved files
+  sessionStorage.setItem(
+    "aboutBusinessForm",
+    JSON.stringify({
+      businessUrl,
+      googleListing,
+      aboutBusiness,
+      note,
+      files: previousFiles
+    })
+  );
+}, [businessUrl, googleListing, aboutBusiness, note]);
 
 const handleFileChange = async (e) => {
   const selectedFiles = Array.from(e.target.files);
+
+// block disallowed file types
+const ALLOWED = ["application/pdf", "text/plain", "text/csv", "application/json", "text/markdown"];
+const invalid = selectedFiles.filter(f => !ALLOWED.includes(f.type));
+if (invalid.length) {
+  alert(`Only PDF or text files are allowed.\nBlocked: ${invalid.map(i=>i.name).join(", ")}`);
+  return;
+}
+//allow files
+
+
   if (selectedFiles.length > 5) {
     alert("You can only upload a maximum of 5 files.");
     return;
@@ -184,36 +235,22 @@ const handleFileChange = async (e) => {
       setLoading(false);
     }
   };
-  const handleSkip = () => {
-    navigate("/steps")
-  }
-
-  useEffect(() => {
-  const saved = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-  if (saved.businessUrl) setBusinessUrl(saved.businessUrl);
-  if (saved.googleListing) setGoogleListing(saved.googleListing);
-  if (saved.aboutBusiness) setAboutBusiness(saved.aboutBusiness);
-  if (saved.note) setNote(saved.note);
-
-  // rebuild File objects
-  if (Array.isArray(saved.files) && saved.files.length) {
-    const rebuilt = saved.files.map((d, i) => dataURLtoFile(d, `file${i + 1}`));
-    setFiles(rebuilt);
-  }
-}, []);
-
-useEffect(() => {
-  sessionStorage.setItem(
-    "aboutBusinessForm",
-    JSON.stringify({
-      businessUrl,
-      googleListing,
-      aboutBusiness,
-      note,
-      files: [],       // placeholder – real files saved separately below
-    })
+const handleSkip = () => {
+  setPopupType("confirm");
+  setPopupMessage(
+    "This step is essential for your agent to understand your business context. You can always update these settings later as needed."
   );
-}, [businessUrl, googleListing, aboutBusiness, note]);
+  setShowPopup(true);
+};
+
+const confirmSkip = () => {
+  setShowPopup(false);
+  navigate("/steps");
+};
+
+const cancelSkip = () => {
+  setShowPopup(false);
+};
 
   return (
     <>
@@ -353,11 +390,12 @@ useEffect(() => {
                 <p className={styles.inlineError}>{aboutBusinessError}</p>
               )}
               <div className={styles.formGroup}>
-                <label htmlFor="file-upload">File Upload</label>
+                <label htmlFor="file-upload">File Upload <span className={styles.filesAllowed}>(allowd only .pdf,.txt,.csv,.json,.md)</span></label>
                 <input
                   id="file-upload"
                   type="file"
                   multiple
+                   accept=".pdf,.txt,.csv,.json,.md"
                   onChange={handleFileChange}
                 />
 
@@ -399,6 +437,7 @@ useEffect(() => {
             type={popupType}
             onClose={() => setShowPopup(false)}
             message={popupMessage}
+               onConfirm={confirmSkip}
           />
         )}
       </div>
