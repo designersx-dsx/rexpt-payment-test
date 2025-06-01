@@ -3,11 +3,11 @@ import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import { fetchAgentDetailById } from "../../Store/apiStore";
 import OffCanvas from "../OffCanvas/OffCanvas";
-
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import useUser from "../../Store/Context/UserContext";
 import Loader2 from "../Loader2/Loader2";
+import Footer from "./Footer/Footer";
 
 const AgentDashboard = () => {
   const [totalBookings, setTotalBookings] = useState(null);
@@ -78,12 +78,22 @@ const AgentDashboard = () => {
   const handleCloseOffcanvas = () => {
     setOpenOffcanvas(false);
   };
+  const navigate = useNavigate();
 
+  const handleBackClick = () => {
+    navigate(-1);
+  };
   return (
     <div>
       <div className={styles.Forsticky}>
         <header className={styles.header}>
-          <div className={styles.profileSection}>
+          <div className={styles.profileBack}>
+            <img
+              src="svg/Notification.svg"
+              alt="Back button"
+              onClick={handleBackClick}
+              
+            ></img>
             <div>
               <img
                 src={user.profile || "images/AgentImage.png"}
@@ -95,6 +105,9 @@ const AgentDashboard = () => {
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || ""}</h2>
             </div>
+          </div>
+          <div className={styles.profileSection}>
+            
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -201,14 +214,9 @@ const AgentDashboard = () => {
               <hr className={styles.agentLine}></hr>
 
               <div className={styles.agentDetailsFlex}>
-                <p className={styles.agentDetails}>
-                  AI Agent Toll Free{" "}
-                  <strong>
-                    {agentData?.agent?.voip_numbers
-                      ? agentData?.agent?.voip_numbers
-                      : "1800 123 XXXX"}
-                  </strong>
-                </p>
+                <div className={styles.AssignNum }>
+                  Assigned Number 
+                </div>
                 <p className={styles.agentDetails}>
                   Agent Code{" "}
                   <strong>{agentData?.agent?.agentCode || "NA"}</strong>
@@ -499,6 +507,7 @@ const AgentDashboard = () => {
           </div>
         </OffCanvas>
       )}
+      <Footer/>
     </div>
   );
 };

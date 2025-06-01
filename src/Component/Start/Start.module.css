@@ -175,22 +175,23 @@
 
 
 .content {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-.content > *:nth-child(1) {
-height: 30vh;
+.content>*:nth-child(1) {
+    height: 30vh;
 }
 
 
-.content > *:nth-child(2) {
-  margin-bottom: 2rem;
+.content>*:nth-child(2) {
+    margin-bottom: 2rem;
 }
+
 .part {
     line-height: 10px;
 }
@@ -252,19 +253,7 @@ height: 30vh;
 
 
 }
-/* New animation styles for fade outs */
 
-.fadeOutLogo {
-    animation: fadeScaleOut 0.8s forwards;
-}
-
-.fadeOutButton {
-    animation: fadeOut 0.8s forwards;
-}
-
-.fadeOutPart {
-    animation: fadeOut 0.8s forwards;
-}
 
 /* Reusable fadeOut animation */
 @keyframes fadeOut {
@@ -287,5 +276,22 @@ height: 30vh;
     100% {
         opacity: 0;
         transform: scale(0.5);
+    }
+}
+
+
+.slideRight {
+    animation: slideRight 0.5s forwards;
+}
+
+@keyframes slideRight {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
     }
 }

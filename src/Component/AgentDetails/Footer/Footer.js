@@ -13,7 +13,7 @@ function Footer() {
   const navigate = useNavigate();
 
   const home = () => {
-    navigate('/home'); // Navigate to /about
+    navigate('/dashboard'); 
   };
 
 

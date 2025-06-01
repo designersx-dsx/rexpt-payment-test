@@ -26,7 +26,6 @@ const Step = () => {
     const [popupMessage, setPopupMessage] = useState("");
     const [loading, setLoading] = useState(false)
     const [agentCount, setAgentCount] = useState(0);
-
     const step2Ref = useRef();
     const step3Ref = useRef();
     const step4Ref = useRef();
@@ -43,7 +42,6 @@ const Step = () => {
         sessionStorage.setItem("agentLanguage", selectedLang);
         sessionStorage.setItem("agentLanguageCode", selectedLangCode);
     }, [selectedLang]);
-
     const totalSlides = 4;
     const role_title =
         sessionStorage.getItem("agentRole") || "General Receptionist";
@@ -404,7 +402,8 @@ Let’s begin assisting the customer!
             console.log(error)
         }
     }
-    const dynamicAgentName = `${business?.businessType}_${business?.businessName}_${role_title}_${packageValue}#${agentCount}`
+      const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
+    const dynamicAgentName = `${sanitize(business?.businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     const handleContinue = async () => {
         if (step4Ref.current) {
             const isValid = step4Ref.current.validate();
@@ -481,6 +480,7 @@ Let’s begin assisting the customer!
                 if (knowledgeBaseId) {
                     agentConfig.knowledge_base_ids = [knowledgeBaseId];
                 }
+                //Create LLm 
                 try {
                     const llmResponse = await axios.post(
                         "https://api.retellai.com/create-retell-llm",
@@ -507,6 +507,7 @@ Let’s begin assisting the customer!
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US"
 
                     };
+                    // Create Agent Creation
                     try {
                         const response = await axios.post(
                             "https://api.retellai.com/create-agent",

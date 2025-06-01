@@ -2,6 +2,7 @@
    margin: 0;
    font-family: "Inter", sans-serif;
    display: none;
+   padding: 2px 1px;
  }
 
  * {
@@ -16,6 +17,14 @@
      display: block;
      user-select: none;
    }
+ }
+
+ #slideradio input[type="radio"] {
+   width: 25px;
+   height: 25px;
+   accent-color: #6524EB;
+   right: 5px;
+   top: 5px;
  }
 
  input[type="radio"] {
@@ -40,6 +49,10 @@
    color: #A3AED0;
  }
 
+ textarea::placeholder {
+   color: #A3AED0;
+
+ }
 
 
  .Dotcontrol .slick-dots {
