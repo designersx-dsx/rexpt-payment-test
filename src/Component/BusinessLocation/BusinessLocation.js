@@ -390,7 +390,7 @@ const handleSelect = (country) => {
         <div>
           <div type="submit" onClick={handleContinue}>
             <div className={styles.btnTheme}>
-              <img src="images/svg-theme.svg" alt="" />
+              <img src="svg/svg-theme.svg" alt="" />
               <p>{loading?<Loader size={20}/>:'Continue'}</p>
             </div>
           </div>

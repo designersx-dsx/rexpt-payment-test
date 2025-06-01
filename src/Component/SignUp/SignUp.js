@@ -328,7 +328,7 @@ const SignUp = () => {
               <div className={styles.Btn} onClick={handleLoginClick}>
                 <div type="submit">
                   <div className={styles.btnTheme}>
-                    <img src="images/svg-theme.svg" alt="" />
+                    <img src="svg/svg-theme.svg" alt="" />
                     <p>
                       {isVerifyingOtp ? (
                         <>

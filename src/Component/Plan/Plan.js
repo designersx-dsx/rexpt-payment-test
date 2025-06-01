@@ -67,7 +67,7 @@ const Plan = () => {
             ))}
 
             <div className={styles.btnTheme}>
-                <img src='images/svg-theme.svg' alt='' />
+                <img src='svg/svg-theme.svg' alt='' />
                 <p>Continue</p>
             </div>
         </div>

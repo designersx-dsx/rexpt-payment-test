@@ -411,7 +411,7 @@
 
 @media (max-width:390px) {
     .agentInfo2 {
-        display: grid;
+        display: block;
         gap: 10px;
         align-items: center;
         text-align: center;
@@ -420,7 +420,7 @@
     }
 
     .agentInfo {
-        display: grid;
+        display: block;
         gap: 10px;
         align-items: center;
         text-align: center;
@@ -430,6 +430,16 @@
 
     .agentCard hr {
         height: 80px;
+    }
+}
+@media (max-width:350px) {
+    .agentInfo2 {
+        display: block;
+        
+    }
+    .agentInfo {
+        display: block;
+        
     }
 }
 
