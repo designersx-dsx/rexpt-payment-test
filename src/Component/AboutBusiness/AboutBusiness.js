@@ -269,12 +269,12 @@ const cancelSkip = () => {
                   {/* <span className={styles.prefix}>https://</span> */}
                     <input
                       id="https://your website url"
-                      type="text"
+                      type="url"
                       placeholder="https://your website url"
                       value={businessUrl}
                         inputMode="url"
                         autoComplete="url"
-                    onKeyDown={(e) => {
+                       onKeyDown={(e) => {
                         const { key, target }   = e;
                         if (key !== "Backspace" && key !== "Delete") return;
 
@@ -325,11 +325,12 @@ const cancelSkip = () => {
                 <label htmlFor="google-listing">Google Listing</label>
                 <input
                   id="google-listing"
-                  type="text"
+                  type="url"
                   placeholder="https://g.co/kgs/zrLgvY9"
                   value={googleListing}
                     inputMode="url"
-                    autoComplete="url"
+                    autoComplete="url"  
+                    
                    onKeyDown={(e) => {
                     const { key, target } = e;
                     if (key !== "Backspace" && key !== "Delete") return;
@@ -437,7 +438,7 @@ const cancelSkip = () => {
             type={popupType}
             onClose={() => setShowPopup(false)}
             message={popupMessage}
-               onConfirm={confirmSkip}
+            onConfirm={()=>confirmSkip}
           />
         )}
       </div>
