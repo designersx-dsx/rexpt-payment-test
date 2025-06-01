@@ -8,6 +8,7 @@
   align-items: anchor-center;
   justify-content: center;
   gap: 10px;
+  margin-bottom: 1rem;
 }
 .container {
   padding: 1rem;
@@ -16,13 +17,13 @@
   color: #333;
 }
 .AssignNum {
-    background-color: #fff;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 16px;
-    color: #000;
-    font-weight: 400;
-    cursor: pointer;
+  background-color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 16px;
+  color: #000;
+  font-weight: 400;
+  cursor: pointer;
 }
 .profileSection {
   display: flex;
@@ -205,11 +206,13 @@
   align-items: center;
   margin-top: 10px;
   gap: 13px;
-  
 }
 .agentDetailsFlex p:last-child {
   text-align: right;
-  
+}
+.agentDetailsFlex p:last-child strong {  
+  font-size: 30px;
+  font-weight: 700;
 }
 
 .businessInfo {
@@ -326,7 +329,7 @@
 }
 
 .Agenttitle {
-  font-size: 50px;
+  font-size: 2.5rem;
   font-weight: 300;
   color: #0f1417;
   margin: 10px 0 20px 0;
@@ -347,25 +350,16 @@
 }
 
 .agentStats {
-
-display: grid
-;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 10px;
-    padding-right: 10px;
-    /* max-height: 500px; */
-    overflow: auto;
-
-
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
   margin-top: 10px;
   padding-right: 10px;
-  /* max-height: 500px; */
   overflow: auto;
-
+  gap: 10px;
+  margin-top: 10px;
+  padding-right: 10px;
+  overflow: auto;
 }
 
 .statText {
@@ -568,18 +562,14 @@ display: grid
   border-radius: 1rem;
 }
 
-
-@media (max-width:370px) {
-
+@media (max-width: 370px) {
   .agentStats {
-    grid-template-columns: repeat(2, 1fr);    
-
-}
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 370px) {
   .Agenttitle {
-
     font-size: 35px;
   }
 }
