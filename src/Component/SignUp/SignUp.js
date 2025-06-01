@@ -447,9 +447,10 @@ const SignUp = () => {
           </div>
 
           <div className={styles.socialMedia}>
-            <img src="svg/google.svg" alt="" />
+            <img src="images/Coming-Soon.png"/>
+            {/* <img src="svg/google.svg" alt="" />
             <img src="svg/facbook.svg" alt="" />
-            <img src="svg/apple.svg" alt="" />
+            <img src="svg/apple.svg" alt="" /> */}
           </div>
         </div>
 
