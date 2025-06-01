@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import { useNavigate } from "react-router-dom";
@@ -61,6 +61,8 @@ function Dashboard() {
     const [popupMessage, setPopupMessage] = useState("");
     const [popupType, setPopupType] = useState("success");
     const [callLoading,setCallLoading]=useState(false)
+  const [liveTranscript,setLiveTranscript]=useState()
+
 
     // Navigate on agent card click
     const handleCardClick = (agent) => {
@@ -333,7 +335,6 @@ function Dashboard() {
         client.on("call_ended", () => setIsCallActive(false));
         setRetellWebClient(client);
     }, []);
-
     // Start call
     const handleStartCall = async () => {
         if (!retellWebClient || !agentDetails) {
@@ -353,6 +354,7 @@ function Dashboard() {
                 }
             );
             const data = await res.json();
+            console.log(data)
             await retellWebClient.startCall({ accessToken: data.access_token });
         } catch (err) {
             console.error("Error starting call:", err);
@@ -389,7 +391,6 @@ function Dashboard() {
     const handleCloseWidgetModal = () => {
         setOpenWidgetModal(false);
     };
-
     return (
         <div>
             <div className={styles.forSticky}>
@@ -783,6 +784,8 @@ function Dashboard() {
                             onEndCall={handleEndCall}
                             callLoading={callLoading}
                             setCallLoading={setCallLoading}
+                            isliveTranscript={liveTranscript}
+                         
 
                         />
                     </Modal2>
