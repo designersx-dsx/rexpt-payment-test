@@ -17,13 +17,10 @@ const Details = () => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-
   const [nameError, setNameError] = useState('');
   const [phoneError, setPhoneError] = useState('');
-
   const [nameSubmitted, setNameSubmitted] = useState(false);
   const [phoneSubmitted, setPhoneSubmitted] = useState(false);
-
   const token = localStorage.getItem('token');
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
@@ -117,19 +114,42 @@ const Details = () => {
       setLoading(false);
     }
   };
+  const [step, setStep] = useState(0);
 
+  useEffect(() => {
+    const played = sessionStorage.getItem("personalDetailsAnimationPlayed");
+
+    if (!played) {
+      const delays = [150, 300, 450,550];
+      const timers = delays.map((delay, index) =>
+        setTimeout(() => setStep(index + 1), delay)
+      );
+
+      sessionStorage.setItem("personalDetailsAnimationPlayed", "true");
+
+      return () => timers.forEach(clearTimeout);
+    } else {
+      setStep(4); 
+    }
+  }, []);
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.mask}>
         <img src="images/Mask.png" alt="Mask" />
       </div>
-
-      <div className={styles.logimg}>
+<div className={styles.logimg2}>
+  <div
+        className={`${styles.logimg} ${styles.animateStep} ${step >= 1 ? styles.animateStep1 : ""
+          }`}
+      >
         <img className={styles.logo} src="svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
       </div>
+</div>
+   
 
       <div
-        className={`${styles.Maincontent} ${styles.animate1} ${startExit ? styles.fadeOut3 : ''}`}
+        className={`${styles.Maincontent} ${styles.animateStep} ${step >= 2 ? styles.animateStep2 : ""
+          }`}
       >
         <div className={styles.welcomeTitle}>
           <h1>Personal Details</h1>
@@ -137,7 +157,8 @@ const Details = () => {
       </div>
 
       <div
-        className={`${styles.container} ${styles.animate2} ${startExit ? styles.fadeOut3 : ''}`}
+        className={`${styles.container} ${styles.animateStep} ${step >= 3 ? styles.animateStep3 : ""
+          }`}
       >
         <div className={styles.labReq} >
           <div className={styles.Dblock} >
@@ -173,7 +194,8 @@ const Details = () => {
 
 
       <div
-        className={`${styles.Btn} ${styles.animate3} ${startExit ? styles.fadeOut1 : ''}`}
+        className={`${styles.Btn} ${styles.animateStep} ${step >= 4 ? styles.animateStep4 : ""
+          }`}
         onClick={handleLoginClick}
       >
         <div type="submit">

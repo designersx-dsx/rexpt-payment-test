@@ -8,24 +8,13 @@
     animation: zoomIn 1.5s ease-out;
 }
 
-.logimg {
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.logimg2 {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-@keyframes zoomIn {
-    0% {
-        transform: scale(0.2);
-        opacity: 0;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
 
 .Maincontent {
     padding: 20px;
@@ -36,6 +25,7 @@
     font-size: 40px;
     margin-block: 0px;
     font-weight: 800;
+    text-align: left;
 }
 
 .container {
@@ -134,7 +124,7 @@
 }
 
 /* ===== Enter Animation ===== */
-@keyframes slideUpFadeIn {
+/* @keyframes slideUpFadeIn {
     0% {
         opacity: 0;
         transform: translateY(50px);
@@ -144,14 +134,13 @@
         opacity: 1;
         transform: translateY(0);
     }
-}
+} */
 
-.pageWrapper {
-    /* animation: slideUpFadeIn 0.8s ease forwards; */
+/* .pageWrapper {
     animation: fadeIn 0.8s ease forwards;
-}
+} */
 
-@keyframes slideUpFadeIn {
+/* @keyframes slideUpFadeIn {
     0% {
         opacity: 0;
         transform: translateY(30px);
@@ -161,9 +150,9 @@
         opacity: 1;
         transform: translateY(0);
     }
-}
+} */
 
-.animate1 {
+/* .animate1 {
     animation: slideUpFadeIn 0.6s ease forwards;
     animation-delay: 0.2s;
     opacity: 0;
@@ -179,7 +168,7 @@
     animation: slideUpFadeIn 0.6s ease forwards;
     animation-delay: 0.8s;
     opacity: 0;
-}
+} */
 
 /* ===== Step-by-step Fade Out (Bottom to Top) ===== */
 @keyframes fadeOut {
@@ -194,7 +183,7 @@
     }
 }
 
-.fadeOut1 {
+/* .fadeOut1 {
     animation: fadeOut 0.5s ease forwards;
     animation-delay: 0s;
 }
@@ -212,7 +201,7 @@
 .fadeOut4 {
     animation: fadeOut 0.5s ease forwards;
     animation-delay: 0.9s;
-}
+} */
 
 .labReq {
     position: relative;
@@ -233,6 +222,46 @@
     font-size: 0.875rem;
     position: absolute;
 }
+
+
+
+
+
+
+@keyframes slideLeftFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animateStep {
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.animateStep1 {
+  animation: slideLeftFadeIn 0.4s ease-out 0.15s forwards;
+}
+
+.animateStep2 {
+  animation: slideLeftFadeIn 0.4s ease-out 0.3s forwards;
+}
+
+.animateStep3 {
+  animation: slideLeftFadeIn 0.4s ease-out 0.45s forwards;
+}
+
+
+
+
+
+
+
 
 @media (max-width:375px) {
     .welcomeTitle h1 {
