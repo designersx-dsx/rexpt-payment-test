@@ -2,24 +2,32 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
 }
 
 .LogoWrapper {
-    position: relative;
+    position: sticky;
+    top: 10px;
+    z-index: 10;
+    transform-origin: center center;
+    transition: transform 0.3s ease-out;
+    display: inline-block;
+    margin: 0 auto;
+    width: 205px;
+    height: 205px;
 }
 
-
-
-.logo {
-    position: relative;
+.RipplThree {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 205px;
+    height: 205px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
     z-index: 1;
-}
-
-.heading {
-
-    font-size: 50px;
-    color: #24252C;
-    text-align: center;
 }
 
 .ripple {
@@ -32,22 +40,27 @@
     opacity: 0;
 }
 
-.RipplThree {
-    width: 100%;
-    display: flex
-}
-
-
 .ripple:nth-child(1) {
     animation-delay: 0s;
 }
-
 .ripple:nth-child(2) {
     animation-delay: 0.4s;
 }
-
 .ripple:nth-child(3) {
     animation-delay: 0.8s;
+}
+
+.logo {
+    position: relative;
+    z-index: 2; /* ensures it's above ripple */
+    width: 205px;
+    height: 205px;
+}
+
+.heading {
+    color: #24252C;
+    text-align: center;
+    margin-top: 1rem;
 }
 
 @keyframes rippleAnimation {
