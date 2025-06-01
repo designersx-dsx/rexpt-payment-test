@@ -1,9 +1,28 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import styles from "../AboutBusiness/AboutBusiness.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
+
+// Convert File → base64 data URL
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.readAsDataURL(file);
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+  });
+
+// Convert data URL → File (used when re-hydrating)
+const dataURLtoFile = (dataUrl, fileName = "file") => {
+  const [header, base64] = dataUrl.split(",");
+  const mime = header.match(/:(.*?);/)[1];
+  const bytes = atob(base64);
+  const buf = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) buf[i] = bytes.charCodeAt(i);
+  return new File([buf], fileName, { type: mime });
+}
 
 function AboutBusiness() {
   const [files, setFiles] = useState([]);
@@ -28,20 +47,85 @@ function AboutBusiness() {
   const [popupMessage, setPopupMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [showSkipConfirm, setShowSkipConfirm] = useState(false);
+const HTTPS_PREFIX  = "https://";
+const PREFIX_LEN    = HTTPS_PREFIX.length;
   const navigate = useNavigate();
+    useEffect(() => {
+  const saved = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+  if (saved.businessUrl) setBusinessUrl(saved.businessUrl);
+  if (saved.googleListing) setGoogleListing(saved.googleListing);
+  if (saved.aboutBusiness) setAboutBusiness(saved.aboutBusiness);
+  if (saved.note) setNote(saved.note);
 
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
+  // rebuild File objects
+  if (Array.isArray(saved.files) && saved.files.length) {
+    const rebuilt = saved.files.map((d, i) => dataURLtoFile(d, `file${i + 1}`));
+    setFiles(rebuilt);
+  }
+}, []);
 
-    if (selectedFiles.length > 5) {
-      alert("You can only upload a maximum of 5 files.");
-      return;
+useEffect(() => {
+  // Try to get previously stored files
+  const existing = sessionStorage.getItem("aboutBusinessForm");
+  let previousFiles = [];
+
+  if (existing) {
+    try {
+      previousFiles = JSON.parse(existing).files || [];
+    } catch (e) {
+      previousFiles = [];
     }
+  }
 
-    setFiles(selectedFiles);
-    if (filesSubmitted) setFilesError(validateFiles(selectedFiles));
-  };
+  // Save updated form with preserved files
+  sessionStorage.setItem(
+    "aboutBusinessForm",
+    JSON.stringify({
+      businessUrl,
+      googleListing,
+      aboutBusiness,
+      note,
+      files: previousFiles
+    })
+  );
+}, [businessUrl, googleListing, aboutBusiness, note]);
+
+const handleFileChange = async (e) => {
+  const selectedFiles = Array.from(e.target.files);
+
+// block disallowed file types
+const ALLOWED = ["application/pdf", "text/plain", "text/csv", "application/json", "text/markdown"];
+const invalid = selectedFiles.filter(f => !ALLOWED.includes(f.type));
+if (invalid.length) {
+  alert(`Only PDF or text files are allowed.\nBlocked: ${invalid.map(i=>i.name).join(", ")}`);
+  return;
+}
+//allow files
+
+
+  if (selectedFiles.length > 5) {
+    alert("You can only upload a maximum of 5 files.");
+    return;
+  }
+
+  setFiles(selectedFiles);
+  if (filesSubmitted) setFilesError(validateFiles(selectedFiles));
+
+  // ⬇️  convert to base64 and cache
+  const base64 = await Promise.all(selectedFiles.map(fileToBase64));
+  sessionStorage.setItem(
+    "aboutBusinessForm",
+    JSON.stringify({
+      businessUrl,
+      googleListing,
+      aboutBusiness,
+      note,
+      files: base64,
+    })
+  );
+};
+
 
   const isValidUrl = (url) => {
     const pattern = new RegExp(
@@ -56,17 +140,21 @@ function AboutBusiness() {
     return !!pattern.test(url);
   };
 
-  const validateBusinessUrl = (url) => {
-    if (!url.trim()) return "Business URL is required.";
-    if (!isValidUrl(url.trim())) return "Please enter a valid URL.";
-    return "";
-  };
+  const validateBusinessUrl = (urlPath) => {
+  const fullUrl =urlPath.trim();
+   console.log(fullUrl)
+  if (!urlPath.trim()) return "Business URL is required.";
+  if (!isValidUrl(fullUrl)) return "Please enter a valid URL.";
+ 
+  return "";
+};
 
-  const validateGoogleListing = (url) => {
-    if (!url.trim()) return "Google Listing URL is required.";
-    if (!isValidUrl(url.trim())) return "Please enter a valid URL.";
-    return "";
-  };
+  const validateGoogleListing = (urlPath) => {
+  const fullUrl = urlPath.trim();
+  if (!urlPath.trim()) return "Google Listing URL is required.";
+  if (!isValidUrl(fullUrl)) return "Please enter a valid URL.";
+  return "";
+};
 
   const validateAboutBusiness = (text) => {
     if (!text.trim()) return "Business description is required.";
@@ -147,9 +235,23 @@ function AboutBusiness() {
       setLoading(false);
     }
   };
-  const handleSkip = () => {
-    navigate("/steps")
-  }
+const handleSkip = () => {
+  setPopupType("confirm");
+  setPopupMessage(
+    "This step is essential for your agent to understand your business context. You can always update these settings later as needed."
+  );
+  setShowPopup(true);
+};
+
+const confirmSkip = () => {
+  setShowPopup(false);
+  navigate("/steps");
+};
+
+const cancelSkip = () => {
+  setShowPopup(false);
+};
+
   return (
     <>
       <div>
@@ -164,18 +266,55 @@ function AboutBusiness() {
                  
                  <div className={styles.Dblock} >
                   <label htmlFor="business-url">URL (Website)</label>
+                  {/* <span className={styles.prefix}>https://</span> */}
                     <input
                       id="https://your website url"
                       type="text"
                       placeholder="https://your website url"
                       value={businessUrl}
-                      onChange={(e) => {
-                        setBusinessUrl(e.target.value);
-                        if (businessUrlSubmitted)
-                          setBusinessUrlError(validateBusinessUrl(e.target.value));
+                        inputMode="url"
+                        autoComplete="url"
+                    onKeyDown={(e) => {
+                        const { key, target }   = e;
+                        if (key !== "Backspace" && key !== "Delete") return;
+
+                        const { selectionStart, selectionEnd, value } = target;
+                        const fullSelection = selectionStart === 0 && selectionEnd === value.length;
+
+                        if (fullSelection) {
+                          // They wiped everything — leave only the prefix
+                          e.preventDefault();
+                          setBusinessUrl(HTTPS_PREFIX);
+                          // Put caret after the prefix
+                          requestAnimationFrame(() =>
+                            target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
+                          );
+                          return;
+                        }
+
+                        // Block any removal that touches the prefix
+                        if (selectionStart <= PREFIX_LEN) e.preventDefault();
+                      }}
+
+                      /* 2️⃣  Clean every keystroke or paste */
+                      onInput={(e) => {
+                        let v = e.target.value;
+
+                        // Strip *every* http:// or https:// that appears anywhere
+                        v = v.replace(/https?:\/\//gi, "");
+
+                        // Kill spaces and force lowercase
+                        v = v.replace(/\s+/g, "").toLowerCase();
+
+                        const final = HTTPS_PREFIX + v;
+                        setBusinessUrl(final);
+
+                        if (businessUrlSubmitted) {
+                          setBusinessUrlError(validateBusinessUrl(final));
+                        }
                       }}
                     />
-                  </div>
+                 </div>
                 </div>
                 {businessUrlSubmitted && businessUrlError && (
                   <p className={styles.inlineError}>{businessUrlError}</p>
@@ -189,13 +328,45 @@ function AboutBusiness() {
                   type="text"
                   placeholder="https://g.co/kgs/zrLgvY9"
                   value={googleListing}
-                  onChange={(e) => {
-                    setGoogleListing(e.target.value);
-                    if (googleListingSubmitted)
-                      setGoogleListingError(validateGoogleListing(e.target.value));
+                    inputMode="url"
+                    autoComplete="url"
+                   onKeyDown={(e) => {
+                    const { key, target } = e;
+                    if (key !== "Backspace" && key !== "Delete") return;
+
+                    const { selectionStart, selectionEnd, value } = target;
+                    const fullSelection = selectionStart === 0 && selectionEnd === value.length;
+
+                    if (fullSelection) {
+                      // They wiped everything — leave only the prefix
+                      e.preventDefault();
+                      setGoogleListing(HTTPS_PREFIX);
+                      // Put caret after the prefix
+                      requestAnimationFrame(() => target.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
+                      return;
+                    }
+
+                    // Block any removal/editing that touches the prefix
+                    if (selectionStart <= PREFIX_LEN) e.preventDefault();
+                  }}
+
+                  onInput={(e) => {
+                    let v = e.target.value;
+
+                    // Strip *every* http:// or https:// that appears anywhere
+                    v = v.replace(/https?:\/\//gi, "");
+
+                    // Remove spaces and convert to lowercase
+                    v = v.replace(/\s+/g, "").toLowerCase();
+
+                    const final = HTTPS_PREFIX + v;
+                    setGoogleListing(final);
+
+                    if (googleListingSubmitted) {
+                      setGoogleListingError(validateGoogleListing(final));
+                    }
                   }}
                 />
-
               </div>
               {googleListingSubmitted && googleListingError && (
                 <p className={styles.inlineError}>{googleListingError}</p>
@@ -205,7 +376,7 @@ function AboutBusiness() {
                 <textarea rows="4" cols="50"
                   id="about-business"
                   type="text"
-                  placeholder="Describe"
+                  placeholder="Use text for describing business Describe something about your business which is not defined or listed on Google My Business or your website."
                   value={aboutBusiness}
                   onChange={(e) => {
                     setAboutBusiness(e.target.value);
@@ -219,11 +390,12 @@ function AboutBusiness() {
                 <p className={styles.inlineError}>{aboutBusinessError}</p>
               )}
               <div className={styles.formGroup}>
-                <label htmlFor="file-upload">File Upload</label>
+                <label htmlFor="file-upload">File Upload <span className={styles.filesAllowed}>(allowd only .pdf,.txt,.csv,.json,.md)</span></label>
                 <input
                   id="file-upload"
                   type="file"
                   multiple
+                   accept=".pdf,.txt,.csv,.json,.md"
                   onChange={handleFileChange}
                 />
 
@@ -265,6 +437,7 @@ function AboutBusiness() {
             type={popupType}
             onClose={() => setShowPopup(false)}
             message={popupMessage}
+               onConfirm={confirmSkip}
           />
         )}
       </div>

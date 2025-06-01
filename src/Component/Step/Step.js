@@ -75,7 +75,7 @@ If you’re unsure of something, respond with:
 
 Always maintain a tone that matches the following persona:  
 **${role_title}**
-
+ 
 ---
 
 Let’s begin assisting the customer!
@@ -336,7 +336,6 @@ Let’s begin assisting the customer!
             stats: "—",
         },
     ];
-
     const handleNext = () => {
         if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
             return;
