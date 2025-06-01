@@ -51,13 +51,15 @@
   transition: border-color 0.3s ease;
   min-height: 55px;
 }
-.input2{
+
+.input2 {
   border: none;
-
-
+  width: 100%;
+  font-size: 16px;
 }
+
 .input2:focus {
-  border-color:none;
+  border-color: none;
   outline: none;
 }
 
@@ -189,6 +191,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  width: 100%;
 }
 
 .arrow {
@@ -197,10 +200,11 @@
   margin-left: auto;
   transition: transform 0.3s ease;
 }
-@media(max-width:375px){
-  
-.title {
-  font-size: 36px;
 
-}
+@media(max-width:375px) {
+
+  .title {
+    font-size: 36px;
+
+  }
 }
