@@ -229,21 +229,27 @@ function AboutBusiness() {
     const knowledgeBaseName = `${sanitize(business?.businessType)}_${sanitize(business?.businessName)}_${sanitize(packageValue)}_#${agentCount}`;
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-    // let knowledgeTexts = [];
+    let knowledgeTexts = [];
+    const moreAbout={
+     title: "More Business Details",
+     text: aboutBusiness
+    }
 
-    // if (aboutBusiness?.trim()) {
-    //   knowledgeTexts.push({
-    //     title: "More Business Details",
-    //     text: aboutBusiness
-    //   });
-    // } else if (note?.trim()) {
-    //   knowledgeTexts.push({
-    //     title: "Additional Note",
-    //     text: note
-    //   });
+    const additional={
+        title: "Aditional Notes/Information",
+        text: note
+    }
+
+    if (aboutBusiness && aboutBusiness.length > 0) {
+  knowledgeTexts.push(moreAbout);
+}
+    if (note && note.length > 0) {
+      knowledgeTexts.push(additional);
+    }
+console.log('knowledgeTexts',knowledgeTexts)
+    // if(knowledgeTexts && knowledgeTexts.length>0){
+    //      formData.append("knowledge_base_texts", knowledgeTexts)
     // }
-
-
     // formData.append("knowledge_base_texts", knowledgeTexts)
     // formData.append("knowledge_base_texts", JSON.stringify(aboutBusiness)); // Optional
     files.forEach((file) => {
@@ -278,7 +284,8 @@ function AboutBusiness() {
       setLoading(false);
     }
   };
-  const handleSkip = () => {
+  const handleSkip = (e) => {
+     e.preventDefault(); // prevent form submit
     setPopupType("confirm");
     setPopupMessage(
       "This step is essential for your agent to understand your business context. You can always update these settings later as needed."
@@ -304,7 +311,7 @@ function AboutBusiness() {
           <div className={styles.header}>
             <h1>About Your Business</h1>
           </div>
-          <form className={styles.formContainer} onSubmit={handleSubmit}>
+          <form className={styles.formContainer} >
             <div className={styles.form}>
               <div className={styles.labReq} >
                 <div className={styles.formGroup}>
@@ -319,6 +326,7 @@ function AboutBusiness() {
                       value={businessUrl}
                       inputMode="url"
                       autoComplete="url"
+                      list="url-suggestions"
                       onKeyDown={(e) => {
                         const { key, target } = e;
                         if (key !== "Backspace" && key !== "Delete") return;
@@ -375,7 +383,7 @@ function AboutBusiness() {
                   value={googleListing}
                   inputMode="url"
                   autoComplete="url"
-
+                  list="url-suggestions"
                   onKeyDown={(e) => {
                     const { key, target } = e;
                     if (key !== "Backspace" && key !== "Delete") return;
@@ -423,7 +431,7 @@ function AboutBusiness() {
               
                   id="about-business"
                   type="text"
-                  placeholder="Use text for describing business Describe something about your business which is not defined or listed on Google My Business or your website."
+                  placeholder="Use text for describing your business. Describe something about your business which is not defined or listed on Google My Business or Your website."
                   value={aboutBusiness}
                   onChange={(e) => {
                     setAboutBusiness(e.target.value);
@@ -451,7 +459,7 @@ function AboutBusiness() {
                 <p className={styles.inlineError}>{filesError}</p>
               )}
               <div className={styles.formGroup}>
-                <label htmlFor="additional-note">Additional Instructions for Receptionist</label>
+                <label htmlFor="additional-note">Additional Agent Instructions </label>
                 <textarea
                   id="additional-note"
                   placeholder="Note"
@@ -465,7 +473,7 @@ function AboutBusiness() {
                 <button>Skip for now</button>
               </div>
               <div>
-                <button type="submit" className={styles.btnTheme} disabled={loading}>
+                <button type="submit" className={styles.btnTheme} disabled={loading} onClick={handleSubmit}>
                   <img src="images/svg-theme.svg" alt="" />
                   {loading ? (
                     <>
@@ -484,7 +492,7 @@ function AboutBusiness() {
             type={popupType}
             onClose={() => setShowPopup(false)}
             message={popupMessage}
-            onConfirm={() => confirmSkip}
+            onConfirm={confirmSkip}
           />
         )}
       </div>
