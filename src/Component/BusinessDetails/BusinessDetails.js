@@ -186,7 +186,8 @@ const validateBusinessSize = (value) => {
     "11 to 50 employees",
     "51 to 100 employees",
     "101 to 250 employees",
-    "251 to 500 employees",    
+    "251 to 500 employees", 
+    "500 + employees"   
   ];
   if (!allowedValues.includes(value)) {
     return "Invalid business size selected.";
@@ -378,6 +379,9 @@ const validateBusinessSize = (value) => {
             {'100 to 250 employees'}
           </option>
           <option value='251 to 500 employees' className={`${styles.selectOption}`}>
+            {'250 to 500  employees'}
+          </option>
+          <option value='500 + employees' className={`${styles.selectOption}`}>
             {'250 to 500  employees'}
           </option>
         </select>

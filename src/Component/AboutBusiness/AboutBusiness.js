@@ -7,7 +7,7 @@ import Loader from "../Loader/Loader";
 
 function AboutBusiness() {
   const [files, setFiles] = useState([]);
-  const [businessUrl, setBusinessUrl] = useState("https://");
+  const [businessUrl, setBusinessUrl] = useState("");
   const [googleListing, setGoogleListing] = useState("");
   const [aboutBusiness, setAboutBusiness] = useState("");
   const [note, setNote] = useState("");
@@ -28,7 +28,8 @@ function AboutBusiness() {
   const [popupMessage, setPopupMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
-
+const HTTPS_PREFIX  = "https://";
+const PREFIX_LEN    = HTTPS_PREFIX.length;
   const navigate = useNavigate();
 
   const handleFileChange = (e) => {
@@ -56,17 +57,21 @@ function AboutBusiness() {
     return !!pattern.test(url);
   };
 
-  const validateBusinessUrl = (url) => {
-    if (!url.trim()) return "Business URL is required.";
-    if (!isValidUrl(url.trim())) return "Please enter a valid URL.";
-    return "";
-  };
+  const validateBusinessUrl = (urlPath) => {
+  const fullUrl =urlPath.trim();
+   console.log(fullUrl)
+  if (!urlPath.trim()) return "Business URL is required.";
+  if (!isValidUrl(fullUrl)) return "Please enter a valid URL.";
+ 
+  return "";
+};
 
-  const validateGoogleListing = (url) => {
-    if (!url.trim()) return "Google Listing URL is required.";
-    if (!isValidUrl(url.trim())) return "Please enter a valid URL.";
-    return "";
-  };
+  const validateGoogleListing = (urlPath) => {
+  const fullUrl = urlPath.trim();
+  if (!urlPath.trim()) return "Google Listing URL is required.";
+  if (!isValidUrl(fullUrl)) return "Please enter a valid URL.";
+  return "";
+};
 
   const validateAboutBusiness = (text) => {
     if (!text.trim()) return "Business description is required.";
@@ -164,18 +169,54 @@ function AboutBusiness() {
                  
                  <div className={styles.Dblock} >
                   <label htmlFor="business-url">URL (Website)</label>
+                  {/* <span className={styles.prefix}>https://</span> */}
                     <input
                       id="https://your website url"
                       type="text"
                       placeholder="https://your website url"
                       value={businessUrl}
-                      onChange={(e) => {
-                        setBusinessUrl(e.target.value);
-                        if (businessUrlSubmitted)
-                          setBusinessUrlError(validateBusinessUrl(e.target.value));
+           
+                    onKeyDown={(e) => {
+                        const { key, target }   = e;
+                        if (key !== "Backspace" && key !== "Delete") return;
+
+                        const { selectionStart, selectionEnd, value } = target;
+                        const fullSelection = selectionStart === 0 && selectionEnd === value.length;
+
+                        if (fullSelection) {
+                          // They wiped everything — leave only the prefix
+                          e.preventDefault();
+                          setBusinessUrl(HTTPS_PREFIX);
+                          // Put caret after the prefix
+                          requestAnimationFrame(() =>
+                            target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
+                          );
+                          return;
+                        }
+
+                        // Block any removal that touches the prefix
+                        if (selectionStart <= PREFIX_LEN) e.preventDefault();
+                      }}
+
+                      /* 2️⃣  Clean every keystroke or paste */
+                      onInput={(e) => {
+                        let v = e.target.value;
+
+                        // Strip *every* http:// or https:// that appears anywhere
+                        v = v.replace(/https?:\/\//gi, "");
+
+                        // Kill spaces and force lowercase
+                        v = v.replace(/\s+/g, "").toLowerCase();
+
+                        const final = HTTPS_PREFIX + v;
+                        setBusinessUrl(final);
+
+                        if (businessUrlSubmitted) {
+                          setBusinessUrlError(validateBusinessUrl(final));
+                        }
                       }}
                     />
-                  </div>
+                 </div>
                 </div>
                 {businessUrlSubmitted && businessUrlError && (
                   <p className={styles.inlineError}>{businessUrlError}</p>
@@ -189,13 +230,43 @@ function AboutBusiness() {
                   type="text"
                   placeholder="https://g.co/kgs/zrLgvY9"
                   value={googleListing}
-                  onChange={(e) => {
-                    setGoogleListing(e.target.value);
-                    if (googleListingSubmitted)
-                      setGoogleListingError(validateGoogleListing(e.target.value));
+                   onKeyDown={(e) => {
+                    const { key, target } = e;
+                    if (key !== "Backspace" && key !== "Delete") return;
+
+                    const { selectionStart, selectionEnd, value } = target;
+                    const fullSelection = selectionStart === 0 && selectionEnd === value.length;
+
+                    if (fullSelection) {
+                      // They wiped everything — leave only the prefix
+                      e.preventDefault();
+                      setGoogleListing(HTTPS_PREFIX);
+                      // Put caret after the prefix
+                      requestAnimationFrame(() => target.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
+                      return;
+                    }
+
+                    // Block any removal/editing that touches the prefix
+                    if (selectionStart <= PREFIX_LEN) e.preventDefault();
+                  }}
+
+                  onInput={(e) => {
+                    let v = e.target.value;
+
+                    // Strip *every* http:// or https:// that appears anywhere
+                    v = v.replace(/https?:\/\//gi, "");
+
+                    // Remove spaces and convert to lowercase
+                    v = v.replace(/\s+/g, "").toLowerCase();
+
+                    const final = HTTPS_PREFIX + v;
+                    setGoogleListing(final);
+
+                    if (googleListingSubmitted) {
+                      setGoogleListingError(validateGoogleListing(final));
+                    }
                   }}
                 />
-
               </div>
               {googleListingSubmitted && googleListingError && (
                 <p className={styles.inlineError}>{googleListingError}</p>
@@ -205,7 +276,7 @@ function AboutBusiness() {
                 <textarea rows="4" cols="50"
                   id="about-business"
                   type="text"
-                  placeholder="Describe"
+                  placeholder="Use text for describing business Describe something about your business which is not defined or listed on Google My Business or your website."
                   value={aboutBusiness}
                   onChange={(e) => {
                     setAboutBusiness(e.target.value);
