@@ -12,6 +12,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
+  const [scale, setScale] = useState(1);
   const voices = [
     { name: 'Blaze', desc: 'Assertive tone' },
     { name: 'Echo', desc: 'Robotic voice' },
@@ -25,7 +26,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     const fetchRetellVoiceList = async () => {
       try {
         const voiceResponses = await getRetellVoices();
-     
+
         setListVoices(voiceResponses.data);
       } catch (error) {
         console.error("Error fetching voices:", error);
@@ -115,6 +116,17 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     },
 
   }));
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      let newScale = 1 - Math.min(scrollY / 400, 0.3);
+      if (newScale < 0.7) newScale = 0.7;
+      setScale(newScale);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   return (
     <>
 
@@ -154,7 +166,13 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
           ))}
         </div>
 
-        <h2 className={styles.sectionTitle}>Agent Voice</h2>
+        <h2 className={styles.sectionTitle} style={{
+          transform: `scale(${scale})`,
+          transition: 'transform 0.3s ease-out',
+          transformOrigin: 'center center',
+          marginTop: '1rem',
+          fontSize: `${scale * 2.5}rem`,
+        }}>Agent Voice</h2>
         <div className={styles.voiceGrid}>
           {/* {voices.map((voice, index) => (
           <label

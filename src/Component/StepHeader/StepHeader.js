@@ -7,7 +7,7 @@ const StepHeader = ({ title }) => {
     useEffect(() => {
         const handleScroll = () => {
             const scrollY = window.scrollY;
-            let newScale = 1 - Math.min(scrollY / 400, 0.3); // scale 1 to 0.7
+            let newScale = 1 - Math.min(scrollY / 400, 0.3);
             if (newScale < 0.7) newScale = 0.7;
             setScale(newScale);
         };

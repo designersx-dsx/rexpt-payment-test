@@ -1,34 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styles from '../Start/Start.module.css';
 import { useNavigate } from 'react-router-dom';
 
 function Start() {
     const navigate = useNavigate();
 
-    // Track animation steps: 0 = nothing, 1 = button fade, 2 = part fade, 3 = logo fade
-    const [animationStep, setAnimationStep] = useState(0);
-
-    useEffect(() => {
-        if (animationStep === 1) {
-            // After button fades (800ms), start part fade
-            const timer = setTimeout(() => setAnimationStep(2), 250);
-            return () => clearTimeout(timer);
-        }
-        if (animationStep === 2) {
-            // After part fades (800ms), start logo fade
-            const timer = setTimeout(() => setAnimationStep(3), 250);
-            return () => clearTimeout(timer);
-        }
-        if (animationStep === 3) {
-            // After logo fades (800ms), navigate
-            const timer = setTimeout(() => navigate('/signup'), 250);
-            return () => clearTimeout(timer);
-        }
-    }, [animationStep, navigate]);
-
+    const [step, setStep] = useState(0);
     const handleClick = () => {
-        if (animationStep === 0) setAnimationStep(1);
+        setTimeout(() => setStep(1), 150);
+        setTimeout(() => setStep(2), 250);
+        setTimeout(() => setStep(3), 350);
+        setTimeout(() => setStep(4), 450);
+        setTimeout(() => setStep(5), 650);
+        setTimeout(() => {
+            navigate('/signup');
+        }, 700);
     };
+
 
     return (
         <div>
@@ -50,30 +38,32 @@ function Start() {
             </div>
 
             <div className={styles.content}>
-                <div className={`${styles.LogoDiv} ${animationStep >= 3 ? styles.fadeOutLogo : ''}`}>
+                <div className={`${styles.LogoDiv} ${step >= 1 ? styles.slideRight : ''}`}>
                     <img src='svg/Rexpt-Logo.svg' alt='Rexpt-Logo' />
                 </div>
 
-                <div className={`${styles.part} ${animationStep >= 2 ? styles.fadeOutPart : ''}`}>
-                    <p className={styles.heading}>Launch Your <b>AI Receptionist</b></p>
-                    <div className={styles.withlogo}>
+                <div className={styles.part} >
+                    <div className={`${styles.part2} ${step >= 2 ? styles.slideRight : ''}`}>
+                        <p className={styles.heading}>
+                            Launch Your <b>AI Receptionist</b>
+                        </p>
+                    </div>
+
+                    <div className={`${styles.withlogo} ${step >= 3 ? styles.slideRight : ''}`}>
                         <p className={styles.with}>with</p>
                         <p><img src='svg/Rexpt-Logo.svg' alt='Rexpt-Logo' /></p>
                     </div>
-                    <p className={styles.desc}>
+                    <p className={`${styles.desc} ${step >= 4 ? styles.slideRight : ''}`}>
                         Engage leads by voice, automate bookings & reminders, and unlock actionable call analytics—powered by Rexpt.in.
                     </p>
                 </div>
-                <div className={styles.parentDiv}>
-                    <div
-                        className={`${styles.BtnDiv} ${animationStep >= 1 ? styles.fadeOutButton : ''}`}
-                        onClick={handleClick}
-                    >
+
+                <div className={`${styles.parentDiv} ${step >= 5 ? styles.slideRight : ''}`}>
+                    <div className={styles.BtnDiv} onClick={handleClick}>
                         <img src='images/svg-theme.svg' alt='Start Button' />
-                        <p>Lst's Start</p>
+                        <p>Let's Start</p>
                     </div>
                 </div>
-
             </div>
         </div>
     );
