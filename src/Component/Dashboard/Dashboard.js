@@ -208,47 +208,82 @@ function Dashboard() {
     };
 
     // Create Cal event
-    const createCalEvent = async () => {
-        if (!apiKey.trim()) {
-            alert("API Key is required to create an event.");
-            return;
-        }
-        if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
-            alert("Please fill all event fields.");
-            return;
-        }
-        try {
-            const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
-                apiKey.trim()
-            )}`;
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title: eventName.trim(),
-                    slug: eventSlug.trim(),
-                    length: parseInt(eventLength, 10),
-                }),
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to create event");
-            }
-            setPopupType("success");
-            setPopupMessage("Your Cal event has been created successfully!");
-            setShowCalKeyInfo(false);
+   const createCalEvent = async () => {
+    if (!apiKey.trim()) {
+        alert("API Key is required to create an event.");
+        return;
+    }
+    if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
+        alert("Please fill all event fields.");
+        return;
+    }
+    try {
+        const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(apiKey.trim())}`;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                title: eventName.trim(),
+                slug: eventSlug.trim(),
+                length: parseInt(eventLength, 10),
+            }),
+        });
 
-            setEventName("");
-            setEventSlug("");
-            setEventLength("");
-            setTimeout(() => {
-                closeModal();
-            }, 1000);
-        } catch (error) {
-            setEventCreateStatus("error");
-            setEventCreateMessage(`Error creating event: ${error.message}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to create event");
         }
-    };
+
+        const responseData = await response.json();
+        const eventTypeId = responseData.id; 
+
+        // Show success message first
+        setPopupType("success");
+        setPopupMessage("Your Cal event has been created successfully!");
+        setShowCalKeyInfo(false);
+
+        // Now update Retell LLM:
+        const retellPayload = {
+            general_tools: [
+                {
+                    type: "book_appointment_cal",
+                    name: "Appointment call",
+                    cal_api_key: selectedAgent.calApiKey,
+                    event_type_id: eventTypeId
+                }
+            ]
+        };
+
+        const retellUrl = `https://api.retellai.com/update-retell-llm/${selectedAgent.llmId}`;
+
+        const retellResponse = await fetch(retellUrl, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${process.env.REACT_APP_API_RETELL_API}`
+            },
+            body: JSON.stringify(retellPayload)
+        });
+
+        if (!retellResponse.ok) {
+            const retellError = await retellResponse.json();
+            console.error("Error updating Retell LLM:", retellError);
+        } else {
+            console.log("Retell LLM updated successfully!");
+        }
+        setEventName("");
+        setEventSlug("");
+        setEventLength("");
+        setTimeout(() => {
+            closeModal();
+        }, 1000);
+    } catch (error) {
+        setEventCreateStatus("error");
+        setEventCreateMessage(`Error creating event: ${error.message}`);
+        console.error("Error in createCalEvent:", error);
+    }
+};
+;
 
     const closeModal = () => {
         setIsCalModalOpen(false);
