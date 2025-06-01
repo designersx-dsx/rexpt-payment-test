@@ -60,7 +60,7 @@ function Start() {
 
                 <div className={`${styles.parentDiv} ${step >= 5 ? styles.slideRight : ''}`}>
                     <div className={styles.BtnDiv} onClick={handleClick}>
-                        <img src='images/svg-theme.svg' alt='Start Button' />
+                        <img src='svg/svg-theme.svg' alt='Start Button' />
                         <p>Let's Start</p>
                     </div>
                 </div>

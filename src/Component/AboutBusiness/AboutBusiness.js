@@ -474,7 +474,7 @@ console.log('knowledgeTexts',knowledgeTexts)
               </div>
               <div>
                 <button type="submit" className={styles.btnTheme} disabled={loading} onClick={handleSubmit}>
-                  <img src="images/svg-theme.svg" alt="" />
+                  <img src="svg/svg-theme.svg" alt="" />
                   {loading ? (
                     <>
                       Add <Loader size={20} />
