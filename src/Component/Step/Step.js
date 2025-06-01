@@ -387,6 +387,7 @@ Let’s begin assisting the customer!
         infinite: false,
         speed: 500,
         slidesToShow: 1,
+          adaptiveHeight: true,
         slidesToScroll: 1,
         arrows: false,
         swipe: false,
