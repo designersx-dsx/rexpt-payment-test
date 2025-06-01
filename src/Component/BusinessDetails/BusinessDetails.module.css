@@ -124,6 +124,12 @@
   flex-direction: column;
   position: relative;
 }
+.selectGroup {
+  margin-top: 1rem;
+  /* display: flex; */
+  flex-direction: column;
+  position: relative;
+}
 
 .labReq {
   margin-top: 20px;
@@ -230,4 +236,43 @@
 .title{
     font-size: 36px;
 }
+}
+
+/* Make the <select> look like your text input */
+.selectInput {
+  width: 100%;
+  padding: 10px ;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: none;         
+  background-size: 12px;   
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #A3AED0;
+  font-size: 14px;
+  outline: none;
+  min-height: 55px;
+  width: 100%;
+}
+
+/* Re-use the existing error style on focus/invalid */
+.inputError {
+  /* border-color: #f44336 !important; */
+}
+.selectDropdown {
+  width: 200px; /* or adjust to your desired smaller width */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  outline: none;
+}
+.selectInput {
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  appearance: none;
 }

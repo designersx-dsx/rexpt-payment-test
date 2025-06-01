@@ -441,11 +441,29 @@ function Dashboard() {
                                     </svg>
                                     {openDropdown === agent.agent_id && (
                                         <div className={styles.OptionsDropdown}>
-                                            <div
+                                             <div
                                                 className={styles.OptionItem}
-                                                onClick={() => handleDelete(agent.agent_id)}
+                                                onClick={() => handleOpenCallModal(agent)}
                                             >
-                                                Delete
+                                                Test Agent
+                                            </div>
+                                             <div
+                                                className={styles.OptionItem}
+                                                onClick={() => handleOpenWidgetModal(agent)}
+                                            >
+                                                Integrate
+                                            </div>
+                                             <div
+                                                className={styles.OptionItem}
+                                                onClick={() => ""}
+                                            >
+                                                Call Settings
+                                            </div>
+                                             <div
+                                                className={styles.OptionItem}
+                                                onClick={() => ""}
+                                            >
+                                                Edit Agent
                                             </div>
                                             <div
                                                 className={styles.OptionItem}
@@ -455,16 +473,22 @@ function Dashboard() {
                                             </div>
                                             <div
                                                 className={styles.OptionItem}
-                                                onClick={() => handleOpenCallModal(agent)}
+                                                onClick={() => handleDelete(agent.agent_id)}
+                                            >
+                                                Delete Agent
+                                            </div>
+                                            
+                                            {/* <div
+                                                className={styles.OptionItem}
                                             >
                                                 Test Call
-                                            </div>
-                                            <div
+                                            </div> */}
+                                            {/* <div
                                                 className={styles.OptionItem}
                                                 onClick={() => handleOpenWidgetModal(agent)}
                                             >
                                                 Widget
-                                            </div>
+                                            </div> */}
                                         </div>
                                     )}
                                 </div>
