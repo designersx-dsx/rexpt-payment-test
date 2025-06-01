@@ -1,9 +1,28 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import styles from "../AboutBusiness/AboutBusiness.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
+
+// Convert File → base64 data URL
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.readAsDataURL(file);
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+  });
+
+// Convert data URL → File (used when re-hydrating)
+const dataURLtoFile = (dataUrl, fileName = "file") => {
+  const [header, base64] = dataUrl.split(",");
+  const mime = header.match(/:(.*?);/)[1];
+  const bytes = atob(base64);
+  const buf = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) buf[i] = bytes.charCodeAt(i);
+  return new File([buf], fileName, { type: mime });
+}
 
 function AboutBusiness() {
   const [files, setFiles] = useState([]);
@@ -32,17 +51,30 @@ const HTTPS_PREFIX  = "https://";
 const PREFIX_LEN    = HTTPS_PREFIX.length;
   const navigate = useNavigate();
 
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
+const handleFileChange = async (e) => {
+  const selectedFiles = Array.from(e.target.files);
+  if (selectedFiles.length > 5) {
+    alert("You can only upload a maximum of 5 files.");
+    return;
+  }
 
-    if (selectedFiles.length > 5) {
-      alert("You can only upload a maximum of 5 files.");
-      return;
-    }
+  setFiles(selectedFiles);
+  if (filesSubmitted) setFilesError(validateFiles(selectedFiles));
 
-    setFiles(selectedFiles);
-    if (filesSubmitted) setFilesError(validateFiles(selectedFiles));
-  };
+  // ⬇️  convert to base64 and cache
+  const base64 = await Promise.all(selectedFiles.map(fileToBase64));
+  sessionStorage.setItem(
+    "aboutBusinessForm",
+    JSON.stringify({
+      businessUrl,
+      googleListing,
+      aboutBusiness,
+      note,
+      files: base64,
+    })
+  );
+};
+
 
   const isValidUrl = (url) => {
     const pattern = new RegExp(
@@ -155,6 +187,34 @@ const PREFIX_LEN    = HTTPS_PREFIX.length;
   const handleSkip = () => {
     navigate("/steps")
   }
+
+  useEffect(() => {
+  const saved = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+  if (saved.businessUrl) setBusinessUrl(saved.businessUrl);
+  if (saved.googleListing) setGoogleListing(saved.googleListing);
+  if (saved.aboutBusiness) setAboutBusiness(saved.aboutBusiness);
+  if (saved.note) setNote(saved.note);
+
+  // rebuild File objects
+  if (Array.isArray(saved.files) && saved.files.length) {
+    const rebuilt = saved.files.map((d, i) => dataURLtoFile(d, `file${i + 1}`));
+    setFiles(rebuilt);
+  }
+}, []);
+
+useEffect(() => {
+  sessionStorage.setItem(
+    "aboutBusinessForm",
+    JSON.stringify({
+      businessUrl,
+      googleListing,
+      aboutBusiness,
+      note,
+      files: [],       // placeholder – real files saved separately below
+    })
+  );
+}, [businessUrl, googleListing, aboutBusiness, note]);
+
   return (
     <>
       <div>
@@ -175,7 +235,8 @@ const PREFIX_LEN    = HTTPS_PREFIX.length;
                       type="text"
                       placeholder="https://your website url"
                       value={businessUrl}
-           
+                        inputMode="url"
+                        autoComplete="url"
                     onKeyDown={(e) => {
                         const { key, target }   = e;
                         if (key !== "Backspace" && key !== "Delete") return;
@@ -230,6 +291,8 @@ const PREFIX_LEN    = HTTPS_PREFIX.length;
                   type="text"
                   placeholder="https://g.co/kgs/zrLgvY9"
                   value={googleListing}
+                    inputMode="url"
+                    autoComplete="url"
                    onKeyDown={(e) => {
                     const { key, target } = e;
                     if (key !== "Backspace" && key !== "Delete") return;
