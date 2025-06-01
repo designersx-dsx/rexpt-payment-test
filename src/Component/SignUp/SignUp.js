@@ -1,152 +1,3 @@
-// import React, { useState, useRef, useEffect } from "react";
-// import styles from "../SignUp/SignUp.module.css";
-// import { useNavigate } from "react-router-dom";
-// import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
-// import PopUp from "../Popup/Popup";
-// import Loader from "../Loader/Loader";
-
-// const SignUp = () => {
-//   const navigate = useNavigate();
-//   const [otpSent, setOtpSent] = React.useState(false);
-//   const [email, setEmail] = React.useState("");
-//   const [emailError, setEmailError] = React.useState("");
-//   const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
-//   const [showPopup, setShowPopup] = useState(false);
-//   const [popupType, setPopupType] = useState(null);
-//   const [popupMessage, setPopupMessage] = useState("");
-//   const [isLoading, setLoading] = useState(false);
-//   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
-//   const [emailTouched, setEmailTouched] = useState(false);
-//   const [emailSubmitted, setEmailSubmitted] = useState(false);
-//   const [verifiedUser, setVerifiedUser] = useState(false)
-//   const inputRefs = useRef([]);
-//   const validateEmail = (email) => {
-//     if (!email) {
-//       if (emailSubmitted) {
-//         return "Email is required.";
-//       }
-//       return "";
-//     }
-//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     if (!emailRegex.test(email)) return "Please enter a valid email address.";
-//     return "";
-//   };
-
-
-//   const handleEmailChange = (e) => {
-//     const val = e.target.value;
-//     setEmail(val);
-//     // setEmailTouched(true);
-//     // if (emailSubmitted) {
-//     //   setEmailError(validateEmail(val));
-//     // } else {
-//     //   setEmailError("");
-//     // }
-//   };
-
-//   const handleLoginClick = async () => {
-//     const fullOtp = otp.join("");
-//     if (fullOtp.length !== 6) {
-//       setShowPopup(true);
-//       setPopupType("failed");
-//       setPopupMessage("Please enter a valid 6-digit OTP.");
-//       return;
-//     }
-//     setIsVerifyingOtp(true);
-//     try {
-//       const response = await verifyEmailOTP(email, fullOtp);
-
-//       if (response?.status === 200) {
-//         localStorage.setItem("token", response.data.token);
-//         sessionStorage.clear();
-//         setPopupType("success");
-//         setShowPopup(true);
-//         setPopupMessage("OTP Verified successfully!");
-//         if (verifiedUser) {
-//           navigate("/dashboard")
-//         }
-//         else {
-//           navigate("/details");
-//         }
-
-//       } else {
-//         console.error("Failed to send OTP");
-//         setPopupType("failed");
-//         setShowPopup(true);
-//         setPopupMessage(
-//           "Failed to send OTP. Please try again." || "Internal Server Error"
-//         );
-//       }
-//     } catch (error) {
-//       setPopupType("failed");
-//       setShowPopup(true);
-//       setPopupMessage(error?.response?.data.error || "Internal Server Error");
-//       console.error("Error sending OTP:", error);
-//     } finally {
-//       setIsVerifyingOtp(false);
-//     }
-//   };
-
-//   const handleSendOTP = async () => {
-//     setEmailTouched(true);
-//     const emailValidationMsg = validateEmail(email);
-//     setEmailError(emailValidationMsg);
-//     if (emailValidationMsg) {
-//       return;
-//     }
-//     setEmailError("");
-//     // setIsVerifyingOtp(true);
-//     try {
-
-//       const response = await LoginWithEmailOTP(email)
-//       console.log(response)
-
-//       if (response?.status === 200) {
-
-//         setVerifiedUser(response.data.verifiedStatus)
-//         setShowPopup(true);
-//         setPopupType("success");
-//         setPopupMessage("OTP sent successfully!");
-//         setOtpSent(true);
-//       } else {
-//         console.error("Failed to send OTP");
-//         setShowPopup(true);
-//         setPopupType("failed");
-//         setPopupMessage("Failed to send OTP. Please try again.");
-//       }
-//     } catch (error) {
-//       setShowPopup(true);
-//       setPopupType("failed");
-//       setPopupMessage(error?.response?.data.error || "Internal Server Error");
-//       console.error("Error sending OTP:", error);
-//     } finally {
-//       // setIsVerifyingOtp(false);
-//     }
-//   };
-
-//   const handleOtpChange = (value, index) => {
-//     const newOtp = [...otp];
-//     newOtp[index] = value;
-//     setOtp(newOtp);
-//     if (value && index < 5) {
-//       const nextInput = document.getElementById(`otp-${index + 1}`);
-//       if (nextInput) nextInput.focus();
-//     }
-//   };
-
-//   const handleKeyDown = (e, index) => {
-//     if (e.key === "Backspace" && !otp[index] && index > 0) {
-//       inputRefs.current[index - 1].focus();
-//     }
-//   };
-//   useEffect(() => {
-//     if (showPopup && popupType === "success" && popupMessage === "OTP sent successfully!") {
-//       const timer = setTimeout(() => {
-//         setShowPopup(false);
-//       }, 1000);
-//       return () => clearTimeout(timer);
-//     }
-//   }, [showPopup, popupType, popupMessage]);
 import React, { useState, useRef, useEffect } from "react";
 import styles from "../SignUp/SignUp.module.css";
 import { useNavigate } from "react-router-dom";
@@ -168,9 +19,26 @@ const SignUp = () => {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
-  const [verifiedUser, setVerifiedUser] = useState(false)
+  const [verifiedUser, setVerifiedUser] = useState(false);
   const inputRefs = useRef([]);
   const { user, setUser } = useUser();
+  const [resendTimer, setResendTimer] = useState(0);
+  const [isResendDisabled, setIsResendDisabled] = useState(false);
+
+  useEffect(() => {
+    let timerInterval = null;
+
+    if (resendTimer > 0) {
+      timerInterval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (resendTimer === 0) {
+      setIsResendDisabled(false);
+      clearInterval(timerInterval);
+    }
+
+    return () => clearInterval(timerInterval);
+  }, [resendTimer]);
 
   const validateEmail = (email) => {
     if (!email) {
@@ -229,16 +97,15 @@ const SignUp = () => {
           setUser({
             name: response?.data?.user?.name || "",
             profile: response?.data?.user?.profile || "images/AgentImage.png",
-            subscriptionDetails: {}
-          })
-          navigate("/dashboard")
-        }
-        else {
+            subscriptionDetails: {},
+          });
+          navigate("/dashboard");
+        } else {
           setUser({
             name: response?.data?.user?.email || "",
             profile: response?.data?.user?.profile || "images/AgentImage.png",
-            subscriptionDetails: {}
-          })
+            subscriptionDetails: {},
+          });
           navigate("/details");
         }
       } else {
@@ -270,11 +137,13 @@ const SignUp = () => {
     try {
       const response = await LoginWithEmailOTP(email);
       if (response?.status === 200) {
-        setVerifiedUser(response.data.verifiedStatus)
+        setVerifiedUser(response.data.verifiedStatus);
         setShowPopup(true);
         setPopupType("success");
         setPopupMessage("OTP sent successfully!");
         setOtpSent(true);
+        setResendTimer(120); 
+        setIsResendDisabled(true); 
       } else {
         setShowPopup(true);
         setPopupType("failed");
@@ -288,7 +157,6 @@ const SignUp = () => {
       setIsVerifyingOtp(false);
     }
   };
-
 
   const handleOtpChange = (value, index) => {
     const newOtp = [...otp];
@@ -306,7 +174,11 @@ const SignUp = () => {
     }
   };
   useEffect(() => {
-    if (showPopup && popupType === "success" && popupMessage === "OTP sent successfully!") {
+    if (
+      showPopup &&
+      popupType === "success" &&
+      popupMessage === "OTP sent successfully!"
+    ) {
       const timer = setTimeout(() => {
         setShowPopup(false);
       }, 1000);
@@ -338,26 +210,29 @@ const SignUp = () => {
         </div>
         <div className={`${styles.Maincontent} ${styles.animate3}`}>
           <div className={styles.welcomeTitle}>
-        <h1 >Log In to your Account</h1>
+            <h1>Log In to your Account</h1>
           </div>
         </div>
 
         <div className={`${styles.container} ${styles.animate4}`}>
           {!otpSent && (
             <>
-              <div className={styles.labReq} >
-                <div className={styles.Dblock} >
+              <div className={styles.labReq}>
+                <div className={styles.Dblock}>
                   <input
                     type="email"
-                    className={`${styles.emailInput} ${emailError ? styles.inputError : ""
-                      }`}
+                    className={`${styles.emailInput} ${
+                      emailError ? styles.inputError : ""
+                    }`}
                     placeholder="Johnvick@gmail.com"
                     value={email}
                     onChange={handleEmailChange}
                     required
                   />
                 </div>
-                {emailError && <p className={styles.inlineError}>{emailError}</p>}
+                {emailError && (
+                  <p className={styles.inlineError}>{emailError}</p>
+                )}
               </div>
               <div className={styles.btnTheme} onClick={handleSendOTP}>
                 <img src="svg/svg-theme2.svg" alt="" />
@@ -421,6 +296,34 @@ const SignUp = () => {
                   />
                 ))}
               </div>
+              <div
+                className={styles.resendContainer}
+                style={{ marginBottom: "12px" }}
+              >
+                <button
+                  type="button"
+                  className={styles.resendButton}
+                  onClick={handleSendOTP}
+                  disabled={isResendDisabled}
+                  style={{
+                    cursor: isResendDisabled ? "not-allowed" : "pointer",
+                    opacity: isResendDisabled ? 0.5 : 1,
+                    background: "none",
+                    border: "none",
+                    color: "#6524EB",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                  }}
+                >
+                  {isResendDisabled
+                    ? `Resend OTP in ${Math.floor(resendTimer / 60)
+                        .toString()
+                        .padStart(2, "0")}:${(resendTimer % 60)
+                        .toString()
+                        .padStart(2, "0")}`
+                    : "Resend OTP"}
+                </button>
+              </div>
 
               <div className={styles.Btn} onClick={handleLoginClick}>
                 <div type="submit">
@@ -447,7 +350,7 @@ const SignUp = () => {
           </div>
 
           <div className={styles.socialMedia}>
-            <img src="images/Coming-Soon.png"/>
+            <img src="images/Coming-Soon.png" />
             {/* <img src="svg/google.svg" alt="" />
             <img src="svg/facbook.svg" alt="" />
             <img src="svg/apple.svg" alt="" /> */}
