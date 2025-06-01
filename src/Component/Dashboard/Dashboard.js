@@ -243,17 +243,16 @@ function Dashboard() {
         setPopupMessage("Your Cal event has been created successfully!");
         setShowCalKeyInfo(false);
 
-        // Now update Retell LLM:
-        const retellPayload = {
-            general_tools: [
-                {
-                    type: "book_appointment_cal",
-                    name: "Appointment call",
-                    cal_api_key: selectedAgent.calApiKey,
-                    event_type_id: eventTypeId
-                }
-            ]
-        };
+     const retellPayload = {
+general_tools: [
+  {
+    type: "book_appointment_cal",
+    calApiKey: selectedAgent.calApiKey,
+    event_type_id: eventTypeId
+  }
+]
+
+};
 
         const retellUrl = `https://api.retellai.com/update-retell-llm/${selectedAgent.llmId}`;
 

@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useUser from "../../Store/Context/UserContext";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
+import AssignNumberModal from "./AssignNumberModal";
 
 const AgentDashboard = () => {
   const [totalBookings, setTotalBookings] = useState(null);
@@ -18,7 +19,9 @@ const AgentDashboard = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
   const { user, setUser } = useUser();
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 
+  
   useEffect(() => {
     const getAgentDetailsAndBookings = async () => {
       try {
@@ -214,9 +217,10 @@ const AgentDashboard = () => {
               <hr className={styles.agentLine}></hr>
 
               <div className={styles.agentDetailsFlex}>
-                <div className={styles.AssignNum }>
-                  Assigned Number 
-                </div>
+               <div className={styles.AssignNum} onClick={() => setIsAssignModalOpen(true)}>
+  Assigned Number
+</div>
+
                 <p className={styles.agentDetails}>
                   Agent Code{" "}
                   <strong>{agentData?.agent?.agentCode || "NA"}</strong>
@@ -507,6 +511,11 @@ const AgentDashboard = () => {
           </div>
         </OffCanvas>
       )}
+      <AssignNumberModal 
+  isOpen={isAssignModalOpen} 
+  onClose={() => setIsAssignModalOpen(false)} 
+/>
+
       <Footer/>
     </div>
   );

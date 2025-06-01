@@ -90,5 +90,13 @@ export const listAgents=async()=>{
 //   });
 //   return res.data;
 // };
+export const updateAgent = async (agentId, updateData) => {
+  const res = await api.put(`/agent/updateAgent/${agentId}`, updateData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
 
 export default api;
