@@ -2,6 +2,7 @@
     position: sticky;
     top: 0;
     z-index: 1;
+    padding: 5px 2px 2px 2px; 
 }
 
 .profileSection {
@@ -85,6 +86,7 @@
 
 .agentInfo {
     display: flex;
+    flex-wrap: wrap;
     gap: 15px;
     align-items: center;
     width: 50%;
@@ -113,14 +115,15 @@
     padding: 1rem;
     display: flex;
     border-radius: 25px;
-    gap: 1rem;
+    gap: 0.25rem;
     align-items: center;
-    margin: -25px 0 0 0;
+    margin: -30px 0 0 0;
 }
 
 .agentCard hr {
     height: 40px;
     border: 1px solid #ffffff;
+    margin: auto 10px;
 }
 
 .agentImage {
@@ -401,7 +404,7 @@
     background-color: #f0f0f0;
 }
 
-@media (max-width:424px) {
+@media (max-width:400px) {
     .agentInfo2 {
         display: grid;
         gap: 10px;

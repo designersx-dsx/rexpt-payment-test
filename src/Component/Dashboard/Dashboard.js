@@ -60,6 +60,7 @@ function Dashboard() {
     //pop0up
     const [popupMessage, setPopupMessage] = useState("");
     const [popupType, setPopupType] = useState("success");
+    const [callLoading,setCallLoading]=useState(false)
 
     // Navigate on agent card click
     const handleCardClick = (agent) => {
@@ -339,7 +340,10 @@ function Dashboard() {
             console.error("RetellWebClient or agent details not ready.");
             return;
         }
+    setCallLoading(false);
+        
         try {
+            setCallLoading(true)
             const res = await fetch(
                 `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
                 {
@@ -352,7 +356,7 @@ function Dashboard() {
             await retellWebClient.startCall({ accessToken: data.access_token });
         } catch (err) {
             console.error("Error starting call:", err);
-        }
+        }finally{setCallLoading(false)}
     };
 
     // End call
@@ -746,6 +750,9 @@ function Dashboard() {
                             isCallActive={isCallActive}
                             onStartCall={handleStartCall}
                             onEndCall={handleEndCall}
+                            callLoading={callLoading}
+                            setCallLoading={setCallLoading}
+
                         />
                     </Modal2>
                 )}

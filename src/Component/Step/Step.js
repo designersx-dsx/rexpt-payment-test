@@ -12,7 +12,8 @@ import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
 import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
-import { createAgent } from "../../Store/apiStore";
+import { createAgent, listAgents } from "../../Store/apiStore";
+
 
 const Step = () => {
     const navigate = useNavigate();
@@ -24,14 +25,14 @@ const Step = () => {
     const [popupType, setPopupType] = useState(null);
     const [popupMessage, setPopupMessage] = useState("");
     const [loading, setLoading] = useState(false)
-  
+    const [agentCount, setAgentCount] = useState(0);
+
     const step2Ref = useRef();
     const step3Ref = useRef();
     const step4Ref = useRef();
     const token = localStorage.getItem("token") || "";
     const decodeTokenData = decodeToken(token)
     const [userId, setUserId] = useState(decodeTokenData?.id || "");
-
     useEffect(() => {
         if (token) {
             setUserId(decodeTokenData.id || "");
@@ -53,6 +54,18 @@ const Step = () => {
         JSON.parse(sessionStorage.getItem("businessLocation")) ||
         "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
+    const packageName = sessionStorage.getItem("package") || "Free";
+
+    const packageMap = {
+        "Free": 1,
+        "Starter": 2,
+        "Scaler": 3,
+        "Growth": 4,
+        "Corporate": 5,
+        "Enterprise": 6
+    };
+
+    const packageValue = packageMap[packageName] || 1; // default to 1 (Free) if not found
     const prompt = `You are an AI Receptionist ${agentName}, working as a ${role_title} for ${business?.businessName}.
 Your main goal is to professionally greet, assist, and guide callers or visitors. Use a helpful, polite, and clear tone. Tailor your conversation based on your role and the context.
 Here is your profile:
@@ -75,7 +88,7 @@ If you’re unsure of something, respond with:
 
 Always maintain a tone that matches the following persona:  
 **${role_title}**
-
+ 
 ---
 
 Let’s begin assisting the customer!
@@ -336,7 +349,6 @@ Let’s begin assisting the customer!
             stats: "—",
         },
     ];
-
     const handleNext = () => {
         if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
             return;
@@ -382,6 +394,17 @@ Let’s begin assisting the customer!
         swipe: false,
         beforeChange: (_, next) => setCurrentStep(next),
     };
+
+    const fetchAgentCountFromUser = async () => {
+        try {
+            const response = await listAgents()
+            const filterAgents = await response.filter(res => res.userId === userId)
+            setAgentCount(filterAgents.length)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const dynamicAgentName = `${business?.businessType}_${business?.businessName}_${role_title}_${packageValue}#${agentCount}`
     const handleContinue = async () => {
         if (step4Ref.current) {
             const isValid = step4Ref.current.validate();
@@ -480,11 +503,10 @@ Let’s begin assisting the customer!
                         response_engine,
                         voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                        agent_name: sessionStorage.getItem("agentName"),
+                        agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US"
 
                     };
-
                     try {
                         const response = await axios.post(
                             "https://api.retellai.com/create-agent",
@@ -503,7 +525,6 @@ Let’s begin assisting the customer!
                         const businessIdObj = JSON.parse(businessIdString);
 
                         // Now access the actual ID
-                        console.log(businessIdObj.businessId, "businessId value");
                         const agentData = {
                             userId: userId,
                             agent_id: agentId || sessionStorage.getItem("agentId"),
@@ -573,6 +594,10 @@ Let’s begin assisting the customer!
         "Agent Name",
         "Receptionist Type",
     ];
+    // function lock
+    useEffect(() => {
+        fetchAgentCountFromUser()
+    }, [])
     return (
         <div className={styles.container}>
             <StepHeader title={stepTitles[currentStep]} />
