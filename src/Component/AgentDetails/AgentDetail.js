@@ -94,17 +94,17 @@ const AgentDashboard = () => {
               onClick={handleBackClick}
               
             ></img>
-            <div>
+            {/* <div>
               <img
                 src={user.profile || "images/AgentImage.png"}
                 alt="Profile"
                 className={styles.profilePic}
               />
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || ""}</h2>
-            </div>
+            </div> */}
           </div>
           <div className={styles.profileSection}>
             
