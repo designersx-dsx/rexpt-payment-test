@@ -420,6 +420,7 @@ function AboutBusiness() {
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
                 <textarea rows="4" cols="50"
+              
                   id="about-business"
                   type="text"
                   placeholder="Use text for describing business Describe something about your business which is not defined or listed on Google My Business or your website."
@@ -450,7 +451,7 @@ function AboutBusiness() {
                 <p className={styles.inlineError}>{filesError}</p>
               )}
               <div className={styles.formGroup}>
-                <label htmlFor="additional-note">Additional Note</label>
+                <label htmlFor="additional-note">Additional Instructions for Receptionist</label>
                 <textarea
                   id="additional-note"
                   placeholder="Note"

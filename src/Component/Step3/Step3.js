@@ -15,6 +15,8 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [agentName, setAgentName] = useState('');
   const [avatar, setAvatar] = useState(null);
   const [agentNameError, setAgentNameError] = useState('');
+  const [scale, setScale] = useState(1);
+
 
   const settings = {
     dots: false,
@@ -62,6 +64,16 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
       setAgentNameError('');
     }
   };
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      let newScale = 1 - Math.min(scrollY / 400, 0.3);
+      if (newScale < 0.7) newScale = 0.7;
+      setScale(newScale);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
@@ -86,11 +98,19 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
         )}
       </div>
       <div className={styles.sliderContainer}>
-        <h2 className={styles.heading}>Choose Avatar</h2>
+        <h2 className={styles.heading}
+          style={{
+            transform: `scale(${scale})`,
+            transition: 'transform 0.3s ease-out',
+            transformOrigin: 'center center',
+            marginTop: '1rem',
+            fontSize: `${scale * 2.5}rem`,
+          }}
+        >Choose Avatar</h2>
 
         <Slider ref={sliderRef} {...settings}>
           {avatars.map((avatar, index) => (
-            <div key={index} className={styles.slide}>
+            <div key={index} className={styles.slide} id='slideradio'>
               <input
                 type="radio"
                 name="avatar"
