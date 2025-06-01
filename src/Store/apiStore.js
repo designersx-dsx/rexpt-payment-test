@@ -77,7 +77,12 @@ export const SendScriptToDeveloper=async(data)=>{
   })
   return res;
 }
+export const listAgents=async()=>{
+   const res = await api.get(`${API_BASE_URL}/agent/listAgents`,{
 
+  });
+  return res.data;
+}
 // export const 
 // export const createKnowledgeBase = async (formData) => {
 //   const res = await api.post('/knowledge-base', formData, {
