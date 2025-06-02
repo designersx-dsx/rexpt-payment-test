@@ -49,6 +49,7 @@ const Step = () => {
     const BusinessLocation =
         JSON.parse(sessionStorage.getItem("businessLocation")) ||
         "Your Business Services";
+    const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
 
@@ -70,7 +71,7 @@ Here is your profile:
 - Business Name:  ${business?.businessName}
 - Business Services:  ${business?.businessType}
 - Business Location: ${BusinessLocation?.country}}
-
+-Additional Instructions: ${aboutBusinessForm.note}
 Responsibilities:
 1. Greet customers warmly and identify their needs.
 2. Answer basic questions about the business, services, or hours.

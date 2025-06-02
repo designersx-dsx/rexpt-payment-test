@@ -240,7 +240,7 @@ const AgentDashboard = () => {
           <div className={styles.businessInfo}>
             <div className={styles.card1}>
               <h2>{agentData?.business?.businessName || "NA"}</h2>
-              <p>Employees {agentData?.business?.businessSize || "NA"}</p>
+              <p>{agentData?.business?.businessSize || "NA"}</p>
               <div className={styles.health}>
                 {/* <h3>Health <span> /Categories</span></h3> */}
                 <h3>{agentData?.business?.businessType || "NA"}</h3>

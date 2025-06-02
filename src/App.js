@@ -42,7 +42,6 @@ function App() {
           <Route path="/agent-detail" element={<AgentDetail />} />
           <Route path="/business-locations" element={<BusinessLocation />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/home" element={<AgentDetail />} />
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<RexAgent />} />
