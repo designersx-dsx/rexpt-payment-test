@@ -13,7 +13,12 @@ import BusinessLocation from './Component/BusinessLocation/BusinessLocation';
 import SecureRoute from './Pages/SecureRoute'
 import Dashboard from './Component/Dashboard/Dashboard';
 import RexAgent from './Component/RexAgent/RexAgent';
+
+import Plans from './Component/Plans/Plans';
+import SubscriptionFlow from './Component/Checkout/SubscriptionFlow';
+
 import Calendar from './Component/Calendar/Calendar';
+
 
 function App() {
   const token = localStorage.getItem('token');
@@ -45,7 +50,18 @@ function App() {
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<RexAgent />} />
+
+
+
+   <Route path="/plans" element={<Plans />} />
+
+             <Route path="/checkout" element={<SubscriptionFlow />} />
+
+
+
+
           <Route path="/calendar" element={<Calendar />} />
+
         </Routes>
 
       </div>
