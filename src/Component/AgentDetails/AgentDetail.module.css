@@ -606,6 +606,9 @@
 }
 
 @media (max-width: 360px) {
+  .agentDetailsFlex p:last-child strong {
+    font-size: 25px;
+}
   .agentDetailsFlex {
     flex-wrap: unset;
   }
