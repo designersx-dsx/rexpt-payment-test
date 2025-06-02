@@ -28,7 +28,7 @@ export const verifyEmailOTP = async (email,otp) => {
 export const getRetellVoices = async () => {
   const res = await axios.get('https://api.retellai.com/list-voices',{
   headers: {
-      Authorization: `Bearer ${process.env.REACT_APP_RETELL_API_KEY}`,
+      Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
     },
   });
   return res;

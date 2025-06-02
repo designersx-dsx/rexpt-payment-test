@@ -183,11 +183,12 @@ const validateBusinessSize = (value) => {
   console.log(value)
   const allowedValues = [
     "1 to 10 employees",
-    "11 to 50 employees",
-    "51 to 100 employees",
-    "101 to 250 employees",
-    "251 to 500 employees", 
-    "500 + employees"   
+    "10 to 50 employees",
+    "50 to 100 employees",
+    "100 to 250 employees",
+    "250 to 500 employees", 
+    "500 to 1000 employees", 
+    "1000+ employees"   
   ];
   if (!allowedValues.includes(value)) {
     return "Invalid business size selected.";
@@ -326,7 +327,7 @@ const validateBusinessSize = (value) => {
       <div className={styles.labReq}>
         <div className={styles.inputGroup}>
           <div className={styles.Dblock}>
-            <label>Business Name</label>
+            <label>Business Name<span className={styles.requiredField}> *</span></label>
             <input
               type="text"
               placeholder="Your Business name"
@@ -358,7 +359,7 @@ const validateBusinessSize = (value) => {
       </div>
       {/* business size –- now a dropdown */}
       <div className={styles.inputGroup}>
-        <label>Business Size (Number of Emp.)</label>
+        <label>Business Size (Number of Emp.)<span className={styles.requiredField}> *</span></label>
         <select
           value={businessSize}
           onChange={handleBusinessSizeChange }
@@ -366,23 +367,29 @@ const validateBusinessSize = (value) => {
             businessSizeError ? styles.inputError : ""
           }`}
         >
+            <option value="" disabled className={styles.selectOption}>
+          {'Select Business Size'}
+        </option>
           <option value='1 to 10 employees' className={`${styles.selectOption}`} >
             {'1 to 10 employees'}
           </option>
-          <option value='11 to 50 employees' className={`${styles.selectOption}`}>
+          <option value='10 to 50 employees' className={`${styles.selectOption}`}>
             {'10 to 50 employees'}
           </option>
-          <option value='51 to 100 employees' className={`${styles.selectOption}`}>
+          <option value='50 to 100 employees' className={`${styles.selectOption}`}>
             {'50 to 100 employees'}
           </option>
-          <option value='101 to 250 employees' className={`${styles.selectOption}`}>
+          <option value='100 to 250 employees' className={`${styles.selectOption}`}>
             {'100 to 250 employees'}
           </option>
-          <option value='251 to 500 employees' className={`${styles.selectOption}`}>
+          <option value='250 to 500 employees' className={`${styles.selectOption}`}>
             {'250 to 500  employees'}
           </option>
-          <option value='500 + employees' className={`${styles.selectOption}`}>
-            {'500 + employees'}
+          <option value='500 to 1000 employees' className={`${styles.selectOption}`}>
+            {'500 to 1000 employees'}
+          </option>
+          <option value='1000+ employees' className={`${styles.selectOption}`}>
+            {'1000+ employees'}
           </option>
         </select>
          {businessSizeSubmitted && businessSizeError && (
