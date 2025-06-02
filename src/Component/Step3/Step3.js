@@ -38,10 +38,11 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [gender, setGender] = useState(''); // default
   const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
   const agentGender=sessionStorage.getItem('agentGender')
-
   useEffect(()=>{
       setGender(agentGender)
-      setAvailableAvatars(avatars['male'])
+      setAvailableAvatars(avatars[agentGender])
+      setAvatar(avatars[agentGender][0].img)
+      sessionStorage.setItem('avatar',avatars[agentGender][0].img)
   },[agentGender])
 
   const settings = {
@@ -54,13 +55,10 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   };
 const agentnm = sessionStorage.getItem('VoiceAgentName');
 useEffect(() => {
-  
   console.log(agentnm)
   if (agentnm) {
     setAgentName(agentnm);
     sessionStorage.setItem('agentName', agentnm);
-    sessionStorage.setItem("avatar", null);
-    setAvatar(null)
     console.log(agentnm);
   }
 }, [agentnm]);
@@ -93,7 +91,9 @@ useEffect(() => {
 
   const handleAgentNameChange = (e) => {
     const val = e.target.value;
+    console.log(val)
     setAgentName(val);
+    sessionStorage.setItem('agentName', val);
     if (val.trim()) {
       setAgentNameError('');
     }
