@@ -672,15 +672,6 @@ Let’s begin assisting the customer!
                     />
                 </div>
 
-                {/* Step 3 */}
-                <div>
-                    <Step3
-                        ref={step3Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                    />
-                </div>
                 {/* Step 4 */}
 
                 <div>
@@ -691,6 +682,16 @@ Let’s begin assisting the customer!
                         onValidationError={handleValidationError}
                         loading={loading}
                         setLoading={setLoading}
+                    />
+                </div>
+                
+                {/* Step 3 */}
+                <div>
+                    <Step3
+                        ref={step3Ref}
+                        onNext={handleNext}
+                        onBack={handleBack}
+                        onValidationError={handleValidationError}
                     />
                 </div>
             </Slider>
