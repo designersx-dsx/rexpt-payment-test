@@ -63,9 +63,18 @@ function Dashboard() {
   const [callLoading, setCallLoading] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState();
 
+  //cam-icon
+  const [openProfileUpdater, setOpenProfileUpdater] = useState(false);
+  const profileRef = useRef(null); // renamed ref
+  const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const videoRef = useRef(null); // To reference the video element for camera feed
+
   // Navigate on agent card click
   const handleCardClick = (agent) => {
-    localStorage.setItem('selectedAgentAvatar',agent?.avatar)
+    localStorage.setItem("selectedAgentAvatar", agent?.avatar);
     navigate("/agent-detail", {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
@@ -396,22 +405,122 @@ function Dashboard() {
   const handleCloseWidgetModal = () => {
     setOpenWidgetModal(false);
   };
+
+  //close camera option click outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (!profileRef.current?.contains(e.target)) setOpenProfileUpdater(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const openCaptureModal = () => {
+    setIsCaptureModalOpen(true);
+  };
+
+  const closeCaptureModal = () => {
+    setIsCaptureModalOpen(false);
+  };
+
+  const captureImage = () => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const img = canvas.toDataURL("image/png");
+    setCapturedImage(img);
+    setIsCaptureModalOpen(false);
+  };
+  const openUploadModal = () => {
+    setIsUploadModalOpen(true);
+  };
+
+  const closeUploadModal = () => {
+    setIsUploadModalOpen(false);
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage(reader.result); // Preview the uploaded image
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div>
       <div className={styles.forSticky}>
         <header className={styles.header}>
-          <div className={styles.profileSection}>
+          <div className={styles.profileSection} ref={profileRef}>
             <div>
-              <img
-                src={user?.profile || "images/AgentImage.png"}
-                alt="Profile"
-                className={styles.profilePic}
-              />
+              <button
+                className={styles.avatarBtn}
+                onClick={() => setOpenProfileUpdater((prev) => !prev)}
+              >
+                <img
+                  src={
+                    capturedImage || user?.profile || "images/camera-icon.avif"
+                  }
+                  alt="Profile"
+                  className={styles.profilePic}
+                />
+              </button>
             </div>
             <div>
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
+            {openProfileUpdater && (
+              <ul className={styles.dropdown}>
+                <li onClick={openCaptureModal}>Capture Profile Picture</li>
+                <li onClick={openUploadModal}>Upload Profile Picture</li>
+              </ul>
+            )}
+            {isCaptureModalOpen && (
+              <div className={styles.modalBackdrop} onClick={closeCaptureModal}>
+                <div
+                  className={styles.modalContainer}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h2>Capture Profile Picture</h2>
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    width="100%"
+                    height="auto"
+                  ></video>
+                  <button onClick={captureImage}>Capture</button>
+                  <button onClick={closeCaptureModal}>Cancel</button>
+                </div>
+              </div>
+            )}
+
+            {isUploadModalOpen && (
+              <div className={styles.modalBackdrop} onClick={closeUploadModal}>
+                <div
+                  className={styles.modalContainer}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h2>Upload Profile Picture</h2>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                  />
+                  {uploadedImage && (
+                    <img
+                      src={uploadedImage}
+                      alt="Preview"
+                      style={{ width: "100px", height: "100px" }}
+                    />
+                  )}
+                  <button onClick={closeUploadModal}>Cancel</button>
+                </div>
+              </div>
+            )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -505,7 +614,7 @@ function Dashboard() {
           let assignedNumbers = [];
           if (agent.voip_numbers) {
             try {
-              assignedNumbers = JSON.parse(agent.voip_numbers);
+              assignedNumbers = JSON.parse(agent?.voip_numbers);
             } catch {
               assignedNumbers = [];
             }
@@ -516,8 +625,8 @@ function Dashboard() {
               className={`${styles.LangStyle} ${styles[randomPlan]}`}
               onClick={() => handleCardClick(agent)}
             >
-              <div className={styles.PlanPriceMain}>
-                <h3 className={styles.PlanPrice}>
+              <div className={styles?.PlanPriceMain}>
+                <h3 className={styles?.PlanPrice}>
                   {agent.plan || "Free Plan"}
                 </h3>
               </div>
@@ -525,9 +634,12 @@ function Dashboard() {
                 <div className={styles.LangItem}>
                   <div className={styles.LangIcon}>
                     <div className={styles.agentAvatarContainer}>
-                    <img src={agent?.avatar ||"images/SofiaAgent.png"}alt="English" />
+                      <img
+                        src={agent?.avatar || "images/SofiaAgent.png"}
+                        alt="English"
+                      />
                     </div>
-                     {/* <img src={"images/SofiaAgent.png"}alt="English" /> */}
+                    {/* <img src={"images/SofiaAgent.png"}alt="English" /> */}
                   </div>
                   <div className={styles.LangText}>
                     <h3 className={styles.agentName}>
@@ -535,7 +647,7 @@ function Dashboard() {
                       <span className={styles.activeText}>Active</span>
                     </h3>
                     <p className={styles.agentAccent}>
-                      {agent.agentLanguage} •{agent.agentAccent}
+                      {agent?.agentLanguage} •{agent?.agentAccent}
                     </p>
                   </div>
                 </div>
@@ -555,7 +667,7 @@ function Dashboard() {
                     <circle cx="9" cy="2" r="2" fill="black" />
                     <circle cx="16" cy="2" r="2" fill="black" />
                   </svg>
-                  {openDropdown === agent.agent_id && (
+                  {openDropdown === agent?.agent_id && (
                     <div className={styles.OptionsDropdown}>
                       <div
                         className={styles.OptionItem}
@@ -630,18 +742,23 @@ function Dashboard() {
               </div>
 
               <div className={styles.LangButton}>
-                {/* {assignedNumbers.length > 0 ? (
-          <div className={styles.AssignNum}>
-            Assigned Number{assignedNumbers.length > 1 ? "s" : ""}: {assignedNumbers.join(", ")}
+                {assignedNumbers.length > 0 ? (
+
+          <div className={styles.AssignNumText}>
+            Assigned Number
+
+            <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
           </div>):(
-             
-          )} */}
-          <div
+             <div
             className={styles.AssignNum}
           >
             Assign Number
             
           </div>
+             
+          )}
+         
+
                 <div className={styles.minLeft}>
                   <span className={styles.MinL}>Min Left</span>{" "}
                   {agent?.callSummary?.remaining?.minutes || 0}
@@ -873,6 +990,7 @@ function Dashboard() {
           onClose={() => setPopupMessage("")}
         />
       )}
+
       <Footer />
     </div>
   );
