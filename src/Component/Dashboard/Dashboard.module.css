@@ -73,9 +73,9 @@
 }
 
 .agentAvatarContainer img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border-radius: 11px;
     object-fit: cover;
 }
 
@@ -343,6 +343,7 @@
     color: #000;
     font-weight: 900;
     text-align: right;
+    font-family: "Lato", sans-serif;
 
 }
 
