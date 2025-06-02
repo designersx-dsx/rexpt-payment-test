@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "../SignUp/SignUp.module.css";
 import { useNavigate } from "react-router-dom";
-import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
+import { API_BASE_URL, LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 import useUser from "../../Store/Context/UserContext";
@@ -97,14 +97,14 @@ const SignUp = () => {
         if (verifiedUser) {
           setUser({
             name: response?.data?.user?.name || "",
-            profile: response?.data?.user?.profile || "images/AgentImage.png",
+            profile: `${API_BASE_URL.split('api')[0]}${response?.data?.user?.profile?.split('public')[1] }`|| "images/AgentImage.png",
             subscriptionDetails: {},
           });
           navigate("/dashboard");
         } else {
           setUser({
             name: response?.data?.user?.email || "",
-            profile: response?.data?.user?.profile || "images/AgentImage.png",
+            profile: `${API_BASE_URL}${response?.data?.user?.profile?.split('public')[1] }`|| "images/AgentImage.png",
             subscriptionDetails: {},
           });
           navigate("/details");

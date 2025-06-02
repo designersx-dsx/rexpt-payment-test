@@ -246,3 +246,120 @@
     font-size: 0.75rem;
   }
 }
+/* Calendar section styling */
+.calendarSection {
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Heading of selected date */
+.calendarSection h1 {
+  font-weight: 800;
+  color: #6a0dad;
+  margin-bottom: 15px;
+  letter-spacing: 0.05em;
+}
+
+/* Calendar base */
+.react-calendar {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(106, 13, 173, 0.1);
+  font-size: 1rem;
+  width: 100%;
+  max-width: 650px;
+  margin: auto;
+  background: #fafafa;
+  padding: 15px 10px;
+}
+
+/* Weekday header styling */
+.react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #6a0dad;
+  border-bottom: 2px solid #6a0dad;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+/* Weekday names */
+.react-calendar__month-view__weekdays__weekday {
+  padding: 10px 0;
+  letter-spacing: 0.07em;
+}
+
+/* Day cells base */
+.react-calendar__tile {
+  border-radius: 12px !important;
+  transition: all 0.3s ease;
+  box-shadow: none !important;
+  color: #4a4a4a;
+  font-weight: 500;
+  padding: 12px 6px;
+}
+
+/* Hover effect on day cells */
+.react-calendar__tile:hover {
+  background: #6a0dad;
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4);
+  cursor: pointer;
+}
+
+/* Selected day style */
+.react-calendar__tile--active {
+  background: linear-gradient(135deg, #9c27b0, #6a0dad);
+  color: white !important;
+  box-shadow: 0 0 15px rgba(106, 13, 173, 0.7);
+  font-weight: 700;
+  transform: scale(1.15);
+  border: none !important;
+}
+
+/* Booking highlight dates */
+.bookingHighlight {
+  background: #e1bee7;
+  color: #6a0dad !important;
+  font-weight: 600;
+  border: 2px solid #6a0dad;
+  box-shadow: 0 0 12px rgba(106, 13, 173, 0.3);
+  transition: background-color 0.3s ease;
+  border-radius: 12px !important;
+}
+
+/* Booking highlight hover */
+.bookingHighlight:hover {
+  background: #6a0dad;
+  color: white !important;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(106, 13, 173, 0.7);
+}
+
+/* Navigation buttons */
+.react-calendar__navigation button {
+  color: #6a0dad;
+  min-width: 44px;
+  background: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  transition: background-color 0.3s ease;
+}
+
+.react-calendar__navigation button:hover,
+.react-calendar__navigation button:focus {
+  background-color: #6a0dad;
+  color: white;
+  outline: none;
+  box-shadow: 0 4px 15px rgba(106, 13, 173, 0.5);
+}
+
+/* Disable outline on buttons */
+.react-calendar__navigation button:focus {
+  outline: none;
+}

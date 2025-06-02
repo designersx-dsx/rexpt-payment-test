@@ -38,6 +38,12 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [gender, setGender] = useState(''); // default
   const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
   const agentGender=sessionStorage.getItem('agentGender')
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
+
+const handleAvatarChange = (avatar) => {
+  // agar current select yehi avatar hai, deselect kar do, warna select karo
+  setSelectedAvatar((prev) => (prev === avatar ? null : avatar));
+};
 useEffect(() => {
   if (agentGender && avatars[agentGender]) {
     const genderAvatars = avatars[agentGender];
@@ -77,10 +83,7 @@ useEffect(() => {
   }
 }, [agentnm]);
 
-  const handleAvatarChange = (avatar) => {
-    setAvatar(avatar?.img);
-    sessionStorage.setItem("avatar", avatar?.img);
-  };
+ 
 
   useImperativeHandle(ref, () => ({
     validate: () => {
@@ -157,24 +160,27 @@ useEffect(() => {
         >Choose Avatar</h2>
 
         <Slider ref={sliderRef} {...settings}>
-          {avatars[gender]?.map((avatar, index) => (
-            <div key={index} className={styles.slide} id='slideradio'>
-                <label className={styles.avatarLabel}>
-              <input
-                type="radio"
-                name="avatar"
-                value={index}
-                onChange={() => handleAvatarChange(avatar)}
-                className={styles.radioButton}
-              />
-              <img
-                src={avatar.img}
-                alt={`Avatar ${index + 1}`}
-                className={styles.avatarImage}
-              />
-              </label>
-            </div>
-          ))}
+       {avatars[gender]?.map((avatar, index) => (
+  <div key={index} className={styles.slide} id="slideradio">
+    <label className={styles.avatarLabel}>
+      <input
+        type="checkbox"
+        name="avatar"
+        value={index}
+        checked={selectedAvatar === avatar}  // control karo selected state
+        onChange={() => handleAvatarChange(avatar)}
+        className={styles.radioButton}
+      />
+      <img
+        src={avatar.img}
+        alt={`Avatar ${index + 1}`}
+        className={styles.avatarImage}
+      />
+    </label>
+  </div>
+))}
+
+
         </Slider>
 
         <div className={styles.customBtn}>

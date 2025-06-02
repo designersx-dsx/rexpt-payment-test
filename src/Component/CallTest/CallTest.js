@@ -34,7 +34,7 @@ const CallTest = ({ onStartCall, onEndCall, isCallActive, callLoading, setCallLo
 
                         <div className={styles.greendiv}   style={{
                                 pointerEvents: callLoading ? 'none' : 'auto',
-                                opacity: callLoading ? 1 : 1,
+                                opacity: callLoading ? 0.7 : 1,
                                 cursor: callLoading ? 'not-allowed' : 'default',
                             }}>
                             <div className={styles.phoneIcon}>
