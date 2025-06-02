@@ -88,7 +88,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
 
     try {
         const response=await updateProfilePicture(userId,formData)
-        console.log('profile picture updated',response)
+        // console.log('profile picture updated',response)
          setUser({
            profile:`${API_BASE_URL?.split('/api')[0]}${response?.profilePicture?.split('/public')[1]}` 
         })
