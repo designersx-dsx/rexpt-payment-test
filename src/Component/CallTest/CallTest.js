@@ -9,7 +9,7 @@ const CallTest = ({ onStartCall, onEndCall, isCallActive, callLoading, setCallLo
     return (
         <div className={styles.container}>
             <div className={styles.imgrex}>
-                <img src="images/rex.png" alt="Rex Agent" />
+                <img src={agentDetails?.avatar || "images/rex.png"} alt="Rex Agent" />
                 {isCallActive ?
                     <div className={styles.reddiv}>
                         <div className={styles.phoneIcon}>
@@ -32,7 +32,11 @@ const CallTest = ({ onStartCall, onEndCall, isCallActive, callLoading, setCallLo
 
                     callLoading ?
 
-                        <div className={styles.greendiv} onClick={onStartCall}>
+                        <div className={styles.greendiv}   style={{
+                                pointerEvents: callLoading ? 'none' : 'auto',
+                                opacity: callLoading ? 1 : 1,
+                                cursor: callLoading ? 'not-allowed' : 'default',
+                            }}>
                             <div className={styles.phoneIcon}>
                                 <img src="svg/Phone-call.svg" alt="Phone Call" />
                             </div>

@@ -65,7 +65,8 @@ function Dashboard() {
 
   // Navigate on agent card click
   const handleCardClick = (agent) => {
-    navigate("/home", {
+    localStorage.setItem('selectedAgentAvatar',agent?.avatar)
+    navigate("/agent-detail", {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
   };
@@ -499,7 +500,7 @@ function Dashboard() {
       </div>
 
       <div className={styles.main}>
-        {localAgents.map((agent) => {
+        {localAgents?.map((agent) => {
           const randomPlan = planStyles["FreePlan"];
           let assignedNumbers = [];
           if (agent.voip_numbers) {
@@ -523,7 +524,10 @@ function Dashboard() {
               <div className={styles.Lang}>
                 <div className={styles.LangItem}>
                   <div className={styles.LangIcon}>
-                    <img src="images/SofiaAgent.png" alt="English" />
+                    <div className={styles.agentAvatarContainer}>
+                    <img src={agent?.avatar ||"images/SofiaAgent.png"}alt="English" />
+                    </div>
+                     {/* <img src={"images/SofiaAgent.png"}alt="English" /> */}
                   </div>
                   <div className={styles.LangText}>
                     <h3 className={styles.agentName}>
@@ -627,15 +631,20 @@ function Dashboard() {
 
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
-          <div className={styles.AssignNum}>
-            Assigned Number{assignedNumbers.length > 1 ? "s" : ""}: {assignedNumbers.join(", ")}
+          <div className={styles.AssignNumText}>
+            Assigned Number
+
+            <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
           </div>):(
              <div
             className={styles.AssignNum}
           >
-            No. is not assign yet.
+            Assign Number
+            
           </div>
+             
           )}
+         
                 <div className={styles.minLeft}>
                   <span className={styles.MinL}>Min Left</span>{" "}
                   {agent?.callSummary?.remaining?.minutes || 0}

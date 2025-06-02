@@ -255,7 +255,6 @@ function AboutBusiness() {
     const matchedBusiness = businessTypes.find(
       (item) => item.name === business?.businessType
     );
-
     const businessCode = matchedBusiness ? matchedBusiness.code : 'unknown';
     const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
     const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(shortBusinessName)}_${sanitize(packageValue)}_#${agentCount}`;
