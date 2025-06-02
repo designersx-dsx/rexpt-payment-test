@@ -209,6 +209,7 @@ function AboutBusiness() {
     if (!validateForm()) return;
 
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
+    const businessLocation = JSON.parse(sessionStorage.getItem("businessLocation"));
 
     const mergedUrls = [businessUrl.trim()];
 
@@ -224,34 +225,59 @@ function AboutBusiness() {
       "Enterprise": 6
     };
 
-    const packageValue = packageMap[packageName] || 1; 
+    const packageValue = packageMap[packageName] || 1;
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const knowledgeBaseName = `${sanitize(business?.businessType)}_${sanitize(business?.businessName)}_${sanitize(packageValue)}_#${agentCount}`;
+    const businessTypes = [
+      { name: "Restaurant", code: "rest" },
+      { name: "Real Estate Broker", code: "rea_est_bro" },
+      { name: "Saloon", code: "sal" },
+      { name: "Doctor's Clinic", code: "doct_cli" },
+      { name: "Dentist Office", code: "dent_off" },
+      { name: "Dry Cleaner", code: "dry_cle" },
+      { name: "Web Design Agency", code: "web_des_age" },
+      { name: "Marketing Agency", code: "mkt_age" },
+      { name: "Gym & Fitness Center", code: "gym_fit" },
+      { name: "Personal Trainer", code: "per_tra" },
+      { name: "Architect", code: "arch" },
+      { name: "Interior Designer", code: "int_des" },
+      { name: "Construction Services", code: "con_ser" },
+      { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
+      { name: "Transport Company", code: "tra_com" },
+      { name: "Landscaping Company", code: "land_com" },
+      { name: "Insurance Agency", code: "ins_age" },
+      { name: "Financial Services", code: "fin_ser" },
+      { name: "Accounting Services", code: "acc_ser" },
+      { name: "Car Repair & Garage", code: "car_rep" },
+      { name: "Boat Repair & Maintenance", code: "boa_rep" },
+      { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
+      { name: "Other Local Business", code: "oth_loc_bus" }
+    ];
+    const matchedBusiness = businessTypes.find(
+      (item) => item.name === business?.businessType
+    );
+
+    const businessCode = matchedBusiness ? matchedBusiness.code : 'unknown';
+    const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
+    const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(shortBusinessName)}_${sanitize(packageValue)}_#${agentCount}`;
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     let knowledgeTexts = [];
-    const moreAbout={
-     title: "More Business Details",
-     text: aboutBusiness
+    let textContent = "";
+    let moreAbout = null;
+    if (businessLocation) {
+      textContent = `
+Country: ${businessLocation.country || ""}
+State: ${businessLocation.state || ""}
+City: ${businessLocation.city || ""}
+Address No. 1: ${businessLocation.address1 || ""}
+Address No. 2: ${businessLocation.address2 || ""}
+`.trim(); // Optional: remove leading/trailing whitespace
+      moreAbout = {
+        title: business.businessType || "Business Info",
+        text: textContent
+      };
     }
-
-    const additional={
-        title: "Aditional Notes/Information",
-        text: note
-    }
-
-    if (aboutBusiness && aboutBusiness.length > 0) {
-  knowledgeTexts.push(moreAbout);
-}
-    if (note && note.length > 0) {
-      knowledgeTexts.push(additional);
-    }
-console.log('knowledgeTexts',knowledgeTexts)
-    // if(knowledgeTexts && knowledgeTexts.length>0){
-    //      formData.append("knowledge_base_texts", knowledgeTexts)
-    // }
-    // formData.append("knowledge_base_texts", knowledgeTexts)
-    // formData.append("knowledge_base_texts", JSON.stringify(aboutBusiness)); // Optional
+    formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
     files.forEach((file) => {
       formData.append("knowledge_base_files", file);
     });
@@ -285,7 +311,7 @@ console.log('knowledgeTexts',knowledgeTexts)
     }
   };
   const handleSkip = (e) => {
-     e.preventDefault(); // prevent form submit
+    e.preventDefault(); // prevent form submit
     setPopupType("confirm");
     setPopupMessage(
       "This step is essential for your agent to understand your business context. You can always update these settings later as needed."
@@ -374,63 +400,63 @@ console.log('knowledgeTexts',knowledgeTexts)
                 )}
               </div>
               <div>
-              <div className={styles.formGroup}>
-                <label htmlFor="google-listing">Google Listing</label>
-                <input
-                  id="google-listing"
-                  type="url"
-                  placeholder="https://g.co/kgs/zrLgvY9"
-                  value={googleListing}
-                  inputMode="url"
-                  autoComplete="url"
-                  list="url-suggestions"
-                  onKeyDown={(e) => {
-                    const { key, target } = e;
-                    if (key !== "Backspace" && key !== "Delete") return;
+                <div className={styles.formGroup}>
+                  <label htmlFor="google-listing">Google Listing</label>
+                  <input
+                    id="google-listing"
+                    type="url"
+                    placeholder="https://g.co/kgs/zrLgvY9"
+                    value={googleListing}
+                    inputMode="url"
+                    autoComplete="url"
+                    list="url-suggestions"
+                    onKeyDown={(e) => {
+                      const { key, target } = e;
+                      if (key !== "Backspace" && key !== "Delete") return;
 
-                    const { selectionStart, selectionEnd, value } = target;
-                    const fullSelection = selectionStart === 0 && selectionEnd === value.length;
+                      const { selectionStart, selectionEnd, value } = target;
+                      const fullSelection = selectionStart === 0 && selectionEnd === value.length;
 
-                    if (fullSelection) {
-                      // They wiped everything — leave only the prefix
-                      e.preventDefault();
-                      setGoogleListing(HTTPS_PREFIX);
-                      // Put caret after the prefix
-                      requestAnimationFrame(() => target.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
-                      return;
-                    }
+                      if (fullSelection) {
+                        // They wiped everything — leave only the prefix
+                        e.preventDefault();
+                        setGoogleListing(HTTPS_PREFIX);
+                        // Put caret after the prefix
+                        requestAnimationFrame(() => target.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
+                        return;
+                      }
 
-                    // Block any removal/editing that touches the prefix
-                    if (selectionStart <= PREFIX_LEN) e.preventDefault();
-                  }}
+                      // Block any removal/editing that touches the prefix
+                      if (selectionStart <= PREFIX_LEN) e.preventDefault();
+                    }}
 
-                  onInput={(e) => {
-                    let v = e.target.value;
+                    onInput={(e) => {
+                      let v = e.target.value;
 
-                    // Strip *every* http:// or https:// that appears anywhere
-                    v = v.replace(/https?:\/\//gi, "");
+                      // Strip *every* http:// or https:// that appears anywhere
+                      v = v.replace(/https?:\/\//gi, "");
 
-                    // Remove spaces and convert to lowercase
-                    v = v.replace(/\s+/g, "").toLowerCase();
+                      // Remove spaces and convert to lowercase
+                      v = v.replace(/\s+/g, "").toLowerCase();
 
-                    const final = HTTPS_PREFIX + v;
-                    setGoogleListing(final);
+                      const final = HTTPS_PREFIX + v;
+                      setGoogleListing(final);
 
-                    if (googleListingSubmitted) {
-                      setGoogleListingError(validateGoogleListing(final));
-                    }
-                  }}
-                />
+                      if (googleListingSubmitted) {
+                        setGoogleListingError(validateGoogleListing(final));
+                      }
+                    }}
+                  />
                 </div>
-                 {googleListingSubmitted && googleListingError && (
-                <p className={styles.inlineError}>{googleListingError}</p>
-              )}
+                {googleListingSubmitted && googleListingError && (
+                  <p className={styles.inlineError}>{googleListingError}</p>
+                )}
               </div>
-             
+
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
                 <textarea rows="4" cols="50"
-              
+
                   id="about-business"
                   type="text"
                   placeholder="Use text for describing your business. Describe something about your business which is not defined or listed on Google My Business or Your website."

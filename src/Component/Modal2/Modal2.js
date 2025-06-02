@@ -10,8 +10,7 @@ const Modal2 = ({ isOpen, onClose, children }) => {
       setShouldRender(true);
       document.body.style.overflow = 'hidden';
     } else if (shouldRender) {
-      setIsClosing(true);
-      document.body.style.overflow = 'auto';
+      setIsClosing(true);    
 
       const timer = setTimeout(() => {
         setShouldRender(false);
@@ -34,6 +33,7 @@ const Modal2 = ({ isOpen, onClose, children }) => {
     setIsClosing(true);
     setTimeout(() => {
       setShouldRender(false);
+      document.body.style.overflow = 'auto';
       setIsClosing(false);
       onClose();
     }, 300);

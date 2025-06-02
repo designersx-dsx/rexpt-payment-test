@@ -2,6 +2,8 @@
   position: sticky;
   top: 0;
   z-index: 1;
+  padding: 2px 1px;
+  background: #fff;
 }
 .profileBack {
   display: flex;
@@ -11,10 +13,11 @@
   margin-bottom: 1rem;
 }
 .container {
-  padding: 1rem;
-  /* max-width: 400px; */
+  padding: 1rem;  
   margin: auto;
-  color: #333;
+  color: #333;  
+  overflow: auto;
+  
 }
 .AssignNum {
   background-color: #fff;
@@ -294,6 +297,7 @@
 .google {
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .google img {

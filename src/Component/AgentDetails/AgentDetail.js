@@ -16,47 +16,54 @@ const AgentDashboard = () => {
   const [agentData, setAgentData] = useState([]);
   const location = useLocation();
   const agentDetails = location.state;
-  const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
-  const { user, setUser } = useUser();
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [assignedNumbers, setAssignedNumbers] = useState([]);
 
-  
   useEffect(() => {
-    const getAgentDetailsAndBookings = async () => {
-      try {
-        const response = await fetchAgentDetailById(agentDetails);
-        setAgentData(response?.data);
-
-        const calApiKey = response?.data?.agent?.calApiKey;
-        if (calApiKey) {
-          const calResponse = await fetch(
-            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
-              calApiKey
-            )}`
-          );
-          if (!calResponse.ok) {
-            throw new Error("Failed to fetch total bookings from Cal.com");
-          }
-
-          const bookingsData = await calResponse.json();
-          setTotalBookings(bookingsData.bookings?.length || 0);
+  const getAgentDetailsAndBookings = async () => {
+    try {
+      const response = await fetchAgentDetailById(agentDetails);
+      setAgentData(response?.data);
+      const voipNumbersStr = response?.data?.agent?.voip_numbers;
+      if (voipNumbersStr) {
+        try {
+          const numbersArray = JSON.parse(voipNumbersStr);
+          setAssignedNumbers(numbersArray);
+        } catch (e) {
+          console.warn("Failed to parse voip_numbers:", e);
+          setAssignedNumbers([]);
         }
-      } catch (err) {
-        console.error(
-          "Failed to fetch data",
-          err.response || err.message || err
-        );
-        setTotalBookings(0);
-      } finally {
-        setLoading(false);
+      } else {
+        setAssignedNumbers([]);
       }
-    };
 
-    if (agentDetails) {
-      getAgentDetailsAndBookings();
+      const calApiKey = response?.data?.agent?.calApiKey;
+      if (calApiKey) {
+        const calResponse = await fetch(
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
+        );
+        if (!calResponse.ok) {
+          throw new Error("Failed to fetch total bookings from Cal.com");
+        }
+
+        const bookingsData = await calResponse.json();
+        setTotalBookings(bookingsData.bookings?.length || 0);
+      }
+    } catch (err) {
+      console.error("Failed to fetch data", err.response || err.message || err);
+      setTotalBookings(0);
+      setAssignedNumbers([]);
+    } finally {
+      setLoading(false);
     }
-  }, [agentDetails]);
+  };
+
+  if (agentDetails) {
+    getAgentDetailsAndBookings();
+  }
+}, [agentDetails]);
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -96,17 +103,6 @@ const AgentDashboard = () => {
               alt="Back button"
               onClick={handleBackClick}
             ></img>
-            {/* <div>
-              <img
-                src={user.profile || "images/AgentImage.png"}
-                alt="Profile"
-                className={styles.profilePic}
-              />
-            </div> */}
-            {/* <div>
-              <p className={styles.greeting}>Hello!</p>
-              <h2 className={styles.name}>{user?.name || ""}</h2>
-            </div> */}
           </div>
           <div className={styles.profileSection}></div>
           <div className={styles.notifiMain}>
@@ -213,18 +209,26 @@ const AgentDashboard = () => {
 
               <hr className={styles.agentLine}></hr>
 
-              <div className={styles.agentDetailsFlex}>
+            <div className={styles.agentDetailsFlex}>
 
-               <div className={styles.AssignNum} onClick={() => setIsAssignModalOpen(true)}>
-  Assigned Number
-</div>
-
-
-                <p className={styles.agentDetails}>
-                  Agent Code{" "}
-                  <strong>{agentData?.agent?.agentCode || "NA"}</strong>
-                </p>
+            {assignedNumbers.length > 0 ? (
+              <div className={styles.agentDetails}>
+                Assigned Number: {assignedNumbers.join(", ")}
               </div>
+            ) : (
+              <div
+                className={styles.AssignNum}
+                onClick={() => setIsAssignModalOpen(true)}
+              >
+                Assign Number
+              </div>
+            )}
+
+            <p className={styles.agentDetails}>
+              Agent Code{" "}
+              <strong>{agentData?.agent?.agentCode || "NA"}</strong>
+            </p>
+          </div>
             </div>
           </div>
         </section>
