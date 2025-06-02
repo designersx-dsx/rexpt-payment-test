@@ -212,8 +212,7 @@ const AgentDashboard = () => {
             <div className={styles.agentDetailsFlex}>
 
             {assignedNumbers.length > 0 ? (
-              <div className={styles.agentDetails}>
-                Assigned Number: {assignedNumbers.join(", ")}
+              <div className={styles.AssignNumText}>Assigned Number<p>{assignedNumbers.join(", ")}</p>
               </div>
             ) : (
               <div
@@ -243,7 +242,7 @@ const AgentDashboard = () => {
               <p>{agentData?.business?.businessSize || "NA"}</p>
               <div className={styles.health}>
                 {/* <h3>Health <span> /Categories</span></h3> */}
-                <h3>{agentData?.business?.businessType || "NA"}</h3>
+                <h3>{agentData?.business?.businessType || "NA"}<span> / Categories</span></h3>
               </div>
 
               <h4>Business Details</h4>

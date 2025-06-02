@@ -743,13 +743,22 @@ function Dashboard() {
 
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
-                  <div className={styles.AssignNum}>
-                    Assigned Number{assignedNumbers.length > 1 ? "s" : ""}:{" "}
-                    {assignedNumbers.join(", ")}
-                  </div>
-                ) : (
-                  <div className={styles.AssignNum}>No. is not assign yet.</div>
-                )}
+
+          <div className={styles.AssignNumText}>
+            Assigned Number
+
+            <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
+          </div>):(
+             <div
+            className={styles.AssignNum}
+          >
+            Assign Number
+            
+          </div>
+             
+          )}
+         
+
                 <div className={styles.minLeft}>
                   <span className={styles.MinL}>Min Left</span>{" "}
                   {agent?.callSummary?.remaining?.minutes || 0}
