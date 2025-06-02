@@ -605,6 +605,12 @@
     margin-bottom: 12px;
 }
 
+.agentAvatarContainer {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
 /* Label style */
 .inputGroup label {
     font-weight: 500;
