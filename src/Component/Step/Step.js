@@ -363,6 +363,7 @@ Let’s begin assisting the customer!
             return;
         }
         if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
+
             return;
         }
         if (currentStep === 2 && step3Ref.current && !step3Ref.current.validate()) {
@@ -671,7 +672,15 @@ Let’s begin assisting the customer!
                         onValidationError={handleValidationError}
                     />
                 </div>
-
+                {/* Step 3 */}
+                <div>
+                    <Step3
+                        ref={step3Ref}
+                        onNext={handleNext}
+                        onBack={handleBack}
+                        onValidationError={handleValidationError}
+                    />
+                </div>
                 {/* Step 4 */}
 
                 <div>
@@ -684,16 +693,8 @@ Let’s begin assisting the customer!
                         setLoading={setLoading}
                     />
                 </div>
-                
-                {/* Step 3 */}
-                <div>
-                    <Step3
-                        ref={step3Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                    />
-                </div>
+
+
             </Slider>
 
             {/* === Footer Fixed Pagination === */}
