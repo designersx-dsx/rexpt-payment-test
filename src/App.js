@@ -48,7 +48,7 @@ function App() {
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<RexAgent />} />
 
-
+ 
         </Routes>
 
       </div>
