@@ -1,7 +1,12 @@
+:root {
+    --vh: 100%;
+}
+
+/* ✅ MODIFIED */
 .StartMain {
     position: relative;
     width: 100vw;
-    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100); /* fix for mobile 100vh */
     overflow: hidden;
     background-color: #fff;
 }
@@ -184,7 +189,7 @@
 }
 
 .content>*:nth-child(1) {
-    height: 30vh;
+    height: 32vh;
 }
 
 
