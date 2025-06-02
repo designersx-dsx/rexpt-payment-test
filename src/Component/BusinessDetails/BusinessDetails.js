@@ -382,7 +382,7 @@ const validateBusinessSize = (value) => {
             {'250 to 500  employees'}
           </option>
           <option value='500 + employees' className={`${styles.selectOption}`}>
-            {'250 to 500  employees'}
+            {'500 + employees'}
           </option>
         </select>
          {businessSizeSubmitted && businessSizeError && (
