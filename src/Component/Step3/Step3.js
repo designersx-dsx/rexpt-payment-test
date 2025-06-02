@@ -38,12 +38,26 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [gender, setGender] = useState(''); // default
   const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
   const agentGender=sessionStorage.getItem('agentGender')
-  useEffect(()=>{
-      setGender(agentGender)
-      setAvailableAvatars(avatars[agentGender])
-      setAvatar(avatars[agentGender][0].img)
-      sessionStorage.setItem('avatar',avatars[agentGender][0].img)
-  },[agentGender])
+useEffect(() => {
+  if (agentGender && avatars[agentGender]) {
+    const genderAvatars = avatars[agentGender];
+    const firstAvatar = genderAvatars[0]?.img || null;
+
+    setGender(agentGender);
+    setAvailableAvatars(genderAvatars);
+    setAvatar(firstAvatar);
+    sessionStorage.setItem('avatar', firstAvatar);
+  } else {
+    // Fallback: use 'Male' as default if agentGender is invalid
+    const defaultGender = 'Male';
+    const defaultAvatars = avatars[defaultGender];
+    const firstAvatar = defaultAvatars[0]?.img || null;
+
+    setGender(defaultGender);
+    setAvailableAvatars(defaultAvatars);
+    setAvatar(firstAvatar);
+    sessionStorage.setItem('avatar', firstAvatar);
+  }}, [agentGender]);
 
   const settings = {
     dots: false,
@@ -55,17 +69,17 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   };
 const agentnm = sessionStorage.getItem('VoiceAgentName');
 useEffect(() => {
-  console.log(agentnm)
+  // console.log(agentnm)
   if (agentnm) {
     setAgentName(agentnm);
     sessionStorage.setItem('agentName', agentnm);
-    console.log(agentnm);
+    // console.log(agentnm);
   }
 }, [agentnm]);
 
   const handleAvatarChange = (avatar) => {
     setAvatar(avatar?.img);
-    sessionStorage.setItem("avatar", avatar.img);
+    sessionStorage.setItem("avatar", avatar?.img);
   };
 
   useImperativeHandle(ref, () => ({
@@ -91,7 +105,7 @@ useEffect(() => {
 
   const handleAgentNameChange = (e) => {
     const val = e.target.value;
-    console.log(val)
+    // console.log(val)
     setAgentName(val);
     sessionStorage.setItem('agentName', val);
     if (val.trim()) {
