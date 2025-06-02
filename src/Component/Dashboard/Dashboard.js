@@ -461,7 +461,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
     setUploadedImage(image);
     closeUploadModal();
   };
-
+console.log('user',user)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -473,7 +473,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
                 onClick={toggleProfileDropdown} // Toggle dropdown visibility on avatar click
               >
                 <img
-                   src={capturedImage || uploadedImage || "images/camera-icon.avif"}
+                   src={user?.profile || capturedImage || uploadedImage || "images/camera-icon.avif"}
                   alt="Profile"
                   className={styles.profilePic}
                 />

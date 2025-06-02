@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);  /* Darkened background */
+  background-color: rgba(0, 0, 0, 0.7); /* Darkened background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,7 +29,7 @@ h2 {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 /* Input styling */
@@ -45,14 +45,14 @@ h2 {
 }
 
 .fileInput:focus {
-  border-color: #5a9bff;  /* Blue color when input is focused */
+  border-color: #5a9bff; /* Blue color when input is focused */
   outline: none;
 }
 
 /* Image preview styling */
 .imagePreview img {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 8px; /* Rounded corners for preview */
   margin-bottom: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   object-fit: cover;
@@ -61,14 +61,17 @@ h2 {
 
 /* Button container */
 .buttons {
+  display: flex;
+  gap: 16px; /* Gap between buttons */
+  justify-content: center;
   margin-top: 20px;
 }
 
-/* Close button styling */
-.buttons button {
-  padding: 12px 25px;
-  background-color: #4CAF50; /* Green background */
+/* Save button styling */
+.saveButton {
+  background-color: #6524EB; /* Purple color */
   color: white;
+  padding: 12px 25px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -76,8 +79,36 @@ h2 {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.buttons button:hover {
-  background-color: #45a049;  /* Darker green on hover */
+.saveButton:hover {
+  background-color: #4B1AB6; /* Darker purple on hover */
+  transform: scale(1.05);
+}
+
+/* Disabled button styling */
+.disabledButton {
+  background-color: #cccccc; /* Gray when disabled */
+  color: #666666;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: not-allowed;
+  font-size: 16px;
+}
+
+/* Close button styling */
+.closeButton {
+  background-color: #6524EB; /* Same purple as saveButton */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: #4B1AB6; /* Darker purple on hover */
   transform: scale(1.05);
 }
 
