@@ -2,21 +2,47 @@ import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } f
 import styles from '../Step3/Step3.module.css';
 import Slider from 'react-slick';
 
-const avatars = [
-  { img: 'images/avtar1.png' },
-  { img: 'images/avtar2.png' },
-  { img: 'images/avtar3.png' },
-  { img: 'images/avtar4.png' },
-  { img: 'images/avtar5.png' },
-];
+// const avatars = [
+//   { img: 'images/avtar1.png' },
+//   { img: 'images/avtar2.png' },
+//   { img: 'images/avtar3.png' },
+//   { img: 'images/avtar4.png' },
+//   { img: 'images/avtar5.png' },
+// ];
 
+const avatars = {
+  Male: [
+    { img: 'images/Male-01.png' },
+    { img: 'images/Male-02.png' },
+    { img: 'images/Male-03.png' },
+    { img: 'images/Male-04.png' },
+    { img: 'images/Male-05.png' },
+
+  ],
+  Female: [
+    { img: 'images/Female-01.png' },
+    { img: 'images/Female-02.png' },
+    { img: 'images/Female-03.png' },
+    { img: 'images/Female-04.png' },
+    { img: 'images/Female-05.png' },
+    { img: 'images/Female-06.png' },
+
+  ],
+}
 const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState('');
   const [avatar, setAvatar] = useState(null);
   const [agentNameError, setAgentNameError] = useState('');
   const [scale, setScale] = useState(1);
+  const [gender, setGender] = useState(''); // default
+  const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
+  const agentGender=sessionStorage.getItem('agentGender')
 
+  useEffect(()=>{
+      setGender(agentGender)
+      setAvailableAvatars(avatars['male'])
+  },[agentGender])
 
   const settings = {
     dots: false,
@@ -26,10 +52,18 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     slidesToScroll: 1,
     arrows: false,
   };
-
-  useEffect(() => {
-    sessionStorage.setItem("agentName", agentName);
-  }, [agentName]);
+const agentnm = sessionStorage.getItem('VoiceAgentName');
+useEffect(() => {
+  
+  console.log(agentnm)
+  if (agentnm) {
+    setAgentName(agentnm);
+    sessionStorage.setItem('agentName', agentnm);
+    sessionStorage.setItem("avatar", null);
+    setAvatar(null)
+    console.log(agentnm);
+  }
+}, [agentnm]);
 
   const handleAvatarChange = (avatar) => {
     setAvatar(avatar?.img);
@@ -109,8 +143,9 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
         >Choose Avatar</h2>
 
         <Slider ref={sliderRef} {...settings}>
-          {avatars.map((avatar, index) => (
+          {avatars[gender]?.map((avatar, index) => (
             <div key={index} className={styles.slide} id='slideradio'>
+                <label className={styles.avatarLabel}>
               <input
                 type="radio"
                 name="avatar"
@@ -123,6 +158,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
                 alt={`Avatar ${index + 1}`}
                 className={styles.avatarImage}
               />
+              </label>
             </div>
           ))}
         </Slider>

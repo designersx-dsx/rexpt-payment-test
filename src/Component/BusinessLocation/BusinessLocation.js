@@ -117,8 +117,8 @@ const BusinessLocation = () => {
   const handleAddress2Change = (e) => {
     const val = e.target.value;
     setAddress2(val);
-    if (address2Submitted) setAddress2Error(validateAddress(val, 'Address line 2'));
-    else setAddress2Error('');
+    // if (address2Submitted) setAddress2Error(validateAddress(val, 'Address line 2'));
+    // else setAddress2Error('');
   };
 
   const handleContinue = async () => {
@@ -130,14 +130,14 @@ const BusinessLocation = () => {
     const sError = validateState(state);
     const cError = validateCity(city);
     const a1Error = validateAddress(address1, 'Address line 1');
-    const a2Error = validateAddress(address2, 'Address line 2');
+    // const a2Error = validateAddress(address2, 'Address line 2');
 
     setStateError(sError);
     setCityError(cError);
     setAddress1Error(a1Error);
-    setAddress2Error(a2Error);
+    // setAddress2Error(a2Error);
 
-    if (sError || cError || a1Error || a2Error) return;
+    if (sError || cError || a1Error) return;
 
     sessionStorage.setItem(
       'businessLocation',
@@ -286,7 +286,7 @@ const handleSelect = (country) => {
             </ul>
           )}
         </div> */}
-        <label className={styles.label}>Country</label>
+        <label className={styles.label}>Country<span className={styles.requiredField}> *</span></label>
 <div className={styles.dropdown} tabIndex={0}>
   <div className={styles.selected}>
     <div className={styles.selectedInfo}>
@@ -335,7 +335,7 @@ const handleSelect = (country) => {
         {/* Ankush Code end */}
         <div className={styles.labReq} >
           <div className={styles.Dblock} >
-            <label className={styles.label}>State</label>
+            <label className={styles.label}>State<span className={styles.requiredField}> *</span></label>
             <input
               type="text"
               placeholder="State"
@@ -348,7 +348,7 @@ const handleSelect = (country) => {
         </div>
         <div className={styles.labReq} >
           <div className={styles.Dblock} >
-            <label className={styles.label}>City</label>
+            <label className={styles.label}>City <span className={styles.requiredField}> *</span></label>
             <input
               type="text"
               placeholder="City"
@@ -362,7 +362,7 @@ const handleSelect = (country) => {
         <div className={styles.labReq} >
           <div className={styles.Dblock} >
 
-            <label className={styles.label}>Address line 1</label>
+            <label className={styles.label}>Address line 1 <span className={styles.requiredField}> *</span></label>
             <input
               type="text"
               placeholder="First Address"

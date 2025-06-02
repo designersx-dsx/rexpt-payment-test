@@ -20,6 +20,10 @@
   text-align: center;
   position: relative;
 }
+.sliderContainer img{
+  width: 100%;
+  max-width: 100%;
+}
 
 .heading {
   font-size: 2.5rem;
@@ -86,5 +90,6 @@
   padding-inline: 20px;
   position: absolute;
   top: 50%;
-  width: 100%;
+  width: 100%; 
 }
+

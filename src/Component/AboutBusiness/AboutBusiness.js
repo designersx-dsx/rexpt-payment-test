@@ -178,12 +178,12 @@ function AboutBusiness() {
 
   const validateForm = () => {
     const urlError = validateBusinessUrl(businessUrl);
-    // const listingError = validateGoogleListing(googleListing);
+    const listingError = validateGoogleListing(googleListing);
     // const aboutError = validateAboutBusiness(aboutBusiness);
     // const fileErr = validateFiles(files);
 
     setBusinessUrlError(urlError);
-    // setGoogleListingError(listingError);
+    setGoogleListingError(listingError);
     // setAboutBusinessError(aboutError);
     // setFilesError(fileErr);
 
@@ -373,7 +373,7 @@ console.log('knowledgeTexts',knowledgeTexts)
                   <p className={styles.inlineError}>{businessUrlError}</p>
                 )}
               </div>
-
+              <div>
               <div className={styles.formGroup}>
                 <label htmlFor="google-listing">Google Listing</label>
                 <input
@@ -421,10 +421,12 @@ console.log('knowledgeTexts',knowledgeTexts)
                     }
                   }}
                 />
-              </div>
-              {googleListingSubmitted && googleListingError && (
+                </div>
+                 {googleListingSubmitted && googleListingError && (
                 <p className={styles.inlineError}>{googleListingError}</p>
               )}
+              </div>
+             
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
                 <textarea rows="4" cols="50"
