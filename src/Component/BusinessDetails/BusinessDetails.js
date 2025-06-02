@@ -382,7 +382,7 @@ const validateBusinessSize = (value) => {
             {'250 to 500  employees'}
           </option>
           <option value='500 + employees' className={`${styles.selectOption}`}>
-            {'250 to 500  employees'}
+            {'500 + employees'}
           </option>
         </select>
          {businessSizeSubmitted && businessSizeError && (
@@ -392,7 +392,7 @@ const validateBusinessSize = (value) => {
       <div onClick={handleLoginClick}>
         <div type="submit">
           <div className={styles.btnTheme}>
-            <img src="images/svg-theme.svg" alt="" />
+            <img src="svg/svg-theme.svg" alt="" />
             <p>Continue</p>
           </div>
         </div>

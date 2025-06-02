@@ -28,7 +28,7 @@ export const verifyEmailOTP = async (email,otp) => {
 export const getRetellVoices = async () => {
   const res = await axios.get('https://api.retellai.com/list-voices',{
   headers: {
-      Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+      Authorization: `Bearer ${process.env.REACT_APP_RETELL_API_KEY}`,
     },
   });
   return res;
@@ -90,5 +90,13 @@ export const listAgents=async()=>{
 //   });
 //   return res.data;
 // };
+export const updateAgent = async (agentId, updateData) => {
+  const res = await api.put(`/agent/updateAgent/${agentId}`, updateData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
 
 export default api;

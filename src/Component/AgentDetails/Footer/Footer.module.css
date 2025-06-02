@@ -44,7 +44,7 @@ position: fixed;
 .topAddIcon {
   position: relative;
   top: -35px;
-  right: 32px;
+  right: 7.5%;
 }
 
 .footerContainer img {
@@ -64,6 +64,16 @@ position: fixed;
   transition: opacity 0.3s ease;
 }
 
+
+
+@media (max-width:400px) {
+  .topAddIcon {
+  position: relative;
+  top: -35px;
+  right: 6.5%;
+}
+  
+}
 
 
 @media (max-width:375px) {

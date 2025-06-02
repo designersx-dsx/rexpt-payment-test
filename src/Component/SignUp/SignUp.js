@@ -25,6 +25,7 @@ const SignUp = () => {
   const [resendTimer, setResendTimer] = useState(0);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
 
+
   useEffect(() => {
     let timerInterval = null;
 
@@ -142,8 +143,8 @@ const SignUp = () => {
         setPopupType("success");
         setPopupMessage("OTP sent successfully!");
         setOtpSent(true);
-        setResendTimer(120); 
-        setIsResendDisabled(true); 
+        setResendTimer(120);
+        setIsResendDisabled(true);
       } else {
         setShowPopup(true);
         setPopupType("failed");
@@ -185,6 +186,37 @@ const SignUp = () => {
       return () => clearTimeout(timer);
     }
   }, [showPopup, popupType, popupMessage]);
+
+
+
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const played = sessionStorage.getItem("loginAnimationPlayed");
+
+    if (!played) {
+      const delays = [150, 250, 350, 450, 550];
+
+      const timers = delays.map((delay, index) =>
+        setTimeout(() => setStep(index + 1), delay)
+      );
+
+      setTimeout(() => {
+        sessionStorage.setItem("loginAnimationPlayed", "true");
+      }, 700);
+
+      return () => timers.forEach(clearTimeout);
+    } else {
+      setStep(5);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    if (otpSent && inputRefs.current[0]) {
+      inputRefs.current[0].focus();
+    }
+  }, [otpSent]);
   return (
     <>
       <div className={styles.StartMain}>
@@ -198,32 +230,31 @@ const SignUp = () => {
         </div>
       </div>
       <div className={styles.pageEnterAnimation}>
-        <div className={`${styles.mask} ${styles.animate1}`}>
+        <div className={`${styles.mask} ${styles.maskZoomFadeIn}`}>
           <img src="images/Mask.png" alt="Mask.png" />
         </div>
-        <div className={`${styles.logimg} ${styles.animate2}`}>
+        <div className={`${styles.logimg} ${step >= 1 ? styles.animate1 : ""}`}>
           <img
             className={styles.logo}
             src="svg/Rexpt-Logo.svg"
             alt="Rexpt-Logo"
           />
         </div>
-        <div className={`${styles.Maincontent} ${styles.animate3}`}>
+        <div className={`${styles.Maincontent} ${step >= 2 ? styles.animate2 : ""}`}>
           <div className={styles.welcomeTitle}>
             <h1>Log In to your Account</h1>
           </div>
         </div>
 
-        <div className={`${styles.container} ${styles.animate4}`}>
+        <div className={styles.container} >
           {!otpSent && (
             <>
-              <div className={styles.labReq}>
+              <div className={`${styles.labReq} ${step >= 3 ? styles.animate3 : ""}`}>
                 <div className={styles.Dblock}>
                   <input
                     type="email"
-                    className={`${styles.emailInput} ${
-                      emailError ? styles.inputError : ""
-                    }`}
+                    className={`${styles.emailInput} ${emailError ? styles.inputError : ""
+                      }`}
                     placeholder="Johnvick@gmail.com"
                     value={email}
                     onChange={handleEmailChange}
@@ -234,7 +265,8 @@ const SignUp = () => {
                   <p className={styles.inlineError}>{emailError}</p>
                 )}
               </div>
-              <div className={styles.btnTheme} onClick={handleSendOTP}>
+              <div className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""}`} onClick={handleSendOTP}>
+
                 <img src="svg/svg-theme2.svg" alt="" />
                 <p>
                   {" "}
@@ -257,24 +289,7 @@ const SignUp = () => {
                 Enter the code sent to your email
               </p>
 
-              {/* <div className={styles.otpContainer}>
-                {[...Array(6)].map((_, i) => (
-                  <input
-                    key={i}
-                    id={`otp-${i}`}
-                    maxLength="1"
-                    value={otp[i]}
-                    onChange={(e) => handleOtpChange(e.target.value, i)}
-                    className={styles.otpInput}
-                    onKeyDown={(e) => handleKeyDown(e, i)}
-                    ref={(el) => (inputRefs.current[i] = el)}
-                    onInput={(e) => {
-                      const target = e.target;
-                      target.value = target.value.replace(/[^0-9]/g, "");
-                    }}
-                  />
-                ))}
-              </div> */}
+
 
               <div className={styles.otpContainer}>
                 {[...Array(6)].map((_, i) => (
@@ -317,8 +332,8 @@ const SignUp = () => {
                 >
                   {isResendDisabled
                     ? `Resend OTP in ${Math.floor(resendTimer / 60)
-                        .toString()
-                        .padStart(2, "0")}:${(resendTimer % 60)
+                      .toString()
+                      .padStart(2, "0")}:${(resendTimer % 60)
                         .toString()
                         .padStart(2, "0")}`
                     : "Resend OTP"}
@@ -328,7 +343,7 @@ const SignUp = () => {
               <div className={styles.Btn} onClick={handleLoginClick}>
                 <div type="submit">
                   <div className={styles.btnTheme}>
-                    <img src="images/svg-theme.svg" alt="" />
+                    <img src="svg/svg-theme.svg" alt="" />
                     <p>
                       {isVerifyingOtp ? (
                         <>
@@ -343,20 +358,23 @@ const SignUp = () => {
               </div>
             </>
           )}
-          <div className={styles.divider}>
-            <hr className={styles.line} />
-            <span className={styles.text}>Or continue with</span>
-            <hr className={styles.line} />
-          </div>
+          <div className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""}`}>
+            <div className={styles.divider}>
+              <hr className={styles.line} />
+              <span className={styles.text}>Or continue with</span>
+              <hr className={styles.line} />
+            </div>
 
-          <div className={styles.socialMedia}>
+            <div className={styles.socialMedia}>
 
-            <img src="svg/Coming-Soon.svg"/>
+              <img src="svg/Coming-Soon.svg" />
 
-            {/* <img src="svg/google.svg" alt="" />
+              {/* <img src="svg/google.svg" alt="" />
             <img src="svg/facbook.svg" alt="" />
             <img src="svg/apple.svg" alt="" /> */}
+            </div>
           </div>
+
         </div>
 
         {showPopup && (
