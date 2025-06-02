@@ -87,7 +87,7 @@ const SignUp = () => {
     setIsVerifyingOtp(true);
     try {
       const response = await verifyEmailOTP(email, fullOtp);
-
+      console.log('response',response)
       if (response?.status === 200) {
         localStorage.setItem("token", response.data.token);
         sessionStorage.clear();
@@ -97,7 +97,7 @@ const SignUp = () => {
         if (verifiedUser) {
           setUser({
             name: response?.data?.user?.name || "",
-            profile: `${API_BASE_URL.split('api')[0]}${response?.data?.user?.profile?.split('public')[1] }`|| "images/AgentImage.png",
+            profile: `${API_BASE_URL?.split('/api')[0]}${response?.data?.user?.profile?.split('public')[1] }`|| "images/AgentImage.png",
             subscriptionDetails: {},
           });
           navigate("/dashboard");
