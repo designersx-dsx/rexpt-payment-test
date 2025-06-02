@@ -347,7 +347,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
     window.location.href = "/signup";
   };
 
-  // Retell Web Client initialization
+  // Retell Web Client initializationcxcxc
   useEffect(() => {
     const client = new RetellWebClient();
     client.on("call_started", () => setIsCallActive(true));
