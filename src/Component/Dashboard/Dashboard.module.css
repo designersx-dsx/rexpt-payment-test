@@ -73,9 +73,9 @@
 }
 
 .agentAvatarContainer img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border-radius: 11px;
     object-fit: cover;
 }
 
@@ -177,6 +177,8 @@
     font-size: 18px;
     color: #000;
     font-weight: 400;
+    word-break: break-all;
+    padding-right: 10px;
 }
 
 .agentLine {
@@ -322,7 +324,7 @@
     gap: 20px;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 0px 0 0;
+    padding: 15px 0px 0 0;
 
 }
 
@@ -341,6 +343,7 @@
     color: #000;
     font-weight: 900;
     text-align: right;
+    font-family: "Lato", sans-serif;
 
 }
 
@@ -413,6 +416,11 @@
 
 .OptionItem:hover {
     background-color: #f0f0f0;
+}
+
+.AssignNumText .NumberCaller{
+font-size: 1.2rem;
+font-weight: 600;
 }
 
 @media (max-width:390px) {
@@ -645,7 +653,7 @@
     text-align: center;
     font-size: 14px;
 }
-
+/* Profile section containing avatar and dropdown */
 .profileSection {
   position: relative;          /* anchor for dropdown */
   display: flex;
@@ -653,7 +661,7 @@
   gap: 0.75rem;
 }
 
-/* --- avatar button --- */
+/* Avatar button */
 .avatarBtn {
   all: unset;                  /* wipe default button styles */
   cursor: pointer;
@@ -661,12 +669,13 @@
   line-height: 0;              /* shrink-to-fit */
   transition: box-shadow 0.2s ease;
 }
+
 .avatarBtn:focus-visible,
 .avatarBtn:hover {
   box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.4);
 }
 
-/* --- circular photo --- */
+/* Circular profile picture */
 .profilePic {
   width: 3rem;                 /* 48 px */
   height: 3rem;
@@ -675,23 +684,10 @@
   background: #f0f0f0;
 }
 
-/* --- text --- */
-.greeting {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #6b7280;              /* slate-500 */
-}
-.name {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111827;              /* gray-900 */
-}
-
-/* --- dropdown menu --- */
+/* Dropdown menu */
 .dropdown {
   position: absolute;
-  top: 100%;                   /* below avatar */
+  top: 100%;                   /* Below the avatar */
   left: 0;
   margin-top: 0.5rem;
   min-width: 12rem;
@@ -703,6 +699,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   z-index: 50;
 }
+
 .dropdown li {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
@@ -713,64 +710,7 @@
   gap: 0.5rem;
   transition: background 0.15s ease;
 }
+
 .dropdown li:hover {
-  background: #f3f4f6;         
-}
-/* Backdrop */
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* Modal container */
-.modalContainer {
-  background-color: #fff;
-  padding: 32px 36px;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 10px 30px rgba(101, 36, 235, 0.25);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #24252c;
-  text-align: center;
-  position: relative;
-}
-
-/* Modal header */
-.modalContainer h2 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #6524eb; /* brand purple */
-  margin-bottom: 12px;
-}
-
-/* Modal paragraph */
-.modalContainer p {
-  font-size: 1.1rem;
-  line-height: 1.4;
-  margin-bottom: 24px;
-  color: #444;
-}
-
-/* Modal button (reuse your submit button style) */
-.modalButton.submit {
-  background-color: #6524eb;
-  color: #fff;
-  border-radius: 30px;
-  padding: 14px 0;
-  font-size: 1rem;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 100%;
-}
-
-.modalButton.submit:hover {
-  background-color: #4b19b2;
+  background: #f3f4f6;         /* gray-100 */
 }
