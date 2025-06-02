@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
+import { API_BASE_URL, LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
 import CustomCheckout from './Checkout';
 import styles from './checkout.module.css';
+import axios from 'axios';
+import useUser from '../../Store/Context/UserContext';
 
 export default function SubscriptionFlow() {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const { user, setUser } = useUser()
   const priceId = location.state?.priceId;
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
@@ -23,7 +27,7 @@ export default function SubscriptionFlow() {
 
   const [subscriptionSuccess, setSubscriptionSuccess] = useState(false);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
-  
+
 
   // Auto redirect after payment success
   useEffect(() => {
@@ -35,7 +39,7 @@ export default function SubscriptionFlow() {
     if (!otpVerified || !customerId) return;
 
     const checkSubscription = async () => {
-   
+
       try {
         const res = await fetch(`${API_BASE}/subscription/${customerId}`);
         const data = await res.json();
@@ -48,7 +52,7 @@ export default function SubscriptionFlow() {
       } catch (err) {
         console.error('❌ Subscription check failed:', err);
       } finally {
-   
+
       }
     };
 
@@ -70,6 +74,7 @@ export default function SubscriptionFlow() {
       }
     } catch {
       setMessage('❌ Failed to send OTP');
+
     } finally {
       setLoading(false);
     }
@@ -86,6 +91,7 @@ export default function SubscriptionFlow() {
       if (verifiedUserId) {
         setUserId(verifiedUserId);
         localStorage.setItem("token", verifyRes.data.token);
+        handleUpdateUserProfile(verifiedUserId)
 
         const customerRes = await fetch(`${API_BASE}/customer`, {
           method: 'POST',
@@ -121,6 +127,30 @@ export default function SubscriptionFlow() {
     setUserId('');
     setMessage('');
   };
+  const handleUpdateUserProfile = async (userId) => {
+    console.log(userId, name, phone)
+    try {
+      const response = await axios.put(`${API_BASE_URL}/endusers/users/${userId}`, {
+        name: name.trim(),
+        phone,
+      });
+      console.log(response)
+      if (response.status === 200) {
+
+        setUser({
+          name: response.data.user?.name,
+        })
+        sessionStorage.setItem('OwnerDetails', JSON.stringify({ name: name.trim(), phone }));
+
+      } else {
+
+      }
+    } catch (error) {
+
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // Render
   return (
@@ -143,6 +173,35 @@ export default function SubscriptionFlow() {
           </button>
         )}
       </div>
+      {otpSent ? "" : <div>
+        <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input
+            type="name"
+            placeholder="Enter name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={styles.input}
+
+          />
+        </div>
+        <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input
+            type="text"
+            placeholder="Enter phone number"
+            value={phone}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Allow only digits and max 10 digits
+              if (/^\d{0,10}$/.test(value)) {
+                setPhone(value);
+              }
+            }}
+            maxLength={10}
+            className={styles.input}
+          />
+
+
+        </div></div>}
 
       {/* OTP Input */}
       {otpSent && !otpVerified && (
@@ -171,24 +230,24 @@ export default function SubscriptionFlow() {
       {message && <p className={styles.message}>{message}</p>}
 
       {/* Subscription check loading */}
-     
+
 
       {/* Already subscribed */}
-    
-     
-        <div style={{ marginTop: '2rem' }}>
-          <CustomCheckout
-            email={email}
-            customerId={customerId}
-            priceId={priceId}
-            userId={userId}
-            onSubscriptionSuccess={() => {
-              setSubscriptionSuccess(true);
-            }}
-            disabled={!otpVerified}  // Submit button disabled until OTP verified
-          />
-        </div>
-    
+
+
+      <div style={{ marginTop: '2rem' }}>
+        <CustomCheckout
+          email={email}
+          customerId={customerId}
+          priceId={priceId}
+          userId={userId}
+          onSubscriptionSuccess={() => {
+            setSubscriptionSuccess(true);
+          }}
+          disabled={!otpVerified}  // Submit button disabled until OTP verified
+        />
+      </div>
+
     </div>
   );
 }
