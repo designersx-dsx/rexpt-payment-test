@@ -342,6 +342,7 @@
 .address p {
   font-size: 14px;
   color: #24252c;
+  word-break: break-word;
 }
 
 .card2 h4 {
@@ -601,18 +602,25 @@
   .Agenttitle {
     font-size: 35px;
   }
-  
+
 }
 
 @media (max-width: 360px) {
+  .agentDetailsFlex {
+    flex-wrap: unset;
+  }
+  .AssignNumText {
+    font-size: 14px;
+}
 
   .agentStats {
     grid-template-columns: repeat(4, 1fr);
     gap: 7px;
   }
+
   .Yellow .statDetail {
-  font-size: 35px !important;
-}
+    font-size: 35px !important;
+  }
 
 }
 
