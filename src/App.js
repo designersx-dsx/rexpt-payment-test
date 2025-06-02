@@ -20,7 +20,6 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
-
           <Route
             path="/signup"
             element={
