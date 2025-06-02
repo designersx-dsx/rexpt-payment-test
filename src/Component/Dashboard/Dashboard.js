@@ -626,16 +626,18 @@ function Dashboard() {
               </div>
 
               <div className={styles.LangButton}>
-                {assignedNumbers.length > 0 ? (
+                {/* {assignedNumbers.length > 0 ? (
           <div className={styles.AssignNum}>
             Assigned Number{assignedNumbers.length > 1 ? "s" : ""}: {assignedNumbers.join(", ")}
           </div>):(
-             <div
+             
+          )} */}
+          <div
             className={styles.AssignNum}
           >
-            No. is not assign yet.
+            Assign Number
+            
           </div>
-          )}
                 <div className={styles.minLeft}>
                   <span className={styles.MinL}>Min Left</span>{" "}
                   {agent?.callSummary?.remaining?.minutes || 0}
