@@ -42,8 +42,9 @@
 // export default UploadProfile;
 import React, { useState } from "react";
 import styles from "./UploadProfile.module.css";
-import { updateProfilePicture } from "../../../Store/apiStore";
+import { API_BASE_URL, updateProfilePicture } from "../../../Store/apiStore";
 import decodeToken from "../../../lib/decodeToken";
+import useUser from "../../../Store/Context/UserContext";
 
 const UploadProfile = ({ onClose, onUpload }) => {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -51,6 +52,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
   const decodeTokenData = decodeToken(token)
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [profile,setProFile]=useState(null)
+  const {user,setUser}=useUser();
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -86,7 +88,10 @@ const UploadProfile = ({ onClose, onUpload }) => {
 
     try {
         const response=await updateProfilePicture(userId,formData)
-        console.log('profile picture updated',response)
+        // console.log('profile picture updated',response)
+         setUser({
+           profile:`${API_BASE_URL?.split('/api')[0]}${response?.profilePicture?.split('/public')[1]}` 
+        })
     } catch (error) {
         console.log(error,'error while updating profile')
     }
