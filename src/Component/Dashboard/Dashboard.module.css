@@ -1,8 +1,9 @@
 .forSticky {
     position: sticky;
     top: 0;
-    z-index: 1;
-    /* padding: 5px 2px 2px 2px;  */
+    z-index: 1;    
+    padding: 2px 1px;
+    background: #fff;
 }
 
 .profileSection {
@@ -374,6 +375,8 @@
     top: 1rem;
     bottom: 3rem;
     position: relative;
+    
+    overflow: auto;
 }
 
 .FilterIcon {
@@ -383,7 +386,7 @@
 
 .OptionsDropdown {
     position: absolute;
-    bottom: 100%;
+    top: 100%;
     /* dropdown icon ke upar */
     right: 0;
     margin-bottom: 8px;

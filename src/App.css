@@ -1,8 +1,7 @@
  body {
    margin: 0;
    font-family: "Inter", sans-serif;
-   display: none;
-   padding: 2px 1px;
+   display: none;   
  }
 
  * {
