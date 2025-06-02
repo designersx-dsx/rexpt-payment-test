@@ -58,6 +58,7 @@ function Dashboard() {
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
+    const [callId,setCallId]=useState(null)
 
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
@@ -160,7 +161,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
           ...agent,
           calApiKey: calApiKeyMap[agent.agent_id] || null,
         }));
-
+        console.log('res',res)
         setDashboardData(agentsWithCalKeys, res.total_call || 0);
         setHasFetched(true);
         localStorage.setItem("userId", userId);
@@ -346,7 +347,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
     window.location.href = "/signup";
   };
 
-  // Retell Web Client initialization
+  // Retell Web Client initializationcxcxc
   useEffect(() => {
     const client = new RetellWebClient();
     client.on("call_started", () => setIsCallActive(true));
@@ -374,6 +375,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
       const data = await res.json();
       console.log(data);
       await retellWebClient.startCall({ accessToken: data.access_token });
+      setCallId(data?.call_id)
     } catch (err) {
       console.error("Error starting call:", err);
     } finally {
@@ -385,6 +387,8 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const handleEndCall = async () => {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
+       const payload={ agentId :agentDetails.agent_id,callId:callId}
+      const DBresponse=await EndWebCallUpdateAgentMinutesLeft(payload)
       console.log("Call end response", response);
     }
   };
@@ -461,7 +465,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
     setUploadedImage(image);
     closeUploadModal();
   };
-console.log('user',user)
+// console.log('user',user)
   return (
     <div>
       <div className={styles.forSticky}>
