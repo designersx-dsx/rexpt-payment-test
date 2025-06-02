@@ -64,20 +64,21 @@ position: fixed;
   transition: opacity 0.3s ease;
 }
 .footerHome,
-.footerCalander {
+.footerCalander,.footerChats {
   position: relative;
 }
 
 
 .footerHome.active::before,
-.footerCalander.active::before {
+.footerCalander.active::before ,
+.footerChats.active::before{
   content: "";
   position: absolute;
   top: -55%; 
   left: 50%;
   transform: translateX(-50%);
-  width: 46px;
-  height: 3px;
+  width: 59px;
+  height: 5px;
   background-color: #5F33E1; 
   border-radius: 1px;
   border-bottom-left-radius: 4px;
