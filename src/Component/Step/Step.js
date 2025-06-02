@@ -35,6 +35,13 @@ const Step = () => {
             setUserId(decodeTokenData.id || "");
         }
     }, [token]);
+    const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"  // Smooth scrolling
+  });
+};
+
 
     useEffect(() => {
         sessionStorage.setItem("agentLanguage", selectedLang);
@@ -375,6 +382,7 @@ Let’s begin assisting the customer!
 
         if (currentStep < totalSlides - 1) {
             sliderRef.current.slickNext();
+            scrollToTop();
         }
     };
 
@@ -399,6 +407,7 @@ const isAdaptiveHeight = currentStep !== 3
     setCurrentStep(next);
   },
     };
+    
 
     const fetchAgentCountFromUser = async () => {
         try {
