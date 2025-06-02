@@ -120,7 +120,7 @@ const Details = () => {
     const played = sessionStorage.getItem("personalDetailsAnimationPlayed");
 
     if (!played) {
-      const delays = [150, 300, 450,550];
+      const delays = [150, 300, 450, 550];
       const timers = delays.map((delay, index) =>
         setTimeout(() => setStep(index + 1), delay)
       );
@@ -129,91 +129,104 @@ const Details = () => {
 
       return () => timers.forEach(clearTimeout);
     } else {
-      setStep(4); 
+      setStep(4);
     }
   }, []);
   return (
-    <div className={styles.pageWrapper}>
-      <div className={styles.mask}>
-        <img src="images/Mask.png" alt="Mask" />
-      </div>
-<div className={styles.logimg2}>
-  <div
-        className={`${styles.logimg} ${styles.animateStep} ${step >= 1 ? styles.animateStep1 : ""
-          }`}
-      >
-        <img className={styles.logo} src="svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
-      </div>
-</div>
-   
-
-      <div
-        className={`${styles.Maincontent} ${styles.animateStep} ${step >= 2 ? styles.animateStep2 : ""
-          }`}
-      >
-        <div className={styles.welcomeTitle}>
-          <h1>Personal Details</h1>
+    <>
+      <div className={styles.StartMain}>
+        <div>
+          <img src="images/Ellipse 6.png" alt="Ellipse 6" />
+          <img src="images/Ellipse 7.png" alt="Ellipse 7" />
+          <img src="images/Ellipse 8.png" alt="Ellipse 8" />
+          <img src="images/Ellipse 9.png" alt="Ellipse 9" />
+          <img src="images/Ellipse 10.png" alt="Ellipse 10" />
+          <img src="images/Ellipse 11.png" alt="Ellipse 11" />
         </div>
       </div>
-
-      <div
-        className={`${styles.container} ${styles.animateStep} ${step >= 3 ? styles.animateStep3 : ""
-          }`}
-      >
-        <div className={styles.labReq} >
-          <div className={styles.Dblock} >
-            <label className={styles.label}>Name</label>
-            <input
-              type="text"
-              className={`${styles.input} ${nameError ? styles.inputError : ''}`}
-              placeholder="Your name"
-              value={name}
-              onChange={handleNameChange}
-            />
-          </div>
-          {nameError && <p className={styles.inlineError}>{nameError}</p>}
+      <div className={styles.pageWrapper}>
+        <div className={`${styles.mask} ${styles.maskZoomFadeIn}`}>
+          <img src="images/Mask.png" alt="Mask" />
         </div>
-        <div className={styles.labReq} >
-          <div className={styles.Dblock} >
-
-            <label className={styles.label}>Phone Number</label>
-            <input
-              type="tel"
-              className={`${styles.input} ${phoneError ? styles.inputError : ''}`}
-              placeholder="Phone number"
-              value={phone}
-              maxLength={10}
-              onChange={handlePhoneChange}
-              inputMode="numeric"
-            />
-          </div>
-
-          {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
-        </div>
-      </div>
-
-
-      <div
-        className={`${styles.Btn} ${styles.animateStep} ${step >= 4 ? styles.animateStep4 : ""
-          }`}
-        onClick={handleLoginClick}
-      >
-        <div type="submit">
-          <div className={styles.btnTheme}>
-            <img src="svg/svg-theme.svg" alt="" />
-            <p>{loading ? <Loader size={20} /> : 'Continue'}</p>
+        <div className={styles.logimg2}>
+          <div
+            className={`${styles.logimg} ${styles.animateStep} ${step >= 1 ? styles.animateStep1 : ""
+              }`}
+          >
+            <img className={styles.logo} src="svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
           </div>
         </div>
-      </div>
 
-      {showPopup && (
-        <PopUp
-          type={popupType}
-          onClose={() => setShowPopup(false)}
-          message={popupMessage}
-        />
-      )}
-    </div>
+
+        <div
+          className={`${styles.Maincontent} ${styles.animateStep} ${step >= 2 ? styles.animateStep2 : ""
+            }`}
+        >
+          <div className={styles.welcomeTitle}>
+            <h1>Personal Details</h1>
+          </div>
+        </div>
+
+        <div
+          className={`${styles.container} ${styles.animateStep} ${step >= 3 ? styles.animateStep3 : ""
+            }`}
+        >
+          <div className={styles.labReq} >
+            <div className={styles.Dblock} >
+              <label className={styles.label}>Name</label>
+              <input
+                type="text"
+                className={`${styles.input} ${nameError ? styles.inputError : ''}`}
+                placeholder="Your name"
+                value={name}
+                onChange={handleNameChange}
+              />
+            </div>
+            {nameError && <p className={styles.inlineError}>{nameError}</p>}
+          </div>
+          <div className={styles.labReq} >
+            <div className={styles.Dblock} >
+
+              <label className={styles.label}>Phone Number</label>
+              <input
+                type="tel"
+                className={`${styles.input} ${phoneError ? styles.inputError : ''}`}
+                placeholder="Phone number"
+                value={phone}
+                maxLength={10}
+                onChange={handlePhoneChange}
+                inputMode="numeric"
+              />
+            </div>
+
+            {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
+          </div>
+        </div>
+
+
+        <div
+          className={`${styles.Btn} ${styles.animateStep} ${step >= 4 ? styles.animateStep4 : ""
+            }`}
+          onClick={handleLoginClick}
+        >
+          <div type="submit">
+            <div className={styles.btnTheme}>
+              <img src="svg/svg-theme.svg" alt="" />
+              <p>{loading ? <Loader size={20} /> : 'Continue'}</p>
+            </div>
+          </div>
+        </div>
+
+        {showPopup && (
+          <PopUp
+            type={popupType}
+            onClose={() => setShowPopup(false)}
+            message={popupMessage}
+          />
+        )}
+      </div>
+    </>
+
   );
 };
 

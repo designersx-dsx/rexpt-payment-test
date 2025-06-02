@@ -33,10 +33,8 @@ function App() {
               token ? <Navigate to="/dashboard" /> : <Start />
             }
           />
-
           <Route path="/" element={<Start />} />
           <Route path="/signup" element={<SecureRoute><SignUp /></SecureRoute>} />
-          
           <Route path="/details" element={<Details />} />
           <Route path="/steps" element={<Step />} />
           <Route path="/about-business" element={<AboutBusiness />} />
@@ -49,7 +47,7 @@ function App() {
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<RexAgent />} />
 
- 
+
         </Routes>
 
       </div>

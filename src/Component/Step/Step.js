@@ -13,8 +13,6 @@ import axios from "axios";
 import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
 import { createAgent, listAgents } from "../../Store/apiStore";
-
-
 const Step = () => {
     const navigate = useNavigate();
     const sliderRef = useRef(null);
@@ -387,7 +385,7 @@ Let’s begin assisting the customer!
         infinite: false,
         speed: 500,
         slidesToShow: 1,
-          adaptiveHeight: true,
+        adaptiveHeight: true,
         slidesToScroll: 1,
         arrows: false,
         swipe: false,
@@ -403,7 +401,7 @@ Let’s begin assisting the customer!
             console.log(error)
         }
     }
-      const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
+    const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${sanitize(business?.businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     const handleContinue = async () => {
         if (step4Ref.current) {
@@ -417,9 +415,7 @@ Let’s begin assisting the customer!
                     model_temperature: 0,
                     model_high_priority: true,
                     tool_call_strict_mode: true,
-
                     general_prompt: prompt,
-
                     general_tools: [
                         {
                             type: "end_call",
@@ -468,10 +464,9 @@ Let’s begin assisting the customer!
                             ],
                         },
                     ],
+
                     starting_state: "information_collection",
-
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
-
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
@@ -505,7 +500,28 @@ Let’s begin assisting the customer!
                         voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US"
+                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                        post_call_analysis_model: "gpt-4o-mini",
+                        normalize_for_speech: true,
+                        post_call_analysis_data: [
+                            {
+                                type: "string",
+                                name: "Detailed Call Summery",
+                                description: "The name of the customer.",
+                                examples: [
+                                    "John Doe",
+                                    "Jane Smith"
+                                ]
+                            },
+                            {
+                                type: "enum",
+                                name: "lead_type",
+                                description: "Feedback given by the customer about the call.",
+                                choices: ["positive", "neutral", "negative"]
+                            }
+                        ],
+
+
 
                     };
                     // Create Agent Creation

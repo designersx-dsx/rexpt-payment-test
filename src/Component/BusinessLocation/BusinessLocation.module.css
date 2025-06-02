@@ -201,6 +201,9 @@
   transition: transform 0.3s ease;
 }
 
+.requiredField{
+color:red;
+}
 @media(max-width:375px) {
 
   .title {
