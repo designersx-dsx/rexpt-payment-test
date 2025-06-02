@@ -97,14 +97,14 @@ const SignUp = () => {
         if (verifiedUser) {
           setUser({
             name: response?.data?.user?.name || "",
-            profile: `${API_BASE_URL?.split('/api')[0]}${response?.data?.user?.profile?.split('public')[1] }`|| "images/AgentImage.png",
+            profile: `${API_BASE_URL?.split('/api')[0]}${response?.data?.user?.profile?.split('public')[1] }`|| "images/camera-icon.avif",
             subscriptionDetails: {},
           });
           navigate("/dashboard");
         } else {
           setUser({
             name: response?.data?.user?.email || "",
-            profile: `${API_BASE_URL}${response?.data?.user?.profile?.split('public')[1] }`|| "images/AgentImage.png",
+            profile: `${API_BASE_URL}${response?.data?.user?.profile?.split('public')[1] }`|| "images/camera-icon.avif",
             subscriptionDetails: {},
           });
           navigate("/details");
