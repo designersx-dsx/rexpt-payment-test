@@ -95,7 +95,11 @@ const AgentDashboard = () => {
   };
   return (
     <div>
-      <div className={styles.Forsticky}>
+         {loading ? (
+        <Loader2 />
+      ) : (
+        <>
+            <div className={styles.Forsticky}>
         <header className={styles.header}>
           <div className={styles.profileBack}>
             <img
@@ -232,9 +236,7 @@ const AgentDashboard = () => {
           </div>
         </section>
       </div>
-      {loading ? (
-        <Loader2 />
-      ) : (
+   
         <div className={styles.container}>
           <div className={styles.businessInfo}>
             <div className={styles.card1}>
@@ -427,7 +429,8 @@ const AgentDashboard = () => {
           <section className={styles.management}>
             <AgentAnalysis data={agentData?.callSummary?.data} />
           </section>
-        </div>
+        </div></>
+  
       )}
       {/* OffCanvas for Logout */}
       {openOffcanvas && (
