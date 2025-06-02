@@ -5,7 +5,9 @@ import { fetchAgentDetailById } from "../../Store/apiStore";
 import OffCanvas from "../OffCanvas/OffCanvas";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import useUser from "../../Store/Context/UserContext";
+import { RetellWebClient } from "retell-client-js-sdk";
+import CallTest from "../CallTest/CallTest";
+import Modal2 from "../Modal2/Modal2";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import AssignNumberModal from "./AssignNumberModal";
@@ -19,6 +21,10 @@ const AgentDashboard = () => {
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [assignedNumbers, setAssignedNumbers] = useState([]);
+  const [retellWebClient, setRetellWebClient] = useState(null);
+  const [isCallActive, setIsCallActive] = useState(false);
+  const [openCallModal, setOpenCallModal] = useState(false);
+  const [callLoading, setCallLoading] = useState(false);
 
   useEffect(() => {
   const getAgentDetailsAndBookings = async () => {
@@ -93,6 +99,56 @@ const AgentDashboard = () => {
   const handleBackClick = () => {
     navigate(-1);
   };
+    useEffect(() => {
+    const client = new RetellWebClient();
+    client.on("call_started", () => setIsCallActive(true));
+    client.on("call_ended", () => setIsCallActive(false));
+    setRetellWebClient(client);
+  }, []);
+
+  // Start call handler
+  const handleStartCall = async () => {
+    if (!retellWebClient || !agentData?.agent) {
+      console.error("RetellWebClient or agent data not ready.");
+      return;
+    }
+    setCallLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agent_id: agentData.agent.agent_id }),
+        }
+      );
+      const data = await res.json();
+      await retellWebClient.startCall({ accessToken: data.access_token });
+    } catch (err) {
+      console.error("Error starting call:", err);
+    } finally {
+      setCallLoading(false);
+    }
+  };
+
+  // End call handler
+  const handleEndCall = async () => {
+    if (retellWebClient) {
+      const response = await retellWebClient.stopCall();
+      console.log("Call end response", response);
+    }
+  };
+
+  // Open call modal
+  const openCallTestModal = () => {
+    setOpenCallModal(true);
+  };
+
+  // Close call modal
+  const closeCallTestModal = () => {
+    setOpenCallModal(false);
+  };
+
   return (
     <div>
          {loading ? (
@@ -324,7 +380,8 @@ const AgentDashboard = () => {
                   />
                 </svg>
               </div>
-              <p className={styles.managementText}>Test Agent</p>
+              <p className={styles.managementText} onClick={openCallTestModal} style={{ cursor: "pointer" }}>Test Agent</p>
+
             </div>
             <div className={styles.managementItem}>
               <div className={styles.SvgDesign}>
@@ -431,6 +488,17 @@ const AgentDashboard = () => {
           </section>
         </div></>
   
+      )}
+      {openCallModal && (
+        <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
+          <CallTest
+            isCallActive={isCallActive}
+            onStartCall={handleStartCall}
+            onEndCall={handleEndCall}
+            callLoading={callLoading}
+            setCallLoading={setCallLoading}
+          />
+        </Modal2>
       )}
       {/* OffCanvas for Logout */}
       {openOffcanvas && (

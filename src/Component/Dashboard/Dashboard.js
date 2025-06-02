@@ -70,8 +70,13 @@ function Dashboard() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // state for avatar dropdown
-  const profileRef = useRef(null); // ref for profile section to detect clicks outside
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const profileRef = useRef(null); 
+
+  const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
+
+const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
+const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
   // Navigate on agent card click
   const handleCardClick = (agent) => {
@@ -428,7 +433,7 @@ function Dashboard() {
   // Open capture modal
   const openCaptureModal = () => {
     setIsCaptureModalOpen(true);
-    setIsDropdownOpen(false); // Close dropdown when an option is selected
+    setIsDropdownOpen(false); 
   };
 
   // Close capture modal
@@ -439,7 +444,7 @@ function Dashboard() {
   // Open upload modal
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
-    setIsDropdownOpen(false); // Close dropdown when an option is selected
+    setIsDropdownOpen(false);
   };
 
   // Close upload modal
@@ -712,12 +717,18 @@ function Dashboard() {
 
             <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
           </div>):(
-             <div
-            className={styles.AssignNum}
-          >
-            Assign Number
-            
-          </div>
+           <div
+  className={styles.AssignNum}
+  onClick={(e) => {
+    e.stopPropagation();
+    openAssignNumberModal();
+  }}
+  style={{ cursor: "pointer" }}
+>
+  Assign Number
+</div>
+
+
              
           )}
          
@@ -928,6 +939,24 @@ function Dashboard() {
           </Modal2>
         )}
       </div>
+      {isAssignNumberModalOpen && (
+  <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
+    <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
+      <h2>Coming Soon!</h2>
+      <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
+        Our exciting plans will be available shortly. You'll be able to select the best one to suit your needs!
+      </p>
+      <button
+        className={`${styles.modalButton} ${styles.submit}`}
+        onClick={closeAssignNumberModal}
+        style={{ width: "100%" }}
+      >
+        Got it!
+      </button>
+    </div>
+  </div>
+)}
+
 
         {/* Modals for capturing/uploading profile picture */}
       {isCaptureModalOpen && (

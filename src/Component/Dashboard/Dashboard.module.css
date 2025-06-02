@@ -714,5 +714,63 @@
   transition: background 0.15s ease;
 }
 .dropdown li:hover {
-  background: #f3f4f6;         /* gray-100 */
+  background: #f3f4f6;         
+}
+/* Backdrop */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal container */
+.modalContainer {
+  background-color: #fff;
+  padding: 32px 36px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(101, 36, 235, 0.25);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #24252c;
+  text-align: center;
+  position: relative;
+}
+
+/* Modal header */
+.modalContainer h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #6524eb; /* brand purple */
+  margin-bottom: 12px;
+}
+
+/* Modal paragraph */
+.modalContainer p {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin-bottom: 24px;
+  color: #444;
+}
+
+/* Modal button (reuse your submit button style) */
+.modalButton.submit {
+  background-color: #6524eb;
+  color: #fff;
+  border-radius: 30px;
+  padding: 14px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.modalButton.submit:hover {
+  background-color: #4b19b2;
 }
