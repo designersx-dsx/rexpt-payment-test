@@ -223,6 +223,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  /* display: -webkit-box; */
 }
 
 .card1 {
@@ -234,21 +235,23 @@
   gap: 12px;
   width: 50%;
   min-height: 200px;
+  word-break: break-all;
 }
 
 .card1 h2 {
   font-size: 18px;
   font-weight: 600;
   color: #24252c;
+  text-transform: capitalize;
 }
+
 
 .card1 p {
   background-color: #b0f3e4;
   padding: 6px 12px;
   border-radius: 4px;
   color: #24252c;
-  font-size: 14px;
-  width: max-content;
+  font-size: 14px;  
 }
 
 .health {
@@ -272,7 +275,7 @@
 }
 
 .card1 span {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 300;
   color: #24252c;
 }
@@ -289,9 +292,16 @@
 }
 
 .card2 h2 {
-  font-size: 18px;
+  font-size: 14px;
+  font-weight: 300;
+  color: #24252c;
+  font-family: "Inter", sans-serif;
+}
+.card2 h2 span {
+  font-size: 14px;
   font-weight: 600;
   color: #24252c;
+  font-family: "Inter", sans-serif;
 }
 
 .google {
@@ -562,6 +572,16 @@
   background: #f4f4f4;
   padding: 1rem;
   border-radius: 1rem;
+}
+.AssignNumText{
+text-align: left;
+}
+
+.AssignNumText p{
+ font-size: 1.1rem;
+font-weight: 400;
+text-align: left !important;
+
 }
 
 @media (max-width: 370px) {
