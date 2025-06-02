@@ -11,6 +11,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [playingIdx, setPlayingIdx] = useState(null);  // which card is playing?
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
+  
   const [popupMessage, setPopupMessage] = useState("");
   const [scale, setScale] = useState(1);
   const voices = [

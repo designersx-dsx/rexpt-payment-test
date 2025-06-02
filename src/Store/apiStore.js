@@ -83,6 +83,13 @@ export const listAgents=async()=>{
   });
   return res.data;
 }
+
+export const updateProfilePicture=async(userId,data)=>{
+   const res = await api.patch(`${API_BASE_URL}/endusers/user/update_profile_picture/${userId}`,data,{
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data;
+}
 // export const 
 // export const createKnowledgeBase = async (formData) => {
 //   const res = await api.post('/knowledge-base', formData, {

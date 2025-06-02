@@ -121,13 +121,14 @@ const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
       </ResponsiveContainer>
 
       <div className={styles.calendarSection}>
-        <h3>{selectedDate.toDateString()}</h3>
-        <Calendar
-          onChange={setSelectedDate}
-          value={selectedDate}
-          tileClassName={tileClassName}
-          calendarType="gregory"
-        />
+        <h1>{selectedDate.toDateString()}</h1>
+       <Calendar
+  onChange={setSelectedDate}
+  value={selectedDate}
+  tileClassName={tileClassName}
+  calendarType="gregory"
+  className={styles.reactCalendar} ></Calendar>
+
       </div>
     </div>
   );

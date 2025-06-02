@@ -347,6 +347,8 @@ Let’s begin assisting the customer!
         },
     ];
     const handleNext = () => {
+
+        
         if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
             return;
         }
@@ -382,16 +384,20 @@ Let’s begin assisting the customer!
         }
     };
 
+const isAdaptiveHeight = currentStep !== 3
     const settings = {
         dots: false,
         infinite: false,
         speed: 500,
         slidesToShow: 1,
-        adaptiveHeight: true,
+        adaptiveHeight: isAdaptiveHeight,
         slidesToScroll: 1,
         arrows: false,
         swipe: false,
-        beforeChange: (_, next) => setCurrentStep(next),
+         beforeChange: (_, next) => {
+    console.log("Navigating to slide:", next); 
+    setCurrentStep(next);
+  },
     };
 
     const fetchAgentCountFromUser = async () => {
@@ -701,15 +707,43 @@ Let’s begin assisting the customer!
             {/* === Footer Fixed Pagination === */}
             <div className={styles.footerFixed}>
                 {/* Step dots */}
-                <div className={styles.stepsIndicator}>
-                    {[...Array(totalSlides)].map((_, idx) => (
-                        <span
-                            key={idx}
-                            className={`${styles.stepDot} ${currentStep === idx ? styles.activeDot : ''}`}
-                            onClick={() => sliderRef.current.slickGoTo(idx)}
-                        />
-                    ))}
-                </div>
+        <div className={styles.stepsIndicator}>
+  {[...Array(totalSlides)].map((_, idx) => (
+    <span
+      key={idx}
+      className={`${styles.stepDot} ${currentStep === idx ? styles.activeDot : ''}`}
+      onClick={async () => {
+        // Step 0 validation (language)
+        if (currentStep === 0 && !selectedLang) {
+          setShowPopup(true);
+          setPopupType("failed");
+          setPopupMessage("Please select a language first.");
+          return;
+        }
+
+        // Step 1 validation (gender + voice)
+        if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
+          return;
+        }
+
+        // Step 2 validation
+        if (currentStep === 2 && step3Ref.current && !step3Ref.current.validate()) {
+          return;
+        }
+
+        // Step 3 validation
+        if (currentStep === 3 && step4Ref.current && !step4Ref.current.validate()) {
+          return;
+        }
+
+        // Allow dot click to change slide
+        sliderRef.current?.slickGoTo(idx);
+      }}
+    />
+  ))}
+</div>
+
+
                 {/* <div className={styles.navBtn} onClick={handleNext}>
                     <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
                 </div> */}

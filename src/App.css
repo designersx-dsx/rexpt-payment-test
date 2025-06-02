@@ -18,14 +18,13 @@
    }
  }
 
- #slideradio input[type="radio"] {
-   width: 25px;
-   height: 25px;
-   accent-color: #6524EB;
-   right: 5px;
-   top: 5px;
- }
-
+#slideradio input[type="checkbox"] {
+  width: 25px;
+  height: 25px;
+  accent-color: #6524EB;
+  right: 5px;
+  top: 5px;
+}
  input[type="radio"] {
    width: 16px;
    height: 16px;

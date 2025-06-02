@@ -15,6 +15,8 @@ import Modal2 from "../Modal2/Modal2";
 import CallTest from "../CallTest/CallTest";
 import WidgetScript from "../Widgets/WidgetScript";
 import Popup from "../Popup/Popup";
+import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
+import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -64,13 +66,17 @@ function Dashboard() {
   const [liveTranscript, setLiveTranscript] = useState();
 
   //cam-icon
-  const [openProfileUpdater, setOpenProfileUpdater] = useState(false);
-  const profileRef = useRef(null); // renamed ref
   const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
-  const videoRef = useRef(null); // To reference the video element for camera feed
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const profileRef = useRef(null); 
+
+  const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
+
+const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
+const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
   // Navigate on agent card click
   const handleCardClick = (agent) => {
@@ -407,49 +413,55 @@ function Dashboard() {
   };
 
   //close camera option click outside
-  useEffect(() => {
-    const handler = (e) => {
-      if (!profileRef.current?.contains(e.target)) setOpenProfileUpdater(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const openCaptureModal = () => {
-    setIsCaptureModalOpen(true);
+     const toggleProfileDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
   };
 
+  // Close the dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsDropdownOpen(false); // Close dropdown if clicked outside
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Open capture modal
+  const openCaptureModal = () => {
+    setIsCaptureModalOpen(true);
+    setIsDropdownOpen(false); 
+  };
+
+  // Close capture modal
   const closeCaptureModal = () => {
     setIsCaptureModalOpen(false);
   };
 
-  const captureImage = () => {
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    const img = canvas.toDataURL("image/png");
-    setCapturedImage(img);
-    setIsCaptureModalOpen(false);
-  };
+  // Open upload modal
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
+    setIsDropdownOpen(false);
   };
 
+  // Close upload modal
   const closeUploadModal = () => {
     setIsUploadModalOpen(false);
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadedImage(reader.result); // Preview the uploaded image
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleCapture = (image) => {
+    setCapturedImage(image);
+    closeCaptureModal();
   };
 
+  const handleUpload = (image) => {
+    setUploadedImage(image);
+    closeUploadModal();
+  };
+console.log('user',user)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -458,12 +470,10 @@ function Dashboard() {
             <div>
               <button
                 className={styles.avatarBtn}
-                onClick={() => setOpenProfileUpdater((prev) => !prev)}
+                onClick={toggleProfileDropdown} // Toggle dropdown visibility on avatar click
               >
                 <img
-                  src={
-                    capturedImage || user?.profile || "images/camera-icon.avif"
-                  }
+                   src={user?.profile || capturedImage || uploadedImage || "images/camera-icon.avif"}
                   alt="Profile"
                   className={styles.profilePic}
                 />
@@ -473,54 +483,12 @@ function Dashboard() {
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
-            {openProfileUpdater && (
-              <ul className={styles.dropdown}>
-                <li onClick={openCaptureModal}>Capture Profile Picture</li>
-                <li onClick={openUploadModal}>Upload Profile Picture</li>
-              </ul>
-            )}
-            {isCaptureModalOpen && (
-              <div className={styles.modalBackdrop} onClick={closeCaptureModal}>
-                <div
-                  className={styles.modalContainer}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h2>Capture Profile Picture</h2>
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    width="100%"
-                    height="auto"
-                  ></video>
-                  <button onClick={captureImage}>Capture</button>
-                  <button onClick={closeCaptureModal}>Cancel</button>
-                </div>
-              </div>
-            )}
-
-            {isUploadModalOpen && (
-              <div className={styles.modalBackdrop} onClick={closeUploadModal}>
-                <div
-                  className={styles.modalContainer}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h2>Upload Profile Picture</h2>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                  />
-                  {uploadedImage && (
-                    <img
-                      src={uploadedImage}
-                      alt="Preview"
-                      style={{ width: "100px", height: "100px" }}
-                    />
-                  )}
-                  <button onClick={closeUploadModal}>Cancel</button>
-                </div>
-              </div>
-            )}
+               {isDropdownOpen && (
+          <ul className={styles.dropdown}>
+            {/* <li onClick={openCaptureModal}>Capture Profile Picture</li> */}
+            <li onClick={openUploadModal}>Upload Profile Picture</li>
+          </ul>
+        )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -749,12 +717,18 @@ function Dashboard() {
 
             <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
           </div>):(
-             <div
-            className={styles.AssignNum}
-          >
-            Assign Number
-            
-          </div>
+           <div
+  className={styles.AssignNum}
+  onClick={(e) => {
+    e.stopPropagation();
+    openAssignNumberModal();
+  }}
+  style={{ cursor: "pointer" }}
+>
+  Assign Number
+</div>
+
+
              
           )}
          
@@ -965,6 +939,32 @@ function Dashboard() {
           </Modal2>
         )}
       </div>
+      {isAssignNumberModalOpen && (
+  <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
+    <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
+      <h2>Coming Soon!</h2>
+      <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
+        Our exciting plans will be available shortly. You'll be able to select the best one to suit your needs!
+      </p>
+      <button
+        className={`${styles.modalButton} ${styles.submit}`}
+        onClick={closeAssignNumberModal}
+        style={{ width: "100%" }}
+      >
+        Got it!
+      </button>
+    </div>
+  </div>
+)}
+
+
+        {/* Modals for capturing/uploading profile picture */}
+      {isCaptureModalOpen && (
+        <CaptureProfile onClose={closeCaptureModal} onCapture={handleCapture} />
+      )}
+      {isUploadModalOpen && (
+        <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
+      )}
 
       <Footer />
 
