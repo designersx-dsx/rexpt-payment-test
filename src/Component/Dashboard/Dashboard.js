@@ -425,17 +425,17 @@ function Dashboard() {
   };
 
   // Close the dropdown if clicked outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsUploadModalOpen(false); // Close dropdown if clicked outside
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (profileRef.current && !profileRef.current.contains(event.target)) {
+  //       setIsUploadModalOpen(false); // Close dropdown if clicked outside
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
 
   // Open upload modal
   const openUploadModal = () => {
@@ -462,12 +462,13 @@ function Dashboard() {
             <div>
               <button
                 className={styles.avatarBtn}
-                onClick={toggleProfileDropdown} // Toggle dropdown visibility on avatar click
+                onClick={openUploadModal} // Toggle dropdown visibility on avatar click
               >
                 <img
                   src={user?.profile || capturedImage || uploadedImage || "images/camera-icon.avif"}
                   alt="Profile"
                   className={styles.profilePic}
+                   onError={(e) => { e.target.src = "images/camera-icon.avif"; }}
                 />
               </button>
             </div>
@@ -475,12 +476,13 @@ function Dashboard() {
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
-            {isDropdownOpen && (
-              <ul className={styles.dropdown}>
-                {/* <li onClick={openCaptureModal}>Capture Profile Picture</li> */}
-                <li onClick={openUploadModal}>Upload Profile Picture</li>
-              </ul>
-            )}
+               {isUploadModalOpen && (
+            <UploadProfile
+              onClose={closeUploadModal}
+              onUpload={handleUpload}
+              currentProfile={uploadedImage || user?.profile || "images/camera-icon.avif"}
+            />
+          )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
