@@ -16,7 +16,8 @@ import RexAgent from './Component/RexAgent/RexAgent';
 import Plans from './Component/Plans/Plans';
 import SubscriptionFlow from './Component/Checkout/SubscriptionFlow';
 import Calendar from './Component/Celender/Calendar';
-
+import BusinessServices from './Component/BusinessServices/BusinessServices';
+import TotalsCallsList from './Component/TotalsCallsList/TotalsCallsList'
 
 function App() {
   const token = localStorage.getItem('token');
@@ -44,19 +45,21 @@ function App() {
           />
           <Route path="/" element={<Start />} />
           <Route path="/signup" element={<SecureRoute><SignUp /></SecureRoute>} />
-          <Route path="/details" element={<Details />} />
-          <Route path="/steps" element={<Step />} />
-          <Route path="/about-business" element={<AboutBusiness />} />
-          <Route path="/business-details" element={<BusinessDetails />} />
-          <Route path="/agent-detail" element={<AgentDetail />} />
-          <Route path="/business-locations" element={<BusinessLocation />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+
+         <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
+          <Route path="/steps" element={<SecureRoute><Step/></SecureRoute>} />
+          <Route path="/about-business" element={<SecureRoute><AboutBusiness/></SecureRoute>} />
+          <Route path="/business-details" element={<SecureRoute><BusinessDetails/></SecureRoute>} />
+          <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
+          <Route path="/business-locations" element={<SecureRoute><BusinessLocation/></SecureRoute>} />
+          <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
-          <Route path="/rex-agent" element={<RexAgent />} />
-          <Route path="/plans" element={<Plans />} />
-          <Route path="/checkout" element={<SubscriptionFlow />} />
-          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/rex-agent" element={<SecureRoute><RexAgent/></SecureRoute>} />
+          <Route path="/plans" element={<SecureRoute><Plans/></SecureRoute>} />
+          <Route path="/checkout" element={<SecureRoute><SubscriptionFlow /></SecureRoute>} />
+          <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
+          <Route path="/totalcall-list" element={<TotalsCallsList />} />
 
         </Routes>
 

@@ -1,0 +1,126 @@
+
+/* offcanvas */
+
+.OffcanvasMain hr{
+    width: 100%;
+    height: 1px;
+    background-color: #D9D9D9;
+    border: none;
+    margin: 20px 0;
+}
+
+.OffcanvasMain input{
+    border: 1.4px solid #8F9BBA;
+    background-color: #F4F7FE;
+    border-radius: 49px;
+}
+
+.OffcanvasMain h3{
+    font-size: 24px;
+    color: #24252C;
+    font-weight: 600;
+
+}
+
+
+
+
+.container {
+  width: 250px;
+  padding: 16px;
+  border: 1px solid #eee;
+  background: #fff;
+  font-family: Arial, sans-serif;
+  border-radius: 8px;
+}
+
+.section {
+  margin-bottom: 20px;
+  display: grid;
+  gap: 20px;
+}
+
+.label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  
+}
+.radio, .checkbox{
+    display: flex ;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.checkbox input[type="checkbox"]{
+    width: 24px;
+    height: 24px;
+    accent-color: #6524EB;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.radio input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #6524EB;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.section label {
+    font-size: 16px;
+  font-weight: 400;
+  color: #090A0A;
+  margin-bottom: 8px;
+      padding: 0 0 0 20px;
+}
+
+
+
+
+
+
+.checkboxGroup,
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.clear {
+  background: none;
+  border: none;
+  color: #24252C;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 19px;
+    padding: 8px 16px;
+}
+
+.apply {
+  background: #7d21e2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 50%;
+  font-weight: 500;
+   font-size: 19px;
+}

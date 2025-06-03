@@ -12,7 +12,7 @@ const SecureRoute = ({ children }) => {
         const res = await axios.post(`${API_BASE_URL}/endusers/verifyToken`, {}, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setIsValid(res.data.valid); // assuming backend returns { valid: true/false }
+        setIsValid(res.data.valid); 
       } catch (err) {
         setIsValid(false);
       }
@@ -25,7 +25,7 @@ const SecureRoute = ({ children }) => {
   }, [token]);
 
   if (isValid === null) return <div><Loader2/></div>;
-  if (isValid === false) return <Navigate to="/" />;
+  if (isValid === false) return <Navigate to="/signup" />;
   return children;
 };
 export default SecureRoute
