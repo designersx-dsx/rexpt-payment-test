@@ -11,22 +11,36 @@ import Modal2 from "../Modal2/Modal2";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import AssignNumberModal from "./AssignNumberModal";
+
 import EditAgent from "../EditAgent/EditAgent"
 import DetailModal from "../DetailModal/DetailModal"
 const AgentDashboard = () => {
   const [totalBookings, setTotalBookings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [agentData, setAgentData] = useState([]);
+
   const location = useLocation();
   const agentDetails = location.state;
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
-  const [assignedNumbers, setAssignedNumbers] = useState([]);
+  // const [assignedNumbers, setAssignedNumbers] = useState([]);
   const [retellWebClient, setRetellWebClient] = useState(null);
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [callLoading, setCallLoading] = useState(false);
+
+  console.log('agentDetails', agentDetails)
+    const {
+    agentData,
+    assignedNumbers,
+    totalBookings,
+    setAgentData,
+    setAssignedNumbers,
+    setTotalBookings,
+  } = useAgentStore();
+
   const [isModalOpen, setModalOpen] = useState(false);
+
 
   useEffect(() => {
     const getAgentDetailsAndBookings = async () => {
@@ -67,12 +81,12 @@ const AgentDashboard = () => {
       }
     };
 
-    if (agentDetails) {
+    if (agentDetails ) {
       getAgentDetailsAndBookings();
     }
   }, [agentDetails]);
 
-
+console.log('loading',loading)
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");

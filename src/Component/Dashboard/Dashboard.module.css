@@ -243,8 +243,11 @@
 .LangStyle.ProPlan {
     background-color: #FFECE5;
 }
+.LangStyle.MiniPlan {
+    background-color: #cbe7f7;
+}
 
-.LangStyle.Maxplan {
+.LangStyle.BusinessPlan {
     background-color: #F4DFE1;
 }
 
@@ -257,7 +260,7 @@
     background-color: #FFD2C1;
 }
 
-.LangStyle.Maxplan .PlanPrice {
+.LangStyle.BusinessPlan .PlanPrice {
     background-color: #FFBEC4;
 }
 
