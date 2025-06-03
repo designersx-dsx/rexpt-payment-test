@@ -17,6 +17,7 @@ import WidgetScript from "../Widgets/WidgetScript";
 import Popup from "../Popup/Popup";
 import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
+import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
