@@ -259,11 +259,9 @@
 }
 
 /* Re-use the existing error style on focus/invalid */
-.inputError {
-  /* border-color: #f44336 !important; */
-}
+
 .selectDropdown {
-  width: 200px; /* or adjust to your desired smaller width */
+  width: 200px; 
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -281,3 +279,7 @@
 .requiredField{
 color:red;
 }
+
+
+
+

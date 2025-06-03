@@ -30,47 +30,45 @@ const BusinessDetails = () => {
     {
       type: "Restaurant",
       subtype: "Your Journey Begins Here",
-      icon: "images/general.png",
+      icon: "svg/Restaurant-icon.svg",
     },
     {
       type: "Real Estate Broker",
       subtype: "Your Journey Begins Here",
-      icon: "images/school.png",
+      icon: "svg/Estate-icon.svg",
     },
     {
       type: "Saloon",
       subtype: "Your Journey Begins Here",
-      icon: "images/Hospital.png",
+      icon: "svg/Saloon-icon.svg",
     },
     {
       type: "Doctor's Clinic",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Doctor-clinic-icon.svg",
     },
-    {
-      type: "Dentist Office",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
+  
     {
       type: "Dry Cleaner",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+        icon: "svg/Dry -Cleaner-icon.svg",
     },
     {
       type: "Web Design Agency",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Web-Design-Agency-icon.svg",
     },
-    {
-      type: "Marketing Agency",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
+   
     {
       type: "Gym & Fitness Center",
       subtype: "Your Journey Begins Here",
+       icon: "svg/Gym-icon.svg",
+    },
+     {
+      type: "Marketing Agency",
+      subtype: "Your Journey Begins Here",
       icon: "images/other.png",
+
     },
     {
       type: "Personal Trainer",

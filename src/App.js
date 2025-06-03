@@ -16,7 +16,8 @@ import RexAgent from './Component/RexAgent/RexAgent';
 import Plans from './Component/Plans/Plans';
 import SubscriptionFlow from './Component/Checkout/SubscriptionFlow';
 import Calendar from './Component/Celender/Calendar';
-
+import BusinessServices from './Component/BusinessServices/BusinessServices';
+import TotalsCallsList from './Component/TotalsCallsList/TotalsCallsList'
 
 function App() {
   const token = localStorage.getItem('token');
@@ -42,6 +43,7 @@ function App() {
           <Route path="/steps" element={<Step />} />
           <Route path="/about-business" element={<AboutBusiness />} />
           <Route path="/business-details" element={<BusinessDetails />} />
+          <Route path="/business-services" element={<BusinessServices />} />
           <Route path="/agent-detail" element={<AgentDetail />} />
           <Route path="/business-locations" element={<BusinessLocation />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -51,7 +53,7 @@ function App() {
           <Route path="/plans" element={<Plans />} />
           <Route path="/checkout" element={<SubscriptionFlow />} />
           <Route path="/calendar" element={<Calendar />} />
-
+          <Route path="/totalcall-list" element={<TotalsCallsList />} />
         </Routes>
 
       </div>
