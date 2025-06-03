@@ -29,7 +29,7 @@ const StepHeader = ({ title }) => {
                     display: 'inline-block',
                     zIndex: 10,
                 }}
-            >
+            >      
                 <div className={styles.RipplThree}>
                     <span className={styles.ripple}></span>
                     <span className={styles.ripple}></span>

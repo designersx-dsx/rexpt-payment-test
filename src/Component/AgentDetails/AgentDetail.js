@@ -346,7 +346,7 @@ const AgentDashboard = () => {
                         }
                       })()}
                     </span>
-                  </p>
+                  </p>    
                 </div>
                 <div className={styles.address}>
                   <img src="svg/location.svg" alt="location" />
