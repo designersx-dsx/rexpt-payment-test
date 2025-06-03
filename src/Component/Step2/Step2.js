@@ -242,8 +242,6 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
                       : "svg/Play-icon.svg"
                   }
                   alt={playingIdx === idx ? "Play" : "Pause"}
-                  height={24}
-                  width={24}
                 />
               </div>
               {/* Hidden audio element */}

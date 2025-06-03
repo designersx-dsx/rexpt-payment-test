@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Plan.module.css";
 import { useNavigate } from "react-router-dom";
-import Loader from "../Loader/Loader";
+import Loader2 from "../Loader2/Loader2";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
@@ -56,7 +56,7 @@ const Plan = () => {
     }
   };
 
-  if (loading) return <p className={styles.status}><Loader /></p>;
+    if (loading) return <div className={styles.status}><Loader2 /></div>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
   return (
