@@ -41,6 +41,148 @@ const AgentDashboard = () => {
   } = useAgentStore();
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isCalModalOpen, setIsCalModalOpen] = useState(false);
+const [apiKey, setApiKey] = useState("");
+const [isApiKeyEditable, setIsApiKeyEditable] = useState(false);
+const [showEventInputs, setShowEventInputs] = useState(false);
+const [eventCreateStatus, setEventCreateStatus] = useState(null);
+const [eventCreateMessage, setEventCreateMessage] = useState("");
+const [eventName, setEventName] = useState("");
+const [eventSlug, setEventSlug] = useState("");
+const [eventLength, setEventLength] = useState("");
+const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
+
+const isValidCalApiKey = (key) => key.startsWith("cal_live_");
+const openCalModal = () => {
+  if (!agentData?.agent) return;
+  setApiKey(agentData.agent.calApiKey || "");
+  setIsApiKeyEditable(false);
+  setShowEventInputs(false);
+  setEventCreateStatus(null);
+  setEventCreateMessage("");
+  setIsCalModalOpen(true);
+};
+const closeCalModal = () => {
+  setIsCalModalOpen(false);
+  setApiKey("");
+  setShowEventInputs(false);
+  setEventCreateStatus(null);
+  setEventCreateMessage("");
+  setEventName("");
+  setEventSlug("");
+  setEventLength("");
+};
+
+const handleApiKeySubmit = async () => {
+  if (!agentData?.agent) return;
+
+  if (!isValidCalApiKey(apiKey.trim())) {
+    setEventCreateStatus("error");
+    setEventCreateMessage("Invalid API Key! It must start with 'cal_live_'.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agentData.agent.agent_id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ calApiKey: apiKey.trim() }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update API key");
+    }
+
+    setEventCreateStatus("success");
+    setEventCreateMessage("Cal API key updated successfully!");
+    setShowEventInputs(true);
+    setShowCalKeyInfo(true);
+  } catch (error) {
+    setEventCreateStatus("error");
+    setEventCreateMessage(`Failed to save API Key: ${error.message}`);
+  }
+};
+
+const createCalEvent = async () => {
+  if (!apiKey.trim()) {
+    alert("API Key is required to create an event.");
+    return;
+  }
+  if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
+    alert("Please fill all event fields.");
+    return;
+  }
+  try {
+    const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(apiKey.trim())}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: eventName.trim(),
+        slug: eventSlug.trim(),
+        length: parseInt(eventLength, 10),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to create event");
+    }
+
+    const responseData = await response.json();
+    const eventTypeId = responseData.event_type.id;
+
+    setEventCreateStatus("success");
+    setEventCreateMessage("Your Cal event has been created successfully!");
+    setShowCalKeyInfo(false);
+
+    // Update Retell LLM with Cal event info
+    const retellPayload = {
+      general_tools: [
+        {
+          type: "book_appointment_cal",
+          name: "cal_tool",
+          cal_api_key: apiKey.trim(),
+          event_type_id: eventTypeId,
+        },
+      ],
+    };
+
+    const retellUrl = `https://api.retellai.com/update-retell-llm/${agentData.agent.llmId}`;
+    const retellResponse = await fetch(retellUrl, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+      },
+      body: JSON.stringify(retellPayload),
+    });
+
+    if (!retellResponse.ok) {
+      const retellError = await retellResponse.json();
+      console.error("Error updating Retell LLM:", retellError);
+    } else {
+      console.log("Retell LLM updated successfully!");
+    }
+
+    setEventName("");
+    setEventSlug("");
+    setEventLength("");
+
+    setTimeout(() => {
+      closeCalModal();
+    }, 1000);
+  } catch (error) {
+    setEventCreateStatus("error");
+    setEventCreateMessage(`Error creating event: ${error.message}`);
+    console.error("Error in createCalEvent:", error);
+  }
+};
+
 
 
   useEffect(() => {
@@ -457,24 +599,28 @@ console.log('loading',loading)
                 </div>
                 <p className={styles.managementText}>Delete Agent</p>
               </div>
-              <div className={styles.managementItem}>
-                <div className={styles.SvgDesign}>
-                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3.76866 16.5998C4.22338 16.5998 4.59201 16.2312 4.59201 15.7765C4.59201 15.3218 4.22338 14.9531 3.76866 14.9531C3.31394 14.9531 2.94531 15.3218 2.94531 15.7765C2.94531 16.2312 3.31394 16.5998 3.76866 16.5998Z" fill="#6524EB" />
-                    <path d="M6.78429 16.5998C7.23901 16.5998 7.60763 16.2312 7.60763 15.7765C7.60763 15.3218 7.23901 14.9531 6.78429 14.9531C6.32956 14.9531 5.96094 15.3218 5.96094 15.7765C5.96094 16.2312 6.32956 16.5998 6.78429 16.5998Z" fill="#6524EB" />
-                    <path d="M9.75304 16.5998C10.2078 16.5998 10.5764 16.2312 10.5764 15.7765C10.5764 15.3218 10.2078 14.9531 9.75304 14.9531C9.29831 14.9531 8.92969 15.3218 8.92969 15.7765C8.92969 16.2312 9.29831 16.5998 9.75304 16.5998Z" fill="#6524EB" />
-                    <path d="M13.0499 16.5998C13.5046 16.5998 13.8733 16.2312 13.8733 15.7765C13.8733 15.3218 13.5046 14.9531 13.0499 14.9531C12.5952 14.9531 12.2266 15.3218 12.2266 15.7765C12.2266 16.2312 12.5952 16.5998 13.0499 16.5998Z" fill="#6524EB" />
-                    <path d="M9.75304 13.8029C10.2078 13.8029 10.5764 13.4343 10.5764 12.9796C10.5764 12.5249 10.2078 12.1562 9.75304 12.1562C9.29831 12.1562 8.92969 12.5249 8.92969 12.9796C8.92969 13.4343 9.29831 13.8029 9.75304 13.8029Z" fill="#6524EB" />
-                    <path d="M13.9722 4.64641H13.8698C13.8694 3.73676 13.1324 3 12.223 3C11.3137 3 10.5763 3.73676 10.5763 4.64641H6.23979C6.23947 3.73676 5.50238 3 4.59306 3C3.68373 3 2.94632 3.73676 2.94632 4.64641H2.56826C1.14846 4.64641 0 5.79848 0 7.21499V7.21665V17.4916C0 18.9098 1.14874 20.0602 2.56826 20.0602H13.9722C15.3904 20.0602 16.5421 18.9098 16.5421 17.4916V7.21661V7.21495C16.5421 5.79848 15.3903 4.64641 13.9722 4.64641ZM14.8173 17.4445C14.8173 17.8673 14.4735 18.2128 14.0496 18.2128H2.59921C2.17536 18.2128 1.8302 17.8673 1.8302 17.4445V10.8104H14.8173V17.4445Z" fill="#6524EB" />
-                    <path d="M13.0499 13.8029C13.5046 13.8029 13.8733 13.4343 13.8733 12.9796C13.8733 12.5249 13.5046 12.1562 13.0499 12.1562C12.5952 12.1562 12.2266 12.5249 12.2266 12.9796C12.2266 13.4343 12.5952 13.8029 13.0499 13.8029Z" fill="#6524EB" />
-                    <circle cx="14.5938" cy="4.5" r="4.5" fill="white" />
-                    <path d="M19.2197 4.56299C19.2197 7.08306 17.1768 9.12598 14.6567 9.12598C12.1367 9.12598 10.0938 7.08306 10.0938 4.56299C10.0938 2.04292 12.1367 0 14.6567 0C17.1768 0 19.2197 2.04292 19.2197 4.56299ZM16.9555 2.83457C16.7885 2.66751 16.5176 2.66751 16.3506 2.83457C16.3465 2.8386 16.3427 2.84288 16.3392 2.84736L14.3587 5.37106L13.1646 4.17697C12.9975 4.00991 12.7267 4.00991 12.5596 4.17697C12.3925 4.34403 12.3925 4.61489 12.5596 4.78195L14.0691 6.29141C14.2361 6.45847 14.507 6.45847 14.674 6.29141C14.6778 6.28769 14.6813 6.28377 14.6846 6.27966L16.9616 3.43335C17.1226 3.26585 17.1205 2.99958 16.9555 2.83457Z" fill="#1AA850" />
-                  </svg>
+            
+<div
+  className={styles.managementItem}
+  onClick={openCalModal} // open Cal modal on click
+  style={{ cursor: "pointer" }}
+>
+  <div className={styles.SvgDesign}>
+    <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3.76866 16.5998C4.22338 16.5998 4.59201 16.2312 4.59201 15.7765C4.59201 15.3218 4.22338 14.9531 3.76866 14.9531C3.31394 14.9531 2.94531 15.3218 2.94531 15.7765C2.94531 16.2312 3.31394 16.5998 3.76866 16.5998Z" fill="#6524EB" />
+      <path d="M6.78429 16.5998C7.23901 16.5998 7.60763 16.2312 7.60763 15.7765C7.60763 15.3218 7.23901 14.9531 6.78429 14.9531C6.32956 14.9531 5.96094 15.3218 5.96094 15.7765C5.96094 16.2312 6.32956 16.5998 6.78429 16.5998Z" fill="#6524EB" />
+      <path d="M9.75304 16.5998C10.2078 16.5998 10.5764 16.2312 10.5764 15.7765C10.5764 15.3218 10.2078 14.9531 9.75304 14.9531C9.29831 14.9531 8.92969 15.3218 8.92969 15.7765C8.92969 16.2312 9.29831 16.5998 9.75304 16.5998Z" fill="#6524EB" />
+      <path d="M13.0499 16.5998C13.5046 16.5998 13.8733 16.2312 13.8733 15.7765C13.8733 15.3218 13.5046 14.9531 13.0499 14.9531C12.5952 14.9531 12.2266 15.3218 12.2266 15.7765C12.2266 16.2312 12.5952 16.5998 13.0499 16.5998Z" fill="#6524EB" />
+      <path d="M9.75304 13.8029C10.2078 13.8029 10.5764 13.4343 10.5764 12.9796C10.5764 12.5249 10.2078 12.1562 9.75304 12.1562C9.29831 12.1562 8.92969 12.5249 8.92969 12.9796C8.92969 13.4343 9.29831 13.8029 9.75304 13.8029Z" fill="#6524EB" />
+      <path d="M13.9722 4.64641H13.8698C13.8694 3.73676 13.1324 3 12.223 3C11.3137 3 10.5763 3.73676 10.5763 4.64641H6.23979C6.23947 3.73676 5.50238 3 4.59306 3C3.68373 3 2.94632 3.73676 2.94632 4.64641H2.56826C1.14846 4.64641 0 5.79848 0 7.21499V7.21665V17.4916C0 18.9098 1.14874 20.0602 2.56826 20.0602H13.9722C15.3904 20.0602 16.5421 18.9098 16.5421 17.4916V7.21661V7.21495C16.5421 5.79848 15.3903 4.64641 13.9722 4.64641ZM14.8173 17.4445C14.8173 17.8673 14.4735 18.2128 14.0496 18.2128H2.59921C2.17536 18.2128 1.8302 17.8673 1.8302 17.4445V10.8104H14.8173V17.4445Z" fill="#6524EB" />
+      <path d="M13.0499 13.8029C13.5046 13.8029 13.8733 13.4343 13.8733 12.9796C13.8733 12.5249 13.5046 12.1562 13.0499 12.1562C12.5952 12.1562 12.2266 12.5249 12.2266 12.9796C12.2266 13.4343 12.5952 13.8029 13.0499 13.8029Z" fill="#6524EB" />
+      <circle cx="14.5938" cy="4.5" r="4.5" fill="white" />
+      <path d="M19.2197 4.56299C19.2197 7.08306 17.1768 9.12598 14.6567 9.12598C12.1367 9.12598 10.0938 7.08306 10.0938 4.56299C10.0938 2.04292 12.1367 0 14.6567 0C17.1768 0 19.2197 2.04292 19.2197 4.56299ZM16.9555 2.83457C16.7885 2.66751 16.5176 2.66751 16.3506 2.83457C16.3465 2.8386 16.3427 2.84288 16.3392 2.84736L14.3587 5.37106L13.1646 4.17697C12.9975 4.00991 12.7267 4.00991 12.5596 4.17697C12.3925 4.34403 12.3925 4.61489 12.5596 4.78195L14.0691 6.29141C14.2361 6.45847 14.507 6.45847 14.674 6.29141C14.6778 6.28769 14.6813 6.28377 14.6846 6.27966L16.9616 3.43335C17.1226 3.26585 17.1205 2.99958 16.9555 2.83457Z" fill="#1AA850" />
+    </svg>
+  </div>
+  <p className={styles.managementText}>Cal.com</p>
+</div>
 
-
-                </div>
-                <p className={styles.managementText}>Cal.com</p>
-              </div>
             </div>
 
             <h1 className={styles.Agenttitle}>Agent Analysis</h1>
@@ -523,10 +669,7 @@ console.log('loading',loading)
               <AgentAnalysis data={agentData?.callSummary?.data} />
             </section>
           </div>
-          </>
-
-  )
-}
+       
 {
   openCallModal && (
     <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
@@ -561,6 +704,131 @@ console.log('loading',loading)
     </OffCanvas>
   )
 }
+{isCalModalOpen && (
+  <div className={styles.modalBackdrop} onClick={closeCalModal}>
+    <div
+      className={styles.modalContainer}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h2>Connect with Cal</h2>
+      <p>
+        Click on the link to connect with Cal:{" "}
+        <a
+          href="https://cal.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          https://cal.com/
+        </a>
+      </p>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+        <label htmlFor="apiKey">Enter your API Key:</label>
+        <input
+          id="apiKey"
+          type="text"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          placeholder="API Key"
+          className={styles.modalInput}
+          disabled={!isApiKeyEditable && !!apiKey}
+        />
+        {apiKey && !isApiKeyEditable && (
+          <button
+            type="button"
+            onClick={() => setIsApiKeyEditable(true)}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
+            title="Edit API Key"
+            aria-label="Edit API Key"
+          >
+            {/* edit icon svg */}
+          </button>
+        )}
+      </div>
+      {showCalKeyInfo && (
+        <div className={styles.infoBanner}>
+          Your Cal API key is added. Now create your Cal event.
+        </div>
+      )}
+
+      {!showEventInputs && (
+        <div className={styles.modalButtons}>
+          <button className={`${styles.modalButton} ${styles.cancel}`} onClick={closeCalModal}>
+            Cancel
+          </button>
+          <button
+            className={`${styles.modalButton} ${styles.submit}`}
+            onClick={handleApiKeySubmit}
+            disabled={!isValidCalApiKey(apiKey.trim())}
+          >
+            {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
+          </button>
+        </div>
+      )}
+
+      {showEventInputs && (
+        <>
+          <div className={styles.createEventSection}>
+            <h3>Create Event</h3>
+            <div className={styles.inputGroup}>
+              <label htmlFor="title">Event Name</label>
+              <input
+                id="title"
+                type="text"
+                placeholder="Enter event name"
+                className={styles.modalInput}
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+              />
+            </div>
+            <div className={styles.inputGroup}>
+              <label htmlFor="slug">Description</label>
+              <input
+                id="slug"
+                type="text"
+                placeholder="Enter Description"
+                className={styles.modalInput}
+                value={eventSlug}
+                onChange={(e) => setEventSlug(e.target.value)}
+              />
+            </div>
+            <div className={styles.inputGroup}>
+              <label htmlFor="length">Length (minutes)</label>
+              <input
+                id="length"
+                type="number"
+                placeholder="Enter length"
+                className={styles.modalInput}
+                value={eventLength}
+                onChange={(e) => setEventLength(e.target.value)}
+                min="1"
+              />
+            </div>
+          </div>
+
+          <div className={styles.modalButtons} style={{ marginTop: "10px" }}>
+            <button className={`${styles.modalButton} ${styles.cancel}`} onClick={() => setShowEventInputs(false)}>
+              Cancel
+            </button>
+            <button
+              className={`${styles.modalButton} ${styles.submit}`}
+              onClick={createCalEvent}
+              disabled={!eventName.trim() || !eventSlug.trim() || !eventLength.trim()}
+            >
+              Add Event
+            </button>
+          </div>
+
+          {eventCreateStatus && (
+            <p style={{ color: eventCreateStatus === "success" ? "green" : "red", marginTop: "10px", fontWeight: "600" }}>
+              {eventCreateMessage}
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  </div>
+)}
 <DetailModal isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         height="80vh">
@@ -578,7 +846,10 @@ console.log('loading',loading)
 
 
       <Footer/>
+   </>
 
+  )
+}
     </div >
   );
 };
