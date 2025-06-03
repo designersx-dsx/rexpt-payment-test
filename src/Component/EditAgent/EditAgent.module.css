@@ -1,0 +1,118 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-block: 20px;
+}
+
+.TitleBar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.TitleBar h3 {
+    font-size: 24px;
+    font-weight: normal;
+    color: #24252c;
+
+}
+
+.TitleBar p {
+    font-weight: 600;
+    font-size: 24px;
+    color: #24252c;
+    text-transform: uppercase;
+}
+
+.card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 12px 16px 12px 12px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    min-height: 60px;
+}
+
+.card:hover {
+    border-color: #a78bfa;
+}
+
+.active {
+    border: 1.5px solid #a78bfa;
+}
+
+.leftSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.radioCircle {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+
+
+.textContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 18px;
+    color: #24252c;
+
+}
+
+.description {
+    font-size: 16px;
+    color: #A3AED0;
+}
+
+.arrow {
+    font-size: 24px;
+    color: #bbb;
+}
+
+
+.btnTheme {
+    position: relative;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 55px;
+    margin-top: 3rem;
+}
+
+.btnTheme img {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.btnTheme p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-weight: 500;
+    font-size: 19px;
+
+}
