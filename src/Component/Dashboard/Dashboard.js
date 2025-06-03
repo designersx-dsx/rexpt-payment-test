@@ -58,7 +58,7 @@ function Dashboard() {
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
-    const [callId,setCallId]=useState(null)
+  const [callId, setCallId] = useState(null)
 
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
@@ -72,12 +72,12 @@ function Dashboard() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const profileRef = useRef(null); 
+  const profileRef = useRef(null);
 
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
 
-const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
-const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
+  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
   // Navigate on agent card click
   const handleCardClick = (agent) => {
@@ -151,6 +151,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
       if (!userId) return;
       try {
         const res = await fetchDashboardDetails(userId);
+        console.log(res,"HELOE")
         let agentsWithCalKeys = res.agents || [];
         const calApiAgents = await fetchCalApiKeys(userId);
         const calApiKeyMap = {};
@@ -161,7 +162,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
           ...agent,
           calApiKey: calApiKeyMap[agent.agent_id] || null,
         }));
-        console.log('res',res)
+        console.log('res', res)
         setDashboardData(agentsWithCalKeys, res.total_call || 0);
         setHasFetched(true);
         localStorage.setItem("userId", userId);
@@ -388,8 +389,8 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const handleEndCall = async () => {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
-       const payload={ agentId :agentDetails.agent_id,callId:callId}
-      const DBresponse=await EndWebCallUpdateAgentMinutesLeft(payload)
+      const payload = { agentId: agentDetails.agent_id, callId: callId }
+      const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload)
       console.log("Call end response", response);
     }
   };
@@ -418,7 +419,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   };
 
   //close camera option click outside
-     const toggleProfileDropdown = () => {
+  const toggleProfileDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
@@ -438,7 +439,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   // Open capture modal
   const openCaptureModal = () => {
     setIsCaptureModalOpen(true);
-    setIsDropdownOpen(false); 
+    setIsDropdownOpen(false);
   };
 
   // Close capture modal
@@ -466,7 +467,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
     setUploadedImage(image);
     closeUploadModal();
   };
-// console.log('user',user)
+  // console.log('user',user)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -478,7 +479,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
                 onClick={toggleProfileDropdown} // Toggle dropdown visibility on avatar click
               >
                 <img
-                   src={user?.profile || capturedImage || uploadedImage || "images/camera-icon.avif"}
+                  src={user?.profile || capturedImage || uploadedImage || "images/camera-icon.avif"}
                   alt="Profile"
                   className={styles.profilePic}
                 />
@@ -488,12 +489,12 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
-               {isDropdownOpen && (
-          <ul className={styles.dropdown}>
-            {/* <li onClick={openCaptureModal}>Capture Profile Picture</li> */}
-            <li onClick={openUploadModal}>Upload Profile Picture</li>
-          </ul>
-        )}
+            {isDropdownOpen && (
+              <ul className={styles.dropdown}>
+                {/* <li onClick={openCaptureModal}>Capture Profile Picture</li> */}
+                <li onClick={openUploadModal}>Upload Profile Picture</li>
+              </ul>
+            )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -600,7 +601,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-                  {agent.plan || "Free Plan"}
+                  {agent.dataValues.product_name ||  "Free "} Plan
                 </h3>
               </div>
               <div className={styles.Lang}>
@@ -717,30 +718,30 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
 
-          <div className={styles.AssignNumText}>
-            Assigned Number
+                  <div className={styles.AssignNumText}>
+                    Assigned Number
 
-            <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
-          </div>):(
-           <div
-  className={styles.AssignNum}
-  onClick={(e) => {
-    e.stopPropagation();
-    openAssignNumberModal();
-  }}
-  style={{ cursor: "pointer" }}
->
-  Assign Number
-</div>
+                    <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
+                  </div>) : (
+                  <div
+                    className={styles.AssignNum}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openAssignNumberModal();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Assign Number
+                  </div>
 
 
-             
-          )}
-         
+
+                )}
+
 
                 <div className={styles.minLeft}>
                   <span className={styles.MinL}>Min Left</span>{" "}
-                  {agent?.callSummary?.remaining?.minutes || 0}
+                  {agent?.callSummary?.remaining?.minutes}
                 </div>
               </div>
             </div>
@@ -945,25 +946,25 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
         )}
       </div>
       {isAssignNumberModalOpen && (
-  <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
-    <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
-      <h2>Coming Soon!</h2>
-      <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-        Our exciting plans will be available shortly. You'll be able to select the best one to suit your needs!
-      </p>
-      <button
-        className={`${styles.modalButton} ${styles.submit}`}
-        onClick={closeAssignNumberModal}
-        style={{ width: "100%" }}
-      >
-        Got it!
-      </button>
-    </div>
-  </div>
-)}
+        <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
+          <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
+            <h2>Coming Soon!</h2>
+            <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
+              Our exciting plans will be available shortly. You'll be able to select the best one to suit your needs!
+            </p>
+            <button
+              className={`${styles.modalButton} ${styles.submit}`}
+              onClick={closeAssignNumberModal}
+              style={{ width: "100%" }}
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
 
 
-        {/* Modals for capturing/uploading profile picture */}
+      {/* Modals for capturing/uploading profile picture */}
       {isCaptureModalOpen && (
         <CaptureProfile onClose={closeCaptureModal} onCapture={handleCapture} />
       )}
