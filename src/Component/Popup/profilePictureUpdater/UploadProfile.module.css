@@ -131,3 +131,200 @@ h2 {
     opacity: 1;
   }
 }
+
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContainer {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 20px;
+}
+
+.errorMessage {
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.imagePreview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.previewImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px; /* Rounded corners as requested */
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.optionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.webcamContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.webcam {
+  width: 100%;
+  height: 240px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.webcamButtons {
+  display: flex;
+  gap: 16px; /* Gap between buttons as requested */
+}
+
+.captureButton {
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.captureButton:hover {
+  background-color: #0056b3;
+}
+
+.closeWebcamButton {
+  background-color: #6c757d;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.closeWebcamButton:hover {
+  background-color: #5a6268;
+}
+
+.uploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.fileInput {
+  font-size: 14px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.fileInput::-webkit-file-upload-button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.fileInput::-webkit-file-upload-button:hover {
+  background-color: #0056b3;
+}
+
+.webcamButton {
+  background-color: #28a745;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.webcamButton:hover {
+  background-color: #218838;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px; /* Gap between buttons as requested */
+}
+
+.saveButton {
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.saveButton:hover {
+  background-color: #0056b3;
+}
+
+.disabledButton {
+  background-color: #e0e0e0;
+  color: #6c757d;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: not-allowed;
+}
+
+.closeButton {
+  background-color: #dc3545;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.closeButton:hover {
+  background-color: #c82333;
+}
