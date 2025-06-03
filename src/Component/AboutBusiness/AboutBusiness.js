@@ -471,7 +471,7 @@ Address No. 2: ${businessLocation.address2 || ""}
               {aboutBusinessSubmitted && aboutBusinessError && (
                 <p className={styles.inlineError}>{aboutBusinessError}</p>
               )}
-              <div className={styles.formGroup}>
+              {/* <div className={styles.formGroup}>
                 <label htmlFor="file-upload">File Upload <span className={styles.filesAllowed}>(allowd only .pdf,.txt,.csv,.json,.md)</span></label>
                 <input
                   id="file-upload"
@@ -481,7 +481,7 @@ Address No. 2: ${businessLocation.address2 || ""}
                   onChange={handleFileChange}
                 />
 
-              </div>
+              </div> */}
               {filesSubmitted && filesError && (
                 <p className={styles.inlineError}>{filesError}</p>
               )}
