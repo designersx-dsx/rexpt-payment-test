@@ -16,7 +16,8 @@ import RexAgent from './Component/RexAgent/RexAgent';
 import Plans from './Component/Plans/Plans';
 import SubscriptionFlow from './Component/Checkout/SubscriptionFlow';
 import Calendar from './Component/Celender/Calendar';
-
+import BusinessServices from './Component/BusinessServices/BusinessServices';
+import TotalsCallsList from './Component/TotalsCallsList/TotalsCallsList'
 
 function App() {
   const token = localStorage.getItem('token');
@@ -30,6 +31,12 @@ function App() {
               token ? <Navigate to="/dashboard" /> : <SignUp />
             }
           />
+           {/* <Route
+            path="/dashboard"
+            element={
+              token ? <Navigate to="/dashboard" /> : <SignUp />
+            }
+          /> */}
           <Route
             path="/"
             element={
@@ -38,7 +45,8 @@ function App() {
           />
           <Route path="/" element={<Start />} />
           <Route path="/signup" element={<SecureRoute><SignUp /></SecureRoute>} />
-          <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
+
+         <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
           <Route path="/steps" element={<SecureRoute><Step/></SecureRoute>} />
           <Route path="/about-business" element={<SecureRoute><AboutBusiness/></SecureRoute>} />
           <Route path="/business-details" element={<SecureRoute><BusinessDetails/></SecureRoute>} />
@@ -51,6 +59,7 @@ function App() {
           <Route path="/plans" element={<SecureRoute><Plans/></SecureRoute>} />
           <Route path="/checkout" element={<SecureRoute><SubscriptionFlow /></SecureRoute>} />
           <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
+          <Route path="/totalcall-list" element={<TotalsCallsList />} />
 
         </Routes>
 
