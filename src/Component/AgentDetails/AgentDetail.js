@@ -11,7 +11,8 @@ import Modal2 from "../Modal2/Modal2";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import AssignNumberModal from "./AssignNumberModal";
-
+import EditAgent from "../EditAgent/EditAgent"
+import DetailModal from "../DetailModal/DetailModal"
 const AgentDashboard = () => {
   const [totalBookings, setTotalBookings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -545,12 +546,21 @@ const AgentDashboard = () => {
     </OffCanvas>
   )
 }
+<DetailModal isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        height="80vh">
+
+        <div>
+          <EditAgent />
+        </div>
+      </DetailModal>
 
       <AssignNumberModal 
   isOpen={isAssignModalOpen} 
   agentId={agentDetails?.agentId}
   onClose={() => setIsAssignModalOpen(false)} 
 />
+
 
       <Footer/>
 
