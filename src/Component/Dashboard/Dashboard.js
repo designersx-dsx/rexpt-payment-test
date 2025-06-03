@@ -435,14 +435,14 @@ const handleAssignNumberClick = (agent, e) => {
 
   //close camera option click outside
   const toggleProfileDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
+    setIsUploadModalOpen((prev) => !prev);
   };
 
   // Close the dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsDropdownOpen(false); // Close dropdown if clicked outside
+        setIsUploadModalOpen(false); // Close dropdown if clicked outside
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -454,7 +454,7 @@ const handleAssignNumberClick = (agent, e) => {
   // Open upload modal
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
-    // setIsDropdownOpen(false);
+    setIsDropdownOpen(false);
   };
 
   // Close upload modal
@@ -476,39 +476,25 @@ const handleAssignNumberClick = (agent, e) => {
             <div>
               <button
                 className={styles.avatarBtn}
-                // onClick={toggleProfileDropdown} // Toggle dropdown visibility on avatar click
-                onClick={openUploadModal}
+                onClick={toggleProfileDropdown} // Toggle dropdown visibility on avatar click
               >
                 <img
                   src={user?.profile || capturedImage || uploadedImage || "images/camera-icon.avif"}
                   alt="Profile"
                   className={styles.profilePic}
-                    onError={(e) => {
-                      e.target.onerror = null; // Prevent infinite loop if fallback also fails
-                      e.target.src = "images/camera-icon.avif";
-                    }}
                 />
               </button>
             </div>
             <div>
               <p className={styles.greeting}>Hello!</p>
-              <h2 className={styles.name}>{user?.name || "User"}</h2>
+              <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
-            {/* {isDropdownOpen && (
-              // <ul className={styles.dropdown}>
-                //  <li onClick={openCaptureModal}>Capture Profile Picture</li> 
-              //   <li onClick={openUploadModal}>Upload Profile Picture</li>
-              // </ul>
-                      <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
-
-            )} */}
-            {isUploadModalOpen && (
-            <UploadProfile
-              onClose={closeUploadModal}
-              onUpload={handleUpload}
-              currentProfile={uploadedImage || user?.profile || "images/camera-icon.avif"}
-            />
-          )}
+            {isDropdownOpen && (
+              <ul className={styles.dropdown}>
+                {/* <li onClick={openCaptureModal}>Capture Profile Picture</li> */}
+                <li onClick={openUploadModal}>Upload Profile Picture</li>
+              </ul>
+            )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -934,18 +920,22 @@ const handleAssignNumberClick = (agent, e) => {
         )}
 
         {/* Call Test Modal */}
-        {openCallModal && (
-          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
-            <CallTest
-              isCallActive={isCallActive}
-              onStartCall={handleStartCall}
-              onEndCall={handleEndCall}
-              callLoading={callLoading}
-              setCallLoading={setCallLoading}
-              isliveTranscript={liveTranscript}
-            />
-          </Modal2>
-        )}
+       {openCallModal && (
+  <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+    <CallTest
+      isCallActive={isCallActive}
+      onStartCall={handleStartCall}
+      onEndCall={handleEndCall}
+      callLoading={callLoading}
+      setCallLoading={setCallLoading}
+      isliveTranscript={liveTranscript}
+      agentName={agentDetails?.agentName}
+      agentAvatar={agentDetails?.avatar}
+      businessName={agentDetails?.business?.businessName}
+    />
+  </Modal2>
+)}
+
         {/* WidgetModal */}
         {openWidgetModal && (
           <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
