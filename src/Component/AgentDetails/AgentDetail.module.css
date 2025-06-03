@@ -514,6 +514,19 @@
   padding: 10px 0 20px 0;
 }
 
+.managementActions::-webkit-scrollbar {
+  height: 4px;
+}
+
+.managementActions::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.managementActions::-webkit-scrollbar-thumb {
+  background-color: #6524EB;
+  border-radius: 4px;
+}
+
 .managementText {
   font-size: 14px;
   color: #6524eb;
@@ -598,14 +611,17 @@
   .agentStats {
     grid-template-columns: repeat(4, 1fr);
   }
-.Yellow .statDetail {
-  font-size: 30px !important;
 
-}
+  .Yellow .statDetail {
+    font-size: 30px !important;
+
+  }
+
   .Agenttitle {
     font-size: 30px;
   }
-  .statDetail{
+
+  .statDetail {
     font-size: 30px;
   }
 
@@ -614,13 +630,15 @@
 @media (max-width: 360px) {
   .agentDetailsFlex p:last-child strong {
     font-size: 25px;
-}
+  }
+
   .agentDetailsFlex {
     flex-wrap: unset;
   }
+
   .AssignNumText {
     font-size: 14px;
-}
+  }
 
   .agentStats {
     grid-template-columns: repeat(4, 1fr);

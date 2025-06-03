@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 function Start() {
     const navigate = useNavigate();
-
     const [step, setStep] = useState(0);
     const handleClick = () => {
         setTimeout(() => setStep(1), 150);
@@ -16,17 +15,17 @@ function Start() {
             navigate('/plans');
         }, 700);
     };
-useEffect(() => {
-  const setVH = () => {
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-  };
+    useEffect(() => {
+        const setVH = () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
 
-  setVH();
-  window.addEventListener('resize', setVH);
+        setVH();
+        window.addEventListener('resize', setVH);
 
-  return () => window.removeEventListener('resize', setVH);
-}, []);
+        return () => window.removeEventListener('resize', setVH);
+    }, []);
 
     return (
         <div>
@@ -60,7 +59,7 @@ useEffect(() => {
                     </div>
 
                     <div className={`${styles.withlogo} ${step >= 3 ? styles.slideRight : ''}`}>
-                        <p className={styles.with}>with</p>
+                        <p className={styles.with} >with </p>
                         <p><img src='svg/Rexpt-Logo.svg' alt='Rexpt-Logo' /></p>
                     </div>
                     <p className={`${styles.desc} ${step >= 4 ? styles.slideRight : ''}`}>
@@ -75,6 +74,8 @@ useEffect(() => {
                     </div>
                 </div>
             </div>
+
+
         </div>
     );
 }

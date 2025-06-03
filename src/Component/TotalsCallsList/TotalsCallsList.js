@@ -44,17 +44,12 @@ const callsPerPage = 6;
 
 
 export default function Home() {
-
-    const [selected, setSelected] = useState(options[0]);
     const [currentPage, setCurrentPage] = useState(1);
-
     const totalPages = Math.ceil(callsData.length / callsPerPage);
-
     // Slice callsData to show only the current page's calls
     const indexOfLastCall = currentPage * callsPerPage;
     const indexOfFirstCall = indexOfLastCall - callsPerPage;
     const currentCalls = callsData.slice(indexOfFirstCall, indexOfLastCall);
-    const [isOpen, setIsOpen] = useState(false);
 
     // Change page handler
     const handlePageChange = (pageNum) => {
@@ -62,18 +57,12 @@ export default function Home() {
         setCurrentPage(pageNum);
     };
 
-
-
     return (
         <div className={styles.container}>
             <div className={styles.card}>
                 {/* Header */}
-<HeaderFilter/>
-
-              
+                <HeaderFilter />
                 {/* Date and Agent */}
-
-
                 {/* Table */}
                 <div className={styles.tableContainer}>
                     <table className={styles.table}>
@@ -110,7 +99,7 @@ export default function Home() {
                                             <path d="M21.9531 11.4053H15.626V12.894H21.9531V11.4053Z" fill="#5F33E1" />
                                         </svg>
 
-                                     
+
 
 
                                     </div></td>
@@ -122,34 +111,34 @@ export default function Home() {
 
                 {/* Pagination */}
                 <div>
-                <div className={styles.pagination}>
-                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </button>
+                    <div className={styles.pagination}>
+                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
 
-                    {[...Array(totalPages)].map((_, idx) => {
-                        const pageNum = idx + 1;
-                        return (
-                            <button
-                                key={pageNum}
-                                onClick={() => handlePageChange(pageNum)}
-                                className={currentPage === pageNum ? styles.pageButtonActive : ""}
-                            >
-                                {pageNum}
-                            </button>
-                        );
-                    })}
+                        {[...Array(totalPages)].map((_, idx) => {
+                            const pageNum = idx + 1;
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => handlePageChange(pageNum)}
+                                    className={currentPage === pageNum ? styles.pageButtonActive : ""}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
 
-                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
 
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
 
-                    </button>
-                </div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

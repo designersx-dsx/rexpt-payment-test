@@ -1,0 +1,56 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+.modal {
+  position: fixed;
+  padding-inline: 1px;
+  bottom: 0;
+  left: 0;
+  width: 98%;
+  right: 0;
+  background: white;
+  border-top-left-radius: 35px;
+  border-top-right-radius: 35px;
+  transition: transform 0.3s ease-in-out;
+  animation: slideUp 0.3s ease-out;
+  overflow-y: auto;
+  margin: auto;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+.closeButton {
+  position: fixed;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  border: none;
+  font-size: 24px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 1100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+
+.content {
+  padding: 1rem;
+}
