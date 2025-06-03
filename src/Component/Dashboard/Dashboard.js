@@ -83,7 +83,7 @@ const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
 
 const handleAssignNumberClick = (agent, e) => {
   e.stopPropagation();
-  const planName = agent?.dataValues?.product_name || "Free";
+  const planName = agent?.subscription?.product_name || "Free";
 
   if (planName.toLowerCase() === "free") {
     openAssignNumberModal();  
@@ -467,7 +467,7 @@ const handleAssignNumberClick = (agent, e) => {
     setUploadedImage(image);
     closeUploadModal();
   };
-  // console.log('user',user)
+  console.log('URSER',localAgents.subscription)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -602,7 +602,7 @@ const handleAssignNumberClick = (agent, e) => {
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
 
-                  {agent?.dataValues?.product_name ||  "Free "} Plan
+                  {agent?.subscription?.product_name ||  "Free "} Plan
                 </h3>
               </div>
               <div className={styles.Lang}>

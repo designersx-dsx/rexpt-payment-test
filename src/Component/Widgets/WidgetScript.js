@@ -19,8 +19,8 @@ const WidgetScript = ({ isAgentDetails }) => {
 
   const scriptText = `
 <body>
-  <div id="rexWidgetContainer"></div>
-  <script id="rex-widget-script" src="https://whimsical-douhua-9d1125.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+  <div id="review-widget"></div>
+  <script id="rex-widget-script" src="https://683f0cc188b34b4460f08d83--mellow-vacherin-b51e16.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
 </body>`;
 
   const openDomainModal = (type) => {
@@ -40,7 +40,6 @@ const WidgetScript = ({ isAgentDetails }) => {
     // Send updated array to API
     try {
       const response = await updateAgentWidgetDomain(isAgentDetails.agent_id, updatedDomains);
-      console.log("API Response:", response);
     } catch (error) {
       console.error("Failed to update domains:", error);
     }
