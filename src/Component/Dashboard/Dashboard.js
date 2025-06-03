@@ -79,6 +79,20 @@ function Dashboard() {
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
+
+const handleAssignNumberClick = (agent, e) => {
+  e.stopPropagation();
+  const planName = agent?.subscription?.product_name || "Free";
+
+  if (planName.toLowerCase() === "free") {
+    openAssignNumberModal();  
+  } else {
+    setSelectedAgentForAssign(agent);
+    setIsAssignModalOpen(true);
+  }
+};
+
+
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -425,17 +439,17 @@ function Dashboard() {
   };
 
   // Close the dropdown if clicked outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsUploadModalOpen(false); // Close dropdown if clicked outside
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (profileRef.current && !profileRef.current.contains(event.target)) {
+  //       setIsUploadModalOpen(false); // Close dropdown if clicked outside
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
 
   // Open upload modal
   const openUploadModal = () => {
@@ -453,7 +467,7 @@ function Dashboard() {
     setUploadedImage(image);
     closeUploadModal();
   };
-  // console.log('user',user)
+  console.log('URSER',localAgents.subscription)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -462,12 +476,13 @@ function Dashboard() {
             <div>
               <button
                 className={styles.avatarBtn}
-                onClick={toggleProfileDropdown} // Toggle dropdown visibility on avatar click
+                onClick={openUploadModal} // Toggle dropdown visibility on avatar click
               >
                 <img
                   src={user?.profile || capturedImage || uploadedImage || "images/camera-icon.avif"}
                   alt="Profile"
                   className={styles.profilePic}
+                   onError={(e) => { e.target.src = "images/camera-icon.avif"; }}
                 />
               </button>
             </div>
@@ -475,12 +490,13 @@ function Dashboard() {
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
-            {isDropdownOpen && (
-              <ul className={styles.dropdown}>
-                {/* <li onClick={openCaptureModal}>Capture Profile Picture</li> */}
-                <li onClick={openUploadModal}>Upload Profile Picture</li>
-              </ul>
-            )}
+               {isUploadModalOpen && (
+            <UploadProfile
+              onClose={closeUploadModal}
+              onUpload={handleUpload}
+              currentProfile={uploadedImage || user?.profile || "images/camera-icon.avif"}
+            />
+          )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -590,7 +606,10 @@ function Dashboard() {
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
 
+
                   {agent?.subscription?.product_name ||  "Free"}{" Plan"}
+
+
                 </h3>
               </div>
               <div className={styles.Lang}>

@@ -43,6 +43,9 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const handleAvatarChange = (avatar) => {
     // agar current select yehi avatar hai, deselect kar do, warna select karo
     setSelectedAvatar((prev) => (prev === avatar ? null : avatar));
+    setAvatar(avatar.img);
+    sessionStorage.setItem('avatar', avatar.img);
+    // console.log(avatar.img)
   };
   useEffect(() => {
     if (agentGender && avatars[agentGender]) {
