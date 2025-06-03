@@ -15,8 +15,8 @@ import Modal2 from "../Modal2/Modal2";
 import CallTest from "../CallTest/CallTest";
 import WidgetScript from "../Widgets/WidgetScript";
 import Popup from "../Popup/Popup";
+import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
-import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -58,7 +58,9 @@ function Dashboard() {
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
+
   const [callId, setCallId] = useState(null);
+
 
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
@@ -67,22 +69,28 @@ function Dashboard() {
   const [liveTranscript, setLiveTranscript] = useState();
 
   //cam-icon
+  const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const profileRef = useRef(null);
+
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
+
 
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
-  const handleAssignNumberClick = (agent, e) => {
-    e.stopPropagation();
-    const planName = agent?.dataValues?.product_name || "Free";
+
+
+const handleAssignNumberClick = (agent, e) => {
+  e.stopPropagation();
+  const planName = agent?.subscription?.product_name || "Free";
+
 
     if (planName.toLowerCase() === "free") {
       openAssignNumberModal();
@@ -91,6 +99,7 @@ function Dashboard() {
       setIsAssignModalOpen(true);
     }
   };
+
 
   // Navigate on agent card click
   const handleCardClick = (agent) => {
@@ -161,16 +170,18 @@ function Dashboard() {
   // }, []);
 
   // Fetch dashboard + merge Cal API keys
+  // console.log('localAgents-----',localAgents)
   useEffect(() => {
     const fetchAndMergeCalApiKeys = async () => {
       if (!userId) return;
       try {
         const res = await fetchDashboardDetails(userId);
-        console.log(res, "HELOE");
+
+        console.log(res,hasFetched,"HELOE")
         let agentsWithCalKeys = res.agents || [];
         const calApiAgents = await fetchCalApiKeys(userId);
         const calApiKeyMap = {};
-        console.log("calApiAgents", calApiAgents);
+
         calApiAgents.forEach((agent) => {
           calApiKeyMap[agent.agent_id] = agent.calApiKey || null;
         });
@@ -188,10 +199,10 @@ function Dashboard() {
         console.error("Error fetching dashboard data or Cal API keys:", error);
       }
     };
-    if ((!hasFetched || !localAgents.length) && userId) {
+    if ((!hasFetched || !agents.length) && userId) {
       fetchAndMergeCalApiKeys();
     }
-  }, [userId, hasFetched, localAgents.length, setDashboardData, setHasFetched]);
+  }, [userId, hasFetched, agents.length, setDashboardData, setHasFetched]);
 
   // Sync local agents with store
   useEffect(() => {
@@ -440,17 +451,17 @@ function Dashboard() {
   };
 
   // Close the dropdown if clicked outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsUploadModalOpen(false); // Close dropdown if clicked outside
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (profileRef.current && !profileRef.current.contains(event.target)) {
+  //       setIsUploadModalOpen(false); // Close dropdown if clicked outside
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
 
   // Open upload modal
   const openUploadModal = () => {
@@ -467,7 +478,7 @@ function Dashboard() {
     setUploadedImage(image);
     closeUploadModal();
   };
-  // console.log('user',user)
+  console.log('URSER',localAgents.subscription)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -476,7 +487,7 @@ function Dashboard() {
             <div>
               <button
                 className={styles.avatarBtn}
-                onClick={toggleProfileDropdown} // Toggle dropdown visibility on avatar click
+                onClick={openUploadModal} // Toggle dropdown visibility on avatar click
               >
                 <img
                   src={
@@ -487,6 +498,7 @@ function Dashboard() {
                   }
                   alt="Profile"
                   className={styles.profilePic}
+                   onError={(e) => { e.target.src = "images/camera-icon.avif"; }}
                 />
               </button>
             </div>
@@ -494,12 +506,13 @@ function Dashboard() {
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
-            {isDropdownOpen && (
-              <ul className={styles.dropdown}>
-                {/* <li onClick={openCaptureModal}>Capture Profile Picture</li> */}
-                <li onClick={openUploadModal}>Upload Profile Picture</li>
-              </ul>
-            )}
+               {isUploadModalOpen && (
+            <UploadProfile
+              onClose={closeUploadModal}
+              onUpload={handleUpload}
+              currentProfile={uploadedImage || user?.profile || "images/camera-icon.avif"}
+            />
+          )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -589,7 +602,9 @@ function Dashboard() {
 
       <div className={styles.main}>
         {localAgents?.map((agent) => {
-          const randomPlan = planStyles["FreePlan"];
+                 const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
+                    const randomPlan = `${agent?.subscription?.product_name}Plan`;
+                    // console.log('randomPlan',randomPlan)
           let assignedNumbers = [];
           if (agent.voip_numbers) {
             try {
@@ -606,7 +621,13 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-                  {agent?.dataValues?.product_name || "Free "} Plan
+
+
+
+                  {agent?.subscription?.product_name ||  "Free"}{" Plan"}
+
+
+
                 </h3>
               </div>
               <div className={styles.Lang}>
@@ -724,6 +745,7 @@ function Dashboard() {
                 {assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
                     Assigned Number
+
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
                       {assignedNumbers.join(", ")}
@@ -733,10 +755,12 @@ function Dashboard() {
                   <div
                     className={styles.AssignNum}
                     onClick={(e) => handleAssignNumberClick(agent, e)}
+
                     style={{ cursor: "pointer" }}
                   >
                     Assign Number
                   </div>
+
                 )}
 
                 <div className={styles.minLeft}>
@@ -965,11 +989,17 @@ function Dashboard() {
               onClick={closeAssignNumberModal}
               style={{ width: "100%" }}
             >
-              Got it!
+              Got it!    
             </button>
           </div>
         </div>
       )}
+
+
+      {/* Modals for capturing/uploading profile picture */}
+      {/* {isCaptureModalOpen && (
+        <CaptureProfile onClose={closeCaptureModal} onCapture={handleCapture} />
+      )} */}
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
@@ -991,6 +1021,7 @@ function Dashboard() {
           </div>
         </OffCanvas>
       )}
+
       {isAssignModalOpen && selectedAgentForAssign && (
         <AssignNumberModal
           isOpen={isAssignModalOpen}
@@ -1002,6 +1033,7 @@ function Dashboard() {
         />
       )}
       {/* nitish */}
+
 
       {popupMessage && (
         <Popup
