@@ -30,12 +30,12 @@ function App() {
               token ? <Navigate to="/dashboard" /> : <SignUp />
             }
           />
-           <Route
-            path="/dashbaord"
+           {/* <Route
+            path="/dashboard"
             element={
               token ? <Navigate to="/dashboard" /> : <SignUp />
             }
-          />
+          /> */}
           <Route
             path="/"
             element={
