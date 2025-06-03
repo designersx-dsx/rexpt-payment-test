@@ -52,9 +52,9 @@
 }
 
 .formGroup textarea {
-    
+    font-family: "Lato", sans-serif;
     height: unset !important;
-    
+
 }
 
 .formGroup label {
@@ -114,7 +114,7 @@
 
 }
 
-.filesAllowed{
+.filesAllowed {
     font-size: 12px;
 }
 

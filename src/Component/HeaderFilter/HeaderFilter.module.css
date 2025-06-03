@@ -1,0 +1,255 @@
+.forSticky {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  /* padding: 5px 2px 2px 2px; */
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  /* background: #7b4fdd; */
+  background-image: linear-gradient(90deg, #6524eb 100%, #eae7ff 50%);
+  color: white;
+  padding: 20px 20px 30px 20px;
+  border-radius: 2rem 2rem 0px 0px;
+  flex-wrap: wrap;
+}
+
+.profileBack {
+  display: flex;
+  align-items: anchor-center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.profileBack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  /* margin-bottom: 1rem; */
+}
+
+.headerTitle {
+  font-weight: 600;
+  color: #fff;
+  font-size: 1.375rem;
+}
+
+.notifiMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notificationIcon1 {
+  background-color: #fff;
+  height: 50px;
+  width: 75px;
+  border-radius: 31px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dropdownContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dropdownContainer select {
+  width: 20px;
+  border: none;
+  outline: none;
+  /* position: absolute; */
+  right: 0;
+  top: 38%;
+  background-color: transparent;
+}
+
+.dropdownContainer {
+  font-size: 16px;
+}
+.dropdownContainer .agentSelect1 {
+  font-size: 16px;
+  /* padding: 12px 16px; */
+  color: #fff;
+}
+
+.agentSelect1 option {
+  color: #000;
+}
+
+.agentSelect1,
+.dropdownContainer {
+  appearance: none; /* Chrome, Edge */
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none; /* Firefox */
+  background-image: none; /* Remove iOS arrow */
+  background-color: none;
+  border: none;
+
+  border-radius: 6px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.agentSelect1 {
+  border-left: 1px solid #6b21a8;
+  /* padding-left: 16px; */
+  font-weight: 700;
+  font-size: clamp(27px, 3vw, 2rem);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  color: #1e1b4b;
+  text-transform: capitalize;
+  outline: none;
+}
+
+.notificationIcon {
+  background-color: #fff;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.agentCard {
+  background-image: linear-gradient(90deg, #e9e6ff 35%, #e1f6ff 68%);
+  padding: 30px 20px 15px 20px;
+  display: flex;
+  border-radius: 25px;
+  gap: 1rem;
+  align-items: center;
+  margin: -30px 0 0 0;
+  height: 78px;
+}
+
+.dateAgentSection p {
+  font-size: 14px;
+  color: #24252c;
+  font-weight: 500;
+  position: absolute;
+  top: -16px;
+}
+
+.dateAgentSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  color: #1e1b4b;
+  position: relative;
+}
+.dateAgentSection hr {
+  height: 46px;
+  background-color: #fff;
+  color: #fff;
+  border: none;
+  width: 1px;
+  width: 1px;
+  margin: auto 10px;
+}
+
+.PartFew {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 50%;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.dateRange h6 {
+  font-size: 2rem;
+  color: #24252c;
+  font-weight: bolder;
+  font-size: clamp(27px, 3vw, 2rem);
+}
+
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* width: 50%; */
+}
+
+.dateRange input type[type="date"] {
+  width: 20px;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.dateRange input [type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.DatePic input {
+  width: 20px;
+  background-color: transparent;
+  background-color: transparent;
+  position: absolute;
+  opacity: 0;
+}
+
+.DateSecT {
+  position: relative;
+  /* height: 38px; */
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+
+.DateSecT p {
+  position: absolute;
+  font-size: 14px;
+  color: #24252c;
+  font-weight: 500;
+  position: absolute;
+  top: -16px;
+}
+
+.DateSecT {
+  width: 50%;
+  /* padding: 0 0 0 20px; */
+}
+
+.selectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.selectWrapper::after,
+.dropdownContainer::after {
+  content: "";
+  position: absolute;
+  top: 57%;
+  right: 16px;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  background: url("/public/svg/SofiaArrow.svg") no-repeat center;
+  background-size: contain;
+}
+
+

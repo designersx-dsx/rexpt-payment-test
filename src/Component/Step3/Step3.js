@@ -37,33 +37,34 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [scale, setScale] = useState(1);
   const [gender, setGender] = useState(''); // default
   const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
-  const agentGender=sessionStorage.getItem('agentGender')
+  const agentGender = sessionStorage.getItem('agentGender')
   const [selectedAvatar, setSelectedAvatar] = useState(null);
 
-const handleAvatarChange = (avatar) => {
-  // agar current select yehi avatar hai, deselect kar do, warna select karo
-  setSelectedAvatar((prev) => (prev === avatar ? null : avatar));
-};
-useEffect(() => {
-  if (agentGender && avatars[agentGender]) {
-    const genderAvatars = avatars[agentGender];
-    const firstAvatar = genderAvatars[0]?.img || null;
+  const handleAvatarChange = (avatar) => {
+    // agar current select yehi avatar hai, deselect kar do, warna select karo
+    setSelectedAvatar((prev) => (prev === avatar ? null : avatar));
+  };
+  useEffect(() => {
+    if (agentGender && avatars[agentGender]) {
+      const genderAvatars = avatars[agentGender];
+      const firstAvatar = genderAvatars[0]?.img || null;
 
-    setGender(agentGender);
-    setAvailableAvatars(genderAvatars);
-    setAvatar(firstAvatar);
-    sessionStorage.setItem('avatar', firstAvatar);
-  } else {
-    // Fallback: use 'Male' as default if agentGender is invalid
-    const defaultGender = 'Male';
-    const defaultAvatars = avatars[defaultGender];
-    const firstAvatar = defaultAvatars[0]?.img || null;
+      setGender(agentGender);
+      setAvailableAvatars(genderAvatars);
+      setAvatar(firstAvatar);
+      sessionStorage.setItem('avatar', firstAvatar);
+    } else {
+      // Fallback: use 'Male' as default if agentGender is invalid
+      const defaultGender = 'Male';
+      const defaultAvatars = avatars[defaultGender];
+      const firstAvatar = defaultAvatars[0]?.img || null;
 
-    setGender(defaultGender);
-    setAvailableAvatars(defaultAvatars);
-    setAvatar(firstAvatar);
-    sessionStorage.setItem('avatar', firstAvatar);
-  }}, [agentGender]);
+      setGender(defaultGender);
+      setAvailableAvatars(defaultAvatars);
+      setAvatar(firstAvatar);
+      sessionStorage.setItem('avatar', firstAvatar);
+    }
+  }, [agentGender]);
 
   const settings = {
     dots: false,
@@ -73,17 +74,17 @@ useEffect(() => {
     slidesToScroll: 1,
     arrows: false,
   };
-const agentnm = sessionStorage.getItem('VoiceAgentName');
-useEffect(() => {
-  // console.log(agentnm)
-  if (agentnm) {
-    setAgentName(agentnm);
-    sessionStorage.setItem('agentName', agentnm);
-    // console.log(agentnm);
-  }
-}, [agentnm]);
+  const agentnm = sessionStorage.getItem('VoiceAgentName');
+  useEffect(() => {
+    // console.log(agentnm)
+    if (agentnm) {
+      setAgentName(agentnm);
+      sessionStorage.setItem('agentName', agentnm);
+      // console.log(agentnm);
+    }
+  }, [agentnm]);
 
- 
+
 
   useImperativeHandle(ref, () => ({
     validate: () => {
@@ -160,27 +161,25 @@ useEffect(() => {
         >Choose Avatar</h2>
 
         <Slider ref={sliderRef} {...settings}>
-       {avatars[gender]?.map((avatar, index) => (
-  <div key={index} className={styles.slide} id="slideradio">
-    <label className={styles.avatarLabel}>
-      <input
-        type="checkbox"
-        name="avatar"
-        value={index}
-        checked={selectedAvatar === avatar}  // control karo selected state
-        onChange={() => handleAvatarChange(avatar)}
-        className={styles.radioButton}
-      />
-      <img
-        src={avatar.img}
-        alt={`Avatar ${index + 1}`}
-        className={styles.avatarImage}
-      />
-    </label>
-  </div>
-))}
-
-
+          {avatars[gender]?.map((avatar, index) => (
+            <div key={index} className={styles.slide} id="slideradio">
+              <label className={styles.avatarLabel}>
+                <input
+                  type="checkbox"
+                  name="avatar"
+                  value={index}
+                  checked={selectedAvatar === avatar}
+                  onChange={() => handleAvatarChange(avatar)}
+                  className={styles.radioButton}
+                />
+                <img
+                  src={avatar.img}
+                  alt={`Avatar ${index + 1}`}
+                  className={styles.avatarImage}
+                />
+              </label>
+            </div>
+          ))}
         </Slider>
 
         <div className={styles.customBtn}>

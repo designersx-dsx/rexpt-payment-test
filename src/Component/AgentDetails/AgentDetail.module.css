@@ -598,9 +598,15 @@
   .agentStats {
     grid-template-columns: repeat(4, 1fr);
   }
+.Yellow .statDetail {
+  font-size: 30px !important;
 
+}
   .Agenttitle {
-    font-size: 35px;
+    font-size: 30px;
+  }
+  .statDetail{
+    font-size: 30px;
   }
 
 }

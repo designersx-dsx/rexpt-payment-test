@@ -49,6 +49,7 @@ position: fixed;
 
 .footerContainer img {
   backdrop-filter: blur(4px);
+  width: 100%;
 
 }
 
