@@ -169,6 +169,7 @@ const BusinessLocation = () => {
       });
 
       const id = response.data.businessId;
+      console.log('response',response)
       sessionStorage.setItem(
         'businessId',
         JSON.stringify({
