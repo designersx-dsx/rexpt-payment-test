@@ -571,7 +571,7 @@ function Dashboard() {
       <div className={styles.main}>
         {localAgents?.map((agent) => {
                  const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
-                    const randomPlan = `${agent?.dataValues?.product_name}Plan`;
+                    const randomPlan = `${agent?.subscription?.product_name}Plan`;
                     // console.log('randomPlan',randomPlan)
           let assignedNumbers = [];
           if (agent.voip_numbers) {
@@ -590,7 +590,7 @@ function Dashboard() {
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
 
-                  {agent?.dataValues?.product_name ||  "Free"}{" Plan"}
+                  {agent?.subscription?.product_name ||  "Free"}{" Plan"}
                 </h3>
               </div>
               <div className={styles.Lang}>

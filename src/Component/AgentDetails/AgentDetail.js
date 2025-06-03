@@ -14,10 +14,11 @@ import AssignNumberModal from "./AssignNumberModal";
 
 import EditAgent from "../EditAgent/EditAgent"
 import DetailModal from "../DetailModal/DetailModal"
+import { useAgentStore } from "../../Store/agentStore";
 const AgentDashboard = () => {
-  const [totalBookings, setTotalBookings] = useState(null);
+  // const [totalBookings, setTotalBookings] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [agentData, setAgentData] = useState([]);
+  // const [agentData, setAgentData] = useState([]);
 
   const location = useLocation();
   const agentDetails = location.state;
