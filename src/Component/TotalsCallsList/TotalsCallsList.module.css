@@ -126,6 +126,7 @@
   margin: auto;
   /* left: 0; */
   right: 20px;
+  background-color: rgb(255, 255, 255);
 }
 
 .pageButton {
@@ -172,7 +173,7 @@
   gap: 8px;
   padding: 16px 0;
   position: fixed;
-  bottom: 0px;
+  bottom: 1rem;
   margin: auto;
   left: 0;
   right: 0px;

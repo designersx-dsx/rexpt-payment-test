@@ -40,7 +40,7 @@ const options = [
 ];
 
 
-const callsPerPage = 5;
+const callsPerPage = 6;
 
 
 export default function Home() {
