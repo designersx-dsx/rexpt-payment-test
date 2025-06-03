@@ -343,7 +343,40 @@ const AgentDashboard = () => {
                       }
                     })()}
                   </span>
+
+                </h2>
+                <div className={styles.google}>
+                  <img src="images/google-icon.png" alt="google-icon" />
+                  <p>
+                    <span style={{ fontSize: "12px" }}>
+                      {(() => {
+                        const filteredUrls =
+                          agentData?.knowledgeBase?.knowledge_base_sources?.filter(
+                            (src) => src?.url && src.url.includes("google.com")
+                          );
+                        if (filteredUrls && filteredUrls.length > 0) {
+                          return filteredUrls.map((src, index) => (
+                            <div key={index}>{src.url}</div>
+                          ));
+                        } else {
+                          return <div>NA</div>;
+                        }
+                      })()}
+                    </span>
+                  </p>    
+                </div>
+                <div className={styles.address}>
+                  <img src="svg/location.svg" alt="location" />
+                  <p>
+                    {agentData?.business?.address1 || ""}{" "}
+                    {agentData?.business?.address2 || ""},
+                    {agentData?.business?.city}
+                  </p>
+                </div>
+                <h4>Knowledge Base</h4>
+
                 </p>
+
               </div>
               <div className={styles.address}>
                 <img src="svg/location.svg" alt="location" />
