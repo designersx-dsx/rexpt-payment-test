@@ -11,15 +11,14 @@ import Modal2 from "../Modal2/Modal2";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import AssignNumberModal from "./AssignNumberModal";
-import DetailModal from "../DetailModal/DetailModal";
-import EditAgent from '../EditAgent/EditAgent'
-import { useAgentStore } from "../../Store/agentStore";
 
+import EditAgent from "../EditAgent/EditAgent"
+import DetailModal from "../DetailModal/DetailModal"
 const AgentDashboard = () => {
-  // const [totalBookings, setTotalBookings] = useState(null);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  // const [agentData, setAgentData] = useState([]);
+  const [totalBookings, setTotalBookings] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [agentData, setAgentData] = useState([]);
+
   const location = useLocation();
   const agentDetails = location.state;
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
@@ -29,6 +28,7 @@ const AgentDashboard = () => {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [callLoading, setCallLoading] = useState(false);
+
   console.log('agentDetails', agentDetails)
     const {
     agentData,
@@ -38,6 +38,9 @@ const AgentDashboard = () => {
     setAssignedNumbers,
     setTotalBookings,
   } = useAgentStore();
+
+  const [isModalOpen, setModalOpen] = useState(false);
+
 
   useEffect(() => {
     const getAgentDetailsAndBookings = async () => {
@@ -167,7 +170,7 @@ console.log('loading',loading)
       {loading ? (
         <Loader2 />
       ) : (
-        <>
+   <>
           <div className={styles.Forsticky}>
             <header className={styles.header}>
               <div className={styles.profileBack}>
@@ -518,40 +521,46 @@ console.log('loading',loading)
             <section className={styles.management}>
               <AgentAnalysis data={agentData?.callSummary?.data} />
             </section>
-          </div></>
-
-      )}
-     {openCallModal && (
-  <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
-    <CallTest
-      isCallActive={isCallActive}
-      onStartCall={handleStartCall}
-      onEndCall={handleEndCall}
-      callLoading={callLoading}
-      setCallLoading={setCallLoading}
-      agentName={agentData?.agent?.agentName}    
-      agentAvatar={agentData?.agent?.avatar}     
-      businessName={agentData?.business?.businessName} 
-    />
-  </Modal2>
-)}
-
-      {/* OffCanvas for Logout */}
-      {openOffcanvas && (
-        <OffCanvas
-          onClose={handleCloseOffcanvas}
-          isOpen={openOffcanvas}
-          direction="right"
-          width="70%"
-        >
-          <div className="HeaderTop">
-            <div className={styles.logoutdiv} onClick={handleLogout}>
-              Logout
-            </div>
           </div>
-        </OffCanvas>
-      )}
-      <DetailModal isOpen={isModalOpen}
+          </>
+
+  )
+}
+{
+  openCallModal && (
+    <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
+      <CallTest
+        isCallActive={isCallActive}
+        onStartCall={handleStartCall}
+        onEndCall={handleEndCall}
+        callLoading={callLoading}
+        setCallLoading={setCallLoading}
+        agentName={agentData?.agent?.agentName}
+        agentAvatar={agentData?.agent?.avatar}
+        businessName={agentData?.business?.businessName}
+      />
+    </Modal2>
+  )
+}
+
+{/* OffCanvas for Logout */ }
+{
+  openOffcanvas && (
+    <OffCanvas
+      onClose={handleCloseOffcanvas}
+      isOpen={openOffcanvas}
+      direction="right"
+      width="70%"
+    >
+      <div className="HeaderTop">
+        <div className={styles.logoutdiv} onClick={handleLogout}>
+          Logout
+        </div>
+      </div>
+    </OffCanvas>
+  )
+}
+<DetailModal isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         height="80vh">
 
@@ -559,15 +568,17 @@ console.log('loading',loading)
           <EditAgent />
         </div>
       </DetailModal>
-      <AssignNumberModal
-        isOpen={isAssignModalOpen}
-        agentId={agentDetails?.agentId}
-        onClose={() => setIsAssignModalOpen(false)}
-      />
 
-      <Footer />
+      <AssignNumberModal 
+  isOpen={isAssignModalOpen} 
+  agentId={agentDetails?.agentId}
+  onClose={() => setIsAssignModalOpen(false)} 
+/>
 
-    </div>
+
+      <Footer/>
+
+    </div >
   );
 };
 

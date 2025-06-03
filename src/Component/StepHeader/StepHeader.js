@@ -29,7 +29,7 @@ const StepHeader = ({ title }) => {
                     display: 'inline-block',
                     zIndex: 10,
                 }}
-            >
+            >      
                 <div className={styles.RipplThree}>
                     <span className={styles.ripple}></span>
                     <span className={styles.ripple}></span>
@@ -62,6 +62,7 @@ const StepHeader = ({ title }) => {
                             </linearGradient>
                         </defs>
                     </svg>
+                    {/* heloo */}
                 </div>
             </div>
             <h2 className={styles.heading} style={{

@@ -150,7 +150,6 @@ const Plan = () => {
                 onClick={() => {
                     if (selected) {
                         if (selected === 'free-trial') {
-                            // Navigate to signup if Free Trial selected
                             navigate('/signup');
                         } else {
                             const selectedProduct = products.find(p => p.id === selected);
