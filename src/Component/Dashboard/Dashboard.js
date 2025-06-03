@@ -58,8 +58,10 @@ function Dashboard() {
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
-  const [callId, setCallId] = useState(null)
-  
+
+  const [callId, setCallId] = useState(null);
+
+
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
@@ -74,23 +76,29 @@ function Dashboard() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const profileRef = useRef(null);
 
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
+
+
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
 
+
 const handleAssignNumberClick = (agent, e) => {
   e.stopPropagation();
   const planName = agent?.subscription?.product_name || "Free";
 
-  if (planName.toLowerCase() === "free") {
-    openAssignNumberModal();  
-  } else {
-    setSelectedAgentForAssign(agent);
-    setIsAssignModalOpen(true);
-  }
-};
+
+    if (planName.toLowerCase() === "free") {
+      openAssignNumberModal();
+    } else {
+      setSelectedAgentForAssign(agent);
+      setIsAssignModalOpen(true);
+    }
+  };
 
 
   // Navigate on agent card click
@@ -129,7 +137,9 @@ const handleAssignNumberClick = (agent, e) => {
   const handleCalClick = (agent, e) => {
     e.stopPropagation();
     setSelectedAgent(agent);
-    const agentInLocal = localAgents?.find((a) => a.agent_id === agent.agent_id);
+    const agentInLocal = localAgents?.find(
+      (a) => a.agent_id === agent.agent_id
+    );
     setApiKey(agentInLocal?.calApiKey || "");
     setIsApiKeyEditable(false);
     setShowEventInputs(false);
@@ -166,10 +176,12 @@ const handleAssignNumberClick = (agent, e) => {
       if (!userId) return;
       try {
         const res = await fetchDashboardDetails(userId);
+
         console.log(res,hasFetched,"HELOE")
         let agentsWithCalKeys = res.agents || [];
         const calApiAgents = await fetchCalApiKeys(userId);
         const calApiKeyMap = {};
+
         calApiAgents.forEach((agent) => {
           calApiKeyMap[agent.agent_id] = agent.calApiKey || null;
         });
@@ -177,7 +189,7 @@ const handleAssignNumberClick = (agent, e) => {
           ...agent,
           calApiKey: calApiKeyMap[agent.agent_id] || null,
         }));
-        console.log('res', res)
+        console.log("res", res);
         setDashboardData(agentsWithCalKeys, res.total_call || 0);
         setHasFetched(true);
         // localStorage.setItem("userId", userId);
@@ -392,7 +404,7 @@ const handleAssignNumberClick = (agent, e) => {
       const data = await res.json();
       console.log(data);
       await retellWebClient.startCall({ accessToken: data.access_token });
-      setCallId(data?.call_id)
+      setCallId(data?.call_id);
     } catch (err) {
       console.error("Error starting call:", err);
     } finally {
@@ -404,8 +416,8 @@ const handleAssignNumberClick = (agent, e) => {
   const handleEndCall = async () => {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
-      const payload = { agentId: agentDetails.agent_id, callId: callId }
-      const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload)
+      const payload = { agentId: agentDetails.agent_id, callId: callId };
+      const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
       console.log("Call end response", response);
     }
   };
@@ -462,7 +474,6 @@ const handleAssignNumberClick = (agent, e) => {
     setIsUploadModalOpen(false);
   };
 
-
   const handleUpload = (image) => {
     setUploadedImage(image);
     closeUploadModal();
@@ -479,7 +490,12 @@ const handleAssignNumberClick = (agent, e) => {
                 onClick={openUploadModal} // Toggle dropdown visibility on avatar click
               >
                 <img
-                  src={user?.profile || capturedImage || uploadedImage || "images/camera-icon.avif"}
+                  src={
+                    user?.profile ||
+                    capturedImage ||
+                    uploadedImage ||
+                    "images/camera-icon.avif"
+                  }
                   alt="Profile"
                   className={styles.profilePic}
                    onError={(e) => { e.target.src = "images/camera-icon.avif"; }}
@@ -607,7 +623,9 @@ const handleAssignNumberClick = (agent, e) => {
                 <h3 className={styles?.PlanPrice}>
 
 
+
                   {agent?.subscription?.product_name ||  "Free"}{" Plan"}
+
 
 
                 </h3>
@@ -725,25 +743,25 @@ const handleAssignNumberClick = (agent, e) => {
 
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
-
                   <div className={styles.AssignNumText}>
                     Assigned Number
 
-                    <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
-                  </div>) : (
+                    <p className={styles.NumberCaller}>
+                      {assignedNumbers.length > 1 ? "s" : ""}{" "}
+                      {assignedNumbers.join(", ")}
+                    </p>
+                  </div>
+                ) : (
                   <div
                     className={styles.AssignNum}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openAssignNumberModal();
-                    }}
+                    onClick={(e) => handleAssignNumberClick(agent, e)}
+
                     style={{ cursor: "pointer" }}
                   >
                     Assign Number
                   </div>
 
                 )}
-
 
                 <div className={styles.minLeft}>
                   <span className={styles.MinL}>Min Left</span>{" "}
@@ -929,21 +947,21 @@ const handleAssignNumberClick = (agent, e) => {
         )}
 
         {/* Call Test Modal */}
-       {openCallModal && (
-  <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
-    <CallTest
-      isCallActive={isCallActive}
-      onStartCall={handleStartCall}
-      onEndCall={handleEndCall}
-      callLoading={callLoading}
-      setCallLoading={setCallLoading}
-      isliveTranscript={liveTranscript}
-      agentName={agentDetails?.agentName}
-      agentAvatar={agentDetails?.avatar}
-      businessName={agentDetails?.business?.businessName}
-    />
-  </Modal2>
-)}
+        {openCallModal && (
+          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+            <CallTest
+              isCallActive={isCallActive}
+              onStartCall={handleStartCall}
+              onEndCall={handleEndCall}
+              callLoading={callLoading}
+              setCallLoading={setCallLoading}
+              isliveTranscript={liveTranscript}
+              agentName={agentDetails?.agentName}
+              agentAvatar={agentDetails?.avatar}
+              businessName={agentDetails?.business?.businessName}
+            />
+          </Modal2>
+        )}
 
         {/* WidgetModal */}
         {openWidgetModal && (
@@ -957,10 +975,14 @@ const handleAssignNumberClick = (agent, e) => {
       </div>
       {isAssignNumberModalOpen && (
         <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
-          <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2>Coming Soon!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-              Our exciting plans will be available shortly. You'll be able to select the best one to suit your needs!
+              Our exciting plans will be available shortly. You'll be able to
+              select the best one to suit your needs!
             </p>
             <button
               className={`${styles.modalButton} ${styles.submit}`}
@@ -1001,16 +1023,16 @@ const handleAssignNumberClick = (agent, e) => {
       )}
 
       {isAssignModalOpen && selectedAgentForAssign && (
-  <AssignNumberModal
-    isOpen={isAssignModalOpen}
-    agentId={selectedAgentForAssign.agent_id}
-    onClose={() => {
-      setIsAssignModalOpen(false);
-      setSelectedAgentForAssign(null);
-    }}
-  />
-)}
-{/* nitish */}
+        <AssignNumberModal
+          isOpen={isAssignModalOpen}
+          agentId={selectedAgentForAssign.agent_id}
+          onClose={() => {
+            setIsAssignModalOpen(false);
+            setSelectedAgentForAssign(null);
+          }}
+        />
+      )}
+      {/* nitish */}
 
 
       {popupMessage && (
