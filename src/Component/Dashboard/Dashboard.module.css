@@ -240,7 +240,7 @@
     background-color: #D5F0FF;
 }
 
-.LangStyle.ProPlan {
+.LangStyle.MaxPlan {
     background-color: #FFECE5;
 }
 .LangStyle.MiniPlan {
@@ -256,7 +256,7 @@
     background-color: #A3DEFF;
 }
 
-.LangStyle.ProPlan .PlanPrice {
+.LangStyle.MaxPlan .PlanPrice {
     background-color: #FFD2C1;
 }
 
