@@ -79,6 +79,20 @@ function Dashboard() {
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
+
+const handleAssignNumberClick = (agent, e) => {
+  e.stopPropagation();
+  const planName = agent?.subscription?.product_name || "Free";
+
+  if (planName.toLowerCase() === "free") {
+    openAssignNumberModal();  
+  } else {
+    setSelectedAgentForAssign(agent);
+    setIsAssignModalOpen(true);
+  }
+};
+
+
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -453,7 +467,7 @@ function Dashboard() {
     setUploadedImage(image);
     closeUploadModal();
   };
-  // console.log('user',user)
+  console.log('URSER',localAgents.subscription)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -592,7 +606,10 @@ function Dashboard() {
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
 
+
                   {agent?.subscription?.product_name ||  "Free"}{" Plan"}
+
+
                 </h3>
               </div>
               <div className={styles.Lang}>
