@@ -923,18 +923,22 @@ function Dashboard() {
         )}
 
         {/* Call Test Modal */}
-        {openCallModal && (
-          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
-            <CallTest
-              isCallActive={isCallActive}
-              onStartCall={handleStartCall}
-              onEndCall={handleEndCall}
-              callLoading={callLoading}
-              setCallLoading={setCallLoading}
-              isliveTranscript={liveTranscript}
-            />
-          </Modal2>
-        )}
+       {openCallModal && (
+  <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+    <CallTest
+      isCallActive={isCallActive}
+      onStartCall={handleStartCall}
+      onEndCall={handleEndCall}
+      callLoading={callLoading}
+      setCallLoading={setCallLoading}
+      isliveTranscript={liveTranscript}
+      agentName={agentDetails?.agentName}
+      agentAvatar={agentDetails?.avatar}
+      businessName={agentDetails?.business?.businessName}
+    />
+  </Modal2>
+)}
+
         {/* WidgetModal */}
         {openWidgetModal && (
           <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>

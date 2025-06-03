@@ -44,7 +44,7 @@ function App() {
             }
           />
           <Route path="/" element={<Start />} />
-          <Route path="/signup" element={<SecureRoute><SignUp /></SecureRoute>} />
+          <Route path="/signup" element={<SignUp />} />
 
          <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
           <Route path="/steps" element={<SecureRoute><Step/></SecureRoute>} />
@@ -56,8 +56,8 @@ function App() {
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<SecureRoute><RexAgent/></SecureRoute>} />
-          <Route path="/plans" element={<SecureRoute><Plans/></SecureRoute>} />
-          <Route path="/checkout" element={<SecureRoute><SubscriptionFlow /></SecureRoute>} />
+          <Route path="/plans" element={<Plans/>} />
+          <Route path="/checkout" element={<SubscriptionFlow />} />
           <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
           <Route path="/totalcall-list" element={<TotalsCallsList />} />
 
