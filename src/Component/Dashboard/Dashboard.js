@@ -343,6 +343,7 @@ const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("agents");
+    localStorage.clear();
     sessionStorage.clear();
     window.location.href = "/signup";
   };
