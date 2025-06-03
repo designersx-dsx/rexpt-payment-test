@@ -421,14 +421,14 @@ function Dashboard() {
 
   //close camera option click outside
   const toggleProfileDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
+    setIsUploadModalOpen((prev) => !prev);
   };
 
   // Close the dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsDropdownOpen(false); // Close dropdown if clicked outside
+        setIsUploadModalOpen(false); // Close dropdown if clicked outside
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -436,17 +436,6 @@ function Dashboard() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  // Open capture modal
-  const openCaptureModal = () => {
-    setIsCaptureModalOpen(true);
-    setIsDropdownOpen(false);
-  };
-
-  // Close capture modal
-  const closeCaptureModal = () => {
-    setIsCaptureModalOpen(false);
-  };
 
   // Open upload modal
   const openUploadModal = () => {
@@ -459,10 +448,6 @@ function Dashboard() {
     setIsUploadModalOpen(false);
   };
 
-  const handleCapture = (image) => {
-    setCapturedImage(image);
-    closeCaptureModal();
-  };
 
   const handleUpload = (image) => {
     setUploadedImage(image);
@@ -923,18 +908,22 @@ function Dashboard() {
         )}
 
         {/* Call Test Modal */}
-        {openCallModal && (
-          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
-            <CallTest
-              isCallActive={isCallActive}
-              onStartCall={handleStartCall}
-              onEndCall={handleEndCall}
-              callLoading={callLoading}
-              setCallLoading={setCallLoading}
-              isliveTranscript={liveTranscript}
-            />
-          </Modal2>
-        )}
+       {openCallModal && (
+  <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+    <CallTest
+      isCallActive={isCallActive}
+      onStartCall={handleStartCall}
+      onEndCall={handleEndCall}
+      callLoading={callLoading}
+      setCallLoading={setCallLoading}
+      isliveTranscript={liveTranscript}
+      agentName={agentDetails?.agentName}
+      agentAvatar={agentDetails?.avatar}
+      businessName={agentDetails?.business?.businessName}
+    />
+  </Modal2>
+)}
+
         {/* WidgetModal */}
         {openWidgetModal && (
           <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
@@ -965,9 +954,9 @@ function Dashboard() {
 
 
       {/* Modals for capturing/uploading profile picture */}
-      {isCaptureModalOpen && (
+      {/* {isCaptureModalOpen && (
         <CaptureProfile onClose={closeCaptureModal} onCapture={handleCapture} />
-      )}
+      )} */}
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}

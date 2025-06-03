@@ -489,17 +489,21 @@ const AgentDashboard = () => {
         </div></>
   
       )}
-      {openCallModal && (
-        <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
-          <CallTest
-            isCallActive={isCallActive}
-            onStartCall={handleStartCall}
-            onEndCall={handleEndCall}
-            callLoading={callLoading}
-            setCallLoading={setCallLoading}
-          />
-        </Modal2>
-      )}
+     {openCallModal && (
+  <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
+    <CallTest
+      isCallActive={isCallActive}
+      onStartCall={handleStartCall}
+      onEndCall={handleEndCall}
+      callLoading={callLoading}
+      setCallLoading={setCallLoading}
+      agentName={agentData?.agent?.agentName}    
+      agentAvatar={agentData?.agent?.avatar}     
+      businessName={agentData?.business?.businessName} 
+    />
+  </Modal2>
+)}
+
       {/* OffCanvas for Logout */}
       {openOffcanvas && (
         <OffCanvas
