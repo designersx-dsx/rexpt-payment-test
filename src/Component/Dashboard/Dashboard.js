@@ -15,8 +15,8 @@ import Modal2 from "../Modal2/Modal2";
 import CallTest from "../CallTest/CallTest";
 import WidgetScript from "../Widgets/WidgetScript";
 import Popup from "../Popup/Popup";
-import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
+import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -67,17 +67,31 @@ function Dashboard() {
   const [liveTranscript, setLiveTranscript] = useState();
 
   //cam-icon
-  const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const profileRef = useRef(null);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
+
 
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+
+const handleAssignNumberClick = (agent, e) => {
+  e.stopPropagation();
+  const planName = agent?.dataValues?.product_name || "Free";
+
+  if (planName.toLowerCase() === "free") {
+    openAssignNumberModal();  
+  } else {
+    setSelectedAgentForAssign(agent);
+    setIsAssignModalOpen(true);
+  }
+};
 
   // Navigate on agent card click
   const handleCardClick = (agent) => {
@@ -710,16 +724,14 @@ function Dashboard() {
 
                     <p className={styles.NumberCaller}>{assignedNumbers.length > 1 ? "s" : ""} {assignedNumbers.join(", ")}</p>
                   </div>) : (
-                  <div
-                    className={styles.AssignNum}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openAssignNumberModal();
-                    }}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Assign Number
-                  </div>
+                 <div
+  className={styles.AssignNum}
+  onClick={(e) => handleAssignNumberClick(agent, e)}
+  style={{ cursor: "pointer" }}
+>
+  Assign Number
+</div>
+
 
                 )}
 
@@ -978,6 +990,17 @@ function Dashboard() {
           </div>
         </OffCanvas>
       )}
+      {isAssignModalOpen && selectedAgentForAssign && (
+  <AssignNumberModal
+    isOpen={isAssignModalOpen}
+    agentId={selectedAgentForAssign.agent_id}
+    onClose={() => {
+      setIsAssignModalOpen(false);
+      setSelectedAgentForAssign(null);
+    }}
+  />
+)}
+
       {popupMessage && (
         <Popup
           type={popupType}
