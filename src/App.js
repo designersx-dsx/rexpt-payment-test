@@ -53,6 +53,7 @@ function App() {
           <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
           <Route path="/business-locations" element={<SecureRoute><BusinessLocation/></SecureRoute>} />
           <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
+          <Route path="/business-services" element={<SecureRoute><BusinessServices /></SecureRoute>} />
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
           <Route path="/rex-agent" element={<SecureRoute><RexAgent/></SecureRoute>} />

@@ -15,7 +15,7 @@ const BusinessLocation = () => {
   const [city, setCity] = useState('');
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false)
   // Inline validation error states
   const [stateError, setStateError] = useState('');
   const [cityError, setCityError] = useState('');
@@ -27,7 +27,7 @@ const BusinessLocation = () => {
   const [citySubmitted, setCitySubmitted] = useState(false);
   const [address1Submitted, setAddress1Submitted] = useState(false);
   const [address2Submitted, setAddress2Submitted] = useState(false);
-  const [search,setSearch]=useState('');
+  const [search, setSearch] = useState('');
   const [filteredCountries, setFilteredCountries] = useState(countries);
 
   const [showPopup, setShowPopup] = useState(false);
@@ -142,8 +142,8 @@ const BusinessLocation = () => {
     sessionStorage.setItem(
       'businessLocation',
       JSON.stringify({
-      country: selected?.name || ipData?.country_name || 'United States',        
-      state: state.trim(),
+        country: selected?.name || ipData?.country_name || 'United States',
+        state: state.trim(),
         city: city.trim(),
         address1: address1.trim(),
         address2: address2.trim(),
@@ -169,6 +169,7 @@ const BusinessLocation = () => {
       });
 
       const id = response.data.businessId;
+      console.log('response',response)
       sessionStorage.setItem(
         'businessId',
         JSON.stringify({
@@ -188,8 +189,8 @@ const BusinessLocation = () => {
       setPopupMessage('An error occurred while adding business details.');
       setShowPopup(true);
       console.error(error);
-    }finally{
-      setTimeout(()=>setLoading(false),1000)
+    } finally {
+      setTimeout(() => setLoading(false), 1000)
     }
   };
 
@@ -206,40 +207,40 @@ const BusinessLocation = () => {
 
 
 
-useEffect(() => {
-  console.log(search)
-  if (search) {
-    const filtered = countries.filter((country) =>
-      country.name.toLowerCase().includes(search.toLowerCase()) 
-    );
-    setFilteredCountries(filtered);
-  } else {
-    setFilteredCountries(countries);
-    setOpen(false);
-  }
-}, [search, countries]);
-
-const handleSelect = (country) => {
-  setSelected(country);
-  setSearch(country.name); // Autofill input with selected country name
-  setOpen(false);
-};
- useEffect(() => {
-  if (countryCode) {
-    const sel = countries.find((country) => country?.code?.toLowerCase() === countryCode);
-    if (sel) {
-      setSelected(sel);
-      setSearch(sel.name); // Autofill search input with country name
-
+  useEffect(() => {
+    console.log(search)
+    if (search) {
+      const filtered = countries.filter((country) =>
+        country.name.toLowerCase().includes(search.toLowerCase())
+      );
+      setFilteredCountries(filtered);
+    } else {
+      setFilteredCountries(countries);
+      setOpen(false);
     }
-  }
-}, [countryCode]);
+  }, [search, countries]);
+
+  const handleSelect = (country) => {
+    setSelected(country);
+    setSearch(country.name); // Autofill input with selected country name
+    setOpen(false);
+  };
+  useEffect(() => {
+    if (countryCode) {
+      const sel = countries.find((country) => country?.code?.toLowerCase() === countryCode);
+      if (sel) {
+        setSelected(sel);
+        setSearch(sel.name); // Autofill search input with country name
+
+      }
+    }
+  }, [countryCode]);
   return (
     <div>
       <div className={styles.container}>
         <h2 className={styles.title}>Business Location Details</h2>
 
- 
+
         {/* <div className={styles.countryInput}>
           <div className={styles.countryDiv}>
             <img
@@ -287,51 +288,51 @@ const handleSelect = (country) => {
           )}
         </div> */}
         <label className={styles.label}>Country<span className={styles.requiredField}> *</span></label>
-<div className={styles.dropdown} tabIndex={0}>
-  <div className={styles.selected}>
-    <div className={styles.selectedInfo}>
-      {selected && (
-        <ReactCountryFlag
-          countryCode={selected.code}
-          svg
-          style={{ width: '2em', height: '2em' }}
-          className={styles.flag}
-        />
-      )}
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => {setSearch(e.target.value);setOpen(true)}}
-        placeholder="Type country or initials"
-        className={styles.input2}
-        onClick={() => setOpen(true)} // Open dropdown on input click
-      />
-    </div>
-  </div>
-  {open && (
-    <ul className={styles.options}>
-      {filteredCountries.length > 0 ? (
-        filteredCountries.map((country) => (
-          <li
-            key={country.code}
-            onClick={() => handleSelect(country)}
-            className={styles.option}
-          >
-            <ReactCountryFlag
-              countryCode={country.code}
-              svg
-              style={{ width: '2em', height: '2em' }}
-              className={styles.flag}
-            />
-            <span>{country.name}</span>
-          </li>
-        ))
-      ) : (
-        <li className={styles.option}>No countries found</li>
-      )}
-    </ul>
-  )}
-</div>
+        <div className={styles.dropdown} tabIndex={0}>
+          <div className={styles.selected}>
+            <div className={styles.selectedInfo}>
+              {selected && (
+                <ReactCountryFlag
+                  countryCode={selected.code}
+                  svg
+                  style={{ width: '2em', height: '2em' }}
+                  className={styles.flag}
+                />
+              )}
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setOpen(true) }}
+                placeholder="Type country or initials"
+                className={styles.input2}
+                onClick={() => setOpen(true)} // Open dropdown on input click
+              />
+            </div>
+          </div>
+          {open && (
+            <ul className={styles.options}>
+              {filteredCountries.length > 0 ? (
+                filteredCountries.map((country) => (
+                  <li
+                    key={country.code}
+                    onClick={() => handleSelect(country)}
+                    className={styles.option}
+                  >
+                    <ReactCountryFlag
+                      countryCode={country.code}
+                      svg
+                      style={{ width: '2em', height: '2em' }}
+                      className={styles.flag}
+                    />
+                    <span>{country.name}</span>
+                  </li>
+                ))
+              ) : (
+                <li className={styles.option}>No countries found</li>
+              )}
+            </ul>
+          )}
+        </div>
         {/* Ankush Code end */}
         <div className={styles.labReq} >
           <div className={styles.Dblock} >
@@ -391,7 +392,7 @@ const handleSelect = (country) => {
           <div type="submit" onClick={handleContinue}>
             <div className={styles.btnTheme}>
               <img src="svg/svg-theme.svg" alt="" />
-              <p>{loading?<Loader size={20}/>:'Continue'}</p>
+              <p>{loading ? <Loader size={20} /> : 'Continue'}</p>
             </div>
           </div>
         </div>

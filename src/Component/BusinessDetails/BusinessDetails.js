@@ -265,7 +265,7 @@ const validateBusinessSize = (value) => {
     };
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    navigate("/business-locations");
+    navigate("/business-services");
   };
 
   return (
