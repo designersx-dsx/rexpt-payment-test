@@ -967,7 +967,7 @@ const handleAssignNumberClick = (agent, e) => {
               onClick={closeAssignNumberModal}
               style={{ width: "100%" }}
             >
-              Got it!
+              Got it!    
             </button>
           </div>
         </div>
