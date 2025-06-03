@@ -25,7 +25,7 @@ const AgentDashboard = () => {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [callLoading, setCallLoading] = useState(false);
-
+  console.log('agentDetails',agentDetails)
   useEffect(() => {
   const getAgentDetailsAndBookings = async () => {
     try {
@@ -518,6 +518,7 @@ const AgentDashboard = () => {
 
       <AssignNumberModal 
   isOpen={isAssignModalOpen} 
+  agentId={agentDetails?.agentId}
   onClose={() => setIsAssignModalOpen(false)} 
 />
 

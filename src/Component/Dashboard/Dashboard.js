@@ -87,8 +87,8 @@ function Dashboard() {
     });
   };
   useEffect(() => {
-    const agents = JSON.parse(localStorage.getItem("agents")) || [];
-    const agentWithCalKey = agents.find((agent) => agent.calApiKey);
+    // const agents = JSON.parse(localStorage.getItem("agents")) || [];
+    const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
 
     if (agentWithCalKey?.calApiKey) {
       const fetchBookings = async () => {
@@ -115,7 +115,7 @@ function Dashboard() {
   const handleCalClick = (agent, e) => {
     e.stopPropagation();
     setSelectedAgent(agent);
-    const agentInLocal = localAgents.find((a) => a.agent_id === agent.agent_id);
+    const agentInLocal = localAgents?.find((a) => a.agent_id === agent.agent_id);
     setApiKey(agentInLocal?.calApiKey || "");
     setIsApiKeyEditable(false);
     setShowEventInputs(false);
@@ -138,12 +138,12 @@ function Dashboard() {
   };
 
   // Load from localStorage on mount
-  useEffect(() => {
-    const savedUserId = localStorage.getItem("userId");
-    const savedAgents = localStorage.getItem("agents");
-    if (savedUserId) setUserId(savedUserId);
-    if (savedAgents) setLocalAgents(JSON.parse(savedAgents));
-  }, []);
+  // useEffect(() => {
+  //   const savedUserId = localStorage.getItem("userId");
+  //   const savedAgents = localStorage.getItem("agents");
+  //   if (savedUserId) setUserId(savedUserId);
+  //   if (savedAgents) setLocalAgents(JSON.parse(savedAgents));
+  // }, []);
 
   // Fetch dashboard + merge Cal API keys
   useEffect(() => {
@@ -155,6 +155,7 @@ function Dashboard() {
         let agentsWithCalKeys = res.agents || [];
         const calApiAgents = await fetchCalApiKeys(userId);
         const calApiKeyMap = {};
+        console.log('calApiAgents',calApiAgents)
         calApiAgents.forEach((agent) => {
           calApiKeyMap[agent.agent_id] = agent.calApiKey || null;
         });
@@ -165,8 +166,8 @@ function Dashboard() {
         console.log('res', res)
         setDashboardData(agentsWithCalKeys, res.total_call || 0);
         setHasFetched(true);
-        localStorage.setItem("userId", userId);
-        localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
+        // localStorage.setItem("userId", userId);
+        // localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
         setLocalAgents(agentsWithCalKeys);
       } catch (error) {
         console.error("Error fetching dashboard data or Cal API keys:", error);
@@ -181,7 +182,7 @@ function Dashboard() {
   useEffect(() => {
     if (agents && agents.length > 0) {
       setLocalAgents(agents);
-      localStorage.setItem("agents", JSON.stringify(agents));
+      // localStorage.setItem("agents", JSON.stringify(agents));
     }
   }, [agents]);
 
@@ -217,7 +218,7 @@ function Dashboard() {
       );
 
       setLocalAgents(updatedAgents);
-      localStorage.setItem("agents", JSON.stringify(updatedAgents));
+      // localStorage.setItem("agents", JSON.stringify(updatedAgents));
 
       setShowEventInputs(true);
       setShowCalKeyInfo(true);
@@ -601,6 +602,7 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
+
                   {agent?.dataValues?.product_name ||  "Free "} Plan
                 </h3>
               </div>
