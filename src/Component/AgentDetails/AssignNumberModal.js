@@ -6,12 +6,11 @@ import { updateAgent } from "../../Store/apiStore";
 const AssignNumberModal = ({ isOpen, onClose, agentId }) => {
   const [loading, setLoading] = useState(false);
   if (!isOpen) return null;
-
   const handleAssignNumber = async () => {
     try {
       setLoading(true);
-     const agentsData = JSON.parse(localStorage.getItem("agents") || "[]");
-      const agentId = agentsData?.[0]?.agent_id;
+    //  const agentsData = JSON.parse(localStorage.getItem("agents") || "[]");
+      // const agentId = agentId;
 
       if (!agentId) {
         throw new Error("Agent ID not found in localStorage.");
