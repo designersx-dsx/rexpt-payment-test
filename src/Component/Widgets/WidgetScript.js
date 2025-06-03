@@ -47,8 +47,6 @@ const WidgetScript = ({ isAgentDetails, onClose }) => {
     } catch (error) {
       alert("A Server Error ocuured while sending script to developer");
     }
-    // console.log("Email sent to developer:", email);
-    // TODO: Add actual sending logic here
 
     setShowModal(false);
     setEmail("");
@@ -103,13 +101,15 @@ const WidgetScript = ({ isAgentDetails, onClose }) => {
             </div>
           </div>
 
-     { showPopup&&    <PopUp
+     
+        </Modal2>
+    
+      )}
+          { showPopup&&    <PopUp
             type={popupType}
             onClose={() => setShowPopup(false)}
             message={popupMessage}
           />}
-        </Modal2>
-      )}
     </div>
   );
 };
