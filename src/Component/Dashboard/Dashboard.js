@@ -601,7 +601,7 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-                  {agent.dataValues.product_name ||  "Free "} Plan
+                  {agent?.dataValues?.product_name ||  "Free "} Plan
                 </h3>
               </div>
               <div className={styles.Lang}>
@@ -733,8 +733,6 @@ function Dashboard() {
                   >
                     Assign Number
                   </div>
-
-
 
                 )}
 
