@@ -999,6 +999,20 @@ const handleAssignNumberClick = (agent, e) => {
           </div>
         </OffCanvas>
       )}
+
+      {isAssignModalOpen && selectedAgentForAssign && (
+  <AssignNumberModal
+    isOpen={isAssignModalOpen}
+    agentId={selectedAgentForAssign.agent_id}
+    onClose={() => {
+      setIsAssignModalOpen(false);
+      setSelectedAgentForAssign(null);
+    }}
+  />
+)}
+{/* nitish */}
+
+
       {popupMessage && (
         <Popup
           type={popupType}
