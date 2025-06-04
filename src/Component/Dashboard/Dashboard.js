@@ -1048,7 +1048,7 @@ const handleAssignNumberClick = (agent, e) => {
         />
       )}
 
-      <Footer />
+     
     </div>
   );
 }
