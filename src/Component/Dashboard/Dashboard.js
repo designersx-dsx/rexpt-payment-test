@@ -245,6 +245,7 @@ const handleAssignNumberClick = (agent, e) => {
       );
 
       setLocalAgents(updatedAgents);
+      setHasFetched(false)
       // localStorage.setItem("agents", JSON.stringify(updatedAgents));
 
       setShowEventInputs(true);
@@ -419,6 +420,9 @@ const handleAssignNumberClick = (agent, e) => {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
       const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+
+      setHasFetched(false)
+
       console.log("Call end response", response);
     }
   };
@@ -479,7 +483,7 @@ const handleAssignNumberClick = (agent, e) => {
     setUploadedImage(image);
     closeUploadModal();
   };
-  console.log('URSER',localAgents.subscription)
+  // console.log('URSER',localAgents.subscription)
   return (
     <div>
       <div className={styles.forSticky}>
