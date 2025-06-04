@@ -420,7 +420,9 @@ const handleAssignNumberClick = (agent, e) => {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
       const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+
       setHasFetched(false)
+
       console.log("Call end response", response);
     }
   };
