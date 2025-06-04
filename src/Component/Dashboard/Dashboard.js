@@ -88,7 +88,7 @@ function Dashboard() {
 
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
-    const planName = agent?.subscription?.product_name || "Free";
+    const planName = agent?.subscription?.plan_name || "Free";
 
     if (planName.toLowerCase() === "free") {
       openAssignNumberModal();
@@ -616,7 +616,7 @@ function Dashboard() {
       <div className={styles.main}>
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-          const randomPlan = `${agent?.subscription?.product_name}Plan`;
+          const randomPlan = `${agent?.subscription?.plan_name}Plan`;
           // console.log('randomPlan',randomPlan)
           let assignedNumbers = [];
           if (agent.voip_numbers) {
@@ -634,7 +634,7 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-                  {agent?.subscription?.product_name || "Free"}
+                  {agent?.subscription?.plan_name || "Free"}
                   {" Plan"}
                 </h3>
               </div>
