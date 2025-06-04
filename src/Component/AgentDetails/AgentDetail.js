@@ -652,7 +652,7 @@ const AgentDashboard = () => {
                   </svg>
 
                 </div>
-                <p className={styles.managementText}>Call Setting</p>
+                <p className={styles.managementText}>Call Transfer</p>
               </div>
 
 
