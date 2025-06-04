@@ -1,0 +1,19 @@
+.headerMain {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(255, 255, 255);
+    padding: 16px;
+}
+
+.BothFlex {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.title h2 {
+    color: #24252C;
+    font-size: 22px;
+    font-family: "Lato", sans-serif;
+}

@@ -20,7 +20,7 @@ const OffCanvas = ({
 
     return (
         <div>
-            {overlay && isOpen && <div className={styles.overlay} onClick={onClose} />}
+            {overlay && isOpen && <div className={styles.overlay}  />}
             <div
                 className={`${styles.offCanvas} ${isOpen ? styles.open : ''} ${styles[direction]}`}
                 style={{

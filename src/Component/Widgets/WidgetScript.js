@@ -24,7 +24,7 @@ const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
   }, []);
 
   const scriptText = `
-<script id="rex-widget-script" src="https://fluffy-bavarois-03810d.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+<script id="rex-widget-script" src="https://delicate-dango-84275c.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
 `;
 
   const handleAddDomain = async () => {

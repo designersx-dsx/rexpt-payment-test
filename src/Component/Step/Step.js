@@ -96,7 +96,6 @@ Always maintain a tone that matches the following persona:
 
 Let’s begin assisting the customer!
 `;
-    console.log(business, "business")
     const generalReceptionistPrompt = `You are ${agentName}, a receptionist at ${business?.businessName}, who understands ${business?.selectedService} and knows about  ${business?.businessName} Business.
   Your role is to simulate a warm, patient, and reliable human receptionist for a  ${business?.businessType}. Every interaction must be handled with clarity, precision, and empathy.
 You will:
@@ -461,7 +460,7 @@ End Call: If the caller is satisfied, invoke end_call function.
     // let  prompt ;
     const prompt1 = role_title === "General Receptionist"
         ? generalReceptionistPrompt
-        : role_title === "Sales Receptionist"
+        : role_title === "Inbound LEAD Qualifier"
             ? salesReceptionistPrompt
             : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
     const languages = [
@@ -957,11 +956,21 @@ End Call: If the caller is satisfied, invoke end_call function.
 
                             }
                         } catch (error) {
+                            // console.log(error,error.status)
+                            if(error?.status==400){
+                            // console.log('errorinside',error)
+                            setPopupType("failed");
+                            setPopupMessage(error?.response?.data?.message);
+                            setShowPopup(true);
+                            setLoading(false)
+                            }else{
                             console.error("Agent creation failed:", error);
                             setPopupType("failed");
                             setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
                             setShowPopup(true);
                             setLoading(false)
+                            }
+                            
 
                         }
 

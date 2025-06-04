@@ -5,17 +5,17 @@ import AgentCreationLoader from '../Popup/AgentCreationLoader';
 const roles = [
     {
         title: 'General Receptionist',
-        description: 'Always ready to assist',
+        description: 'Ready to handle all Inbound calls',
         icon: 'svg/general-receptionist.svg',
     },
     {
-        title: 'Sales Receptionist',
-        description: 'Boosting your sales calls.',
+        title: 'Inbound LEAD Qualifier',
+        description: 'Handle inbound sales queries',
         icon: 'svg/sales receptionist.svg',
     },
     {
-        title: 'Technical Receptionist',
-        description: 'Smart support at entry.',
+        title: 'Technical Support Agent',
+        description: 'Product/Service Tech support',
         icon: 'svg/technical-receptionist.svg',
     },
 ];

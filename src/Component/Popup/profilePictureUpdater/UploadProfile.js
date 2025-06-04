@@ -337,6 +337,22 @@ import styles from "./UploadProfile.module.css";
 import { API_BASE_URL, updateProfilePicture } from "../../../Store/apiStore";
 import decodeToken from "../../../lib/decodeToken";
 import useUser from "../../../Store/Context/UserContext";
+import imageCompression from "browser-image-compression";
+
+const compressImage = async (imageFile) => {
+  const options = {
+    maxSizeMB: 0.1,           // Target size in MB (200 KB)
+    maxWidthOrHeight: 800,    // Resize if larger
+    useWebWorker: true,
+  };
+  try {
+    const compressedFile = await imageCompression(imageFile, options);
+    return compressedFile;
+  } catch (error) {
+    console.error("Compression error:", error);
+    return imageFile;
+  }
+};
 
 const UploadProfile = ({ onClose, onUpload }) => {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -359,11 +375,12 @@ const UploadProfile = ({ onClose, onUpload }) => {
   };
 
   // Handle file upload
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async(event) => {
     event.stopPropagation();
     const file = event.target.files[0];
     if (file) {
-      setProfile(file);
+       const compressed = await compressImage(file);
+      setProfile(compressed);
       const reader = new FileReader();
       reader.onloadend = () => {
         setUploadedImage(reader.result);
@@ -371,12 +388,12 @@ const UploadProfile = ({ onClose, onUpload }) => {
         stopWebcamStream(); // stop if uploading while webcam is open
         setIsWebcamOpen(false);
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(compressed);
     }
   };
 
   // Capture image from webcam
-  const captureImage = (e) => {
+  const captureImage = async(e) => {
     e.stopPropagation();
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
@@ -392,7 +409,11 @@ const UploadProfile = ({ onClose, onUpload }) => {
         ia[i] = byteString.charCodeAt(i);
       }
       const blob = new Blob([ab], { type: mimeString });
-      setProfile(blob);
+      const file = new File([blob], "webcam.jpg", { type: mimeString });
+
+      const compressed = await compressImage(file);
+
+      setProfile(compressed);
 
       stopWebcamStream();
       setIsWebcamOpen(false);
