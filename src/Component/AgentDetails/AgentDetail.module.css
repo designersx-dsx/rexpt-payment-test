@@ -624,11 +624,12 @@
   border-radius: 2rem;
   display: flex;
   height: 39px;
-  min-width: 153px;
+  min-width: 170px;
   align-items: center;
   gap: 10px;
   position: relative;
   background-color: #fff;
+  padding: 1px;
 }
 
 .managementItem::before {

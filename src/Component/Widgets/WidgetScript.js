@@ -1,8 +1,11 @@
-import React, { useRef, useState } from "react";
+
+import React, { useRef, useState, useEffect } from "react";
 import styles from "./Widgets.module.css";
 import { SendScriptToDeveloper, updateAgentWidgetDomain } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
+
 const WidgetScript = ({ isAgentDetails }) => {
+  console.log(isAgentDetails, "isAgentDetails")
   const scriptRef = useRef(null);
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -10,58 +13,64 @@ const WidgetScript = ({ isAgentDetails }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
-  const [showDomainModal, setShowDomainModal] = useState(false);
   const [domains, setDomains] = useState([]);
-  console.log(domains)
   const [currentDomain, setCurrentDomain] = useState("");
-  const [actionType, setActionType] = useState("");
+  const [scriptVisible, setScriptVisible] = useState(false);
+  const [domainError, setDomainError] = useState("");
+const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+  useEffect(() => {
+    // Show domain modal on load
+    setScriptVisible(false);
+  }, []);
+
   const scriptText = `
-  <script id="rex-widget-script" src="https://fluffy-bavarois-03810d.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+<script id="rex-widget-script" src="https://fluffy-bavarois-03810d.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
 `;
-  const openDomainModal = (type) => {
-    setActionType(type);
-    setShowDomainModal(true);
-  };
 
   const handleAddDomain = async () => {
     const trimmed = currentDomain.trim();
-    if (trimmed && !domains.includes(trimmed)) {
-      const updatedDomains = [...domains, trimmed];
-      setDomains(updatedDomains);
-      setCurrentDomain("");
-      // Send updated array to API
-      try {
-        const response = await updateAgentWidgetDomain(isAgentDetails.agent_id, updatedDomains);
-      } catch (error) {
-        console.error("Failed to update domains:", error);
-      }
+
+    if (!trimmed) {
+      setDomainError("Domain is required.");
+      return;
+    }
+
+    if (!domainRegex.test(trimmed)) {
+      setDomainError("Please enter a valid URL (e.g., https://example.com)");
+      return;
+    }
+
+    if (domains.includes(trimmed)) {
+      setDomainError("This domain has already been added.");
+      return;
+    }
+
+    const updatedDomains = [...domains, trimmed];
+    setDomains(updatedDomains);
+    setCurrentDomain("");
+    setDomainError("");
+
+    try {
+      await updateAgentWidgetDomain(isAgentDetails.agent_id, updatedDomains);
+    } catch (error) {
+      console.error("Failed to update domains:", error);
     }
   };
 
 
-  const handleDomainContinue = () => {
+
+  const handleGenerateScript = () => {
     if (domains.length === 0) {
       alert("Please add at least one domain.");
       return;
     }
-
-    setShowDomainModal(false);
-
-    if (actionType === "copy") {
-      handleCopyConfirmed();
-    } else if (actionType === "send") {
-      setShowModal(true);
-    }
+    setScriptVisible(true);
   };
 
-  const handleCopyConfirmed = () => {
+  const handleCopy = () => {
     navigator.clipboard.writeText(scriptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
   };
 
   const handleSend = async () => {
@@ -72,62 +81,21 @@ const WidgetScript = ({ isAgentDetails }) => {
     };
     try {
       const response = await SendScriptToDeveloper(payload);
-      console.log("send script", response);
       setShowPopup(true);
       setPopupType("success");
-      setPopupMessage("Script sent");
+      setPopupMessage("Script sent successfully");
     } catch (error) {
+      console.log(error)
       alert("A Server Error occurred while sending script to developer");
     }
-
     setShowModal(false);
     setEmail("");
   };
 
   return (
     <div className={styles.container}>
-      {!showModal && !showDomainModal && (
-        <>
-          <div className={styles.scriptBox}>
-            <button className={styles.copyButton} onClick={() => openDomainModal("copy")}>
-              {copied ? "Copied!" : "Copy"}
-            </button>
-            <br />
-            <br />
-            <pre ref={scriptRef} className={styles.scriptText}>
-              {scriptText}
-            </pre>
-          </div>
-
-          <div className={styles.actionButtons}>
-            <button className={styles.emailBtn} onClick={() => openDomainModal("send")}>
-              Send to developer
-            </button>
-          </div>
-        </>
-      )}
-      {showModal && !showDomainModal && (
-        <>
-          <h3>Send to Developer</h3>
-          <input
-            type="email"
-            placeholder="Enter developer's email"
-            value={email}
-            onChange={handleEmailChange}
-            className={styles.inputField}
-          />
-          <div className={styles.modalActions}>
-            <button onClick={handleSend} className={styles.sendBtn}>
-              Send
-            </button>
-            <button onClick={() => setShowModal(false)} className={styles.cancelBtn}>
-              Cancel
-            </button>
-          </div>
-        </>
-      )}
-      {/* Domain Modal */}
-      {showDomainModal && (
+      {/* Domain Modal (Always Visible at first) */}
+      {!scriptVisible && (
         <div className={styles.domainModal}>
           <h3>Add Domain(s)</h3>
           <p className={styles.noteText}>
@@ -138,9 +106,14 @@ const WidgetScript = ({ isAgentDetails }) => {
               type="text"
               placeholder="Enter domain (e.g., example.com)"
               value={currentDomain}
-              onChange={(e) => setCurrentDomain(e.target.value)}
+              onChange={(e) => {
+                setCurrentDomain(e.target.value);
+                setDomainError(""); // Clear error while typing
+              }}
               className={styles.inputField}
             />
+            {domainError && <p style={{ color: "red" }} className={styles.errorText}>{domainError}</p>}
+
             <button className={styles.addDomainBtn} onClick={handleAddDomain}>
               Add
             </button>
@@ -151,16 +124,57 @@ const WidgetScript = ({ isAgentDetails }) => {
             ))}
           </ul>
           <div className={styles.modalActions}>
-            <button onClick={handleDomainContinue} className={styles.sendBtn}>
-              Continue
+            <button onClick={handleGenerateScript} className={styles.sendBtn}>
+              Generate Script
             </button>
-            <button onClick={() => setShowDomainModal(false)} className={styles.cancelBtn}>
+          </div>
+        </div>
+      )}
+
+      {/* Script Section */}
+      {scriptVisible && (
+        <>
+          <div className={styles.scriptBox}>
+            <button className={styles.copyButton} onClick={handleCopy}>
+              {copied ? "Copied!" : "Copy"}
+            </button>
+            <br />
+            <pre ref={scriptRef} className={styles.scriptText}>
+              {scriptText}
+            </pre>
+          </div>
+
+          <div className={styles.actionButtons}>
+            <button className={styles.emailBtn} onClick={() => setShowModal(true)}>
+              Send to Developer
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Email Modal */}
+      {showModal && (
+        <div className={styles.modalContainer}>
+          <h3>Send to Developer</h3>
+          <input
+            type="email"
+            placeholder="Enter developer's email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={styles.inputField}
+          />
+          <div className={styles.modalActions}>
+            <button onClick={handleSend} className={styles.sendBtn}>
+              Send
+            </button>
+            <button onClick={() => setShowModal(false)} className={styles.cancelBtn}>
               Cancel
             </button>
           </div>
         </div>
       )}
 
+      {/* Popup */}
       {showPopup && (
         <PopUp
           type={popupType}
