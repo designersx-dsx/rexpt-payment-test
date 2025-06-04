@@ -88,7 +88,7 @@ function Dashboard() {
 
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
-    const planName = agent?.subscription?.product_name || "Free";
+    const planName = agent?.subscription?.plan_name || "Free";
 
     if (planName.toLowerCase() === "free") {
       openAssignNumberModal();
@@ -253,86 +253,83 @@ function Dashboard() {
   };
 
   // Create Cal event
-  const createCalEvent = async () => {
-    if (!apiKey.trim()) {
-      alert("API Key is required to create an event.");
-      return;
+const createCalEvent = async () => {
+  if (!apiKey.trim()) {
+    alert("API Key is required to create an event.");
+    return;
+  }
+  if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
+    alert("Please fill all event fields.");
+    return;
+  }
+  try {
+    // Call Cal API to create an event
+    const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(apiKey.trim())}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: eventName.trim(),
+        slug: eventSlug.trim(),
+        length: parseInt(eventLength, 10),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to create event");
     }
-    if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
-      alert("Please fill all event fields.");
-      return;
+
+    const responseData = await response.json();
+    const eventTypeId = responseData.event_type.id;
+    const retellPayload = {
+      general_tools: [
+        {
+          type: "book_appointment_cal",
+          name: "cal_tool",
+          cal_api_key: apiKey.trim(), 
+          event_type_id: eventTypeId,  
+        }
+      ]
+    };
+
+    // Update LLM using the Retell API
+    const retellUrl = `https://api.retellai.com/update-retell-llm/${selectedAgent.llmId}`;
+    const retellResponse = await fetch(retellUrl, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+      },
+      body: JSON.stringify(retellPayload),
+    });
+
+    if (!retellResponse.ok) {
+      const retellError = await retellResponse.json();
+      console.error("Error updating Retell LLM:", retellError);
+    } else {
+      console.log("Retell LLM updated successfully!");
     }
-    try {
-      const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
-        apiKey.trim()
-      )}`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: eventName.trim(),
-          slug: eventSlug.trim(),
-          length: parseInt(eventLength, 10),
-        }),
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create event");
-      }
+    // Success
+    setPopupType("success");
+    setPopupMessage("Your Cal event has been created successfully!");
+    setShowCalKeyInfo(false);
+    setEventName("");
+    setEventSlug("");
+    setEventLength("");
 
-      const responseData = await response.json();
+    setTimeout(() => {
+      closeModal(); 
+    }, 1000);
 
-      if (!response.ok) {
-        throw new Error(responseData.message || "Failed to create event");
-      }
+  } catch (error) {
+    setEventCreateStatus("error");
+    setEventCreateMessage(`Error creating event: ${error.message}`);
+    console.error("Error in createCalEvent:", error);
+  }
+};
 
-      const eventTypeId = responseData.event_type.id;
-
-      // Show success message first
-      setPopupType("success");
-      setPopupMessage("Your Cal event has been created successfully!");
-      setShowCalKeyInfo(false);
-
-      const retellPayload = {
-        general_tools: [
-          {
-            type: "book_appointment_cal",
-            name: "cal_tool",
-            cal_api_key: selectedAgent.calApiKey,
-            event_type_id: eventTypeId,
-          },
-        ],
-      };
-
-      const retellUrl = `https://api.retellai.com/update-retell-llm/${selectedAgent.llmId}`;
-
-      const retellResponse = await fetch(retellUrl, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-        },
-        body: JSON.stringify(retellPayload),
-      });
-      if (!retellResponse.ok) {
-        const retellError = await retellResponse.json();
-        console.error("Error updating Retell LLM:", retellError);
-      } else {
-        console.log("Retell LLM updated successfully!");
-      }
-      setEventName("");
-      setEventSlug("");
-      setEventLength("");
-      setTimeout(() => {
-        closeModal();
-      }, 1000);
-    } catch (error) {
-      setEventCreateStatus("error");
-      setEventCreateMessage(`Error creating event: ${error.message}`);
-      console.error("Error in createCalEvent:", error);
-    }
-  };
   const closeModal = () => {
     setIsCalModalOpen(false);
     setApiKey("");
@@ -618,7 +615,7 @@ function Dashboard() {
       <div className={styles.main}>
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-          const randomPlan = `${agent?.subscription?.product_name}Plan`;
+          const randomPlan = `${agent?.subscription?.plan_name}Plan`;
           // console.log('randomPlan',randomPlan)
           let assignedNumbers = [];
           if (agent.voip_numbers) {
@@ -636,7 +633,7 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-                  {agent?.subscription?.product_name || "Free"}
+                  {agent?.subscription?.plan_name || "Free"}
                   {" Plan"}
                 </h3>
               </div>

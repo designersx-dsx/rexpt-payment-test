@@ -793,11 +793,13 @@ End Call: If the caller is satisfied, invoke end_call function.
                 const agentConfig = {
                     version: 0,
                     model: "gemini-2.0-flash-lite",
-                    //   s2s_model: "gpt-4o-realtime",
                     model_temperature: 0,
                     model_high_priority: true,
                     tool_call_strict_mode: true,
                     general_prompt: prompt1,
+                    responsiveness:1,
+                    enable_backchannel:true,
+
                     general_tools: [
                         {
                             type: "end_call",
@@ -806,7 +808,6 @@ End Call: If the caller is satisfied, invoke end_call function.
                         },
 
                     ],
-
                     states: [
                         {
                             name: "information_collection",

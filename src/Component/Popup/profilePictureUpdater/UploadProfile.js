@@ -486,7 +486,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
                   Capture
                 </button>
                 <button onClick={toggleWebcam} className={styles.closeWebcamButton}>
-                  Close Webcam
+                  Close Camera
                 </button>
               </div>
             </div>
@@ -500,7 +500,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
               />
               {!uploadedImage && !capturedImage && (
                 <button onClick={toggleWebcam} className={styles.webcamButton}>
-                  Capture with Webcam
+                  Capture with Camera
                 </button>
               )}
             </div>

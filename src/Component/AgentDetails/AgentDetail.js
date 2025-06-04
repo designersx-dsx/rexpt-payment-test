@@ -374,11 +374,13 @@ const AgentDashboard = () => {
     navigate("/totalcall-list")
     sessionStorage.setItem("agentId", agentId)
   }
-  console.log(agentData, agentDetails?.agentId)
+
+  // console.log(agentData,agentDetails?.agentId)
   return (
     <div>
 
-      {(loading && !agentData?.agent?.agent_id != agentDetails?.agentId) ? (
+      {(loading && !agentData?.agent?.agent_id!=agentDetails?.agentId)? (
+
 
         <Loader2 />
       ) : (
