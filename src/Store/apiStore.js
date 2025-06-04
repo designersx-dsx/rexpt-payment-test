@@ -104,5 +104,13 @@ export const updateAgentWidgetDomain = async (id,updateData) => {
   const res = await axios.put(`${API_BASE_URL}/agent/updateAgentWidgetDomain/${id}`, updateData);
   return res.data;
 };
-
+export const validateWebsite = async (websiteUrl) => {
+  try {
+    const res = await api.post('/validate-website', { website: websiteUrl });
+    return res.data;
+  } catch (error) {
+    console.error("Error validating website:", error);
+    return { valid: false, reason: 'Error validating website' };
+  }
+};
 export default api;
