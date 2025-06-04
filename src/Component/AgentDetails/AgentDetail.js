@@ -14,7 +14,7 @@ import AssignNumberModal from "./AssignNumberModal";
 
 import EditAgent from "../EditAgent/EditAgent"
 import DetailModal from "../DetailModal/DetailModal"
-import { useAgentStore } from "../../Store/agentStore";
+import { useAgentStore } from "../../Store/agentDetailStore";
 const AgentDashboard = () => {
   // const [totalBookings, setTotalBookings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,14 +31,22 @@ const AgentDashboard = () => {
   const [callLoading, setCallLoading] = useState(false);
 
   console.log('agentDetails', agentDetails)
-    const {
-    agentData,
-    assignedNumbers,
-    totalBookings,
-    setAgentData,
-    setAssignedNumbers,
-    setTotalBookings,
-  } = useAgentStore();
+  //   const {
+  //   agentData,
+  //   assignedNumbers,
+  //   totalBookings,
+  //   setAgentData,
+  //   setAssignedNumbers,
+  //   setTotalBookings,
+  // } = useAgentStore();
+  const {
+  agentData,
+  assignedNumbers,
+  totalBookings,
+  setAgentById,
+  setCurrentAgentId,
+  getAgentById,
+} = useAgentStore();
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
@@ -185,49 +193,101 @@ const createCalEvent = async () => {
 
 
 
-  useEffect(() => {
-    const getAgentDetailsAndBookings = async () => {
-      try {
-        const response = await fetchAgentDetailById(agentDetails);
-        setAgentData(response?.data);
-        const voipNumbersStr = response?.data?.agent?.voip_numbers;
-        if (voipNumbersStr) {
-          try {
-            const numbersArray = JSON.parse(voipNumbersStr);
-            setAssignedNumbers(numbersArray);
-          } catch (e) {
-            console.warn("Failed to parse voip_numbers:", e);
-            setAssignedNumbers([]);
-          }
-        } else {
-          setAssignedNumbers([]);
-        }
+  // useEffect(() => {
+  //   const getAgentDetailsAndBookings = async () => {
+  //     try {
+  //       const response = await fetchAgentDetailById(agentDetails);
+  //       setAgentData(response?.data);
+  //       const voipNumbersStr = response?.data?.agent?.voip_numbers;
+  //       if (voipNumbersStr) {
+  //         try {
+  //           const numbersArray = JSON.parse(voipNumbersStr);
+  //           setAssignedNumbers(numbersArray);
+  //         } catch (e) {
+  //           console.warn("Failed to parse voip_numbers:", e);
+  //           setAssignedNumbers([]);
+  //         }
+  //       } else {
+  //         setAssignedNumbers([]);
+  //       }
 
-        const calApiKey = response?.data?.agent?.calApiKey;
-        if (calApiKey) {
+  //       const calApiKey = response?.data?.agent?.calApiKey;
+  //       if (calApiKey) {
+  //         const calResponse = await fetch(
+  //           `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
+  //         );
+  //         if (!calResponse.ok) {
+  //           throw new Error("Failed to fetch total bookings from Cal.com");
+  //         }
+
+  //         const bookingsData = await calResponse.json();
+  //         setTotalBookings(bookingsData.bookings?.length || 0);
+  //       }
+  //     } catch (err) {
+  //       console.error("Failed to fetch data", err.response || err.message || err);
+  //       setTotalBookings(0);
+  //       setAssignedNumbers([]);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (agentDetails ) {
+  //     getAgentDetailsAndBookings();
+  //   }
+  // }, [agentDetails]);
+
+  useEffect(() => {
+  const getAgentDetailsAndBookings = async () => {
+
+    if (!agentDetails?.agentId) return;
+
+    const cached = getAgentById(agentDetails.agentId);
+    if (cached) {
+      setCurrentAgentId(agentDetails.agentId); // Load into active context
+      setLoading(false);
+    }
+
+    try {
+      const response = await fetchAgentDetailById(agentDetails);
+      const agentInfo = response?.data;
+      // console.log('agentInfo',agentInfo)
+      let numbersArray = [];
+
+      const voipNumbersStr = agentInfo?.agent?.voip_numbers;
+      if (voipNumbersStr) {
+        try {
+          numbersArray = JSON.parse(voipNumbersStr);
+        } catch {
+          console.warn("Failed to parse voip_numbers");
+        }
+      }
+
+      let total = 0;
+      const calApiKey = agentInfo?.agent?.calApiKey;
+      if (calApiKey) {
+        try {
           const calResponse = await fetch(
             `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
           );
-          if (!calResponse.ok) {
-            throw new Error("Failed to fetch total bookings from Cal.com");
-          }
-
           const bookingsData = await calResponse.json();
-          setTotalBookings(bookingsData.bookings?.length || 0);
+          total = bookingsData.bookings?.length || 0;
+        } catch {
+          console.warn("Failed to fetch bookings from Cal.com");
         }
-      } catch (err) {
-        console.error("Failed to fetch data", err.response || err.message || err);
-        setTotalBookings(0);
-        setAssignedNumbers([]);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    if (agentDetails ) {
-      getAgentDetailsAndBookings();
+      // Set all data into zustand
+      setAgentById(agentDetails.agentId, agentInfo, numbersArray, total);
+    } catch (err) {
+      console.error("Failed to fetch data", err.response || err.message || err);
+    } finally {
+      setLoading(false);
     }
-  }, [agentDetails]);
+  };
+
+  getAgentDetailsAndBookings();
+}, [agentDetails]);
 
 console.log('loading',loading)
   const handleLogout = () => {
@@ -310,7 +370,7 @@ console.log('loading',loading)
 
   return (
     <div>
-      {loading ? (
+      {(loading && agentData)? (
         <Loader2 />
       ) : (
    <>
@@ -474,7 +534,7 @@ console.log('loading',loading)
                         agentData?.knowledgeBase?.knowledge_base_sources?.filter(
                           (src) => src?.url && !src.url.includes("google.com")
                         );
-                      if (filteredUrls && filteredUrls.length > 0) {
+                      if (filteredUrls && filteredUrls?.length > 0) {
                         return filteredUrls.map((src, index) => (
                           <div key={index}>{src.url}</div>
                         ));
@@ -493,7 +553,7 @@ console.log('loading',loading)
                           agentData?.knowledgeBase?.knowledge_base_sources?.filter(
                             (src) => src?.url && src.url.includes("google.com")
                           );
-                        if (filteredUrls && filteredUrls.length > 0) {
+                        if (filteredUrls && filteredUrls?.length > 0) {
                           return filteredUrls.map((src, index) => (
                             <div key={index}>{src.url}</div>
                           ));
