@@ -360,6 +360,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
 
   // Handle file upload
   const handleFileUpload = (event) => {
+    event.stopPropagation();
     const file = event.target.files[0];
     if (file) {
       setProfile(file);
@@ -375,7 +376,8 @@ const UploadProfile = ({ onClose, onUpload }) => {
   };
 
   // Capture image from webcam
-  const captureImage = () => {
+  const captureImage = (e) => {
+    e.stopPropagation();
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
       setCapturedImage(imageSrc);
@@ -398,7 +400,8 @@ const UploadProfile = ({ onClose, onUpload }) => {
   };
 
   // Toggle webcam
-  const toggleWebcam = () => {
+  const toggleWebcam = (e) => {
+    e.stopPropagation();
     if (isWebcamOpen) stopWebcamStream();
     setIsWebcamOpen(!isWebcamOpen);
     setUploadedImage(null);
@@ -407,7 +410,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
   };
 
   // Save image to server
-  const saveImageToServer = async () => {
+  const saveImageToServer = async (e) => {
     if (!profile) return;
     const formData = new FormData();
     formData.append("profilePicture", profile);
@@ -425,9 +428,10 @@ const UploadProfile = ({ onClose, onUpload }) => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = (e) => {
     if (uploadedImage || capturedImage) {
       saveImageToServer();
+      stopWebcamStream();
     }
   };
 

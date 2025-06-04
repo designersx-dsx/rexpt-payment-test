@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import styles from "./Widgets.module.css";
 import { SendScriptToDeveloper, updateAgentWidgetDomain } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
-
 const WidgetScript = ({ isAgentDetails }) => {
   const scriptRef = useRef(null);
   const [copied, setCopied] = useState(false);
@@ -15,36 +14,29 @@ const WidgetScript = ({ isAgentDetails }) => {
   const [domains, setDomains] = useState([]);
   console.log(domains)
   const [currentDomain, setCurrentDomain] = useState("");
-  const [actionType, setActionType] = useState(""); // "copy" or "send"
-
+  const [actionType, setActionType] = useState("");
   const scriptText = `
-<body>
-  <div id="review-widget"></div>
-  <script id="rex-widget-script" src="https://683f0cc188b34b4460f08d83--mellow-vacherin-b51e16.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
-</body>`;
-
+  <script id="rex-widget-script" src="https://fluffy-bavarois-03810d.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+`;
   const openDomainModal = (type) => {
     setActionType(type);
     setShowDomainModal(true);
   };
 
   const handleAddDomain = async () => {
-  const trimmed = currentDomain.trim();
-  if (trimmed && !domains.includes(trimmed)) {
-    const updatedDomains = [...domains, trimmed]; // Create updated array
-    setDomains(updatedDomains);                   // Update state
-    setCurrentDomain("");                         // Clear input
-
-    console.log("Updated Domains:", updatedDomains);
-
-    // Send updated array to API
-    try {
-      const response = await updateAgentWidgetDomain(isAgentDetails.agent_id, updatedDomains);
-    } catch (error) {
-      console.error("Failed to update domains:", error);
+    const trimmed = currentDomain.trim();
+    if (trimmed && !domains.includes(trimmed)) {
+      const updatedDomains = [...domains, trimmed];
+      setDomains(updatedDomains);
+      setCurrentDomain("");
+      // Send updated array to API
+      try {
+        const response = await updateAgentWidgetDomain(isAgentDetails.agent_id, updatedDomains);
+      } catch (error) {
+        console.error("Failed to update domains:", error);
+      }
     }
-  }
-};
+  };
 
 
   const handleDomainContinue = () => {

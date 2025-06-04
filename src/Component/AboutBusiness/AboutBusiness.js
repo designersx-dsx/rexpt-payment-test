@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
-import { listAgents } from "../../Store/apiStore";
+import { listAgents, validateWebsite } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 
 // Convert File → base64 data URL
@@ -24,7 +24,7 @@ const dataURLtoFile = (dataUrl, fileName = "file") => {
   const buf = new Uint8Array(bytes.length);
   for (let i = 0; i < bytes.length; i++) buf[i] = bytes.charCodeAt(i);
   return new File([buf], fileName, { type: mime });
-}
+};
 
 function AboutBusiness() {
   const [files, setFiles] = useState([]);
@@ -50,20 +50,48 @@ function AboutBusiness() {
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [agentCount, setAgentCount] = useState(0);
-  const [showSkipConfirm, setShowSkipConfirm] = useState(false);
   const HTTPS_PREFIX = "https://";
   const PREFIX_LEN = HTTPS_PREFIX.length;
   const navigate = useNavigate();
   const token = localStorage.getItem("token") || "";
-  const decodeTokenData = decodeToken(token)
+  const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
+  const [isVerified, setIsVerified] = useState(false);
+
+  const handleVerifyUrl = async () => {
+    const result = await validateWebsite(businessUrl);
+    if (result.valid) {
+      setPopupType("success");
+      setPopupMessage("Valid website URL!");
+      setIsVerified(true);
+      setShowPopup(true);
+    } else {
+      setPopupType("failed");
+      setPopupMessage(`Invalid website URL!`);
+      setShowPopup(true);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    let v = e.target.value;
+    v = v.replace(/https?:\/\//gi, "");
+    v = v.replace(/\s+/g, "").toLowerCase();
+    const final = HTTPS_PREFIX + v;
+    setBusinessUrl(final);
+    if (businessUrlSubmitted) {
+      setBusinessUrlError(validateBusinessUrl(final));
+    }
+  };
+  
   useEffect(() => {
     if (token) {
       setUserId(decodeTokenData.id || "");
     }
   }, [token]);
   useEffect(() => {
-    const saved = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+    const saved = JSON.parse(
+      sessionStorage.getItem("aboutBusinessForm") || "{}"
+    );
     if (saved.businessUrl) setBusinessUrl(saved.businessUrl);
     if (saved.googleListing) setGoogleListing(saved.googleListing);
     if (saved.aboutBusiness) setAboutBusiness(saved.aboutBusiness);
@@ -71,7 +99,9 @@ function AboutBusiness() {
 
     // rebuild File objects
     if (Array.isArray(saved.files) && saved.files.length) {
-      const rebuilt = saved.files.map((d, i) => dataURLtoFile(d, `file${i + 1}`));
+      const rebuilt = saved.files.map((d, i) =>
+        dataURLtoFile(d, `file${i + 1}`)
+      );
       setFiles(rebuilt);
     }
   }, []);
@@ -89,7 +119,6 @@ function AboutBusiness() {
       }
     }
 
-    // Save updated form with preserved files
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
@@ -97,7 +126,7 @@ function AboutBusiness() {
         googleListing,
         aboutBusiness,
         note,
-        files: previousFiles
+        files: previousFiles,
       })
     );
   }, [businessUrl, googleListing, aboutBusiness, note]);
@@ -106,14 +135,23 @@ function AboutBusiness() {
     const selectedFiles = Array.from(e.target.files);
 
     // block disallowed file types
-    const ALLOWED = ["application/pdf", "text/plain", "text/csv", "application/json", "text/markdown"];
-    const invalid = selectedFiles.filter(f => !ALLOWED.includes(f.type));
+    const ALLOWED = [
+      "application/pdf",
+      "text/plain",
+      "text/csv",
+      "application/json",
+      "text/markdown",
+    ];
+    const invalid = selectedFiles.filter((f) => !ALLOWED.includes(f.type));
     if (invalid.length) {
-      alert(`Only PDF or text files are allowed.\nBlocked: ${invalid.map(i => i.name).join(", ")}`);
+      alert(
+        `Only PDF or text files are allowed.\nBlocked: ${invalid
+          .map((i) => i.name)
+          .join(", ")}`
+      );
       return;
     }
     //allow files
-
 
     if (selectedFiles.length > 5) {
       alert("You can only upload a maximum of 5 files.");
@@ -137,15 +175,14 @@ function AboutBusiness() {
     );
   };
 
-
   const isValidUrl = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" +
-      "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
-      "((\\d{1,3}\\.){3}\\d{1,3}))" +
-      "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
-      "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
-      "(\\#[-a-zA-Z\\d_]*)?$",
+        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
+        "((\\d{1,3}\\.){3}\\d{1,3}))" +
+        "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
+        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
+        "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     );
     return !!pattern.test(url);
@@ -187,18 +224,20 @@ function AboutBusiness() {
     // setAboutBusinessError(aboutError);
     // setFilesError(fileErr);
 
-    return !urlError
+    return !urlError;
     // && !listingError && !aboutError && !fileErr;
   };
   const fetchAgentCountFromUser = async () => {
     try {
-      const response = await listAgents()
-      const filterAgents = await response.filter(res => res.userId === userId)
-      setAgentCount(filterAgents.length)
+      const response = await listAgents();
+      const filterAgents = await response.filter(
+        (res) => res.userId === userId
+      );
+      setAgentCount(filterAgents.length);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setBusinessUrlSubmitted(true);
@@ -209,7 +248,9 @@ function AboutBusiness() {
     if (!validateForm()) return;
 
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
-    const businessLocation = JSON.parse(sessionStorage.getItem("businessLocation"));
+    const businessLocation = JSON.parse(
+      sessionStorage.getItem("businessLocation")
+    );
 
     const mergedUrls = [businessUrl.trim()];
 
@@ -217,16 +258,19 @@ function AboutBusiness() {
     const packageName = sessionStorage.getItem("package") || "Free";
 
     const packageMap = {
-      "Free": 1,
-      "Starter": 2,
-      "Scaler": 3,
-      "Growth": 4,
-      "Corporate": 5,
-      "Enterprise": 6
+      Free: 1,
+      Starter: 2,
+      Scaler: 3,
+      Growth: 4,
+      Corporate: 5,
+      Enterprise: 6,
     };
 
     const packageValue = packageMap[packageName] || 1;
-    const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
+    const sanitize = (str) =>
+      String(str || "")
+        .trim()
+        .replace(/\s+/g, "_");
     const businessTypes = [
       { name: "Restaurant", code: "rest" },
       { name: "Real Estate Broker", code: "rea_est_bro" },
@@ -250,14 +294,16 @@ function AboutBusiness() {
       { name: "Car Repair & Garage", code: "car_rep" },
       { name: "Boat Repair & Maintenance", code: "boa_rep" },
       { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
-      { name: "Other Local Business", code: "oth_loc_bus" }
+      { name: "Other Local Business", code: "oth_loc_bus" },
     ];
     const matchedBusiness = businessTypes.find(
       (item) => item.name === business?.businessType
     );
-    const businessCode = matchedBusiness ? matchedBusiness.code : 'unknown';
+    const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
     const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
-    const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(shortBusinessName)}_${sanitize(packageValue)}_#${agentCount}`;
+    const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(
+      shortBusinessName
+    )}_${sanitize(packageValue)}_#${agentCount}`;
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     let knowledgeTexts = [];
@@ -273,7 +319,7 @@ Address No. 2: ${businessLocation.address2 || ""}
 `.trim(); // Optional: remove leading/trailing whitespace
       moreAbout = {
         title: business.businessType || "Business Info",
-        text: textContent
+        text: textContent,
       };
     }
     formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
@@ -292,8 +338,11 @@ Address No. 2: ${businessLocation.address2 || ""}
           },
         }
       );
-      console.log(response, "response")
-      sessionStorage.setItem("knowledgeBaseId", response.data.knowledge_base_id);
+      console.log(response, "response");
+      sessionStorage.setItem(
+        "knowledgeBaseId",
+        response.data.knowledge_base_id
+      );
 
       setPopupType("success");
       setPopupMessage("Knowledge base created successfully!");
@@ -301,7 +350,10 @@ Address No. 2: ${businessLocation.address2 || ""}
 
       setTimeout(() => navigate("/steps"), 1500);
     } catch (error) {
-      console.error("Upload failed:", error.response?.data?.message || error.message);
+      console.error(
+        "Upload failed:",
+        error.response?.data?.message || error.message
+      );
       setPopupType("failed");
       setPopupMessage(error.response?.data?.message || "Internal Server Error");
       setShowPopup(true);
@@ -310,7 +362,7 @@ Address No. 2: ${businessLocation.address2 || ""}
     }
   };
   const handleSkip = (e) => {
-    e.preventDefault(); // prevent form submit
+    e.preventDefault(); 
     setPopupType("confirm");
     setPopupMessage(
       "This step is essential for your agent to understand your business context. You can always update these settings later as needed."
@@ -327,8 +379,8 @@ Address No. 2: ${businessLocation.address2 || ""}
     setShowPopup(false);
   };
   useEffect(() => {
-    fetchAgentCountFromUser()
-  }, [])
+    fetchAgentCountFromUser();
+  }, []);
   return (
     <>
       <div>
@@ -336,16 +388,15 @@ Address No. 2: ${businessLocation.address2 || ""}
           <div className={styles.header}>
             <h1>About Your Business</h1>
           </div>
-          <form className={styles.formContainer} >
+          <form className={styles.formContainer}>
             <div className={styles.form}>
-              <div className={styles.labReq} >
+              <div className={styles.labReq}>
                 <div className={styles.formGroup}>
-
-                  <div className={styles.Dblock} >
+                  <div className={styles.Dblock}>
                     <label htmlFor="business-url">URL (Website)</label>
                     {/* <span className={styles.prefix}>https://</span> */}
                     <input
-                      id="https://your website url"
+                      id="https://your-website-url"
                       type="url"
                       placeholder="https://your website url"
                       value={businessUrl}
@@ -355,9 +406,9 @@ Address No. 2: ${businessLocation.address2 || ""}
                       onKeyDown={(e) => {
                         const { key, target } = e;
                         if (key !== "Backspace" && key !== "Delete") return;
-
                         const { selectionStart, selectionEnd, value } = target;
-                        const fullSelection = selectionStart === 0 && selectionEnd === value.length;
+                        const fullSelection =
+                          selectionStart === 0 && selectionEnd === value.length;
 
                         if (fullSelection) {
                           // They wiped everything — leave only the prefix
@@ -373,38 +424,35 @@ Address No. 2: ${businessLocation.address2 || ""}
                         // Block any removal that touches the prefix
                         if (selectionStart <= PREFIX_LEN) e.preventDefault();
                       }}
-
-                      /* 2️⃣  Clean every keystroke or paste */
-                      onInput={(e) => {
-                        let v = e.target.value;
-
-                        // Strip *every* http:// or https:// that appears anywhere
-                        v = v.replace(/https?:\/\//gi, "");
-
-                        // Kill spaces and force lowercase
-                        v = v.replace(/\s+/g, "").toLowerCase();
-
-                        const final = HTTPS_PREFIX + v;
-                        setBusinessUrl(final);
-
-                        if (businessUrlSubmitted) {
-                          setBusinessUrlError(validateBusinessUrl(final));
-                        }
-                      }}
+                      onInput={handleInputChange}
                     />
+                     <div className={styles.verifyButtonContainer}>
+                {!isVerified && (
+                  <button
+                    type="button"
+                    className={styles.verifyButton}
+                    onClick={handleVerifyUrl}
+                  >
+                    Verify
+                  </button>
+                )}
+              </div>
                   </div>
                 </div>
                 {businessUrlSubmitted && businessUrlError && (
                   <p className={styles.inlineError}>{businessUrlError}</p>
                 )}
               </div>
+              {/* Verify Button */}
+             
+
               <div>
                 <div className={styles.formGroup}>
                   <label htmlFor="google-listing">Google Listing</label>
                   <input
                     id="google-listing"
                     type="url"
-                    placeholder="https://g.co/kgs/zrLgvY9"
+                    placeholder="Type the name of your Business to Search"
                     value={googleListing}
                     inputMode="url"
                     autoComplete="url"
@@ -414,21 +462,23 @@ Address No. 2: ${businessLocation.address2 || ""}
                       if (key !== "Backspace" && key !== "Delete") return;
 
                       const { selectionStart, selectionEnd, value } = target;
-                      const fullSelection = selectionStart === 0 && selectionEnd === value.length;
+                      const fullSelection =
+                        selectionStart === 0 && selectionEnd === value.length;
 
                       if (fullSelection) {
                         // They wiped everything — leave only the prefix
                         e.preventDefault();
                         setGoogleListing(HTTPS_PREFIX);
                         // Put caret after the prefix
-                        requestAnimationFrame(() => target.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
+                        requestAnimationFrame(() =>
+                          target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
+                        );
                         return;
                       }
 
                       // Block any removal/editing that touches the prefix
                       if (selectionStart <= PREFIX_LEN) e.preventDefault();
                     }}
-
                     onInput={(e) => {
                       let v = e.target.value;
 
@@ -454,8 +504,9 @@ Address No. 2: ${businessLocation.address2 || ""}
 
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
-                <textarea rows="4" cols="50"
-
+                <textarea
+                  rows="4"
+                  cols="50"
                   id="about-business"
                   type="text"
                   placeholder="Use text for describing your business. Describe something about your business which is not defined or listed on Google My Business or Your website."
@@ -463,10 +514,11 @@ Address No. 2: ${businessLocation.address2 || ""}
                   onChange={(e) => {
                     setAboutBusiness(e.target.value);
                     if (aboutBusinessSubmitted)
-                      setAboutBusinessError(validateAboutBusiness(e.target.value));
+                      setAboutBusinessError(
+                        validateAboutBusiness(e.target.value)
+                      );
                   }}
                 />
-
               </div>
               {aboutBusinessSubmitted && aboutBusinessError && (
                 <p className={styles.inlineError}>{aboutBusinessError}</p>
@@ -486,7 +538,9 @@ Address No. 2: ${businessLocation.address2 || ""}
                 <p className={styles.inlineError}>{filesError}</p>
               )}
               <div className={styles.formGroup}>
-                <label htmlFor="additional-note">Additional Agent Instructions </label>
+                <label htmlFor="additional-note">
+                  Additional Agent Instructions{" "}
+                </label>
                 <textarea
                   id="additional-note"
                   placeholder="Note"
@@ -500,7 +554,12 @@ Address No. 2: ${businessLocation.address2 || ""}
                 <button>Skip for now</button>
               </div>
               <div>
-                <button type="submit" className={styles.btnTheme} disabled={loading} onClick={handleSubmit}>
+                <button
+                  type="submit"
+                  className={styles.btnTheme}
+                  disabled={loading}
+                  onClick={handleSubmit}
+                >
                   <img src="svg/svg-theme.svg" alt="" />
                   {loading ? (
                     <>
