@@ -26,14 +26,16 @@ export default function Home() {
     console.log(fetchAgents, "HELO")
     useEffect(() => {
         fetchCallHistory();
-    }, []);
+    }, [agentId]);
 
     const fetchCallHistory = async () => {
         try {
             setLoading(true)
-            const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`);
-            setData(response.data.filteredCalls || []);
-            setLoading(false)
+            if (agentId) {
+                const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`);
+                setData(response.data.filteredCalls || []);
+                setLoading(false)
+            }
         } catch (error) {
             console.error("Error fetching call history:", error);
         } finally {
@@ -79,7 +81,7 @@ export default function Home() {
                     isAgents={
                         fetchAgents.state.agents
                     }
-                            // onAgentChange={handleAgentChange}
+                // onAgentChange={handleAgentChange}
 
                 />
 
