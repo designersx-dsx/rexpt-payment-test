@@ -1,5 +1,7 @@
 import React from "react";
 import styles from './CallTest.module.css';
+import Loader from "../Loader/Loader";
+import Loader2 from "../Loader2/Loader2";
 
 const CallTest = ({
   onStartCall,
@@ -52,8 +54,10 @@ const CallTest = ({
             </div>
             <div className={styles.callText}>
               <p>Connecting...</p>
+              
               <small>{displayBusinessName}&nbsp; Agent is LIVE</small>
             </div>
+            
           </div>
         ) : (
           <div className={styles.greendiv} onClick={onStartCall}>
