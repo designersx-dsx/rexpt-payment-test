@@ -28,14 +28,24 @@ const BusinessDetails = () => {
 
   const businessTypes = [
     {
-      type: "Restaurant",
-      subtype: "Your Journey Begins Here",
-      icon: "svg/Restaurant-icon.svg",
-    },
-    {
       type: "Real Estate Broker",
       subtype: "Your Journey Begins Here",
       icon: "svg/Estate-icon.svg",
+    },
+    {
+      type: "  Landscaping Company",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Landscaping-icon.svg",
+    },
+    {
+      type: " Architect",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Architect-icon.svg",
+    },
+    {
+      type: "Interior Designer",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Interior-Designer-icon.svg",
     },
     {
       type: "Saloon",
@@ -43,102 +53,30 @@ const BusinessDetails = () => {
       icon: "svg/Saloon-icon.svg",
     },
     {
+      type: "Dentist",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Dentist-Office-icon.svg",
+    },
+    {
       type: "Doctor's Clinic",
       subtype: "Your Journey Begins Here",
       icon: "svg/Doctor-clinic-icon.svg",
     },
-  
     {
-      type: "Dry Cleaner",
+      type: "Gym & Fitness Center",
       subtype: "Your Journey Begins Here",
-        icon: "svg/Dry -Cleaner-icon.svg",
+      icon: "svg/Gym-icon.svg",
+    },
+
+    {
+      type: "Personal Trainer",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Personal-Trainer-icon.svg",
     },
     {
       type: "Web Design Agency",
       subtype: "Your Journey Begins Here",
       icon: "svg/Web-Design-Agency-icon.svg",
-    },
-   
-    {
-      type: "Gym & Fitness Center",
-      subtype: "Your Journey Begins Here",
-       icon: "svg/Gym-icon.svg",
-    },
-     {
-      type: "Marketing Agency",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-
-    },
-    {
-      type: "Personal Trainer",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: "Architect",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: "Interior Designer",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: " Construction Services",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: " Cleaning/Janitorial Service",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: "  Transport Company",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: "  Landscaping Company",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: "  Insurance Agency",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: "  Financial Services",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: " Accounting Services",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: " Car Repair & Garage",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: " Boat Repair & Maintenance",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: "Property Rental & Leasing Service",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-    },
-    {
-      type: "Other Local Business",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
     },
   ];
   const businessSizeOptions = [
@@ -176,23 +114,23 @@ const BusinessDetails = () => {
     return "";
   };
 
-const validateBusinessSize = (value) => {
-  if (!value.trim()) return "Business size is required.";
-  console.log(value)
-  const allowedValues = [
-    "1 to 10 employees",
-    "10 to 50 employees",
-    "50 to 100 employees",
-    "100 to 250 employees",
-    "250 to 500 employees", 
-    "500 to 1000 employees", 
-    "1000+ employees"   
-  ];
-  if (!allowedValues.includes(value)) {
-    return "Invalid business size selected.";
-  }
-  return "";
-};
+  const validateBusinessSize = (value) => {
+    if (!value.trim()) return "Business size is required.";
+    console.log(value)
+    const allowedValues = [
+      "1 to 10 employees",
+      "10 to 50 employees",
+      "50 to 100 employees",
+      "100 to 250 employees",
+      "250 to 500 employees",
+      "500 to 1000 employees",
+      "1000+ employees"
+    ];
+    if (!allowedValues.includes(value)) {
+      return "Invalid business size selected.";
+    }
+    return "";
+  };
 
   const handleBusinessNameChange = (e) => {
     const val = e.target.value;
@@ -204,9 +142,9 @@ const validateBusinessSize = (value) => {
     }
   };
 
- const handleBusinessSizeChange = (e) => {
-  setBusinessSize(e.target.value);
-};
+  const handleBusinessSizeChange = (e) => {
+    setBusinessSize(e.target.value);
+  };
 
   const handleBusinessTypeChange = (e) => {
     setBusinessType(e.target.value);
@@ -360,14 +298,13 @@ const validateBusinessSize = (value) => {
         <label>Business Size (Number of Emp.)<span className={styles.requiredField}> *</span></label>
         <select
           value={businessSize}
-          onChange={handleBusinessSizeChange }
-          className={`${styles.selectInput} ${
-            businessSizeError ? styles.inputError : ""
-          }`}
+          onChange={handleBusinessSizeChange}
+          className={`${styles.selectInput} ${businessSizeError ? styles.inputError : ""
+            }`}
         >
-            <option value="" disabled className={styles.selectOption}>
-          {'Select Business Size'}
-        </option>
+          <option value="" disabled className={styles.selectOption}>
+            {'Select Business Size'}
+          </option>
           <option value='1 to 10 employees' className={`${styles.selectOption}`} >
             {'1 to 10 employees'}
           </option>
@@ -390,7 +327,7 @@ const validateBusinessSize = (value) => {
             {'1000+ employees'}
           </option>
         </select>
-         {businessSizeSubmitted && businessSizeError && (
+        {businessSizeSubmitted && businessSizeError && (
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>

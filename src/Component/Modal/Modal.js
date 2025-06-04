@@ -42,7 +42,7 @@ const Modal = ({ isOpen, onClose, children }) => {
   if (!shouldRender) return null;
 
   return (
-    <div className={styles.backdrop} onClick={handleClose}>
+    <div className={styles.backdrop} >
       <div
         className={`${styles.modalContainer} ${isClosing ? styles.slideDown : ''}`}
         onClick={(e) => e.stopPropagation()}
