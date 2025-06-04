@@ -3,6 +3,7 @@ import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import { useNavigate } from "react-router-dom";
 import {
+  deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
   fetchDashboardDetails,
 } from "../../Store/apiStore";
@@ -62,7 +63,6 @@ function Dashboard() {
 
   const [callId, setCallId] = useState(null);
 
-
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
@@ -80,18 +80,14 @@ function Dashboard() {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
 
-
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
-
-
-const handleAssignNumberClick = (agent, e) => {
-  e.stopPropagation();
-  const planName = agent?.subscription?.product_name || "Free";
-
+  const handleAssignNumberClick = (agent, e) => {
+    e.stopPropagation();
+    const planName = agent?.subscription?.product_name || "Free";
 
     if (planName.toLowerCase() === "free") {
       openAssignNumberModal();
@@ -100,7 +96,6 @@ const handleAssignNumberClick = (agent, e) => {
       setIsAssignModalOpen(true);
     }
   };
-
 
   // Navigate on agent card click
   const handleCardClick = (agent) => {
@@ -178,7 +173,7 @@ const handleAssignNumberClick = (agent, e) => {
       try {
         const res = await fetchDashboardDetails(userId);
 
-        console.log(res,hasFetched,"HELOE")
+        console.log(res, hasFetched, "HELOE");
         let agentsWithCalKeys = res.agents || [];
         const calApiAgents = await fetchCalApiKeys(userId);
         const calApiKeyMap = {};
@@ -245,7 +240,7 @@ const handleAssignNumberClick = (agent, e) => {
       );
 
       setLocalAgents(updatedAgents);
-      setHasFetched(false)
+      setHasFetched(false);
       // localStorage.setItem("agents", JSON.stringify(updatedAgents));
 
       setShowEventInputs(true);
@@ -352,9 +347,17 @@ const handleAssignNumberClick = (agent, e) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
-  const handleDelete = (id) => {
-    alert(`Delete clicked for card ${id}`);
-    setOpenDropdown(null);
+  const handleDelete = async (agentId) => {
+    try {
+      await deleteAgent(agentId);
+      setPopupMessage("Agent deleted successfully!");
+      setPopupType("success");
+       setHasFetched(false)
+       sessionStorage.clear();
+    } catch (error) {
+      setPopupMessage(`Failed to delete agent: ${error.message}`);
+      setPopupType("failed");
+    }
   };
 
   const handleUpgrade = (id) => {
@@ -421,7 +424,7 @@ const handleAssignNumberClick = (agent, e) => {
       const payload = { agentId: agentDetails.agent_id, callId: callId };
       const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
 
-      setHasFetched(false)
+      setHasFetched(false);
 
       console.log("Call end response", response);
     }
@@ -503,7 +506,9 @@ const handleAssignNumberClick = (agent, e) => {
                   }
                   alt="Profile"
                   className={styles.profilePic}
-                   onError={(e) => { e.target.src = "images/camera-icon.avif"; }}
+                  onError={(e) => {
+                    e.target.src = "images/camera-icon.avif";
+                  }}
                 />
               </button>
             </div>
@@ -511,13 +516,15 @@ const handleAssignNumberClick = (agent, e) => {
               <p className={styles.greeting}>Hello!</p>
               <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
             </div>
-               {isUploadModalOpen && (
-            <UploadProfile
-              onClose={closeUploadModal}
-              onUpload={handleUpload}
-              currentProfile={uploadedImage || user?.profile || "images/camera-icon.avif"}
-            />
-          )}
+            {isUploadModalOpen && (
+              <UploadProfile
+                onClose={closeUploadModal}
+                onUpload={handleUpload}
+                currentProfile={
+                  uploadedImage || user?.profile || "images/camera-icon.avif"
+                }
+              />
+            )}
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon}>
@@ -607,9 +614,9 @@ const handleAssignNumberClick = (agent, e) => {
 
       <div className={styles.main}>
         {localAgents?.map((agent) => {
-                 const planStyles = ['MiniPlan', 'ProPlan', 'Maxplan'];
-                    const randomPlan = `${agent?.subscription?.product_name}Plan`;
-                    // console.log('randomPlan',randomPlan)
+          const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
+          const randomPlan = `${agent?.subscription?.product_name}Plan`;
+          // console.log('randomPlan',randomPlan)
           let assignedNumbers = [];
           if (agent.voip_numbers) {
             try {
@@ -626,13 +633,8 @@ const handleAssignNumberClick = (agent, e) => {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-
-
-
-                  {agent?.subscription?.product_name ||  "Free"}{" Plan"}
-
-
-
+                  {agent?.subscription?.product_name || "Free"}
+                  {" Plan"}
                 </h3>
               </div>
               <div className={styles.Lang}>
@@ -698,11 +700,22 @@ const handleAssignNumberClick = (agent, e) => {
                       >
                         Upgrade
                       </div>
-                      <div
-                        className={styles.OptionItem}
-                        onClick={() => handleDelete(agent.agent_id)}
-                      >
-                        Delete Agent
+                      <div key={agent.agent_id}>
+                        <div
+                          className={styles.OptionItem}
+                          onClick={async () => {
+                            try {
+                              await handleDelete(agent.agent_id);
+                            } catch (error) {
+                              setPopupMessage(
+                                `Failed to delete agent: ${error.message}`
+                              );
+                              setPopupType("failed");
+                            }
+                          }}
+                        >
+                          Delete Agent
+                        </div>
                       </div>
 
                       {/* <div
@@ -750,7 +763,6 @@ const handleAssignNumberClick = (agent, e) => {
                 {assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
                     Assigned Number
-
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
                       {assignedNumbers.join(", ")}
@@ -760,12 +772,10 @@ const handleAssignNumberClick = (agent, e) => {
                   <div
                     className={styles.AssignNum}
                     onClick={(e) => handleAssignNumberClick(agent, e)}
-
                     style={{ cursor: "pointer" }}
                   >
                     Assign Number
                   </div>
-
                 )}
 
                 <div className={styles.minLeft}>
@@ -994,12 +1004,11 @@ const handleAssignNumberClick = (agent, e) => {
               onClick={closeAssignNumberModal}
               style={{ width: "100%" }}
             >
-              Got it!    
+              Got it!
             </button>
           </div>
         </div>
       )}
-
 
       {/* Modals for capturing/uploading profile picture */}
       {/* {isCaptureModalOpen && (
@@ -1039,7 +1048,6 @@ const handleAssignNumberClick = (agent, e) => {
       )}
       {/* nitish */}
 
-
       {popupMessage && (
         <Popup
           type={popupType}
@@ -1047,8 +1055,6 @@ const handleAssignNumberClick = (agent, e) => {
           onClose={() => setPopupMessage("")}
         />
       )}
-
-     
     </div>
   );
 }
