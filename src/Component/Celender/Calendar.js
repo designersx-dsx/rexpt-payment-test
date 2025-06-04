@@ -1,5 +1,6 @@
 import React from 'react'
 import Footer from '../AgentDetails/Footer/Footer'
+import Footer2 from '../AgentDetails/Footer/Footer2'
 const Calendar = () => {
   return (
     <>
@@ -7,6 +8,8 @@ const Calendar = () => {
       <h1>Calendar</h1>
     </div>
     <Footer/>
+    {/* <Footer2/> */}
+
     </>
    
   )

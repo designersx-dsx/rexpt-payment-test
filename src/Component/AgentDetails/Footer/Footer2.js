@@ -1,8 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../Footer/Footer2.module.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Footer2 = () => {
   const [activeTab, setActiveTab] = useState("home");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Set active tab based on current path
+    if (location.pathname.includes("/dashboard")) {
+      setActiveTab("home");
+    } else if (location.pathname.includes("/calendar")) {
+      setActiveTab("calendar");
+    } else if (location.pathname.includes("/info")) {
+      setActiveTab("info");
+    }
+  }, [location.pathname]);
+
+  const handleTabClick = (tab, path) => {
+    setActiveTab(tab);
+    navigate(path);
+  };
   return (
     <div>
       <div className={styles.navbar}>
@@ -10,7 +29,7 @@ const Footer2 = () => {
           className={`${styles.tab} ${
             activeTab === "home" ? styles.active : ""
           }`}
-          onClick={() => setActiveTab("home")}
+          onClick={() => handleTabClick("home", "/dashboard")}
         >
           <span className={styles.icon}>
             <svg
@@ -34,7 +53,7 @@ const Footer2 = () => {
           className={`${styles.tab} ${
             activeTab === "calendar" ? styles.active : ""
           }`}
-          onClick={() => setActiveTab("calendar")}
+          onClick={() => handleTabClick("calendar", "/calendar")}
         >
           <span className={styles.icon}>
             <svg
