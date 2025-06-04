@@ -13,12 +13,19 @@ function CallTransfer() {
                     <img src='svg/Add-icon.svg' alt='Add-icon' />
                 </div>
                 <div className={styles.card}>
-                    <label className={styles.label}>Condition for Agent to follow</label>
-                    <select className={styles.select}>
-                        <option>Forward when busy</option>
-                        <option>Forward when no answer</option>
-                        <option>Always forward</option>
-                    </select>
+                    <div className={styles.selectWrapper}>
+                        <label className={styles.label}>Condition for Agent to follow</label>
+                        <select className={styles.select}>
+                            <option>Forward when busy</option>
+                            <option>Forward when no answer</option>
+                            <option>Always forward</option>
+                        </select>
+                        <img
+                            src="svg/select-arrow.svg"
+                            alt="arrow"
+                            className={styles.arrowIcon}
+                        />
+                    </div>
 
                     <label className={styles.label}>Forward to</label>
                     <div className={styles.phoneInput}>
@@ -26,10 +33,23 @@ function CallTransfer() {
                             <img src="svg/india-Flag.svg" alt="flag" />
                             <span>+91</span>
                         </div>
-                        <span className={styles.phoneNumber}>985 XXX 88XX</span>
+                        <input
+                            type="tel"
+                            className={styles.phoneNumberInput}
+                            placeholder="985 XXX 88XX"
+                        />
                     </div>
                 </div>
-
+                <div className={styles.Btn} >
+                    <div type="submit">
+                        <div className={styles.btnTheme}>
+                            <img src="svg/svg-theme2.svg" alt="" />
+                            <p>
+                                Submit
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
 
