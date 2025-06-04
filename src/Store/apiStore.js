@@ -113,4 +113,17 @@ export const validateWebsite = async (websiteUrl) => {
     return { valid: false, reason: 'Error validating website' };
   }
 };
+export const deleteAgent = async (agentId) => {
+  try {
+    const res = await api.delete(`/agent/deleteAgent/${agentId}`, {
+      headers: {
+         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,  
+      },
+    });
+    return res.data; 
+  } catch (error) {
+    console.error("Error deleting agent:", error.response?.data || error.message);
+    throw new Error("Failed to delete agent");
+  }
+};
 export default api;

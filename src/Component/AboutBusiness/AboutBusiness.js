@@ -426,14 +426,7 @@ Address No. 2: ${businessLocation.address2 || ""}
                       }}
                       onInput={handleInputChange}
                     />
-                  </div>
-                </div>
-                {businessUrlSubmitted && businessUrlError && (
-                  <p className={styles.inlineError}>{businessUrlError}</p>
-                )}
-              </div>
-              {/* Verify Button */}
-              <div className={styles.verifyButtonContainer}>
+                     <div className={styles.verifyButtonContainer}>
                 {!isVerified && (
                   <button
                     type="button"
@@ -444,6 +437,14 @@ Address No. 2: ${businessLocation.address2 || ""}
                   </button>
                 )}
               </div>
+                  </div>
+                </div>
+                {businessUrlSubmitted && businessUrlError && (
+                  <p className={styles.inlineError}>{businessUrlError}</p>
+                )}
+              </div>
+              {/* Verify Button */}
+             
 
               <div>
                 <div className={styles.formGroup}>
