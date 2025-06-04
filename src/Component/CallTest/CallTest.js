@@ -54,7 +54,6 @@ const CallTest = ({
             </div>
             <div className={styles.callText}>
               <p>Connecting...</p>
-              
               <small>{displayBusinessName}&nbsp; Agent is LIVE</small>
             </div>
             

@@ -486,7 +486,34 @@ const createCalEvent = async () => {
     setUploadedImage(image);
     closeUploadModal();
   };
-  // console.log('URSER',localAgents.subscription)
+ 
+  useEffect(() => {
+    
+    window.history.pushState(null, "", window.location.href);
+
+  
+    const handlePopState = (e) => {
+  
+      window.history.pushState(null, "", window.location.href);
+
+      
+      const confirmExit = window.confirm("Are you sure you want to leave? You might lose unsaved changes.");
+      if (!confirmExit) {
+      
+        window.history.pushState(null, "", window.location.href); 
+      }
+    };
+
+   
+    window.addEventListener('popstate', handlePopState);
+
+   
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+  
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1020,6 +1047,8 @@ const createCalEvent = async () => {
 
       <Footer />
       {/* <Footer2/> */}
+
+
       {/* OffCanvas for Logout */}
       {openOffcanvas && (
         <OffCanvas
