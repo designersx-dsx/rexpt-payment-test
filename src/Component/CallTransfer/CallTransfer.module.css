@@ -1,0 +1,70 @@
+.CallTransferMain {
+    padding-inline: 16px;
+}
+
+.headrPart {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.card {
+    background: #F3EEFF;
+    border-radius: 12px;
+    padding: 16px;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+.label {
+    color: #24252C;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: "Lato", sans-serif;
+
+}
+
+.select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-block: 14px;
+    background-color: #fff;
+    appearance: none;
+    min-height: 55px;
+}
+
+.phoneInput {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 10px 12px;
+    gap: 10px;
+    border: 1px solid #ccc;
+    margin-block: 14px;
+    min-height: 55px;
+}
+
+.countryCode {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-right: 10px;
+    border-right: 1px solid #E0E5F2;
+}
+
+.countryCode img {
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+}
+
+.phoneNumber {
+    font-size: 14px;
+    color: #222;
+}
