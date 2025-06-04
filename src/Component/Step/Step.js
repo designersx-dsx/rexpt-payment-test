@@ -461,7 +461,7 @@ End Call: If the caller is satisfied, invoke end_call function.
     // let  prompt ;
     const prompt1 = role_title === "General Receptionist"
         ? generalReceptionistPrompt
-        : role_title === "Sales Receptionist"
+        : role_title === "Inbound LEAD Qualifier"
             ? salesReceptionistPrompt
             : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
     const languages = [
