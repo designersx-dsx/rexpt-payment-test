@@ -348,18 +348,20 @@ function Dashboard() {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
-  const handleDelete = async (agentId) => {
-    try {
-      await deleteAgent(agentId);
-      setPopupMessage("Agent deleted successfully!");
-      setPopupType("success");
-       setHasFetched(false)
-       sessionStorage.clear();
-    } catch (error) {
-      setPopupMessage(`Failed to delete agent: ${error.message}`);
-      setPopupType("failed");
-    }
-  };
+ const handleDelete = async (agentId) => {
+  try {
+    await deleteAgent(agentId);
+    const updatedAgents = localAgents.filter(agent => agent.agent_id !== agentId);
+    setLocalAgents(updatedAgents); 
+    setPopupMessage("Agent deleted successfully!");
+    setPopupType("success");
+    setHasFetched(false);
+  } catch (error) {
+    setPopupMessage(`Failed to delete agent: ${error.message}`);
+    setPopupType("failed");
+  }
+};
+
 
   const handleUpgrade = (id) => {
     alert(`Upgrade clicked for card ${id}`);
