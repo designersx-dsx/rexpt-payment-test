@@ -30,7 +30,7 @@ const AgentDashboard = () => {
   const [openCallModal, setOpenCallModal] = useState(false);
   const [callLoading, setCallLoading] = useState(false);
 
-  // console.log('agentDetails', agentDetails)
+  console.log('agentDetails', agentDetails)
   //   const {
   //   agentData,
   //   assignedNumbers,
@@ -61,6 +61,7 @@ const AgentDashboard = () => {
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
    const [agentId,setAgentId]=useState("")
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
+
   const openCalModal = () => {
     if (!agentData?.agent) return;
     setApiKey(agentData.agent.calApiKey || "");
@@ -373,10 +374,11 @@ const AgentDashboard = () => {
    navigate("/totalcall-list")
    sessionStorage.setItem("agentId",agentId)
   }
+  console.log(agentData,agentDetails.agentId)
   return (
     <div>
 
-      {(loading && !agentData)? (
+      {(loading && !agentData?.agent?.agent_id!=agentDetails.agentId)? (
 
         <Loader2 />
       ) : (
