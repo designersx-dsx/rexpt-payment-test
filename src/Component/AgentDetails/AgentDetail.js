@@ -30,7 +30,7 @@ const AgentDashboard = () => {
   const [openCallModal, setOpenCallModal] = useState(false);
   const [callLoading, setCallLoading] = useState(false);
 
-  console.log('agentDetails', agentDetails)
+  // console.log('agentDetails', agentDetails)
   //   const {
   //   agentData,
   //   assignedNumbers,
@@ -236,7 +236,7 @@ const createCalEvent = async () => {
   //     getAgentDetailsAndBookings();
   //   }
   // }, [agentDetails]);
-
+// console.log('agentData',agentData)
   useEffect(() => {
   const getAgentDetailsAndBookings = async () => {
 
@@ -370,7 +370,7 @@ console.log('loading',loading)
 
   return (
     <div>
-      {(loading && agentData)? (
+      {(loading && !agentData)? (
         <Loader2 />
       ) : (
    <>
