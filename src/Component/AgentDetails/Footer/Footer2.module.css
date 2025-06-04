@@ -14,6 +14,7 @@
   border-radius: 20px 20px 0 0;
   z-index: 50;
   backdrop-filter: blur(4px);
+  padding: 0px 10px 15px 10px;
 }
 
 .tab {
@@ -51,7 +52,7 @@
 }
 
 .createBtn:hover {
-  background-color: #5b00c9;
+  background-color: #5f33e1;
 }
 
 .createIcon {
@@ -60,6 +61,12 @@
   border-radius: 50%;
   font-size: 1.5rem;
   box-shadow: rgb(255 255 255 / 20%) 0px 0px 8px 0px;
+  height: 40px;
+    width: 40px;
+    align-items: center;
+    display: flex
+;
+    justify-content: center;
 }
 
 .createText {
@@ -74,7 +81,7 @@
   position: relative;
   background: transparent;
   border: none;
-  padding: 10px;
+  padding: 20px 6px 5px 6px;
   cursor: pointer;
 }
 
@@ -84,14 +91,136 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 3px;
+  height: 4px;
   width: 100%;
   background-color: #5f33e1;
-  border-radius: 2px;
+  border-radius: 0px 0px 4px 4px;
 }
 
-/* @media (max-width: 400px) {
+
+@media (max-width:600px) {
   .navbar {
-    background: url("data:image/svg+xml,%3Csvg width='440' height='78' viewBox='0 0 440 78' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 16C0 7.16344 7.16344 0 16 0H118H142.424C154.321 0 165.093 7.02915 169.884 17.9178L176.116 32.0822C180.907 42.9708 191.679 50 203.576 50H271H309.302C319.684 50 329.328 44.632 334.799 35.8082L348.201 14.1918C353.672 5.36797 363.316 0 373.698 0H424C432.837 0 440 7.16344 440 16V62C440 70.8366 432.837 78 424 78H16C7.16346 78 0 70.8366 0 62V16Z' fill='%23EDE9FC' fill-opacity='0.8'/%3E%3C/svg%3E") !important;
-  }
-} */
+ 
+  padding: 0px 5px 30px 5px;
+}
+.createBtn {  
+  gap: 15px;
+  
+}
+.createText {
+  font-size: 1.4rem;
+  
+}
+.createIcon {  
+  height: 40px;
+    width: 40px;
+    
+}
+
+}
+
+
+@media (max-width:450px) {
+  .navbar {
+ 
+  padding: 0px 5px 20px 5px;
+}
+.createBtn {  
+  gap: 15px;
+  
+}
+.createText {
+  font-size: 1.4rem;
+  
+}
+.createIcon {  
+  height: 40px;
+    width: 40px;
+    
+}
+  
+}
+
+@media (max-width:420px) {
+  .navbar {
+ 
+  padding: 0px 5px 15px 5px;
+}
+.createBtn {  
+  gap: 8px;
+  
+}
+.createText {
+  font-size: 1.4rem;
+  
+}
+.createIcon {  
+  height: 35px;
+    width: 35px;
+    
+}
+  
+}
+@media (max-width:400px) {
+  .navbar {
+ 
+  padding: 0px 5px 12px 5px;
+}
+.createBtn {  
+  gap: 8px;
+  
+}
+.createIcon {  
+  height: 32px;
+    width: 32px;
+    
+}
+  
+}
+
+@media (max-width:380px) {
+  .navbar {
+ 
+  padding: 0px 5px 3px 5px;
+}
+.createBtn {  
+  gap: 5px;
+  
+}
+.createText {
+  font-size: 1.2rem;
+  
+}
+.createIcon {  
+  height: 32px;
+    width: 32px;
+    
+}
+
+  
+}
+
+@media (max-width:350px) {
+  .navbar {
+ 
+  padding: 0px 5px 0px 5px;
+}
+.createBtn {  
+  gap: 8px;
+  
+}
+.createText {
+  font-size: 1rem;
+  
+}
+.createIcon {  
+  height: 30px;
+    width: 30px;
+    
+}
+  
+}
+
+
+
+

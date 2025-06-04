@@ -1047,6 +1047,8 @@ const createCalEvent = async () => {
 
       <Footer />
       {/* <Footer2/> */}
+
+
       {/* OffCanvas for Logout */}
       {openOffcanvas && (
         <OffCanvas

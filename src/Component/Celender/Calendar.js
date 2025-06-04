@@ -1,5 +1,6 @@
 import React from 'react'
 import Footer from '../AgentDetails/Footer/Footer'
+
 import styles from '../Celender/Clender.module.css'
 const Calendar = () => {
   return (
@@ -8,6 +9,7 @@ const Calendar = () => {
         <h1>Coming Soon</h1>
       </div>
       <Footer />
+
     </>
 
   )
