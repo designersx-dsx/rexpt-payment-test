@@ -18,6 +18,7 @@ import Popup from "../Popup/Popup";
 import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
+import Footer2 from "../AgentDetails/Footer/Footer2";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -1010,7 +1011,7 @@ const handleAssignNumberClick = (agent, e) => {
       )}
 
       <Footer />
-
+      {/* <Footer2/> */}
       {/* OffCanvas for Logout */}
       {openOffcanvas && (
         <OffCanvas
