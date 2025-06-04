@@ -11,6 +11,7 @@ import Modal2 from "../Modal2/Modal2";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import AssignNumberModal from "./AssignNumberModal";
+import CommingSoon from "../ComingSoon/CommingSoon";
 
 import EditAgent from "../EditAgent/EditAgent"
 import DetailModal from "../DetailModal/DetailModal"
@@ -61,6 +62,7 @@ const AgentDashboard = () => {
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [agentId, setAgentId] = useState("")
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
+  const [showModal, setShowModal] = useState(false);
 
   const openCalModal = () => {
     if (!agentData?.agent) return;
@@ -379,7 +381,7 @@ const AgentDashboard = () => {
   return (
     <div>
 
-      {(loading && !agentData?.agent?.agent_id!=agentDetails?.agentId)? (
+      {(loading && !agentData?.agent?.agent_id != agentDetails?.agentId) ? (
 
 
         <Loader2 />
@@ -586,6 +588,10 @@ const AgentDashboard = () => {
                 <h4>Knowledge Base</h4>
               </div>
             </div>
+            <CommingSoon
+              show={showModal}
+              onClose={() => setShowModal(false)}
+            />
             <div className={styles.managementActions}>
               <div className={styles.managementItem}>
                 <div className={styles.SvgDesign}>
@@ -616,7 +622,7 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Cal.com</p>
               </div>
-              <div className={styles.managementItem}>
+              <div className={styles.managementItem} onClick={() => setShowModal(true)}>
                 <div className={styles.SvgDesign}>
                   <svg
                     width="22"
@@ -635,8 +641,7 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Integrate</p>
               </div>
-
-              <div className={styles.managementItem}>
+              <div className={styles.managementItem} onClick={() => setShowModal(true)}>
                 <div className={styles.SvgDesign}>
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7241 7.95904C13.0074 8.2424 13.0074 8.70193 12.7241 8.98529C12.4407 9.26866 11.9812 9.26866 11.6978 8.98529L9.905 7.19248C9.62164 6.90912 9.62164 6.44959 9.905 6.16623C10.0468 6.02445 10.2325 5.95366 10.4181 5.95366H16.1853C16.5862 5.95366 16.9112 6.27869 16.9112 6.67956C16.9112 7.08043 16.5862 7.40546 16.1853 7.40546H12.1703L12.7241 7.95904ZM7.397 10.6027C6.59767 9.80484 5.88916 8.92178 5.28704 7.96956C5.06718 7.62188 5.06941 7.20401 5.29311 6.85876L6.1525 5.53195C6.33575 5.24879 6.37074 4.92558 6.25222 4.60986L4.77411 0.670293C4.54273 0.0534077 3.80995 -0.190717 3.25475 0.164042C2.56747 0.603143 1.88 1.04245 1.19252 1.48155C0.251412 2.08286 -0.185466 3.16392 0.0736272 4.25025C0.871536 7.59396 2.61197 10.6029 5.01723 12.9827C7.397 15.3882 10.406 17.1284 13.7497 17.9263C14.8361 18.1856 15.9171 17.7487 16.5184 16.8074C16.9575 16.1201 17.3969 15.4324 17.836 14.7452C18.1907 14.1898 17.9466 13.4572 17.3297 13.2258L13.3901 11.7477C13.0744 11.6292 12.7512 11.6642 12.468 11.8474L11.1412 12.7068C10.796 12.9303 10.3781 12.9327 10.0304 12.7129C9.07797 12.1106 8.19471 11.4021 7.397 10.6027ZM13.8794 2.69044C13.596 2.40708 13.596 1.94755 13.8794 1.66418C14.1627 1.38082 14.6223 1.38082 14.9056 1.66418L16.6985 3.45699C16.9818 3.74036 16.9818 4.19988 16.6985 4.48325C16.5567 4.62503 16.371 4.69582 16.1853 4.69582H10.4181C10.0173 4.69582 9.69223 4.37079 9.69223 3.96992C9.69223 3.56904 10.0173 3.24402 10.4181 3.24402H14.4332L13.8794 2.69044Z" fill="#6524EB" />
@@ -647,7 +652,6 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Call Transfer</p>
               </div>
-
 
               <div className={styles.managementItem} >
                 <div className={styles.SvgDesign}>
@@ -660,7 +664,7 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText} onClick={() => setModalOpen(true)}>Edit Agent</p>
               </div>
-              <div className={styles.managementItem}>
+              <div className={styles.managementItem} onClick={() => setShowModal(true)}>
                 <div className={styles.SvgDesign}>
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M18.9075 13.7036C17.7025 12.4986 15.8722 12.3081 14.4642 13.123C12.3349 14.3748 9.5527 14.0927 7.72536 12.2647C5.88086 10.4205 5.61058 7.60564 6.90038 5.46931C6.89904 5.4683 6.89702 5.46729 6.89567 5.46628C7.67353 4.06607 7.47157 2.26734 6.28241 1.07818C4.84484 -0.359392 2.51497 -0.359392 1.07707 1.07818C-0.279723 2.4353 -0.354108 4.58711 0.850878 6.0331C2.69875 8.47067 4.7277 10.8143 6.95154 13.0382C9.16562 15.2523 11.4975 17.2768 13.922 19.12C13.9246 19.1176 13.9267 19.1153 13.9287 19.1129C15.375 20.3398 17.543 20.2735 18.9078 18.9086C20.3444 17.4717 20.3444 15.1412 18.9075 13.7036Z" fill="#6524EB" />
@@ -673,9 +677,21 @@ const AgentDashboard = () => {
                   </svg>
 
                 </div>
-                <p className={styles.managementText}>Call Transfer</p>
+                <p className={styles.managementText}>Call Setting</p>
               </div>
-              <div className={styles.managementItem}>
+
+              <div className={styles.managementItem} onClick={() => setShowModal(true)}>
+                <div className={styles.SvgDesign}>
+                  <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.50093 8.65722C11.9787 8.65722 14.0127 10.5339 14.2304 12.9286V13.7058H4.77122V12.9286C4.98902 10.5338 7.02327 8.65722 9.50093 8.65722ZM11.7627 5.80843C11.7627 4.57634 10.7465 3.57124 9.50093 3.57124C8.25533 3.57124 7.2392 4.57634 7.2392 5.80843C7.2392 7.04052 8.25533 8.04562 9.50093 8.04562C10.7465 8.04562 11.7627 7.04052 11.7627 5.80843ZM12.264 0.508766C10.0229 -0.165144 7.63425 0.00578332 5.53367 0.960128L5.55077 0.914725C5.68217 0.562182 5.50217 0.17404 5.14666 0.0422889C4.79205 -0.0876866 4.39785 0.0921426 4.26556 0.442008L3.57974 2.26701C3.50684 2.46109 3.52754 2.67742 3.63554 2.85457C3.74444 3.03173 3.92804 3.15014 4.13595 3.17596L6.02777 3.40919C6.40307 3.45638 6.74598 3.19286 6.79278 2.82164C6.83418 2.4958 6.63257 2.19313 6.32748 2.09342C8.069 1.36342 10.0248 1.25125 11.8634 1.80409C16.1519 3.09585 18.581 7.59694 17.2769 11.8389C16.9718 12.8306 16.4876 13.7396 15.836 14.5391C15.5984 14.8302 15.6452 15.2584 15.9404 15.4917C16.0673 15.5932 16.2185 15.643 16.3697 15.643C16.5695 15.643 16.7684 15.554 16.9043 15.3902C17.6657 14.4527 18.2318 13.3925 18.5882 12.2326C20.112 7.27568 17.2752 2.01589 12.264 0.508766ZM14.8622 15.8245L12.9704 15.5895C12.5951 15.5415 12.2522 15.8059 12.2054 16.1771C12.164 16.5029 12.3656 16.8056 12.6707 16.9053C10.9292 17.6353 8.97343 17.7475 7.13481 17.1946C2.84631 15.9056 0.418094 11.4045 1.72218 7.15982C2.02728 6.16808 2.51149 5.25916 3.16309 4.45963C3.39979 4.16853 3.3539 3.74299 3.05869 3.50706C2.7635 3.27205 2.33239 3.31922 2.09568 3.61033C1.33426 4.54598 0.768162 5.60626 0.411751 6.76633C-1.11197 11.7232 1.72576 16.9828 6.73701 18.4899C8.97805 19.1638 11.3677 18.9929 13.4673 18.0385L13.4502 18.0839C13.3188 18.4365 13.4988 18.8273 13.8534 18.9564C13.9326 18.984 14.0127 19 14.0919 19C14.37 19 14.632 18.8291 14.7346 18.5575L15.4204 16.7325C15.4933 16.5385 15.4726 16.3221 15.3637 16.145C15.2548 15.9678 15.0712 15.8494 14.8633 15.8254L14.8622 15.8245Z" fill="#6524EB" />
+                  </svg>
+
+
+                </div>
+                <p className={styles.managementText}>Upgrade</p>
+              </div>
+
+              <div className={styles.managementItem} onClick={() => setShowModal(true)}>
                 <div className={styles.SvgDesign}>
                   <svg width="17" height="19" viewBox="0 0 17 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3.01032 16.5278C3.10401 17.5153 3.92705 18.2446 4.91546 18.2446H11.6882C12.6756 18.2446 13.4987 17.5153 13.5933 16.5278L14.6754 5.875L1.90527 5.87592L3.01032 16.5278ZM9.59468 9.2857H10.5353V14.8119H9.59468V9.2857ZM6.37328 9.2857H7.3139V14.8119H6.37328V9.2857Z" fill="#6524EB" />
@@ -685,9 +701,6 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Delete Agent</p>
               </div>
-
-
-
             </div>
 
             <h1 className={styles.Agenttitle}>Agent Analysis</h1>

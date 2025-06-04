@@ -18,7 +18,7 @@ import SubscriptionFlow from './Component/Checkout/SubscriptionFlow';
 import Calendar from './Component/Celender/Calendar';
 import BusinessServices from './Component/BusinessServices/BusinessServices';
 import TotalsCallsList from './Component/TotalsCallsList/TotalsCallsList'
-
+import CallTransfer from './Component/CallTransfer/CallTransfer';
 function App() {
   const token = localStorage.getItem('token');
   return (
@@ -65,6 +65,8 @@ function App() {
           <Route path="/checkout" element={<SubscriptionFlow />} />
           <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
           <Route path="/totalcall-list" element={<TotalsCallsList />} />
+          <Route path="/call-transfer" element={<CallTransfer />} />
+
 
         </Routes>
 
