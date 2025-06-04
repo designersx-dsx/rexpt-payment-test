@@ -265,6 +265,31 @@
 }
 
 
+.LangStyle.ScalerPlan {
+    background-color: #FFECE5;
+}
+.LangStyle.StarterPlan {
+    background-color: #cbe7f7;
+}
+
+.LangStyle.GrowthPlan {
+    background-color: #F4DFE1;
+}
+
+
+.LangStyle.StarterPlan .PlanPrice {
+    background-color: #A3DEFF;
+}
+
+.LangStyle.ScalerPlan .PlanPrice {
+    background-color: #FFD2C1;
+}
+
+.LangStyle.GrowthPlan .PlanPrice {
+    background-color: #FFBEC4;
+}
+
+
 
 
 
