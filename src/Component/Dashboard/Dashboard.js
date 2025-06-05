@@ -6,6 +6,7 @@ import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
   fetchDashboardDetails,
+  getUserAgentMergedDataForAgentUpdate,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -488,7 +489,49 @@ const createCalEvent = async () => {
   };
  
 
-  
+//   const handleEditAgent=async(agent)=>{
+//         console.log(agent)
+//     try {  
+//       const agent_id=agent.agent_id;
+//       const businessId=agent.businessId;
+
+//       const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
+//       console.log('response')
+//     } catch (error) {
+//       console.log('An Error Occured while fetching Agent Data for ')
+//     }
+//     console.log('agent',agent)
+//     localStorage.setItem('UpdationMode','ON')
+//     sessionStorage.setItem('agentName',agent.agentName)
+//     sessionStorage.setItem('agentGender',agent.agentGender)
+//     sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
+//     sessionStorage.setItem('agentRole',agent.agentRole)
+//     sessionStorage.setItem('agentVoice',agent.agentVoice)
+//     sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
+//     sessionStorage.setItem('avatar',agent.avatar)
+//     sessionStorage.setItem('businessDetails',agent.business)
+//     sessionStorage.setItem('businessLocation',agent.business)
+//     sessionStorage.setItem('businessId',agent.businessId)
+//     sessionStorage.setItem('agent_id',agent.agent_id)
+//     sessionStorage.setItem('llmId',agent.llmId)
+//     sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
+//     sessionStorage.setItem(  'businessLocation',
+//   // JSON.stringify({
+//   //   country: selected?.name || ipData?.country_name || 'United States',
+//   //   state: state.trim(),
+//   //   city: city.trim(),
+//   //   address1: address1.trim(),
+//   //   address2: address2.trim(),
+//   // })
+//   //   //  const businessData = {
+//     //   userId,
+//     //   businessType,
+//     //   businessName: businessName.trim(),
+//     //   businessSize,
+//     // };
+//     // sessionStorage.setItem("businessDetails", JSON.stringify(businessData))
+// );
+//   }
 
   return (
     <div>
@@ -694,6 +737,7 @@ const createCalEvent = async () => {
                       <div className={styles.OptionItem} onClick={() => ""}>
                         Call Settings
                       </div>
+                      {/* <div className={styles.OptionItem} onClick={() => handleEditAgent(agent)}> */}
                       <div className={styles.OptionItem} onClick={() => ""}>
                         Edit Agent
                       </div>

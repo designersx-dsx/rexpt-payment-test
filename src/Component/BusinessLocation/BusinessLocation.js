@@ -154,12 +154,14 @@ const BusinessLocation = () => {
       setLoading(true)
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-
+      console.log('businessDetails,businessDetails',businessDetails)
       const response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
         userId,
         businessName: businessDetails?.businessName,
         businessSize: businessDetails.businessSize,
         businessType: businessDetails.businessType,
+        buisnessEmail:businessDetails?.email,
+        buisnessService:businessDetails?.selectedService,
         address1: locationData.address1,
         address2: locationData.address2,
         city: locationData.city,
