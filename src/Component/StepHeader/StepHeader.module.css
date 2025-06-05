@@ -62,6 +62,7 @@
     text-align: center;
     margin-top: 1rem;
     margin-bottom: 10px;
+    font-size: 40px;
 }
 
 @keyframes rippleAnimation {
