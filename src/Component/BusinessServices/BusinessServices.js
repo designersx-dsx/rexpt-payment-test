@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../BusinessServices/BusinessServices.module.css';
 import { useNavigate } from "react-router-dom";
-
+import { validateEmail as validateEmailAPI } from '../../Store/apiStore';
+import PopUp from '../Popup/Popup';
 const BusinessServices = () => {
     const navigate = useNavigate();
     const [businessType, setBusinessType] = useState("Restaurant");
@@ -10,8 +11,11 @@ const BusinessServices = () => {
     const [businessSize, setBusinessSize] = useState("");
     const [email, setEmail] = useState("");
     // Error states
-    const [emailError, setEmailError] = useState("");
+   const [emailError, setEmailError] = useState("");
     const [serviceError, setServiceError] = useState("");
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    const [popupMessage, setPopupMessage] = useState(""); 
+    const [popupType, setPopupType] = useState("");
     const businessServices = [
         {
             type: "Restaurant",
@@ -267,6 +271,7 @@ const BusinessServices = () => {
             ]
         }
     ];
+    
     const [searchTerm, setSearchTerm] = useState("");
     const selectedBusiness = businessServices.find(biz => biz.type === businessType);
     const selectedServices = selectedBusiness?.services || [];
@@ -301,6 +306,12 @@ const BusinessServices = () => {
         const isEmailValid = validateEmail(email);
         const isServiceValid = validateService(selectedService);
 
+        if (!isEmailVerified) {
+            setPopupMessage("Please verify your email first.");
+            setPopupType("failed"); 
+            return;  
+        }
+
         if (isEmailValid && isServiceValid) {
             sessionStorage.setItem(
                 "businessDetails",
@@ -315,6 +326,30 @@ const BusinessServices = () => {
             navigate("/business-locations");
         }
     };
+      const handleEmailVerify = async () => {
+        try {
+            const response = await validateEmailAPI(email);
+
+            if (response.valid) {
+                setIsEmailVerified(true);  
+                setEmailError(""); 
+                setPopupMessage("Email verified successfully!");
+                setPopupType("success");  
+            } else {
+                setIsEmailVerified(false);
+                setPopupMessage("Invalid email address.");
+                setPopupType("failed");  
+                setEmailError("Invalid email address.");
+            }
+        } catch (error) {
+            console.error("Error verifying email:", error);
+            setEmailError("Error verifying email.");
+            setPopupMessage("Error verifying email.");
+            setPopupType("failed"); 
+            setIsEmailVerified(false);
+        }
+    };
+
     useEffect(() => {
         const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
         if (savedDetails) {
@@ -325,9 +360,10 @@ const BusinessServices = () => {
             setEmail(savedDetails.email || "");
         }
     }, []);
+    
 
     return (
-        <div className={styles.container}>
+         <div className={styles.container}>
             <h1 className={styles.title}>Business Services</h1>
 
             <div className={styles.searchBox}>
@@ -393,12 +429,28 @@ const BusinessServices = () => {
                             value={email}
                             onChange={(e) => {
                                 setEmail(e.target.value);
-                                setEmailError(""); // Clear error on change
+                                setEmailError("");
+                                setIsEmailVerified(false); 
                             }}
                             onBlur={(e) => validateEmail(e.target.value)}
                         />
                         {emailError && (
                             <p style={{ color: 'red', marginTop: '5px' }}>{emailError}</p>
+                        )}
+
+                        {!isEmailVerified && (
+                            <button
+                                type="button"
+                                className={styles.verifyButton}
+                                onClick={handleEmailVerify}
+                                disabled={emailError || isEmailVerified}
+                            >
+                                Verify Email
+                            </button>
+                        )}
+
+                        {isEmailVerified && (
+                            <p style={{ color: 'green', marginTop: '5px' }}>Email verified successfully!</p>
                         )}
                     </div>
                 </div>
@@ -406,11 +458,23 @@ const BusinessServices = () => {
 
             <div>
                 <div type="submit">
-                    <div className={styles.btnTheme} onClick={handleContinue}>
-
+                    <div
+                        className={styles.btnTheme}
+                        onClick={handleContinue}
+                        disabled={!isEmailVerified} 
+                    >
                         <img src="svg/svg-theme.svg" alt="" type="button" />
                         <p>Continue</p>
-                    </div> </div> </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Show PopUp */}
+            <PopUp
+                type={popupType}
+                message={popupMessage}
+                onClose={() => setPopupMessage("")}  // Close the popup
+            />
         </div>
     );
 };
