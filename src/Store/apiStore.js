@@ -98,8 +98,9 @@ export const updateAgent = async (agentId, updateData) => {
   });
   return res.data;
 };
-export const updateAgentWidgetDomain = async (id, updateData) => {
-  const data = { url: updateData }
+export const updateAgentWidgetDomain = async (id, url) => {
+  
+  const data = { url: url }
   const res = await axios.put(`${API_BASE_URL}/agent/updateAgentWidgetDomain/${id}`, data);
   return res.data;
 };

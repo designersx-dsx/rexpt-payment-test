@@ -3,10 +3,8 @@ import React, { useRef, useState, useEffect } from "react";
 import styles from "./Widgets.module.css";
 import { SendScriptToDeveloper, updateAgentWidgetDomain } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
-
 const WidgetScript = ({ isAgentDetails }) => {
-  console.log(isAgentDetails, "isAgentDetails")
-  console.log(JSON.parse(isAgentDetails.agentWidgetDomain), "isAgentDetails")
+  console.log(isAgentDetails.agentWidgetDomain, "isAgentDetails")
   const scriptRef = useRef(null);
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -14,35 +12,45 @@ const WidgetScript = ({ isAgentDetails }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
-  const [domains, setDomains] = useState([]);
-  console.log(domains,"domains")
+  const [domains, setDomains] = useState("");
   const [currentDomain, setCurrentDomain] = useState("");
   const [scriptVisible, setScriptVisible] = useState(false);
   const [domainError, setDomainError] = useState("");
+  const [existingDomain, setExistingDomain] = useState([])
+  console.log(existingDomain, "HELLO")
   const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
   useEffect(() => {
-    // Show domain modal on load
     setScriptVisible(false);
   }, []);
-
   const scriptText = `
 <script id="rex-widget-script" src="https://delicate-dango-84275c.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
 `;
+  const handleAddDomain = async () => {
+    const trimmed = currentDomain.trim();
+    if (!trimmed) {
+      setDomainError("Domain cannot be empty");
+      return;
+    }
 
-const handleAddDomain = async () => {
-  const trimmed = currentDomain.trim();
-  console.log(trimmed,"HELLO")
-  setDomains(trimmed); 
-  setCurrentDomain("");
-  setDomainError("");
+    if (!domainRegex.test(trimmed)) {
+      setDomainError("Invalid domain format");
+      return;
+    }
+    // Add to domains array (avoid duplicates)
+    const url = domainRegex(trimmed)
+    // Update state first
+    setDomains(url);
+    setCurrentDomain("");
+    setDomainError("");
 
-  try {
-    await updateAgentWidgetDomain(isAgentDetails.agent_id, domains); // ✅ send single string
-  } catch (error) {
-    console.error("Failed to update domain:", error);
-  }
-};
-
+    try {
+      // Send updated array to backend
+      await updateAgentWidgetDomain(isAgentDetails.agent_id, url);
+    } catch (error) {
+      console.error("Failed to update domain:", error);
+      setDomainError("Failed to update domain");
+    }
+  };
   const handleGenerateScript = () => {
     if (domains.length === 0) {
       alert("Please add at least one domain.");
@@ -75,12 +83,35 @@ const handleAddDomain = async () => {
     setShowModal(false);
     setEmail("");
   };
-
+  useEffect(() => {
+    if (typeof isAgentDetails.agentWidgetDomain === "string") {
+      try {
+        const parsed = JSON.parse(isAgentDetails.agentWidgetDomain);
+        setExistingDomain(parsed);
+      } catch (error) {
+        console.error("Failed to parse agentWidgetDomain", error);
+        setExistingDomain([]);
+      }
+    } else if (Array.isArray(isAgentDetails.agentWidgetDomain)) {
+      setExistingDomain(isAgentDetails.agentWidgetDomain);
+    } else {
+      setExistingDomain([]);
+    }
+  }, [isAgentDetails])
   return (
     <div className={styles.container}>
-      {/* Domain Modal (Always Visible at first) */}
       {!scriptVisible && (
         <div className={styles.domainModal}>
+          <h2>Already Domain Exist </h2>
+          <ul className={styles.domainList}>
+            {Array.isArray((existingDomain)) && existingDomain.length > 0 ? (
+              existingDomain.map((d, i) => (
+                <li key={`existing-${i}`}>{d.domain}</li>
+              ))
+            ) : (
+              <li>No domains found</li>
+            )}
+          </ul>
           <h3> Enter your Website URL</h3>
           <p className={styles.noteText}>
             Note: The widget will only work on the domains you add.
@@ -105,11 +136,11 @@ const handleAddDomain = async () => {
           <ul className={styles.domainList}>
             {domains}
           </ul>
-          <div className={styles.modalActions}>
+          {existingDomain.length > 0 ? <div className={styles.modalActions}>
             <button onClick={handleGenerateScript} className={styles.sendBtn}>
               Generate Code
             </button>
-          </div>
+          </div> : ""}
         </div>
       )}
 
