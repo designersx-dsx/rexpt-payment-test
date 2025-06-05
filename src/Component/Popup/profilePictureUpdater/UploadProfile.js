@@ -488,6 +488,8 @@ const UploadProfile = ({ onClose, onUpload }) => {
           </div>
         )}
 
+      
+
         {/* Webcam or Upload */}
         <div className={styles.optionsContainer}>
           {isWebcamOpen ? (
