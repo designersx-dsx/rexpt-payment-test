@@ -19,6 +19,7 @@ import Calendar from './Component/Celender/Calendar';
 import BusinessServices from './Component/BusinessServices/BusinessServices';
 import TotalsCallsList from './Component/TotalsCallsList/TotalsCallsList'
 import CallTransfer from './Component/CallTransfer/CallTransfer';
+import CallDetails from './Component/CallDetails/CallDetails';
 function App() {
   const token = localStorage.getItem('token');
   return (
@@ -48,14 +49,12 @@ function App() {
           />
           <Route path="/" element={<Start />} />
           <Route path="/signup" element={<SignUp />} />
-
-         <Route path="/details" element={<SecureRoute><Details /></SecureRoute>} />
+         <Route path="/details" element={<Details />} />
           <Route path="/steps" element={<Step/>} />
-          <Route path="/about-business" element={<SecureRoute><AboutBusiness/></SecureRoute>} />
+          <Route path="/about-business" element={<AboutBusiness/>} />
           <Route path="/business-details" element={<BusinessDetails/>} />
           <Route path="/agent-detail" element={<AgentDetail />} />
           <Route path="/business-locations" element={<SecureRoute><BusinessLocation/></SecureRoute>} />
-
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/business-services" element={<SecureRoute><BusinessServices /></SecureRoute>} />
           {/* <Route path="/home" element={<Home />} /> */}
@@ -66,7 +65,7 @@ function App() {
           <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
           <Route path="/totalcall-list" element={<TotalsCallsList />} />
           <Route path="/call-transfer" element={<CallTransfer />} />
-
+          <Route path="/call-details" element={<CallDetails />} />
 
         </Routes>
 

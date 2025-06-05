@@ -317,7 +317,7 @@ const handleApiKeySubmit = async () => {
     localStorage.removeItem("agents");
     sessionStorage.clear();
     // window.location.href = "/signup";
-     navigate("/signup", { replace: true });
+    navigate("/signup", { replace: true });
   };
 
   const withShimmer = (content) =>
@@ -415,7 +415,7 @@ const handleApiKeySubmit = async () => {
               </div>
               <div className={styles.profileSection}></div>
               <div className={styles.notifiMain}>
-                <div className={styles.notificationIcon}>
+                <div className={styles.notificationIcon} onClick={() => setShowModal(true)}>
                   <svg
                     width="20"
                     height="22"
@@ -487,58 +487,64 @@ const handleApiKeySubmit = async () => {
               </div>
             </header>
 
-            <section className={styles.agentCard}>
-              <div className={styles.agentInfo}>
-                <div className={styles.agentAvatarContainer}>
-                  <img
-                    src={agentData?.agent?.avatar || "images/SofiaAgent.png"}
-                    alt="Sofia"
-                    className={styles.agentAvatar}
-                  />
-                </div>
-                <div>
-                  <div className={styles.foractive}>
-                    <h3 className={styles.agentName}>
-                      {agentData?.agent?.agentName}
-                      <span
-                        className={
-                          agentData?.agent?.agentStatus
-                            ? styles.activeText
-                            : styles.InactiveText
-                        }
-                      >
-                        {agentData?.agent?.agentStatus ? "Active" : "Inactive"}
-                      </span>
-                    </h3>
-                    <p className={styles.agentAccent}>
-                      {agentData?.agent?.agentLanguage}.
-                      {agentData?.agent?.agentAccent}
-                    </p>
+            <section >
+              
+              <div className={styles.agentCard}>
+                <h3 className={styles.PlanTitle}>Free Plan</h3>
+                <div className={styles.agentInfo}>
+                  <div className={styles.agentAvatarContainer}>
+                    <img
+                      src={agentData?.agent?.avatar || "images/SofiaAgent.png"}
+                      alt="Sofia"
+                      className={styles.agentAvatar}
+                    />
+                    <p className={styles.generalDiv}>General </p>
                   </div>
+                  <div>
+                    <div className={styles.foractive}>
+                      <h3 className={styles.agentName}>
+                        {agentData?.agent?.agentName}
+                        <span
+                          className={
+                            agentData?.agent?.agentStatus
+                              ? styles.activeText
+                              : styles.InactiveText
+                          }
+                        >
+                          {agentData?.agent?.agentStatus ? "Active" : "Inactive"}
+                        </span>
+                      </h3>
+                      <p className={styles.agentAccent}>
+                        {agentData?.agent?.agentLanguage}.
+                        {agentData?.agent?.agentAccent}
+                      </p>
+                    </div>
 
-                  <hr className={styles.agentLine}></hr>
+                    <hr className={styles.agentLine}></hr>
 
-                  <div className={styles.agentDetailsFlex}>
+                    <div className={styles.agentDetailsFlex}>
 
-                    {assignedNumbers.length > 0 ? (
-                      <div className={styles.AssignNumText}>Assigned Number<p>{assignedNumbers.join(", ")}</p>
-                      </div>
-                    ) : (
-                      <div
-                        className={styles.AssignNum}
-                        onClick={() => setIsAssignModalOpen(true)}
-                      >
-                        Assign Number
-                      </div>
-                    )}
+                      {assignedNumbers.length > 0 ? (
+                        <div className={styles.AssignNumText}>Assigned Number<p>{assignedNumbers.join(", ")}</p>
+                        </div>
+                      ) : (
+                        <div
+                          className={styles.AssignNum}
+                          onClick={() => setIsAssignModalOpen(true)}
+                        >
+                          Assign Number
+                        </div>
+                      )}
 
-                    <p className={styles.agentDetails}>
-                      Agent Code{" "}
-                      <strong>{agentData?.agent?.agentCode || "NA"}</strong>
-                    </p>
+                      <p className={styles.agentDetails}>
+                        Agent Code{" "}
+                        <strong>{agentData?.agent?.agentCode || "NA"}</strong>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
+
             </section>
           </div>
 
@@ -737,15 +743,15 @@ const handleApiKeySubmit = async () => {
             </div>
 
             <h1 className={styles.Agenttitle}>Agent Analysis</h1>
-            <div className={styles.agentStats} onClick={handleCallHistoryNavigation}>
-              <div className={` ${styles.stat} ${styles.Yellow}`}>
+            <div className={styles.agentStats} >
+              <div className={` ${styles.stat} ${styles.Yellow}`} onClick={handleCallHistoryNavigation}>
                 <div className={` ${styles.statText} `}>Total Calls</div>
                 <div className={styles.statDetail}>
                   {agentData?.callSummary?.totalCalls || "NA"}
                 </div>
               </div>
 
-              <div className={` ${styles.stat} ${styles.blue}`}>
+              <div className={` ${styles.stat} ${styles.blue}`} onClick={handleCallHistoryNavigation}>
                 <span className={` ${styles.statText} `}>Avg. Call Duration</span>
 
                 <span className={styles.statDetail}>
@@ -763,14 +769,14 @@ const handleApiKeySubmit = async () => {
                 </span>
               </div>
 
-              <div className={` ${styles.stat}  ${styles.Purple}`}>
+              <div className={` ${styles.stat}  ${styles.Purple}`} onClick={() => setShowModal(true)}>
                 <span className={` ${styles.statText}`}>Bookings</span>
                 <span className={styles.statDetail}>
                   {totalBookings !== null ? totalBookings : "0"}
                 </span>
               </div>
 
-              <div className={` ${styles.stat} ${styles.Red}`}>
+              <div className={` ${styles.stat} ${styles.Red}`} onClick={() => setShowModal(true)}>
                 <span className={` ${styles.statText} `}>Minutes Remaining</span>
                 <span className={styles.statDetail}>
                   {Math.floor(agentData?.agent?.mins_left / 60)}
