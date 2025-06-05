@@ -16,6 +16,8 @@ const BusinessServices = () => {
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [popupMessage, setPopupMessage] = useState(""); 
     const [popupType, setPopupType] = useState("");
+    // const [selectedServices, setSelectedServices] = useState([]);
+
     const businessServices = [
         {
             type: "Restaurant",
@@ -360,6 +362,18 @@ const BusinessServices = () => {
             setEmail(savedDetails.email || "");
         }
     }, []);
+
+    const handleServiceToggle = (service) => {
+    setSelectedService((prev) => {
+        if (prev.includes(service)) {
+            return prev.filter((s) => s !== service); // Deselect
+        } else {
+            return [...prev, service]; // Select
+        }
+    });
+    setServiceError(""); // Clear any existing error
+};
+// console.log(selectedService)
     
 
     return (
@@ -397,7 +411,7 @@ const BusinessServices = () => {
                                 </div>
                             </div>
                             <div>
-                                <input
+                                {/* <input
                                     type="radio"
                                     name="service"
                                     value={service}
@@ -407,6 +421,13 @@ const BusinessServices = () => {
                                         setServiceError(""); // Clear error on change
                                     }}
                                     onBlur={(e) => validateService(e.target.value)}
+                                /> */}
+                                <input
+                                    type="checkbox"
+                                    name="service"
+                                    value={service}
+                                    checked={selectedService.includes(service)}
+                                    onChange={() => handleServiceToggle(service)}
                                 />
                             </div>
                         </label>
