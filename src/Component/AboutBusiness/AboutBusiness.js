@@ -553,7 +553,7 @@ Address No. 2: ${businessLocation.address2 || ""}
               <div onClick={handleSkip} className={styles.skipButton}>
                 <button>Skip for now</button>
               </div>
-              <div>
+              <div className={styles.fixedBtn}>
                 <button
                   type="submit"
                   className={styles.btnTheme}
