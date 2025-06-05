@@ -24,22 +24,41 @@ const SignUp = () => {
   const { user, setUser } = useUser();
   const [resendTimer, setResendTimer] = useState(0);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
+  const [resendEndTime, setResendEndTime] = useState(null);
 
 
-  useEffect(() => {
-    let timerInterval = null;
+  // useEffect(() => {
+  //   let timerInterval = null;
 
-    if (resendTimer > 0) {
-      timerInterval = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (resendTimer === 0) {
+  //   if (resendTimer > 0) {
+  //     timerInterval = setInterval(() => {
+  //       setResendTimer((prev) => prev - 1);
+  //     }, 1000);
+  //   } else if (resendTimer === 0) {
+  //     setIsResendDisabled(false);
+  //     clearInterval(timerInterval);
+  //   }
+
+  //   return () => clearInterval(timerInterval);
+  // }, [resendTimer]);
+useEffect(() => {
+  if (!resendEndTime) return;
+
+  const interval = setInterval(() => {
+    const timeLeft = Math.max(0, Math.floor((resendEndTime - Date.now()) / 1000));
+    setResendTimer(timeLeft);
+
+    if (timeLeft <= 0) {
       setIsResendDisabled(false);
-      clearInterval(timerInterval);
+      setResendEndTime(null);
+      clearInterval(interval);
     }
+  }, 1000);
 
-    return () => clearInterval(timerInterval);
-  }, [resendTimer]);
+  return () => clearInterval(interval);
+}, [resendEndTime]);
+
+
 
   const validateEmail = (email) => {
     if (!email) {
@@ -143,7 +162,10 @@ const SignUp = () => {
         setPopupType("success");
         setPopupMessage("OTP sent successfully!");
         setOtpSent(true);
-        setResendTimer(120);
+        const endTime = Date.now() + 120 * 1000; // 2 mins from now
+        setResendEndTime(endTime);
+        // setResendTimer(endTime);
+
         setIsResendDisabled(true);
       } else {
         setShowPopup(true);
@@ -151,9 +173,18 @@ const SignUp = () => {
         setPopupMessage("Failed to send OTP. Please try again.");
       }
     } catch (error) {
+      console.log(error)
+      if(error.status==409){
       setShowPopup(true);
       setPopupType("failed");
       setPopupMessage(error?.response?.data.error || "Internal Server Error");
+      setOtpSent(true);
+      }else{
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage(error?.response?.data.error || "Internal Server Error");
+      }
+
     } finally {
       setIsVerifyingOtp(false);
     }
@@ -285,6 +316,10 @@ const SignUp = () => {
           {/* OTP Input Fields & Continue Button */}
           {otpSent && (
             <>
+          {email && <p className={styles.codeText}>
+             Email has been sent to <strong>{email}</strong>
+            </p>
+          }
               <p className={styles.codeText}>
                 Enter the code sent to your email
               </p>
@@ -330,13 +365,9 @@ const SignUp = () => {
                     fontSize: "14px",
                   }}
                 >
-                  {isResendDisabled
-                    ? `Resend OTP in ${Math.floor(resendTimer / 60)
-                      .toString()
-                      .padStart(2, "0")}:${(resendTimer % 60)
-                        .toString()
-                        .padStart(2, "0")}`
-                    : "Resend OTP"}
+                {isResendDisabled && resendTimer > 0
+                ? `Resend OTP in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
+                : "Resend OTP"}
                 </button>
               </div>
 
