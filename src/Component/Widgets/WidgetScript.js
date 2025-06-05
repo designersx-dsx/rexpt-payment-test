@@ -25,17 +25,17 @@ const WidgetScript = ({ isAgentDetails }) => {
 `;
   const handleAddDomain = async () => {
     const trimmed = currentDomain.trim();
-    if (!trimmed) {
-      setDomainError("Domain cannot be empty");
-      return;
-    }
+    // if (!trimmed) {
+    //   setDomainError("Domain cannot be empty");
+    //   return;
+    // }
 
-    if (!domainRegex.test(trimmed)) {
-      setDomainError("Invalid domain format");
-      return;
-    }
+    // if (!domainRegex.test(trimmed)) {
+    //   setDomainError("Invalid domain format");
+    //   return;
+    // }
     // Add to domains array (avoid duplicates)
-    const url = domainRegex(trimmed)
+    const url = (trimmed)
     // Update state first
     setDomains(url);
     setCurrentDomain("");
