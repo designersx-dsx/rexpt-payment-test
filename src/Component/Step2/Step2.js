@@ -174,13 +174,13 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
 
         <h2
           className={styles.sectionTitle}
-          style={{
-            transform: `scale(${scale})`,
-            transition: "transform 0.3s ease-out",
-            transformOrigin: "center center",
-            marginTop: "1rem",
-            fontSize: `${scale * 2.5}rem`,
-          }}
+          // style={{
+          //   transform: `scale(${scale})`,
+          //   transition: "transform 0.3s ease-out",
+          //   transformOrigin: "center center",
+          //   marginTop: "1rem",
+          //   fontSize: `${scale * 2.5}rem`,
+          // }}
         >
           Agent Voice
         </h2>

@@ -19,6 +19,7 @@ import Popup from "../Popup/Popup";
 import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
+import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -32,6 +33,7 @@ function Dashboard() {
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
@@ -554,7 +556,7 @@ const createCalEvent = async () => {
             )}
           </div>
           <div className={styles.notifiMain}>
-            <div className={styles.notificationIcon}>
+            <div className={styles.notificationIcon} onClick={() => setShowModal(true)}>
               <svg
                 width="20"
                 height="22"
@@ -1047,7 +1049,10 @@ const createCalEvent = async () => {
 
       <Footer />
       {/* <Footer2/> */}
-
+ <CommingSoon
+              show={showModal}
+              onClose={() => setShowModal(false)}
+            />
 
       {/* OffCanvas for Logout */}
       {openOffcanvas && (
