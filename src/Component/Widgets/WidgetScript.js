@@ -4,7 +4,6 @@ import styles from "./Widgets.module.css";
 import { SendScriptToDeveloper, updateAgentWidgetDomain } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 const WidgetScript = ({ isAgentDetails }) => {
-  console.log(isAgentDetails.agentWidgetDomain, "isAgentDetails")
   const scriptRef = useRef(null);
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -17,13 +16,12 @@ const WidgetScript = ({ isAgentDetails }) => {
   const [scriptVisible, setScriptVisible] = useState(false);
   const [domainError, setDomainError] = useState("");
   const [existingDomain, setExistingDomain] = useState([])
-  console.log(existingDomain, "HELLO")
   const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
   useEffect(() => {
     setScriptVisible(false);
   }, []);
   const scriptText = `
-<script id="rex-widget-script" src="https://delicate-dango-84275c.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+<script id="rex-widget-script" src="https://fascinating-lollipop-32d85d.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
 `;
   const handleAddDomain = async () => {
     const trimmed = currentDomain.trim();
