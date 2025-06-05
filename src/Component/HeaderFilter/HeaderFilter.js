@@ -116,7 +116,7 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents }) {
 
                             <div className={styles.selectWrapper}>
                                 <select className={styles.agentSelect1} >
-                                    {isAgents.map((agent, i) => (
+                                    {isAgents?.map((agent, i) => (
                                         <option key={agent.agentId} value={agent.agentId} >
                                             {agent.agentName}
                                         </option>

@@ -79,7 +79,7 @@ export default function Home() {
                         setCurrentPage(1);
                     }}
                     isAgents={
-                        fetchAgents.state.agents
+                        fetchAgents?.state?.agents
                     }
                 // onAgentChange={handleAgentChange}
 

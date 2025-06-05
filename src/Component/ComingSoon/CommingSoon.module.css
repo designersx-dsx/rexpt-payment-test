@@ -12,25 +12,35 @@
 }
 
 .modal {
-    background: #fff;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    animation: CommingSoon_slideIn__KM6ZA 0.3s ease-out;
-    width: 90%;
-    height: 250px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: CommingSoon_slideIn__KM6ZA 0.3s ease-out;
+  width: 90%;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 50px;
+  min-height: 400px;
 }
 
 .message {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 45px;
+  font-weight: 400;
   color: #333;
-  margin-bottom: 20px;
+  font-family: "Lato", sans-serif;
+}
+
+.message2 {
+  font-size: 70px;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 3rem;
+  font-family: "Lato", sans-serif;
 }
 
 .closeBtn {
@@ -42,6 +52,9 @@
   cursor: pointer;
   font-weight: 500;
   transition: background-color 0.2s;
+  font-size: 20px;
+  width: 60%;
+  min-height: 55px;
 }
 
 
@@ -51,6 +64,7 @@
     transform: translateY(-30px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;

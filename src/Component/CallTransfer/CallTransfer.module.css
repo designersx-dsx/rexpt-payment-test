@@ -140,3 +140,9 @@
     font-size: 19px;
 
 }
+
+@media (max-width:375px) {
+    .headrPart h2 {
+        font-size: 20px;
+    }
+}

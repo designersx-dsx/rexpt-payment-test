@@ -1,3 +1,4 @@
+
 import "./App.css";
 import {
   BrowserRouter,
@@ -25,6 +26,7 @@ import Calendar from "./Component/Celender/Calendar";
 import BusinessServices from "./Component/BusinessServices/BusinessServices";
 import TotalsCallsList from "./Component/TotalsCallsList/TotalsCallsList";
 import CallTransfer from "./Component/CallTransfer/CallTransfer";
+
 function App() {
   const token = localStorage.getItem("token");
   return (
@@ -38,7 +40,6 @@ function App() {
                 path="/signup"
                 element={token ? <Navigate to="/dashboard" /> : <SignUp />}
               />
-
               <Route
                 path="/"
                 element={token ? <Navigate to="/dashboard" /> : <Start />}
@@ -81,6 +82,7 @@ function App() {
                   </SecureRoute>
                 }
               />
+
 
               <Route path="/dashboard" element={<Dashboard />} />
               <Route
