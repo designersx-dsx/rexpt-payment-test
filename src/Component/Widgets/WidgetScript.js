@@ -6,6 +6,7 @@ import PopUp from "../Popup/Popup";
 
 const WidgetScript = ({ isAgentDetails }) => {
   console.log(isAgentDetails, "isAgentDetails")
+  console.log(JSON.parse(isAgentDetails.agentWidgetDomain), "isAgentDetails")
   const scriptRef = useRef(null);
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -14,10 +15,11 @@ const WidgetScript = ({ isAgentDetails }) => {
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [domains, setDomains] = useState([]);
+  console.log(domains,"domains")
   const [currentDomain, setCurrentDomain] = useState("");
   const [scriptVisible, setScriptVisible] = useState(false);
   const [domainError, setDomainError] = useState("");
-const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+  const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
   useEffect(() => {
     // Show domain modal on load
     setScriptVisible(false);
@@ -27,37 +29,19 @@ const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
 <script id="rex-widget-script" src="https://delicate-dango-84275c.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
 `;
 
-  const handleAddDomain = async () => {
-    const trimmed = currentDomain.trim();
+const handleAddDomain = async () => {
+  const trimmed = currentDomain.trim();
+  console.log(trimmed,"HELLO")
+  setDomains(trimmed); 
+  setCurrentDomain("");
+  setDomainError("");
 
-    if (!trimmed) {
-      setDomainError("Domain is required.");
-      return;
-    }
-
-    if (!domainRegex.test(trimmed)) {
-      setDomainError("Please enter a valid URL (e.g., https://example.com)");
-      return;
-    }
-
-    if (domains.includes(trimmed)) {
-      setDomainError("This domain has already been added.");
-      return;
-    }
-
-    const updatedDomains = [...domains, trimmed];
-    setDomains(updatedDomains);
-    setCurrentDomain("");
-    setDomainError("");
-
-    try {
-      await updateAgentWidgetDomain(isAgentDetails.agent_id, updatedDomains);
-    } catch (error) {
-      console.error("Failed to update domains:", error);
-    }
-  };
-
-
+  try {
+    await updateAgentWidgetDomain(isAgentDetails.agent_id, domains); // ✅ send single string
+  } catch (error) {
+    console.error("Failed to update domain:", error);
+  }
+};
 
   const handleGenerateScript = () => {
     if (domains.length === 0) {
@@ -97,7 +81,7 @@ const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
       {/* Domain Modal (Always Visible at first) */}
       {!scriptVisible && (
         <div className={styles.domainModal}>
-          <h3>Add Domain(s)</h3>
+          <h3> Enter your Website URL</h3>
           <p className={styles.noteText}>
             Note: The widget will only work on the domains you add.
           </p>
@@ -114,18 +98,16 @@ const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
             />
             {domainError && <p style={{ color: "red" }} className={styles.errorText}>{domainError}</p>}
 
-            <button className={styles.addDomainBtn} onClick={handleAddDomain}>
+            <button className={styles.sendBtn} onClick={handleAddDomain}>
               Add
             </button>
           </div>
           <ul className={styles.domainList}>
-            {domains.map((domain, index) => (
-              <li key={index}>{domain}</li>
-            ))}
+            {domains}
           </ul>
           <div className={styles.modalActions}>
             <button onClick={handleGenerateScript} className={styles.sendBtn}>
-              Generate Script
+              Generate Code
             </button>
           </div>
         </div>

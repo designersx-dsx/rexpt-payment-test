@@ -98,10 +98,9 @@ export const updateAgent = async (agentId, updateData) => {
   });
   return res.data;
 };
-export const updateAgentWidgetDomain = async (id,updateData) => {
-  console.log(id,updateData)
-
-  const res = await axios.put(`${API_BASE_URL}/agent/updateAgentWidgetDomain/${id}`, updateData);
+export const updateAgentWidgetDomain = async (id, updateData) => {
+  const data = { url: updateData }
+  const res = await axios.put(`${API_BASE_URL}/agent/updateAgentWidgetDomain/${id}`, data);
   return res.data;
 };
 export const validateWebsite = async (websiteUrl) => {
@@ -117,10 +116,10 @@ export const deleteAgent = async (agentId) => {
   try {
     const res = await api.delete(`/agent/deleteAgent/${agentId}`, {
       headers: {
-         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,  
+        Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
       },
     });
-    return res.data; 
+    return res.data;
   } catch (error) {
     console.error("Error deleting agent:", error.response?.data || error.message);
     throw new Error("Failed to delete agent");
