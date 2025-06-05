@@ -21,7 +21,7 @@ const WidgetScript = ({ isAgentDetails }) => {
     setScriptVisible(false);
   }, []);
   const scriptText = `
-<script id="rex-widget-script" src="https://delicate-dango-84275c.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+<script id="rex-widget-script" src="https://fascinating-lollipop-32d85d.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
 `;
   const handleAddDomain = async () => {
     const trimmed = currentDomain.trim();
