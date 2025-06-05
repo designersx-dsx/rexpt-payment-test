@@ -56,7 +56,7 @@ function App() {
           <Route path="/agent-detail" element={<AgentDetail />} />
           <Route path="/business-locations" element={<SecureRoute><BusinessLocation/></SecureRoute>} />
 
-          <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/business-services" element={<SecureRoute><BusinessServices /></SecureRoute>} />
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
