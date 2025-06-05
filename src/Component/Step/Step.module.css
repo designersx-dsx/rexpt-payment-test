@@ -4,7 +4,11 @@
 
   text-align: center;
 
+}
 
+.container .Step3Container{
+  overflow: scroll;
+  margin-bottom: 5rem;
 }
 
 .LogoDiv {

@@ -6,7 +6,7 @@
 }
 
 .LogoWrapper {
-    position: sticky;
+    position: relative;
     top: 10px;
     z-index: 10;
     transform-origin: center center;

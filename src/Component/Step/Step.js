@@ -757,7 +757,7 @@ End Call: If the caller is satisfied, invoke end_call function.
         }
     };
 
-    const isAdaptiveHeight = currentStep !== 3
+    const isAdaptiveHeight = currentStep !== 3|| currentStep !==2
     const settings = {
         dots: false,
         infinite: false,
@@ -1064,7 +1064,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                     />
                 </div>
                 {/* Step 3 */}
-                <div>
+                <div className={styles.Step3Container}> 
                     <Step3
                         ref={step3Ref}
                         onNext={handleNext}
