@@ -313,7 +313,7 @@ const SignUp = () => {
               </div>
               <div
                 className={styles.resendContainer}
-                style={{ marginBottom: "12px" }}
+         
               >
                 <button
                   type="button"
