@@ -157,24 +157,12 @@ function Dashboard() {
     const data = await response.json();
     return data.agents;
   };
-
-  // Load from localStorage on mount
-  // useEffect(() => {
-  //   const savedUserId = localStorage.getItem("userId");
-  //   const savedAgents = localStorage.getItem("agents");
-  //   if (savedUserId) setUserId(savedUserId);
-  //   if (savedAgents) setLocalAgents(JSON.parse(savedAgents));
-  // }, []);
-
   // Fetch dashboard + merge Cal API keys
-  // console.log('localAgents-----',localAgents)
   useEffect(() => {
     const fetchAndMergeCalApiKeys = async () => {
       if (!userId) return;
       try {
         const res = await fetchDashboardDetails(userId);
-
-        console.log(res, hasFetched, "HELOE");
         let agentsWithCalKeys = res.agents || [];
         const calApiAgents = await fetchCalApiKeys(userId);
         const calApiKeyMap = {};
@@ -186,7 +174,7 @@ function Dashboard() {
           ...agent,
           calApiKey: calApiKeyMap[agent.agent_id] || null,
         }));
-        console.log("res", res);
+     
         setDashboardData(agentsWithCalKeys, res.total_call || 0);
         setHasFetched(true);
         // localStorage.setItem("userId", userId);
@@ -196,7 +184,7 @@ function Dashboard() {
         console.error("Error fetching dashboard data or Cal API keys:", error);
       }
     };
-    if ((!hasFetched || !agents.length) && userId) {
+    if ((!hasFetched || !agents.length) ) {
       fetchAndMergeCalApiKeys();
     }
   }, [userId, hasFetched, agents.length, setDashboardData, setHasFetched]);
@@ -407,7 +395,7 @@ const createCalEvent = async () => {
         }
       );
       const data = await res.json();
-      console.log(data);
+    
       await retellWebClient.startCall({ accessToken: data.access_token });
       setCallId(data?.call_id);
     } catch (err) {
@@ -426,7 +414,7 @@ const createCalEvent = async () => {
 
       setHasFetched(false);
 
-      console.log("Call end response", response);
+
     }
   };
 
@@ -487,31 +475,7 @@ const createCalEvent = async () => {
     closeUploadModal();
   };
  
-  useEffect(() => {
-    
-    window.history.pushState(null, "", window.location.href);
 
-  
-    const handlePopState = (e) => {
-  
-      window.history.pushState(null, "", window.location.href);
-
-      
-      const confirmExit = window.confirm("Are you sure you want to leave? You might lose unsaved changes.");
-      if (!confirmExit) {
-      
-        window.history.pushState(null, "", window.location.href); 
-      }
-    };
-
-   
-    window.addEventListener('popstate', handlePopState);
-
-   
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
   
 
   return (
@@ -643,7 +607,7 @@ const createCalEvent = async () => {
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
-          // console.log('randomPlan',randomPlan)
+        
           let assignedNumbers = [];
           if (agent.voip_numbers) {
             try {

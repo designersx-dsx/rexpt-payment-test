@@ -488,6 +488,8 @@ const UploadProfile = ({ onClose, onUpload }) => {
           </div>
         )}
 
+      
+
         {/* Webcam or Upload */}
         <div className={styles.optionsContainer}>
           {isWebcamOpen ? (
@@ -539,6 +541,16 @@ const UploadProfile = ({ onClose, onUpload }) => {
 
         {/* Save and Close */}
         <div className={styles.buttons}>
+          
+          <button
+            onClick={() => {
+              stopWebcamStream(); // stop stream on close
+              onClose();
+            }}
+            className={styles.closeButton}
+          >
+            Close
+          </button>
           <button
             onClick={handleSave}
             disabled={!uploadedImage && !capturedImage}
@@ -549,15 +561,6 @@ const UploadProfile = ({ onClose, onUpload }) => {
             }
           >
             Save Profile
-          </button>
-          <button
-            onClick={() => {
-              stopWebcamStream(); // stop stream on close
-              onClose();
-            }}
-            className={styles.closeButton}
-          >
-            Close
           </button>
         </div>
       </div>

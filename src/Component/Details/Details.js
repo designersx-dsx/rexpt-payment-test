@@ -132,7 +132,34 @@ const Details = () => {
       setStep(4);
     }
   }, []);
-  return (
+  useEffect(() => {
+    // Push an initial state to prevent the back button
+    window.history.pushState(null, "", window.location.href);
+
+    // Handle popstate (back button press)
+    const handlePopState = (e) => {
+      // Prevent back navigation by pushing the current state again
+      window.history.pushState(null, "", window.location.href);
+
+      // Trigger the confirmation dialog when back navigation is attempted
+      const confirmExit = window.confirm("Are you sure you want to leave? You might lose unsaved changes.");
+      if (!confirmExit) {
+        // If the user clicks "Cancel", close the tab
+        window.close(); // This will close the tab (might not work in all browsers)
+        
+        // Optional: You can push another state to ensure the URL stays the same.
+        // window.history.pushState(null, "", window.location.href); // Reinforce blocking back again
+      }
+    };
+
+    // Add event listener to block back navigation
+    window.addEventListener('popstate', handlePopState);
+
+    // Cleanup function to remove event listeners when the component unmounts
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);  return (
     <>
       <div className={styles.StartMain}>
         <div>

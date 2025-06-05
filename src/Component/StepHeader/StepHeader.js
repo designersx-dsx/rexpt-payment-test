@@ -19,16 +19,16 @@ const StepHeader = ({ title }) => {
 
             <div
                 className={styles.LogoWrapper}
-                style={{
-                    position: 'sticky',
-                    top: '10px',
-                    transform: `scale(${scale})`,
-                    transition: 'transform 0.3s ease-out',
-                    transformOrigin: 'center center',
-                    margin: '0 auto',
-                    display: 'inline-block',
-                    zIndex: 10,
-                }}
+                // style={{
+                //     position: 'sticky',
+                //     top: '10px',
+                //     transform: `scale(${scale})`,
+                //     transition: 'transform 0.3s ease-out',
+                //     transformOrigin: 'center center',
+                //     margin: '0 auto',
+                //     display: 'inline-block',
+                //     zIndex: 10,
+                // }}
             >      
                 <div className={styles.RipplThree}>
                     <span className={styles.ripple}></span>
@@ -65,13 +65,16 @@ const StepHeader = ({ title }) => {
                     {/* heloo */}
                 </div>
             </div>
-            <h2 className={styles.heading} style={{
-                transform: `scale(${scale})`,
-                transition: 'transform 0.3s ease-out',
-                transformOrigin: 'center center',
-                marginTop: '1rem',
-                fontSize: `${scale * 2.5}rem`,
-            }}>{title}</h2>
+            <h2 className={styles.heading} 
+            // style={{
+            //     transform: `scale(${scale})`,
+            //     transition: 'transform 0.3s ease-out',
+            //     transformOrigin: 'center center',
+            //     marginTop: '1rem',
+            //     fontSize: `${scale * 2.5}rem`,
+            // }}
+            
+            >{title}</h2>
         </div>
     )
 }
