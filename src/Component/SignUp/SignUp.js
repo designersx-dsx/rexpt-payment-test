@@ -100,7 +100,7 @@ const SignUp = () => {
             profile: `${API_BASE_URL?.split('/api')[0]}${response?.data?.user?.profile?.split('public')[1] }`|| "images/camera-icon.avif",
             subscriptionDetails: {},
           });
-          navigate("/dashboard");
+          navigate("/dashboard",{ replace: true });
         } else {
           setUser({
             name: response?.data?.user?.email || "",

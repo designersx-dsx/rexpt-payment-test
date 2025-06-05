@@ -63,6 +63,7 @@ const AgentDashboard = () => {
   const [agentId, setAgentId] = useState("")
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   const openCalModal = () => {
     if (!agentData?.agent) return;
@@ -299,7 +300,8 @@ const AgentDashboard = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("agents");
     sessionStorage.clear();
-    window.location.href = "/signup";
+    // window.location.href = "/signup";
+     navigate("/signup", { replace: true });
   };
 
   const withShimmer = (content) =>
@@ -317,7 +319,6 @@ const AgentDashboard = () => {
   const handleCloseOffcanvas = () => {
     setOpenOffcanvas(false);
   };
-  const navigate = useNavigate();
 
   const handleBackClick = () => {
     navigate(-1);
