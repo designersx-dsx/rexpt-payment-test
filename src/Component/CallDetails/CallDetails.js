@@ -15,7 +15,7 @@ const CallDetails = () => {
                 </div>
                 {/* <div className={styles.profileSection}></div> */}
                 <div className={styles.notifiMain}>
-                 
+
                     <div className={styles.notificationIcon} >
 
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,6 +27,73 @@ const CallDetails = () => {
                     </div>
                 </div>
             </header>
+            <section>
+                <div className={styles.agentCard}>
+                    <div className={styles.details}>
+                        <p>Caller Name</p>
+                        <p>Sentiment</p>
+                    </div>
+                    <div className={styles.detail2}>
+                        <div className={styles.userName}>
+                            <h2>Nitish</h2>
+                        </div>
+                        <div className={styles.status}>
+                            <p>Postive</p>
+                        </div>
+
+                    </div>
+                    <hr className={styles.hrline} />
+                    <div className={styles.details3}>
+                        <div className={styles.Part1}>
+                            <p>28 May 2025</p>
+                            <strong>12:06</strong>
+                        </div>
+                        <div className={styles.Part2}>
+                            <p>Attended by</p>
+                            <strong>SOFIA</strong>
+                        </div>
+                        <div className={styles.Part3}>
+                            <p>Durations</p>
+                            <strong>14 min</strong>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+                <div className={styles.DataMain}>
+                    <div className={styles.dataTitle}>
+                        <h2>Data Collected</h2>
+                    </div>
+                    <div className={styles.dataCard}>
+                        <div className={styles.PhoneNumber}>
+                            <p>Phone number</p>
+                            <b>+91 9874XXXX88</b>
+                        </div>
+                        <div className={styles.EmailAddress}>
+                            <p>Email address</p>
+                            <b>Nitish.p@gmail.com</b>
+                        </div>
+                        <div className={styles.Address}>
+                            <p>Address (if collected)</p>
+                            <b>SAS Nagar, Mohali</b>
+                        </div>
+                        <div className={styles.Reason}>
+                            <p>Reason</p>
+                            <b>Website Development</b>
+                        </div>
+                    </div>
+                    <div className={styles.moredetailsDiv}>
+                        <div className={styles.channel}>
+                            <p>channel</p>
+                            <div>
+                                <p>phone</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     )
 }
