@@ -106,9 +106,9 @@ useEffect(() => {
     setIsVerifyingOtp(true);
     try {
       const response = await verifyEmailOTP(email, fullOtp);
-      console.log('response',response)
+      // console.log('response',response)
       if (response?.status === 200) {
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("token", response?.data.token);
         sessionStorage.clear();
         setPopupType("success");
         setShowPopup(true);
