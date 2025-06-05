@@ -4,7 +4,7 @@ import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import { fetchAgentDetailById } from "../../Store/apiStore";
 import OffCanvas from "../OffCanvas/OffCanvas";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import decodeToken from "../../lib/decodeToken";
 import { RetellWebClient } from "retell-client-js-sdk";
 import CallTest from "../CallTest/CallTest";
 import Modal2 from "../Modal2/Modal2";
@@ -65,6 +65,11 @@ const AgentDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
+    const token = localStorage.getItem("token") || "";
+    const decodeTokenData = decodeToken(token);
+    const userIdFromToken = decodeTokenData?.id || "";
+    const [userId, setUserId] = useState(userIdFromToken);
+
   const openCalModal = () => {
     if (!agentData?.agent) return;
     setApiKey(agentData.agent.calApiKey || "");
@@ -85,39 +90,50 @@ const AgentDashboard = () => {
     setEventLength("");
   };
 
-  const handleApiKeySubmit = async () => {
-    if (!agentData?.agent) return;
+const handleApiKeySubmit = async () => {
+  if (!agentData?.agent) return;
 
-    if (!isValidCalApiKey(apiKey.trim())) {
-      setEventCreateStatus("error");
-      setEventCreateMessage("Invalid API Key! It must start with 'cal_live_'.");
-      return;
-    }
+  if (!isValidCalApiKey(apiKey.trim())) {
+    setEventCreateStatus("error");
+    setEventCreateMessage("Invalid API Key! It must start with 'cal_live_'.");
+    return;
+  }
 
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agentData.agent.agent_id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: apiKey.trim() }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update API key");
+  try {
+    const response = await fetch(
+       `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ calApiKey: apiKey.trim() }),
       }
+    );
 
-      setEventCreateStatus("success");
-      setEventCreateMessage("Cal API key updated successfully!");
-      setShowEventInputs(true);
-      setShowCalKeyInfo(true);
-    } catch (error) {
-      setEventCreateStatus("error");
-      setEventCreateMessage(`Failed to save API Key: ${error.message}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update API key");
     }
-  };
+
+    setEventCreateStatus("success");
+    setEventCreateMessage("Cal API key updated successfully!");
+    setShowEventInputs(true);
+    setShowCalKeyInfo(true);
+
+    setAgentById(agentDetails.agentId, {
+      ...agentData,
+      agent: {
+        ...agentData.agent,
+        calApiKey: apiKey.trim(), 
+      },
+    });
+    
+  } catch (error) {
+    setEventCreateStatus("error");
+    setEventCreateMessage(`Failed to save API Key: ${error.message}`);
+  }
+};
+
+
 
   const createCalEvent = async () => {
     if (!apiKey.trim()) {
@@ -605,11 +621,13 @@ const AgentDashboard = () => {
 
               </div>
               <div className={styles.managementItem}
-                onClick={openCalModal} // open Cal modal on click
+                onClick={openCalModal} 
                 style={{ cursor: "pointer" }}
               >
-                <div className={styles.SvgDesign}>
-                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <div className={styles.SvgDesign}>
+          {agentData?.agent?.calApiKey ? (
+           
+            <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3.76866 16.5998C4.22338 16.5998 4.59201 16.2312 4.59201 15.7765C4.59201 15.3218 4.22338 14.9531 3.76866 14.9531C3.31394 14.9531 2.94531 15.3218 2.94531 15.7765C2.94531 16.2312 3.31394 16.5998 3.76866 16.5998Z" fill="#6524EB" />
                     <path d="M6.78429 16.5998C7.23901 16.5998 7.60763 16.2312 7.60763 15.7765C7.60763 15.3218 7.23901 14.9531 6.78429 14.9531C6.32956 14.9531 5.96094 15.3218 5.96094 15.7765C5.96094 16.2312 6.32956 16.5998 6.78429 16.5998Z" fill="#6524EB" />
                     <path d="M9.75304 16.5998C10.2078 16.5998 10.5764 16.2312 10.5764 15.7765C10.5764 15.3218 10.2078 14.9531 9.75304 14.9531C9.29831 14.9531 8.92969 15.3218 8.92969 15.7765C8.92969 16.2312 9.29831 16.5998 9.75304 16.5998Z" fill="#6524EB" />
@@ -620,7 +638,21 @@ const AgentDashboard = () => {
                     <circle cx="14.5938" cy="4.5" r="4.5" fill="white" />
                     <path d="M19.2197 4.56299C19.2197 7.08306 17.1768 9.12598 14.6567 9.12598C12.1367 9.12598 10.0938 7.08306 10.0938 4.56299C10.0938 2.04292 12.1367 0 14.6567 0C17.1768 0 19.2197 2.04292 19.2197 4.56299ZM16.9555 2.83457C16.7885 2.66751 16.5176 2.66751 16.3506 2.83457C16.3465 2.8386 16.3427 2.84288 16.3392 2.84736L14.3587 5.37106L13.1646 4.17697C12.9975 4.00991 12.7267 4.00991 12.5596 4.17697C12.3925 4.34403 12.3925 4.61489 12.5596 4.78195L14.0691 6.29141C14.2361 6.45847 14.507 6.45847 14.674 6.29141C14.6778 6.28769 14.6813 6.28377 14.6846 6.27966L16.9616 3.43335C17.1226 3.26585 17.1205 2.99958 16.9555 2.83457Z" fill="#1AA850" />
                   </svg>
-                </div>
+          ) : (
+          
+            <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.67686 16.6018C5.13159 16.6018 5.50021 16.2331 5.50021 15.7784C5.50021 15.3237 5.13159 14.9551 4.67686 14.9551C4.22214 14.9551 3.85352 15.3237 3.85352 15.7784C3.85352 16.2331 4.22214 16.6018 4.67686 16.6018Z" fill="#6524EB"/>
+<path d="M7.69542 16.6018C8.15014 16.6018 8.51877 16.2331 8.51877 15.7784C8.51877 15.3237 8.15014 14.9551 7.69542 14.9551C7.2407 14.9551 6.87207 15.3237 6.87207 15.7784C6.87207 16.2331 7.2407 16.6018 7.69542 16.6018Z" fill="#6524EB"/>
+<path d="M10.6603 16.6018C11.115 16.6018 11.4836 16.2331 11.4836 15.7784C11.4836 15.3237 11.115 14.9551 10.6603 14.9551C10.2055 14.9551 9.83691 15.3237 9.83691 15.7784C9.83691 16.2331 10.2055 16.6018 10.6603 16.6018Z" fill="#6524EB"/>
+<path d="M13.9532 16.6018C14.408 16.6018 14.7766 16.2331 14.7766 15.7784C14.7766 15.3237 14.408 14.9551 13.9532 14.9551C13.4985 14.9551 13.1299 15.3237 13.1299 15.7784C13.1299 16.2331 13.4985 16.6018 13.9532 16.6018Z" fill="#6524EB"/>
+<path d="M10.6603 13.8029C11.115 13.8029 11.4836 13.4343 11.4836 12.9796C11.4836 12.5249 11.115 12.1562 10.6603 12.1562C10.2055 12.1562 9.83691 12.5249 9.83691 12.9796C9.83691 13.4343 10.2055 13.8029 10.6603 13.8029Z" fill="#6524EB"/>
+<path d="M14.8794 4.64641H14.777C14.7767 3.73676 14.0396 3 13.1303 3C12.2209 3 11.4835 3.73676 11.4835 4.64641H7.14702C7.1467 3.73676 6.40961 3 5.50028 3C4.59096 3 3.85355 3.73676 3.85355 4.64641H3.47548C2.05568 4.64641 0.907227 5.79848 0.907227 7.21499V7.21665V17.4916C0.907227 18.9098 2.05597 20.0602 3.47548 20.0602H14.8794C16.2976 20.0602 17.4493 18.9098 17.4493 17.4916V7.21661V7.21495C17.4493 5.79848 16.2976 4.64641 14.8794 4.64641ZM15.7245 17.4445C15.7245 17.8673 15.3807 18.2128 14.9568 18.2128H3.50644C3.08259 18.2128 2.73742 17.8673 2.73742 17.4445V10.8104H15.7245V17.4445Z" fill="#6524EB"/>
+<path d="M13.9532 13.8029C14.408 13.8029 14.7766 13.4343 14.7766 12.9796C14.7766 12.5249 14.408 12.1562 13.9532 12.1562C13.4985 12.1562 13.1299 12.5249 13.1299 12.9796C13.1299 13.4343 13.4985 13.8029 13.9532 13.8029Z" fill="#6524EB"/>
+<circle cx="15.5" cy="4.5" r="4.5" fill="white"/>
+<path d="M20 4.5C20 6.98528 17.9853 9 15.5 9C13.0147 9 11 6.98528 11 4.5C11 2.01472 13.0147 0 15.5 0C17.9853 0 20 2.01472 20 4.5ZM14.0114 2.61363C13.9015 2.50379 13.7235 2.50379 13.6136 2.61363C13.5038 2.72346 13.5038 2.90154 13.6136 3.01137L15.1023 4.5L13.6136 5.98863C13.5038 6.09846 13.5038 6.27654 13.6136 6.38637C13.7235 6.49621 13.9015 6.49621 14.0114 6.38637L15.5 4.89775L16.9886 6.38637C17.0985 6.49621 17.2765 6.49621 17.3864 6.38637C17.4962 6.27654 17.4962 6.09846 17.3864 5.98863L15.8977 4.5L17.3864 3.01137C17.4962 2.90154 17.4962 2.72346 17.3864 2.61363C17.2765 2.50379 17.0985 2.50379 16.9886 2.61363L15.5 4.10225L14.0114 2.61363Z" fill="#E53939"/>
+</svg>
+          )}
+        </div>
                 <p className={styles.managementText}>Cal.com</p>
               </div>
               <div className={styles.managementItem} onClick={() => setShowModal(true)}>

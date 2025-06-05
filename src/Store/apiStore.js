@@ -126,4 +126,15 @@ export const deleteAgent = async (agentId) => {
     throw new Error("Failed to delete agent");
   }
 };
+
+export const validateEmail = async (email) => {
+  try {
+    const res = await api.get(`/validate-email?email=${email}`);
+    return res.data; 
+  } catch (error) {
+    console.error("Error validating email:", error);
+    return { valid: false, reason: 'Error validating email' };  
+  }
+};
+
 export default api;
