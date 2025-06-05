@@ -386,6 +386,7 @@ const handleApiKeySubmit = async () => {
 
   // Close call modal
   const closeCallTestModal = () => {
+    handleEndCall();
     setOpenCallModal(false);
   };
   //handleCallHistoryNavigation

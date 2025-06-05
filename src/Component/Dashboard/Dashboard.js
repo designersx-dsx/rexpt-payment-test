@@ -438,9 +438,10 @@ const createCalEvent = async () => {
   };
 
   // Close call modal
-  const handleCloseCallModal = () => {
-    setOpenCallModal(false);
-  };
+const handleCloseCallModal = () => {
+  handleEndCall(); 
+  setOpenCallModal(false);  
+};
 
   // Open Widget modal
   const handleOpenWidgetModal = (agent) => {
@@ -965,21 +966,21 @@ const createCalEvent = async () => {
         )}
 
         {/* Call Test Modal */}
-        {openCallModal && (
-          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
-            <CallTest
-              isCallActive={isCallActive}
-              onStartCall={handleStartCall}
-              onEndCall={handleEndCall}
-              callLoading={callLoading}
-              setCallLoading={setCallLoading}
-              isliveTranscript={liveTranscript}
-              agentName={agentDetails?.agentName}
-              agentAvatar={agentDetails?.avatar}
-              businessName={agentDetails?.business?.businessName}
-            />
-          </Modal2>
-        )}
+       {openCallModal && (
+  <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+    <CallTest
+      isCallActive={isCallActive}
+      onStartCall={handleStartCall}
+      onEndCall={handleEndCall}
+      callLoading={callLoading}
+      setCallLoading={setCallLoading}
+      isliveTranscript={liveTranscript}
+      agentName={agentDetails?.agentName}
+      agentAvatar={agentDetails?.avatar}
+      businessName={agentDetails?.business?.businessName}
+    />
+  </Modal2>
+)}
 
         {/* WidgetModal */}
         {openWidgetModal && (
