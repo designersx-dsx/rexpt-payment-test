@@ -65,13 +65,16 @@ const StepHeader = ({ title }) => {
                     {/* heloo */}
                 </div>
             </div>
-            <h2 className={styles.heading} style={{
+            <h2 className={styles.heading} 
+            style={{
                 transform: `scale(${scale})`,
                 transition: 'transform 0.3s ease-out',
                 transformOrigin: 'center center',
                 marginTop: '1rem',
                 fontSize: `${scale * 2.5}rem`,
-            }}>{title}</h2>
+            }}
+            
+            >{title}</h2>
         </div>
     )
 }
