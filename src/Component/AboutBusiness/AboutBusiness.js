@@ -82,7 +82,7 @@ function AboutBusiness() {
       setBusinessUrlError(validateBusinessUrl(final));
     }
   };
-  
+
   useEffect(() => {
     if (token) {
       setUserId(decodeTokenData.id || "");
@@ -178,11 +178,11 @@ function AboutBusiness() {
   const isValidUrl = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" +
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
-        "((\\d{1,3}\\.){3}\\d{1,3}))" +
-        "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
-        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
-        "(\\#[-a-zA-Z\\d_]*)?$",
+      "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
+      "((\\d{1,3}\\.){3}\\d{1,3}))" +
+      "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
+      "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
+      "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     );
     return !!pattern.test(url);
@@ -362,7 +362,7 @@ Address No. 2: ${businessLocation.address2 || ""}
     }
   };
   const handleSkip = (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setPopupType("confirm");
     setPopupMessage(
       "This step is essential for your agent to understand your business context. You can always update these settings later as needed."
@@ -426,17 +426,17 @@ Address No. 2: ${businessLocation.address2 || ""}
                       }}
                       onInput={handleInputChange}
                     />
-                     <div className={styles.verifyButtonContainer}>
-                {!isVerified && (
-                  <button
-                    type="button"
-                    className={styles.verifyButton}
-                    onClick={handleVerifyUrl}
-                  >
-                    Verify
-                  </button>
-                )}
-              </div>
+                    <div className={styles.verifyButtonContainer}>
+                      {!isVerified && (
+                        <button
+                          type="button"
+                          className={styles.verifyButton}
+                          onClick={handleVerifyUrl}
+                        >
+                          Verify
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
                 {businessUrlSubmitted && businessUrlError && (
@@ -444,7 +444,7 @@ Address No. 2: ${businessLocation.address2 || ""}
                 )}
               </div>
               {/* Verify Button */}
-             
+
 
               <div>
                 <div className={styles.formGroup}>
