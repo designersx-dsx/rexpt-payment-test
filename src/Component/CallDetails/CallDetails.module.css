@@ -1,72 +1,171 @@
 .forSticky {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  /* padding: 5px 2px 2px 2px; */
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
+
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  /* background: #7b4fdd; */
-  background-image: linear-gradient(90deg, #6524eb 100%, #eae7ff 50%);
-  color: white;
-  padding: 20px 20px 30px 20px;
-  border-radius: 2rem 2rem 0px 0px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-image: linear-gradient(90deg, #6524eb 100%, #eae7ff 50%);
+    color: white;
+    padding: 20px 20px 30px 20px;
+    border-radius: 2rem 2rem 0px 0px;
+    flex-wrap: wrap;
 }
 
 .profileBack {
-  display: flex;
-  align-items: anchor-center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 1rem;
+    display: flex;
+    align-items: anchor-center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 1rem;
 }
 
 .profileBack {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  /* margin-bottom: 1rem; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .headerTitle {
-  font-weight: 600;
-  color: #fff;
-  font-size: 1.375rem;
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.375rem;
 }
 
 .notifiMain {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .notificationIcon1 {
-  background-color: #fff;
-  height: 50px;
-  width: 75px;
-  border-radius: 31px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    background-color: #fff;
+    height: 50px;
+    width: 75px;
+    border-radius: 31px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.notificationIcon {
+    background-color: #fff;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Section CSS Start */
+.agentCard {
+    background-image: linear-gradient(90deg, #e9e6ff 35%, #e1f6ff 68%);
+    padding: 1rem;
+    border-radius: 25px;
+    gap: 1rem;
+    margin: -30px 0 0 0;
+    position: relative;
+}
+
+.details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.details p {
+    color: #24252C;
+    font-size: 14px;
+
+}
+
+.detail2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.userName h2 {
+    color: #24252C;
+    font-size: 25px;
+}
+
+.status {
+    background-color: #1AA850;
+    border-radius: 4px;
+    color: #fff;
+    padding: 2px 12px;
+    font-size: 14px;
+}
+
+.hrline {
+    margin: 10px 0;
+    height: 1px;
+    background-color: #fff;
+    border: none;
+    margin-block: 1rem;
 }
 
 
+.details3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
 
+.Part1 p,
+.Part2 p,
+.Part3 p {
+    font-size: 16px;
+    color: #24252C;
+}
 
+.Part1 strong,
+.Part2 strong,
+.Part3 strong {
+    font-size: 16px;
+    color: #24252C;
+}
 
+.Part3 {
+    display: flex;
+    align-items: end;
+    flex-direction: column;
+    justify-content: end;
+}
 
+.DataMain {
+    padding: 16px;
+}
 
+.dataTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #24252C;
+}
 
-.notificationIcon {
-  background-color: #fff;
-  height: 50px;
-  width: 50px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.dataCard {
+    background-color: #F8F8F8;
+    padding: 20px 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.PhoneNumber,
+.EmailAddress,
+.Address,
+.Reason {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

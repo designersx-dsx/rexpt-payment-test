@@ -66,7 +66,6 @@ function App() {
           <Route path="/totalcall-list" element={<TotalsCallsList />} />
           <Route path="/call-transfer" element={<CallTransfer />} />
           <Route path="/call-details" element={<CallDetails />} />
-
         </Routes>
 
       </div>
