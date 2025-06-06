@@ -338,6 +338,8 @@ import { API_BASE_URL, updateProfilePicture } from "../../../Store/apiStore";
 import decodeToken from "../../../lib/decodeToken";
 import useUser from "../../../Store/Context/UserContext";
 import imageCompression from "browser-image-compression";
+import Cropper from "react-easy-crop";
+import getCroppedImg from "../../../utils/cropImageHelper";
 
 const compressImage = async (imageFile) => {
   const options = {
@@ -365,6 +367,10 @@ const UploadProfile = ({ onClose, onUpload }) => {
   const [userId] = useState(decodeTokenData?.id || "");
   const [profile, setProfile] = useState(null);
   const { user, setUser } = useUser();
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [isCropping, setIsCropping] = useState(false);
 
   // Helper to stop webcam stream
   const stopWebcamStream = () => {
@@ -386,6 +392,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
         setUploadedImage(reader.result);
         setCapturedImage(null);
         stopWebcamStream(); // stop if uploading while webcam is open
+          setIsCropping(true); // enable crop view
         setIsWebcamOpen(false);
       };
       reader.readAsDataURL(compressed);
@@ -399,6 +406,8 @@ const UploadProfile = ({ onClose, onUpload }) => {
     if (imageSrc) {
       setCapturedImage(imageSrc);
       setUploadedImage(null);
+        setIsCropping(true); // enable crop view
+
 
       // Convert to Blob
       const byteString = atob(imageSrc.split(",")[1]);
@@ -454,6 +463,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
       saveImageToServer();
       stopWebcamStream();
     }
+    stopWebcamStream();
   };
 
   // Handle camera permission errors
@@ -478,7 +488,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
         {cameraError && <div className={styles.errorMessage}>{cameraError}</div>}
 
         {/* Preview */}
-        {(uploadedImage || capturedImage) && (
+        {/* {(uploadedImage || capturedImage) && (
           <div className={styles.imagePreview}>
             <img
               src={uploadedImage || capturedImage}
@@ -486,7 +496,20 @@ const UploadProfile = ({ onClose, onUpload }) => {
               className={styles.previewImage}
             />
           </div>
-        )}
+        )} */}
+        {isCropping && (uploadedImage || capturedImage) && (
+      <div className={styles.cropContainer}>
+        <Cropper
+          image={uploadedImage || capturedImage}
+          crop={crop}
+          zoom={zoom}
+          aspect={1}
+          onCropChange={setCrop}
+          onZoomChange={setZoom}
+          onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
+        />
+      </div>
+    )}
 
       
 
@@ -551,7 +574,48 @@ const UploadProfile = ({ onClose, onUpload }) => {
           >
             Close
           </button>
-          <button
+
+  {isCropping && (uploadedImage || capturedImage) && (
+  <div className={styles.cropperOverlay}>
+    <div className={styles.cropContainer}>
+      <Cropper
+        image={uploadedImage || capturedImage}
+        crop={crop}
+        zoom={zoom}
+        aspect={1}
+        onCropChange={setCrop}
+        onZoomChange={setZoom}
+        onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
+      />
+    </div>
+
+    <div className={styles.cropButtons}>
+      <button
+        className={styles.cancelCropButton}
+        onClick={() => setIsCropping(false)}
+      >
+        Cancel
+      </button>
+      <button
+        className={styles.applyCropButton}
+        onClick={async () => {
+          const imageSrc = uploadedImage || capturedImage;
+          const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+          const croppedFile = new File([croppedBlob], "cropped.jpg", {
+            type: "image/jpeg",
+          });
+          const compressed = await compressImage(croppedFile);
+          setProfile(compressed);
+          setUploadedImage(URL.createObjectURL(croppedBlob));
+          setIsCropping(false);
+        }}
+      >
+        Apply Crop
+      </button>
+    </div>
+  </div>
+)}
+               <button
             onClick={handleSave}
             disabled={!uploadedImage && !capturedImage}
             className={

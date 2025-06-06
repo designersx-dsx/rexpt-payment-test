@@ -84,7 +84,43 @@ function App() {
               />
 
 
-              <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/"
+            element={
+              token ? <Navigate to="/dashboard" /> : <Start />
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <SecureRoute>
+                <Dashboard />
+              </SecureRoute>
+            }
+          />
+          <Route path="/" element={<Start />} />
+          <Route path="/signup" element={<SignUp />} />
+         
+          <Route path="/steps" element={<Step/>} />
+        
+          <Route path="/business-details" element={<BusinessDetails/>} />
+          <Route path="/agent-detail" element={<AgentDetail />} />
+      
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/business-services" element={<SecureRoute><BusinessServices /></SecureRoute>} />
+          {/* <Route path="/home" element={<Home />} /> */}
+          <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
+          <Route path="/rex-agent" element={<SecureRoute><RexAgent /></SecureRoute>} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/checkout" element={<SubscriptionFlow />} />
+          <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
+          <Route path="/totalcall-list" element={<TotalsCallsList />} />
+          <Route path="/call-transfer" element={<CallTransfer />} />
+          <Route path="/call-details" element={<CallDetails />} />
+        </Routes>
+
+
+     
               <Route
                 path="/business-services"
                 element={
