@@ -29,56 +29,53 @@ const BusinessDetails = () => {
   const location = useLocation();
   const agentDetails = location.state;
 
+  const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
+      try {  
+      const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
+      console.log('response',response)
+      const agent=response?.data?.agent;
+      const business=response?.data?.business;
+      
+    // console.log('agent',agent)
+    sessionStorage.setItem('UpdationMode','ON')
+    sessionStorage.setItem('agentName',agent.agentName)
+    sessionStorage.setItem('agentGender',agent.agentGender)
+    sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
+    sessionStorage.setItem('agentLanguage',agent.agentLanguage)
+    sessionStorage.setItem('llmId',agent.llmId)
+    sessionStorage.setItem('agent_id',agent.agent_id)
+    sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
 
-  const fetchPrevAgentDEtails = async (agent_id, businessId) => {
-    try {
-      const response = await getUserAgentMergedDataForAgentUpdate(agent_id, businessId)
-      console.log('response', response)
-      const agent = response?.data?.agent;
-      const business = response?.data?.business;
+    //need to clear later
+    localStorage.setItem('agentName',agent.agentName)
+    localStorage.setItem('agentGender',agent.agentGender)
+    localStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
+    localStorage.setItem('agentLanguage',agent.agentLanguage)
+    localStorage.setItem('llmId',agent.llmId)
+    localStorage.setItem('agent_id',agent.agent_id)
+    localStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
+    localStorage.setItem('agentRole',agent.agentRole)
+    localStorage.setItem('agentVoice',agent.agentVoice)
+    localStorage.setItem('agentVoiceAccent',agent.agentAccent)
+    localStorage.setItem('avatar',agent.avatar)
+    //need to clear above
 
-      // console.log('agent',agent)
-      sessionStorage.setItem('UpdationMode', 'ON')
-      sessionStorage.setItem('agentName', agent.agentName)
-      sessionStorage.setItem('agentGender', agent.agentGender)
-      sessionStorage.setItem('agentLanguageCode', agent.agentLanguageCode)
-      sessionStorage.setItem('agentLanguage', agent.agentLanguage)
-      sessionStorage.setItem('agentRole', agent.agentRole)
-      sessionStorage.setItem('agentVoice', agent.agentVoice)
-      sessionStorage.setItem('agentVoiceAccent', agent.agentAccent)
-      sessionStorage.setItem('avatar', agent.avatar)
-      sessionStorage.setItem('businessDetails', agent.business)
-      sessionStorage.setItem('businessLocation', agent.business)
-      sessionStorage.setItem('businessId', agent.businessId)
-      sessionStorage.setItem('agent_id', agent.agent_id)
-      sessionStorage.setItem('llmId', agent.llmId)
-      sessionStorage.setItem('knowledgeBaseId', agent.knowledgeBaseId)
-      sessionStorage.setItem('businessLocation', JSON.stringify({
-        country: business?.country,
-        state: business?.state.trim(),
-        city: business?.city.trim(),
-        address1: business?.address1.trim(),
-        address2: business?.address2.trim(),
-      }))
+    sessionStorage.setItem('agentRole',agent.agentRole)
+    sessionStorage.setItem('agentVoice',agent.agentVoice)
+    sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
+    sessionStorage.setItem('avatar',agent.avatar)
+    sessionStorage.setItem('businessDetails',agent.business)
+    sessionStorage.setItem('businessLocation',agent.business)
+    sessionStorage.setItem('businessId',agent.businessId)
+ 
+    sessionStorage.setItem('businessLocation',  JSON.stringify({
+    country: business?.country,
+    state: business?.state.trim(),
+    city: business?.city.trim(),
+    address1: business?.address1.trim(),
+    address2: business?.address2.trim(),
+  }))
 
-      const businessData = {
-        businessType: business?.businessType,
-        businessName: business?.businessName.trim(),
-        businessSize: business?.businessSize,
-        selectedService: business?.buisnessService,
-        email: business?.buisnessEmail
-
-      };
-      sessionStorage.setItem("businessDetails", JSON.stringify(businessData))
-      const businessServices = {
-        selectedService: business?.buisnessService,
-        email: business?.buisnessEmail
-      }
-      sessionStorage.setItem("businesServices", JSON.stringify(businessServices))
-
-      setBusinessType(business?.businessType);
-      setBusinessName(business?.businessName.trim());
-      setBusinessSize(business?.businessSize);
 
 
     } catch (error) {
