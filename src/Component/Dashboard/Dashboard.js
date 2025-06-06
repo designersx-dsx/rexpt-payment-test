@@ -484,6 +484,7 @@ const handleCloseCallModal = () => {
      navigate('/business-details', {
       state: { agentId: ag.agent_id, bussinesId: ag.businessId },
     });
+  }
 
   const handleRefresh = () => {
    setHasFetched(false);
@@ -1075,4 +1076,4 @@ const handleAlertPopUp=(show,message, type)=>{
   );
 }
 
-export default Dashboard;
+export default Dashboard
