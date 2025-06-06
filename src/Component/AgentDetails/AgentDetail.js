@@ -10,6 +10,7 @@ import CallTest from "../CallTest/CallTest";
 import Modal2 from "../Modal2/Modal2";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
+import Footer2 from "./Footer/Footer2";
 import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 
@@ -491,7 +492,7 @@ const handleApiKeySubmit = async () => {
                     />
                     <p className={styles.generalDiv}>General </p>
                   </div>
-                  <div>
+                  <div className={styles.FullLine}>
                     <div className={styles.foractive}>
                       <h3 className={styles.agentName}>
                         {agentData?.agent?.agentName}
@@ -955,7 +956,7 @@ const handleApiKeySubmit = async () => {
           />
 
 
-          <Footer />
+          <Footer2 />
         </>
 
       )

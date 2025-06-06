@@ -104,8 +104,9 @@
   right: 0;
   transform: translate(50%, 0%);
 }
-
-
+.navbar {
+  background-color: #EDE9FC;
+}
 }
 
 
