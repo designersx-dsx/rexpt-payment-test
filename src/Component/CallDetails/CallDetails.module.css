@@ -169,3 +169,19 @@
     align-items: center;
     justify-content: space-between;
 }
+
+.channel{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+.Ptext{
+    color: #4E4E50;
+}
+.PhoneDiv{
+    background-color: #EBE2FF;
+    color: #6524eb;
+    padding: 4px 8px;
+    border-radius: 4px;
+}

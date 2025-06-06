@@ -413,7 +413,7 @@ const BusinessServices = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-
+  <div className={styles.ListDiv}>
             <div className={styles.optionList}>
                 {filteredServices.length > 0 ? (
                     filteredServices.map((service, index) => (
@@ -460,7 +460,7 @@ const BusinessServices = () => {
                     <p style={{ color: 'red', marginTop: '5px' }}>{serviceError}</p>
                 )}
             </div>
-
+</div>
             <div className={styles.labReq}>
                 <div className={styles.inputGroup}>
                     <div className={styles.Dblock}>

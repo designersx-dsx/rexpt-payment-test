@@ -382,6 +382,7 @@ const SignUp = () => {
                       fontWeight: "bold",
                       fontSize: "14px",
                     }}
+
                   >
                     {isResendDisabled && resendTimer > 0
                       ? `Resend OTP in ${String(
@@ -393,6 +394,37 @@ const SignUp = () => {
                       : "Resend OTP"}
                   </button>
                 </div>
+
+                    inputMode="numeric"
+                    type="tel"
+                  />
+                ))}
+              </div>
+              <div
+                className={styles.resendContainer}
+         
+              >
+                <button
+                  type="button"
+                  className={styles.resendButton}
+                  onClick={handleSendOTP}
+                  disabled={isResendDisabled}
+                  style={{
+                    cursor: isResendDisabled ? "not-allowed" : "pointer",
+                    opacity: isResendDisabled ? 0.5 : 1,
+                    background: "none",
+                    border: "none",
+                    color: "#6524EB",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                  }}
+                >
+                {isResendDisabled && resendTimer > 0
+                ? `Resend OTP in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
+                : "Resend One time Password"}
+                </button>
+              </div>
+
 
                 <div className={styles.Btn} onClick={handleLoginClick}>
                   <div type="submit">
