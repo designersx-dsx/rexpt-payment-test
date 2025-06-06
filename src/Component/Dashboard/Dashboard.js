@@ -6,6 +6,7 @@ import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
   fetchDashboardDetails,
+  getUserAgentMergedDataForAgentUpdate,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -476,9 +477,17 @@ function Dashboard() {
     closeUploadModal();
   };
 
+
+  const handleEditAgent=async(ag)=>{
+    localStorage.setItem('UpdationMode','ON');
+     navigate('/business-details', {
+      state: { agentId: ag.agent_id, bussinesId: ag.businessId },
+    });
+
   const handleRefresh = () => {
    setHasFetched(false);
    fetchAndMergeCalApiKeys()
+
   }
 
 const handleAlertPopUp=(show,message, type)=>{
@@ -689,7 +698,8 @@ const handleAlertPopUp=(show,message, type)=>{
                       <div className={styles.OptionItem} onClick={() => ""}>
                         Call Settings
                       </div>
-                      <div className={styles.OptionItem} onClick={() => ""}>
+                      <div className={styles.OptionItem} onClick={() => handleEditAgent(agent)}>
+                      {/* <div className={styles.OptionItem} onClick={() => ""}> */}
                         Edit Agent
                       </div>
                       <div
