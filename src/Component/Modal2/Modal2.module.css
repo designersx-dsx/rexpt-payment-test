@@ -2,7 +2,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);  /* Darker background for better focus */
+  background: rgba(0, 0, 0, 0.6);  
   z-index: 50;
   display: flex;
   justify-content: center;
@@ -13,42 +13,47 @@
 
 /* Modal Container */
 .modalContainer {
-  margin-top: 3rem;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 90%;
   max-width: 450px;
-  animation: slideUp 0.3s ease-out forwards;
-  transform: translateY(100px);
-  opacity: 0;
-  border-radius: 16px;  /* Rounded corners for a softer look */
+  border-radius: 16px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out forwards;
+  opacity: 0;
 }
 
-/* Animation for modal */
+/* Animation for modal - Slide Up (show) */
 @keyframes slideUp {
+  from {
+    transform: translate(-50%, -40%);
+    opacity: 0;
+  }
   to {
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
     opacity: 1;
   }
 }
 
-/* Slide Down Animation */
+/* Slide Down Animation (hide) */
 .slideDown {
   animation: slideDown 0.3s ease-in forwards;
 }
 
 @keyframes slideDown {
   from {
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
     opacity: 1;
   }
   to {
-    transform: translateY(100px);
+    transform: translate(-50%, -40%);
     opacity: 0;
   }
 }
 
-/* Modal Body */
+/* Modal Inner Content */
 .modal {
   background: #fff;
   padding: 2rem;
@@ -74,10 +79,10 @@
 }
 
 .closeBtn:hover {
-  color: #FF5733;  /* Stylish hover color */
+  color: #FF5733;
 }
 
-/* Confirmation Modal */
+/* Confirmation Modal Style */
 .confirmationModal {
   background: rgba(0, 0, 0, 0.1);
   padding: 2rem;
