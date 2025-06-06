@@ -152,16 +152,23 @@ const BusinessDetails = () => {
     "1000+",
   ];
 
-  useEffect(() => {
-    if (sessionStorage.getItem("businessDetails")) {
-      const businessDetails = JSON.parse(
-        sessionStorage?.getItem("businessDetails")
-      );
-      setBusinessType(businessDetails?.businessType);
-      setBusinessName(businessDetails?.businessName);
-      setBusinessSize(businessDetails?.businessSize);
+useEffect(() => {
+  try {
+    const stored = sessionStorage.getItem("businessDetails");
+
+    if (stored && stored !== "undefined" && stored !== "null") {
+      const businessDetails = JSON.parse(stored);
+
+      if (businessDetails) {
+        setBusinessType(businessDetails.businessType || "");
+        setBusinessName(businessDetails.businessName || "");
+        setBusinessSize(businessDetails.businessSize || "");
+      }
     }
-  }, []);
+  } catch (err) {
+    console.error("Failed to parse businessDetails from sessionStorage:", err);
+  }
+}, []);
 
   const containsEmoji = (text) => {
     return /[\p{Emoji_Presentation}\u200d]/u.test(text);
