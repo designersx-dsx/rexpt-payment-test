@@ -6,7 +6,7 @@ import PopUp from '../Popup/Popup';
 const BusinessServices = () => {
     const navigate = useNavigate();
     const [businessType, setBusinessType] = useState("Restaurant");
-    const [selectedService, setSelectedService] = useState("");
+    const [selectedService, setSelectedService] = useState([]);
     const [businessName, setBusinessName] = useState("");
     const [businessSize, setBusinessSize] = useState("");
     const [email, setEmail] = useState("");
