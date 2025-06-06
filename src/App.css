@@ -31,6 +31,14 @@
    .ForMobile{
     /* display: none; */
    }
+   .App{
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    /* display: flex; */
+    width: 100%;
+   }
+   
  }
 
 
