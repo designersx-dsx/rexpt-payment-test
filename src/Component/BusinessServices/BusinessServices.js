@@ -303,33 +303,37 @@ const BusinessServices = () => {
         setServiceError("");
         return true;
     };
+const handleContinue = () => {
+  const isEmailValid = validateEmail(email);
+  const isServiceValid = selectedService.length > 0;
 
-    const handleContinue = () => {
-        const isEmailValid = validateEmail(email);
-        const isServiceValid = validateService(selectedService);
+  if (isEmailValid && isServiceValid) {
+    // Save selected services in sessionStorage
+    sessionStorage.setItem("businessDetails", JSON.stringify({
+      businessType,
+      businessName,
+      businessSize,
+      selectedService, 
+      email,
+    }));
+
+    // Save selected services as selectedServices
+    sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
+
+    navigate("/about-business-next");
+  } else {
+    const errorMessage = isEmailValid
+      ? "Please select at least one service."
+      : "Invalid email address or empty fields."; 
+
+    setPopupMessage(errorMessage);
+    setPopupType("failed");
+  }
+};
 
 
-        // if (!isEmailVerified) {
-        //     setPopupMessage("Please verify your email first.");
-        //     setPopupType("failed"); 
-        //     return;  
-        // }
 
 
-        if (isEmailValid && isServiceValid) {
-            sessionStorage.setItem(
-                "businessDetails",
-                JSON.stringify({
-                    businessType,
-                    businessName,
-                    businessSize,
-                    selectedService,
-                    email,
-                })
-            );
-            navigate("/business-locations");
-        }
-    };
       const handleEmailVerify = async () => {
         try {
             const response = await validateEmailAPI(email);
@@ -384,17 +388,15 @@ const BusinessServices = () => {
     }
     }, []);
 
-    const handleServiceToggle = (service) => {
-    setSelectedService((prev) => {
-        if (prev.includes(service)) {
-            return prev.filter((s) => s !== service); // Deselect
-        } else {
-            return [...prev, service]; // Select
-        }
-    });
-    setServiceError(""); // Clear any existing error
-};
-// console.log(selectedService)
+  const handleServiceToggle = (service) => {
+    setSelectedService((prev) =>
+      prev.includes(service)
+        ? prev.filter((s) => s !== service)
+        : [...prev, service]
+    );
+    setServiceError("");
+  };
+
     
 
     return (

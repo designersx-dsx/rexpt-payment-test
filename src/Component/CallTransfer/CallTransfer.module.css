@@ -1,6 +1,9 @@
 .CallTransferMain {
     padding-inline: 16px;
 }
+.CallTransferMain1 {
+    padding: 16px;
+}
 
 .headrPart {
     display: flex;
@@ -145,4 +148,15 @@
     .headrPart h2 {
         font-size: 20px;
     }
+}
+.skipButton {
+    margin-top: 5px;
+  text-align: center;
+}
+
+.skipButton button {
+  border: none;
+  background-color: white;
+  color: #bebebe;
+  font-size: 14px;
 }
