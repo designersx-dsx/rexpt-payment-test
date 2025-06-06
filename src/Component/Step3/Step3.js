@@ -51,7 +51,7 @@ const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img 
       const matchedAvatar = avatars[agentGender][matchedAvatarIndex];
       setSelectedAvatar(matchedAvatar);
       setAvatar(matchedAvatar?.img);
-      sliderRef.current?.slickGoTo(matchedAvatarIndex); // ✅ Move slider to matched avatar
+      sliderRef.current?.slickGoTo(matchedAvatarIndex); 
     }
 
     const storedName = localStorage.getItem('agentName');
@@ -166,38 +166,16 @@ const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+
+  
+
   return (
     <>
-      <div className={styles.labReq} >
-        <div className={styles.agentInputBox} id='sliderstep'>
-          <label className={styles.agentLabel}>Name Your Virtual Agent</label>
-          <div className={styles.Dblock} >
-            <input
-              type="text"
-              name="agentName"
-              onChange={handleAgentNameChange}
-              className={styles.agentInput}
-              placeholder="Ex- Smith, Nova"
-              value={agentName}
-            />
-          </div>
-        </div>
-        {agentNameError && (
-          <p className={styles.agenterror}>
-            {agentNameError}
-          </p>
-        )}
-      </div>
+      
       <div className={styles.sliderContainer}>
         <h2 className={styles.heading}
-          style={{
-            transform: `scale(${scale})`,
-            transition: 'transform 0.3s ease-out',
-            transformOrigin: 'center center',
-            marginTop: '1rem',
-            fontSize: `${scale * 2.5}rem`,
-          }}
-        >Choose Avatar</h2>
+        
+        >Receptionist Avatar</h2>
 
         <Slider ref={sliderRef} {...settings}>
           {avatars[gender]?.map((avatar, index) => (
@@ -219,7 +197,28 @@ const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img 
                   className={styles.avatarImage}
                 />
               </label>
+       <div className={styles.labReq} >
+        <div className={styles.agentInputBox} id='sliderstep'>
+          <label className={styles.agentLabel}>Name Your Virtual Agent</label>
+          <div className={styles.Dblock} >
+            <input
+              type="text"
+              name="agentName"
+              onChange={handleAgentNameChange}
+              className={styles.agentInput}
+              placeholder="Ex- Smith, Nova"
+              value={agentName}
+            />
+          </div>
+        </div>
+        {agentNameError && (
+          <p className={styles.agenterror}>
+            {agentNameError}
+          </p>
+        )}
+      </div>
             </div>
+            
           ))}
         </Slider>
 

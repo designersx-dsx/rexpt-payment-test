@@ -1157,7 +1157,7 @@ End Call: If the caller is satisfied, invoke end_call function.
     const stepTitles = [
         "Agent Language Supported",
         "Agent Gender",
-        "Agent Name",
+        "",
         "Receptionist Type",
     ];
     // function lock
