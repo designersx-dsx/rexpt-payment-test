@@ -160,8 +160,7 @@ function Dashboard() {
     return data.agents;
   };
   // Fetch dashboard + merge Cal API keys
-  useEffect(() => {
-    const fetchAndMergeCalApiKeys = async () => {
+   const fetchAndMergeCalApiKeys = async () => {
       if (!userId) return;
       try {
         const res = await fetchDashboardDetails(userId);
@@ -176,7 +175,7 @@ function Dashboard() {
           ...agent,
           calApiKey: calApiKeyMap[agent.agent_id] || null,
         }));
-     
+
         setDashboardData(agentsWithCalKeys, res.total_call || 0);
         setHasFetched(true);
         // localStorage.setItem("userId", userId);
@@ -186,11 +185,11 @@ function Dashboard() {
         console.error("Error fetching dashboard data or Cal API keys:", error);
       }
     };
-    if ((!hasFetched || !agents.length) ) {
+  useEffect(() => {
+    if ((!hasFetched || !agents.length)) {
       fetchAndMergeCalApiKeys();
     }
-  }, [userId, hasFetched, agents.length, setDashboardData, setHasFetched]);
-
+  }, [userId, hasFetched, setDashboardData, setHasFetched]);
   // Sync local agents with store
   useEffect(() => {
     if (agents && agents.length > 0) {
@@ -243,82 +242,82 @@ function Dashboard() {
   };
 
   // Create Cal event
-const createCalEvent = async () => {
-  if (!apiKey.trim()) {
-    alert("API Key is required to create an event.");
-    return;
-  }
-  if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
-    alert("Please fill all event fields.");
-    return;
-  }
-  try {
-    // Call Cal API to create an event
-    const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(apiKey.trim())}`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: eventName.trim(),
-        slug: eventSlug.trim(),
-        length: parseInt(eventLength, 10),
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to create event");
+  const createCalEvent = async () => {
+    if (!apiKey.trim()) {
+      alert("API Key is required to create an event.");
+      return;
     }
-
-    const responseData = await response.json();
-    const eventTypeId = responseData.event_type.id;
-    const retellPayload = {
-      general_tools: [
-        {
-          type: "book_appointment_cal",
-          name: "cal_tool",
-          cal_api_key: apiKey.trim(), 
-          event_type_id: eventTypeId,  
-        }
-      ]
-    };
-
-    // Update LLM using the Retell API
-    const retellUrl = `https://api.retellai.com/update-retell-llm/${selectedAgent.llmId}`;
-    const retellResponse = await fetch(retellUrl, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-      },
-      body: JSON.stringify(retellPayload),
-    });
-
-    if (!retellResponse.ok) {
-      const retellError = await retellResponse.json();
-      console.error("Error updating Retell LLM:", retellError);
-    } else {
-      console.log("Retell LLM updated successfully!");
+    if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
+      alert("Please fill all event fields.");
+      return;
     }
+    try {
+      // Call Cal API to create an event
+      const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(apiKey.trim())}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: eventName.trim(),
+          slug: eventSlug.trim(),
+          length: parseInt(eventLength, 10),
+        }),
+      });
 
-    // Success
-    setPopupType("success");
-    setPopupMessage("Your Cal event has been created successfully!");
-    setShowCalKeyInfo(false);
-    setEventName("");
-    setEventSlug("");
-    setEventLength("");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create event");
+      }
 
-    setTimeout(() => {
-      closeModal(); 
-    }, 1000);
+      const responseData = await response.json();
+      const eventTypeId = responseData.event_type.id;
+      const retellPayload = {
+        general_tools: [
+          {
+            type: "book_appointment_cal",
+            name: "cal_tool",
+            cal_api_key: apiKey.trim(),
+            event_type_id: eventTypeId,
+          }
+        ]
+      };
 
-  } catch (error) {
-    setEventCreateStatus("error");
-    setEventCreateMessage(`Error creating event: ${error.message}`);
-    console.error("Error in createCalEvent:", error);
-  }
-};
+      // Update LLM using the Retell API
+      const retellUrl = `https://api.retellai.com/update-retell-llm/${selectedAgent.llmId}`;
+      const retellResponse = await fetch(retellUrl, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+        },
+        body: JSON.stringify(retellPayload),
+      });
+
+      if (!retellResponse.ok) {
+        const retellError = await retellResponse.json();
+        console.error("Error updating Retell LLM:", retellError);
+      } else {
+        console.log("Retell LLM updated successfully!");
+      }
+
+      // Success
+      setPopupType("success");
+      setPopupMessage("Your Cal event has been created successfully!");
+      setShowCalKeyInfo(false);
+      setEventName("");
+      setEventSlug("");
+      setEventLength("");
+
+      setTimeout(() => {
+        closeModal();
+      }, 1000);
+
+    } catch (error) {
+      setEventCreateStatus("error");
+      setEventCreateMessage(`Error creating event: ${error.message}`);
+      console.error("Error in createCalEvent:", error);
+    }
+  };
 
   const closeModal = () => {
     setIsCalModalOpen(false);
@@ -335,19 +334,19 @@ const createCalEvent = async () => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
- const handleDelete = async (agentId) => {
-  try {
-    await deleteAgent(agentId);
-    const updatedAgents = localAgents.filter(agent => agent.agent_id !== agentId);
-    setLocalAgents(updatedAgents); 
-    setPopupMessage("Agent deleted successfully!");
-    setPopupType("success");
-    setHasFetched(false);
-  } catch (error) {
-    setPopupMessage(`Failed to delete agent: ${error.message}`);
-    setPopupType("failed");
-  }
-};
+  const handleDelete = async (agentId) => {
+    try {
+      await deleteAgent(agentId);
+      const updatedAgents = localAgents.filter(agent => agent.agent_id !== agentId);
+      setLocalAgents(updatedAgents);
+      setPopupMessage("Agent deleted successfully!");
+      setPopupType("success");
+      setHasFetched(false);
+    } catch (error) {
+      setPopupMessage(`Failed to delete agent: ${error.message}`);
+      setPopupType("failed");
+    }
+  };
 
 
   const handleUpgrade = (id) => {
@@ -397,7 +396,7 @@ const createCalEvent = async () => {
         }
       );
       const data = await res.json();
-    
+
       await retellWebClient.startCall({ accessToken: data.access_token });
       setCallId(data?.call_id);
     } catch (err) {
@@ -476,10 +475,16 @@ const createCalEvent = async () => {
     setUploadedImage(image);
     closeUploadModal();
   };
- 
 
-  
+  const handleRefresh = () => {
+   setHasFetched(false);
+   fetchAndMergeCalApiKeys()
+  }
 
+const handleAlertPopUp=(show,message, type)=>{
+  setPopupMessage(message);
+  setPopupType(type);
+}
   return (
     <div>
       <div className={styles.forSticky}>
@@ -609,7 +614,7 @@ const createCalEvent = async () => {
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
-        
+
           let assignedNumbers = [];
           if (agent.voip_numbers) {
             try {
@@ -977,6 +982,8 @@ const createCalEvent = async () => {
             <WidgetScript
               isAgentDetails={agentDetails}
               onClose={handleCloseWidgetModal}
+              refreshFuntion={handleRefresh}
+              alertPopUp={handleAlertPopUp}
             />
           </Modal2>
         )}
@@ -1013,10 +1020,10 @@ const createCalEvent = async () => {
 
       <Footer />
       {/* <Footer2/> */}
- <CommingSoon
-              show={showModal}
-              onClose={() => setShowModal(false)}
-            />
+      <CommingSoon
+        show={showModal}
+        onClose={() => setShowModal(false)}
+      />
 
       {/* OffCanvas for Logout */}
       {openOffcanvas && (
