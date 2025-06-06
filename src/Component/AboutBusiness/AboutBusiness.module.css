@@ -115,6 +115,7 @@
 }
 
 .filesAllowed {
+
   font-size: 12px;
 }
 .verifyButton {
@@ -132,6 +133,18 @@
 
 @media screen and (min-width: 601px) {
   .btnTheme {
+
+    font-size: 12px;
+}
+.verifyStatus{
+     position: absolute;
+    right: 20px;
+    top: 30%;
+    border: unset;
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 5px;
+
     cursor: pointer;
   }
   .container {
@@ -147,3 +160,24 @@
     font-size: 36px;
   }
 }
+
+@media (max-width:375px) {
+    .header h1 {
+        font-size: 36px;
+    }
+}
+.requiredStar {
+    position: absolute;
+  color: red;
+  font-weight: bold;
+   /* right: 205px; */
+     top: 15%;
+}
+.requiredStar1 {
+    position: absolute;
+  color: red;
+  font-weight: bold;
+   /* right: 78px; */
+     /* top: 28%; */
+}
+
