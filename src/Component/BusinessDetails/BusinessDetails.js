@@ -43,6 +43,24 @@ const BusinessDetails = () => {
     sessionStorage.setItem('agentGender',agent.agentGender)
     sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
     sessionStorage.setItem('agentLanguage',agent.agentLanguage)
+    sessionStorage.setItem('llmId',agent.llmId)
+    sessionStorage.setItem('agent_id',agent.agent_id)
+    sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
+
+    //need to clear later
+    localStorage.setItem('agentName',agent.agentName)
+    localStorage.setItem('agentGender',agent.agentGender)
+    localStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
+    localStorage.setItem('agentLanguage',agent.agentLanguage)
+    localStorage.setItem('llmId',agent.llmId)
+    localStorage.setItem('agent_id',agent.agent_id)
+    localStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
+    localStorage.setItem('agentRole',agent.agentRole)
+    localStorage.setItem('agentVoice',agent.agentVoice)
+    localStorage.setItem('agentVoiceAccent',agent.agentAccent)
+    localStorage.setItem('avatar',agent.avatar)
+    //need to clear above
+
     sessionStorage.setItem('agentRole',agent.agentRole)
     sessionStorage.setItem('agentVoice',agent.agentVoice)
     sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
@@ -50,9 +68,7 @@ const BusinessDetails = () => {
     sessionStorage.setItem('businessDetails',agent.business)
     sessionStorage.setItem('businessLocation',agent.business)
     sessionStorage.setItem('businessId',agent.businessId)
-    sessionStorage.setItem('agent_id',agent.agent_id)
-    sessionStorage.setItem('llmId',agent.llmId)
-    sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
+ 
     sessionStorage.setItem('businessLocation',  JSON.stringify({
     country: business?.country,
     state: business?.state.trim(),

@@ -12,12 +12,13 @@ import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
 import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
-import { createAgent, listAgents } from "../../Store/apiStore";
+import { createAgent, listAgents, updateAgent } from "../../Store/apiStore";
+import { useDashboardStore } from "../../Store/agentZustandStore";
 const Step = () => {
     const navigate = useNavigate();
     const sliderRef = useRef(null);
     const [currentStep, setCurrentStep] = useState(0);
-    const [selectedLang, setSelectedLang] = useState("");
+    const [selectedLang, setSelectedLang] = useState();
     const [selectedLangCode, setSelectedLangCode] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [popupType, setPopupType] = useState(null);
@@ -30,6 +31,14 @@ const Step = () => {
     const token = localStorage.getItem("token") || "";
     const decodeTokenData = decodeToken(token)
     const [userId, setUserId] = useState(decodeTokenData?.id || "");
+    const { setHasFetched } = useDashboardStore();
+    useEffect(()=>{
+       if (localStorage.getItem('UpdationMode') == "ON"  ) {  
+            setSelectedLang(localStorage.getItem("agentLanguage"))
+            setSelectedLangCode(localStorage.getItem("agentLanguageCode"))
+        }
+    },[])
+    
     useEffect(() => {
         if (token) {
             setUserId(decodeTokenData.id || "");
@@ -787,8 +796,11 @@ End Call: If the caller is satisfied, invoke end_call function.
     const handleContinue = async () => {
         if (step4Ref.current) {
             const isValid = step4Ref.current.validate();
-            if (isValid) {
+            //creation here
+            if (isValid && localStorage.getItem("UpdationMode") != "ON") {
                 setLoading(true)
+
+                
                 const agentConfig = {
                     version: 0,
                     model: "gemini-2.0-flash-lite",
@@ -799,60 +811,19 @@ End Call: If the caller is satisfied, invoke end_call function.
                     responsiveness: 1,
                     enable_backchannel: true,
 
-                    general_tools: [
-                        {
-                            type: "end_call",
-                            name: "end_call",
-                            description: "End the call with user.",
-                        },
+                    // general_tools: [
+                    //     {
+                    //         type: "end_call",
+                    //         name: "end_call",
+                    //         description: "End the call with user.",
+                    //     },
 
-                    ],
-                    states: [
-                        {
-                            name: "information_collection",
-                            state_prompt:
-                                "You will follow the steps below to collect information...",
-                            edges: [
-                                {
-                                    destination_state_name: "appointment_booking",
-                                    description: "Transition to book an appointment.",
-                                },
-                            ],
-                            tools: [
-                                {
-                                    type: "transfer_call",
-                                    name: "transfer_to_support",
-                                    description: "Transfer to the support team.",
-                                    transfer_destination: {
-                                        type: "predefined",
-                                        number: "+918054226461", // Replace with actual number
-                                    },
-                                },
-                            ],
-                        },
-                        {
-                            name: "appointment_booking",
-                            state_prompt:
-                                "You will follow the steps below to book an appointment...",
-                            tools: [
-                                {
-                                    type: "book_appointment_cal",
-                                    name: "book_appointment",
-                                    description: "Book an annual check up.",
-                                    cal_api_key: "cal_live_447bd92f96b6fc71e427e51cdc40e2cf",
-                                    event_type_id: 2508223,
-                                    timezone: "America/Los_Angeles",
-                                },
-                            ],
-                        },
-                    ],
-
-                    starting_state: "information_collection",
+                    // ],
+                    // starting_state: "information_collection",
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
-
                 };
                 const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
                 if (knowledgeBaseId) {
@@ -989,6 +960,142 @@ End Call: If the caller is satisfied, invoke end_call function.
                     setShowPopup(true);
                     setLoading(false)
                 }
+
+
+
+                setLoading(false)
+            }
+
+            //updation here
+            if (isValid && localStorage.getItem("UpdationMode") == "ON") {
+                setLoading(true)
+                const agentConfig = {
+                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
+                };
+                const llm_id=localStorage.getItem('llmId')
+                console.log('llm_id',llm_id)
+                //Create LLm 
+                try {
+                    const llmResponse = await axios.patch(
+                        `https://api.retellai.com/update-retell-llm/${llm_id} `,
+                        agentConfig,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    );
+                    console.log('llmResponseupdate',llmResponse)
+                    sessionStorage.setItem("llmId", llmResponse.data.llm_id);
+                    const llmId = llmResponse.data.llm_id;
+
+                    const finalAgentData = {
+                        voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                        agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
+                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                        normalize_for_speech: true,
+                    };
+                    // update Agent Creation
+                    const agent_id=localStorage.getItem('agent_id')
+                    try {
+                        const response = await axios.patch(
+                            `https://api.retellai.com/update-agent/${agent_id}`,
+                            finalAgentData,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                                },
+                            }
+                        );
+                        console.log('agent update ',response)
+                        const agentId = response.data.agent_id;
+                        // Get businessId from sessionStorage
+                        const businessIdString = sessionStorage.getItem("businessId") ;
+
+                        // Convert string to object
+                        const businessIdObj = JSON.parse(businessIdString);
+
+                        // Now access the actual ID
+                        const agentData = {
+                            userId: userId,
+                            agent_id: agentId || sessionStorage.getItem("agentId"),
+                            knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+                            llmId: sessionStorage.getItem("llmId"),
+                            avatar: sessionStorage.getItem("avatar") || "",
+                            agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                            agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
+                            agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
+                            agentName: sessionStorage.getItem('agentName') || "",
+                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
+                            agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
+                            agentGender: sessionStorage.getItem('agentGender') || "female",
+                            agentStatus: true,
+                            businessId: businessIdObj.businessId,
+                        }
+                        try {
+                            const response = await updateAgent(agentId,agentData);
+                            if (response.status === 200 || response.status === 201) {
+                                // sessionStorage.setItem("agentId", response.data.agent_id);
+                                // sessionStorage.setItem("agentStatus", true);
+                                setPopupType("success");
+                                setPopupMessage("Agent Updated successfully!");
+                                setShowPopup(true);
+                                setTimeout(() => navigate("/dashboard"), 1500);
+                                setLoading(false)
+                                sessionStorage.clear()
+                                    localStorage.removeItem('agentName')
+                                    localStorage.removeItem('agentGender')
+                                    localStorage.removeItem('agentLanguageCode')
+                                    localStorage.removeItem('agentLanguage')
+                                    localStorage.removeItem('llmId')
+                                    localStorage.removeItem('agent_id')
+                                    localStorage.removeItem('knowledgeBaseId')
+                                    localStorage.removeItem('agentRole')
+                                    localStorage.removeItem('agentVoice')
+                                    localStorage.removeItem('agentVoiceAccent')
+                                    localStorage.removeItem('avatar')
+                                    setHasFetched(false)
+                            }
+                            console.log('response server',response)
+                        } catch (error) {
+                            // console.log(error,error.status)
+                            if (error?.status == 400) {
+                                // console.log('errorinside',error)
+                                setPopupType("failed");
+                                setPopupMessage(error?.response?.data?.message);
+                                setShowPopup(true);
+                                setLoading(false)
+                            } else {
+                                console.error("Agent Updation failed:", error);
+                                setPopupType("failed");
+                                setPopupMessage("Agent Updation failed while saving data in Database. Please try again.");
+                                setShowPopup(true);
+                                setLoading(false)
+                            }
+
+
+                        }
+
+
+                    } catch (err) {
+                        console.error("Upload failed:", err);
+                        setPopupType("failed");
+                        setPopupMessage("Agent creation failed.");
+                        setShowPopup(true);
+                        setLoading(false)
+                    }
+                } catch (error) {
+                    console.error("LLM updation failed:", error);
+                    setPopupType("failed");
+                    setPopupMessage("LLM updation failed. Please try again.");
+                    setShowPopup(true);
+                    setLoading(false)
+                }
+
+
+
                 setLoading(false)
             }
         }
