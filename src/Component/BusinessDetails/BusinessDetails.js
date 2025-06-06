@@ -29,7 +29,6 @@ const BusinessDetails = () => {
   const location = useLocation();
   const agentDetails = location.state;
 
-
   const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
       try {  
       const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
@@ -77,36 +76,18 @@ const BusinessDetails = () => {
     address2: business?.address2.trim(),
   }))
 
-    const businessData = {
-    businessType:business?.businessType,
-    businessName: business?.businessName.trim(),
-    businessSize:business?.businessSize,
-    selectedService:business?.buisnessService,
-    email:business?.buisnessEmail
-    
-  };
-    sessionStorage.setItem("businessDetails", JSON.stringify(businessData))
-    const businessServices={
-      selectedService:business?.buisnessService,
-      email:business?.buisnessEmail
-    }
-    sessionStorage.setItem("businesServices",JSON.stringify(businessServices))
 
-     setBusinessType(business?.businessType);
-     setBusinessName(business?.businessName.trim());
-     setBusinessSize(business?.businessSize);
-  
-    
+
     } catch (error) {
-      console.log('An Error Occured while fetching Agent Data for ',error)
+      console.log('An Error Occured while fetching Agent Data for ', error)
     }
   }
 
-  useEffect(()=>{
-      if(localStorage.getItem('UpdationMode')){
-        fetchPrevAgentDEtails(agentDetails?.agentId,agentDetails?.bussinesId)
-      }
-  },[agentDetails])
+  useEffect(() => {
+    if (localStorage.getItem('UpdationMode')) {
+      fetchPrevAgentDEtails(agentDetails?.agentId, agentDetails?.bussinesId)
+    }
+  }, [agentDetails])
 
   const businessTypes = [
     {
@@ -303,40 +284,42 @@ const BusinessDetails = () => {
           onChange={handleSearchChange}
         />
       </div>
+      <div className={styles.ListDiv}>
+        <div className={styles.optionList}>
+          {filteredBusinessTypes.length > 0 ? (
+            filteredBusinessTypes.map((item, index) => (
+              <label className={styles.option} key={index}>
+                <div className={styles.forflex}>
+                  <div className={styles.icon}>
+                    <img
+                      src={item.icon}
+                      alt={`${item.type} icon`}
+                      className={styles.iconImg}
+                    />
+                  </div>
+                  <div>
+                    <strong>{item.type}</strong>
+                    <p className={styles.subType}>{item.subtype}</p>
+                  </div>
+                </div>
 
-      <div className={styles.optionList}>
-        {filteredBusinessTypes.length > 0 ? (
-          filteredBusinessTypes.map((item, index) => (
-            <label className={styles.option} key={index}>
-              <div className={styles.forflex}>
-                <div className={styles.icon}>
-                  <img
-                    src={item.icon}
-                    alt={`${item.type} icon`}
-                    className={styles.iconImg}
+                <div>
+                  <input
+                    type="radio"
+                    name="businessType"
+                    value={item.type}
+                    checked={businessType === item.type}
+                    onChange={handleBusinessTypeChange}
                   />
                 </div>
-                <div>
-                  <strong>{item.type}</strong>
-                  <p className={styles.subType}>{item.subtype}</p>
-                </div>
-              </div>
-
-              <div>
-                <input
-                  type="radio"
-                  name="businessType"
-                  value={item.type}
-                  checked={businessType === item.type}
-                  onChange={handleBusinessTypeChange}
-                />
-              </div>
-            </label>
-          ))
-        ) : (
-          <p className={styles.noItemFound}>No item found</p>
-        )}
+              </label>
+            ))
+          ) : (
+            <p className={styles.noItemFound}>No item found</p>
+          )}
+        </div>
       </div>
+
 
       {businessTypeSubmitted && businessTypeError && (
         <p className={styles.inlineError}>{businessTypeError}</p>

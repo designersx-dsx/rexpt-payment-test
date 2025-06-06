@@ -46,8 +46,14 @@
   width: 100%;
 }
 
-.optionList {
+.ListDiv {
   margin-top: 1rem;
+  border: 1px solid #E0E5F2;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.optionList {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -125,6 +131,7 @@
   flex-direction: column;
   position: relative;
 }
+
 .selectGroup {
   margin-top: 1rem;
   /* display: flex; */
@@ -233,21 +240,27 @@
   background-color: #f0f0f0;
 }
 
-@media (max-width:375px){
-.title{
+@media (max-width:375px) {
+  .title {
     font-size: 36px;
+  }
+  .option strong {
+  font-size: 15px;
+}
+.subType{
+  font-size: 13px;
 }
 }
 
 /* Make the <select> look like your text input */
 .selectInput {
   width: 100%;
-  padding: 10px ;
+  padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  appearance: none;         
-  background-size: 12px;   
+  appearance: none;
+  background-size: 12px;
   margin-top: 10px;
   padding: 10px;
   border-radius: 10px;
@@ -262,8 +275,10 @@
 .inputError {
   /* border-color: #f44336 !important; */
 }
+
 .selectDropdown {
-  width: 200px; /* or adjust to your desired smaller width */
+  width: 200px;
+  /* or adjust to your desired smaller width */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -271,6 +286,7 @@
   background-color: white;
   outline: none;
 }
+
 .selectInput {
   background-repeat: no-repeat;
   background-position: right 10px center;
@@ -278,6 +294,24 @@
   appearance: none;
 }
 
+
 .requiredField{
 color:red;
 }
+
+
+@media screen and (min-width: 601px) {
+    .btnTheme{
+    cursor: pointer;
+   }
+   .container {
+    
+    max-width: 500px;
+   
+}
+}
+
+.requiredField {
+  color: red;
+}
+

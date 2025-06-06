@@ -808,15 +808,55 @@ End Call: If the caller is satisfied, invoke end_call function.
                     model_high_priority: true,
                     tool_call_strict_mode: true,
                     general_prompt: prompt1,
-                    responsiveness: 1,
-                    enable_backchannel: true,
 
-                    // general_tools: [
-                    //     {
-                    //         type: "end_call",
-                    //         name: "end_call",
-                    //         description: "End the call with user.",
-                    //     },
+                    general_tools: [
+                        {
+                            type: "end_call",
+                            name: "end_call",
+                            description: "End the call with user.",
+                        },
+
+                    ],
+                    states: [
+                        {
+                            name: "information_collection",
+                            state_prompt:
+                                "You will follow the steps below to collect information...",
+                            edges: [
+                                {
+                                    destination_state_name: "appointment_booking",
+                                    description: "Transition to book an appointment.",
+                                },
+                            ],
+                            tools: [
+                                {
+                                    type: "transfer_call",
+                                    name: "transfer_to_support",
+                                    description: "Transfer to the support team.",
+                                    transfer_destination: {
+                                        type: "predefined",
+                                        number: "+918054226461", // Replace with actual number
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            name: "appointment_booking",
+                            state_prompt:
+                                "You will follow the steps below to book an appointment...",
+                            tools: [
+                                {
+                                    type: "book_appointment_cal",
+                                    name: "book_appointment",
+                                    description: "Book an annual check up.",
+                                    cal_api_key: "cal_live_447bd92f96b6fc71e427e51cdc40e2cf",
+                                    event_type_id: 2508223,
+                                    timezone: "America/Los_Angeles",
+                                },
+                            ],
+                        },
+                    ],
+
 
                     // ],
                     // starting_state: "information_collection",
@@ -855,7 +895,11 @@ End Call: If the caller is satisfied, invoke end_call function.
                         agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         post_call_analysis_model: "gpt-4o-mini",
-                        normalize_for_speech: true,
+                        responsiveness: 1,
+                        enable_backchannel: true,
+                        interruption_sensitivity: 0.7,
+                        backchannel_frequency: 0.7,
+                        backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                         post_call_analysis_data: [
                             {
                                 type: "string",
@@ -912,6 +956,11 @@ End Call: If the caller is satisfied, invoke end_call function.
                             agentPlan: "free" || "Plus",
                             agentStatus: true,
                             businessId: businessIdObj.businessId,
+                            responsiveness: 1,
+                            enable_backchannel: true,
+                            interruption_sensitivity: 0.7,
+                            backchannel_frequency: 0.7,
+                            backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                         }
                         try {
                             const response = await createAgent(agentData);

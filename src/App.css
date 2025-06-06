@@ -11,6 +11,7 @@
  }
  
  .ForDesktop{
+  display: none !important;
   align-items: center;
     margin: auto;
     justify-content: center;
@@ -28,8 +29,16 @@
    @media screen and (min-width: 601px) {
    
    .ForMobile{
-    display: none;
+    /* display: none; */
    }
+   .App{
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    /* display: flex; */
+    width: 100%;
+   }
+   
  }
 
 

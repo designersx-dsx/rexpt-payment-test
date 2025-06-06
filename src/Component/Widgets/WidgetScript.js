@@ -258,7 +258,7 @@ import styles from "./Widgets.module.css";
 import { API_BASE_URL, SendScriptToDeveloper, updateAgentWidgetDomain } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 
-const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
+const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
   const scriptRef = useRef(null);
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -273,7 +273,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState([]);
   const [error, setError] = useState("");
-  
+
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email.trim());
@@ -281,7 +281,9 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
   const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
 
   const scriptText = `
-<script id="rex-widget-script" src="https://kaleidoscopic-naiad-9c62fb.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+
+<script id="rex-widget-script" src="https://dazzling-raindrop-43edfa.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+
 `;
 
   useEffect(() => {
@@ -359,13 +361,13 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
       });
 
       const result = await res.json();
-      alertPopUp("true","Script sent successfully!","success")
-      
+      alertPopUp("true", "Script sent successfully!", "success")
+
       // alert(result.msg || "Script sent!");
       setEmails([]);
     } catch (err) {
       // alert("Failed to send emails");
-       alertPopUp("true","Script sent successfully!","fail")
+      alertPopUp("true", "Script sent successfully!", "fail")
       console.error(err);
     }
   };
@@ -374,6 +376,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
     <div>
       <h3>Enter your Website URL</h3>
       <p className={styles.noteText}>Note: The widget will only work on the domains you add.</p>
+      <div className={styles.addBtn} onClick={handleAddDomain}>+</div>
       <div className={styles.domainInputRow}>
         <input
           type="text"
@@ -385,7 +388,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
           }}
           className={styles.inputField}
         />
-        <button className={styles.sendBtn} onClick={handleAddDomain}>Add</button>
+
       </div>
       {domainError && <p style={{ color: "red" }}>{domainError}</p>}
     </div>
@@ -395,13 +398,13 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
   };
   return (
     <div className={styles.container}>
-      {/* No domain yet: Show input form */}
+
       {existingDomain.length === 0 && renderDomainInput()}
 
-      {/* Domain exists: show script & buttons */}
       {existingDomain.length > 0 && (
         <>
-          <h2>Widget Script</h2>
+          <h3 className={styles.title}>Widget Script</h3>
+            <div className={styles.forScroll}>
           <div className={styles.domainList}>
             <strong>Allowed Domains:</strong>
             <ul>
@@ -412,14 +415,16 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
           </div>
 
           {showDomainInput && renderDomainInput()}
-
-          <div className={styles.scriptBox}>
-            <button className={styles.copyButton} onClick={handleCopy}>
-              {copied ? "Copied!" : "Copy"}
-            </button>
-            <br />
-            <pre ref={scriptRef} className={styles.scriptText}>{scriptText}</pre>
+        
+            <div className={styles.scriptBox}>
+              <button className={styles.copyButton} onClick={handleCopy}>
+                {copied ? "Copied!" : "Copy"}
+              </button>
+              <br />
+              <pre ref={scriptRef} className={styles.scriptText}>{scriptText}</pre>
+            </div>
           </div>
+
 
           <div className={styles.actionButtons}>
             <button className={styles.emailBtn} onClick={() => setShowModal(true)}>

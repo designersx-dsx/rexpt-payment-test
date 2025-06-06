@@ -74,6 +74,13 @@
     justify-content: center;
     float: right;
   }
+
+  @media screen and (min-width: 601px) {
+  
+.open.right {
+    width: 20% !important;
+  }
+}
   
  
   /* @media screen and (min-device-width: 1300px) and (max-device-width: 2500px) { 

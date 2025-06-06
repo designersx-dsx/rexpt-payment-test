@@ -163,31 +163,31 @@ function Dashboard() {
     return data.agents;
   };
   // Fetch dashboard + merge Cal API keys
-   const fetchAndMergeCalApiKeys = async () => {
-      if (!userId) return;
-      try {
-        const res = await fetchDashboardDetails(userId);
-        let agentsWithCalKeys = res.agents || [];
-        const calApiAgents = await fetchCalApiKeys(userId);
-        const calApiKeyMap = {};
+  const fetchAndMergeCalApiKeys = async () => {
+    if (!userId) return;
+    try {
+      const res = await fetchDashboardDetails(userId);
+      let agentsWithCalKeys = res.agents || [];
+      const calApiAgents = await fetchCalApiKeys(userId);
+      const calApiKeyMap = {};
 
-        calApiAgents.forEach((agent) => {
-          calApiKeyMap[agent.agent_id] = agent.calApiKey || null;
-        });
-        agentsWithCalKeys = agentsWithCalKeys.map((agent) => ({
-          ...agent,
-          calApiKey: calApiKeyMap[agent.agent_id] || null,
-        }));
+      calApiAgents.forEach((agent) => {
+        calApiKeyMap[agent.agent_id] = agent.calApiKey || null;
+      });
+      agentsWithCalKeys = agentsWithCalKeys.map((agent) => ({
+        ...agent,
+        calApiKey: calApiKeyMap[agent.agent_id] || null,
+      }));
 
-        setDashboardData(agentsWithCalKeys, res.total_call || 0);
-        setHasFetched(true);
-        // localStorage.setItem("userId", userId);
-        // localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
-        setLocalAgents(agentsWithCalKeys);
-      } catch (error) {
-        console.error("Error fetching dashboard data or Cal API keys:", error);
-      }
-    };
+      setDashboardData(agentsWithCalKeys, res.total_call || 0);
+      setHasFetched(true);
+      // localStorage.setItem("userId", userId);
+      // localStorage.setItem("agents", JSON.stringify(agentsWithCalKeys));
+      setLocalAgents(agentsWithCalKeys);
+    } catch (error) {
+      console.error("Error fetching dashboard data or Cal API keys:", error);
+    }
+  };
   useEffect(() => {
     if ((!hasFetched || !agents.length)) {
       fetchAndMergeCalApiKeys();
@@ -433,10 +433,10 @@ function Dashboard() {
   };
 
   // Close call modal
-const handleCloseCallModal = () => {
-  handleEndCall(); 
-  setOpenCallModal(false);  
-};
+  const handleCloseCallModal = () => {
+    handleEndCall();
+    setOpenCallModal(false);
+  };
 
   // Open Widget modal
   const handleOpenWidgetModal = (agent) => {
@@ -484,23 +484,23 @@ const handleCloseCallModal = () => {
   };
 
 
-  const handleEditAgent=async(ag)=>{
-    localStorage.setItem('UpdationMode','ON');
-     navigate('/business-details', {
+  const handleEditAgent = async (ag) => {
+    localStorage.setItem('UpdationMode', 'ON');
+    navigate('/business-details', {
       state: { agentId: ag.agent_id, bussinesId: ag.businessId },
     });
   }
 
   const handleRefresh = () => {
-   setHasFetched(false);
-   fetchAndMergeCalApiKeys()
+    setHasFetched(false);
+    fetchAndMergeCalApiKeys()
 
   }
 
-const handleAlertPopUp=(show,message, type)=>{
-  setPopupMessage(message);
-  setPopupType(type);
-}
+  const handleAlertPopUp = (show, message, type) => {
+    setPopupMessage(message);
+    setPopupType(type);
+  }
   return (
     <div>
       <div className={styles.forSticky}>
@@ -706,7 +706,7 @@ const handleAlertPopUp=(show,message, type)=>{
                         Call Settings
                       </div>
                       <div className={styles.OptionItem} onClick={() => handleEditAgent(agent)}>
-                      {/* <div className={styles.OptionItem} onClick={() => ""}> */}
+                        {/* <div className={styles.OptionItem} onClick={() => ""}> */}
                         Edit Agent
                       </div>
                       <div
@@ -977,21 +977,21 @@ const handleAlertPopUp=(show,message, type)=>{
         )}
 
         {/* Call Test Modal */}
-       {openCallModal && (
-  <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
-    <CallTest
-      isCallActive={isCallActive}
-      onStartCall={handleStartCall}
-      onEndCall={handleEndCall}
-      callLoading={callLoading}
-      setCallLoading={setCallLoading}
-      isliveTranscript={liveTranscript}
-      agentName={agentDetails?.agentName}
-      agentAvatar={agentDetails?.avatar}
-      businessName={agentDetails?.business?.businessName}
-    />
-  </Modal2>
-)}
+        {openCallModal && (
+          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+            <CallTest
+              isCallActive={isCallActive}
+              onStartCall={handleStartCall}
+              onEndCall={handleEndCall}
+              callLoading={callLoading}
+              setCallLoading={setCallLoading}
+              isliveTranscript={liveTranscript}
+              agentName={agentDetails?.agentName}
+              agentAvatar={agentDetails?.avatar}
+              businessName={agentDetails?.business?.businessName}
+            />
+          </Modal2>
+        )}
 
         {/* WidgetModal */}
         {openWidgetModal && (
@@ -1035,8 +1035,8 @@ const handleAlertPopUp=(show,message, type)=>{
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
 
-      <Footer />
-      {/* <Footer2/> */}
+      {/* <Footer /> */}
+      <Footer2/>
       <CommingSoon
         show={showModal}
         onClose={() => setShowModal(false)}

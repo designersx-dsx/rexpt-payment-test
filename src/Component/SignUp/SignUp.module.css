@@ -412,6 +412,19 @@
 
 }
 
+@media screen and (min-width: 601px) {
+ .signUpContainer{
+    align-items: center;
+        display: flex
+;
+        margin: auto;
+        justify-content: center;
+ }
+ .btnTheme{
+    cursor: pointer;
+   }
+
+}
 @media (max-width:375px) {
     .welcomeTitle h1 {
         font-size: 30px;
