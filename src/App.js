@@ -1,4 +1,3 @@
-
 import "./App.css";
 import {
   BrowserRouter,
@@ -32,7 +31,17 @@ function App() {
   const token = localStorage.getItem("token");
   return (
     <>
-      <div className="ForDesktop"><h1><b>Hello User,</b> This is currently visible only on the mobile version. The desktop version will be <strong>available soon.</strong></h1></div>
+    <div className="DesktopPlusMobile">
+      <div className="ForDesktop">
+        <img src="svg/Rexpt-Logo.svg"/>
+        <h1>
+          
+          Launch Your <b>AI Receptionist</b> with Rexpt.in
+        </h1>
+        <p>
+          Launch Your AI Receptionist with Rexpt.in
+        </p>
+      </div>
       <div className="ForMobile">
         <BrowserRouter>
           <div className="App">
@@ -84,12 +93,9 @@ function App() {
                 }
               />
 
-
               <Route
                 path="/"
-                element={
-                  token ? <Navigate to="/dashboard" /> : <Start />
-                }
+                element={token ? <Navigate to="/dashboard" /> : <Start />}
               />
               <Route
                 path="/dashboard"
@@ -106,15 +112,44 @@ function App() {
 
               <Route path="/business-details" element={<BusinessDetails />} />
               <Route path="/agent-detail" element={<AgentDetail />} />
-
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/business-services" element={<SecureRoute><BusinessServices /></SecureRoute>} />
+
+              <Route
+                path="/business-services"
+                element={
+                  <SecureRoute>
+                    <BusinessServices />
+                  </SecureRoute>
+                }
+              />
+
               {/* <Route path="/home" element={<Home />} /> */}
-              <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
-              <Route path="/rex-agent" element={<SecureRoute><RexAgent /></SecureRoute>} />
+              <Route
+                path="/ai-assistant"
+                element={
+                  <SecureRoute>
+                    <AiAssistant />
+                  </SecureRoute>
+                }
+              />
+              <Route
+                path="/rex-agent"
+                element={
+                  <SecureRoute>
+                    <RexAgent />
+                  </SecureRoute>
+                }
+              />
               <Route path="/plans" element={<Plans />} />
               <Route path="/checkout" element={<SubscriptionFlow />} />
-              <Route path="/calendar" element={<SecureRoute><Calendar /></SecureRoute>} />
+              <Route
+                path="/calendar"
+                element={
+                  <SecureRoute>
+                    <Calendar />
+                  </SecureRoute>
+                }
+              />
               <Route path="/totalcall-list" element={<TotalsCallsList />} />
               <Route path="/call-transfer" element={<CallTransfer />} />
               <Route path="/call-details" element={<CallDetails />} />
@@ -159,6 +194,8 @@ function App() {
           </div>
         </BrowserRouter>
       </div>
+      </div>
+      
     </>
   );
 }
