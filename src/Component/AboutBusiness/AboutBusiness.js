@@ -35,7 +35,6 @@ function AboutBusiness() {
   const [placeDetails, setPlaceDetails] = useState(null);
   // Inline error states
   const [businessUrlError, setBusinessUrlError] = useState("");
-  const [googleListingError, setGoogleListingError] = useState("");
   const [aboutBusinessError, setAboutBusinessError] = useState("");
   const [filesError, setFilesError] = useState("");
 
@@ -57,23 +56,42 @@ function AboutBusiness() {
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
- 
- const initAutocomplete = () => {
+const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
+  const [displayBusinessName, setDisplayBusinessName] = useState("")
+
+
+   const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
       document.getElementById("google-autocomplete"),
       {
         types: ["establishment"],
-        fields: ["place_id", "name", "url", "formatted_address", "formatted_phone_number", "address_components"],
+        fields: ["place_id", "name", "url"],
       }
     );
 
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
       if (place.place_id) {
-        fetchPlaceDetails(place.place_id);
+        const businessUrl = place.url; // Save full URL
+        const businessName = place.name; // Save business name for display
+        setGoogleListing(businessUrl); // Full URL for backend
+        setDisplayBusinessName(businessName); // Business name to display in input
+        sessionStorage.setItem("googleListing", businessUrl); // Store full URL in sessionStorage
+        sessionStorage.setItem("displayBusinessName", businessName); // Store business name
       }
     });
   };
+
+  // Effect to initialize Google Places autocomplete when the component mounts
+   useEffect(() => {
+    const interval = setInterval(() => {
+      if (window.google?.maps?.places) {
+        initAutocomplete();
+        clearInterval(interval);
+      }
+    }, 300);
+  }, []);
+
 
 const fetchPlaceDetails = (placeId) => {
     setLoading(true);
@@ -109,55 +127,56 @@ const fetchPlaceDetails = (placeId) => {
   };
 
 
-
-
-  const handleVerifyUrl = async () => {
-    const result = await validateWebsite(businessUrl);
+  const handleUrlVerification = async (url) => {
+    setUrlVerificationInProgress(true); 
+    const result = await validateWebsite(url);
     if (result.valid) {
-      setPopupType("success");
-      setPopupMessage("Valid website URL!");
-      setIsVerified(true);
-      setShowPopup(true);
+      setIsVerified(true); 
+      setBusinessUrlError(""); 
+      sessionStorage.setItem("businessUrl", url); 
     } else {
-      setPopupType("failed");
-      setPopupMessage(`Invalid website URL!`);
-      setShowPopup(true);
+      setIsVerified(false); 
+      setBusinessUrlError("Invalid URL");
     }
+    setUrlVerificationInProgress(false); 
   };
 
+  const handleBlur = () => {
+    if (businessUrl.trim()) {
+      handleUrlVerification(businessUrl); 
+    }
+  };
   const handleInputChange = (e) => {
     let v = e.target.value;
     v = v.replace(/https?:\/\//gi, "");
     v = v.replace(/\s+/g, "").toLowerCase();
     const final = HTTPS_PREFIX + v;
     setBusinessUrl(final);
-    if (businessUrlSubmitted) {
-      setBusinessUrlError(validateBusinessUrl(final));
+    if (businessUrlError) {
+      setBusinessUrlError("");
     }
   };
+
 
   useEffect(() => {
     if (token) {
       setUserId(decodeTokenData.id || "");
     }
   }, [token]);
-  useEffect(() => {
-    const saved = JSON.parse(
-      sessionStorage.getItem("aboutBusinessForm") || "{}"
-    );
-    if (saved.businessUrl) setBusinessUrl(saved.businessUrl);
-    if (saved.googleListing) setGoogleListing(saved.googleListing);
-    if (saved.aboutBusiness) setAboutBusiness(saved.aboutBusiness);
-    if (saved.note) setNote(saved.note);
+
+ useEffect(() => {
+    const savedData = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+    if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+    if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
+    if (savedData.note) setNote(savedData.note);
 
     // rebuild File objects
-    if (Array.isArray(saved.files) && saved.files.length) {
-      const rebuilt = saved.files.map((d, i) =>
-        dataURLtoFile(d, `file${i + 1}`)
-      );
-      setFiles(rebuilt);
+    if (Array.isArray(savedData.files) && savedData.files.length) {
+      const rebuiltFiles = savedData.files.map((d, i) => dataURLtoFile(d, `file${i + 1}`));
+      setFiles(rebuiltFiles);
     }
   }, []);
+
 
   useEffect(() => {
     // Try to get previously stored files
@@ -184,49 +203,49 @@ const fetchPlaceDetails = (placeId) => {
     );
   }, [businessUrl, googleListing, aboutBusiness, note]);
 
-  const handleFileChange = async (e) => {
-    const selectedFiles = Array.from(e.target.files);
+  // const handleFileChange = async (e) => {
+  //   const selectedFiles = Array.from(e.target.files);
 
-    // block disallowed file types
-    const ALLOWED = [
-      "application/pdf",
-      "text/plain",
-      "text/csv",
-      "application/json",
-      "text/markdown",
-    ];
-    const invalid = selectedFiles.filter((f) => !ALLOWED.includes(f.type));
-    if (invalid.length) {
-      alert(
-        `Only PDF or text files are allowed.\nBlocked: ${invalid
-          .map((i) => i.name)
-          .join(", ")}`
-      );
-      return;
-    }
-    //allow files
+  //   // block disallowed file types
+  //   const ALLOWED = [
+  //     "application/pdf",
+  //     "text/plain",
+  //     "text/csv",
+  //     "application/json",
+  //     "text/markdown",
+  //   ];
+  //   const invalid = selectedFiles.filter((f) => !ALLOWED.includes(f.type));
+  //   if (invalid.length) {
+  //     alert(
+  //       `Only PDF or text files are allowed.\nBlocked: ${invalid
+  //         .map((i) => i.name)
+  //         .join(", ")}`
+  //     );
+  //     return;
+  //   }
+  //   //allow files
 
-    if (selectedFiles.length > 5) {
-      alert("You can only upload a maximum of 5 files.");
-      return;
-    }
+  //   if (selectedFiles.length > 5) {
+  //     alert("You can only upload a maximum of 5 files.");
+  //     return;
+  //   }
 
-    setFiles(selectedFiles);
-    if (filesSubmitted) setFilesError(validateFiles(selectedFiles));
+  //   setFiles(selectedFiles);
+  //   if (filesSubmitted) setFilesError(validateFiles(selectedFiles));
 
-    // ⬇️  convert to base64 and cache
-    const base64 = await Promise.all(selectedFiles.map(fileToBase64));
-    sessionStorage.setItem(
-      "aboutBusinessForm",
-      JSON.stringify({
-        businessUrl,
-        googleListing,
-        aboutBusiness,
-        note,
-        files: base64,
-      })
-    );
-  };
+  //   // ⬇️  convert to base64 and cache
+  //   const base64 = await Promise.all(selectedFiles.map(fileToBase64));
+  //   sessionStorage.setItem(
+  //     "aboutBusinessForm",
+  //     JSON.stringify({
+  //       businessUrl,
+  //       googleListing,
+  //       aboutBusiness,
+  //       note,
+  //       files: base64,
+  //     })
+  //   );
+  // };
 
   const isValidUrl = (url) => {
     const pattern = new RegExp(
@@ -267,18 +286,27 @@ const fetchPlaceDetails = (placeId) => {
   };
 
   const validateForm = () => {
-    const urlError = validateBusinessUrl(businessUrl);
-    const listingError = validateGoogleListing(googleListing);
-    // const aboutError = validateAboutBusiness(aboutBusiness);
-    // const fileErr = validateFiles(files);
+    let errorMessage = "";
 
-    setBusinessUrlError(urlError);
-    setGoogleListingError(listingError);
-    // setAboutBusinessError(aboutError);
-    // setFilesError(fileErr);
+    if (!businessUrl.trim()) {
+      errorMessage += "Business URL is required.\n";
+    }
 
-    return !urlError;
-    // && !listingError && !aboutError && !fileErr;
+    if (!googleListing.trim()) {
+      errorMessage += "Google Listing is required.\n";
+    }
+    if (!isVerified) {
+      errorMessage += "Business URL must be verified.\n";
+    }
+
+    if (errorMessage) {
+      setPopupType("failed");
+      setPopupMessage(errorMessage);
+      setShowPopup(true);
+      return false;
+    }
+
+    return true;
   };
   const fetchAgentCountFromUser = async () => {
     try {
@@ -291,27 +319,39 @@ const fetchPlaceDetails = (placeId) => {
       console.log(error);
     }
   };
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   setBusinessUrlSubmitted(true);
   setGoogleListingSubmitted(true);
   setAboutBusinessSubmitted(true);
   setFilesSubmitted(true);
 
-  // Validate form inputs before proceeding
-  if (!validateForm()) return;
+  if (!businessUrl) {
+    setPopupType("failed");
+    setPopupMessage("Website URL is required.");
+    setShowPopup(true);
+    return;
+  }
 
-  // Get the business details and location from sessionStorage
+  if (!isVerified) {
+    setPopupType("failed");
+    setPopupMessage("Business URL must be verified before proceeding.");
+    setShowPopup(true);
+    return;
+  }
+
+  // Ensure Google Listing is provided
+  if (!googleListing.trim()) {
+    setPopupType("failed");
+    setPopupMessage("Google Listing is required.");
+    setShowPopup(true);
+    return;
+  }
+
   const business = JSON.parse(sessionStorage.getItem("businessDetails"));
   const businessLocation = JSON.parse(sessionStorage.getItem("businessLocation"));
-
-  // Create an array of URLs, including the business URL and Google Listing URL
-  const mergedUrls = [businessUrl.trim(), googleListing]; // Add Google Listing URL here
-
-  // Prepare form data to send to the server
+  const mergedUrls = [businessUrl.trim(), googleListing]; 
   const formData = new FormData();
-  
-  // Get the package name and use it to determine the package value
   const packageName = sessionStorage.getItem("package") || "Free";
   const packageMap = {
     Free: 1,
@@ -422,6 +462,8 @@ const fetchPlaceDetails = (placeId) => {
   }
 };
 
+
+
   const handleSkip = (e) => {
     e.preventDefault();
     setPopupType("confirm");
@@ -436,13 +478,17 @@ const fetchPlaceDetails = (placeId) => {
     navigate("/steps");
   };
 
- useEffect(() => {
-    const interval = setInterval(() => {
-      if (window.google?.maps?.places) {
-        initAutocomplete();
-        clearInterval(interval);
-      }
-    }, 300);
+  useEffect(() => {
+    const savedGoogleListing = sessionStorage.getItem("googleListing");
+    const savedDisplayBusinessName = sessionStorage.getItem("displayBusinessName");
+
+    if (savedGoogleListing) {
+      setGoogleListing(savedGoogleListing); 
+    }
+
+    if (savedDisplayBusinessName) {
+      setDisplayBusinessName(savedDisplayBusinessName); 
+    }
   }, []);
 
   useEffect(() => {
@@ -460,15 +506,15 @@ const fetchPlaceDetails = (placeId) => {
               <div className={styles.labReq}>
                 <div className={styles.formGroup}>
                   <div className={styles.Dblock}>
-                    <label htmlFor="business-url">URL (Website)</label>
-                    {/* <span className={styles.prefix}>https://</span> */}
+                    <label htmlFor="business-url">URL (Website)</label> <span className={styles.requiredStar}>*</span> 
                     <input
-                      id="https://your-website-url"
+                     id="https://your-website-url"
                       type="url"
                       placeholder="https://your website url"
                       value={businessUrl}
                       inputMode="url"
                       autoComplete="url"
+                      onBlur={handleBlur}
                       list="url-suggestions"
                       onKeyDown={(e) => {
                         const { key, target } = e;
@@ -478,7 +524,6 @@ const fetchPlaceDetails = (placeId) => {
                           selectionStart === 0 && selectionEnd === value.length;
 
                         if (fullSelection) {
-                          // They wiped everything — leave only the prefix
                           e.preventDefault();
                           setBusinessUrl(HTTPS_PREFIX);
                           // Put caret after the prefix
@@ -486,24 +531,24 @@ const fetchPlaceDetails = (placeId) => {
                             target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
                           );
                           return;
-                        }
-
-                        // Block any removal that touches the prefix
+                        }                       
                         if (selectionStart <= PREFIX_LEN) e.preventDefault();
                       }}
                       onInput={handleInputChange}
                     />
-                    <div className={styles.verifyButtonContainer}>
-                      {!isVerified && (
-                        <button
-                          type="button"
-                          className={styles.verifyButton}
-                          onClick={handleVerifyUrl}
-                        >
-                          Verify
-                        </button>
-                      )}
-                    </div>
+                     <div className={styles.verifyStatus}>
+                {urlVerificationInProgress ? (
+                  <Loader size={20} /> 
+                ) : (
+                  isVerified !== null && (
+                    <span
+                      className={isVerified ? styles.validIcon : styles.invalidIcon}
+                    >
+                      {isVerified ? "✔️" : "❌"}
+                    </span>
+                  )
+                )}
+              </div>
                   </div>
                 </div>
                 {/* {businessUrlSubmitted && businessUrlError && (
@@ -514,14 +559,19 @@ const fetchPlaceDetails = (placeId) => {
 
 
               <div>
-            <div className={styles.formGroup}>
-              <label htmlFor="google-autocomplete">Google Listing (Business Name)</label>
-              <input
+           <div className={styles.formGroup}>
+  <label htmlFor="google-autocomplete">
+    Google Listing (Business Name) <span className={styles.requiredStar1}>*</span>
+  </label>
+  <input
                 id="google-autocomplete"
                 type="text"
                 placeholder="Search for your business"
+                value={displayBusinessName}
+                onChange={(e) => setDisplayBusinessName(e.target.value)} 
+                required
               />
-            </div>
+</div>
               </div>
 
               <div className={styles.formGroup}>
@@ -576,7 +626,7 @@ const fetchPlaceDetails = (placeId) => {
                 <button>Skip for now</button>
               </div>
               <div className={styles.fixedBtn}>
-                <button
+               <button
                   type="submit"
                   className={styles.btnTheme}
                   disabled={loading}

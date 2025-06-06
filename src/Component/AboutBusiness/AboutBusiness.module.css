@@ -125,15 +125,13 @@
 .filesAllowed {
     font-size: 12px;
 }
-.verifyButton{
-    position: absolute;
+.verifyStatus{
+     position: absolute;
     right: 20px;
     top: 30%;
     border: unset;
-    background-color: #6524eb;
     color: #fff;
     padding: 5px 15px;
-    border: 1px solid #6524eb;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -141,4 +139,18 @@
     .header h1 {
         font-size: 36px;
     }
+}
+.requiredStar {
+    position: absolute;
+  color: red;
+  font-weight: bold;
+   right: 205px;
+     top: 15%;
+}
+.requiredStar1 {
+    position: absolute;
+  color: red;
+  font-weight: bold;
+   right: 78px;
+     top: 28%;
 }

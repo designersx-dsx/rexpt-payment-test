@@ -431,18 +431,8 @@ const BusinessServices = () => {
                                     <p className={styles.subType}>{selectedBusiness.subtype}</p>
                                 </div>
                             </div>
+                            
                             <div>
-                                {/* <input
-                                    type="radio"
-                                    name="service"
-                                    value={service}
-                                    checked={selectedService === service}
-                                    onChange={(e) => {
-                                        setSelectedService(e.target.value);
-                                        setServiceError(""); // Clear error on change
-                                    }}
-                                    onBlur={(e) => validateService(e.target.value)}
-                                /> */}
                                 <input
                                     type="checkbox"
                                     name="service"
@@ -460,7 +450,9 @@ const BusinessServices = () => {
                     <p style={{ color: 'red', marginTop: '5px' }}>{serviceError}</p>
                 )}
             </div>
+
 </div>
+
             <div className={styles.labReq}>
                 <div className={styles.inputGroup}>
                     <div className={styles.Dblock}>
