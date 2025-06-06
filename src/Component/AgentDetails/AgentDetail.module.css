@@ -502,6 +502,8 @@
   color: #24252c;
   font-size: 14px;
   margin-left: 20px;
+  display: block;
+  overflow: auto;
 }
 
 .address {

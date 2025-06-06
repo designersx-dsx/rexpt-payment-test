@@ -757,7 +757,7 @@ End Call: If the caller is satisfied, invoke end_call function.
         }
     };
 
-    const isAdaptiveHeight = currentStep !== 3|| currentStep !==2
+    const isAdaptiveHeight = currentStep !== 3 || currentStep !== 2
     const settings = {
         dots: false,
         infinite: false,
@@ -796,8 +796,8 @@ End Call: If the caller is satisfied, invoke end_call function.
                     model_high_priority: true,
                     tool_call_strict_mode: true,
                     general_prompt: prompt1,
-                    responsiveness:1,
-                    enable_backchannel:true,
+                    responsiveness: 1,
+                    enable_backchannel: true,
 
                     general_tools: [
                         {
@@ -957,20 +957,20 @@ End Call: If the caller is satisfied, invoke end_call function.
                             }
                         } catch (error) {
                             // console.log(error,error.status)
-                            if(error?.status==400){
-                            // console.log('errorinside',error)
-                            setPopupType("failed");
-                            setPopupMessage(error?.response?.data?.message);
-                            setShowPopup(true);
-                            setLoading(false)
-                            }else{
-                            console.error("Agent creation failed:", error);
-                            setPopupType("failed");
-                            setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
-                            setShowPopup(true);
-                            setLoading(false)
+                            if (error?.status == 400) {
+                                // console.log('errorinside',error)
+                                setPopupType("failed");
+                                setPopupMessage(error?.response?.data?.message);
+                                setShowPopup(true);
+                                setLoading(false)
+                            } else {
+                                console.error("Agent creation failed:", error);
+                                setPopupType("failed");
+                                setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
+                                setShowPopup(true);
+                                setLoading(false)
                             }
-                            
+
 
                         }
 
@@ -1064,7 +1064,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                     />
                 </div>
                 {/* Step 3 */}
-                <div className={styles.Step3Container}> 
+                <div className={styles.Step3Container}>
                     <Step3
                         ref={step3Ref}
                         onNext={handleNext}

@@ -32,7 +32,7 @@ function AboutBusiness() {
   const [googleListing, setGoogleListing] = useState("");
   const [aboutBusiness, setAboutBusiness] = useState("");
   const [note, setNote] = useState("");
-
+  const [placeDetails, setPlaceDetails] = useState(null);
   // Inline error states
   const [businessUrlError, setBusinessUrlError] = useState("");
   const [googleListingError, setGoogleListingError] = useState("");
@@ -57,6 +57,59 @@ function AboutBusiness() {
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
+ 
+ const initAutocomplete = () => {
+    const autocomplete = new window.google.maps.places.Autocomplete(
+      document.getElementById("google-autocomplete"),
+      {
+        types: ["establishment"],
+        fields: ["place_id", "name", "url", "formatted_address", "formatted_phone_number", "address_components"],
+      }
+    );
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (place.place_id) {
+        fetchPlaceDetails(place.place_id);
+      }
+    });
+  };
+
+const fetchPlaceDetails = (placeId) => {
+    setLoading(true);
+    const service = new window.google.maps.places.PlacesService(document.createElement("div"));
+    
+    service.getDetails({ placeId }, (result, status) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        setPlaceDetails(result);
+        generateGoogleListingUrl(result); // Generate and set the Google Listing URL
+        setLoading(false);
+      } else {
+        console.error("Place details fetch failed:", status);
+        setLoading(false);
+      }
+    });
+  };
+
+  // Generate the Google Listing URL but don't show it in the UI
+  const generateGoogleListingUrl = (place) => {
+    const address = [
+      place.address_components.find(c => c.types.includes("street_number"))?.long_name,
+      place.address_components.find(c => c.types.includes("route"))?.long_name,
+      place.address_components.find(c => c.types.includes("premise"))?.long_name,
+      place.address_components.find(c => c.types.includes("subpremise"))?.long_name,
+      place.address_components.find(c => c.types.includes("sublocality_level_1"))?.long_name,
+      place.address_components.find(c => c.types.includes("locality"))?.long_name,
+      place.address_components.find(c => c.types.includes("administrative_area_level_2"))?.long_name,
+      place.address_components.find(c => c.types.includes("administrative_area_level_1"))?.long_name
+    ].filter(Boolean).join(" ");
+
+    const googleLink = `https://www.google.com/search?q=${encodeURIComponent(place.name + " " + address)}`;
+    setGoogleListing(googleLink); // Save Google Listing URL but don't display it
+  };
+
+
+
 
   const handleVerifyUrl = async () => {
     const result = await validateWebsite(businessUrl);
@@ -238,129 +291,137 @@ function AboutBusiness() {
       console.log(error);
     }
   };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setBusinessUrlSubmitted(true);
-    setGoogleListingSubmitted(true);
-    setAboutBusinessSubmitted(true);
-    setFilesSubmitted(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setBusinessUrlSubmitted(true);
+  setGoogleListingSubmitted(true);
+  setAboutBusinessSubmitted(true);
+  setFilesSubmitted(true);
 
-    if (!validateForm()) return;
+  // Validate form inputs before proceeding
+  if (!validateForm()) return;
 
-    const business = JSON.parse(sessionStorage.getItem("businessDetails"));
-    const businessLocation = JSON.parse(
-      sessionStorage.getItem("businessLocation")
-    );
+  // Get the business details and location from sessionStorage
+  const business = JSON.parse(sessionStorage.getItem("businessDetails"));
+  const businessLocation = JSON.parse(sessionStorage.getItem("businessLocation"));
 
-    const mergedUrls = [businessUrl.trim()];
+  // Create an array of URLs, including the business URL and Google Listing URL
+  const mergedUrls = [businessUrl.trim(), googleListing]; // Add Google Listing URL here
 
-    const formData = new FormData();
-    const packageName = sessionStorage.getItem("package") || "Free";
-
-    const packageMap = {
-      Free: 1,
-      Starter: 2,
-      Scaler: 3,
-      Growth: 4,
-      Corporate: 5,
-      Enterprise: 6,
-    };
-
-    const packageValue = packageMap[packageName] || 1;
-    const sanitize = (str) =>
-      String(str || "")
-        .trim()
-        .replace(/\s+/g, "_");
-    const businessTypes = [
-      { name: "Restaurant", code: "rest" },
-      { name: "Real Estate Broker", code: "rea_est_bro" },
-      { name: "Saloon", code: "sal" },
-      { name: "Doctor's Clinic", code: "doct_cli" },
-      { name: "Dentist Office", code: "dent_off" },
-      { name: "Dry Cleaner", code: "dry_cle" },
-      { name: "Web Design Agency", code: "web_des_age" },
-      { name: "Marketing Agency", code: "mkt_age" },
-      { name: "Gym & Fitness Center", code: "gym_fit" },
-      { name: "Personal Trainer", code: "per_tra" },
-      { name: "Architect", code: "arch" },
-      { name: "Interior Designer", code: "int_des" },
-      { name: "Construction Services", code: "con_ser" },
-      { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
-      { name: "Transport Company", code: "tra_com" },
-      { name: "Landscaping Company", code: "land_com" },
-      { name: "Insurance Agency", code: "ins_age" },
-      { name: "Financial Services", code: "fin_ser" },
-      { name: "Accounting Services", code: "acc_ser" },
-      { name: "Car Repair & Garage", code: "car_rep" },
-      { name: "Boat Repair & Maintenance", code: "boa_rep" },
-      { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
-      { name: "Other Local Business", code: "oth_loc_bus" },
-    ];
-    const matchedBusiness = businessTypes.find(
-      (item) => item.name === business?.businessType
-    );
-    const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
-    const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
-    const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(
-      shortBusinessName
-    )}_${sanitize(packageValue)}_#${agentCount}`;
-    formData.append("knowledge_base_name", knowledgeBaseName);
-    formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-    let knowledgeTexts = [];
-    let textContent = "";
-    let moreAbout = null;
-    if (businessLocation) {
-      textContent = `
-Country: ${businessLocation.country || ""}
-State: ${businessLocation.state || ""}
-City: ${businessLocation.city || ""}
-Address No. 1: ${businessLocation.address1 || ""}
-Address No. 2: ${businessLocation.address2 || ""}
-`.trim(); // Optional: remove leading/trailing whitespace
-      moreAbout = {
-        title: business.businessType || "Business Info",
-        text: textContent,
-      };
-    }
-    formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
-    files.forEach((file) => {
-      formData.append("knowledge_base_files", file);
-    });
-    try {
-      setLoading(true);
-      const response = await axios.post(
-        "https://api.retellai.com/create-knowledge-base",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log(response, "response");
-      sessionStorage.setItem(
-        "knowledgeBaseId",
-        response.data.knowledge_base_id
-      );
-
-      setPopupType("success");
-      setPopupMessage("Knowledge base created successfully!");
-      setShowPopup(true);
-
-      setTimeout(() => navigate("/steps"), 1500);
-    } catch (error) {
-      console.error(
-        "Upload failed:",
-        error.response?.data?.message || error.message
-      );
-      setPopupType("failed");
-      setPopupMessage(error.response?.data?.message || "Internal Server Error");
-      setShowPopup(true);
-    } finally {
-      setLoading(false);
-    }
+  // Prepare form data to send to the server
+  const formData = new FormData();
+  
+  // Get the package name and use it to determine the package value
+  const packageName = sessionStorage.getItem("package") || "Free";
+  const packageMap = {
+    Free: 1,
+    Starter: 2,
+    Scaler: 3,
+    Growth: 4,
+    Corporate: 5,
+    Enterprise: 6,
   };
+  const packageValue = packageMap[packageName] || 1;
+
+  // Sanitize and format business details
+  const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
+  const businessTypes = [
+    { name: "Restaurant", code: "rest" },
+    { name: "Real Estate Broker", code: "rea_est_bro" },
+    { name: "Saloon", code: "sal" },
+    { name: "Doctor's Clinic", code: "doct_cli" },
+    { name: "Dentist Office", code: "dent_off" },
+    { name: "Dry Cleaner", code: "dry_cle" },
+    { name: "Web Design Agency", code: "web_des_age" },
+    { name: "Marketing Agency", code: "mkt_age" },
+    { name: "Gym & Fitness Center", code: "gym_fit" },
+    { name: "Personal Trainer", code: "per_tra" },
+    { name: "Architect", code: "arch" },
+    { name: "Interior Designer", code: "int_des" },
+    { name: "Construction Services", code: "con_ser" },
+    { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
+    { name: "Transport Company", code: "tra_com" },
+    { name: "Landscaping Company", code: "land_com" },
+    { name: "Insurance Agency", code: "ins_age" },
+    { name: "Financial Services", code: "fin_ser" },
+    { name: "Accounting Services", code: "acc_ser" },
+    { name: "Car Repair & Garage", code: "car_rep" },
+    { name: "Boat Repair & Maintenance", code: "boa_rep" },
+    { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
+    { name: "Other Local Business", code: "oth_loc_bus" },
+  ];
+
+  // Find the business type code
+  const matchedBusiness = businessTypes.find((item) => item.name === business?.businessType);
+  const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
+  const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
+
+  // Create the knowledge base name
+  const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(shortBusinessName)}_${sanitize(packageValue)}_#${agentCount}`;
+
+  // Append the knowledge base name and URLs to form data
+  formData.append("knowledge_base_name", knowledgeBaseName);
+  formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+
+  // Prepare business location and description
+  let knowledgeTexts = [];
+  let textContent = "";
+  let moreAbout = null;
+  if (businessLocation) {
+    textContent = `
+      Country: ${businessLocation.country || ""}
+      State: ${businessLocation.state || ""}
+      City: ${businessLocation.city || ""}
+      Address No. 1: ${businessLocation.address1 || ""}
+      Address No. 2: ${businessLocation.address2 || ""}
+    `.trim(); // Optional: remove leading/trailing whitespace
+    moreAbout = {
+      title: business.businessType || "Business Info",
+      text: textContent,
+    };
+  }
+
+  // Append the business description to form data
+  formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
+
+  // Append any files to form data
+  files.forEach((file) => {
+    formData.append("knowledge_base_files", file);
+  });
+
+  // Submit the form data to the server
+  try {
+    setLoading(true);
+    const response = await axios.post(
+      "https://api.retellai.com/create-knowledge-base",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    // Handle the successful response
+    console.log(response, "response");
+    sessionStorage.setItem("knowledgeBaseId", response.data.knowledge_base_id);
+
+    setPopupType("success");
+    setPopupMessage("Knowledge base created successfully!");
+    setShowPopup(true);
+
+    setTimeout(() => navigate("/steps"), 1500);
+  } catch (error) {
+    console.error("Upload failed:", error.response?.data?.message || error.message);
+    setPopupType("failed");
+    setPopupMessage(error.response?.data?.message || "Internal Server Error");
+    setShowPopup(true);
+  } finally {
+    setLoading(false);
+  }
+};
+
   const handleSkip = (e) => {
     e.preventDefault();
     setPopupType("confirm");
@@ -375,9 +436,15 @@ Address No. 2: ${businessLocation.address2 || ""}
     navigate("/steps");
   };
 
-  const cancelSkip = () => {
-    setShowPopup(false);
-  };
+ useEffect(() => {
+    const interval = setInterval(() => {
+      if (window.google?.maps?.places) {
+        initAutocomplete();
+        clearInterval(interval);
+      }
+    }, 300);
+  }, []);
+
   useEffect(() => {
     fetchAgentCountFromUser();
   }, []);
@@ -439,67 +506,22 @@ Address No. 2: ${businessLocation.address2 || ""}
                     </div>
                   </div>
                 </div>
-                {businessUrlSubmitted && businessUrlError && (
+                {/* {businessUrlSubmitted && businessUrlError && (
                   <p className={styles.inlineError}>{businessUrlError}</p>
-                )}
+                )} */}
               </div>
               {/* Verify Button */}
 
 
               <div>
-                <div className={styles.formGroup}>
-                  <label htmlFor="google-listing">Google Listing</label>
-                  <input
-                    id="google-listing"
-                    type="url"
-                    placeholder="Type the name of your Business to Search"
-                    value={googleListing}
-                    inputMode="url"
-                    autoComplete="url"
-                    list="url-suggestions"
-                    onKeyDown={(e) => {
-                      const { key, target } = e;
-                      if (key !== "Backspace" && key !== "Delete") return;
-
-                      const { selectionStart, selectionEnd, value } = target;
-                      const fullSelection =
-                        selectionStart === 0 && selectionEnd === value.length;
-
-                      if (fullSelection) {
-                        // They wiped everything — leave only the prefix
-                        e.preventDefault();
-                        setGoogleListing(HTTPS_PREFIX);
-                        // Put caret after the prefix
-                        requestAnimationFrame(() =>
-                          target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
-                        );
-                        return;
-                      }
-
-                      // Block any removal/editing that touches the prefix
-                      if (selectionStart <= PREFIX_LEN) e.preventDefault();
-                    }}
-                    onInput={(e) => {
-                      let v = e.target.value;
-
-                      // Strip *every* http:// or https:// that appears anywhere
-                      v = v.replace(/https?:\/\//gi, "");
-
-                      // Remove spaces and convert to lowercase
-                      v = v.replace(/\s+/g, "").toLowerCase();
-
-                      const final = HTTPS_PREFIX + v;
-                      setGoogleListing(final);
-
-                      if (googleListingSubmitted) {
-                        setGoogleListingError(validateGoogleListing(final));
-                      }
-                    }}
-                  />
-                </div>
-                {googleListingSubmitted && googleListingError && (
-                  <p className={styles.inlineError}>{googleListingError}</p>
-                )}
+            <div className={styles.formGroup}>
+              <label htmlFor="google-autocomplete">Google Listing (Business Name)</label>
+              <input
+                id="google-autocomplete"
+                type="text"
+                placeholder="Search for your business"
+              />
+            </div>
               </div>
 
               <div className={styles.formGroup}>
@@ -520,9 +542,9 @@ Address No. 2: ${businessLocation.address2 || ""}
                   }}
                 />
               </div>
-              {aboutBusinessSubmitted && aboutBusinessError && (
+              {/* {aboutBusinessSubmitted && aboutBusinessError && (
                 <p className={styles.inlineError}>{aboutBusinessError}</p>
-              )}
+              )} */}
               {/* <div className={styles.formGroup}>
                 <label htmlFor="file-upload">File Upload <span className={styles.filesAllowed}>(allowd only .pdf,.txt,.csv,.json,.md)</span></label>
                 <input
@@ -534,9 +556,9 @@ Address No. 2: ${businessLocation.address2 || ""}
                 />
 
               </div> */}
-              {filesSubmitted && filesError && (
+              {/* {filesSubmitted && filesError && (
                 <p className={styles.inlineError}>{filesError}</p>
-              )}
+              )} */}
               <div className={styles.formGroup}>
                 <label htmlFor="additional-note">
                   Additional Agent Instructions{" "}

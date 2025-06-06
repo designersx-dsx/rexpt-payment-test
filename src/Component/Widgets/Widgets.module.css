@@ -194,3 +194,4 @@ h1 {
   background-color: #e53935;
 }
 .modalTop{position: absolute;top: 20px;background-color: #43a047;}
+.modalInfo{display: flex;}

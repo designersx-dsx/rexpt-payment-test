@@ -43,10 +43,13 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const handleAvatarChange = (avatar) => {
     // agar current select yehi avatar hai, deselect kar do, warna select karo
     setSelectedAvatar((prev) => (prev === avatar ? null : avatar));
+       
+
     setAvatar(avatar.img);
     sessionStorage.setItem('avatar', avatar.img);
     // console.log(avatar.img)
   };
+  //  console.log('avatar',selectedAvatar)
   useEffect(() => {
     if (agentGender && avatars[agentGender]) {
       const genderAvatars = avatars[agentGender];
@@ -98,7 +101,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
         setAgentNameError("");
       }
 
-      if (!avatar) {
+      if (!selectedAvatar) {
         onValidationError?.({
           type: "failed",
           message: "Please select an avatar!"
@@ -172,6 +175,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
                   name="avatar"
                   value={index}
                   checked={selectedAvatar === avatar}
+                  required
                   onChange={() => handleAvatarChange(avatar)}
                   className={styles.radioButton}
                 />
