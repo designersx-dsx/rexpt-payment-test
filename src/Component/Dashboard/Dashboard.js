@@ -35,6 +35,8 @@ function Dashboard() {
   const [agentDetails, setAgentDetails] = useState(null);
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isCallInProgress, setIsCallInProgress] = useState(false);
+
 
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
@@ -380,11 +382,12 @@ function Dashboard() {
   }, []);
   // Start call
   const handleStartCall = async () => {
-    if (!retellWebClient || !agentDetails) {
+    if (isCallInProgress || !retellWebClient || !agentDetails) {
       console.error("RetellWebClient or agent details not ready.");
       return;
     }
     setCallLoading(false);
+    setIsCallInProgress(true); 
 
     try {
       setCallLoading(true);
@@ -409,13 +412,15 @@ function Dashboard() {
 
   // End call
   const handleEndCall = async () => {
+    console.log('isCallInProgress',isCallInProgress)
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
-      const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
-
+      if(isCallInProgress){
+        const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+      }
       setHasFetched(false);
-
+      setIsCallInProgress(false); 
 
     }
   };

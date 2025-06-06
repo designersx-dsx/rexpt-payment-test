@@ -43,6 +43,7 @@ export const createAgent = async (data) => {
   });
   return res;
 };
+
 export const fetchDashboardDetails = async (userId) => {
   const res = await api.get(`${API_BASE_URL}/agent/getUserAgentsDetails/${userId}`, {
     headers: {

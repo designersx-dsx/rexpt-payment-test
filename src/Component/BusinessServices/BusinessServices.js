@@ -6,7 +6,7 @@ import PopUp from '../Popup/Popup';
 const BusinessServices = () => {
     const navigate = useNavigate();
     const [businessType, setBusinessType] = useState("Restaurant");
-    const [selectedService, setSelectedService] = useState("");
+    const [selectedService, setSelectedService] = useState([]);
     const [businessName, setBusinessName] = useState("");
     const [businessSize, setBusinessSize] = useState("");
     const [email, setEmail] = useState("");
@@ -358,35 +358,48 @@ const handleContinue = () => {
         }
     };
 
-    useEffect(() => {
-        // const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
-        // console.log(savedDetails)
-    if (localStorage.getItem("UpdationMode") != "ON") {
-      const savedDetails = JSON.parse(
-        sessionStorage.getItem("businessDetails")
-      );
-      if (savedDetails) {
-        setBusinessType(savedDetails.businessType);
-        setBusinessName(savedDetails.businessName);
-        setBusinessSize(savedDetails.businessSize);
-        setSelectedService(savedDetails.selectedService || "");
-        setEmail(savedDetails.email || "");
+useEffect(() => {
+  try {
+    const isUpdateMode = localStorage.getItem("UpdationMode") === "ON";
+
+    const rawBusinessDetails = sessionStorage.getItem("businessDetails");
+    const rawBusinessServices = sessionStorage.getItem("businesServices");
+
+    const businessDetails =
+      rawBusinessDetails && rawBusinessDetails !== "null" && rawBusinessDetails !== "undefined"
+        ? JSON.parse(rawBusinessDetails)
+        : null;
+
+    const businessServices =
+      rawBusinessServices && rawBusinessServices !== "null" && rawBusinessServices !== "undefined"
+        ? JSON.parse(rawBusinessServices)
+        : null;
+
+    if (!isUpdateMode) {
+      if (businessDetails) {
+        setBusinessType(businessDetails.businessType || "");
+        setBusinessName(businessDetails.businessName || "");
+        setBusinessSize(businessDetails.businessSize || "");
+        setSelectedService(businessDetails.selectedService || []);
+        setEmail(businessDetails.email || "");
       }
     } else {
-      const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
-      const savedServices = JSON.parse(sessionStorage.getItem("businesServices"));
-      console.log('savedServices',savedServices)
-      if (savedDetails) {
-        setBusinessType(savedDetails.businessType);
-        setBusinessName(savedDetails.businessName);
-        setBusinessSize(savedDetails.businessSize);
+      if (businessDetails) {
+        setBusinessType(businessDetails.businessType || "");
+        setBusinessName(businessDetails.businessName || "");
+        setBusinessSize(businessDetails.businessSize || "");
       }
-      if (savedServices) {
-        setSelectedService(savedServices.selectedService || "");
-        setEmail(savedServices.email || "");
+
+      if (businessServices) {
+        setSelectedService(businessServices.selectedService || []);
+        setEmail(businessServices.email || "");
       }
     }
-    }, []);
+  } catch (error) {
+    console.error("Error loading session data:", error);
+  }
+}, []);
+
 
   const handleServiceToggle = (service) => {
     setSelectedService((prev) =>
