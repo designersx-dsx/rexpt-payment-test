@@ -281,3 +281,15 @@
 .requiredField{
 color:red;
 }
+
+
+@media screen and (min-width: 601px) {
+    .btnTheme{
+    cursor: pointer;
+   }
+   .container {
+    
+    max-width: 500px;
+   
+}
+}

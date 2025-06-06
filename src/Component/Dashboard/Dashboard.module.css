@@ -451,6 +451,42 @@
     font-weight: 600;
 }
 
+@media screen and (min-width: 601px) {
+ .forSticky{
+    width: 50%;
+    /* margin: auto; */
+    position: unset;
+    left: 0;
+    right: 0;
+    transform: translate(50%,0%);
+
+}
+
+.main {
+    padding: 0 20px;
+margin: 170px 0 0 0;
+       /* grid-template-columns: repeat(3, auto); */
+    /* grid-template-columns: repeat(3, minmax(200px, 1fr)); */
+    flex-wrap: wrap; 
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+
+}
+
+.LangStyle {
+    width: 30%;
+    padding: 20px;
+    border-radius: 18px;
+    margin: 0 0px;
+    cursor: pointer;
+     min-width: 200px;
+ margin-bottom: unset; 
+}
+
+
+}
+
 @media (max-width:380px) {
     .agentInfo2 {
         display: block;
