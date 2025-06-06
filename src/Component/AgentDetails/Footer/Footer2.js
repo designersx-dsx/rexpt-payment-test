@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Footer/Footer2.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import ModalChat from '../../ModalChat/ModalChat';
+import Plan from '../../Plan/Plan'
+import ChatBox from '../../ChatBox/ChatBox';
+import Modal from "../../Modal/Modal";
 const Footer2 = () => {
   const [activeTab, setActiveTab] = useState("home");
+    const [open, setOpen] = useState(false);
+    const [open2, setOpen2] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
+ 
   useEffect(() => {
     // Set active tab based on current path
     if (location.pathname.includes("/dashboard")) {
@@ -75,7 +80,7 @@ const Footer2 = () => {
           </span>
         </button>
 
-        <div className={styles.createWrapper}>
+        <div className={styles.createWrapper} onClick={() => setOpen(true)}>
           <button className={styles.createBtn}>
             <span className={styles.createIcon}>＋</span>
             <span className={styles.createText}>Create</span>
@@ -88,7 +93,7 @@ const Footer2 = () => {
           }`}
           onClick={() => setActiveTab("info")}
         >
-          <span className={styles.icon}>
+          <span className={styles.icon}     onClick={() => setOpen2(true)}>
             <svg
               width="30"
               height="29"
@@ -108,6 +113,16 @@ const Footer2 = () => {
           </span>
         </button>
       </div>
+      {/* Plan Modal Start */}
+      <Modal isOpen={open} onClose={() => setOpen(false)}>
+        <Plan />
+      </Modal>
+      {/* Plan Modal End */}
+      {/* Chat Modal End */}
+      <ModalChat isOpen2={open2} onClose2={() => setOpen2(false)}>
+       <ChatBox/>
+      </ModalChat>
+      {/* Chat Modal End */}
     </div>
   );
 };
