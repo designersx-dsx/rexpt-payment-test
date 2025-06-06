@@ -106,9 +106,8 @@ function App() {
 
               <Route path="/business-details" element={<BusinessDetails />} />
               <Route path="/agent-detail" element={<AgentDetail />} />
-
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/business-services" element={<SecureRoute><BusinessServices /></SecureRoute>} />
+              <Route path="/business-services" element={<BusinessServices />} />
               {/* <Route path="/home" element={<Home />} /> */}
               <Route path="/ai-assistant" element={<SecureRoute><AiAssistant /></SecureRoute>} />
               <Route path="/rex-agent" element={<SecureRoute><RexAgent /></SecureRoute>} />
