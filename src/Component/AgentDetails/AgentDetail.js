@@ -30,16 +30,6 @@ const AgentDashboard = () => {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [callLoading, setCallLoading] = useState(false);
-
-  console.log('agentDetails', agentDetails)
-  //   const {
-  //   agentData,
-  //   assignedNumbers,
-  //   totalBookings,
-  //   setAgentData,
-  //   setAssignedNumbers,
-  //   setTotalBookings,
-  // } = useAgentStore();
   const {
     agentData,
     assignedNumbers,

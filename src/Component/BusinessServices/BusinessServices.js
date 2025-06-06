@@ -308,11 +308,13 @@ const BusinessServices = () => {
         const isEmailValid = validateEmail(email);
         const isServiceValid = validateService(selectedService);
 
+
         // if (!isEmailVerified) {
         //     setPopupMessage("Please verify your email first.");
         //     setPopupType("failed"); 
         //     return;  
         // }
+
 
         if (isEmailValid && isServiceValid) {
             sessionStorage.setItem(
@@ -353,14 +355,33 @@ const BusinessServices = () => {
     };
 
     useEffect(() => {
-        const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
-        if (savedDetails) {
-            setBusinessType(savedDetails.businessType);
-            setBusinessName(savedDetails.businessName);
-            setBusinessSize(savedDetails.businessSize);
-            setSelectedService(savedDetails.selectedService || "");
-            setEmail(savedDetails.email || "");
-        }
+        // const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
+        // console.log(savedDetails)
+    if (localStorage.getItem("UpdationMode") != "ON") {
+      const savedDetails = JSON.parse(
+        sessionStorage.getItem("businessDetails")
+      );
+      if (savedDetails) {
+        setBusinessType(savedDetails.businessType);
+        setBusinessName(savedDetails.businessName);
+        setBusinessSize(savedDetails.businessSize);
+        setSelectedService(savedDetails.selectedService || "");
+        setEmail(savedDetails.email || "");
+      }
+    } else {
+      const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
+      const savedServices = JSON.parse(sessionStorage.getItem("businesServices"));
+      console.log('savedServices',savedServices)
+      if (savedDetails) {
+        setBusinessType(savedDetails.businessType);
+        setBusinessName(savedDetails.businessName);
+        setBusinessSize(savedDetails.businessSize);
+      }
+      if (savedServices) {
+        setSelectedService(savedServices.selectedService || "");
+        setEmail(savedServices.email || "");
+      }
+    }
     }, []);
 
     const handleServiceToggle = (service) => {
@@ -410,18 +431,8 @@ const BusinessServices = () => {
                                     <p className={styles.subType}>{selectedBusiness.subtype}</p>
                                 </div>
                             </div>
+                            
                             <div>
-                                {/* <input
-                                    type="radio"
-                                    name="service"
-                                    value={service}
-                                    checked={selectedService === service}
-                                    onChange={(e) => {
-                                        setSelectedService(e.target.value);
-                                        setServiceError(""); // Clear error on change
-                                    }}
-                                    onBlur={(e) => validateService(e.target.value)}
-                                /> */}
                                 <input
                                     type="checkbox"
                                     name="service"
@@ -439,7 +450,6 @@ const BusinessServices = () => {
                     <p style={{ color: 'red', marginTop: '5px' }}>{serviceError}</p>
                 )}
             </div>
-
             <div className={styles.labReq}>
                 <div className={styles.inputGroup}>
                     <div className={styles.Dblock}>
