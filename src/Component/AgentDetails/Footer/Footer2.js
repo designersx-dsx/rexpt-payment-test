@@ -91,7 +91,7 @@ const Footer2 = () => {
           className={`${styles.tab} ${
             activeTab === "info" ? styles.active : ""
           }`}
-          onClick={() => setActiveTab("info")}
+     
         >
           <span className={styles.icon}     onClick={() => setOpen2(true)}>
             <svg
