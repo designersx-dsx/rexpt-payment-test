@@ -281,7 +281,9 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
   const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
 
   const scriptText = `
+
 <script id="rex-widget-script" src="https://gilded-pie-8b3125.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+
 `;
 
   useEffect(() => {
