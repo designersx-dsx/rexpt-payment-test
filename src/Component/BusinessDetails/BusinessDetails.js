@@ -30,67 +30,67 @@ const BusinessDetails = () => {
   const agentDetails = location.state;
 
 
-  const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
-      try {  
-      const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
-      console.log('response',response)
-      const agent=response?.data?.agent;
-      const business=response?.data?.business;
-      
-    // console.log('agent',agent)
-    sessionStorage.setItem('UpdationMode','ON')
-    sessionStorage.setItem('agentName',agent.agentName)
-    sessionStorage.setItem('agentGender',agent.agentGender)
-    sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
-    sessionStorage.setItem('agentLanguage',agent.agentLanguage)
-    sessionStorage.setItem('agentRole',agent.agentRole)
-    sessionStorage.setItem('agentVoice',agent.agentVoice)
-    sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
-    sessionStorage.setItem('avatar',agent.avatar)
-    sessionStorage.setItem('businessDetails',agent.business)
-    sessionStorage.setItem('businessLocation',agent.business)
-    sessionStorage.setItem('businessId',agent.businessId)
-    sessionStorage.setItem('agent_id',agent.agent_id)
-    sessionStorage.setItem('llmId',agent.llmId)
-    sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
-    sessionStorage.setItem('businessLocation',  JSON.stringify({
-    country: business?.country,
-    state: business?.state.trim(),
-    city: business?.city.trim(),
-    address1: business?.address1.trim(),
-    address2: business?.address2.trim(),
-  }))
+  const fetchPrevAgentDEtails = async (agent_id, businessId) => {
+    try {
+      const response = await getUserAgentMergedDataForAgentUpdate(agent_id, businessId)
+      console.log('response', response)
+      const agent = response?.data?.agent;
+      const business = response?.data?.business;
 
-    const businessData = {
-    businessType:business?.businessType,
-    businessName: business?.businessName.trim(),
-    businessSize:business?.businessSize,
-    selectedService:business?.buisnessService,
-    email:business?.buisnessEmail
-    
-  };
-    sessionStorage.setItem("businessDetails", JSON.stringify(businessData))
-    const businessServices={
-      selectedService:business?.buisnessService,
-      email:business?.buisnessEmail
-    }
-    sessionStorage.setItem("businesServices",JSON.stringify(businessServices))
+      // console.log('agent',agent)
+      sessionStorage.setItem('UpdationMode', 'ON')
+      sessionStorage.setItem('agentName', agent.agentName)
+      sessionStorage.setItem('agentGender', agent.agentGender)
+      sessionStorage.setItem('agentLanguageCode', agent.agentLanguageCode)
+      sessionStorage.setItem('agentLanguage', agent.agentLanguage)
+      sessionStorage.setItem('agentRole', agent.agentRole)
+      sessionStorage.setItem('agentVoice', agent.agentVoice)
+      sessionStorage.setItem('agentVoiceAccent', agent.agentAccent)
+      sessionStorage.setItem('avatar', agent.avatar)
+      sessionStorage.setItem('businessDetails', agent.business)
+      sessionStorage.setItem('businessLocation', agent.business)
+      sessionStorage.setItem('businessId', agent.businessId)
+      sessionStorage.setItem('agent_id', agent.agent_id)
+      sessionStorage.setItem('llmId', agent.llmId)
+      sessionStorage.setItem('knowledgeBaseId', agent.knowledgeBaseId)
+      sessionStorage.setItem('businessLocation', JSON.stringify({
+        country: business?.country,
+        state: business?.state.trim(),
+        city: business?.city.trim(),
+        address1: business?.address1.trim(),
+        address2: business?.address2.trim(),
+      }))
 
-     setBusinessType(business?.businessType);
-     setBusinessName(business?.businessName.trim());
-     setBusinessSize(business?.businessSize);
-  
-    
+      const businessData = {
+        businessType: business?.businessType,
+        businessName: business?.businessName.trim(),
+        businessSize: business?.businessSize,
+        selectedService: business?.buisnessService,
+        email: business?.buisnessEmail
+
+      };
+      sessionStorage.setItem("businessDetails", JSON.stringify(businessData))
+      const businessServices = {
+        selectedService: business?.buisnessService,
+        email: business?.buisnessEmail
+      }
+      sessionStorage.setItem("businesServices", JSON.stringify(businessServices))
+
+      setBusinessType(business?.businessType);
+      setBusinessName(business?.businessName.trim());
+      setBusinessSize(business?.businessSize);
+
+
     } catch (error) {
-      console.log('An Error Occured while fetching Agent Data for ',error)
+      console.log('An Error Occured while fetching Agent Data for ', error)
     }
   }
 
-  useEffect(()=>{
-      if(localStorage.getItem('UpdationMode')){
-        fetchPrevAgentDEtails(agentDetails?.agentId,agentDetails?.bussinesId)
-      }
-  },[agentDetails])
+  useEffect(() => {
+    if (localStorage.getItem('UpdationMode')) {
+      fetchPrevAgentDEtails(agentDetails?.agentId, agentDetails?.bussinesId)
+    }
+  }, [agentDetails])
 
   const businessTypes = [
     {
@@ -287,40 +287,42 @@ const BusinessDetails = () => {
           onChange={handleSearchChange}
         />
       </div>
+      <div className={styles.ListDiv}>
+        <div className={styles.optionList}>
+          {filteredBusinessTypes.length > 0 ? (
+            filteredBusinessTypes.map((item, index) => (
+              <label className={styles.option} key={index}>
+                <div className={styles.forflex}>
+                  <div className={styles.icon}>
+                    <img
+                      src={item.icon}
+                      alt={`${item.type} icon`}
+                      className={styles.iconImg}
+                    />
+                  </div>
+                  <div>
+                    <strong>{item.type}</strong>
+                    <p className={styles.subType}>{item.subtype}</p>
+                  </div>
+                </div>
 
-      <div className={styles.optionList}>
-        {filteredBusinessTypes.length > 0 ? (
-          filteredBusinessTypes.map((item, index) => (
-            <label className={styles.option} key={index}>
-              <div className={styles.forflex}>
-                <div className={styles.icon}>
-                  <img
-                    src={item.icon}
-                    alt={`${item.type} icon`}
-                    className={styles.iconImg}
+                <div>
+                  <input
+                    type="radio"
+                    name="businessType"
+                    value={item.type}
+                    checked={businessType === item.type}
+                    onChange={handleBusinessTypeChange}
                   />
                 </div>
-                <div>
-                  <strong>{item.type}</strong>
-                  <p className={styles.subType}>{item.subtype}</p>
-                </div>
-              </div>
-
-              <div>
-                <input
-                  type="radio"
-                  name="businessType"
-                  value={item.type}
-                  checked={businessType === item.type}
-                  onChange={handleBusinessTypeChange}
-                />
-              </div>
-            </label>
-          ))
-        ) : (
-          <p className={styles.noItemFound}>No item found</p>
-        )}
+              </label>
+            ))
+          ) : (
+            <p className={styles.noItemFound}>No item found</p>
+          )}
+        </div>
       </div>
+
 
       {businessTypeSubmitted && businessTypeError && (
         <p className={styles.inlineError}>{businessTypeError}</p>
