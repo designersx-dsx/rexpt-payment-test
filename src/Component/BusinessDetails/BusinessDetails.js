@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "../BusinessDetails/BusinessDetails.module.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import decodeToken from "../../lib/decodeToken";
+import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 
 const BusinessDetails = () => {
   const navigate = useNavigate();
@@ -25,6 +26,71 @@ const BusinessDetails = () => {
   const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
   const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
+  const location = useLocation();
+  const agentDetails = location.state;
+
+
+  const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
+      try {  
+      const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
+      console.log('response',response)
+      const agent=response?.data?.agent;
+      const business=response?.data?.business;
+      
+    // console.log('agent',agent)
+    sessionStorage.setItem('UpdationMode','ON')
+    sessionStorage.setItem('agentName',agent.agentName)
+    sessionStorage.setItem('agentGender',agent.agentGender)
+    sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
+    sessionStorage.setItem('agentLanguage',agent.agentLanguage)
+    sessionStorage.setItem('agentRole',agent.agentRole)
+    sessionStorage.setItem('agentVoice',agent.agentVoice)
+    sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
+    sessionStorage.setItem('avatar',agent.avatar)
+    sessionStorage.setItem('businessDetails',agent.business)
+    sessionStorage.setItem('businessLocation',agent.business)
+    sessionStorage.setItem('businessId',agent.businessId)
+    sessionStorage.setItem('agent_id',agent.agent_id)
+    sessionStorage.setItem('llmId',agent.llmId)
+    sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
+    sessionStorage.setItem('businessLocation',  JSON.stringify({
+    country: business?.country,
+    state: business?.state.trim(),
+    city: business?.city.trim(),
+    address1: business?.address1.trim(),
+    address2: business?.address2.trim(),
+  }))
+
+    const businessData = {
+    businessType:business?.businessType,
+    businessName: business?.businessName.trim(),
+    businessSize:business?.businessSize,
+    selectedService:business?.buisnessService,
+    email:business?.buisnessEmail
+    
+  };
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData))
+    const businessServices={
+      selectedService:business?.buisnessService,
+      email:business?.buisnessEmail
+    }
+    sessionStorage.setItem("businesServices",JSON.stringify(businessServices))
+
+     setBusinessType(business?.businessType);
+     setBusinessName(business?.businessName.trim());
+     setBusinessSize(business?.businessSize);
+  
+    
+    } catch (error) {
+      console.log('An Error Occured while fetching Agent Data for ',error)
+    }
+  }
+
+  useEffect(()=>{
+      if(localStorage.getItem('UpdationMode')){
+        fetchPrevAgentDEtails(agentDetails?.agentId,agentDetails?.bussinesId)
+      }
+  },[agentDetails])
 
   const businessTypes = [
     {

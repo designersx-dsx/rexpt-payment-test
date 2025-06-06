@@ -311,7 +311,7 @@ const BusinessServices = () => {
         if (!isEmailVerified) {
             setPopupMessage("Please verify your email first.");
             setPopupType("failed"); 
-            return;  
+            // return;  
         }
 
         if (isEmailValid && isServiceValid) {
@@ -353,14 +353,33 @@ const BusinessServices = () => {
     };
 
     useEffect(() => {
-        const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
-        if (savedDetails) {
-            setBusinessType(savedDetails.businessType);
-            setBusinessName(savedDetails.businessName);
-            setBusinessSize(savedDetails.businessSize);
-            setSelectedService(savedDetails.selectedService || "");
-            setEmail(savedDetails.email || "");
-        }
+        // const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
+        // console.log(savedDetails)
+    if (localStorage.getItem("UpdationMode") != "ON") {
+      const savedDetails = JSON.parse(
+        sessionStorage.getItem("businessDetails")
+      );
+      if (savedDetails) {
+        setBusinessType(savedDetails.businessType);
+        setBusinessName(savedDetails.businessName);
+        setBusinessSize(savedDetails.businessSize);
+        setSelectedService(savedDetails.selectedService || "");
+        setEmail(savedDetails.email || "");
+      }
+    } else {
+      const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
+      const savedServices = JSON.parse(sessionStorage.getItem("businesServices"));
+      console.log('savedServices',savedServices)
+      if (savedDetails) {
+        setBusinessType(savedDetails.businessType);
+        setBusinessName(savedDetails.businessName);
+        setBusinessSize(savedDetails.businessSize);
+      }
+      if (savedServices) {
+        setSelectedService(savedServices.selectedService || "");
+        setEmail(savedServices.email || "");
+      }
+    }
     }, []);
 
     const handleServiceToggle = (service) => {
