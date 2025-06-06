@@ -144,13 +144,13 @@
     position: absolute;
   color: red;
   font-weight: bold;
-   right: 205px;
+   /* right: 205px; */
      top: 15%;
 }
 .requiredStar1 {
     position: absolute;
   color: red;
   font-weight: bold;
-   right: 78px;
-     top: 28%;
+   /* right: 78px; */
+     /* top: 28%; */
 }
