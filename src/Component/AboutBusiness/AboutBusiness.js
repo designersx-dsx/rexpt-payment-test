@@ -506,7 +506,7 @@ const handleSubmit = async (e) => {
               <div className={styles.labReq}>
                 <div className={styles.formGroup}>
                   <div className={styles.Dblock}>
-                    <label htmlFor="business-url">URL (Website)</label> <span className={styles.requiredStar}>*</span> 
+                    <label htmlFor="business-url">URL (Website) <span className={styles.requiredStar}>*</span> </label>
                     <input
                      id="https://your-website-url"
                       type="url"
