@@ -253,3 +253,6 @@
 }
 
 
+.profileBack img{
+  cursor: pointer;
+}
