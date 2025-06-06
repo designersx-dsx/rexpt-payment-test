@@ -116,13 +116,12 @@ const SignUp = () => {
         sessionStorage.clear();
         setPopupType("success");
         setShowPopup(true);
-        setPopupMessage("OTP Verified successfully!");
+        setPopupMessage("One time Password Verified successfully!");
         if (verifiedUser) {
           setUser({
             name: response?.data?.user?.name || "",
             profile:
-              `${API_BASE_URL?.split("/api")[0]}${
-                response?.data?.user?.profile?.split("public")[1]
+              `${API_BASE_URL?.split("/api")[0]}${response?.data?.user?.profile?.split("public")[1]
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
@@ -131,8 +130,7 @@ const SignUp = () => {
           setUser({
             name: response?.data?.user?.email || "",
             profile:
-              `${API_BASE_URL}${
-                response?.data?.user?.profile?.split("public")[1]
+              `${API_BASE_URL}${response?.data?.user?.profile?.split("public")[1]
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
@@ -141,7 +139,7 @@ const SignUp = () => {
       } else {
         setPopupType("failed");
         setShowPopup(true);
-        setPopupMessage("Failed to verify OTP. Please try again.");
+        setPopupMessage("Failed to verify One time Password. Please try again.");
       }
     } catch (error) {
       setPopupType("failed");
@@ -170,7 +168,7 @@ const SignUp = () => {
         setVerifiedUser(response.data.verifiedStatus);
         setShowPopup(true);
         setPopupType("success");
-        setPopupMessage("OTP sent successfully!");
+        setPopupMessage("One time Password sent successfully!");
         setOtpSent(true);
         const endTime = Date.now() + 120 * 1000; // 2 mins from now
         setResendEndTime(endTime);
@@ -180,7 +178,7 @@ const SignUp = () => {
       } else {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage("Failed to send OTP. Please try again.");
+        setPopupMessage("Failed to send One time Password. Please try again.");
       }
     } catch (error) {
       console.log(error);
@@ -281,9 +279,8 @@ const SignUp = () => {
             />
           </div>
           <div
-            className={`${styles.Maincontent} ${
-              step >= 2 ? styles.animate2 : ""
-            }`}
+            className={`${styles.Maincontent} ${step >= 2 ? styles.animate2 : ""
+              }`}
           >
             <div className={styles.welcomeTitle}>
               <h1>Log In to your Account</h1>
@@ -294,16 +291,14 @@ const SignUp = () => {
             {!otpSent && (
               <>
                 <div
-                  className={`${styles.labReq} ${
-                    step >= 3 ? styles.animate3 : ""
-                  }`}
+                  className={`${styles.labReq} ${step >= 3 ? styles.animate3 : ""
+                    }`}
                 >
                   <div className={styles.Dblock}>
                     <input
                       type="email"
-                      className={`${styles.emailInput} ${
-                        emailError ? styles.inputError : ""
-                      }`}
+                      className={`${styles.emailInput} ${emailError ? styles.inputError : ""
+                        }`}
                       placeholder="Johnvick@gmail.com"
                       value={email}
                       onChange={handleEmailChange}
@@ -315,9 +310,8 @@ const SignUp = () => {
                   )}
                 </div>
                 <div
-                  className={`${styles.btnTheme} ${
-                    step >= 4 ? styles.animate4 : ""
-                  }`}
+                  className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""
+                    }`}
                   onClick={handleSendOTP}
                 >
                   <img src="svg/svg-theme2.svg" alt="" />
@@ -328,7 +322,7 @@ const SignUp = () => {
                         <Loader size={17} />
                       </>
                     ) : (
-                      "Send OTP"
+                      "Send One time Password"
                     )}
                   </p>
                 </div>
@@ -367,7 +361,7 @@ const SignUp = () => {
                     />
                   ))}
                 </div>
-                <div className={styles.resendContainer}>
+                {/* <div className={styles.resendContainer}>
                   <button
                     type="button"
                     className={styles.resendButton}
@@ -386,44 +380,42 @@ const SignUp = () => {
                   >
                     {isResendDisabled && resendTimer > 0
                       ? `Resend OTP in ${String(
-                          Math.floor(resendTimer / 60)
-                        ).padStart(2, "0")}:${String(resendTimer % 60).padStart(
-                          2,
-                          "0"
-                        )}`
+                        Math.floor(resendTimer / 60)
+                      ).padStart(2, "0")}:${String(resendTimer % 60).padStart(
+                        2,
+                        "0"
+                      )}`
                       : "Resend OTP"}
                   </button>
-                </div>
+                </div> */}
 
-                    inputMode="numeric"
-                    type="tel"
-                  />
-                ))}
-              </div>
-              <div
-                className={styles.resendContainer}
-         
-              >
-                <button
-                  type="button"
-                  className={styles.resendButton}
-                  onClick={handleSendOTP}
-                  disabled={isResendDisabled}
-                  style={{
-                    cursor: isResendDisabled ? "not-allowed" : "pointer",
-                    opacity: isResendDisabled ? 0.5 : 1,
-                    background: "none",
-                    border: "none",
-                    color: "#6524EB",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
+
+
+
+                <div
+                  className={styles.resendContainer}
+
                 >
-                {isResendDisabled && resendTimer > 0
-                ? `Resend OTP in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
-                : "Resend One time Password"}
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className={styles.resendButton}
+                    onClick={handleSendOTP}
+                    disabled={isResendDisabled}
+                    style={{
+                      cursor: isResendDisabled ? "not-allowed" : "pointer",
+                      opacity: isResendDisabled ? 0.5 : 1,
+                      background: "none",
+                      border: "none",
+                      color: "#6524EB",
+                      fontWeight: "bold",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {isResendDisabled && resendTimer > 0
+                      ? `Resend One time Password in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
+                      : "Resend One time Password"}
+                  </button>
+                </div>
 
 
                 <div className={styles.Btn} onClick={handleLoginClick}>
@@ -445,9 +437,8 @@ const SignUp = () => {
               </>
             )}
             <div
-              className={`${styles.Maincontent2} ${
-                step >= 5 ? styles.animate5 : ""
-              }`}
+              className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
+                }`}
             >
               <div className={styles.divider}>
                 <hr className={styles.line} />
