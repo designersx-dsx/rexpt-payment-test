@@ -796,9 +796,6 @@ End Call: If the caller is satisfied, invoke end_call function.
                     model_high_priority: true,
                     tool_call_strict_mode: true,
                     general_prompt: prompt1,
-                    responsiveness: 1,
-                    enable_backchannel: true,
-
                     general_tools: [
                         {
                             type: "end_call",
@@ -884,7 +881,11 @@ End Call: If the caller is satisfied, invoke end_call function.
                         agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         post_call_analysis_model: "gpt-4o-mini",
-                        normalize_for_speech: true,
+                        responsiveness: 1,
+                        enable_backchannel: true,
+                        interruption_sensitivity: 0.7,
+                        backchannel_frequency: 0.7,
+                        backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                         post_call_analysis_data: [
                             {
                                 type: "string",
@@ -941,6 +942,11 @@ End Call: If the caller is satisfied, invoke end_call function.
                             agentPlan: "free" || "Plus",
                             agentStatus: true,
                             businessId: businessIdObj.businessId,
+                            responsiveness: 1,
+                            enable_backchannel: true,
+                            interruption_sensitivity: 0.7,
+                            backchannel_frequency: 0.7,
+                            backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                         }
                         try {
                             const response = await createAgent(agentData);

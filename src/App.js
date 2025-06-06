@@ -112,8 +112,8 @@ function App() {
 
               <Route path="/business-details" element={<BusinessDetails />} />
               <Route path="/agent-detail" element={<AgentDetail />} />
-
               <Route path="/dashboard" element={<Dashboard />} />
+
               <Route
                 path="/business-services"
                 element={
@@ -122,6 +122,7 @@ function App() {
                   </SecureRoute>
                 }
               />
+
               {/* <Route path="/home" element={<Home />} /> */}
               <Route
                 path="/ai-assistant"

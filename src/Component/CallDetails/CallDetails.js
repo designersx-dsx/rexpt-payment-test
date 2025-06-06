@@ -86,9 +86,21 @@ const CallDetails = () => {
                     </div>
                     <div className={styles.moredetailsDiv}>
                         <div className={styles.channel}>
-                            <p>channel</p>
-                            <div>
-                                <p>phone</p>
+                            <p className={styles.Ptext}>Channel</p>
+                            <div className={styles.PhoneDiv}>
+                                <p>Phone</p>
+                            </div>
+                        </div>
+                        <div className={styles.channel}>
+                            <p className={styles.Ptext}>Caller’s Type</p>
+                            <div className={styles.PhoneDiv}>
+                                <p>Phone</p>
+                            </div>
+                        </div>
+                        <div className={styles.channel}>
+                            <p className={styles.Ptext}>Call Recording</p>
+                            <div className={styles.PhoneDiv}>
+                                <p>Phone</p>
                             </div>
                         </div>
                     </div>
