@@ -282,7 +282,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion,alertPopUp }) => {
 
   const scriptText = `
 
-<script id="rex-widget-script" src="https://gilded-pie-8b3125.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
+<script id="rex-widget-script" src="https://dazzling-raindrop-43edfa.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
 
 `;
 
