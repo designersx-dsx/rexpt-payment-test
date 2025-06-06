@@ -367,7 +367,7 @@ useEffect(() => {
                 >
                 {isResendDisabled && resendTimer > 0
                 ? `Resend OTP in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
-                : "Resend OTP"}
+                : "Resend One time Password"}
                 </button>
               </div>
 
