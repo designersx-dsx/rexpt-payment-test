@@ -98,16 +98,16 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Estate-icon.svg",
     },
-    {
-      type: "  Landscaping Company",
-      subtype: "Your Journey Begins Here",
-      icon: "svg/Landscaping-icon.svg",
-    },
-    {
-      type: " Architect",
-      subtype: "Your Journey Begins Here",
-      icon: "svg/Architect-icon.svg",
-    },
+    // {
+    //   type: "  Landscaping Company",
+    //   subtype: "Your Journey Begins Here",
+    //   icon: "svg/Landscaping-icon.svg",
+    // },
+    // {
+    //   type: " Architect",
+    //   subtype: "Your Journey Begins Here",
+    //   icon: "svg/Architect-icon.svg",
+    // },
     {
       type: "Interior Designer",
       subtype: "Your Journey Begins Here",

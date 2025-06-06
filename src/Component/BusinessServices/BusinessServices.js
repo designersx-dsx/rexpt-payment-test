@@ -308,11 +308,13 @@ const BusinessServices = () => {
         const isEmailValid = validateEmail(email);
         const isServiceValid = validateService(selectedService);
 
-        if (!isEmailVerified) {
-            setPopupMessage("Please verify your email first.");
-            setPopupType("failed"); 
-            // return;  
-        }
+
+        // if (!isEmailVerified) {
+        //     setPopupMessage("Please verify your email first.");
+        //     setPopupType("failed"); 
+        //     return;  
+        // }
+
 
         if (isEmailValid && isServiceValid) {
             sessionStorage.setItem(
@@ -470,15 +472,15 @@ const BusinessServices = () => {
                             onChange={(e) => {
                                 setEmail(e.target.value);
                                 setEmailError("");
-                                setIsEmailVerified(false); 
+                                // setIsEmailVerified(false); 
                             }}
-                            onBlur={(e) => validateEmail(e.target.value)}
+                            // onBlur={(e) => validateEmail(e.target.value)}
                         />
                         {emailError && (
                             <p style={{ color: 'red', marginTop: '5px' }}>{emailError}</p>
                         )}
 
-                        {!isEmailVerified && (
+                        {/* {!isEmailVerified && (
                             <button
                                 type="button"
                                 className={styles.verifyButton}
@@ -487,7 +489,7 @@ const BusinessServices = () => {
                             >
                                 Verify Email
                             </button>
-                        )}
+                        )} */}
 
                         {isEmailVerified && (
                             <p style={{ color: 'green', marginTop: '5px' }}>Email verified successfully!</p>
@@ -501,7 +503,7 @@ const BusinessServices = () => {
                     <div
                         className={styles.btnTheme}
                         onClick={handleContinue}
-                        disabled={!isEmailVerified} 
+                        // disabled={!isEmailVerified} 
                     >
                         <img src="svg/svg-theme.svg" alt="" type="button" />
                         <p>Continue</p>

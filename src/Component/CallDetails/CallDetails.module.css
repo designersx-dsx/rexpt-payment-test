@@ -1,0 +1,72 @@
+.forSticky {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  /* padding: 5px 2px 2px 2px; */
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  /* background: #7b4fdd; */
+  background-image: linear-gradient(90deg, #6524eb 100%, #eae7ff 50%);
+  color: white;
+  padding: 20px 20px 30px 20px;
+  border-radius: 2rem 2rem 0px 0px;
+  flex-wrap: wrap;
+}
+
+.profileBack {
+  display: flex;
+  align-items: anchor-center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.profileBack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  /* margin-bottom: 1rem; */
+}
+
+.headerTitle {
+  font-weight: 600;
+  color: #fff;
+  font-size: 1.375rem;
+}
+
+.notifiMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notificationIcon1 {
+  background-color: #fff;
+  height: 50px;
+  width: 75px;
+  border-radius: 31px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+
+
+
+
+.notificationIcon {
+  background-color: #fff;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

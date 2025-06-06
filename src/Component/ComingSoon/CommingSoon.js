@@ -19,8 +19,9 @@ const CommingSoon = ({ show, onClose }) => {
   return (
     <div className={styles.overlay}>
       <div className={styles.modal}>
-        <p className={styles.message}> Coming Soon ... </p>
-        <button onClick={onClose} className={styles.closeBtn}>Close</button>
+        <h2 className={styles.message}> Coming </h2>
+        <h1 className={styles.message2}>Soon</h1>
+        <button onClick={onClose} className={styles.closeBtn}>CLOSE</button>
       </div>
     </div>
   );
