@@ -342,7 +342,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
           
           <div className={styles.modalActions}>
             <button onClick={handleSend} disabled={loading} className={styles.sendEmail}>
-              {loading ? <div className={styles.loaderDiv}><Loader size={16} />&nbsp;&nbsp;Sending</div> : "Send Emails"}
+              {loading ? <div className={styles.loaderDiv}><Loader size={18} />&nbsp;&nbsp; &nbsp;Sending</div> : "Send Emails"}
             </button>
              
               <button className={styles.adddBtn} onClick={handleAddEmails} disabled={loading}>Add</button>

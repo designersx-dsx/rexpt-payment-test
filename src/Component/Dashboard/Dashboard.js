@@ -26,7 +26,7 @@ function Dashboard() {
     useDashboardStore();
   const navigate = useNavigate();
   const { user } = useUser();
-
+ console.log(agents,"agents")
   // Retell Web Client states
   const [retellWebClient, setRetellWebClient] = useState(null);
   const [isCallActive, setIsCallActive] = useState(false);
