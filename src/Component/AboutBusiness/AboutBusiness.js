@@ -56,9 +56,11 @@ function AboutBusiness() {
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
-  const [urlVerificationInProgress, setUrlVerificationInProgress] =
-    useState(false);
-  const [displayBusinessName, setDisplayBusinessName] = useState("");
+
+  const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
+  const [displayBusinessName, setDisplayBusinessName] = useState("")
+
+
 
   const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
@@ -91,6 +93,7 @@ function AboutBusiness() {
       }
     }, 300);
   }, []);
+
 
   const fetchPlaceDetails = (placeId) => {
     setLoading(true);
@@ -179,9 +182,11 @@ function AboutBusiness() {
   }, [token]);
 
   useEffect(() => {
+
     const savedData = JSON.parse(
       sessionStorage.getItem("aboutBusinessForm") || "{}"
     );
+
     if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
     if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
     if (savedData.note) setNote(savedData.note);
@@ -366,9 +371,11 @@ function AboutBusiness() {
     }
 
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
+
     const businessLocation = JSON.parse(
       sessionStorage.getItem("businessLocation")
     );
+
     const mergedUrls = [businessUrl.trim(), googleListing];
     const formData = new FormData();
     const packageName = sessionStorage.getItem("package") || "Free";
@@ -383,10 +390,12 @@ function AboutBusiness() {
     const packageValue = packageMap[packageName] || 1;
 
     // Sanitize and format business details
+
     const sanitize = (str) =>
       String(str || "")
         .trim()
         .replace(/\s+/g, "_");
+
     const businessTypes = [
       { name: "Restaurant", code: "rest" },
       { name: "Real Estate Broker", code: "rea_est_bro" },
@@ -414,16 +423,20 @@ function AboutBusiness() {
     ];
 
     // Find the business type code
+
     const matchedBusiness = businessTypes.find(
       (item) => item.name === business?.businessType
     );
+
     const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
     const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
 
     // Create the knowledge base name
+
     const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(
       shortBusinessName
     )}_${sanitize(packageValue)}_#${agentCount}`;
+
 
     // Append the knowledge base name and URLs to form data
     formData.append("knowledge_base_name", knowledgeBaseName);
@@ -446,6 +459,7 @@ function AboutBusiness() {
         text: textContent,
       };
     }
+
 
     // Append the business description to form data
     formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
@@ -475,6 +489,7 @@ function AboutBusiness() {
         "knowledgeBaseId",
         response.data.knowledge_base_id
       );
+
 
       setPopupType("success");
       setPopupMessage("Knowledge base created successfully!");
@@ -538,6 +553,7 @@ function AboutBusiness() {
               <div className={styles.labReq}>
                 <div className={styles.formGroup}>
                   <div className={styles.Dblock}>
+
                     <label htmlFor="business-url">
                       URL (Website){" "}
                       <span className={styles.requiredStar}>*</span>{" "}
@@ -587,6 +603,7 @@ function AboutBusiness() {
                   )
                 )}
               </div>
+
                     </div>
                   </div>
                 </div>
@@ -599,8 +616,10 @@ function AboutBusiness() {
               <div>
                 <div className={styles.formGroup}>
                   <label htmlFor="google-autocomplete">
+
                     Google Listing (Business Name){" "}
                     <span className={styles.requiredStar1}>*</span>
+
                   </label>
                   <input
                     id="google-autocomplete"
