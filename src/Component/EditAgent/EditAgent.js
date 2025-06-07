@@ -166,12 +166,12 @@ const EditOptions = ({agentDetails}) => {
                 </label>
             ))}
             <div >
-                <div type="submit">
+                {/* <div type="submit">
                     <div className={styles.btnTheme}>
                         <img src="svg/svg-theme.svg" alt="" />
                         <p>Continue</p>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );
