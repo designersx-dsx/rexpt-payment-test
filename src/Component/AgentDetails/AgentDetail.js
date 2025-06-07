@@ -16,6 +16,7 @@ import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
 import DetailModal from "../DetailModal/DetailModal";
 import { useAgentStore } from "../../Store/agentDetailStore";
+import { useDashboardStore } from "../../Store/agentZustandStore";
 const AgentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -35,8 +36,10 @@ const AgentDashboard = () => {
     setCurrentAgentId,
     getAgentById,
   } = useAgentStore();
+  console.log('agentDetails',agentDetails)
 
   const [isModalOpen, setModalOpen] = useState(localStorage.getItem('UpdationModeStepWise')=='ON');
+   const { setHasFetched } =      useDashboardStore();
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [isApiKeyEditable, setIsApiKeyEditable] = useState(false);
@@ -302,7 +305,7 @@ const AgentDashboard = () => {
     getAgentDetailsAndBookings();
   }, [agentDetails,refresh]);
 
-  console.log("loading", loading);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
@@ -367,6 +370,7 @@ const AgentDashboard = () => {
           const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
         }
         setRefresh((prev)=>!prev)
+        setHasFetched(false)
         setIsCallInProgress(false);
       console.log("Call end response", response);
     }
@@ -388,6 +392,50 @@ const AgentDashboard = () => {
     sessionStorage.setItem("agentId", agentId);
   };
 
+
+  const handleCloseEditagentModalOpen=()=>{
+    sessionStorage.removeItem('UpdationMode');
+sessionStorage.removeItem('agentName');
+sessionStorage.removeItem('agentGender');
+sessionStorage.removeItem('agentLanguageCode');
+sessionStorage.removeItem('agentLanguage');
+sessionStorage.removeItem('llmId');
+sessionStorage.removeItem('agent_id');
+sessionStorage.removeItem('knowledgeBaseId');
+sessionStorage.removeItem('googleListing');
+sessionStorage.removeItem('displayBusinessName');
+sessionStorage.removeItem('aboutBusinessForm');
+sessionStorage.removeItem('agentRole');
+sessionStorage.removeItem('agentVoice');
+sessionStorage.removeItem('agentVoiceAccent');
+sessionStorage.removeItem('avatar');
+sessionStorage.removeItem('businessDetails');
+sessionStorage.removeItem('businessId');
+sessionStorage.removeItem('businesServices');
+sessionStorage.removeItem('businessLocation');
+localStorage.removeItem('UpdationMode');
+localStorage.removeItem('UpdationModeStepWise');
+localStorage.removeItem('agentName');
+localStorage.removeItem('agentGender');
+localStorage.removeItem('agentLanguageCode');
+localStorage.removeItem('agentLanguage');
+localStorage.removeItem('llmId');
+localStorage.removeItem('agent_id');
+localStorage.removeItem('knowledgeBaseId');
+localStorage.removeItem('agentRole');
+localStorage.removeItem('agentVoice');
+localStorage.removeItem('agentVoiceAccent');
+localStorage.removeItem('avatar');
+localStorage.removeItem('googleUrl');
+localStorage.removeItem('webUrl');
+localStorage.removeItem('aboutBusiness');
+localStorage.removeItem('additionalInstruction');
+localStorage.removeItem('knowledge_base_name');
+localStorage.removeItem('knowledge_base_id');
+
+
+    setModalOpen(false)
+  }
   // console.log(agentData,agentDetails?.agentId)
   return (
     <div>
@@ -1110,11 +1158,12 @@ const AgentDashboard = () => {
               </div>
             </div>
           )}
-          <DetailModal
-            isOpen={isModalOpen}
-            onClose={() => setModalOpen(false)}
-            height="80vh"
-          >
+
+          <DetailModal isOpen={isModalOpen}
+            onClose={() => handleCloseEditagentModalOpen()}
+            height="80vh">
+
+
             <div>
               <EditAgent agentDetails={agentDetails}/>
             </div>

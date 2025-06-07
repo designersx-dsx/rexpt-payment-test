@@ -543,15 +543,14 @@ End Call: If the caller is satisfied, invoke end_call function.
                       setPopupMessage("Business Details Updated Succesfully");
                       setShowPopup(true);
                       setLoading(false)
+                      console.log(localStorage.getItem("agent_id") ,localStorage.getItem("bussinesId"))
                       setTimeout(() =>
                       navigate("/agent-detail", {
                         state: {
-                        agentId: localStorage.getItem("agentId") || sessionStorage.getItem("agentId"),
-                        bussinesId: localStorage.getItem("bussinesId") || sessionStorage.getItem("bussinesId") ,
+                        agentId:  sessionStorage.getItem("agent_id") || localStorage.getItem("agentId") ,
+                        bussinesId: sessionStorage.getItem("businessId") || localStorage.getItem("bussinesId") ,
                         },
-                    }),
-                    1000
-                );
+                    }),1000);
                     }
                     catch(error){
                       console.error("Business Details failed:", error);
