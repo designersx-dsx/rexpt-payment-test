@@ -1,23 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styles from "./AgentAnalysis.module.css";
-import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-// const data = [
-//   { name: "Mon", value: 80 },
-//   { name: "Tue", value: 60 },
-//   { name: "Wed", value: 75 },
-//   { name: "Thu", value: 65 },
-//   { name: "Fri", value: 30 },
-//   { name: "Sat", value: 100 },
-//   { name: "Sun", value: 70 },
-// ];
-// const data = Array.from({ length: 30 }, (_, i) => ({
-//   name: `${i + 1}`, // Day of the month as string ("1", "2", ..., "30")
-//   value: Math.floor(Math.random() * 100) + 20, // Sample value between 20–119
-// }));
-
+// Helper function to format date
 function formatDateISO(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -25,55 +18,75 @@ function formatDateISO(date) {
   return `${y}-${m}-${d}`;
 }
 
-const AgentAnalysis = ({data}) => {
-const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
- const [bookingDates, setBookingDates] = useState([]);
+// Helper function to format time
+function formatTime(isoDate) {
+  const date = new Date(isoDate);
+  return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+
+const AgentAnalysis = ({ data, calApiKey }) => {
+  const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
+  const [bookingDates, setBookingDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
-  // console.log(callVolume)
+  const [bookingsForSelectedDate, setBookingsForSelectedDate] = useState([]);
+  const bookingsRef = useRef(null); // Ref for booking details section
+
   useEffect(() => {
     async function fetchBookingDates() {
       try {
-        const agents = JSON.parse(localStorage.getItem("agents")) || [];
-        const agentWithCalKey = agents.find((agent) => agent.calApiKey);
-        if (!agentWithCalKey) {
-          console.warn("No Cal API Key found in localStorage agents");
+        if (!calApiKey) {
+          console.warn("No Cal API Key provided to AgentAnalysis");
           return;
         }
 
-        const calApiKey = agentWithCalKey.calApiKey;
         const response = await fetch(
-          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
-            calApiKey
-          )}`
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
         );
-        if (!response.ok)
-          throw new Error("Failed to fetch bookings from Cal API");
-
+        if (!response.ok) throw new Error("Failed to fetch bookings");
         const bookingsData = await response.json();
-        const datesSet = new Set();
+        const bookingsMap = {}; 
         bookingsData.bookings?.forEach((booking) => {
           if (booking.startTime) {
             const date = new Date(booking.startTime);
-            if (date.getFullYear() === new Date().getFullYear()) {
-              datesSet.add(date.toISOString().slice(0, 10));
+            const formattedDate = formatDateISO(date);
+            if (!bookingsMap[formattedDate]) {
+              bookingsMap[formattedDate] = [];
             }
+            bookingsMap[formattedDate].push(booking); 
           }
         });
 
-        setBookingDates(Array.from(datesSet));
+        setBookingDates(bookingsMap);
+        setBookingsForSelectedDate(bookingsMap[formatDateISO(selectedDate)] || []);
       } catch (error) {
         console.error("Failed to fetch booking dates:", error);
       }
     }
 
     fetchBookingDates();
-  }, []);
+  }, [calApiKey, selectedDate]);
 
-  const tileClassName = ({ date, view }) => {
+  const handleDateClick = (date) => {
+    setSelectedDate(date); // Set the selected date
+    setBookingsForSelectedDate(bookingDates[formatDateISO(date)] || []);
+    // Scroll to the bookings list after selecting a date
+    if (bookingsRef.current) {
+      bookingsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const tileContent = ({ date, view }) => {
     if (view === "month") {
       const dateStr = formatDateISO(date);
-      if (bookingDates.includes(dateStr)) {
-        return styles.bookingHighlight;
+      const bookingsCount = bookingDates[dateStr] ? bookingDates[dateStr].length : 0;
+      if (bookingsCount > 0) {
+        const dots = [];
+        for (let i = 0; i < bookingsCount; i++) {
+          dots.push(
+            <div key={i} className={`${styles.bookingDot} ${bookingsCount === 2 ? styles.two : bookingsCount === 3 ? styles.three : ""}`}></div>
+          );
+        }
+        return <div className={styles.bookingDotContainer}>{dots}</div>;
       }
     }
     return null;
@@ -114,7 +127,6 @@ const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
             strokeLinecap="round"
             strokeOpacity={1}
             isAnimationActive={true}
-            className="line-with-shadow"
             filter="url(#shadow)"
           />
         </LineChart>
@@ -122,14 +134,37 @@ const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
 
       <div className={styles.calendarSection}>
         <h1>{selectedDate.toDateString()}</h1>
-       <Calendar
-  onChange={setSelectedDate}
-  value={selectedDate}
-  tileClassName={tileClassName}
-  calendarType="gregory"
-  className={styles.reactCalendar} ></Calendar>
-
+        <Calendar
+          onChange={handleDateClick}
+          value={selectedDate}
+          tileContent={tileContent} // Insert the dots
+          calendarType="gregory"
+          className={styles.reactCalendar}
+        />
       </div>
+
+      {bookingsForSelectedDate.length > 0 && (
+        <div className={styles.bookingsList} ref={bookingsRef}>
+          <h3>Bookings for {selectedDate.toDateString()}:</h3>
+          <ul>
+            {bookingsForSelectedDate.map((booking, index) => (
+              <li key={index} className={styles.bookingCard}>
+                <div className={styles.bookingCard}>
+                  <div className={styles.time}>
+                    {formatTime(booking.startTime)} - {formatTime(booking.endTime)}
+                  </div>
+                  <div className={styles.title}>
+                    {booking.title}
+                  </div>
+                  <div className={styles.status}>
+                    {booking.status === "ACCEPTED" ? "Accepted" : "Pending"}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

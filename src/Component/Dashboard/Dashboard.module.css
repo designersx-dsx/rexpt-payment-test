@@ -486,6 +486,9 @@
      min-width: 400px;
  margin-bottom: unset; 
 }
+.main .LangStyle:last-child {
+    margin-bottom: unset;
+}
 
 
 }
@@ -790,4 +793,94 @@
 .dropdown li:hover {
     background: #f3f4f6;
     /* gray-100 */
+}
+/* Backdrop: dim the screen */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.modalContainer {
+  background-color: #ffffff;
+  padding: 32px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: slideFadeIn 0.3s ease-out;
+}
+
+/* Title */
+.modalContainer h2 {
+  font-size: 1.8rem;
+  color: #222;
+  margin-bottom: 12px;
+}
+
+/* Paragraph */
+.modalContainer p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+/* Button wrapper */
+.modalButtons {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+/* Shared button styles */
+.modalButton {
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  min-width: 100px;
+}
+
+/* No Button */
+.cancel {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.cancel:hover {
+  background-color: #e0e0e0;
+}
+
+/* Yes Button */
+.submit {
+  background-color: #d72638;
+  color: #fff;
+}
+
+.submit:hover {
+  background-color: #b71c2b;
+}
+
+/* Modal entry animation */
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

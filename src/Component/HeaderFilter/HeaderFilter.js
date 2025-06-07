@@ -5,14 +5,16 @@ import SideFilter from "./SideFilter/SideFilter";
 import { useNavigate } from "react-router-dom";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeChange, onAgentChange, selectedAgentId }) {
-    console.log(isAgents, "isAgents")
+function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeChange, onAgentChange, selectedAgentId, isCallSummary, filters, onFilterChange }) {
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(false);
     const [showCalendar, setShowCalendar] = useState(false);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [open, setOpen] = useState(false);
+    const today = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 7);
     function formatDateWithoutTimezone(date) {
         if (!date) return null;
         const year = date.getFullYear();
@@ -38,15 +40,15 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
         const [start, end] = dates;
         setStartDate(start);
         setEndDate(end);
-        console.log(dates)
         if (start && end) {
             onRangeChange({
                 startDate: formatDateWithoutTimezone(start),
                 endDate: formatDateWithoutTimezone(end),
             });
-            setOpen(false);  // optionally close calendar after selection
+            setOpen(false);
         }
     };
+
     return (
         <div>
 
@@ -109,10 +111,10 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
                         <div className={styles.PartFew}>
                             <p>  {startDate
                                 ? startDate.toLocaleString("default", { month: "long", year: "numeric" })
-                                : "Select Date Range"}</p>
+                                : (startDate || new Date()).toLocaleString("default", { month: "long", year: "numeric" })}</p>
                             <div className={styles.dateRange}>
 
-                                <h6>{startDate ? startDate.getDate() : "--"}</h6>
+                                <h6>{startDate ? startDate.getDate() : sevenDaysAgo.getDate()}</h6>
                                 <div>
                                     <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M0 6C0 5.63181 0.287817 5.33333 0.642857 5.33333L15.8051 5.33333L11.7597 1.13807C11.5087 0.877723 11.5087 0.455611 11.7597 0.195262C12.0108 -0.0650873 12.4178 -0.0650873 12.6689 0.195262L17.8117 5.52859C18.0628 5.78894 18.0628 6.21106 17.8117 6.4714L12.6689 11.8047C12.4178 12.0651 12.0108 12.0651 11.7597 11.8047C11.5087 11.5444 11.5087 11.1223 11.7597 10.8619L15.8051 6.66667L0.642857 6.66667C0.287817 6.66667 0 6.36819 0 6Z" fill="black" />
@@ -120,7 +122,7 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
                                 </div>
 
 
-                                <h6>{endDate ? endDate.getDate() : "--"}</h6>
+                                <h6>{endDate ? endDate.getDate() : today.getDate()}</h6>
                             </div>
 
 
@@ -188,7 +190,7 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
                 showCloseBtn={true}
             >
                 {/* Put any content you want inside offcanvas here */}
-                <SideFilter />
+                <SideFilter filters={filters} onFilterChange={onFilterChange} isLeadTypeSummary={isCallSummary} />
             </OffCanvas>
 
         </div>

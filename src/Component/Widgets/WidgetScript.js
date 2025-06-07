@@ -279,7 +279,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
       {generateMode && !showModal && (
         <>
-          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}>Back</button>
+          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}><img src="svg/back-Btn.svg" alt="back-Btn"/></button>
           <h3 className={styles.title}>Widget Script</h3>
           <div className={styles.forScroll}>
             <div className={styles.domainList}>
@@ -315,7 +315,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
       {showModal && (
         <div className={styles.modalContainer}>
-          <button className={styles.backBtn} onClick={() => setShowModal(false)}> Back</button>
+          <button className={styles.backBtn} onClick={() => setShowModal(false)}><img src="svg/back-Btn.svg" alt="back-Btn"/></button>
           <h3>Send Script to Developer</h3>
           <div className={styles.modalInfo}>
             <input
@@ -342,7 +342,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
           
           <div className={styles.modalActions}>
             <button onClick={handleSend} disabled={loading} className={styles.sendEmail}>
-              {loading ? <div className={styles.loaderDiv}><Loader size={16} />&nbsp;&nbsp;Sending</div> : "Send Emails"}
+              {loading ? <div className={styles.loaderDiv}><Loader size={18} />&nbsp;&nbsp; &nbsp;Sending</div> : "Send Emails"}
             </button>
              
               <button className={styles.adddBtn} onClick={handleAddEmails} disabled={loading}>Add</button>

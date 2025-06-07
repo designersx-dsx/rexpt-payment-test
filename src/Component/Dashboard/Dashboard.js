@@ -26,7 +26,7 @@ function Dashboard() {
     useDashboardStore();
   const navigate = useNavigate();
   const { user } = useUser();
-
+ console.log(agents,"agents")
   // Retell Web Client states
   const [retellWebClient, setRetellWebClient] = useState(null);
   const [isCallActive, setIsCallActive] = useState(false);
@@ -86,6 +86,9 @@ function Dashboard() {
 
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [agentToDelete, setAgentToDelete] = useState(null);
+
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
@@ -101,6 +104,29 @@ function Dashboard() {
     }
   };
 
+
+  useEffect(()=>{
+    if(localStorage.getItem("UpdationMode")=="ON"){
+            localStorage.removeItem('UpdationMode')
+            localStorage.removeItem('agentName')
+            localStorage.removeItem('agentGender')
+            localStorage.removeItem('agentLanguageCode')
+            localStorage.removeItem('agentLanguage')
+            localStorage.removeItem('llmId')
+            localStorage.removeItem('agent_id')
+            localStorage.removeItem('knowledgeBaseId')
+            localStorage.removeItem('agentRole')
+            localStorage.removeItem('agentVoice')
+            localStorage.removeItem('agentVoiceAccent')
+            localStorage.removeItem('avatar')
+            localStorage.removeItem("UpdationMode")
+            localStorage.removeItem("googleUrl")
+            localStorage.removeItem("knowledge_base_id")
+            localStorage.removeItem("knowledge_base_name")
+            localStorage.removeItem("selectedAgentAvatar")
+            localStorage.removeItem("webUrl")
+    }
+  },[])
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -108,31 +134,31 @@ function Dashboard() {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
   };
-  useEffect(() => {
-    // const agents = JSON.parse(localStorage.getItem("agents")) || [];
-    const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
+ useEffect(() => {
+  const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
 
-    if (agentWithCalKey?.calApiKey) {
-      const fetchBookings = async () => {
-        try {
-          const response = await fetch(
-            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
-              agentWithCalKey.calApiKey
-            )}`
-          );
-          if (!response.ok) throw new Error("Failed to fetch bookings");
+  if (agentWithCalKey?.calApiKey) {
+    const fetchBookings = async () => {
+      try {
+        const response = await fetch(
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+            agentWithCalKey.calApiKey
+          )}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch bookings");
 
-          const data = await response.json();
-          setBookingCount(data.bookings?.length || 0);
-        } catch (error) {
-          console.error("Error fetching booking count:", error);
-          setBookingCount(0);
-        }
-      };
+        const data = await response.json();
+        setBookingCount(data.bookings?.length || 0);
+        console.log("Booking count fetched:", data.bookings?.length || 0);
+      } catch (error) {
+        console.error("Error fetching booking count:", error);
+        setBookingCount(0);
+      }
+    };
 
-      fetchBookings();
-    }
-  }, []);
+    fetchBookings();
+  }
+}, [localAgents]); 
   // Open Cal modal & set current agent + API key
   const handleCalClick = (agent, e) => {
     e.stopPropagation();
@@ -414,6 +440,7 @@ function Dashboard() {
       }
       setHasFetched(false);
       setIsCallInProgress(false);
+      
     }
   };
 
@@ -698,16 +725,11 @@ function Dashboard() {
                       <div key={agent.agent_id}>
                         <div
                           className={styles.OptionItem}
-                          onClick={async () => {
-                            try {
-                              await handleDelete(agent.agent_id);
-                            } catch (error) {
-                              setPopupMessage(
-                                `Failed to delete agent: ${error.message}`
-                              );
-                              setPopupType("failed");
-                            }
-                          }}
+                          onClick={() => {
+  setAgentToDelete(agent);
+  setShowDeleteConfirm(true);
+}}
+
                         >
                           Delete Agent
                         </div>
@@ -793,11 +815,11 @@ function Dashboard() {
               <p>
                 Click on the link to connect with Cal:{" "}
                 <a
-                  href="https://cal.com/"
+                  href="https://refer.cal.com/designersx"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  https://cal.com/
+                 Click to connect with cal
                 </a>
               </p>
 
@@ -955,6 +977,42 @@ function Dashboard() {
             </div>
           </div>
         )}
+        {showDeleteConfirm && agentToDelete && (
+  <div className={styles.modalBackdrop} onClick={() => setShowDeleteConfirm(false)}>
+    <div
+      className={styles.modalContainer}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h2>Are you sure?</h2>
+      <p>Do you want to delete agent <strong>{agentToDelete.agentName}</strong>?</p>
+      <div className={styles.modalButtons}>
+        <button
+          className={`${styles.modalButton} ${styles.cancel}`}
+          onClick={() => setShowDeleteConfirm(false)}
+        >
+          No
+        </button>
+        <button
+          className={`${styles.modalButton} ${styles.submit}`}
+          onClick={async () => {
+            try {
+              await handleDelete(agentToDelete.agent_id);
+              setShowDeleteConfirm(false);
+              setAgentToDelete(null);
+            } catch (error) {
+              setPopupMessage(`Failed to delete agent: ${error.message}`);
+              setPopupType("failed");
+              setShowDeleteConfirm(false);
+            }
+          }}
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
         {/* Call Test Modal */}
         {openCallModal && (

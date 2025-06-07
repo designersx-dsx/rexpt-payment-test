@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import decodeToken from "../../lib/decodeToken";
 import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
+import { useAgentCreator } from "../../hooks/useAgentCreator";
 
 const BusinessDetails = () => {
   const navigate = useNavigate();
@@ -13,11 +14,23 @@ const BusinessDetails = () => {
   const [businessSize, setBusinessSize] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
+  const [Loading, setLoading] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
-
+  const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
+  const EditingMode=localStorage.getItem('UpdationMode')
+  const setHasFetched=true
+const { handleCreateAgent } = useAgentCreator({
+  stepValidator: () => "BusinessDetails", // or custom validation
+  setLoading,
+  setPopupMessage,
+  setPopupType,
+  setShowPopup,
+  navigate,
+  setHasFetched,
+});
   const [businessNameError, setBusinessNameError] = useState("");
   const [businessSizeError, setBusinessSizeError] = useState("");
   const [businessTypeError, setBusinessTypeError] = useState("");
@@ -35,7 +48,7 @@ const BusinessDetails = () => {
       console.log('response',response)
       const agent=response?.data?.agent;
       const business=response?.data?.business;
-      
+            
     // console.log('agent',agent)
     sessionStorage.setItem('UpdationMode','ON')
     sessionStorage.setItem('agentName',agent.agentName)
@@ -47,6 +60,7 @@ const BusinessDetails = () => {
     sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
 
     //need to clear later
+    localStorage.setItem('UpdationMode','ON')
     localStorage.setItem('agentName',agent.agentName)
     localStorage.setItem('agentGender',agent.agentGender)
     localStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
@@ -58,16 +72,46 @@ const BusinessDetails = () => {
     localStorage.setItem('agentVoice',agent.agentVoice)
     localStorage.setItem('agentVoiceAccent',agent.agentAccent)
     localStorage.setItem('avatar',agent.avatar)
+    sessionStorage.setItem("googleListing",business.googleUrl)
+    sessionStorage.getItem("displayBusinessName",);
+    localStorage.setItem('googleUrl',business.googleUrl)
+    localStorage.setItem('webUrl',business.webUrl)
+    localStorage.setItem('aboutBusiness',business.aboutBusiness)
+    localStorage.setItem('additionalInstruction',business.additionalInstruction)
+    localStorage.setItem('knowledge_base_name',business.knowledge_base_name)
+    localStorage.setItem('knowledge_base_id',business.knowledge_base_id)
     //need to clear above
+
+    sessionStorage.setItem(
+    "aboutBusinessForm",
+    JSON.stringify({
+      businessUrl:business.webUrl,
+      googleListing:business.googleUrl,
+      aboutBusiness:business.aboutBusiness,
+      note:business.additionalInstruction,
+    }))
 
     sessionStorage.setItem('agentRole',agent.agentRole)
     sessionStorage.setItem('agentVoice',agent.agentVoice)
     sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
     sessionStorage.setItem('avatar',agent.avatar)
     sessionStorage.setItem('businessDetails',agent.business)
-    sessionStorage.setItem('businessLocation',agent.business)
     sessionStorage.setItem('businessId',agent.businessId)
- 
+        
+      const businessData = {
+      userId:business.userId  ,
+      businessType:business.businessType,
+      businessName: business.businessName.trim(),
+      businessSize:business.businessSize,
+    };
+
+  
+    sessionStorage.setItem("businesServices",JSON.stringify({
+       selectedService:business.buisnessService,
+        email:business.buisnessEmail
+    }))
+
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
     sessionStorage.setItem('businessLocation',  JSON.stringify({
     country: business?.country,
     state: business?.state.trim(),
@@ -151,7 +195,7 @@ const BusinessDetails = () => {
     "501 to 1000",
     "1000+",
   ];
-
+const stored = sessionStorage.getItem("businessDetails");
 useEffect(() => {
   try {
     const stored = sessionStorage.getItem("businessDetails");
@@ -168,7 +212,7 @@ useEffect(() => {
   } catch (err) {
     console.error("Failed to parse businessDetails from sessionStorage:", err);
   }
-}, []);
+}, [stored]);
 
   const containsEmoji = (text) => {
     return /[\p{Emoji_Presentation}\u200d]/u.test(text);
@@ -276,9 +320,23 @@ useEffect(() => {
     navigate("/business-services");
   };
 
+const handleSaveEdit = (e) => {
+  e.preventDefault();
+      const businessData = {
+      userId,
+      businessType,
+      businessName: businessName.trim(),
+      businessSize,
+    };
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+  console.log('edit hit')
+  handleCreateAgent();
+  
+};
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Business Details</h1>
+      <h1 className={styles.title}>{EditingMode?' Edit Business Details' :'Business Details' }</h1>
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
@@ -403,6 +461,7 @@ useEffect(() => {
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
+      {stepEditingMode!='ON'?    
       <div onClick={handleLoginClick}>
         <div type="submit">
           <div className={styles.btnTheme}>
@@ -411,6 +470,27 @@ useEffect(() => {
           </div>
         </div>
       </div>
+      :
+       <div onClick={handleSaveEdit}>
+        <div type="submit">
+          <div className={styles.btnTheme}>
+            <img src="svg/svg-theme.svg" alt="" />
+            <p>Save Edits</p>
+          </div>
+        </div>
+      </div>
+        }
+      {/* <div onClick={handleLoginClick}>
+        <div type="submit">
+          <div className={styles.btnTheme}>
+            <img src="svg/svg-theme.svg" alt="" />
+          
+              
+           
+            
+          </div>
+        </div>
+      </div> */}
 
       {showPopup && (
         <PopUp
