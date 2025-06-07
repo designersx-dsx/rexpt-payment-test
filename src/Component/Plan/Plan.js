@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./Plan.module.css";
 import { useNavigate } from "react-router-dom";
 import Loader2 from "../Loader2/Loader2";
-
+import Modal from '../Modal2/Modal2'
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = () => {
@@ -12,7 +12,16 @@ const Plan = () => {
   const [selected, setSelected] = useState("free-trial");
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
-
+    const [show  , setShow] = useState(false)
+    const [close  , setClose] = useState(false)
+    
+    const handleCLose = ()=>{
+        setClose(true)
+        setShow(false)
+    }
+    const handleNaviagte =()=>{
+    navigate('/signup')
+}
   useEffect(() => {
     fetch(`${API_BASE}/products`)
       .then((res) => res.json())
@@ -38,30 +47,54 @@ const Plan = () => {
     setOpen(open === id ? null : id);
   };
 
-  const handleContinue = () => {
-    if (!selected) {
-      alert("Please select a plan first");
-      return;
-    }
-    if (selected === "free-trial") {
-      navigate("/signup");
-      return;
-    }
-    // Find selected product for price id
-    const selectedProduct = products.find((p) => p.id === selected);
-    if (selectedProduct && selectedProduct.prices.length > 0) {
-      navigate("/checkout", { state: { priceId: selectedProduct.prices[0].id } });
-    } else {
-      alert("No price available for selected plan");
-    }
-  };
-
+  // const handleContinue = () => {
+  //   if (!selected) {
+  //     alert("Please select a plan first");
+  //     return;
+  //   }
+  //   if (selected === "free-trial") {
+  //     navigate("/signup");
+  //     return;
+  //   }
+  //   // Find selected product for price id
+  //   const selectedProduct = products.find((p) => p.id === selected);
+  //   if (selectedProduct && selectedProduct.prices.length > 0) {
+  //     navigate("/checkout", { state: { priceId: selectedProduct.prices[0].id } });
+  //   } else {
+  //     alert("No price available for selected plan");
+  //   }
+  // };
+const handleContinue = ()=>{
+   setShow(true)
+}
     if (loading) return <div className={styles.status}><Loader2 /></div>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
   return (
     <div className={styles.container}>
       {/* Header */}
+
+       {show?  <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
+                Comming Soon
+                
+                </h2>
+                
+                <p className={styles.apologyHeadText}apologyHeadText>
+
+As a Free Plan user, you are currently limited to creating one agent. However, you will soon be able to create additional agents and upgrade your existing ones once our Paid Agents feature is live. We are working diligently to bring this feature to you and will notify you as soon as Paid Plans become available.
+Thank you for your patience.
+                </p>
+
+                <div className={styles.zz}>
+
+                {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
+
+                </div>
+
+                
+                </Modal>
+                
+                : null}
       <div className={styles.header}>
         <div className={styles.icon}>
           <img src="images/inlogo.png" alt="inlogo" />

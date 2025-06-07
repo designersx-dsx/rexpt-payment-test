@@ -33,7 +33,9 @@
   color: #6b7c93;
   margin-bottom: 1rem;
 }
-
+.apologyHead{
+  text-align: center;
+}
 .planPrice {
   font-size: 1.2rem;
   font-weight: 600;
