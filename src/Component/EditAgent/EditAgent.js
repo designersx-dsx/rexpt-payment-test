@@ -171,7 +171,8 @@ const EditOptions = ({agentDetails}) => {
                         <img src="svg/svg-theme.svg" alt="" />
                         <p>Continue</p>
                     </div>
-                </div> */}
+                </div> */}     
+                   
             </div>
         </div>
     );

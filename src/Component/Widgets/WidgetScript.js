@@ -321,7 +321,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
           <div className={styles.modalInfo}>
             <input
               type="text"
-              placeholder="Enter emails separated by comma"
+              placeholder="Enter your email address"
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
               onBlur={handleAddEmails}
