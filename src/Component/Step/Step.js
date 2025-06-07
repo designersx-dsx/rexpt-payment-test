@@ -56,15 +56,12 @@ const Step = () => {
         sessionStorage.setItem("agentLanguage", selectedLang);
         sessionStorage.setItem("agentLanguageCode", selectedLangCode);
     }, [selectedLang]);
+    
     const totalSlides = 4;
-    const role_title =
-        sessionStorage.getItem("agentRole") || "General Receptionist";
-    const business =
-        JSON.parse(sessionStorage.getItem("businessDetails")) ||
-        "Your Business Name";
-    const BusinessLocation =
-        JSON.parse(sessionStorage.getItem("businessLocation")) ||
-        "Your Business Services";
+
+    const role_title =  sessionStorage.getItem("agentRole") || "General Receptionist";
+    const business =JSON.parse(sessionStorage.getItem("businessDetails")) ||"Your Business Name";
+    const BusinessLocation = JSON.parse(sessionStorage.getItem("businessLocation")) ||"Your Business Services";
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
@@ -1019,6 +1016,7 @@ End Call: If the caller is satisfied, invoke end_call function.
             if (isValid && localStorage.getItem("UpdationMode") == "ON") {
                 setLoading(true)
                 const agentConfig = {
+                    general_prompt: prompt1,
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                 };
                 const llm_id=localStorage.getItem('llmId')
@@ -1094,6 +1092,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setTimeout(() => navigate("/dashboard"), 1500);
                                 setLoading(false)
                                 sessionStorage.clear()
+                                    localStorage.removeItem('UpdationMode')
                                     localStorage.removeItem('agentName')
                                     localStorage.removeItem('agentGender')
                                     localStorage.removeItem('agentLanguageCode')

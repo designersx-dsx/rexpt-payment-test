@@ -945,7 +945,7 @@ const handleApiKeySubmit = async () => {
             height="80vh">
 
             <div>
-              <EditAgent />
+              <EditAgent agentDetails={agentDetails}/>
             </div>
           </DetailModal>
 

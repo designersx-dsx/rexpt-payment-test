@@ -103,6 +103,29 @@ function Dashboard() {
     }
   };
 
+
+  useEffect(()=>{
+    if(localStorage.getItem("UpdationMode")=="ON"){
+            localStorage.removeItem('UpdationMode')
+            localStorage.removeItem('agentName')
+            localStorage.removeItem('agentGender')
+            localStorage.removeItem('agentLanguageCode')
+            localStorage.removeItem('agentLanguage')
+            localStorage.removeItem('llmId')
+            localStorage.removeItem('agent_id')
+            localStorage.removeItem('knowledgeBaseId')
+            localStorage.removeItem('agentRole')
+            localStorage.removeItem('agentVoice')
+            localStorage.removeItem('agentVoiceAccent')
+            localStorage.removeItem('avatar')
+            localStorage.removeItem("UpdationMode")
+            localStorage.removeItem("googleUrl")
+            localStorage.removeItem("knowledge_base_id")
+            localStorage.removeItem("knowledge_base_name")
+            localStorage.removeItem("selectedAgentAvatar")
+            localStorage.removeItem("webUrl")
+    }
+  },[])
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);

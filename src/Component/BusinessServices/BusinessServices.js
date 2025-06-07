@@ -3,6 +3,7 @@ import styles from '../BusinessServices/BusinessServices.module.css';
 import { useNavigate } from "react-router-dom";
 import { validateEmail as validateEmailAPI } from '../../Store/apiStore';
 import PopUp from '../Popup/Popup';
+import { useAgentCreator } from '../../hooks/useAgentCreator';
 const BusinessServices = () => {
     const navigate = useNavigate();
     const [businessType, setBusinessType] = useState("Restaurant");
@@ -17,6 +18,20 @@ const BusinessServices = () => {
     const [popupMessage, setPopupMessage] = useState(""); 
     const [popupType, setPopupType] = useState("");
     // const [selectedServices, setSelectedServices] = useState([]);
+    const [Loading,setLoading]=useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
+    const EditingMode=localStorage.getItem('UpdationMode')
+    const setHasFetched=true
+    const { handleCreateAgent } = useAgentCreator({
+      stepValidator: () => "BusinessDetails", // or custom validation
+      setLoading,
+      setPopupMessage,
+      setPopupType,
+      setShowPopup,
+      navigate,
+      setHasFetched,
+    });
 
     const businessServices = [
         {
@@ -280,6 +295,7 @@ const BusinessServices = () => {
     const filteredServices = selectedServices.filter(service =>
         service.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    console.log(filteredServices)
 
     const validateEmail = (value) => {
         if (!value) {
