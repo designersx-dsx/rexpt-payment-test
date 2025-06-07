@@ -2,200 +2,205 @@ import React, { useState, useEffect } from 'react';
 import styles from '../Plan/Plan.module.css';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Loader/Loader';
-import Modal from '../Modal2/Modal2'
+import Modal from '../Modal2/Modal2';
+
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [selected, setSelected] = useState(null);
-    const [open, setOpen] = useState(null);
-    const navigate = useNavigate();
-    const [show  , setShow] = useState(false)
-    const [close  , setClose] = useState(false)
-    
-    const handleCLose = ()=>{
-        setClose(true)
-        setShow(false)
-    }
-    useEffect(() => {
-        fetch(`${API_BASE}/products`)
-            .then(res => res.json())
-            .then(data => {
-                const productsWithMetadata = data.map(product => {
-                    const matchedData = product.data?.data?.find(p => p.id === product.id);
-                    return {
-                        ...product,
-                        metadata: matchedData?.metadata || {},
-                    };
-                });
-                setProducts(productsWithMetadata);
-                setLoading(false);
-            })
-            .catch(() => {
-                setError('Failed to load plans.');
-                setLoading(false);
-            });
-    }, []);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selected, setSelected] = useState(null);
+  const [open, setOpen] = useState(null);
+  const [show, setShow] = useState(false);
 
-    const toggleAccordion = (id) => {
-        setOpen(open === id ? null : id);
-    };
-const handleNaviagte =()=>{
-    navigate('/signup')
-}
-    if (loading) return <p className={styles.status}><Loader/></p>;
-    if (error) return <p className={styles.statusError}>{error}</p>;
+  const navigate = useNavigate();
 
-    return (
-      <>
-        <div className={styles.hero_sec}>
-            {show?  <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
-                Comming Soon
-                
-                </h2>
-                
-                <p className={styles.apologyHeadText}apologyHeadText>
-Sorry for the delay! Our plans will be starting soon, and we’ll notify you as soon as they’re live. For now, you can create a free account and start using the basic features. Thanks for your patience!
-                </p>
+  const handleClose = () => {
+    setShow(false);
+  };
 
-                <div className={styles.zz}>
+  useEffect(() => {
+    fetch(`${API_BASE}/products`)
+      .then(res => res.json())
+      .then(data => {
+        const productsWithMetadata = data.map(product => {
+          const matchedData = product.data?.data?.find(p => p.id === product.id);
+          return {
+            ...product,
+            metadata: matchedData?.metadata || {},
+          };
+        });
+        setProducts(productsWithMetadata);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Failed to load plans.');
+        setLoading(false);
+      });
+  }, []);
 
-                <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button>
+  const toggleAccordion = (id) => {
+    setOpen(open === id ? null : id);
+  };
 
-                </div>
+  const handleNavigate = () => {
+    navigate('/signup');
+  };
 
-                
-                </Modal>
-                
-                : null}
-          <div className={styles.container}>
+  if (loading) return <p className={styles.status}><Loader /></p>;
+  if (error) return <p className={styles.statusError}>{error}</p>;
 
-            {/* Header */}
-            <div className={styles.header}>
-                <div className={styles.icon}>
-                    <img src="images/inlogo.png" alt="inlogo" />
-                </div>
-                <div className={styles.headercontent}>
-                    <h3>Select Your Plan</h3>
-                    <p>Customizable payment structures</p>
-                </div>
+  return (
+    <>
+      <div className={styles.hero_sec}>
+        {show && (
+          <Modal isOpen={show} onClose={handleClose}>
+            <h2 className={styles.apologyHead}>Coming Soon</h2>
+            <p className={styles.apologyHeadText}>
+              Sorry for the delay! Our plans will be starting soon, and we’ll notify you as soon as they’re live.
+              For now, you can create a free account and start using the basic features. Thanks for your patience!
+            </p>
+            <div className={styles.zz}>
+              <button className={styles.closeBTN} onClick={handleNavigate}>
+                Continue with Free
+              </button>
             </div>
+          </Modal>
+        )}
 
-            {/* Free Trial Plan (same classes used) */}
-            <div
-                className={`${styles.planBox} ${selected === 'free-trial' ? styles.selected : ''}`}
-                onClick={() => setSelected('free-trial')}
-            >
-                <div className={styles.part1}>
-                    <label className={styles.radioLabel}>
-                        <input
-                            type="radio"
-                            name="plan"
-                            value="free-trial"
-                            checked={selected === 'free-trial'}
-                            onChange={() => setSelected('free-trial')}
-                        />
-                        <div className={styles.planContent}>
-                            <div className={styles.planTitle}>
-                                <div>
-                                    <p>Free Trial</p>
-                                    <span className={styles.description}>Try all features free — includes 10 minutes</span>
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-                </div>
+        <div className={styles.container}>
+          {/* Header */}
+          <div className={styles.header}>
+            <div className={styles.icon}>
+              <img src="images/inlogo.png" alt="inlogo" />
             </div>
+            <div className={styles.headercontent}>
+              <h3>Select Your Plan</h3>
+              <p>Customizable payment structures</p>
+            </div>
+          </div>
 
-            {/* Stripe Product Plans */}
-            {products.map((product) => (
-                <div
-                    key={product.id}
-                    className={`${styles.planBox} ${selected === product.id ? styles.selected : ''}`}
-                    onClick={() => setSelected(product.id)}
-                >
-                    <div className={styles.part1}>
-                        <label className={styles.radioLabel}>
-                            <input
-                                type="radio"
-                                name="plan"
-                                value={product.id}
-                                checked={selected === product.id}
-                                onChange={() => setSelected(product.id)}
-                            />
-                            <div className={styles.planContent}>
-                                <div className={styles.planTitle}>
-                                    <div>
-                                        <p>{product.name}</p>
-                                        <span className={styles.description}>{product.description}</span>
-                                    </div>
-                                    {product.metadata.badge && (
-                                        <span className={styles.badge}>{product.metadata.badge}</span>
-                                    )}
-                                </div>
-                            </div>
-                        </label>
-
-                        <img
-                            src={open === product.id ? '/svg/up.svg' : '/svg/down.svg'}
-                            alt="Toggle Arrow"
-                            className={`${styles.arrowIcon} ${open === product.id ? styles.rotated : ''}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                toggleAccordion(product.id);
-                            }}
-                        />
+          {/* Free Trial Plan */}
+          <div
+            className={`${styles.planBox} ${selected === 'free-trial' ? styles.selected : ''}`}
+            onClick={() => {
+              setSelected('free-trial');
+              navigate('/signup');
+            }}
+          >
+            <div className={styles.part1}>
+              <label className={styles.radioLabel}>
+                <input
+                  type="radio"
+                  name="plan"
+                  value="free-trial"
+                  checked={selected === 'free-trial'}
+                  onChange={() => {
+                    setSelected('free-trial');
+                    navigate('/signup');
+                  }}
+                />
+                <div className={styles.planContent}>
+                  <div className={styles.planTitle}>
+                    <div>
+                      <p>Free Trial</p>
+                      <span className={styles.description}>
+                        Try all features free — includes 10 minutes
+                      </span>
                     </div>
-
-                    <div className={`${styles.accordion} ${open === product.id ? styles.open : ''}`}>
-                        {product.metadata.minutes && (
-                            <p>Includes <strong>{product.metadata.minutes}</strong> minutes</p>
-                        )}
-                        <div className={styles.pricesContainer}>
-                            {product.prices.map(price => (
-                                <div
-                                    key={price.id}
-                                    className={styles.priceOption}
-                                  
-                                >
-                                    {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                  </div>
                 </div>
-            ))}
+              </label>
+            </div>
+          </div>
 
-            {/* Continue button */}
+          {/* Stripe Product Plans */}
+          {products.map((product) => (
             <div
-                className={styles.btnTheme}
-                onClick={() => {
-                   setShow(true)
-                }}
+              key={product.id}
+              className={`${styles.planBox} ${selected === product.id ? styles.selected : ''}`}
+              onClick={() => setSelected(product.id)}
             >
-                <img src='svg/svg-theme.svg' alt='' />
-                <p>Continue</p>
-            </div>
+              <div className={styles.part1}>
+                <label className={styles.radioLabel}>
+                  <input
+                    type="radio"
+                    name="plan"
+                    value={product.id}
+                    checked={selected === product.id}
+                    onChange={() => setSelected(product.id)}
+                  />
+                  <div className={styles.planContent}>
+                    <div className={styles.planTitle}>
+                      <div>
+                        <p>{product.name}</p>
+                        <span className={styles.description}>{product.description}</span>
+                      </div>
+                      {product.metadata.badge && (
+                        <span className={styles.badge}>{product.metadata.badge}</span>
+                      )}
+                    </div>
+                  </div>
+                </label>
 
-            {/* Login link */}
-            <div className={styles.loginBox}>
-                <p>
-                    Already have an account?{' '}
-                    <span
-                        className={styles.loginLink}
-                        onClick={() => navigate('/signup')}
-                    >
-                        Login
-                    </span>
-                </p>
-            </div>
+                <img
+                  src={open === product.id ? '/svg/up.svg' : '/svg/down.svg'}
+                  alt="Toggle Arrow"
+                  className={`${styles.arrowIcon} ${open === product.id ? styles.rotated : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleAccordion(product.id);
+                  }}
+                />
+              </div>
 
+              <div className={`${styles.accordion} ${open === product.id ? styles.open : ''}`}>
+                {product.metadata.minutes && (
+                  <p>
+                    Includes <strong>{product.metadata.minutes}</strong> minutes
+                  </p>
+                )}
+                <div className={styles.pricesContainer}>
+                  {product.prices.map(price => (
+                    <div key={price.id} className={styles.priceOption}>
+                      {(price.unit_amount / 100).toFixed(2)}{' '}
+                      {price.currency.toUpperCase()} / {price.interval}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Continue button */}
+          <div
+            className={styles.btnTheme}
+            onClick={() => {
+              if (selected && selected !== 'free-trial') {
+                setShow(true);
+              } else {
+                navigate('/signup');
+              }
+            }}
+          >
+            <img src="svg/svg-theme.svg" alt="" />
+            <p>Continue</p>
+          </div>
+
+          {/* Login link */}
+          <div className={styles.loginBox}>
+            <p>
+              Already have an account?{' '}
+              <span className={styles.loginLink} onClick={() => navigate('/signup')}>
+                Login
+              </span>
+            </p>
           </div>
         </div>
-      </>
-    );
+      </div>
+    </>
+  );
 };
 
 export default Plan;
