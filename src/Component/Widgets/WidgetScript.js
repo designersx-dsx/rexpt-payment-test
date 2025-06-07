@@ -4,6 +4,7 @@ import { API_BASE_URL, updateAgentWidgetDomain, validateWebsite } from "../../St
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
+ const url=isAgentDetails?.business?.webUrl||""
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [emailInput, setEmailInput] = useState("");
@@ -18,7 +19,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
   // Each domain input keeps value, isVerified, loading, error, debounceTimer
   const [domainInputs, setDomainInputs] = useState([
-    { value: "", isVerified: false, loading: false, error: "", debounceTimer: null },
+    { value:url, isVerified: false, loading: false, error: "", debounceTimer: null },
   ]);
 
   const agentId = isAgentDetails.agent_id;
