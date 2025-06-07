@@ -297,19 +297,19 @@ const BusinessServices = () => {
     );
     console.log(filteredServices)
 
-    const validateEmail = (value) => {
-        if (!value) {
-            setEmailError("Email is required.");
-            return false;
-        }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
-            setEmailError("Invalid email address.");
-            return false;
-        }
-        setEmailError("");
-        return true;
-    };
+    // const validateEmail = (value) => {
+    //     if (!value) {
+    //         setEmailError("Email is required.");
+    //         return false;
+    //     }
+    //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //     if (!emailRegex.test(value)) {
+    //         setEmailError("Invalid email address.");
+    //         return false;
+    //     }
+    //     setEmailError("");
+    //     return true;
+    // };
 
     const validateService = (value) => {
         if (!value) {
@@ -320,10 +320,11 @@ const BusinessServices = () => {
         return true;
     };
 const handleContinue = () => {
-  const isEmailValid = validateEmail(email);
+//   const isEmailValid = validateEmail(email);
   const isServiceValid = selectedService.length > 0;
 
-  if (isEmailValid && isServiceValid) {
+//   if (isEmailValid && isServiceValid) {
+  if (isServiceValid) {
     // Save selected services in sessionStorage
     sessionStorage.setItem("businessDetails", JSON.stringify({
       businessType,
@@ -338,15 +339,14 @@ const handleContinue = () => {
 
     navigate("/about-business-next");
   } else {
-    const errorMessage = isEmailValid
+    const errorMessage = isServiceValid
       ? "Please select at least one service."
-      : "Invalid email address or empty fields."; 
+      : ""; 
 
     setPopupMessage(errorMessage);
     setPopupType("failed");
   }
 };
-
 
 
 
@@ -440,7 +440,7 @@ useEffect(() => {
             )
   console.log('edit hit')
   handleCreateAgent();
-  
+
 };
     
 
@@ -503,7 +503,7 @@ useEffect(() => {
             <div className={styles.labReq}>
                 <div className={styles.inputGroup}>
                     <div className={styles.Dblock}>
-                        <label> Business Email Address<span className={styles.requiredField}> *</span></label>
+                        <label> Business Email Address</label>
                         <input
                             type="email"
                             placeholder="Business Email Address"
