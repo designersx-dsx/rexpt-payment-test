@@ -464,7 +464,7 @@ End Call: If the caller is satisfied, invoke end_call function.
 
 
 
-    console.log(prompt1)
+    // console.log(prompt1)
   
             //updation here
             if (isValid && localStorage.getItem("UpdationMode") == "ON") {

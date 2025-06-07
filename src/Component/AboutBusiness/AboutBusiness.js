@@ -477,6 +477,7 @@ function AboutBusiness() {
     formData2.append("aboutBusiness", sanitize(aboutBusiness));
     formData2.append("additionalInstruction", sanitize(note));
     formData2.append("knowledge_base_name", knowledgeBaseName);
+    formData2.append("agentId", localStorage.getItem("agent_id"));
 
     formData3.append('knowledge_base_urls', JSON.stringify(mergedUrls))
 
@@ -510,8 +511,19 @@ function AboutBusiness() {
       setLoading(true);
       // formData2.append("knowledge_base_id",response?.data?.knowledge_base_id||"")
       let response;
-      if (!knowledgeBaseId) {
-        response = await axios.post(
+      console.log('knowledgeBaseId--------------',knowledgeBaseId)
+      if (!knowledgeBaseId || knowledgeBaseId == "undefined" && knowledgeBaseId == "null") {
+        const response = await axios.post(
+          `https://api.retellai.com/add-knowledge-base-sources/${knowledgeBaseId}`,
+          formData3,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+      } else {
+       const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
           formData,
           {
@@ -521,19 +533,13 @@ function AboutBusiness() {
             },
           }
         );
-      } else {
-        response = await axios.post(
-          `https://api.retellai.com/add-knowledge-base-sources/${knowledgeBaseId}`,
-          formData3,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
+         formData2.append("knowledge_base_id", response.data.knowledge_base_id);
+        sessionStorage.setItem(
+        "knowledgeBaseId",
+        response.data.knowledge_base_id
+      );
       }
-
-      formData2.append("knowledge_base_id", response.data.knowledge_base_id);
+     
       // console.log("businessId", businessId);
       try {
         response = await axios.patch(
