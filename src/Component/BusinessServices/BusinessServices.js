@@ -3,6 +3,7 @@ import styles from '../BusinessServices/BusinessServices.module.css';
 import { useNavigate } from "react-router-dom";
 import { validateEmail as validateEmailAPI } from '../../Store/apiStore';
 import PopUp from '../Popup/Popup';
+import { useAgentCreator } from '../../hooks/useAgentCreator';
 const BusinessServices = () => {
     const navigate = useNavigate();
     const [businessType, setBusinessType] = useState("Restaurant");
@@ -17,6 +18,20 @@ const BusinessServices = () => {
     const [popupMessage, setPopupMessage] = useState(""); 
     const [popupType, setPopupType] = useState("");
     // const [selectedServices, setSelectedServices] = useState([]);
+    const [Loading,setLoading]=useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
+    const EditingMode=localStorage.getItem('UpdationMode')
+    const setHasFetched=true
+    const { handleCreateAgent } = useAgentCreator({
+      stepValidator: () => "businesServices", // or custom validation
+      setLoading,
+      setPopupMessage,
+      setPopupType,
+      setShowPopup,
+      navigate,
+      setHasFetched,
+    });
 
     const businessServices = [
         {
@@ -280,6 +295,7 @@ const BusinessServices = () => {
     const filteredServices = selectedServices.filter(service =>
         service.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    console.log(filteredServices)
 
     const validateEmail = (value) => {
         if (!value) {
@@ -410,11 +426,27 @@ useEffect(() => {
     setServiceError("");
   };
 
+  const handleSaveEdit = (e) => {
+  e.preventDefault();
+         sessionStorage.setItem(
+                "businessDetails",
+                JSON.stringify({
+                    businessType,
+                    businessName,
+                    businessSize,
+                    selectedService,
+                    email,
+                })
+            )
+  console.log('edit hit')
+  handleCreateAgent();
+  
+};
     
 
     return (
          <div className={styles.container}>
-            <h1 className={styles.title}>Business Services</h1>
+            <h1 className={styles.title}>{EditingMode?'Edit: Business Services': 'Business Services'}</h1>
 
             <div className={styles.searchBox}>
                 <span className={styles.searchIcon}>
@@ -504,7 +536,7 @@ useEffect(() => {
                     </div>
                 </div>
             </div>
-
+{stepEditingMode!='ON'? 
             <div>
                 <div type="submit">
                     <div
@@ -517,7 +549,20 @@ useEffect(() => {
                     </div>
                 </div>
             </div>
-
+            :
+          <div>
+                <div type="submit">
+                    <div
+                        className={styles.btnTheme}
+                        onClick={handleSaveEdit}
+                        // disabled={!isEmailVerified} 
+                    >
+                        <img src="svg/svg-theme.svg" alt="" type="button" />
+                         <p>Save Edits</p>
+                    </div>
+                </div>
+            </div>
+}
             {/* Show PopUp */}
             <PopUp
                 type={popupType}

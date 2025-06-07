@@ -32,6 +32,9 @@ const Step = () => {
     const decodeTokenData = decodeToken(token)
     const [userId, setUserId] = useState(decodeTokenData?.id || "");
     const { setHasFetched } = useDashboardStore();
+    const EditingMode = localStorage.getItem("UpdationMode");
+    const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
+
     useEffect(()=>{
        if (localStorage.getItem('UpdationMode') == "ON"  ) {  
             setSelectedLang(localStorage.getItem("agentLanguage"))
@@ -56,7 +59,9 @@ const Step = () => {
         sessionStorage.setItem("agentLanguage", selectedLang);
         sessionStorage.setItem("agentLanguageCode", selectedLangCode);
     }, [selectedLang]);
+    
     const totalSlides = 4;
+
     const role_title =
         sessionStorage.getItem("agentRole") || "General Receptionist";
     const business =
@@ -66,6 +71,7 @@ const Step = () => {
         JSON.parse(sessionStorage.getItem("businessLocation")) ||
         "Your Business Services";
     const languageSelect = (sessionStorage?.getItem("agentLanguage"))
+
 
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
@@ -1020,6 +1026,7 @@ End Call: If the caller is satisfied, invoke end_call function.
             if (isValid && localStorage.getItem("UpdationMode") == "ON") {
                 setLoading(true)
                 const agentConfig = {
+                    general_prompt: prompt1,
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                 };
                 const llm_id=localStorage.getItem('llmId')
@@ -1092,9 +1099,24 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setPopupType("success");
                                 setPopupMessage("Agent Updated successfully!");
                                 setShowPopup(true);
-                                setTimeout(() => navigate("/dashboard"), 1500);
+                                if(stepEditingMode){
+                                    setTimeout(
+                                          () =>
+                                        navigate("/agent-detail", {
+                                            state: {
+                                            agentId: agentId || sessionStorage.getItem("agentId"),
+                                            bussinesId: businessIdObj.businessId,
+                                            },
+                                        }),
+                                        1000
+                                    );
+                                }else{
+                                    setTimeout(() => navigate("/dashboard"), 1500);
+                                }
+                                
                                 setLoading(false)
                                 sessionStorage.clear()
+                                    localStorage.removeItem('UpdationMode')
                                     localStorage.removeItem('agentName')
                                     localStorage.removeItem('agentGender')
                                     localStorage.removeItem('agentLanguageCode')
@@ -1107,6 +1129,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                                     localStorage.removeItem('agentVoiceAccent')
                                     localStorage.removeItem('avatar')
                                     setHasFetched(false)
+
                             }
                             console.log('response server',response)
                         } catch (error) {
