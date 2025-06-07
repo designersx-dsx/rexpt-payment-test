@@ -20,6 +20,16 @@
     color: #fff;
     text-transform: capitalize;
 }
+.apologyHead{
+    margin: 3px;
+    text-align: center;
+}
+.apologyHeadText{
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+
+}
 
 .profileSection .greeting {
     margin: 0;
