@@ -24,6 +24,9 @@ import Footer2 from "../AgentDetails/Footer/Footer2";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
+
+
+    
   const navigate = useNavigate();
   const { user } = useUser();
  console.log(agents,"agents")

@@ -226,6 +226,8 @@ function CheckoutForm({
             className={styles.input}
             required
           />
+
+          
           {errors.state && <p className={styles.errorMsg}>{errors.state}</p>}
 
           <label>Postal Code *</label>
