@@ -59,9 +59,17 @@ const Step = () => {
     
     const totalSlides = 4;
 
-    const role_title =  sessionStorage.getItem("agentRole") || "General Receptionist";
-    const business =JSON.parse(sessionStorage.getItem("businessDetails")) ||"Your Business Name";
-    const BusinessLocation = JSON.parse(sessionStorage.getItem("businessLocation")) ||"Your Business Services";
+    const role_title =
+        sessionStorage.getItem("agentRole") || "General Receptionist";
+    const business =
+        JSON.parse(sessionStorage.getItem("businessDetails")) ||
+        "Your Business Name";
+    const BusinessLocation =
+        JSON.parse(sessionStorage.getItem("businessLocation")) ||
+        "Your Business Services";
+    const languageSelect = (sessionStorage?.getItem("agentLanguage"))
+
+
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
@@ -110,6 +118,7 @@ You will:
 - Collect accurate details from the caller.
 - Summarize and confirm details before taking the final action.
 - Forward calls as and if necessary.
+- Speak in ${languageSelect} languge when you start. You can shift to American English language, if user ask you to. 
 
 
 ### Persona of the Receptionist
@@ -725,8 +734,6 @@ End Call: If the caller is satisfied, invoke end_call function.
         },
     ];
     const handleNext = () => {
-
-
         if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
             return;
         }
@@ -856,7 +863,7 @@ End Call: If the caller is satisfied, invoke end_call function.
 
 
                     // ],
-                    // starting_state: "information_collection",
+                    starting_state: "information_collection",
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
@@ -890,7 +897,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                         voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                        language: "multi",
                         post_call_analysis_model: "gpt-4o-mini",
                         responsiveness: 1,
                         enable_backchannel: true,

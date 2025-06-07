@@ -256,3 +256,9 @@
 .profileBack img{
   cursor: pointer;
 }
+.datePickerCalender{
+position: "absolute";
+left: 0px;
+top: 10px;
+z-index: 9999999999;
+}

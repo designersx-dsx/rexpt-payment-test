@@ -56,13 +56,15 @@ function AboutBusiness() {
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
-const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
+
+  const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("")
   const location = useLocation();
   const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
   const businessId = location.state?.businessId || sessionBusinessiD.businessId;
 
-   const initAutocomplete = () => {
+
+  const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
       document.getElementById("google-autocomplete"),
       {
@@ -85,7 +87,7 @@ const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false
   };
 
   // Effect to initialize Google Places autocomplete when the component mounts
-   useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
         initAutocomplete();
@@ -95,10 +97,12 @@ const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false
   }, []);
 
 
-const fetchPlaceDetails = (placeId) => {
+  const fetchPlaceDetails = (placeId) => {
     setLoading(true);
-    const service = new window.google.maps.places.PlacesService(document.createElement("div"));
-    
+    const service = new window.google.maps.places.PlacesService(
+      document.createElement("div")
+    );
+
     service.getDetails({ placeId }, (result, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
         setPlaceDetails(result);
@@ -114,38 +118,52 @@ const fetchPlaceDetails = (placeId) => {
   // Generate the Google Listing URL but don't show it in the UI
   const generateGoogleListingUrl = (place) => {
     const address = [
-      place.address_components.find(c => c.types.includes("street_number"))?.long_name,
-      place.address_components.find(c => c.types.includes("route"))?.long_name,
-      place.address_components.find(c => c.types.includes("premise"))?.long_name,
-      place.address_components.find(c => c.types.includes("subpremise"))?.long_name,
-      place.address_components.find(c => c.types.includes("sublocality_level_1"))?.long_name,
-      place.address_components.find(c => c.types.includes("locality"))?.long_name,
-      place.address_components.find(c => c.types.includes("administrative_area_level_2"))?.long_name,
-      place.address_components.find(c => c.types.includes("administrative_area_level_1"))?.long_name
-    ].filter(Boolean).join(" ");
+      place.address_components.find((c) => c.types.includes("street_number"))
+        ?.long_name,
+      place.address_components.find((c) => c.types.includes("route"))
+        ?.long_name,
+      place.address_components.find((c) => c.types.includes("premise"))
+        ?.long_name,
+      place.address_components.find((c) => c.types.includes("subpremise"))
+        ?.long_name,
+      place.address_components.find((c) =>
+        c.types.includes("sublocality_level_1")
+      )?.long_name,
+      place.address_components.find((c) => c.types.includes("locality"))
+        ?.long_name,
+      place.address_components.find((c) =>
+        c.types.includes("administrative_area_level_2")
+      )?.long_name,
+      place.address_components.find((c) =>
+        c.types.includes("administrative_area_level_1")
+      )?.long_name,
+    ]
+      .filter(Boolean)
+      .join(" ");
 
-    const googleLink = `https://www.google.com/search?q=${encodeURIComponent(place.name + " " + address)}`;
+    const googleLink = `https://www.google.com/search?q=${encodeURIComponent(
+      place.name + " " + address
+    )}`;
     setGoogleListing(googleLink); // Save Google Listing URL but don't display it
   };
 
-
   const handleUrlVerification = async (url) => {
-    setUrlVerificationInProgress(true); 
+    setUrlVerificationInProgress(true);
     const result = await validateWebsite(url);
     if (result.valid) {
-      setIsVerified(true); 
-      setBusinessUrlError(""); 
-      sessionStorage.setItem("businessUrl", url); 
+      setIsVerified(true);
+      setBusinessUrlError("");
+      sessionStorage.setItem("businessUrl", url);
     } else {
-      setIsVerified(false); 
+      setIsVerified(false);
       setBusinessUrlError("Invalid URL");
     }
-    setUrlVerificationInProgress(false); 
+    setUrlVerificationInProgress(false);
   };
 
   const handleBlur = () => {
     if (businessUrl.trim()) {
-      handleUrlVerification(businessUrl); 
+      handleUrlVerification(businessUrl);
     }
   };
   const handleInputChange = (e) => {
@@ -159,25 +177,28 @@ const fetchPlaceDetails = (placeId) => {
     }
   };
 
-
   useEffect(() => {
     if (token) {
       setUserId(decodeTokenData.id || "");
     }
   }, [token]);
 
+
  useEffect(() => {
   if(localStorage.getItem("UpdationMode")=="ON"){
 
 
     const savedData = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+
     if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
     if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
     if (savedData.note) setNote(savedData.note);
 
     // rebuild File objects
     if (Array.isArray(savedData.files) && savedData.files.length) {
-      const rebuiltFiles = savedData.files.map((d, i) => dataURLtoFile(d, `file${i + 1}`));
+      const rebuiltFiles = savedData.files.map((d, i) =>
+        dataURLtoFile(d, `file${i + 1}`)
+      );
       setFiles(rebuiltFiles);
     }
       }else{
@@ -187,7 +208,6 @@ const fetchPlaceDetails = (placeId) => {
     if (savedData.note) setNote(savedData.note);
       }
   }, []);
-
 
   useEffect(() => {
     // Try to get previously stored files
@@ -261,11 +281,11 @@ const fetchPlaceDetails = (placeId) => {
   const isValidUrl = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" +
-      "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
-      "((\\d{1,3}\\.){3}\\d{1,3}))" +
-      "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
-      "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
-      "(\\#[-a-zA-Z\\d_]*)?$",
+        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
+        "((\\d{1,3}\\.){3}\\d{1,3}))" +
+        "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
+        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
+        "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     );
     return !!pattern.test(url);
@@ -330,84 +350,98 @@ const fetchPlaceDetails = (placeId) => {
       console.log(error);
     }
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setBusinessUrlSubmitted(true);
-  setGoogleListingSubmitted(true);
-  setAboutBusinessSubmitted(true);
-  setFilesSubmitted(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setBusinessUrlSubmitted(true);
+    setGoogleListingSubmitted(true);
+    setAboutBusinessSubmitted(true);
+    setFilesSubmitted(true);
 
-  if (!businessUrl) {
-    setPopupType("failed");
-    setPopupMessage("Website URL is required.");
-    setShowPopup(true);
-    return;
-  }
+    if (!businessUrl) {
+      setPopupType("failed");
+      setPopupMessage("Website URL is required.");
+      setShowPopup(true);
+      return;
+    }
 
-  if (!isVerified) {
-    setPopupType("failed");
-    setPopupMessage("Business URL must be verified before proceeding.");
-    setShowPopup(true);
-    return;
-  }
 
-  // Ensure Google Listing is provided
-  if (!googleListing.trim()) {
-    setPopupType("failed");
-    setPopupMessage("Google Listing is required.");
-    setShowPopup(true);
-    return;
-  }
+    if (!isVerified) {
+      setPopupType("failed");
+      setPopupMessage("Business URL must be verified before proceeding.");
+      setShowPopup(true);
+      return;
+    }
 
-  const business = JSON.parse(sessionStorage.getItem("businessDetails"));
-  const businessLocation = JSON.parse(sessionStorage.getItem("businessLocation"));
-  const mergedUrls = [businessUrl.trim(), googleListing]; 
-  const formData = new FormData();
-  const formData2=new FormData();
-  const packageName = sessionStorage.getItem("package") || "Free";
-  const packageMap = {
-    Free: 1,
-    Starter: 2,
-    Scaler: 3,
-    Growth: 4,
-    Corporate: 5,
-    Enterprise: 6,
-  };
-  const packageValue = packageMap[packageName] || 1;
+    // Ensure Google Listing is provided
+    if (!googleListing.trim()) {
+      setPopupType("failed");
+      setPopupMessage("Google Listing is required.");
+      setShowPopup(true);
+      return;
+    }
 
-  // Sanitize and format business details
-  const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-  const businessTypes = [
-    { name: "Restaurant", code: "rest" },
-    { name: "Real Estate Broker", code: "rea_est_bro" },
-    { name: "Saloon", code: "sal" },
-    { name: "Doctor's Clinic", code: "doct_cli" },
-    { name: "Dentist Office", code: "dent_off" },
-    { name: "Dry Cleaner", code: "dry_cle" },
-    { name: "Web Design Agency", code: "web_des_age" },
-    { name: "Marketing Agency", code: "mkt_age" },
-    { name: "Gym & Fitness Center", code: "gym_fit" },
-    { name: "Personal Trainer", code: "per_tra" },
-    { name: "Architect", code: "arch" },
-    { name: "Interior Designer", code: "int_des" },
-    { name: "Construction Services", code: "con_ser" },
-    { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
-    { name: "Transport Company", code: "tra_com" },
-    { name: "Landscaping Company", code: "land_com" },
-    { name: "Insurance Agency", code: "ins_age" },
-    { name: "Financial Services", code: "fin_ser" },
-    { name: "Accounting Services", code: "acc_ser" },
-    { name: "Car Repair & Garage", code: "car_rep" },
-    { name: "Boat Repair & Maintenance", code: "boa_rep" },
-    { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
-    { name: "Other Local Business", code: "oth_loc_bus" },
-  ];
+    const business = JSON.parse(sessionStorage.getItem("businessDetails"));
 
-  // Find the business type code
-  const matchedBusiness = businessTypes.find((item) => item.name === business?.businessType);
-  const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
-  const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
+    const businessLocation = JSON.parse(
+      sessionStorage.getItem("businessLocation")
+    );
 
+    const mergedUrls = [businessUrl.trim(), googleListing];
+    const formData = new FormData();
+    const packageName = sessionStorage.getItem("package") || "Free";
+    const packageMap = {
+      Free: 1,
+      Starter: 2,
+      Scaler: 3,
+      Growth: 4,
+      Corporate: 5,
+      Enterprise: 6,
+    };
+    const packageValue = packageMap[packageName] || 1;
+
+    // Sanitize and format business details
+
+    const sanitize = (str) =>
+      String(str || "")
+        .trim()
+        .replace(/\s+/g, "_");
+
+    const businessTypes = [
+      { name: "Restaurant", code: "rest" },
+      { name: "Real Estate Broker", code: "rea_est_bro" },
+      { name: "Saloon", code: "sal" },
+      { name: "Doctor's Clinic", code: "doct_cli" },
+      { name: "Dentist Office", code: "dent_off" },
+      { name: "Dry Cleaner", code: "dry_cle" },
+      { name: "Web Design Agency", code: "web_des_age" },
+      { name: "Marketing Agency", code: "mkt_age" },
+      { name: "Gym & Fitness Center", code: "gym_fit" },
+      { name: "Personal Trainer", code: "per_tra" },
+      { name: "Architect", code: "arch" },
+      { name: "Interior Designer", code: "int_des" },
+      { name: "Construction Services", code: "con_ser" },
+      { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
+      { name: "Transport Company", code: "tra_com" },
+      { name: "Landscaping Company", code: "land_com" },
+      { name: "Insurance Agency", code: "ins_age" },
+      { name: "Financial Services", code: "fin_ser" },
+      { name: "Accounting Services", code: "acc_ser" },
+      { name: "Car Repair & Garage", code: "car_rep" },
+      { name: "Boat Repair & Maintenance", code: "boa_rep" },
+      { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
+      { name: "Other Local Business", code: "oth_loc_bus" },
+    ];
+
+    // Find the business type code
+
+    const matchedBusiness = businessTypes.find(
+      (item) => item.name === business?.businessType
+    );
+
+    const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
+    const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
+
+    // Create the knowledge base name
   // Create the knowledge base name
   const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(shortBusinessName)}_${sanitize(packageValue)}_#${agentCount}`;
   console.log(knowledgeBaseName,mergedUrls)
@@ -434,19 +468,19 @@ const handleSubmit = async (e) => {
       Address No. 1: ${businessLocation.address1 || ""}
       Address No. 2: ${businessLocation.address2 || ""}
     `.trim(); // Optional: remove leading/trailing whitespace
-    moreAbout = {
-      title: business.businessType || "Business Info",
-      text: textContent,
-    };
-  }
+      moreAbout = {
+        title: business.businessType || "Business Info",
+        text: textContent,
+      };
+    }
 
-  // Append the business description to form data
-  formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
 
-  // Append any files to form data
-  files.forEach((file) => {
-    formData.append("knowledge_base_files", file);
-  });
+    // Append the business description to form data
+    formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
+ // Append any files to form data
+    files.forEach((file) => {
+      formData.append("knowledge_base_files", file);
+    });
 
   // Submit the form data to the server
   try {
@@ -494,7 +528,27 @@ const handleSubmit = async (e) => {
   }
 };
 
+   
 
+
+
+      setPopupType("success");
+      setPopupMessage("Knowledge base created successfully!");
+      setShowPopup(true);
+
+      setTimeout(() => navigate("/steps"), 1500);
+    } catch (error) {
+      console.error(
+        "Upload failed:",
+        error.response?.data?.message || error.message
+      );
+      setPopupType("failed");
+      setPopupMessage(error.response?.data?.message || "Internal Server Error");
+      setShowPopup(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSkip = (e) => {
     e.preventDefault();
@@ -512,14 +566,16 @@ const handleSubmit = async (e) => {
 
   useEffect(() => {
     const savedGoogleListing = sessionStorage.getItem("googleListing");
-    const savedDisplayBusinessName = sessionStorage.getItem("displayBusinessName");
+    const savedDisplayBusinessName = sessionStorage.getItem(
+      "displayBusinessName"
+    );
 
     if (savedGoogleListing) {
-      setGoogleListing(savedGoogleListing); 
+      setGoogleListing(savedGoogleListing);
     }
 
     if (savedDisplayBusinessName) {
-      setDisplayBusinessName(savedDisplayBusinessName); 
+      setDisplayBusinessName(savedDisplayBusinessName);
     }
   }, []);
 
@@ -538,37 +594,44 @@ const handleSubmit = async (e) => {
               <div className={styles.labReq}>
                 <div className={styles.formGroup}>
                   <div className={styles.Dblock}>
-                    <label htmlFor="business-url">URL (Website) <span className={styles.requiredStar}>*</span> </label>
-                    <input
-                     id="https://your-website-url"
-                      type="url"
-                      placeholder="https://your website url"
-                      value={businessUrl}
-                      inputMode="url"
-                      autoComplete="url"
-                      onBlur={handleBlur}
-                      list="url-suggestions"
-                      onKeyDown={(e) => {
-                        const { key, target } = e;
-                        if (key !== "Backspace" && key !== "Delete") return;
-                        const { selectionStart, selectionEnd, value } = target;
-                        const fullSelection =
-                          selectionStart === 0 && selectionEnd === value.length;
 
-                        if (fullSelection) {
-                          e.preventDefault();
-                          setBusinessUrl(HTTPS_PREFIX);
-                          // Put caret after the prefix
-                          requestAnimationFrame(() =>
-                            target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
-                          );
-                          return;
-                        }                       
-                        if (selectionStart <= PREFIX_LEN) e.preventDefault();
-                      }}
-                      onInput={handleInputChange}
-                    />
-                     <div className={styles.verifyStatus}>
+                    <label htmlFor="business-url">
+                      URL (Website){" "}
+                      <span className={styles.requiredStar}>*</span>{" "}
+                    </label>
+                    <div className={styles.inputFlex}>
+                      <input
+                        id="https://your-website-url"
+                        type="url"
+                        placeholder="https://your website url"
+                        value={businessUrl}
+                        inputMode="url"
+                        autoComplete="url"
+                        onBlur={handleBlur}
+                        list="url-suggestions"
+                        onKeyDown={(e) => {
+                          const { key, target } = e;
+                          if (key !== "Backspace" && key !== "Delete") return;
+                          const { selectionStart, selectionEnd, value } =
+                            target;
+                          const fullSelection =
+                            selectionStart === 0 &&
+                            selectionEnd === value.length;
+
+                          if (fullSelection) {
+                            e.preventDefault();
+                            setBusinessUrl(HTTPS_PREFIX);
+                            // Put caret after the prefix
+                            requestAnimationFrame(() =>
+                              target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
+                            );
+                            return;
+                          }
+                          if (selectionStart <= PREFIX_LEN) e.preventDefault();
+                        }}
+                        onInput={handleInputChange}
+                      />
+                        <div className={styles.verifyStatus}>
                 {urlVerificationInProgress ? (
                   <Loader size={20} /> 
                 ) : (
@@ -581,6 +644,8 @@ const handleSubmit = async (e) => {
                   )
                 )}
               </div>
+
+                    </div>
                   </div>
                 </div>
                 {/* {businessUrlSubmitted && businessUrlError && (
@@ -589,21 +654,23 @@ const handleSubmit = async (e) => {
               </div>
               {/* Verify Button */}
 
-
               <div>
-           <div className={styles.formGroup}>
-  <label htmlFor="google-autocomplete">
-    Google Listing (Business Name) <span className={styles.requiredStar1}>*</span>
-  </label>
-  <input
-                id="google-autocomplete"
-                type="text"
-                placeholder="Search for your business"
-                value={displayBusinessName}
-                onChange={(e) => setDisplayBusinessName(e.target.value)} 
-                required
-              />
-</div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="google-autocomplete">
+
+                    Google Listing (Business Name){" "}
+                    <span className={styles.requiredStar1}>*</span>
+
+                  </label>
+                  <input
+                    id="google-autocomplete"
+                    type="text"
+                    placeholder="Search for your business"
+                    value={displayBusinessName}
+                    onChange={(e) => setDisplayBusinessName(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
 
               <div className={styles.formGroup}>
@@ -658,7 +725,7 @@ const handleSubmit = async (e) => {
                 <button>Skip for now</button>
               </div>
               <div className={styles.fixedBtn}>
-               <button
+                <button
                   type="submit"
                   className={styles.btnTheme}
                   disabled={loading}
