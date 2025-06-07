@@ -161,6 +161,7 @@ const Details = () => {
     };
   }, []);  return (
     <>
+    <div className={styles.signUpContainer}>
       <div className={styles.StartMain}>
         <div>
           <img src="images/Ellipse 6.png" alt="Ellipse 6" />
@@ -251,6 +252,7 @@ const Details = () => {
             message={popupMessage}
           />
         )}
+      </div>
       </div>
     </>
 

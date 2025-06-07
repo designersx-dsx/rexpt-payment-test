@@ -8,6 +8,14 @@
 
 }
 
+.container h3 {
+  font-size: 30px;
+  color: #24252c;
+  border-bottom: 1px solid rgb(233, 233, 233);
+  padding-block: 10px;
+  margin-bottom: 10px;
+}
+
 h1 {
   text-align: center;
   font-weight: 700;
@@ -19,11 +27,14 @@ h1 {
 
 .noteText {
   font-size: 14px;
+  margin-block: 10px;
 }
 
 .domainList li {
   list-style: decimal;
   margin-left: 20px;
+  font-size: 13px;
+  margin-bottom: 5px;
 }
 
 .forScroll {
@@ -31,6 +42,7 @@ h1 {
   overflow: auto;
   padding-right: 10px;
 }
+
 .forScroll::-webkit-scrollbar {
   width: 4px;
 }
@@ -46,7 +58,7 @@ h1 {
 }
 
 .forScroll::-webkit-scrollbar-thumb:hover {
-  background-color: #6524EB; 
+  background-color: #6524EB;
 }
 
 .scriptBox {
@@ -60,24 +72,25 @@ h1 {
   box-shadow: inset 0 1px 3px #eaeef3;
   overflow-wrap: break-word;
   user-select: text;
-  margin-bottom: 10px;
+  margin: 10px;
 }
 
 .copyButton {
   position: absolute;
-  top: 15px;
-  right: 20px;
-  background-color: #dddddd;
-  /* Tailwind's blue-600 */
+  top: 0px;
+  right: 0px;
+  background-color: #ede9fc;
   border: none;
-  color: #000000;
+  color: #6524EB;
   padding: 4px 16px;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 4px;
+  border-top-right-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  -webkit-user-select: none;
   user-select: none;
+  ;
 }
 
 .copyButton:hover {
@@ -118,6 +131,7 @@ h1 {
   user-select: none;
   letter-spacing: 0.03em;
   width: 100%;
+  min-height: 50px;
 }
 
 .whatsappBtn {
@@ -130,8 +144,8 @@ h1 {
 }
 
 .emailBtn {
-  background: #EDE9FC;
-  color: #6524EB;
+  color: #EDE9FC;
+  background-color: #6524EB;
 }
 
 
@@ -185,6 +199,7 @@ h1 {
   border-radius: 8px;
   font-size: 14px;
   transition: border 0.3s ease;
+  min-height: 55px;
 }
 
 .inputField:focus {
@@ -192,12 +207,7 @@ h1 {
   outline: none;
 }
 
-.modalActions {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 20px;
-}
+
 
 .addBtn {
 
@@ -216,11 +226,12 @@ h1 {
   float: right;
 
 }
-.sendEmailBtn{
-background-color: #6524EB;
+
+.sendEmailBtn {
+  background-color: #6524EB;
   font-size: 20px;
   font-weight: 800;
- 
+
   cursor: pointer;
   border: none;
   color: #fff;
@@ -230,6 +241,7 @@ background-color: #6524EB;
   border: none;
 
 }
+
 .sendBtn {
   background-color: #6524EB;
   padding: 10px;
@@ -266,5 +278,145 @@ background-color: #6524EB;
 
 .modalInfo {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
-.loaderDiv{display: flex;}
+
+.loaderDiv {
+  display: flex;
+}
+
+
+/* Ankush Css Start */
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.inputField {
+  width: 100%;
+  padding-right: 32px;
+  box-sizing: border-box;
+}
+
+.loader,
+.verified,
+.notVerified {
+  position: absolute;
+  right: 10px;
+  top: 38%;
+  /* transform: translate(0%, -50%); */
+  pointer-events: none;
+}
+
+.removeBtn {
+  border: none;
+  background-color: #000000;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  /* margin-bottom: 10px; */
+  position: relative;
+  z-index: 1;
+  top: -75px;
+}
+
+.verified input[type="checkbox"] {
+  accent-color: #6524EB;
+  width: 20px;
+  height: 20px;
+}
+
+.generateCodeBtn {
+  border: none;
+  background-color: #6524EB;
+  color: #ffff;
+  padding: 4px 20px;
+  height: 40px;
+  border-radius: 5px;
+  width: 50%;
+}
+
+.addNewInputBtn {
+  border: none;
+  background-color: #EBE2FF;
+  color: #6524EB;
+  padding: 4px 20px;
+  height: 40px;
+  border-radius: 5px;
+  width: 50%;
+}
+
+.InputMain {
+  position: relative;
+}
+
+.BottomBtnAddGen {
+  width: 100%;
+  display: flex;
+  /* justify-content: space-between; */
+  margin-top: 10px;
+  gap: 10%;
+}
+
+.backBtn {
+  border: none;
+  background-color: #ffffff;
+  /* padding: 3px 10px; */
+  /* color: #ffffff; */
+  /* border-radius: 4px; */
+}
+
+.listType {
+  list-style: auto;
+  margin-left: 20px;
+  margin-block: 10px;
+}
+
+.listType li {
+  margin-block: 10px;
+  font-size: 13px;
+}
+
+.Cross {
+  background-color: #000000;
+  color: #ffff;
+  padding: 3px 10px;
+  border: none;
+  border-radius: 4px;
+
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+
+}
+
+.adddBtn {
+  background-color: #6524EB;
+    color: white;
+    padding: 4px 10px;
+    border: 20px;
+    min-height: 50px;
+    width: 40px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    font-size: 16px;
+
+}
+
+.sendEmail {
+  background-color: #6524EB;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  min-height: 40px;
+  border-radius: 4px;
+  width: 50%;
+
+}

@@ -105,7 +105,8 @@
   transform: translate(50%, 0%);
 }
 .navbar {
-  background-color: #EDE9FC;
+ background-color: #ede9fcab;
+ background-image: unset;
 }
 }
 

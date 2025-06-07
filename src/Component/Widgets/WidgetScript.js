@@ -114,7 +114,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
       const domainsToAdd = verifiedDomains.filter(
         (d) => !existingDomain.find((ex) => ex.domain === d)
       );
-       console.log(domainsToAdd,"domainsToAdd")
+      console.log(domainsToAdd, "domainsToAdd")
       // Add each domain by API call
       for (const domain of domainsToAdd) {
         console.log("HELLO")
@@ -212,57 +212,64 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
     <div className={styles.container}>
       <h3>Enter your Website URL(s)</h3>
       <p className={styles.noteText}>Note: The widget will only work on the domains you add.</p>
+      <div className={styles.forScroll}>
+        {domainInputs.map((input, index) => (
+          <div key={index} className={styles.domainInputRow}>
+            <div className={styles.InputMain}>
+              <input
+                type="text"
+                placeholder="e.g., https://example.com"
+                value={input.value}
+                onChange={(e) => handleDomainChange(index, e.target.value)}
+                className={styles.inputField}
+                disabled={loading}
+              />
+              {input.loading ? (
+                <p className={styles.loader}><Loader size={16} /></p>
+              ) : input.isVerified ? (
+                <p className={styles.verified} title="Verified"> <input type="checkbox" name="" value="" checked /></p>
+              ) : input.value ? (
+                <p className={styles.notVerified} title="Not Verified">X</p>
+              ) : null}
+            </div>
 
-      {domainInputs.map((input, index) => (
-        <div key={index} className={styles.domainInputRow}>
-          <input
-            type="text"
-            placeholder="e.g., https://example.com"
-            value={input.value}
-            onChange={(e) => handleDomainChange(index, e.target.value)}
-            className={styles.inputField}
-            disabled={loading}
-          />
-          {input.loading ? (
-            <span className={styles.loader}><Loader size={16} /></span>
-          ) : input.isVerified ? (
-            <span className={styles.verified} title="Verified">✅</span>
-          ) : input.value ? (
-            <span className={styles.notVerified} title="Not Verified">❌</span>
-          ) : null}
 
-          {domainInputs.length > 1 && (
-            <button
-              onClick={() => handleRemoveDomainInput(index)}
-              className={styles.removeBtn}
-              title="Remove this domain input"
-              disabled={loading}
-            >
-              ❌
-            </button>
-          )}
+            {domainInputs.length > 1 && (
+              <button
+                onClick={() => handleRemoveDomainInput(index)}
+                className={styles.removeBtn}
+                title="Remove this domain input"
+                disabled={loading}
+              >
+                X
+              </button>
+            )}
 
-          {input.error && <p style={{ color: "red", marginTop: 4 }}>{input.error}</p>}
-        </div>
-      ))}
+            {input.error && <p style={{ color: "red", marginTop: 4 }}>{input.error}</p>}
+          </div>
+        ))}
+      </div>
 
-      <button
-        className={styles.addNewInputBtn}
-        onClick={handleAddDomainInput}
-        disabled={loading}
-      >
-        + Add Another Domain
-      </button>
 
-      {(existingDomain.length > 0 || domainInputs.some(input => input.isVerified)) && (
+      <div className={styles.BottomBtnAddGen}>
         <button
-          className={styles.generateCodeBtn}
-          onClick={handleGenerateCode}
+          className={styles.addNewInputBtn}
+          onClick={handleAddDomainInput}
           disabled={loading}
         >
-          {loading ? "Processing..." : "Generate Code"}
+          Add Domain
         </button>
-      )}
+
+        {(existingDomain.length > 0 || domainInputs.some(input => input.isVerified)) && (
+          <button
+            className={styles.generateCodeBtn}
+            onClick={handleGenerateCode}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Generate Code"}
+          </button>
+        )}
+      </div>
     </div>
   );
 
@@ -272,7 +279,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
       {generateMode && !showModal && (
         <>
-          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}>⬅ Back</button>
+          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}><img src="svg/back-Btn.svg" alt="back-Btn"/></button>
           <h3 className={styles.title}>Widget Script</h3>
           <div className={styles.forScroll}>
             <div className={styles.domainList}>
@@ -308,7 +315,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
       {showModal && (
         <div className={styles.modalContainer}>
-          <button className={styles.backBtn} onClick={() => setShowModal(false)}>⬅ Back</button>
+          <button className={styles.backBtn} onClick={() => setShowModal(false)}><img src="svg/back-Btn.svg" alt="back-Btn"/></button>
           <h3>Send Script to Developer</h3>
           <div className={styles.modalInfo}>
             <input
@@ -320,24 +327,28 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
               className={styles.inputField}
               disabled={loading}
             />
-            <div className={styles.modalActions}>
-              <button onClick={handleAddEmails} disabled={loading}>Add</button>
-            </div>
+           
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
-          <ul>
+          <div className={styles.forScroll}>
+<ul className={styles.listType}>
             {emails.map((e, idx) => (
               <li key={idx}>
-                {e} <button onClick={() => handleDelete(idx)} disabled={loading}>x</button>
+                {e} <button onClick={() => handleDelete(idx)} disabled={loading} className={styles.Cross}><span >X</span></button>
               </li>
             ))}
           </ul>
+          </div>
+          
           <div className={styles.modalActions}>
-            <button onClick={handleSend} disabled={loading}>
+            <button onClick={handleSend} disabled={loading} className={styles.sendEmail}>
               {loading ? <div className={styles.loaderDiv}><Loader size={16} />&nbsp;&nbsp;Sending</div> : "Send Emails"}
             </button>
+             
+              <button className={styles.adddBtn} onClick={handleAddEmails} disabled={loading}>Add</button>
+            </div>
           </div>
-        </div>
+     
       )}
 
       {showPopup && (
