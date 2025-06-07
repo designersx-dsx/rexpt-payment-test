@@ -390,3 +390,112 @@
 .react-calendar__navigation button:focus {
   outline: none;
 }
+.bookingsList {
+  margin-top: 20px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bookingsList h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.bookingsList ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.bookingsList li {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  color: #333;
+}
+
+.bookingsList li strong {
+  font-size: 18px;
+  color: #444;
+}
+
+.bookingsList li .bookingTime {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.bookingsList li .bookingTitle {
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.bookingCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bookingCard .time {
+  font-size: 16px;
+  color: #6a0dad;
+  margin-bottom: 5px;
+}
+
+.bookingCard .title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.bookingCard .status {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  color: white;
+}
+
+.bookingCard .status.accepted {
+  background-color: #6a0dad;
+}
+
+.bookingCard .status.pending {
+  background-color: #ffa000;
+}
+
+.bookingCard .status.cancelled {
+  background-color: #d32f2f;
+}
+
+.bookingDotContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px; 
+}
+
+/* Style for each individual dot */
+.bookingDot {
+  width: 8px; /* Adjust the size of the dots */
+  height: 8px;
+  border-radius: 50%;
+  background-color: #6A0DAD; /* Dot color */
+  display: inline-block;
+}
+
+/* Optional: Style for cases with 2 dots */
+.bookingDot.two {
+  background-color: #4B0082; /* Different color for 2 dots */
+}
+
+/* Optional: Style for cases with 3 dots */
+.bookingDot.three {
+  background-color: #8A2BE2; /* Different color for 3 dots */
+}
+
