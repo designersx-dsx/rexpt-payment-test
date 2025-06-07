@@ -8,6 +8,14 @@
 
 }
 
+.container h3 {
+  font-size: 30px;
+  color: #24252c;
+  border-bottom: 1px solid rgb(233, 233, 233);
+  padding-block: 10px;
+  margin-bottom: 10px;
+}
+
 h1 {
   text-align: center;
   font-weight: 700;
@@ -19,13 +27,14 @@ h1 {
 
 .noteText {
   font-size: 14px;
-  margin-bottom: 10px;
+  margin-block: 10px;
 }
 
 .domainList li {
   list-style: decimal;
   margin-left: 20px;
   font-size: 13px;
+  margin-bottom: 5px;
 }
 
 .forScroll {
@@ -70,13 +79,13 @@ h1 {
   position: absolute;
   top: 0px;
   right: 0px;
-  background-color: #dddddd;
+  background-color: #ede9fc;
   border: none;
-  color: #000000;
+  color: #6524EB;
   padding: 4px 16px;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 10px;
+  border-top-right-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   -webkit-user-select: none;
@@ -122,6 +131,7 @@ h1 {
   user-select: none;
   letter-spacing: 0.03em;
   width: 100%;
+  min-height: 50px;
 }
 
 .whatsappBtn {
@@ -134,8 +144,8 @@ h1 {
 }
 
 .emailBtn {
-  background: #EDE9FC;
-  color: #6524EB;
+  color: #EDE9FC;
+  background-color: #6524EB;
 }
 
 
@@ -325,6 +335,7 @@ h1 {
   padding: 4px 20px;
   height: 40px;
   border-radius: 5px;
+  width: 50%;
 }
 
 .addNewInputBtn {
@@ -334,7 +345,7 @@ h1 {
   padding: 4px 20px;
   height: 40px;
   border-radius: 5px;
-
+  width: 50%;
 }
 
 .InputMain {
@@ -351,10 +362,10 @@ h1 {
 
 .backBtn {
   border: none;
-  background-color: #000000;
-  padding: 3px 10px;
-  color: #ffffff;
-  border-radius: 4px;
+  background-color: #ffffff;
+  /* padding: 3px 10px; */
+  /* color: #ffffff; */
+  /* border-radius: 4px; */
 }
 
 .listType {
@@ -363,13 +374,15 @@ h1 {
   margin-block: 10px;
 }
 
-.listType li{
+.listType li {
   margin-block: 10px;
+  font-size: 13px;
 }
+
 .Cross {
   background-color: #000000;
   color: #ffff;
-  padding: 4px 10px;
+  padding: 3px 10px;
   border: none;
   border-radius: 4px;
 
@@ -383,16 +396,17 @@ h1 {
 
 .adddBtn {
   background-color: #6524EB;
-  color: white;
-  padding: 4px 10px;
-  border: 20px;
-  min-height: 40px;
-  width: 40px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50%;
+    color: white;
+    padding: 4px 10px;
+    border: 20px;
+    min-height: 50px;
+    width: 40px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    font-size: 16px;
 
 }
 
