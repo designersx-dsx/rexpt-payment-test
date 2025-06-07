@@ -26,7 +26,7 @@ import BusinessServices from "./Component/BusinessServices/BusinessServices";
 import TotalsCallsList from "./Component/TotalsCallsList/TotalsCallsList";
 import CallTransfer from "./Component/CallTransfer/CallTransfer";
 import CallDetails from "./Component/CallDetails/CallDetails";
-
+import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT"
 function App() {
   const token = localStorage.getItem("token");
   return (
@@ -79,6 +79,14 @@ function App() {
                 element={
                   <SecureRoute>
                     <AboutBusiness />
+                  </SecureRoute>
+                }
+              />
+                   <Route
+                path="/about-business-next"
+                element={
+                  <SecureRoute>
+                    <BusinessServicesNEXT />
                   </SecureRoute>
                 }
               />

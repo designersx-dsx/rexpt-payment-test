@@ -29,6 +29,25 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     { name: "Echo3", desc: "Robotic voice" },
   ];
 
+useEffect(() => {
+  if (localStorage.getItem("UpdationMode") === "ON" && listVoices.length > 0) {
+    const storedGender = localStorage.getItem("agentGender");
+    if (storedGender) {
+      const formattedGender =
+        storedGender.charAt(0).toUpperCase() + storedGender.slice(1).toLowerCase();
+      setSelectedGender(formattedGender);
+    }
+
+    const storedVoiceId = localStorage.getItem("agentVoice");
+    if (storedVoiceId) {
+      const matchingVoice = listVoices.find((v) => v.voice_id === storedVoiceId);
+      if (matchingVoice) {
+        setSelectedVoice(matchingVoice);
+      }
+    }
+  }
+}, [listVoices]);
+
   useEffect(() => {
     const fetchRetellVoiceList = async () => {
       try {
@@ -43,7 +62,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   }, []);
 
   useEffect(() => {
-    console.log(selectedVoice);
+    // console.log(selectedVoice);
     sessionStorage.setItem("agentVoice", selectedVoice?.voice_id);
     sessionStorage.setItem("agentVoiceAccent", selectedVoice?.accent);
     sessionStorage.setItem("VoiceAgentName", selectedVoice?.voice_name);
