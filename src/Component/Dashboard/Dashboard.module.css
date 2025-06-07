@@ -486,6 +486,9 @@
      min-width: 400px;
  margin-bottom: unset; 
 }
+.main .LangStyle:last-child {
+    margin-bottom: unset;
+}
 
 
 }

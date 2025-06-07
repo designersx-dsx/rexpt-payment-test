@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styles from "../AboutBusiness/AboutBusiness.module.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
-import { listAgents, validateWebsite } from "../../Store/apiStore";
+import { API_BASE_URL, listAgents, validateWebsite } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 
 // Convert File → base64 data URL
@@ -59,7 +59,9 @@ function AboutBusiness() {
 
   const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("")
-
+  const location = useLocation();
+  const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
+  const businessId = location.state?.businessId || sessionBusinessiD.businessId;
 
 
   const initAutocomplete = () => {
@@ -181,11 +183,12 @@ function AboutBusiness() {
     }
   }, [token]);
 
-  useEffect(() => {
 
-    const savedData = JSON.parse(
-      sessionStorage.getItem("aboutBusinessForm") || "{}"
-    );
+ useEffect(() => {
+  if(localStorage.getItem("UpdationMode")=="ON"){
+
+
+    const savedData = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
 
     if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
     if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
@@ -198,6 +201,12 @@ function AboutBusiness() {
       );
       setFiles(rebuiltFiles);
     }
+      }else{
+          const savedData = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+    if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+    if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
+    if (savedData.note) setNote(savedData.note);
+      }
   }, []);
 
   useEffect(() => {
@@ -355,6 +364,7 @@ function AboutBusiness() {
       return;
     }
 
+
     if (!isVerified) {
       setPopupType("failed");
       setPopupMessage("Business URL must be verified before proceeding.");
@@ -432,22 +442,26 @@ function AboutBusiness() {
     const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
 
     // Create the knowledge base name
+  // Create the knowledge base name
+  const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(shortBusinessName)}_${sanitize(packageValue)}_#${agentCount}`;
+  console.log(knowledgeBaseName,mergedUrls)
+  // Append the knowledge base name and URLs to form data
+  formData.append("knowledge_base_name", knowledgeBaseName);
+  formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
 
-    const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(
-      shortBusinessName
-    )}_${sanitize(packageValue)}_#${agentCount}`;
+  formData2.append("googleUrl", googleListing);
+  formData2.append("webUrl",businessUrl.trim());
+  formData2.append("aboutBusiness",aboutBusiness)
+  formData2.append("additionalInstruction",note)
+  formData2.append("knowledge_base_name",knowledgeBaseName)
 
 
-    // Append the knowledge base name and URLs to form data
-    formData.append("knowledge_base_name", knowledgeBaseName);
-    formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-
-    // Prepare business location and description
-    let knowledgeTexts = [];
-    let textContent = "";
-    let moreAbout = null;
-    if (businessLocation) {
-      textContent = `
+  // Prepare business location and description
+  let knowledgeTexts = [];
+  let textContent = "";
+  let moreAbout = null;
+  if (businessLocation) {
+    textContent = `
       Country: ${businessLocation.country || ""}
       State: ${businessLocation.state || ""}
       City: ${businessLocation.city || ""}
@@ -463,32 +477,59 @@ function AboutBusiness() {
 
     // Append the business description to form data
     formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
-
-    // Append any files to form data
+ // Append any files to form data
     files.forEach((file) => {
       formData.append("knowledge_base_files", file);
     });
 
-    // Submit the form data to the server
-    try {
-      setLoading(true);
-      const response = await axios.post(
-        "https://api.retellai.com/create-knowledge-base",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+  // Submit the form data to the server
+  try {
+    setLoading(true);
+    // const response = await axios.post(
+    //   "https://api.retellai.com/create-knowledge-base",
+    //   formData,
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   }
+    // );
+    // formData2.append("knowledge_base_id",response?.data?.knowledge_base_id||"")
+    formData2.append("knowledge_base_id",2)
+    console.log('businessId',businessId)
+    try{  
+      const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId}`,formData2,{
+      headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      console.log('response added KnowledeBase', response)
+    }catch(error){
+      console.log('error while saving knowledge bas in Database');
+    }
 
-      // Handle the successful response
-      console.log(response, "response");
-      sessionStorage.setItem(
-        "knowledgeBaseId",
-        response.data.knowledge_base_id
-      );
+    // Handle the successful response
+    // console.log(response, "response");
+    // sessionStorage.setItem("knowledgeBaseId", response.data.knowledge_base_id);
+    setPopupType("success");
+    setPopupMessage("Knowledge base created successfully!");
+    setShowPopup(true);
+
+    // setTimeout(() => navigate("/steps"), 1500);
+  } catch (error) {
+    console.error("Upload failed:", error.response?.data?.message || error.message);
+    setPopupType("failed");
+    setPopupMessage(error.response?.data?.message || "Internal Server Error");
+    setShowPopup(true);
+  } finally {
+    setLoading(false);
+  }
+};
+
+   
+
 
 
       setPopupType("success");
