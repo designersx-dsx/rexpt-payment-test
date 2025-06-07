@@ -1,55 +1,141 @@
+/* Backdrop */
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);  
   z-index: 50;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  transition: opacity 0.3s ease;
 }
 
+/* Modal Container */
 .modalContainer {
-  margin-top: 3rem;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 90%;
-  max-width: 400px;
+  max-width: 450px;
+  border-radius: 16px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
   animation: slideUp 0.3s ease-out forwards;
-  transform: translateY(100px);
   opacity: 0;
 }
 
+/* Animation for modal - Slide Up (show) */
 @keyframes slideUp {
+  from {
+    transform: translate(-50%, -40%);
+    opacity: 0;
+  }
   to {
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
     opacity: 1;
   }
 }
 
+/* Slide Down Animation (hide) */
 .slideDown {
   animation: slideDown 0.3s ease-in forwards;
 }
 
 @keyframes slideDown {
   from {
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
     opacity: 1;
   }
-
   to {
-    transform: translateY(100px);
+    transform: translate(-50%, -40%);
     opacity: 0;
   }
 }
 
+/* Modal Inner Content */
 .modal {
-  background: white;
+  background: #fff;
   padding: 1.5rem;
   border-radius: 20px;
   position: relative;
   z-index: 2;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Close Button */
+.closeBtn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: #BCBCBC;
+  cursor: pointer;
+  z-index: 3;
+  transition: color 0.3s ease;
+}
+
+.closeBtn:hover {
+  color: #FF5733;
+}
+
+/* Confirmation Modal Style */
+.confirmationModal {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+  margin-top: 1rem;
+}
+
+/* Confirmation Buttons */
+.confirmationButtons {
+  display: flex;
+  justify-content: space-around;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.confirmationButtons button {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Yes Button */
+.confirmationButtons button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.confirmationButtons button:first-child:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+/* No Button */
+.confirmationButtons button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.confirmationButtons button:last-child:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+}
+
+/* Notch */
 .notch {
   position: absolute;
   bottom: -20px;
@@ -57,25 +143,8 @@
   transform: translateX(-50%) rotate(45deg);
   width: 80px;
   height: 80px;
-  background: white;
+  background: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   z-index: 1;
   border-radius: 10px;
-}
-
-.closeBtn {
-  position: absolute;
-  top: 20px;
-  right: 25px;
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  font-weight: bold;
-  color: #BCBCBC;
-  cursor: pointer;
-  z-index: 3;
-}
-
-.closeBtn:hover {
-  color: #000;
 }

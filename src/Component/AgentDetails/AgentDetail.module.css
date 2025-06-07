@@ -257,8 +257,8 @@
 }
 
 .agentAvatarContainer img {
-  width: 100%;
-  height: 100%;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -289,6 +289,7 @@
   gap: 20px;
   align-items: center;
   margin-top: 10px;
+  width: 100%;
 }
 
 .agentCard {
@@ -502,6 +503,8 @@
   color: #24252c;
   font-size: 14px;
   margin-left: 20px;
+  display: block;
+  overflow: auto;
 }
 
 .address {
@@ -597,24 +600,28 @@
   background: #ffeba5;
   color: #000;
   border: 1px solid #ffe074;
+  cursor: pointer;
 }
 
 .stat.blue {
   background: #bff7f7;
   color: #000;
   border: 1px solid #9af3ef;
+  cursor: pointer;
 }
 
 .stat.Purple {
   background: #e2d2ff;
   border: 1px solid #cfbaff;
   color: #000;
+  cursor: pointer;
 }
 
 .stat.Red {
   background: #ffcbbe;
   color: #000;
   border: 1px solid #ffa58c;
+  cursor: pointer;
 }
 
 .Yellow .statDetail {
@@ -664,6 +671,7 @@
   position: relative;
   background-color: #fff;
   padding: 1px;
+  cursor: pointer;
 }
 
 .managementItem::before {
@@ -778,6 +786,25 @@
   font-size: 1.1rem;
   font-weight: 400;
   text-align: left !important;
+
+}
+.FullLine{
+  width: 100%;
+}
+
+@media screen and (min-width: 601px) {
+ .Forsticky{
+    width: 50%; 
+    position: unset;
+    left: 0;
+    right: 0;
+    transform: translate(50%,0%);
+
+}
+.container {
+  
+    width: 50%;
+}
 
 }
 

@@ -31,7 +31,7 @@ const avatars = {
 }
 const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const sliderRef = useRef(null);
-  const [agentName, setAgentName] = useState('');
+  const [agentName, setAgentName] = useState("");
   const [avatar, setAvatar] = useState(null);
   const [agentNameError, setAgentNameError] = useState('');
   const [scale, setScale] = useState(1);
@@ -39,14 +39,44 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
   const agentGender = sessionStorage.getItem('agentGender')
   const [selectedAvatar, setSelectedAvatar] = useState(null);
+  console.log('agentGender',agentName)
+useEffect(() => {
+  const updationMode = localStorage.getItem("UpdationMode") === "ON" ||"";
+  const storedAvatarImg = localStorage.getItem('avatar') ||"";
 
+  if (updationMode) {
+const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img === storedAvatarImg);
+
+    if (matchedAvatarIndex !== -1) {
+      const matchedAvatar = avatars[agentGender][matchedAvatarIndex];
+      setSelectedAvatar(matchedAvatar);
+      setAvatar(matchedAvatar?.img);
+      sliderRef.current?.slickGoTo(matchedAvatarIndex); 
+    }
+
+    const storedName = localStorage.getItem('agentName');
+    if (storedName) {
+      setAgentName(storedName);
+      sessionStorage.setItem('agentName', storedName);
+    }
+
+    const storedAgentName=localStorage.getItem("agentName")
+    if(storedAgentName){
+      setAgentName(storedName);
+      sessionStorage.setItem('agentName', storedName);
+      sessionStorage.setItem('VoiceAgentName',storedName);
+    }
+  }
+}, [agentGender,avatars]);
+
+  
   const handleAvatarChange = (avatar) => {
-    // agar current select yehi avatar hai, deselect kar do, warna select karo
-    setSelectedAvatar((prev) => (prev === avatar ? null : avatar));
-    setAvatar(avatar.img);
-    sessionStorage.setItem('avatar', avatar.img);
-    // console.log(avatar.img)
+    // setSelectedAvatar((prev) => (prev === avatar ? null : avatar));
+    setAvatar(avatar?.img);
+    setSelectedAvatar(avatar);
+    sessionStorage.setItem('avatar', avatar?.img);
   };
+  //  console.log('avatar',selectedAvatar)
   useEffect(() => {
     if (agentGender && avatars[agentGender]) {
       const genderAvatars = avatars[agentGender];
@@ -80,7 +110,13 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const agentnm = sessionStorage.getItem('VoiceAgentName');
   useEffect(() => {
     // console.log(agentnm)
-    if (agentnm) {
+
+    if(localStorage.getItem("UpdationMode") == "ON"){
+      console.log('inside if on')
+      setAgentName(localStorage.getItem('agentName'))
+      // setAgentName(sessionStorage.getItem('VoiceAgentName'))
+
+    }else {
       setAgentName(agentnm);
       sessionStorage.setItem('agentName', agentnm);
       // console.log(agentnm);
@@ -98,7 +134,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
         setAgentNameError("");
       }
 
-      if (!avatar) {
+      if (!selectedAvatar) {
         onValidationError?.({
           type: "failed",
           message: "Please select an avatar!"
@@ -130,9 +166,38 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+
+  
+
   return (
     <>
-      <div className={styles.labReq} >
+      
+      <div className={styles.sliderContainer}>
+        <h2 className={styles.heading}
+        
+        >Receptionist Avatar</h2>
+
+        <Slider ref={sliderRef} {...settings}>
+          {avatars[gender]?.map((avatar, index) => (
+            <div key={index} className={styles.slide} id="slideradio">
+              <label className={styles.avatarLabel}>
+                <input
+                  type="checkbox"
+                  name="avatar"
+                  value={index}
+                  // checked={selectedAvatar === avatar}
+                    checked={selectedAvatar?.img === avatar.img}
+                  required
+                  onChange={() => handleAvatarChange(avatar)}
+                  className={styles.radioButton}
+                />
+                <img
+                  src={avatar.img}
+                  alt={`Avatar ${index + 1}`}
+                  className={styles.avatarImage}
+                />
+              </label>
+       <div className={styles.labReq} >
         <div className={styles.agentInputBox} id='sliderstep'>
           <label className={styles.agentLabel}>Name Your Virtual Agent</label>
           <div className={styles.Dblock} >
@@ -152,36 +217,8 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
           </p>
         )}
       </div>
-      <div className={styles.sliderContainer}>
-        <h2 className={styles.heading}
-          style={{
-            transform: `scale(${scale})`,
-            transition: 'transform 0.3s ease-out',
-            transformOrigin: 'center center',
-            marginTop: '1rem',
-            fontSize: `${scale * 2.5}rem`,
-          }}
-        >Choose Avatar</h2>
-
-        <Slider ref={sliderRef} {...settings}>
-          {avatars[gender]?.map((avatar, index) => (
-            <div key={index} className={styles.slide} id="slideradio">
-              <label className={styles.avatarLabel}>
-                <input
-                  type="checkbox"
-                  name="avatar"
-                  value={index}
-                  checked={selectedAvatar === avatar}
-                  onChange={() => handleAvatarChange(avatar)}
-                  className={styles.radioButton}
-                />
-                <img
-                  src={avatar.img}
-                  alt={`Avatar ${index + 1}`}
-                  className={styles.avatarImage}
-                />
-              </label>
             </div>
+            
           ))}
         </Slider>
 

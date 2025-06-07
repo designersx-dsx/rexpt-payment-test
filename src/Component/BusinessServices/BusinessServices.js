@@ -6,7 +6,7 @@ import PopUp from '../Popup/Popup';
 const BusinessServices = () => {
     const navigate = useNavigate();
     const [businessType, setBusinessType] = useState("Restaurant");
-    const [selectedService, setSelectedService] = useState("");
+    const [selectedService, setSelectedService] = useState([]);
     const [businessName, setBusinessName] = useState("");
     const [businessSize, setBusinessSize] = useState("");
     const [email, setEmail] = useState("");
@@ -303,31 +303,37 @@ const BusinessServices = () => {
         setServiceError("");
         return true;
     };
+const handleContinue = () => {
+  const isEmailValid = validateEmail(email);
+  const isServiceValid = selectedService.length > 0;
 
-    const handleContinue = () => {
-        const isEmailValid = validateEmail(email);
-        const isServiceValid = validateService(selectedService);
+  if (isEmailValid && isServiceValid) {
+    // Save selected services in sessionStorage
+    sessionStorage.setItem("businessDetails", JSON.stringify({
+      businessType,
+      businessName,
+      businessSize,
+      selectedService, 
+      email,
+    }));
 
-        // if (!isEmailVerified) {
-        //     setPopupMessage("Please verify your email first.");
-        //     setPopupType("failed"); 
-        //     return;  
-        // }
+    // Save selected services as selectedServices
+    sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
 
-        if (isEmailValid && isServiceValid) {
-            sessionStorage.setItem(
-                "businessDetails",
-                JSON.stringify({
-                    businessType,
-                    businessName,
-                    businessSize,
-                    selectedService,
-                    email,
-                })
-            );
-            navigate("/business-locations");
-        }
-    };
+    navigate("/about-business-next");
+  } else {
+    const errorMessage = isEmailValid
+      ? "Please select at least one service."
+      : "Invalid email address or empty fields."; 
+
+    setPopupMessage(errorMessage);
+    setPopupType("failed");
+  }
+};
+
+
+
+
       const handleEmailVerify = async () => {
         try {
             const response = await validateEmailAPI(email);
@@ -352,28 +358,58 @@ const BusinessServices = () => {
         }
     };
 
-    useEffect(() => {
-        const savedDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
-        if (savedDetails) {
-            setBusinessType(savedDetails.businessType);
-            setBusinessName(savedDetails.businessName);
-            setBusinessSize(savedDetails.businessSize);
-            setSelectedService(savedDetails.selectedService || "");
-            setEmail(savedDetails.email || "");
-        }
-    }, []);
+useEffect(() => {
+  try {
+    const isUpdateMode = localStorage.getItem("UpdationMode") === "ON";
 
-    const handleServiceToggle = (service) => {
-    setSelectedService((prev) => {
-        if (prev.includes(service)) {
-            return prev.filter((s) => s !== service); // Deselect
-        } else {
-            return [...prev, service]; // Select
-        }
-    });
-    setServiceError(""); // Clear any existing error
-};
-// console.log(selectedService)
+    const rawBusinessDetails = sessionStorage.getItem("businessDetails");
+    const rawBusinessServices = sessionStorage.getItem("businesServices");
+
+    const businessDetails =
+      rawBusinessDetails && rawBusinessDetails !== "null" && rawBusinessDetails !== "undefined"
+        ? JSON.parse(rawBusinessDetails)
+        : null;
+
+    const businessServices =
+      rawBusinessServices && rawBusinessServices !== "null" && rawBusinessServices !== "undefined"
+        ? JSON.parse(rawBusinessServices)
+        : null;
+
+    if (!isUpdateMode) {
+      if (businessDetails) {
+        setBusinessType(businessDetails.businessType || "");
+        setBusinessName(businessDetails.businessName || "");
+        setBusinessSize(businessDetails.businessSize || "");
+        setSelectedService(businessDetails.selectedService || []);
+        setEmail(businessDetails.email || "");
+      }
+    } else {
+      if (businessDetails) {
+        setBusinessType(businessDetails.businessType || "");
+        setBusinessName(businessDetails.businessName || "");
+        setBusinessSize(businessDetails.businessSize || "");
+      }
+
+      if (businessServices) {
+        setSelectedService(businessServices.selectedService || []);
+        setEmail(businessServices.email || "");
+      }
+    }
+  } catch (error) {
+    console.error("Error loading session data:", error);
+  }
+}, []);
+
+
+  const handleServiceToggle = (service) => {
+    setSelectedService((prev) =>
+      prev.includes(service)
+        ? prev.filter((s) => s !== service)
+        : [...prev, service]
+    );
+    setServiceError("");
+  };
+
     
 
     return (
@@ -392,7 +428,7 @@ const BusinessServices = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-
+  <div className={styles.ListDiv}>
             <div className={styles.optionList}>
                 {filteredServices.length > 0 ? (
                     filteredServices.map((service, index) => (
@@ -410,18 +446,8 @@ const BusinessServices = () => {
                                     <p className={styles.subType}>{selectedBusiness.subtype}</p>
                                 </div>
                             </div>
+                            
                             <div>
-                                {/* <input
-                                    type="radio"
-                                    name="service"
-                                    value={service}
-                                    checked={selectedService === service}
-                                    onChange={(e) => {
-                                        setSelectedService(e.target.value);
-                                        setServiceError(""); // Clear error on change
-                                    }}
-                                    onBlur={(e) => validateService(e.target.value)}
-                                /> */}
                                 <input
                                     type="checkbox"
                                     name="service"
@@ -439,6 +465,8 @@ const BusinessServices = () => {
                     <p style={{ color: 'red', marginTop: '5px' }}>{serviceError}</p>
                 )}
             </div>
+
+</div>
 
             <div className={styles.labReq}>
                 <div className={styles.inputGroup}>

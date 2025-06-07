@@ -43,6 +43,7 @@ export const createAgent = async (data) => {
   });
   return res;
 };
+
 export const fetchDashboardDetails = async (userId) => {
   const res = await api.get(`${API_BASE_URL}/agent/getUserAgentsDetails/${userId}`, {
     headers: {
@@ -136,5 +137,17 @@ export const validateEmail = async (email) => {
     return { valid: false, reason: 'Error validating email' };  
   }
 };
+
+
+export const getUserAgentMergedDataForAgentUpdate = async (agentId,businessId) => {
+  try {
+    const res = await api.get(`/agent/getUserAgentMergedDataForAgentUpdate/${agentId}?businessId=${businessId}`);
+    return res.data; 
+  } catch (error) {
+    console.error("Error validating email:", error);
+    return { valid: false, reason: 'Error validating email' };  
+  }
+};
+
 
 export default api;

@@ -56,9 +56,13 @@
   color: #5a6572;
   width: 100%;
 }
-
-.optionList {
+.ListDiv {
   margin-top: 1rem;
+  border: 1px solid #E0E5F2;
+  padding: 10px;
+  border-radius: 10px;
+}
+.optionList {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -290,7 +294,23 @@
 .requiredField{
 color:red;
 }
+.headrPart {
+  margin-top: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
 
 
 
+@media screen and (min-width: 601px) {
+    .btnTheme{
+    cursor: pointer;
+   }
+   .container {
+    
+    max-width: 500px;
+   
+}
+}

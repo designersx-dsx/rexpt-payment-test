@@ -13,15 +13,22 @@ const roles = [
         description: 'Handle inbound sales queries',
         icon: 'svg/sales receptionist.svg',
     },
-    {
-        title: 'Technical Support Agent',
-        description: 'Product/Service Tech support',
-        icon: 'svg/technical-receptionist.svg',
-    },
+    // {
+    //     title: 'Technical Support Agent',
+    //     description: 'Product/Service Tech support',
+    //     icon: 'svg/technical-receptionist.svg',
+    // },
 ];
 const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoading }, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
+    useEffect(()=>{
+        const updationMode = localStorage.getItem("UpdationMode") === "ON";
+        const storedAgentRole = localStorage.getItem('agentRole');
 
+            if(updationMode){
+                setSelectedRole(storedAgentRole)
+            }
+    },[])
 
     useEffect(() => {
         sessionStorage.setItem('agentRole', selectedRole)

@@ -121,7 +121,7 @@ const BusinessLocation = () => {
     // else setAddress2Error('');
   };
 
-  const handleContinue = async () => {
+ const handleContinue = async () => {
     setStateSubmitted(true);
     setCitySubmitted(true);
     setAddress1Submitted(true);
@@ -151,25 +151,48 @@ const BusinessLocation = () => {
     );
 
     try {
-      setLoading(true)
+      setLoading(true);
+      
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
+      const customServices = JSON.parse(sessionStorage.getItem('selectedServices')) || []; 
+      let response;
 
-      const response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
-        userId,
-        businessName: businessDetails?.businessName,
-        businessSize: businessDetails.businessSize,
-        businessType: businessDetails.businessType,
-        address1: locationData.address1,
-        address2: locationData.address2,
-        city: locationData.city,
-        state: locationData.state,
-        country: locationData.country,
-        zip: locationData.zip,
-      });
+      if(localStorage.getItem('UpdationMode')!="ON"){
+        console.log('Inside create API');
+        response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
+          userId,
+          businessName: businessDetails?.businessName,
+          businessSize: businessDetails.businessSize,
+          businessType: businessDetails.businessType,
+          buisnessEmail: businessDetails?.email,
+          buisnessService: [...businessDetails?.selectedService, ...customServices],  
+          address1: locationData.address1,
+          address2: locationData.address2,
+          city: locationData.city,
+          state: locationData.state,
+          country: locationData.country,
+          zip: locationData.zip,
+        });
+      } else {
+        response = await axios.put(`${API_BASE_URL}/businessDetails/updateBusinessDetails/${userId}`, {
+          businessName: businessDetails?.businessName,
+          businessSize: businessDetails.businessSize,
+          businessType: businessDetails.businessType,
+          buisnessEmail: businessDetails?.email,
+          buisnessService: [...businessDetails?.selectedService, ...customServices], 
+          address1: locationData.address1,
+          address2: locationData.address2,
+          city: locationData.city,
+          state: locationData.state,
+          country: locationData.country,
+          zip: locationData.zip,
+        });
+      }
 
       const id = response.data.businessId;
-      console.log('response',response)
+      console.log('Response from the server:', response);
+      
       sessionStorage.setItem(
         'businessId',
         JSON.stringify({
@@ -190,9 +213,10 @@ const BusinessLocation = () => {
       setShowPopup(true);
       console.error(error);
     } finally {
-      setTimeout(() => setLoading(false), 1000)
+      setTimeout(() => setLoading(false), 1000);
     }
   };
+
 
   // console.log('countryList',countries  )
   // const countries = [
