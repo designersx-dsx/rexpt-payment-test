@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from './HeaderFilter.module.css'
 import OffCanvas from "../OffCanvas/OffCanvas";
 import SideFilter from "./SideFilter/SideFilter";
 import { useNavigate } from "react-router-dom";
-function HeaderFilter({ options, selectedSentiment, onFilter, isAgents }) {
-    console.log(isAgents)
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeChange, onAgentChange, selectedAgentId }) {
+    console.log(isAgents, "isAgents")
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(false);
+    const [showCalendar, setShowCalendar] = useState(false);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [open, setOpen] = useState(false);
+    function formatDateWithoutTimezone(date) {
+        if (!date) return null;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
     const [selected, setSelected] = useState(
         options.find((opt) => opt.label === selectedSentiment) || options[0]
     );
@@ -20,6 +33,20 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents }) {
     const handleBack = () => {
         navigate(-1)
     }
+
+    const handleChangeDate = (dates) => {
+        const [start, end] = dates;
+        setStartDate(start);
+        setEndDate(end);
+        console.log(dates)
+        if (start && end) {
+            onRangeChange({
+                startDate: formatDateWithoutTimezone(start),
+                endDate: formatDateWithoutTimezone(end),
+            });
+            setOpen(false);  // optionally close calendar after selection
+        }
+    };
     return (
         <div>
 
@@ -80,10 +107,12 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents }) {
                 <section className={styles.agentCard}>
                     <div className={styles.dateAgentSection}>
                         <div className={styles.PartFew}>
-                            <p>August 2025</p>
+                            <p>  {startDate
+                                ? startDate.toLocaleString("default", { month: "long", year: "numeric" })
+                                : "Select Date Range"}</p>
                             <div className={styles.dateRange}>
 
-                                <h6>23</h6>
+                                <h6>{startDate ? startDate.getDate() : "--"}</h6>
                                 <div>
                                     <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M0 6C0 5.63181 0.287817 5.33333 0.642857 5.33333L15.8051 5.33333L11.7597 1.13807C11.5087 0.877723 11.5087 0.455611 11.7597 0.195262C12.0108 -0.0650873 12.4178 -0.0650873 12.6689 0.195262L17.8117 5.52859C18.0628 5.78894 18.0628 6.21106 17.8117 6.4714L12.6689 11.8047C12.4178 12.0651 12.0108 12.0651 11.7597 11.8047C11.5087 11.5444 11.5087 11.1223 11.7597 10.8619L15.8051 6.66667L0.642857 6.66667C0.287817 6.66667 0 6.36819 0 6Z" fill="black" />
@@ -91,14 +120,25 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents }) {
                                 </div>
 
 
-                                <h6>25</h6>
+                                <h6>{endDate ? endDate.getDate() : "--"}</h6>
                             </div>
 
 
 
                             <div className={styles.DatePic}>
-                                <input type="date" />
-                                <svg width="26" height="31" viewBox="0 0 26 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                {open && (
+                                    <div style={{ position: "absolute", zIndex: 100, left: "50px", top: "40px" }}>
+                                        <DatePicker
+                                            selectsRange
+                                            startDate={startDate}
+                                            endDate={endDate}
+                                            onChange={handleChangeDate}
+                                            inline
+                                        />
+                                    </div>
+                                )}
+
+                                <svg onClick={() => setOpen(!open)} width="26" height="31" viewBox="0 0 26 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M25.9997 8.82162V6.1039C26.001 5.20803 25.6546 4.34916 25.0361 3.71493C24.4164 3.08207 23.5771 2.72729 22.7017 2.72866H20.7421V1.09586C20.7421 0.490382 20.2629 0 19.6713 0C19.0796 0 18.6005 0.490382 18.6005 1.09586V2.72866H14.0708V1.09586C14.0708 0.490382 13.5916 0 12.9999 0C12.4083 0 11.9291 0.490382 11.9291 1.09586V2.72866H7.39944V1.09586C7.39944 0.490382 6.92025 0 6.32861 0C5.73696 0 5.25778 0.490382 5.25778 1.09586V2.72866H3.29815C2.42275 2.7273 1.58349 3.08207 0.963748 3.71493C0.345341 4.34916 -0.00133459 5.20803 3.86125e-06 6.1039V8.82162H25.9997Z" fill="#5F33E1" />
                                     <path d="M3.86125e-06 11.0156V26.9604C-0.00133459 27.8563 0.345341 28.7152 0.963748 29.3494C1.58349 29.9822 2.42275 30.337 3.29815 30.3357H22.7015C23.5769 30.337 24.4162 29.9822 25.0359 29.3494C25.6543 28.7152 26.001 27.8563 25.9997 26.9604V11.0156H3.86125e-06ZM7.30561 27.3069H5.35404C4.76777 27.2987 4.29794 26.8096 4.29794 26.211C4.29794 25.6124 4.76777 25.1234 5.35404 25.1152H7.30695H7.30561C7.89054 25.1248 8.36037 25.6124 8.36037 26.211C8.36037 26.8096 7.89054 27.2973 7.30561 27.3069ZM7.30561 21.7715H5.35404C4.76777 21.7633 4.29794 21.2742 4.29794 20.6756C4.29794 20.077 4.76777 19.588 5.35404 19.5798H7.30695H7.30561C7.89054 19.588 8.3617 20.077 8.3617 20.6756C8.3617 21.2742 7.89188 21.7633 7.30561 21.7715ZM7.30561 16.2361H5.35404C4.76777 16.2279 4.29794 15.7389 4.29794 15.1403C4.29794 14.5417 4.76777 14.0526 5.35404 14.0444H7.30695H7.30561C7.89054 14.054 8.36037 14.5417 8.36037 15.1403C8.36037 15.7389 7.89054 16.2265 7.30561 16.2361ZM13.9434 27.3069H11.9905C11.4055 27.2987 10.9344 26.8096 10.9344 26.211C10.9344 25.6124 11.4055 25.1234 11.9905 25.1152H13.9434C14.5283 25.1248 14.9968 25.6124 14.9968 26.211C14.9968 26.8096 14.5283 27.2973 13.9434 27.3069ZM13.9434 21.7715H11.9905C11.4055 21.7633 10.9344 21.2742 10.9344 20.6756C10.9344 20.077 11.4055 19.588 11.9905 19.5798H13.9434C14.5283 19.588 14.9981 20.077 14.9981 20.6756C14.9981 21.2742 14.5283 21.7633 13.9434 21.7715ZM13.9434 16.2361H11.9905C11.4055 16.2279 10.9344 15.7389 10.9344 15.1403C10.9344 14.5417 11.4055 14.0526 11.9905 14.0444H13.9434C14.5283 14.054 14.9968 14.5417 14.9968 15.1403C14.9968 15.7389 14.5283 16.2265 13.9434 16.2361ZM20.6466 27.3069H18.6937C18.1074 27.2987 17.6376 26.8096 17.6376 26.211C17.6376 25.6124 18.1087 25.1234 18.6937 25.1152H20.6466H20.6452C21.2302 25.1248 21.7 25.6124 21.7 26.211C21.7 26.8096 21.2302 27.2973 20.6452 27.3069H20.6466ZM20.6466 21.7715H18.6937C18.1074 21.7633 17.6376 21.2742 17.6376 20.6756C17.6376 20.077 18.1087 19.588 18.6937 19.5798H20.6466H20.6452C21.2315 19.588 21.7013 20.077 21.7013 20.6756C21.7013 21.2742 21.2315 21.7633 20.6452 21.7715H20.6466ZM20.6466 16.2361H18.6937C18.1074 16.2279 17.6376 15.7389 17.6376 15.1403C17.6376 14.5417 18.1087 14.0526 18.6937 14.0444H20.6466H20.6452C21.2302 14.054 21.7 14.5417 21.7 15.1403C21.7 15.7389 21.2302 16.2265 20.6452 16.2361H20.6466Z" fill="#B5A0F3" />
                                 </svg>
@@ -110,15 +150,21 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents }) {
 
                         <hr></hr>
 
-
                         <div className={styles.DateSecT}>
                             <p>Agent</p>
 
                             <div className={styles.selectWrapper}>
-                                <select className={styles.agentSelect1} >
+                                <select className={styles.agentSelect1}
+                                    value={selectedAgentId}
+                                    onChange={(e) => onAgentChange(e.target.value)}
+
+                                >
                                     {isAgents?.map((agent, i) => (
-                                        <option key={agent.agentId} value={agent.agentId} >
-                                            {agent.agentName}
+
+                                        <option key={agent.agent_id
+                                        } value={agent.agent_id
+                                        } >
+                                            {agent.agentName.length > 12 ? agent.agentName.slice(0, 10) + '...' : agent.agentName}
                                         </option>
                                     ))}
 
