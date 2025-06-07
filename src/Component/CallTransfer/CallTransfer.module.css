@@ -144,6 +144,21 @@
 
 }
 
+@media screen and (min-width: 601px) {
+ .CallTransferMain1{
+    max-width: 500px;
+    align-items: center;
+    margin: auto;
+}
+.CallTransferMain {
+     max-width: 500px;
+    align-items: center;
+    margin: auto;
+}
+
+}
+
+
 @media (max-width:375px) {
     .headrPart h2 {
         font-size: 20px;

@@ -18,39 +18,35 @@ const callsPerPage = 6;
 
 export default function Home() {
     const [agentId, setAgentId] = useState(sessionStorage.getItem("agentId") || "");
-
     const [data, setData] = useState([]);
     const [selectedDateRange, setSelectedDateRange] = useState({ startDate: "", endDate: "" });
-    console.log(selectedDateRange, "selectedDateRange")
     const [selectedSentiment, setSelectedSentiment] = useState("All");
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(false)
     const fetchAgents = JSON.parse(sessionStorage.getItem("dashboard-session-storage"))
+    const [filters, setFilters] = useState({ leadType: [], channel: '' });
     useEffect(() => {
-        fetchCallHistory();
+        if (agentId) {
+            fetchCallHistory();
+        }
     }, [agentId]);
 
-const fetchCallHistory = async () => {
-    try {
-        setLoading(true);
-        if (agentId) {
-            const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`);
-            // Always update data, even if empty
-            setData(response.data.filteredCalls || []);
-        } else {
-            // If no agentId, clear data explicitly
+    const fetchCallHistory = async () => {
+        try {
+            setLoading(true);
+            if (agentId) {
+                const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`);
+                setData(response.data.filteredCalls || []);
+            } else {
+                setData([]);
+            }
+        } catch (error) {
+            console.error("Error fetching call history:", error);
             setData([]);
+        } finally {
+            setLoading(false);
         }
-    } catch (error) {
-        console.error("Error fetching call history:", error);
-        // On error, clear data to avoid showing stale data
-        setData([]);
-    } finally {
-        setLoading(false);
-    }
-};
-
-
+    };
     const convertMsToMinSec = (durationMs) => {
         const minutes = Math.floor(durationMs / 60000);
         const seconds = Math.floor((durationMs % 60000) / 1000);
@@ -63,42 +59,59 @@ const fetchCallHistory = async () => {
         const time = dateObj.toLocaleTimeString();
         return { date, time };
     };
-    const filteredData = selectedSentiment === "All"
-        ? data
-        : data.filter((call) => call.user_sentiment === selectedSentiment);
-    const filteredByDate = filteredData.filter(call => {
-        if (!selectedDateRange.startDate || !selectedDateRange.endDate) return true;
+    const filteredData = data.filter((call) => {
+        // Sentiment Filter (apply only if not "All")
+        const sentimentMatch =
+            selectedSentiment === "All" || call.user_sentiment === selectedSentiment;
 
-        // Convert selected date strings to start and end timestamps of those days
-        const startDate = new Date(selectedDateRange.startDate);
-        startDate.setHours(0, 0, 0, 0); // start of day
+        // Date Range Filter (apply only if both dates are selected)
+        const inDateRange = (() => {
+            if (!selectedDateRange.startDate || !selectedDateRange.endDate) return true;
 
-        const endDate = new Date(selectedDateRange.endDate);
-        endDate.setHours(23, 59, 59, 999); // end of day
+            const startDate = new Date(selectedDateRange.startDate);
+            startDate.setHours(0, 0, 0, 0);
 
-        // call.end_timestamp is in milliseconds
-        return call.end_timestamp >= startDate.getTime() && call.end_timestamp <= endDate.getTime();
+            const endDate = new Date(selectedDateRange.endDate);
+            endDate.setHours(23, 59, 59, 999);
+
+            return (
+                call.end_timestamp >= startDate.getTime() &&
+                call.end_timestamp <= endDate.getTime()
+            );
+        })();
+
+        // Lead Type Filter (apply only if leadType has selections)
+        const leadTypeMatch =
+            !filters ||
+            !Array.isArray(filters.leadType) ||
+            filters.leadType.length === 0 ||
+            filters.leadType.includes(call.custom_analysis_data.lead_type);
+
+
+
+        // Channel Filter (apply only if a channel is selected)
+        const channelMatch =
+            filters.channel === "" || call.call_type === filters.channel;
+
+        //  Return only if all conditions match
+        return sentimentMatch && inDateRange && leadTypeMatch && channelMatch;
     });
-    ;
-
     // Pagination
-    const totalPages = Math.ceil(filteredByDate.length / callsPerPage);
+    const totalPages = Math.ceil(filteredData.length / callsPerPage);
     const indexOfLastCall = currentPage * callsPerPage;
     const indexOfFirstCall = indexOfLastCall - callsPerPage;
-    const currentCalls = filteredByDate.slice(indexOfFirstCall, indexOfLastCall);
-    console.log(currentCalls)
+    const currentCalls = filteredData.slice(indexOfFirstCall, indexOfLastCall);
     // Handle page change
     const handlePageChange = (pageNum) => {
         if (pageNum < 1 || pageNum > totalPages) return;
         setCurrentPage(pageNum);
     };
     //Function Lock
-useEffect(() => {
-  if (agentId) {
-    console.log(agentId)
-    fetchCallHistory();
-  }
-}, [agentId]);
+    useEffect(() => {
+        if (agentId) {
+            fetchCallHistory();
+        }
+    }, [agentId]);
     return (
         <div className={styles.container}>
             <div className={styles.card}>
@@ -116,8 +129,14 @@ useEffect(() => {
                         setSelectedDateRange(range);
                         setCurrentPage(1);
                     }}
-                    selectedAgentId={agentId}          
-                    onAgentChange={(newAgentId) => setAgentId(newAgentId)} 
+                    selectedAgentId={agentId}
+                    onAgentChange={(newAgentId) => setAgentId(newAgentId)}
+                    isCallSummary={data}
+                    filters={filters}
+                    onFilterChange={(newFilters) => {
+                        setFilters(newFilters);
+                        setCurrentPage(1);
+                    }}
                 />
                 {/* Table */}
                 <div className={styles.tableContainer}>
@@ -170,30 +189,30 @@ useEffect(() => {
                 </div>
 
                 {/* Pagination */}
-           {filteredByDate.length > 0 && (
-  <div className={styles.pagination}>
-    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-      &lt;
-    </button>
+                {filteredData.length > 0 && (
+                    <div className={styles.pagination}>
+                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                            &lt;
+                        </button>
 
-    {[...Array(totalPages)].map((_, idx) => {
-      const pageNum = idx + 1;
-      return (
-        <button
-          key={pageNum}
-          onClick={() => handlePageChange(pageNum)}
-          className={currentPage === pageNum ? styles.pageButtonActive : ""}
-        >
-          {pageNum}
-        </button>
-      );
-    })}
+                        {[...Array(totalPages)].map((_, idx) => {
+                            const pageNum = idx + 1;
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => handlePageChange(pageNum)}
+                                    className={currentPage === pageNum ? styles.pageButtonActive : ""}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
 
-    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-      &gt;
-    </button>
-  </div>
-)}
+                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                            &gt;
+                        </button>
+                    </div>
+                )}
 
             </div>
         </div>

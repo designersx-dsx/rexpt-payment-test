@@ -279,7 +279,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
       {generateMode && !showModal && (
         <>
-          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}>Back</button>
+          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}><img src="svg/back-Btn.svg" alt="back-Btn"/></button>
           <h3 className={styles.title}>Widget Script</h3>
           <div className={styles.forScroll}>
             <div className={styles.domainList}>
@@ -315,7 +315,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
       {showModal && (
         <div className={styles.modalContainer}>
-          <button className={styles.backBtn} onClick={() => setShowModal(false)}> Back</button>
+          <button className={styles.backBtn} onClick={() => setShowModal(false)}><img src="svg/back-Btn.svg" alt="back-Btn"/></button>
           <h3>Send Script to Developer</h3>
           <div className={styles.modalInfo}>
             <input
