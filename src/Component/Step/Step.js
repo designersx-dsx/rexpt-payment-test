@@ -731,8 +731,6 @@ End Call: If the caller is satisfied, invoke end_call function.
         },
     ];
     const handleNext = () => {
-
-
         if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
             return;
         }
@@ -862,7 +860,7 @@ End Call: If the caller is satisfied, invoke end_call function.
 
 
                     // ],
-                    // starting_state: "information_collection",
+                    starting_state: "information_collection",
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
