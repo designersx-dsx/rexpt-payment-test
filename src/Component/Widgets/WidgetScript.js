@@ -1,296 +1,35 @@
-
-// import React, { useRef, useState, useEffect } from "react";
-// import styles from "./Widgets.module.css";
-// import { SendScriptToDeveloper, updateAgentWidgetDomain } from "../../Store/apiStore";
-// import PopUp from "../Popup/Popup";
-// const WidgetScript = ({ isAgentDetails, refreshFuntion }) => {
-//   console.log(isAgentDetails)
-//   const scriptRef = useRef(null);
-//   const [copied, setCopied] = useState(false);
-//   const [showModal, setShowModal] = useState(false);
-//   const [email, setEmail] = useState("");
-//   const [showPopup, setShowPopup] = useState(false);
-//   const [popupType, setPopupType] = useState(null);
-//   const [popupMessage, setPopupMessage] = useState("");
-//   const [domains, setDomains] = useState("");
-//   const [currentDomain, setCurrentDomain] = useState("");
-//   const [scriptVisible, setScriptVisible] = useState(false);
-//   const [domainError, setDomainError] = useState("");
-//   const [existingDomain, setExistingDomain] = useState([])
-//   const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
-//   useEffect(() => {
-//     setScriptVisible(false);
-//   }, []);
-//   const scriptText = `
-// <script id="rex-widget-script" src="https://fascinating-lollipop-32d85d.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
-// `;
-//   const handleAddDomain = async () => {
-//     const trimmed = currentDomain.trim();
-//     // if (!trimmed) {
-//     //   setDomainError("Domain cannot be empty");
-//     //   return;
-//     // }
-
-//     // if (!domainRegex.test(trimmed)) {
-//     //   setDomainError("Invalid domain format");
-//     //   return;
-//     // }
-//     // Add to domains array (avoid duplicates)
-//     const url = (trimmed)
-//     // Update state first
-//     setDomains(url);
-//     setCurrentDomain("");
-//     setDomainError("");
-
-//     try {
-//       // Send updated array to backend
-//       await updateAgentWidgetDomain(isAgentDetails.agent_id, url);
-//       refreshFuntion()
-//     } catch (error) {
-//       console.error("Failed to update domain:", error);
-//       setDomainError("Failed to update domain");
-//     }
-//   };
-//   const handleGenerateScript = () => {
-//     if (domains.length === 0) {
-//       alert("Please add at least one domain.");
-//       return;
-//     }
-//     setScriptVisible(true);
-//   };
-
-//   const handleCopy = () => {
-//     navigator.clipboard.writeText(scriptText);
-//     setCopied(true);
-//     setTimeout(() => setCopied(false), 2000);
-//   };
-
-//   const handleSend = async () => {
-//     const payload = {
-//       email,
-//       script: scriptText,
-//       domains,
-//     };
-//     try {
-//       const response = await SendScriptToDeveloper(payload);
-//       setShowPopup(true);
-//       setPopupType("success");
-//       setPopupMessage("Script sent successfully");
-//     } catch (error) {
-//       console.log(error)
-//       alert("A Server Error occurred while sending script to developer");
-//     }
-//     setShowModal(false);
-//     setEmail("");
-//   };
-//   useEffect(() => {
-//     if (typeof isAgentDetails.agentWidgetDomain === "string") {
-//       try {
-//         const parsed = JSON.parse(isAgentDetails.agentWidgetDomain);
-//         setExistingDomain(parsed);
-//       } catch (error) {
-//         console.error("Failed to parse agentWidgetDomain", error);
-//         setExistingDomain([]);
-//       }
-//     } else if (Array.isArray(isAgentDetails.agentWidgetDomain)) {
-//       setExistingDomain(isAgentDetails.agentWidgetDomain);
-//     } else {
-//       setExistingDomain([]);
-//     }
-//   }, [isAgentDetails])
-//   return (
-//     <div className={styles.container}>
-//       {!scriptVisible && (
-//         <div className={styles.domainModal}>
-//           {existingDomain ? "" : <div>
-//             <h2>Already Domain Exist </h2>
-//             <ul className={styles.domainList}>
-//               {existingDomain.map((d, i) => (
-//                 <li key={`existing-${i}`}>{d.domain}</li>
-//               ))}
-//             </ul>
-//           </div>}
-//           {existingDomain ? "" : <div>
-//             <h3> Enter your Website URL</h3>
-//             <p className={styles.noteText}>
-//               Note: The widget will only work on the domains you add.
-//             </p>
-//             <div className={styles.domainInputRow}>
-//               <input
-//                 type="text"
-//                 placeholder="Enter domain (e.g., example.com)"
-//                 value={currentDomain}
-//                 onChange={(e) => {
-//                   setCurrentDomain(e.target.value);
-//                   setDomainError(""); // Clear error while typing
-//                 }}
-//                 className={styles.inputField}
-//               />
-//               {domainError && <p style={{ color: "red" }} className={styles.errorText}>{domainError}</p>}
-
-//               <button className={styles.sendBtn} onClick={handleAddDomain}>
-//                 Add
-//               </button>
-//             </div>
-
-//             <ul className={styles.domainList}>
-//               {domains && <li>{domains}</li>}
-//             </ul>
-
-//             <div className={styles.modalActions}>
-//               <button onClick={handleGenerateScript} className={styles.sendBtn}>
-//                 Generate Code
-//               </button>
-//             </div>
-//           </div>}
-//         </div>
-
-//       )}
-
-//       <br />
-//       {/* Script Section */}
-//       { existingDomain.length<0? (
-//         <>
-//          <h3> Enter your Website URL</h3>
-//             <p className={styles.noteText}>
-//               Note: The widget will only work on the domains you add.
-//             </p>
-//             <div className={styles.domainInputRow}>
-//               <input
-//                 type="text"
-//                 placeholder="Enter domain (e.g., example.com)"
-//                 value={currentDomain}
-//                 onChange={(e) => {
-//                   setCurrentDomain(e.target.value);
-//                   setDomainError(""); // Clear error while typing
-//                 }}
-//                 className={styles.inputField}
-//               />
-//               {domainError && <p style={{ color: "red" }} className={styles.errorText}>{domainError}</p>}
-
-//               <button className={styles.sendBtn} onClick={handleAddDomain}>
-//                 Add
-//               </button>
-//             </div>
-
-//           {/* <div>
-//             <div className={styles.scriptBox}>
-//               <button className={styles.copyButton} onClick={handleCopy}>
-//                 {copied ? "Copied!" : "Copy"}
-//               </button>
-//               <br />
-//               <pre ref={scriptRef} className={styles.scriptText}>
-//                 {scriptText}
-//               </pre>
-//             </div>
-
-//             <div className={styles.actionButtons}>
-//               <button className={styles.emailBtn} onClick={() => {
-//                 setShowModal(true);
-//                 setScriptVisible(false);
-
-//               }}>
-//                 Send to Developer
-//               </button>
-//             </div>
-//           </div> */}
-//         </>
-//       ) : <div>
-//         <div className={styles.scriptBox}>
-//           <button className={styles.copyButton} onClick={handleCopy}>
-//             {copied ? "Copied!" : "Copy"}
-//           </button>
-//           <br />
-//           <pre ref={scriptRef} className={styles.scriptText}>
-//             {scriptText}
-//           </pre>
-//         </div>
-
-//         <div className={styles.actionButtons}>
-//           <button className={styles.emailBtn} onClick={() => {
-//             setShowModal(true);
-//             setScriptVisible(false);
-
-//           }}>
-//             Send to Developer
-//           </button>
-//         </div>
-//       </div>}
-//       <br />
-//       {/* Email Modal */}
-//       {showModal && (
-//         <div className={styles.modalContainer}>
-//           <h3>Send to Developer</h3>
-//           <input
-//             type="email"
-//             placeholder="Enter developer's email"
-//             value={email}
-//             onChange={(e) => setEmail(e.target.value)}
-//             className={styles.inputField}
-//           />
-//           <div className={styles.modalActions}>
-//             <button onClick={handleSend} className={styles.sendBtn}>
-//               Send
-//             </button>
-//             <button onClick={() => setShowModal(false)} className={styles.cancelBtn}>
-//               Cancel
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Popup */}
-//       {showPopup && (
-//         <PopUp
-//           type={popupType}
-//           onClose={() => setShowPopup(false)}
-//           message={popupMessage}
-//         />
-//       )}
-//     </div>
-//   );
-// };
-
-// export default WidgetScript;
-
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Widgets.module.css";
-import { API_BASE_URL, SendScriptToDeveloper, updateAgentWidgetDomain } from "../../Store/apiStore";
+import { API_BASE_URL, updateAgentWidgetDomain, validateWebsite } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
-
+import Loader from "../Loader/Loader";
 const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
-  const scriptRef = useRef(null);
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [email, setEmail] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupType, setPopupType] = useState(null);
-  const [popupMessage, setPopupMessage] = useState("");
-  const [currentDomain, setCurrentDomain] = useState("");
-  const [domainError, setDomainError] = useState("");
-  const [existingDomain, setExistingDomain] = useState([]);
-  const [showDomainInput, setShowDomainInput] = useState(false); // for Add More
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState([]);
   const [error, setError] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState(null);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [existingDomain, setExistingDomain] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [generateMode, setGenerateMode] = useState(false);
 
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email.trim());
-  };
-  const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+  // Each domain input keeps value, isVerified, loading, error, debounceTimer
+  const [domainInputs, setDomainInputs] = useState([
+    { value: "", isVerified: false, loading: false, error: "", debounceTimer: null },
+  ]);
 
-  const scriptText = `
+  const agentId = isAgentDetails.agent_id;
+  const scriptText = `<script id="rex-widget-script" src="https://dazzling-raindrop-43edfa.netlify.app/index.js?agentId=${agentId}"></script>`;
 
-<script id="rex-widget-script" src="https://dazzling-raindrop-43edfa.netlify.app/index.js?agentId=${isAgentDetails.agent_id}"></script>
-
-`;
-
+  // Load existing domains on mount or update
   useEffect(() => {
     if (typeof isAgentDetails.agentWidgetDomain === "string") {
       try {
         const parsed = JSON.parse(isAgentDetails.agentWidgetDomain);
-        setExistingDomain(parsed);
+        setExistingDomain(Array.isArray(parsed) ? parsed : []);
       } catch {
         setExistingDomain([]);
       }
@@ -298,53 +37,138 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
       setExistingDomain(isAgentDetails.agentWidgetDomain);
     }
   }, [isAgentDetails]);
-  const handleAddDomain = async () => {
-    const trimmed = currentDomain.trim();
-    if (!trimmed) {
-      setDomainError("Domain cannot be empty");
-      return;
-    }
 
-    if (!domainRegex.test(trimmed)) {
-      setDomainError("Invalid domain format");
-      return;
-    }
+  // Update single domain input by index
+  const updateDomainInput = (index, newProps) => {
+    setDomainInputs((prev) => {
+      const newInputs = [...prev];
+      newInputs[index] = { ...newInputs[index], ...newProps };
+      return newInputs;
+    });
+  };
 
-    const updatedDomains = [...existingDomain, { domain: trimmed }];
+  // Handle input changes and trigger validation debounce (no API add here)
+  const handleDomainChange = (index, value) => {
+    updateDomainInput(index, { value, isVerified: false, error: "", loading: true });
+  };
+
+  // Add new empty domain input
+  const handleAddDomainInput = () => {
+    setDomainInputs((prev) => [...prev, { value: "", isVerified: false, loading: false, error: "", debounceTimer: null }]);
+  };
+
+  // Remove domain input by index and clear debounce timer if any
+  const handleRemoveDomainInput = (index) => {
+    setDomainInputs((prev) => {
+      const newInputs = [...prev];
+      if (newInputs[index].debounceTimer) clearTimeout(newInputs[index].debounceTimer);
+      newInputs.splice(index, 1);
+      return newInputs;
+    });
+  };
+
+  // Validate domains only - debounce + validate URL, mark verified or error
+  useEffect(() => {
+    domainInputs.forEach((input, index) => {
+      if (input.debounceTimer) clearTimeout(input.debounceTimer);
+
+      if (!input.value.trim()) {
+        updateDomainInput(index, { isVerified: false, error: "", loading: false, debounceTimer: null });
+        return;
+      }
+
+      updateDomainInput(index, { loading: true });
+
+      const timer = setTimeout(async () => {
+        try {
+          const res = await validateWebsite(input.value.trim());
+          if (res.valid) {
+            updateDomainInput(index, { isVerified: true, error: "", loading: false, debounceTimer: null });
+          } else {
+            updateDomainInput(index, { isVerified: false, error: "Invalid URL", loading: false, debounceTimer: null });
+          }
+        } catch {
+          updateDomainInput(index, { isVerified: false, error: "Validation failed", loading: false, debounceTimer: null });
+        }
+      }, 600);
+
+      updateDomainInput(index, { debounceTimer: timer });
+    });
+
+    return () => {
+      domainInputs.forEach((input) => {
+        if (input.debounceTimer) clearTimeout(input.debounceTimer);
+      });
+    };
+  }, [domainInputs.map((input) => input.value).join()]);
+
+  // On clicking Generate Code, add all verified domains via API, update existingDomain and show code
+  const handleGenerateCode = async () => {
+    setLoading(true);
     try {
-      await updateAgentWidgetDomain(isAgentDetails.agent_id, trimmed);
-      setExistingDomain(updatedDomains);
-      setCurrentDomain("");
-      setDomainError("");
-      setShowDomainInput(false); // hide input after successful add
+      // Filter all verified, non-empty domains
+      const verifiedDomains = domainInputs
+        .filter((input) => input.isVerified && input.value.trim() !== "")
+        .map((input) => input.value.trim());
+      // Filter out already existing domains
+      const domainsToAdd = verifiedDomains.filter(
+        (d) => !existingDomain.find((ex) => ex.domain === d)
+      );
+       console.log(domainsToAdd,"domainsToAdd")
+      // Add each domain by API call
+      for (const domain of domainsToAdd) {
+        console.log("HELLO")
+        await updateAgentWidgetDomain(agentId, domain);
+      }
+
+      // Update existingDomain state
+      setExistingDomain((prev) => {
+        const combined = [...prev];
+        domainsToAdd.forEach((d) => {
+          if (!combined.find((ex) => ex.domain === d)) combined.push({ domain: d });
+        });
+        return combined;
+      });
+
+      // Clear inputs after adding
+      setDomainInputs([{ value: "", isVerified: false, loading: false, error: "", debounceTimer: null }]);
+
+      // Switch to generate mode
+      setGenerateMode(true);
+
+      // Refresh parent
       refreshFuntion();
-    } catch (error) {
-      setDomainError("Failed to update domain");
+    } catch (err) {
+      alertPopUp("true", "Failed to add domains!", "fail");
+    } finally {
+      setLoading(false);
     }
   };
-  const handleCopy = () => {
-    navigator.clipboard.writeText(scriptText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+
+  // Email handling code (unchanged)
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
   const handleAddEmails = () => {
-    const rawEmails = emailInput.split(",").map(e => e.trim()).filter(e => e);
+    const rawEmails = emailInput.split(",").map((e) => e.trim()).filter(Boolean);
     const validEmails = rawEmails.filter(validateEmail);
-    const invalidEmails = rawEmails.filter(e => !validateEmail(e));
+    const invalidEmails = rawEmails.filter((e) => !validateEmail(e));
 
     if (invalidEmails.length > 0) {
       setError(`Invalid email(s): ${invalidEmails.join(", ")}`);
       return;
     }
 
-    setEmails([...emails, ...validEmails]);
+    setEmails((prev) => [...prev, ...validEmails]);
     setEmailInput("");
     setError("");
   };
+
   const handleDelete = (index) => {
-    const updated = [...emails];
-    updated.splice(index, 1);
-    setEmails(updated);
+    setEmails((prev) => {
+      const updated = [...prev];
+      updated.splice(index, 1);
+      return updated;
+    });
   };
 
   const handleSend = async () => {
@@ -354,131 +178,170 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
     }
 
     try {
+      setLoading(true);
       const res = await fetch(`${API_BASE_URL}/agent/sendScriptToEmail`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: emails, script: scriptText }),
       });
-
-      const result = await res.json();
-      alertPopUp("true", "Script sent successfully!", "success")
-
-      // alert(result.msg || "Script sent!");
+      await res.json();
+      alertPopUp("true", "Script sent successfully!", "success");
       setEmails([]);
+      setShowModal(false);
     } catch (err) {
-      // alert("Failed to send emails");
-      alertPopUp("true", "Script sent successfully!", "fail")
-      console.error(err);
+      alertPopUp("true", "Failed to send emails!", "fail");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const renderDomainInput = () => (
-    <div>
-      <h3>Enter your Website URL</h3>
-      <p className={styles.noteText}>Note: The widget will only work on the domains you add.</p>
-      <div className={styles.addBtn} onClick={handleAddDomain}>+</div>
-      <div className={styles.domainInputRow}>
-        <input
-          type="text"
-          placeholder="e.g., https://example.com"
-          value={currentDomain}
-          onChange={(e) => {
-            setCurrentDomain(e.target.value);
-            setDomainError("");
-          }}
-          className={styles.inputField}
-        />
+  // Prefill domain input with last existing domain if inputs empty
+  useEffect(() => {
+    if (existingDomain.length > 0) {
+      const lastDomain = existingDomain[existingDomain.length - 1].domain;
+      if (domainInputs.length === 1 && domainInputs[0].value.trim() === "") {
+        setDomainInputs([
+          { value: lastDomain, isVerified: false, loading: true, error: "", debounceTimer: null },
+        ]);
+      }
+    }
+  }, [existingDomain]);
 
-      </div>
-      {domainError && <p style={{ color: "red" }}>{domainError}</p>}
+  // Render domain inputs
+  const renderDomainInputs = () => (
+    <div className={styles.container}>
+      <h3>Enter your Website URL(s)</h3>
+      <p className={styles.noteText}>Note: The widget will only work on the domains you add.</p>
+
+      {domainInputs.map((input, index) => (
+        <div key={index} className={styles.domainInputRow}>
+          <input
+            type="text"
+            placeholder="e.g., https://example.com"
+            value={input.value}
+            onChange={(e) => handleDomainChange(index, e.target.value)}
+            className={styles.inputField}
+            disabled={loading}
+          />
+          {input.loading ? (
+            <span className={styles.loader}><Loader size={16} /></span>
+          ) : input.isVerified ? (
+            <span className={styles.verified} title="Verified">✅</span>
+          ) : input.value ? (
+            <span className={styles.notVerified} title="Not Verified">❌</span>
+          ) : null}
+
+          {domainInputs.length > 1 && (
+            <button
+              onClick={() => handleRemoveDomainInput(index)}
+              className={styles.removeBtn}
+              title="Remove this domain input"
+              disabled={loading}
+            >
+              ❌
+            </button>
+          )}
+
+          {input.error && <p style={{ color: "red", marginTop: 4 }}>{input.error}</p>}
+        </div>
+      ))}
+
+      <button
+        className={styles.addNewInputBtn}
+        onClick={handleAddDomainInput}
+        disabled={loading}
+      >
+        + Add Another Domain
+      </button>
+
+      {(existingDomain.length > 0 || domainInputs.some(input => input.isVerified)) && (
+        <button
+          className={styles.generateCodeBtn}
+          onClick={handleGenerateCode}
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Generate Code"}
+        </button>
+      )}
     </div>
   );
-  const handleEmailChange = (e) => {
-    setEmailInput(e.target.value);
-  };
+
   return (
     <div className={styles.container}>
+      {!generateMode && renderDomainInputs()}
 
-      {existingDomain.length === 0 && renderDomainInput()}
-
-      {existingDomain.length > 0 && (
+      {generateMode && !showModal && (
         <>
+          <button className={styles.backBtn} onClick={() => setGenerateMode(false)}>⬅ Back</button>
           <h3 className={styles.title}>Widget Script</h3>
-            <div className={styles.forScroll}>
-          <div className={styles.domainList}>
-            <strong>Allowed Domains:</strong>
-            <ul>
-              {existingDomain.map((d, i) => (
-                <li key={`d-${i}`}>{d.domain}</li>
-              ))}
-            </ul>
-          </div>
+          <div className={styles.forScroll}>
+            <div className={styles.domainList}>
+              <strong>Allowed Domains:</strong>
+              <ul>
+                {existingDomain.map((d, i) => (
+                  <li key={`d-${i}`}>{d.domain}</li>
+                ))}
+              </ul>
+            </div>
 
-          {showDomainInput && renderDomainInput()}
-        
             <div className={styles.scriptBox}>
-              <button className={styles.copyButton} onClick={handleCopy}>
+              <button
+                className={styles.copyButton}
+                onClick={() => {
+                  navigator.clipboard.writeText(scriptText);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+              >
                 {copied ? "Copied!" : "Copy"}
               </button>
               <br />
-              <pre ref={scriptRef} className={styles.scriptText}>{scriptText}</pre>
+              <pre className={styles.scriptText}>{scriptText}</pre>
             </div>
           </div>
 
-
           <div className={styles.actionButtons}>
-            <button className={styles.emailBtn} onClick={() => setShowModal(true)}>
-              Send to Developer
-            </button>
-            <button className={styles.sendBtn} onClick={() => setShowDomainInput(!showDomainInput)}>
-              {showDomainInput ? "Cancel" : "Add More Domain"}
-            </button>
+            <button className={styles.emailBtn} onClick={() => setShowModal(true)}>Send to Developer</button>
           </div>
         </>
       )}
 
-      {/* Email Modal */}
       {showModal && (
         <div className={styles.modalContainer}>
+          <button className={styles.backBtn} onClick={() => setShowModal(false)}>⬅ Back</button>
           <h3>Send Script to Developer</h3>
           <div className={styles.modalInfo}>
             <input
               type="text"
               placeholder="Enter emails separated by comma"
               value={emailInput}
-              onChange={handleEmailChange}
+              onChange={(e) => setEmailInput(e.target.value)}
               onBlur={handleAddEmails}
               className={styles.inputField}
+              disabled={loading}
             />
             <div className={styles.modalActions}>
-              <button onClick={handleAddEmails}>Add</button>
+              <button onClick={handleAddEmails} disabled={loading}>Add</button>
             </div>
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
-
-
-
           <ul>
             {emails.map((e, idx) => (
               <li key={idx}>
-                {e}
-                <button onClick={() => handleDelete(idx)}>x</button>
+                {e} <button onClick={() => handleDelete(idx)} disabled={loading}>x</button>
               </li>
             ))}
           </ul>
           <div className={styles.modalActions}>
-            <button onClick={handleSend}>Send Emails</button>
+            <button onClick={handleSend} disabled={loading}>
+              {loading ? <div className={styles.loaderDiv}><Loader size={16} />&nbsp;&nbsp;Sending</div> : "Send Emails"}
+            </button>
           </div>
         </div>
       )}
 
-      {/* Popup message */}
       {showPopup && (
-        <PopUp
-          type={popupType}
-          message={popupMessage}
-          onClose={() => setShowPopup(false)}
-        />
+        <PopUp type={popupType} message={popupMessage} onClose={() => setShowPopup(false)} />
       )}
     </div>
   );

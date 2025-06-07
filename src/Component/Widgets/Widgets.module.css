@@ -216,7 +216,20 @@ h1 {
   float: right;
 
 }
+.sendEmailBtn{
+background-color: #6524EB;
+  font-size: 20px;
+  font-weight: 800;
+ 
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  width: 100%;
+  height: 30px;
+  align-items: center;
+  border: none;
 
+}
 .sendBtn {
   background-color: #6524EB;
   padding: 10px;
@@ -254,3 +267,4 @@ h1 {
 .modalInfo {
   display: flex;
 }
+.loaderDiv{display: flex;}

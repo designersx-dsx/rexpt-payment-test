@@ -56,6 +56,8 @@ const Step = () => {
     const BusinessLocation =
         JSON.parse(sessionStorage.getItem("businessLocation")) ||
         "Your Business Services";
+    const languageSelect = (sessionStorage?.getItem("agentLanguage"))
+
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
@@ -104,6 +106,7 @@ You will:
 - Collect accurate details from the caller.
 - Summarize and confirm details before taking the final action.
 - Forward calls as and if necessary.
+- Speak in ${languageSelect} languge when you start. You can shift to American English language, if user ask you to. 
 
 
 ### Persona of the Receptionist
@@ -879,7 +882,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                         voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                        language: "multi",
                         post_call_analysis_model: "gpt-4o-mini",
                         responsiveness: 1,
                         enable_backchannel: true,
