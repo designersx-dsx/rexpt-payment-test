@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from '../Plan/Plan.module.css';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Loader/Loader';
-
+import Modal from '../Modal2/Modal2'
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = () => {
@@ -12,7 +12,13 @@ const Plan = () => {
     const [selected, setSelected] = useState(null);
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
-
+    const [show  , setShow] = useState(false)
+    const [close  , setClose] = useState(false)
+    
+    const handleCLose = ()=>{
+        setClose(true)
+        setShow(false)
+    }
     useEffect(() => {
         fetch(`${API_BASE}/products`)
             .then(res => res.json())
@@ -36,13 +42,34 @@ const Plan = () => {
     const toggleAccordion = (id) => {
         setOpen(open === id ? null : id);
     };
-
+const handleNaviagte =()=>{
+    navigate('/signup')
+}
     if (loading) return <p className={styles.status}><Loader/></p>;
     if (error) return <p className={styles.statusError}>{error}</p>;
 
     return (
       <>
         <div className={styles.hero_sec}>
+            {show?  <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
+                Comming Soon
+                
+                </h2>
+                
+                <p className={styles.apologyHeadText}apologyHeadText>
+Sorry for the delay! Our plans will be starting soon, and we’ll notify you as soon as they’re live. For now, you can create a free account and start using the basic features. Thanks for your patience!
+                </p>
+
+                <div className={styles.zz}>
+
+                <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button>
+
+                </div>
+
+                
+                </Modal>
+                
+                : null}
           <div className={styles.container}>
 
             {/* Header */}
@@ -131,10 +158,7 @@ const Plan = () => {
                                 <div
                                     key={price.id}
                                     className={styles.priceOption}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        navigate('/checkout', { state: { priceId: price.id } });
-                                    }}
+                                  
                                 >
                                     {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
                                 </div>
@@ -148,21 +172,7 @@ const Plan = () => {
             <div
                 className={styles.btnTheme}
                 onClick={() => {
-                    if (selected) {
-                        if (selected === 'free-trial') {
-                            navigate('/signup');
-                        } else {
-                            const selectedProduct = products.find(p => p.id === selected);
-                            if (selectedProduct && selectedProduct.prices.length > 0) {
-                                const priceId = selectedProduct.prices[0].id;
-                                navigate('/checkout', { state: { priceId } });
-                            } else {
-                                alert('No price available for selected plan');
-                            }
-                        }
-                    } else {
-                        alert('Please select a plan first');
-                    }
+                   setShow(true)
                 }}
             >
                 <img src='svg/svg-theme.svg' alt='' />
@@ -175,7 +185,7 @@ const Plan = () => {
                     Already have an account?{' '}
                     <span
                         className={styles.loginLink}
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate('/signup')}
                     >
                         Login
                     </span>

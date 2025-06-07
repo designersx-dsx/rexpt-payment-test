@@ -39,6 +39,8 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
   const agentGender = sessionStorage.getItem('agentGender')
   const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const EditingMode = localStorage.getItem("UpdationMode");
+
   console.log('agentGender',agentName)
 useEffect(() => {
   const updationMode = localStorage.getItem("UpdationMode") === "ON" ||"";
@@ -173,9 +175,7 @@ const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img 
     <>
       
       <div className={styles.sliderContainer}>
-        <h2 className={styles.heading}
-        
-        >Receptionist Avatar</h2>
+        <h2 className={styles.heading}>{EditingMode?'Edit: Receptionist Avatar':'Receptionist Avatar'}</h2>
 
         <Slider ref={sliderRef} {...settings}>
           {avatars[gender]?.map((avatar, index) => (

@@ -1155,10 +1155,10 @@ End Call: If the caller is satisfied, invoke end_call function.
         setShowPopup(true);
     };
     const stepTitles = [
-        "Agent Language Supported",
-        "Agent Gender",
+        EditingMode?"Edit: Agent Language ":"Agent Language Supported",
+        EditingMode?"Edit: Agent Gender":"Agent Gender",
         "",
-        "Receptionist Type",
+        EditingMode?"Edit: Receptionist Type":"Receptionist Type",
     ];
     // function lock
     useEffect(() => {
