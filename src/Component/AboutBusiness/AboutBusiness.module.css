@@ -20,7 +20,11 @@
 .Dblock {
   display: grid;
 }
-
+.inputFlex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .header h1 {
   font-size: 40px;
   font-weight: 700;
@@ -115,7 +119,6 @@
 }
 
 .filesAllowed {
-
   font-size: 12px;
 }
 .verifyButton {
@@ -133,11 +136,10 @@
 
 @media screen and (min-width: 601px) {
   .btnTheme {
-
     font-size: 12px;
-}
-.verifyStatus{
-     position: absolute;
+  }
+  .verifyStatus {
+    position: absolute;
     right: 20px;
     top: 30%;
     border: unset;
@@ -161,23 +163,22 @@
   }
 }
 
-@media (max-width:375px) {
-    .header h1 {
-        font-size: 36px;
-    }
+@media (max-width: 375px) {
+  .header h1 {
+    font-size: 36px;
+  }
 }
 .requiredStar {
-    position: absolute;
+  position: absolute;
   color: red;
   font-weight: bold;
-   /* right: 205px; */
-     top: 15%;
+  /* right: 205px; */
+  top: 15%;
 }
 .requiredStar1 {
-    position: absolute;
+  position: absolute;
   color: red;
   font-weight: bold;
-   /* right: 78px; */
-     /* top: 28%; */
+  /* right: 78px; */
+  /* top: 28%; */
 }
-
