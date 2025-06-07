@@ -115,32 +115,12 @@ function App() {
                 <Route path="/totalcall-list" element={<TotalsCallsList />} />
                 <Route path="/call-transfer" element={<CallTransfer />} />
                 <Route path="/call-details" element={<CallDetails />} />
-                <Route path="/business-services" element={<SecureRoute><BusinessServices /></SecureRoute>} />
-
-                <Route path="/ai-assistant" element={
-                  <SecureRoute>
-                    <AiAssistant />
-                  </SecureRoute>
-                }
-                />
-                <Route
-                  path="/rex-agent"
-                  element={
-                    <SecureRoute>
-                      <RexAgent />
-                    </SecureRoute>
-                  }
-                />
+                <Route path="/business-services" element={<SecureRoute><BusinessServices/></SecureRoute>} />
+                <Route path="/ai-assistant" element={<SecureRoute> <AiAssistant /> </SecureRoute>} />
+                <Route path="/rex-agent" element={<SecureRoute>  <RexAgent /> </SecureRoute>} />
                 <Route path="/plans" element={<Plans />} />
                 <Route path="/checkout" element={<SubscriptionFlow />} />
-                <Route
-                  path="/calendar"
-                  element={
-                    <SecureRoute>
-                      <Calendar />
-                    </SecureRoute>
-                  }
-                />
+                <Route path="/calendar" element={<SecureRoute>   <Calendar /> </SecureRoute>} />
                 <Route path="/totalcall-list" element={<TotalsCallsList />} />
                 <Route path="/call-transfer" element={<CallTransfer />} />
               </Routes>
