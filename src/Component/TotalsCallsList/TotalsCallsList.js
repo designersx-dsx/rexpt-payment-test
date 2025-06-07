@@ -17,31 +17,39 @@ const options = [
 const callsPerPage = 6;
 
 export default function Home() {
-    const agentId = sessionStorage.getItem("agentId");
+    const [agentId, setAgentId] = useState(sessionStorage.getItem("agentId") || "");
+
     const [data, setData] = useState([]);
+    const [selectedDateRange, setSelectedDateRange] = useState({ startDate: "", endDate: "" });
+    console.log(selectedDateRange, "selectedDateRange")
     const [selectedSentiment, setSelectedSentiment] = useState("All");
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(false)
     const fetchAgents = JSON.parse(sessionStorage.getItem("dashboard-session-storage"))
-    console.log(fetchAgents, "HELO")
     useEffect(() => {
         fetchCallHistory();
     }, [agentId]);
 
-    const fetchCallHistory = async () => {
-        try {
-            setLoading(true)
-            if (agentId) {
-                const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`);
-                setData(response.data.filteredCalls || []);
-                setLoading(false)
-            }
-        } catch (error) {
-            console.error("Error fetching call history:", error);
-        } finally {
-            setLoading(false)
+const fetchCallHistory = async () => {
+    try {
+        setLoading(true);
+        if (agentId) {
+            const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`);
+            // Always update data, even if empty
+            setData(response.data.filteredCalls || []);
+        } else {
+            // If no agentId, clear data explicitly
+            setData([]);
         }
-    };
+    } catch (error) {
+        console.error("Error fetching call history:", error);
+        // On error, clear data to avoid showing stale data
+        setData([]);
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     const convertMsToMinSec = (durationMs) => {
         const minutes = Math.floor(durationMs / 60000);
@@ -58,21 +66,44 @@ export default function Home() {
     const filteredData = selectedSentiment === "All"
         ? data
         : data.filter((call) => call.user_sentiment === selectedSentiment);
+    const filteredByDate = filteredData.filter(call => {
+        if (!selectedDateRange.startDate || !selectedDateRange.endDate) return true;
 
-    const totalPages = Math.ceil(filteredData.length / callsPerPage);
+        // Convert selected date strings to start and end timestamps of those days
+        const startDate = new Date(selectedDateRange.startDate);
+        startDate.setHours(0, 0, 0, 0); // start of day
+
+        const endDate = new Date(selectedDateRange.endDate);
+        endDate.setHours(23, 59, 59, 999); // end of day
+
+        // call.end_timestamp is in milliseconds
+        return call.end_timestamp >= startDate.getTime() && call.end_timestamp <= endDate.getTime();
+    });
+    ;
+
+    // Pagination
+    const totalPages = Math.ceil(filteredByDate.length / callsPerPage);
     const indexOfLastCall = currentPage * callsPerPage;
     const indexOfFirstCall = indexOfLastCall - callsPerPage;
-    const currentCalls = filteredData.slice(indexOfFirstCall, indexOfLastCall);
-
+    const currentCalls = filteredByDate.slice(indexOfFirstCall, indexOfLastCall);
+    console.log(currentCalls)
+    // Handle page change
     const handlePageChange = (pageNum) => {
         if (pageNum < 1 || pageNum > totalPages) return;
         setCurrentPage(pageNum);
     };
-
+    //Function Lock
+useEffect(() => {
+  if (agentId) {
+    console.log(agentId)
+    fetchCallHistory();
+  }
+}, [agentId]);
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <HeaderFilter options={options}
+                <HeaderFilter
+                    options={options}
                     selectedSentiment={selectedSentiment}
                     onFilter={(label) => {
                         setSelectedSentiment(label);
@@ -81,11 +112,13 @@ export default function Home() {
                     isAgents={
                         fetchAgents?.state?.agents
                     }
-                // onAgentChange={handleAgentChange}
-
+                    onRangeChange={(range) => {
+                        setSelectedDateRange(range);
+                        setCurrentPage(1);
+                    }}
+                    selectedAgentId={agentId}          
+                    onAgentChange={(newAgentId) => setAgentId(newAgentId)} 
                 />
-
-
                 {/* Table */}
                 <div className={styles.tableContainer}>
                     <table className={styles.table}>
@@ -137,28 +170,31 @@ export default function Home() {
                 </div>
 
                 {/* Pagination */}
-                <div className={styles.pagination}>
-                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                        &lt;
-                    </button>
+           {filteredByDate.length > 0 && (
+  <div className={styles.pagination}>
+    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+      &lt;
+    </button>
 
-                    {[...Array(totalPages)].map((_, idx) => {
-                        const pageNum = idx + 1;
-                        return (
-                            <button
-                                key={pageNum}
-                                onClick={() => handlePageChange(pageNum)}
-                                className={currentPage === pageNum ? styles.pageButtonActive : ""}
-                            >
-                                {pageNum}
-                            </button>
-                        );
-                    })}
+    {[...Array(totalPages)].map((_, idx) => {
+      const pageNum = idx + 1;
+      return (
+        <button
+          key={pageNum}
+          onClick={() => handlePageChange(pageNum)}
+          className={currentPage === pageNum ? styles.pageButtonActive : ""}
+        >
+          {pageNum}
+        </button>
+      );
+    })}
 
-                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                        &gt;
-                    </button>
-                </div>
+    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+      &gt;
+    </button>
+  </div>
+)}
+
             </div>
         </div>
     );

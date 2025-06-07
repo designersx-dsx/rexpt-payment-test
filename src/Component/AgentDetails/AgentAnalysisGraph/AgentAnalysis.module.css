@@ -231,6 +231,7 @@
   border-radius: 12px;
 }
 
+
 /* Booking highlight */
 .bookingHighlight {
   background: #9e7de9 !important;
@@ -238,6 +239,32 @@
   font-weight: bold;
   border-radius: 12px;
 }
+
+.reactCalendar {
+  /* Parent calendar container */
+  width: 100%;
+  border: none;
+}
+
+/* Customize the tile (individual day) */
+.reactCalendar .react-calendar__tile {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  color: #333;
+}
+
+/* Highlight selected day */
+.reactCalendar .react-calendar__tile--active {
+  background: #5f33e1 !important;
+  color: white;
+}
+
+/* Hover effect */
+.reactCalendar .react-calendar__tile:hover {
+  background-color: #e6f0ff;
+}
+
 
 /* Responsive behavior */
 @media screen and (max-width: 600px) {
