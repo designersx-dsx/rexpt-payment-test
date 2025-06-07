@@ -26,7 +26,9 @@ export default function Home() {
     const fetchAgents = JSON.parse(sessionStorage.getItem("dashboard-session-storage"))
     const [filters, setFilters] = useState({ leadType: [], channel: '' });
     useEffect(() => {
-        fetchCallHistory();
+        if (agentId) {
+            fetchCallHistory();
+        }
     }, [agentId]);
 
     const fetchCallHistory = async () => {
