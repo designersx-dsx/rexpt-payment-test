@@ -74,12 +74,12 @@ function AboutBusiness() {
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
       if (place.place_id) {
-        const businessUrl = place.url; // Save full URL
-        const businessName = place.name; // Save business name for display
-        setGoogleListing(businessUrl); // Full URL for backend
-        setDisplayBusinessName(businessName); // Business name to display in input
-        sessionStorage.setItem("googleListing", businessUrl); // Store full URL in sessionStorage
-        sessionStorage.setItem("displayBusinessName", businessName); // Store business name
+        const businessUrl = place.url; 
+        const businessName = place.name; 
+        setGoogleListing(businessUrl);
+        setDisplayBusinessName(businessName); 
+        sessionStorage.setItem("googleListing", businessUrl); 
+        sessionStorage.setItem("displayBusinessName", businessName); 
       }
     });
   };
@@ -104,7 +104,7 @@ function AboutBusiness() {
     service.getDetails({ placeId }, (result, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
         setPlaceDetails(result);
-        generateGoogleListingUrl(result); // Generate and set the Google Listing URL
+        generateGoogleListingUrl(result);
         setLoading(false);
       } else {
         console.error("Place details fetch failed:", status);
