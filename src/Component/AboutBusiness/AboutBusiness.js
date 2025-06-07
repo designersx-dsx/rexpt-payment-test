@@ -846,7 +846,7 @@ function AboutBusiness() {
                 ></textarea>
               </div>
               <div onClick={handleSkip} className={styles.skipButton}>
-                <button>Skip for now</button>
+               {EditingMode?"": <button>Skip for now</button>}
               </div>
 
               <div className={styles.fixedBtn}>
