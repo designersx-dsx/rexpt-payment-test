@@ -4,8 +4,13 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
-import { API_BASE_URL, listAgents, validateWebsite } from "../../Store/apiStore";
+import {
+  API_BASE_URL,
+  listAgents,
+  validateWebsite,
+} from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
+import { useAgentCreator } from "../../hooks/useAgentCreator";
 
 // Convert File → base64 data URL
 const fileToBase64 = (file) =>
@@ -57,12 +62,28 @@ function AboutBusiness() {
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
 
-  const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
-  const [displayBusinessName, setDisplayBusinessName] = useState("")
+  const [urlVerificationInProgress, setUrlVerificationInProgress] =
+    useState(false);
+  const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
-  const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
-  const businessId = location.state?.businessId || sessionBusinessiD.businessId;
-
+  const sessionBusinessiD = JSON.parse(sessionStorage.getItem("businessId"));
+  const businessId =
+    location.state?.businessId ||
+    sessionBusinessiD ||
+    sessionBusinessiD?.businessId;
+  const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
+  const EditingMode = localStorage.getItem("UpdationMode");
+  const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+  const setHasFetched = true;
+  const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "AboutBusiness", // or custom validation
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+  });
 
   const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
@@ -95,7 +116,6 @@ function AboutBusiness() {
       }
     }, 300);
   }, []);
-
 
   const fetchPlaceDetails = (placeId) => {
     setLoading(true);
@@ -183,30 +203,31 @@ function AboutBusiness() {
     }
   }, [token]);
 
-
- useEffect(() => {
-  if(localStorage.getItem("UpdationMode")=="ON"){
-
-
-    const savedData = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-
-    if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
-    if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
-    if (savedData.note) setNote(savedData.note);
-
-    // rebuild File objects
-    if (Array.isArray(savedData.files) && savedData.files.length) {
-      const rebuiltFiles = savedData.files.map((d, i) =>
-        dataURLtoFile(d, `file${i + 1}`)
+  useEffect(() => {
+    if (localStorage.getItem("UpdationMode") == "ON") {
+      const savedData = JSON.parse(
+        sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
-      setFiles(rebuiltFiles);
-    }
-      }else{
-          const savedData = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-    if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
-    if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
-    if (savedData.note) setNote(savedData.note);
+
+      if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+      if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
+      if (savedData.note) setNote(savedData.note);
+
+      // rebuild File objects
+      if (Array.isArray(savedData.files) && savedData.files.length) {
+        const rebuiltFiles = savedData.files.map((d, i) =>
+          dataURLtoFile(d, `file${i + 1}`)
+        );
+        setFiles(rebuiltFiles);
       }
+    } else {
+      const savedData = JSON.parse(
+        sessionStorage.getItem("aboutBusinessForm") || "{}"
+      );
+      if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+      if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
+      if (savedData.note) setNote(savedData.note);
+    }
   }, []);
 
   useEffect(() => {
@@ -281,11 +302,11 @@ function AboutBusiness() {
   const isValidUrl = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" +
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
-        "((\\d{1,3}\\.){3}\\d{1,3}))" +
-        "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
-        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
-        "(\\#[-a-zA-Z\\d_]*)?$",
+      "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
+      "((\\d{1,3}\\.){3}\\d{1,3}))" +
+      "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
+      "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
+      "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     );
     return !!pattern.test(url);
@@ -364,7 +385,6 @@ function AboutBusiness() {
       return;
     }
 
-
     if (!isVerified) {
       setPopupType("failed");
       setPopupMessage("Business URL must be verified before proceeding.");
@@ -381,13 +401,14 @@ function AboutBusiness() {
     }
 
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
-
     const businessLocation = JSON.parse(
       sessionStorage.getItem("businessLocation")
     );
 
     const mergedUrls = [businessUrl.trim(), googleListing];
     const formData = new FormData();
+    const formData2 = new FormData();     //for save in db
+    const formData3 = new FormData();     // for update knowlede base
     const packageName = sessionStorage.getItem("package") || "Free";
     const packageMap = {
       Free: 1,
@@ -442,26 +463,29 @@ function AboutBusiness() {
     const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
 
     // Create the knowledge base name
-  // Create the knowledge base name
-  const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(shortBusinessName)}_${sanitize(packageValue)}_#${agentCount}`;
-  console.log(knowledgeBaseName,mergedUrls)
-  // Append the knowledge base name and URLs to form data
-  formData.append("knowledge_base_name", knowledgeBaseName);
-  formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+    // Create the knowledge base name
+    const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(
+      shortBusinessName
+    )}_${sanitize(packageValue)}_#${agentCount}`;
+    console.log(knowledgeBaseName, mergedUrls);
+    // Append the knowledge base name and URLs to form data
+    formData.append("knowledge_base_name", knowledgeBaseName);
+    formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
 
-  formData2.append("googleUrl", googleListing);
-  formData2.append("webUrl",businessUrl.trim());
-  formData2.append("aboutBusiness",aboutBusiness)
-  formData2.append("additionalInstruction",note)
-  formData2.append("knowledge_base_name",knowledgeBaseName)
+    formData2.append("googleUrl", googleListing);
+    formData2.append("webUrl", businessUrl.trim());
+    formData2.append("aboutBusiness", sanitize(aboutBusiness));
+    formData2.append("additionalInstruction", sanitize(note));
+    formData2.append("knowledge_base_name", knowledgeBaseName);
 
+    formData3.append('knowledge_base_urls', JSON.stringify(mergedUrls))
 
-  // Prepare business location and description
-  let knowledgeTexts = [];
-  let textContent = "";
-  let moreAbout = null;
-  if (businessLocation) {
-    textContent = `
+    // Prepare business location and description
+    let knowledgeTexts = [];
+    let textContent = "";
+    let moreAbout = null;
+    if (businessLocation) {
+      textContent = `
       Country: ${businessLocation.country || ""}
       State: ${businessLocation.state || ""}
       City: ${businessLocation.city || ""}
@@ -474,69 +498,107 @@ function AboutBusiness() {
       };
     }
 
-
     // Append the business description to form data
     formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
- // Append any files to form data
+    formData3.append("knowledge_base_texts", JSON.stringify([moreAbout]));
     files.forEach((file) => {
       formData.append("knowledge_base_files", file);
     });
 
-  // Submit the form data to the server
-  try {
-    setLoading(true);
-    // const response = await axios.post(
-    //   "https://api.retellai.com/create-knowledge-base",
-    //   formData,
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   }
-    // );
-    // formData2.append("knowledge_base_id",response?.data?.knowledge_base_id||"")
-    formData2.append("knowledge_base_id",2)
-    console.log('businessId',businessId)
-    try{  
-      const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId}`,formData2,{
-      headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      console.log('response added KnowledeBase', response)
-    }catch(error){
-      console.log('error while saving knowledge bas in Database');
-    }
+    // Submit the form data to the server
+    try {
+      setLoading(true);
+      // formData2.append("knowledge_base_id",response?.data?.knowledge_base_id||"")
+      let response;
+      if (!knowledgeBaseId) {
+        response = await axios.post(
+          "https://api.retellai.com/create-knowledge-base",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      } else {
+        response = await axios.post(
+          `https://api.retellai.com/add-knowledge-base-sources/${knowledgeBaseId}`,
+          formData3,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+      }
 
-    // Handle the successful response
-    // console.log(response, "response");
-    // sessionStorage.setItem("knowledgeBaseId", response.data.knowledge_base_id);
-    setPopupType("success");
-    setPopupMessage("Knowledge base created successfully!");
-    setShowPopup(true);
+      formData2.append("knowledge_base_id", response.data.knowledge_base_id);
+      // console.log("businessId", businessId);
+      try {
+        response = await axios.patch(
+          `${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId}`,
+          formData2,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        // console.log('response added KnowledeBase', response)
+      } catch (error) {
+        console.log("error while saving knowledge bas in Database", error);
+      }
 
-    // setTimeout(() => navigate("/steps"), 1500);
-  } catch (error) {
-    console.error("Upload failed:", error.response?.data?.message || error.message);
-    setPopupType("failed");
-    setPopupMessage(error.response?.data?.message || "Internal Server Error");
-    setShowPopup(true);
-  } finally {
-    setLoading(false);
-  }
-};
+      // Handle the successful response
+      // console.log(response, "response");
 
-   
+      // ifknowledgeBase  created at edit 
+        if (stepEditingMode == "ON" && !knowledgeBaseId && response?.data?.knowledge_base_id) {
+          const llm_id = localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
+          const agentConfig = {};
+          if (response.data.knowledge_base_id) {
+            agentConfig.knowledge_base_ids = [response.data.knowledge_base_id];
+          }
+          try {
+            const llmResponse = await axios.patch(
+              `https://api.retellai.com/update-retell-llm/${llm_id}`,
+              agentConfig,
+              {
+                headers: {
+                  Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            console.log("llm updated successfully added knowledgeBaseId");
+          } catch (error) {
+            console.log("failed to update llm while adding knowledgeBaseId");
+          }
+        }
 
-
-
+      sessionStorage.setItem(
+        "knowledgeBaseId",
+        response.data.knowledge_base_id
+      );
       setPopupType("success");
       setPopupMessage("Knowledge base created successfully!");
       setShowPopup(true);
-
-      setTimeout(() => navigate("/steps"), 1500);
+      {
+        stepEditingMode != "ON"
+          ? setTimeout(() => navigate("/steps"), 1500)
+          : setTimeout(
+            () =>
+              navigate("/agent-detail", {
+                state: {
+                  agentId: localStorage.getItem("agent_id"),
+                  bussinesId: businessId,
+                },
+              }),
+            1500
+          );
+      }
     } catch (error) {
       console.error(
         "Upload failed:",
@@ -549,6 +611,24 @@ function AboutBusiness() {
       setLoading(false);
     }
   };
+
+  //     setPopupType("success");
+  //     setPopupMessage("Knowledge base created successfully!");
+  //     setShowPopup(true);
+
+  //     setTimeout(() => navigate("/steps"), 1500);
+  //   } catch (error) {
+  //     console.error(
+  //       "Upload failed:",
+  //       error.response?.data?.message || error.message
+  //     );
+  //     setPopupType("failed");
+  //     setPopupMessage(error.response?.data?.message || "Internal Server Error");
+  //     setShowPopup(true);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleSkip = (e) => {
     e.preventDefault();
@@ -582,19 +662,37 @@ function AboutBusiness() {
   useEffect(() => {
     fetchAgentCountFromUser();
   }, []);
+
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    sessionStorage.setItem(
+      "aboutBusinessForm",
+      JSON.stringify({
+        businessUrl,
+        googleListing,
+        aboutBusiness,
+        note,
+      })
+    );
+    console.log("edit hit");
+    setTimeout(() => {
+      handleCreateAgent();
+    }, 800);
+  };
   return (
     <>
       <div>
         <div className={styles.container}>
           <div className={styles.header}>
-            <h1>About Your Business</h1>
+            <h1>
+              {EditingMode ? "Edit: About Your Business" : "About Your Business"}
+            </h1>
           </div>
           <form className={styles.formContainer}>
             <div className={styles.form}>
               <div className={styles.labReq}>
                 <div className={styles.formGroup}>
                   <div className={styles.Dblock}>
-
                     <label htmlFor="business-url">
                       URL (Website){" "}
                       <span className={styles.requiredStar}>*</span>{" "}
@@ -631,20 +729,23 @@ function AboutBusiness() {
                         }}
                         onInput={handleInputChange}
                       />
-                        <div className={styles.verifyStatus}>
-                {urlVerificationInProgress ? (
-                  <Loader size={20} /> 
-                ) : (
-                  isVerified !== null && (
-                    <span
-                      className={isVerified ? styles.validIcon : styles.invalidIcon}
-                    >
-                      {isVerified ? "✔️" : "❌"}
-                    </span>
-                  )
-                )}
-              </div>
-
+                      <div className={styles.verifyStatus}>
+                        {urlVerificationInProgress ? (
+                          <Loader size={20} />
+                        ) : (
+                          isVerified !== null && (
+                            <span
+                              className={
+                                isVerified
+                                  ? styles.validIcon
+                                  : styles.invalidIcon
+                              }
+                            >
+                              {isVerified ? "✔️" : "❌"}
+                            </span>
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -657,10 +758,8 @@ function AboutBusiness() {
               <div>
                 <div className={styles.formGroup}>
                   <label htmlFor="google-autocomplete">
-
                     Google Listing (Business Name){" "}
                     <span className={styles.requiredStar1}>*</span>
-
                   </label>
                   <input
                     id="google-autocomplete"
@@ -724,22 +823,59 @@ function AboutBusiness() {
               <div onClick={handleSkip} className={styles.skipButton}>
                 <button>Skip for now</button>
               </div>
+
               <div className={styles.fixedBtn}>
-                <button
-                  type="submit"
-                  className={styles.btnTheme}
-                  disabled={loading}
-                  onClick={handleSubmit}
-                >
-                  <img src="svg/svg-theme.svg" alt="" />
-                  {loading ? (
-                    <>
-                      Add <Loader size={20} />
-                    </>
+                {stepEditingMode != "ON" || knowledgeBaseId ? (
+                  stepEditingMode != "ON" ? (
+                    <button
+                      type="submit"
+                      className={styles.btnTheme}
+                      disabled={loading}
+                      onClick={handleSubmit}
+                    >
+                      <img src="svg/svg-theme.svg" alt="" />
+                      {loading ? (
+                        <>
+                          Add <Loader size={20} />
+                        </>
+                      ) : (
+                        <p>Continue</p>
+                      )}
+                    </button>
                   ) : (
-                    <p>Continue</p>
-                  )}
-                </button>
+                    <button
+                      type="submit"
+                      className={styles.btnTheme}
+                      disabled={loading}
+                      onClick={handleSubmit}
+                    >
+                      <img src="svg/svg-theme.svg" alt="" />
+                      {loading ? (
+                        <>
+                          Add <Loader size={20} />
+                        </>
+                      ) : (
+                        <p>Save Edits</p>
+                      )}
+                    </button>
+                  )
+                ) : (
+                  <button
+                    type="submit"
+                    className={styles.btnTheme}
+                    disabled={loading}
+                    onClick={handleSaveEdit}
+                  >
+                    <img src="svg/svg-theme.svg" alt="" />
+                    {loading ? (
+                      <>
+                        Add <Loader size={20} />
+                      </>
+                    ) : (
+                      <p>Save Edits</p>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           </form>

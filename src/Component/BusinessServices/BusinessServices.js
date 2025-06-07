@@ -24,7 +24,7 @@ const BusinessServices = () => {
     const EditingMode=localStorage.getItem('UpdationMode')
     const setHasFetched=true
     const { handleCreateAgent } = useAgentCreator({
-      stepValidator: () => "BusinessDetails", // or custom validation
+      stepValidator: () => "businesServices", // or custom validation
       setLoading,
       setPopupMessage,
       setPopupType,
@@ -426,11 +426,27 @@ useEffect(() => {
     setServiceError("");
   };
 
+  const handleSaveEdit = (e) => {
+  e.preventDefault();
+         sessionStorage.setItem(
+                "businessDetails",
+                JSON.stringify({
+                    businessType,
+                    businessName,
+                    businessSize,
+                    selectedService,
+                    email,
+                })
+            )
+  console.log('edit hit')
+  handleCreateAgent();
+  
+};
     
 
     return (
          <div className={styles.container}>
-            <h1 className={styles.title}>Business Services</h1>
+            <h1 className={styles.title}>{EditingMode?'Edit: Business Services': 'Business Services'}</h1>
 
             <div className={styles.searchBox}>
                 <span className={styles.searchIcon}>
@@ -520,7 +536,7 @@ useEffect(() => {
                     </div>
                 </div>
             </div>
-
+{stepEditingMode!='ON'? 
             <div>
                 <div type="submit">
                     <div
@@ -533,7 +549,20 @@ useEffect(() => {
                     </div>
                 </div>
             </div>
-
+            :
+          <div>
+                <div type="submit">
+                    <div
+                        className={styles.btnTheme}
+                        onClick={handleSaveEdit}
+                        // disabled={!isEmailVerified} 
+                    >
+                        <img src="svg/svg-theme.svg" alt="" type="button" />
+                         <p>Save Edits</p>
+                    </div>
+                </div>
+            </div>
+}
             {/* Show PopUp */}
             <PopUp
                 type={popupType}

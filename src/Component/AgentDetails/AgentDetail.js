@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
-import { fetchAgentDetailById } from "../../Store/apiStore";
+import { EndWebCallUpdateAgentMinutesLeft, fetchAgentDetailById } from "../../Store/apiStore";
 
 import { useLocation, useNavigate } from "react-router-dom";
 import decodeToken from "../../lib/decodeToken";
@@ -40,7 +40,7 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
 
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(localStorage.getItem('UpdationModeStepWise')=='ON');
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [isApiKeyEditable, setIsApiKeyEditable] = useState(false);
@@ -54,6 +54,10 @@ const AgentDashboard = () => {
   const [agentId, setAgentId] = useState("")
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showModal, setShowModal] = useState(false);
+    const [isCallInProgress, setIsCallInProgress] = useState(false);
+    const [callId, setCallId] = useState(null);
+    const [refresh,setRefresh]=useState(false)
+  
   const navigate = useNavigate();
 
     const token = localStorage.getItem("token") || "";
@@ -299,7 +303,7 @@ const handleApiKeySubmit = async () => {
     };
 
     getAgentDetailsAndBookings();
-  }, [agentDetails]);
+  }, [agentDetails,refresh]);
 
   console.log('loading', loading)
   const handleLogout = () => {
@@ -334,22 +338,24 @@ const handleApiKeySubmit = async () => {
 
   // Start call handler
   const handleStartCall = async () => {
-    if (!retellWebClient || !agentData?.agent) {
+    if (isCallInProgress || !retellWebClient || !agentData?.agent) {
       console.error("RetellWebClient or agent data not ready.");
       return;
     }
     setCallLoading(true);
-    try {
+  setIsCallInProgress(true);
+      try {
       const res = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ agent_id: agentData.agent.agent_id }),
+          body: JSON.stringify({ agent_id: agentData?.agent?.agent_id }),
         }
       );
       const data = await res.json();
       await retellWebClient.startCall({ accessToken: data.access_token });
+      setCallId(data?.call_id);
     } catch (err) {
       console.error("Error starting call:", err);
     } finally {
@@ -361,6 +367,12 @@ const handleApiKeySubmit = async () => {
   const handleEndCall = async () => {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
+      const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
+        if (isCallInProgress) {
+          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+        }
+        setRefresh((prev)=>!prev)
+        setIsCallInProgress(false);
       console.log("Call end response", response);
     }
   };

@@ -32,6 +32,9 @@ const Step = () => {
     const decodeTokenData = decodeToken(token)
     const [userId, setUserId] = useState(decodeTokenData?.id || "");
     const { setHasFetched } = useDashboardStore();
+    const EditingMode = localStorage.getItem("UpdationMode");
+    const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
+
     useEffect(()=>{
        if (localStorage.getItem('UpdationMode') == "ON"  ) {  
             setSelectedLang(localStorage.getItem("agentLanguage"))
@@ -1096,7 +1099,21 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setPopupType("success");
                                 setPopupMessage("Agent Updated successfully!");
                                 setShowPopup(true);
-                                setTimeout(() => navigate("/dashboard"), 1500);
+                                if(stepEditingMode){
+                                    setTimeout(
+                                          () =>
+                                        navigate("/agent-detail", {
+                                            state: {
+                                            agentId: agentId || sessionStorage.getItem("agentId"),
+                                            bussinesId: businessIdObj.businessId,
+                                            },
+                                        }),
+                                        1000
+                                    );
+                                }else{
+                                    setTimeout(() => navigate("/dashboard"), 1500);
+                                }
+                                
                                 setLoading(false)
                                 sessionStorage.clear()
                                     localStorage.removeItem('UpdationMode')
@@ -1112,6 +1129,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                                     localStorage.removeItem('agentVoiceAccent')
                                     localStorage.removeItem('avatar')
                                     setHasFetched(false)
+
                             }
                             console.log('response server',response)
                         } catch (error) {

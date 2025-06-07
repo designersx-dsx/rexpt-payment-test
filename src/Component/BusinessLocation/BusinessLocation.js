@@ -8,6 +8,7 @@ import decodeToken from '../../lib/decodeToken';
 import { getData } from 'country-list';
 import ReactCountryFlag from "react-country-flag";
 import Loader from '../Loader/Loader';
+import { useAgentCreator } from '../../hooks/useAgentCreator';
 const BusinessLocation = () => {
   const countries = getData();
   const navigate = useNavigate();
@@ -40,6 +41,18 @@ const BusinessLocation = () => {
 
   const [countryCode, setCountryCode] = useState('');
   const [ipData, setIpData] = useState({});
+    const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
+    const EditingMode=localStorage.getItem('UpdationMode')
+    const setHasFetched=true
+    const { handleCreateAgent } = useAgentCreator({
+      stepValidator: () => "BusinessLocation", // or custom validation
+      setLoading,
+      setPopupMessage,
+      setPopupType,
+      setShowPopup,
+      navigate,
+      setHasFetched,
+    });
 
   useEffect(() => {
     const businessLocation = JSON.parse(sessionStorage.getItem('businessLocation'));
@@ -259,10 +272,31 @@ const BusinessLocation = () => {
       }
     }
   }, [countryCode]);
+
+  const handleSaveEdit = (e) => {
+  e.preventDefault();
+      sessionStorage.setItem(
+      'businessLocation',
+      JSON.stringify({
+        country: selected?.name || ipData?.country_name ,
+        state: state.trim(),
+        city: city.trim(),
+        address1: address1.trim(),
+        address2: address2.trim(),
+      })
+    );
+  console.log('edit hit')
+  setTimeout(()=>{
+    handleCreateAgent();
+  },800)
+  
+  
+};
+
   return (
     <div>
       <div className={styles.container}>
-        <h2 className={styles.title}>Business Location Details</h2>
+        <h2 className={styles.title}>{EditingMode?'Edit: Business Location Details':'Business Location Details'}</h2>
 
 
         {/* <div className={styles.countryInput}>
@@ -411,7 +445,7 @@ const BusinessLocation = () => {
             />  </div>
           {address2Error && <p className={styles.inlineError}>{address2Error}</p>}
         </div>
-
+{stepEditingMode!='ON'?  
         <div>
           <div type="submit" onClick={handleContinue}>
             <div className={styles.btnTheme}>
@@ -420,6 +454,16 @@ const BusinessLocation = () => {
             </div>
           </div>
         </div>
+        :
+        <div>
+          <div type="submit" onClick={handleSaveEdit}>
+            <div className={styles.btnTheme}>
+              <img src="svg/svg-theme.svg" alt="" />
+              <p>{loading ? <Loader size={20} /> : 'Save Edits'}</p>
+            </div>
+          </div>
+        </div>
+}
       </div>
 
       {showPopup && (

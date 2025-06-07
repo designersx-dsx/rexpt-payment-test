@@ -437,6 +437,7 @@ function Dashboard() {
       }
       setHasFetched(false);
       setIsCallInProgress(false);
+      
     }
   };
 

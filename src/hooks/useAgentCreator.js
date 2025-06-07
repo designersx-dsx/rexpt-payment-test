@@ -20,6 +20,8 @@ export const useAgentCreator = ({
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
+  const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
+  const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
       const [agentCount, setAgentCount] = useState(0);
   
      const fetchAgentCountFromUser = async () => {
@@ -463,41 +465,66 @@ End Call: If the caller is satisfied, invoke end_call function.
 
 
     console.log(prompt1)
-        setPopupType("success");
-        setPopupMessage("Agent created successfully!");
-        setShowPopup(true);
+  
             //updation here
             if (isValid && localStorage.getItem("UpdationMode") == "ON") {
-
-              if(isValid=='BusinessDetails'){
-                setLoading(true)
-                const agentConfig = {
-                 general_prompt: prompt1,
-                 begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
-                };
-                const llm_id=localStorage.getItem('llmId')
-                console.log('llm_id',llm_id)
+                setLoading(false)
+              if(isValid=='BusinessDetails' || isValid=='businesServices' || isValid=='BusinessLocation'){
+              
                 const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
                 const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
                 const buisenessServices=JSON.parse(sessionStorage.getItem('businesServices'))
-                try {  
-                        const response = await axios.put(`${API_BASE_URL}/businessDetails/updateBusinessDetails/${userId}`, {
-                        businessName: businessDetails?.businessName,
-                        businessSize: businessDetails.businessSize,
-                        businessType: businessDetails.businessType,
-                        buisnessEmail:buisenessServices?.email,
-                        buisnessService:buisenessServices?.selectedService,
-                        address1: locationData.address1,
-                        address2: locationData.address2,
-                        city: locationData.city,
-                        state: locationData.state,
-                        country: locationData.country,
-                        zip: locationData.zip,
-                      });
-                      console.log('updation response')
-                } catch (error) {
-                  console.log('error while buinsess details updated')
+                console.log(buisenessServices,"buisenessServices")
+                  try {  
+                          const response = await axios.put(`${API_BASE_URL}/businessDetails/updateBusinessDetails/${userId}`, {
+                          businessName: businessDetails?.businessName,
+                          businessSize: businessDetails.businessSize,
+                          businessType: businessDetails.businessType,
+                          buisnessEmail:buisenessServices?.email,
+                          buisnessService:buisenessServices?.selectedService,
+                          address1: locationData.address1,
+                          address2: locationData.address2,
+                          city: locationData.city,
+                          state: locationData.state,
+                          country: locationData.country,
+                          zip: locationData.zip,
+                          });
+                    console.log('updation response',response)
+                  } catch (error) {
+                    console.log('error while buinsess details updated')
+                    return
+                  }
                 }
+
+                const storedKnowledgeBaseId =sessionStorage.getItem('knowledgeBaseId');
+                if(isValid=='AboutBusiness'){
+                    if (storedKnowledgeBaseId && storedKnowledgeBaseId !== "undefined" && storedKnowledgeBaseId !== "null") {
+                      const formData2 = new FormData();
+                      const buisnessData=JSON.parse(sessionStorage.getItem('aboutBusinessForm'))
+                      formData2.append("googleUrl", buisnessData.googleListing);
+                      formData2.append("webUrl",buisnessData.businessUrl.trim());
+                      formData2.append("aboutBusiness",buisnessData.aboutBusiness)
+                      formData2.append("additionalInstruction",buisnessData.note)
+                      try {  
+                       const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId}`,formData2,{
+                       headers: {
+                          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                          "Content-Type": "multipart/form-data",
+                        },
+                        })
+                          console.log('updation response',response)
+                        } catch (error) {
+                          console.log('error while buinsess details updated')
+                          return
+                        }
+                    }
+                }
+
+                const llm_id=localStorage.getItem('llmId')
+                  const agentConfig = {
+                 general_prompt: prompt1,
+                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
+                };
                 //Create LLm 
                 try {
                     const llmResponse = await axios.patch(
@@ -513,9 +540,18 @@ End Call: If the caller is satisfied, invoke end_call function.
                     console.log('llmResponseupdate',llmResponse)
                     sessionStorage.setItem("llmId", llmResponse.data.llm_id);
                       setPopupType("success");
-                      setPopupMessage("Business Details Updated Succesfully. Please try again.");
+                      setPopupMessage("Business Details Updated Succesfully");
                       setShowPopup(true);
                       setLoading(false)
+                      setTimeout(() =>
+                      navigate("/agent-detail", {
+                        state: {
+                        agentId: localStorage.getItem("agentId") || sessionStorage.getItem("agentId"),
+                        bussinesId: localStorage.getItem("bussinesId") || sessionStorage.getItem("bussinesId") ,
+                        },
+                    }),
+                    1000
+                );
                     }
                     catch(error){
                       console.error("Business Details failed:", error);
@@ -525,16 +561,9 @@ End Call: If the caller is satisfied, invoke end_call function.
                       setLoading(false)
                     }
 
-              }
-
-
-
                 setLoading(true)
-                const agentConfig = {
-                 general_prompt: prompt1,
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
-                };
-                const llm_id=localStorage.getItem('llmId')
+              
+                
                 console.log('llm_id',llm_id)
                 //Create LLm 
                 // try {
