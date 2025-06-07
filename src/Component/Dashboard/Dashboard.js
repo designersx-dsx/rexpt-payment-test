@@ -21,6 +21,7 @@ import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
+import Modal from '../Modal2/Modal2'
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -88,7 +89,8 @@ function Dashboard() {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
-
+ const [show  , setShow] = useState(false)
+    const [close  , setClose] = useState(false)
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
@@ -356,9 +358,12 @@ function Dashboard() {
   };
 
   const handleUpgrade = (id) => {
-    alert(`Upgrade clicked for card ${id}`);
-    setOpenDropdown(null);
+   setShow(true)
   };
+    const handleCLose = ()=>{
+        setClose(true)
+        setShow(false)
+    }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -497,6 +502,27 @@ function Dashboard() {
   return (
     <div>
       <div className={styles.forSticky}>
+              {show?  <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
+                        Comming Soon
+                        
+                        </h2>
+                        
+                        <p className={styles.apologyHeadText}apologyHeadText>
+        
+        As a Free Plan user, you are currently limited to creating one agent. However, you will soon be able to create additional agents and upgrade your existing ones once our Paid Agents feature is live. We are working diligently to bring this feature to you and will notify you as soon as Paid Plans become available.
+        Thank you for your patience.
+                        </p>
+        
+                        <div className={styles.zz}>
+        
+                        {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
+        
+                        </div>
+        
+                        
+                        </Modal>
+                        
+                        : null}
         <header className={styles.header}>
           <div className={styles.profileSection} ref={profileRef}>
             <div>
@@ -682,9 +708,9 @@ function Dashboard() {
                       >
                         Integrate
                       </div>
-                      <div className={styles.OptionItem} onClick={() => ""}>
+                      {/* <div className={styles.OptionItem} onClick={() => ""}>
                         Call Settings
-                      </div>
+                      </div> */}
                       <div
                         className={styles.OptionItem}
                         onClick={() => handleEditAgent(agent)}
