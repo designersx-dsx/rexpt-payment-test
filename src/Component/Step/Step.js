@@ -463,7 +463,6 @@ Timezone: {{current_time_[timezone]}}
 Transcription Errors: Use best judgment to guess and respond.
 End Call: If the caller is satisfied, invoke end_call function.
 `
-    console.log(salesReceptionistPrompt)
     // let  prompt ;
     const prompt1 = role_title === "General Receptionist"
         ? generalReceptionistPrompt
