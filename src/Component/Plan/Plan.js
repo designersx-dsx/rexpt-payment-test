@@ -134,7 +134,9 @@ For now, If your sign-up for a "Free Account", We promise to send you Upgradatio
       </div> */}
 
       {/* Dynamic Plans from API */}
+      <div className="PlanBoxMain">
       {products.map((product) => (
+        
         <div
           key={product.id}
           className={`${styles.planBox} ${selected === product.id ? styles.selected : ""}`}
@@ -193,8 +195,10 @@ For now, If your sign-up for a "Free Account", We promise to send you Upgradatio
               ))}
             </div>
           </div>
-        </div>
+        </div> 
+        
       ))}
+      </div>
 
       {/* Continue button */}
       <div className={styles.btnTheme} onClick={handleContinue}>
