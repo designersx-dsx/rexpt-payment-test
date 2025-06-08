@@ -235,3 +235,11 @@
     justify-content: center;
     align-items: center;
 }
+@media screen and (min-width: 601px) {
+    .PlanBoxMain {
+    height:200px;
+    overflow: auto;
+}
+}
+
+
