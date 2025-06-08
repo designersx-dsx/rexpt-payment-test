@@ -284,7 +284,7 @@ const SignUp = () => {
           >
             <div className={styles.welcomeTitle}>
               <h1>Log In to your Account</h1>
-              <p >We will create a New FREE Account for you, if it does not exist. Make sure email address provided is correct.</p>
+              <p >If it does not exist, We will create a<b> New FREE Account</b> for you. Make sure the email ID provided is correct.</p>
             </div>
           </div>
 
