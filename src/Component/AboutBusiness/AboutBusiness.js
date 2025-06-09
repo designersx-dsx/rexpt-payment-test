@@ -69,9 +69,9 @@ function AboutBusiness() {
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("businessId"));
   const businessId1 = sessionBusinessiD?.businessId; // This is 251
   const businessId =
-    location.state?.businessId ||
-    sessionBusinessiD ||
-    sessionBusinessiD?.businessId;
+  location.state?.businessId ||
+  sessionBusinessiD ||
+  sessionBusinessiD?.businessId;
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const EditingMode = localStorage.getItem("UpdationMode");
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
@@ -214,7 +214,9 @@ function AboutBusiness() {
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
       if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
       if (savedData.note) setNote(savedData.note);
-
+      if (savedData.googleListing) {
+      setGoogleListing(savedData.googleListing);
+    }
       // rebuild File objects
       if (Array.isArray(savedData.files) && savedData.files.length) {
         const rebuiltFiles = savedData.files.map((d, i) =>
