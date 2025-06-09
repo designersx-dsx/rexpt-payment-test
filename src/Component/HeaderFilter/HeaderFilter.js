@@ -238,7 +238,7 @@ function HeaderFilter({
                     }
                   }}
                 >
-                  <option value="all">All Agents</option>
+                  <option value="all">All</option>
                   {isAgents?.map((agent) => (
                     <option key={agent.agent_id} value={agent.agent_id}>
                       {agent.agentName.length > 12
