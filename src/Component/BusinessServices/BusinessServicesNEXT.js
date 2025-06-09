@@ -161,6 +161,11 @@ sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices
 
 };
 
+const handleRemoveService = (index) => {
+  const updatedServices = services.filter((_, i) => i !== index);
+  setServices(updatedServices.length ? updatedServices : [{ service: '' }]);
+};
+
   return (
     <div className={styles.CallTransferMain1}>
       <div className={styles.headrPart}>
@@ -184,6 +189,16 @@ sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices
               value={item.service}
               onChange={(e) => handleServiceChange(index, e.target.value)}
             />
+                  {services.length > 1 && (
+            <button
+              type="button"
+              className={styles.removeButton}
+              onClick={() => handleRemoveService(index)}
+              // style={{ padding: "4px 8px", borderRadius: "4px" }}
+            >
+              ❌
+            </button>
+          )}
           </div>
         </div>
       ))}

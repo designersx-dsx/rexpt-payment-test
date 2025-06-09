@@ -961,10 +961,12 @@ End Call: If the caller is satisfied, invoke end_call function.
                             if (response.status === 200 || response.status === 201) {
                                 sessionStorage.setItem("agentId", response.data.agent_id);
                                 sessionStorage.setItem("agentStatus", true);
+                                 
                                 setPopupType("success");
                                 setPopupMessage("Agent created successfully!");
                                 setShowPopup(true);
-                                setTimeout(() => navigate("/dashboard"), 1500);
+
+                                setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);
                                 setLoading(false)
                                 sessionStorage.clear()
 

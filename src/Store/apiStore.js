@@ -148,6 +148,35 @@ export const getUserAgentMergedDataForAgentUpdate = async (agentId,businessId) =
     return { valid: false, reason: 'Error validating email' };  
   }
 };
+export const deactivateAgent = async (agentId) => {
+  try {
+    const res = await api.put(`/agent/deactivateAgent/${agentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error deactivating agent:", error.response?.data || error.message);
+    throw new Error("Failed to deactivate agent");
+  }
+};
+
+
+export const getAllAgentCalls = async (userId) => {
+  try {
+    const res = await api.get(`/agent/user/${userId}/agent/calls`, {
+      headers: {
+         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching agent calls:", error.response?.data || error.message);
+    throw new Error("Failed to fetch agent calls");
+  }
+};
+
 
 
 export default api;
