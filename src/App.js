@@ -49,7 +49,7 @@ function App() {
         <div className="ForMobile">
           <BrowserRouter>
             <div className="App">
-              <RoutePersistence />
+              {/* <RoutePersistence /> */}
               <Routes>
                 <Route
                   path="/signup"
