@@ -7,7 +7,7 @@ import { useAgentCreator } from '../../hooks/useAgentCreator';
 const BusinessServices = () => {
     const navigate = useNavigate();
     const [businessType, setBusinessType] = useState("Restaurant");
-    const [selectedService, setSelectedService] = useState([]);
+const [selectedService, setSelectedService] = useState([]);
     const [businessName, setBusinessName] = useState("");
     const [businessSize, setBusinessSize] = useState("");
     const [email, setEmail] = useState("");
@@ -293,9 +293,10 @@ const BusinessServices = () => {
     const selectedBusiness = businessServices.find(biz => biz.type === businessType);
     const selectedServices = selectedBusiness?.services || [];
     const filteredServices = selectedServices.filter(service =>
-        service.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    console.log(filteredServices)
+        service.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        
+    // console.log(filteredServices)
 
     // const validateEmail = (value) => {
     //     if (!value) {
@@ -319,9 +320,28 @@ const BusinessServices = () => {
         setServiceError("");
         return true;
     };
+    
 const handleContinue = () => {
 //   const isEmailValid = validateEmail(email);
   const isServiceValid = selectedService.length > 0;
+
+    // Step 1: Get old businesServices (if any)
+    const raw = sessionStorage.getItem("businesServices");
+    let previous = {};
+    try {
+      previous = raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.error("Failed to parse businesServices:", err);
+    }
+
+    // Step 2: Merge selectedService & email
+    const updatedBusinessServices = {
+      ...previous,
+      selectedService,
+      email,
+    };
+
+    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
 
 //   if (isEmailValid && isServiceValid) {
   if (isServiceValid) {
@@ -347,6 +367,7 @@ const handleContinue = () => {
     setPopupType("failed");
   }
 };
+
 
 
 
@@ -382,12 +403,16 @@ useEffect(() => {
     const rawBusinessServices = sessionStorage.getItem("businesServices");
 
     const businessDetails =
-      rawBusinessDetails && rawBusinessDetails !== "null" && rawBusinessDetails !== "undefined"
+      rawBusinessDetails &&
+      rawBusinessDetails !== "null" &&
+      rawBusinessDetails !== "undefined"
         ? JSON.parse(rawBusinessDetails)
         : null;
 
     const businessServices =
-      rawBusinessServices && rawBusinessServices !== "null" && rawBusinessServices !== "undefined"
+      rawBusinessServices &&
+      rawBusinessServices !== "null" &&
+      rawBusinessServices !== "undefined"
         ? JSON.parse(rawBusinessServices)
         : null;
 
@@ -396,7 +421,18 @@ useEffect(() => {
         setBusinessType(businessDetails.businessType || "");
         setBusinessName(businessDetails.businessName || "");
         setBusinessSize(businessDetails.businessSize || "");
-        setSelectedService(businessDetails.selectedService || []);
+        // For selectedService: if it's an array, use it; if a string, try to parse it.
+                  console.log('sdsds',businessDetails)
+        if (Array.isArray(businessDetails.selectedService)) {
+          setSelectedService(businessDetails.selectedService);
+        } else if (typeof businessDetails.selectedService === "string") {
+          try {
+            const parsed = JSON.parse(businessDetails.selectedService);
+            if (Array.isArray(parsed)) {
+              setSelectedService(parsed);
+            }
+          } catch {}
+        }
         setEmail(businessDetails.email || "");
       }
     } else {
@@ -406,8 +442,26 @@ useEffect(() => {
         setBusinessSize(businessDetails.businessSize || "");
       }
 
-      if (businessServices) {
-        setSelectedService(businessServices.selectedService || []);
+      if (businessServices?.selectedService) {
+        try {
+          let finalSelected = [];
+          console.log('sdsds',businessServices.selectedService)
+
+          if (typeof businessServices.selectedService === "string") {
+            const parsed = JSON.parse(businessServices.selectedService);
+            if (Array.isArray(parsed)) {
+              finalSelected = parsed;
+            }
+          } else if (Array.isArray(businessServices.selectedService)) {
+            finalSelected = businessServices.selectedService;
+          }
+
+          console.log("✅ Final selectedService:", finalSelected);
+          setSelectedService(finalSelected);
+        } catch (err) {
+          console.error("❌ Failed to parse selectedService:", err);
+        }
+
         setEmail(businessServices.email || "");
       }
     }
@@ -417,24 +471,45 @@ useEffect(() => {
 }, []);
 
 
-  const handleServiceToggle = (service) => {
-    setSelectedService((prev) =>
-      prev.includes(service)
-        ? prev.filter((s) => s !== service)
-        : [...prev, service]
-    );
-    setServiceError("");
-  };
+
+const handleServiceToggle = (service) => {
+  setSelectedService((prev) =>
+    prev.includes(service)
+      ? prev.filter((s) => s !== service)
+      : [...prev, service]
+  );
+  setServiceError("");
+};
 
   const handleSaveEdit = (e) => {
   e.preventDefault();
+  
+    const isServiceValid = selectedService.length > 0;
+
+    // Step 1: Get old businesServices (if any)
+    const raw = sessionStorage.getItem("businesServices");
+    let previous = {};
+    try {
+      previous = raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.error("Failed to parse businesServices:", err);
+    }
+
+    // Step 2: Merge selectedService & email
+    const updatedBusinessServices = {
+      ...previous,
+      selectedService,
+      email,
+    };
+
+    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
          sessionStorage.setItem(
                 "businessDetails",
                 JSON.stringify({
                     businessType,
                     businessName,
                     businessSize,
-                    selectedService,
+                    selectedService:updatedBusinessServices,
                     email,
                 })
             )
@@ -443,7 +518,7 @@ useEffect(() => {
 
 };
     
-
+console.log('selectedService',selectedService)
     return (
          <div className={styles.container}>
             <h1 className={styles.title}>{EditingMode?'Edit: Business Services': 'Business Services'}</h1>

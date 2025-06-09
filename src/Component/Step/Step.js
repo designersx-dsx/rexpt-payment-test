@@ -1087,9 +1087,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                                         1000
                                     );
                                 } else {
-                                    setTimeout(() => navigate("/dashboard"), 1500);
-                                }
-
+                                    setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);
                                 setLoading(false)
                                 sessionStorage.clear()
                                 localStorage.removeItem('UpdationMode')
@@ -1105,6 +1103,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 localStorage.removeItem('agentVoiceAccent')
                                 localStorage.removeItem('avatar')
                                 setHasFetched(false)
+                                }
 
                             }
                             console.log('response server', response)
