@@ -252,6 +252,13 @@
 .title{
     font-size: 36px;
 }
+.option strong {
+  font-size: 15px;
+}
+
+.subType {
+  font-size: 13px;
+}
 }
 
 /* Make the <select> look like your text input */
