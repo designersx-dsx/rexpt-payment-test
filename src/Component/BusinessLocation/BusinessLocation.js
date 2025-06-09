@@ -133,7 +133,10 @@ const BusinessLocation = () => {
     // if (address2Submitted) setAddress2Error(validateAddress(val, 'Address line 2'));
     // else setAddress2Error('');
   };
-console.log('sasas  ',cleanServiceArray(),)
+// console.log('sasas  ',cleanServiceArray(),)
+      const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
+      console.log('selectedCustomServices',customServices)
+
  const handleContinue = async () => {
     setStateSubmitted(true);
     setCitySubmitted(true);
@@ -167,7 +170,7 @@ console.log('sasas  ',cleanServiceArray(),)
       
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-      const customServices = JSON.parse(sessionStorage.getItem('selectedServices')) || []; 
+      const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
       const businesServices =JSON.parse(sessionStorage.getItem('businesServices'))
 
       let response;
@@ -182,8 +185,7 @@ console.log('sasas  ',cleanServiceArray(),)
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices],  
           buisnessService: cleanServiceArray(),
-
-
+          customServices:customServices,
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -198,8 +200,8 @@ console.log('sasas  ',cleanServiceArray(),)
           businessType: businessDetails.businessType,
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices], 
-         buisnessService: cleanServiceArray(),
- 
+           buisnessService: cleanServiceArray(),
+          customServices:customServices,  
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,

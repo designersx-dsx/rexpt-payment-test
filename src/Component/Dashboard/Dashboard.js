@@ -512,7 +512,8 @@ function Dashboard() {
 
   const handleEditAgent = async (ag) => {
     localStorage.setItem("UpdationMode", "ON");
-    fetchPrevAgentDEtails( ag.agent_id,ag.businessId)
+    await fetchPrevAgentDEtails( ag.agent_id,ag.businessId)
+
     navigate("/business-details", {
       state: { agentId: ag.agent_id, bussinesId: ag.businessId },
     });
@@ -1173,6 +1174,7 @@ export default Dashboard;
       localStorage.setItem('knowledge_base_name',business.knowledge_base_name)
       localStorage.setItem('knowledge_base_id',business.knowledge_base_id)
       //need to clear above
+
   
       sessionStorage.setItem(
       "aboutBusinessForm",
@@ -1196,12 +1198,18 @@ export default Dashboard;
         businessName: business.businessName.trim(),
         businessSize:business.businessSize,
       };
-  
-  
+
+
+    //  let parsedCustomeServices=saveParse(business.buisnessService, [])
+    //   console.log('business.buisnessService:', parsedCustomeServices);
+    //   console.log('typeof:', typeof parsedCustomeServices);
+
       let parsedServices = safeParse(business.buisnessService, []); 
-      console.log('business.buisnessService:', parsedServices);
-      console.log('typeof:', typeof parsedServices);
-  
+       sessionStorage.setItem("businesServices",JSON.stringify({
+         selectedService:parsedServices,
+          email:business.buisnessEmail
+      }))
+
       sessionStorage.setItem("businesServices",JSON.stringify({
          selectedService:parsedServices,
           email:business.buisnessEmail
