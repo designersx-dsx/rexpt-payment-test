@@ -142,7 +142,7 @@ useEffect(() => {
   .filter(service => service !== '')
   .map(service => ({ service }));
 
-sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
+  sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
     navigate('/business-locations');
   };
 
@@ -152,14 +152,12 @@ sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices
 
     const handleSaveEdit = (e) => {
   e.preventDefault();
-  
-   const filteredServices = services
+  const filteredServices = services
   .map(item => item.service.trim())
   .filter(service => service !== '')
   .map(service => ({ service }));
 
-sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
-
+  sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
   console.log('edit hit')
   handleCreateAgent();
 

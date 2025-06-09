@@ -53,10 +53,10 @@ export const useAgentCreator = ({
     const role_title =  sessionStorage.getItem("agentRole") || "General Receptionist";
     const business =JSON.parse(sessionStorage.getItem("businessDetails")) ||"Your Business Name";
      const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
-                const cleanedCustomServices = rawCustomServices
-                .map(item => item?.service?.trim())
-                .filter(Boolean)
-                .map(service => ({ service }));
+    const cleanedCustomServices = rawCustomServices
+    .map(item => item?.service?.trim())
+    .filter(Boolean)
+    .map(service => ({ service }));
     const SelectedServices =JSON.parse(sessionStorage.getItem("businesServices")) ||"Your Business Name";
     const BusinessLocation = JSON.parse(sessionStorage.getItem("businessLocation")) ||"Your Business Services";
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";

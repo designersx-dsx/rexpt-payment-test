@@ -1290,7 +1290,6 @@ export default AgentDashboard;
         JSON.stringify(cleanedCustomServices)
       );
       
-      sessionStorage.setItem("selectedCustomServices",business?.customServices|| [])
       sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
       sessionStorage.setItem('businessLocation',  JSON.stringify({
       country: business?.country,
