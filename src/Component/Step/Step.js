@@ -1091,6 +1091,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setPopupType("success");
                                 setPopupMessage("Agent Updated successfully!");
                                 setShowPopup(true);
+                                setTimeout(()=>{
                                 if (stepEditingMode) {
                                     // setTimeout(
                                     //     () =>
@@ -1122,7 +1123,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setHasFetched(false)
                                 }
 
-
+                            },1000)
                                     
 
                             
