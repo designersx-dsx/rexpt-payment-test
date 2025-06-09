@@ -390,6 +390,7 @@ const AgentDashboard = () => {
   const handleCallHistoryNavigation = () => {
     navigate("/totalcall-list");
     sessionStorage.setItem("agentId", agentId);
+    sessionStorage.setItem("userId", userId);
   };
 
 
