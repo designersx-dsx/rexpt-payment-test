@@ -48,7 +48,10 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
             setOpen(false);
         }
     };
-
+const handleFilterChange = (newFilters) => {
+  onFilterChange(newFilters); // existing filter logic
+  setIsOpen(false); // close the OffCanvas
+};
     return (
         <div>
 
@@ -187,7 +190,7 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
                 showCloseBtn={true}
             >
                 {/* Put any content you want inside offcanvas here */}
-                <SideFilter filters={filters} onFilterChange={onFilterChange} isLeadTypeSummary={isCallSummary} />
+                <SideFilter filters={filters} onFilterChange={handleFilterChange} isLeadTypeSummary={isCallSummary} />
             </OffCanvas>
 
         </div>
