@@ -59,6 +59,11 @@
   right: 5px;
   top: 5px;
 }
+
+#services input[type= "checkbox"]{
+  accent-color: #6524EB;
+
+}
  input[type="radio"] {
    width: 16px;
    height: 16px;

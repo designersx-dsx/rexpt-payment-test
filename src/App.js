@@ -125,9 +125,9 @@ function App() {
               <Route
                 path="/business-services"
                 element={
-                  <SecureRoute>
+              
                     <BusinessServices />
-                  </SecureRoute>
+             
                 }
               />
 
