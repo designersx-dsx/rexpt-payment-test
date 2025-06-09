@@ -433,7 +433,6 @@ function Dashboard() {
       setCallLoading(false);
     }
   };
-
   // End call
   const handleEndCall = async () => {
     console.log("isCallInProgress", isCallInProgress);
@@ -442,6 +441,7 @@ function Dashboard() {
       const payload = { agentId: agentDetails.agent_id, callId: callId };
       if (isCallInProgress) {
         const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+           setIsCallInProgress(false);
       }
       setHasFetched(false);
       setIsCallInProgress(false);
@@ -1158,7 +1158,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       agent_id,
       businessId
     );
-    console.log("response", response);
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
@@ -1257,7 +1256,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
           .map((service) => ({ service }))
       : [];
 
-    console.log("Final cleaned services to store:", cleanedCustomServices);
 
     sessionStorage.setItem(
       "selectedCustomServices",
