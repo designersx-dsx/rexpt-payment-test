@@ -528,6 +528,11 @@ function Dashboard() {
     setPopupMessage(message);
     setPopupType(type);
   };
+
+  const handleTotalCallClick = () => {
+  navigate("/totalcall-list");
+};
+
   function formatName(name) {
   if (!name) return "";  
 
@@ -542,6 +547,7 @@ function Dashboard() {
     return name;
   }
 }
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -571,7 +577,7 @@ function Dashboard() {
             <div>
               <button
                 className={styles.avatarBtn}
-                onClick={openUploadModal} // Toggle dropdown visibility on avatar click
+                onClick={openUploadModal} 
               >
                 <img
                   src={
@@ -663,7 +669,7 @@ function Dashboard() {
         </header>
 
         <section className={styles.agentCard}>
-          <div className={styles.agentInfo}>
+          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
             <img src="svg/total-call.svg" alt="total-call" />
           </div>
