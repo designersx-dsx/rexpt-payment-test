@@ -1261,7 +1261,32 @@ export default AgentDashboard;
          selectedService:parsedServices,
           email:business.buisnessEmail
       }))
-  
+      //custome servce filter and save
+      let rawCustomServices = business?.customServices || [];
+
+      if (typeof rawCustomServices === 'string') {
+        try {
+          rawCustomServices = JSON.parse(rawCustomServices);
+        } catch (err) {
+          console.error("Failed to parse customServices:", rawCustomServices);
+          rawCustomServices = [];
+        }
+      }
+
+      const cleanedCustomServices = Array.isArray(rawCustomServices)
+        ? rawCustomServices
+            .map(item => item?.service?.trim())
+            .filter(Boolean)
+            .map(service => ({ service }))
+        : [];
+
+      console.log("Final cleaned services to store:", cleanedCustomServices);
+
+      sessionStorage.setItem(
+        "selectedCustomServices",
+        JSON.stringify(cleanedCustomServices)
+      );
+      
       sessionStorage.setItem("selectedCustomServices",business?.customServices|| [])
       sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
       sessionStorage.setItem('businessLocation',  JSON.stringify({

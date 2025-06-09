@@ -107,13 +107,24 @@ const AboutBusinessNext = () => {
     navigate,
     setHasFetched,
   });
-  useEffect(() => {
-    const savedServices = JSON.parse(sessionStorage.getItem('selectedCustomServices'));
-    // console.log('savedServices',savedServices)
+useEffect(() => {
+  let savedServices = sessionStorage.getItem('selectedCustomServices');
+  try {
+    savedServices = JSON.parse(savedServices);
+    if (typeof savedServices === 'string') {
+      savedServices = JSON.parse(savedServices); // handle double-stringified case
+    }
+
     if (Array.isArray(savedServices)) {
       setServices(savedServices);
+    } else {
+      console.warn("Custom services not an array:", savedServices);
     }
-  }, []);
+  } catch (err) {
+    console.error("Error parsing selectedCustomServices:", err);
+    setServices([{ service: '' }]);
+  }
+}, []);
 
   const handleAddService = () => {
     setServices([...services, { service: '' }]);
@@ -126,9 +137,12 @@ const AboutBusinessNext = () => {
   };
 
   const handleSubmit = () => {
-    const filteredServices = services.filter(item => item.service.trim() !== '');
-    // console.log('filteredServices',filteredServices)
-    sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
+   const filteredServices = services
+  .map(item => item.service.trim())
+  .filter(service => service !== '')
+  .map(service => ({ service }));
+
+sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
     navigate('/business-locations');
   };
 
@@ -139,7 +153,7 @@ const AboutBusinessNext = () => {
     const handleSaveEdit = (e) => {
   e.preventDefault();
   const filteredServices = services.filter(item => item.service.trim() !== '');
-    // console.log('filteredServices',filteredServices)
+    console.log('filteredServices',filteredServices)
     sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
 
   console.log('edit hit')
