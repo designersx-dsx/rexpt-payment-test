@@ -67,17 +67,18 @@ function AboutBusiness() {
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("businessId"));
-  const businessId1 = sessionBusinessiD?.businessId; // This is 251
+  const businessId1 = sessionBusinessiD?.businessId; 
   const businessId =
-    location.state?.businessId ||
-    sessionBusinessiD ||
-    sessionBusinessiD?.businessId;
+  location.state?.businessId ||
+  sessionBusinessiD ||
+  sessionBusinessiD?.businessId;
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const EditingMode = localStorage.getItem("UpdationMode");
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+
   const setHasFetched = true;
   const { handleCreateAgent } = useAgentCreator({
-    stepValidator: () => "AboutBusiness", // or custom validation
+    stepValidator: () => "AboutBusiness",
     setLoading,
     setPopupMessage,
     setPopupType,
@@ -86,29 +87,29 @@ function AboutBusiness() {
     setHasFetched,
   });
 
-  const initAutocomplete = () => {
-    const autocomplete = new window.google.maps.places.Autocomplete(
-      document.getElementById("google-autocomplete"),
-      {
-        types: ["establishment"],
-        fields: ["place_id", "name", "url"],
-      }
-    );
+ const initAutocomplete = () => {
+  const autocomplete = new window.google.maps.places.Autocomplete(
+    document.getElementById("google-autocomplete"),
+    {
+      types: ["establishment"],
+      fields: ["place_id", "name", "url"],
+    }
+  );
 
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      if (place.place_id) {
-        const businessUrl = place.url;
-        const businessName = place.name;
-        setGoogleListing(businessUrl);
-        setDisplayBusinessName(businessName);
-        sessionStorage.setItem("googleListing", businessUrl);
-        sessionStorage.setItem("displayBusinessName", businessName);
-      }
-    });
-  };
+  autocomplete.addListener("place_changed", () => {
+    const place = autocomplete.getPlace();
+    if (place.place_id) {
+      const businessUrl = place.url;
+      const businessName = place.name;
+      setGoogleListing(businessUrl);
+      setDisplayBusinessName(businessName);
+      sessionStorage.setItem("googleListing", businessUrl);
+      sessionStorage.setItem("displayBusinessName", businessName);
+      fetchPlaceDetails(place.place_id); 
+    }
+  });
+};
 
-  // Effect to initialize Google Places autocomplete when the component mounts
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
@@ -165,22 +166,32 @@ function AboutBusiness() {
     const googleLink = `https://www.google.com/search?q=${encodeURIComponent(
       place.name + " " + address
     )}`;
-    setGoogleListing(googleLink); // Save Google Listing URL but don't display it
+    setGoogleListing(googleLink); 
   };
 
-  const handleUrlVerification = async (url) => {
-    setUrlVerificationInProgress(true);
-    const result = await validateWebsite(url);
-    if (result.valid) {
-      setIsVerified(true);
-      setBusinessUrlError("");
-      sessionStorage.setItem("businessUrl", url);
-    } else {
-      setIsVerified(false);
-      setBusinessUrlError("Invalid URL");
-    }
-    setUrlVerificationInProgress(false);
-  };
+ const handleUrlVerification = async (url) => {
+  setUrlVerificationInProgress(true);
+  const result = await validateWebsite(url);
+  if (result.valid) {
+    setIsVerified(true);
+    setBusinessUrlError("");
+    sessionStorage.setItem("businessUrl", url);
+    localStorage.setItem("isVerified", true);  
+  } else {
+    setIsVerified(false);
+    setBusinessUrlError("Invalid URL");
+    localStorage.setItem("isVerified", false);
+  }
+  setUrlVerificationInProgress(false);
+};
+
+useEffect(() => {
+  const savedVerifiedStatus = localStorage.getItem("isVerified");
+  if (savedVerifiedStatus !== null) {
+    setIsVerified(savedVerifiedStatus === 'true');  
+  }
+}, []);
+
 
   const handleBlur = () => {
     if (businessUrl.trim()) {
@@ -213,7 +224,9 @@ function AboutBusiness() {
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
       if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
       if (savedData.note) setNote(savedData.note);
-
+      if (savedData.googleListing) {
+      setGoogleListing(savedData.googleListing);
+    }
       // rebuild File objects
       if (Array.isArray(savedData.files) && savedData.files.length) {
         const rebuiltFiles = savedData.files.map((d, i) =>
@@ -313,28 +326,9 @@ function AboutBusiness() {
     return !!pattern.test(url);
   };
 
-  const validateBusinessUrl = (urlPath) => {
-    const fullUrl = urlPath.trim();
-    if (!urlPath.trim()) return "Business URL is required.";
-    if (!isValidUrl(fullUrl)) return "Please enter a valid URL.";
-
-    return "";
-  };
-
-  const validateGoogleListing = (urlPath) => {
-    const fullUrl = urlPath.trim();
-    if (!urlPath.trim()) return "Google Listing URL is required.";
-    if (!isValidUrl(fullUrl)) return "Please enter a valid URL.";
-    return "";
-  };
 
   const validateAboutBusiness = (text) => {
     if (!text.trim()) return "Business description is required.";
-    return "";
-  };
-
-  const validateFiles = (filesArray) => {
-    if (filesArray.length === 0) return "At least one file must be uploaded.";
     return "";
   };
 
@@ -479,6 +473,7 @@ function AboutBusiness() {
     formData2.append("additionalInstruction", sanitize(note));
     formData2.append("knowledge_base_name", knowledgeBaseName);
     formData2.append("agentId", localStorage.getItem("agent_id"));
+    formData2.append('displayBusinessName',displayBusinessName)
 
     formData3.append('knowledge_base_urls', JSON.stringify(mergedUrls))
 
@@ -512,9 +507,23 @@ function AboutBusiness() {
       setLoading(true);
       // formData2.append("knowledge_base_id",response?.data?.knowledge_base_id||"")
 
-      console.log('knowledgeBaseId--------------', knowledgeBaseId)
-      // if (!knowledgeBaseId) {
-        const response = await axios.post(
+      let knowledge_Base_ID=knowledgeBaseId;
+
+      console.log('knowledgeBaseId--------------', knowledgeBaseId,knowledge_Base_ID)
+      if(knowledge_Base_ID !== null && knowledge_Base_ID !== undefined && knowledge_Base_ID !== 'null' && knowledge_Base_ID !== 'undefined' && knowledge_Base_ID !== ''){
+        console.log('inside add-knowledge-base-sources ')
+           const response = await axios.post(
+          `https://api.retellai.com/add-knowledge-base-sources/${knowledge_Base_ID}`,
+          formData3,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          console.log('add-knowledge-base-sources knowledgeBaseId updated',response)
+      }else{
+          const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
           formData,
           {
@@ -525,14 +534,16 @@ function AboutBusiness() {
           }
         );
         formData2.append("knowledge_base_id", response.data.knowledge_base_id);
+        knowledge_Base_ID=response.data.knowledge_base_id;
         sessionStorage.setItem(
           "knowledgeBaseId",
           response.data.knowledge_base_id
         );
-        
-         try {
-        response = await axios.patch(
-          `${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId1}`,
+      }
+      
+      try {
+        const response = await axios.patch(
+          `${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId1||businessId}`,
           formData2,
           {
             headers: {
@@ -541,89 +552,56 @@ function AboutBusiness() {
             },
           }
         );
-        // console.log('response added KnowledeBase', response)
+        console.log('response added KnowledeBase local', response)
       } catch (error) {
         console.log("error while saving knowledge bas in Database", error);
       }
-      // } else {
-        // const response = await axios.post(
-        //   `https://api.retellai.com/add-knowledge-base-sources/${knowledgeBaseId}`,
-        //   formData3,
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-        //       "Content-Type": "multipart/form-data",
-        //     },
-        //   })
-      // }
 
-      // console.log("businessId", businessId);
-      // try {
-      //   response = await axios.patch(
-      //     `${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId}`,
-      //     formData2,
-      //     {
-      //       headers: {
-      //         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-      //         "Content-Type": "multipart/form-data",
-      //       },
-      //     }
-      //   );
-      //   // console.log('response added KnowledeBase', response)
-      // } catch (error) {
-      //   console.log("error while saving knowledge bas in Database", error);
-      // }
+      // if knowledgeBase  created at edit 
+      if (stepEditingMode == "ON" && knowledge_Base_ID) {
+        const llm_id = localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
+        const agentConfig = {};
+        if (knowledge_Base_ID) {
+          agentConfig.knowledge_base_ids = [knowledge_Base_ID];
+        }
+        try {
+          const llmResponse = await axios.patch(
+            `https://api.retellai.com/update-retell-llm/${llm_id}`,
+            agentConfig,
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("llm updated successfully added knowledgeBaseId");
+        } catch (error) {
+          console.log("failed to update llm while adding knowledgeBaseId");
+        }
+      }
 
-      // Handle the successful response
-      // console.log(response, "response");
-
-      // ifknowledgeBase  created at edit 
-      // if (stepEditingMode == "ON" && !knowledgeBaseId && response?.data?.knowledge_base_id) {
-      //   const llm_id = localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
-      //   const agentConfig = {};
-      //   if (response.data.knowledge_base_id) {
-      //     agentConfig.knowledge_base_ids = [response.data.knowledge_base_id];
-      //   }
-      //   try {
-      //     const llmResponse = await axios.patch(
-      //       `https://api.retellai.com/update-retell-llm/${llm_id}`,
-      //       agentConfig,
-      //       {
-      //         headers: {
-      //           Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-      //           "Content-Type": "application/json",
-      //         },
-      //       }
-      //     );
-      //     console.log("llm updated successfully added knowledgeBaseId");
-      //   } catch (error) {
-      //     console.log("failed to update llm while adding knowledgeBaseId");
-      //   }
-      // }
-
-      sessionStorage.setItem(
-        "knowledgeBaseId",
-        response.data.knowledge_base_id
-      );
+      
+      if (stepEditingMode != "ON") {
       setPopupType("success");
       setPopupMessage("Knowledge base created successfully!");
       setShowPopup(true);
-         setTimeout(() => navigate("/steps"), 1500)
-      // if (stepEditingMode != "ON") {
-      //   setTimeout(() => navigate("/steps"), 1500)
-      // } else {
-      //   setTimeout(
-      //     () =>
-      //       navigate("/agent-detail", {
-      //         state: {
-      //           agentId: localStorage.getItem("agent_id"),
-      //           bussinesId: businessId,
-      //         },
-      //       }),
-      //     1500
-      //   );
-
-      // }
+        setTimeout(() => navigate("/steps"), 1000)
+      } else {
+      setPopupType("success");
+      setPopupMessage("Knowledge base Updated successfully!");
+      setShowPopup(true);
+        setTimeout(
+          () =>
+            navigate("/agent-detail", {
+              state: {
+                agentId: localStorage.getItem("agent_id"),
+                bussinesId: businessId1||businessId,
+              },
+            }),
+          1000
+        );
+      }
     } catch (error) {
       console.error(
         "Upload failed:",
@@ -850,8 +828,8 @@ function AboutBusiness() {
               </div>
 
               <div className={styles.fixedBtn}>
-                {stepEditingMode != "ON" || knowledgeBaseId ? (
-                  stepEditingMode != "ON" ? (
+     {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
+                 { stepEditingMode != "ON" ? (
                     <button
                       type="submit"
                       className={styles.btnTheme}
@@ -884,7 +862,8 @@ function AboutBusiness() {
                       )}
                     </button>
                   )
-                ) : (
+                }
+                {/* ) : (
                   <button
                     type="submit"
                     className={styles.btnTheme}
@@ -900,7 +879,7 @@ function AboutBusiness() {
                       <p>Save Edits</p>
                     )}
                   </button>
-                )}
+                )} */}
               </div>
             </div>
           </form>

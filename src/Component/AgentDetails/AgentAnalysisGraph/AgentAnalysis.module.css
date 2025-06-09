@@ -148,7 +148,7 @@
   margin-top: 2rem;
   background: #ffffff;
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   text-align: center;
 }
@@ -260,11 +260,22 @@
   color: white;
 }
 
+
 /* Hover effect */
 .reactCalendar .react-calendar__tile:hover {
   background-color: #e6f0ff;
 }
 
+.react-calendar__month-view__days__day--weekend {
+    color: #000000 !important;
+}
+ 
+
+
+.reactCalendar .react-calendar__tile--active {
+    background: #6524eb !important;
+    color: white;
+}
 
 /* Responsive behavior */
 @media screen and (max-width: 600px) {

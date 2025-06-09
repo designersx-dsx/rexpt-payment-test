@@ -21,16 +21,12 @@ import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
-import Modal from '../Modal2/Modal2'
+import Modal from "../Modal2/Modal2";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
-
-
-
   const navigate = useNavigate();
   const { user } = useUser();
-  console.log(agents, "agents")
   // Retell Web Client states
   const [retellWebClient, setRetellWebClient] = useState(null);
   const [isCallActive, setIsCallActive] = useState(false);
@@ -92,8 +88,8 @@ function Dashboard() {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
-  const [show, setShow] = useState(false)
-  const [close, setClose] = useState(false)
+  const [show, setShow] = useState(false);
+  const [close, setClose] = useState(false);
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
@@ -109,29 +105,28 @@ function Dashboard() {
     }
   };
 
-
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
-      localStorage.removeItem('UpdationMode')
-      localStorage.removeItem('agentName')
-      localStorage.removeItem('agentGender')
-      localStorage.removeItem('agentLanguageCode')
-      localStorage.removeItem('agentLanguage')
-      localStorage.removeItem('llmId')
-      localStorage.removeItem('agent_id')
-      localStorage.removeItem('knowledgeBaseId')
-      localStorage.removeItem('agentRole')
-      localStorage.removeItem('agentVoice')
-      localStorage.removeItem('agentVoiceAccent')
-      localStorage.removeItem('avatar')
-      localStorage.removeItem("UpdationMode")
-      localStorage.removeItem("googleUrl")
-      localStorage.removeItem("knowledge_base_id")
-      localStorage.removeItem("knowledge_base_name")
-      localStorage.removeItem("selectedAgentAvatar")
-      localStorage.removeItem("webUrl")
+      localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("agentName");
+      localStorage.removeItem("agentGender");
+      localStorage.removeItem("agentLanguageCode");
+      localStorage.removeItem("agentLanguage");
+      localStorage.removeItem("llmId");
+      localStorage.removeItem("agent_id");
+      localStorage.removeItem("knowledgeBaseId");
+      localStorage.removeItem("agentRole");
+      localStorage.removeItem("agentVoice");
+      localStorage.removeItem("agentVoiceAccent");
+      localStorage.removeItem("avatar");
+      localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("knowledge_base_id");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("selectedAgentAvatar");
+      localStorage.removeItem("webUrl");
     }
-  }, [])
+  }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -154,7 +149,6 @@ function Dashboard() {
 
           const data = await response.json();
           setBookingCount(data.bookings?.length || 0);
-          console.log("Booking count fetched:", data.bookings?.length || 0);
         } catch (error) {
           console.error("Error fetching booking count:", error);
           setBookingCount(0);
@@ -384,14 +378,18 @@ function Dashboard() {
   };
 
   const handleUpgrade = (id) => {
-    setShow(true)
+    setShow(true);
   };
   const handleCLose = () => {
-    setClose(true)
-    setShow(false)
-  }
+    setClose(true);
+    setShow(false);
+  };
 
   const handleLogout = () => {
+    setPopupType("confirm");
+    setPopupMessage("Are you sure you want to logout?");
+  };
+  const handleLogoutConfirm = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("agents");
@@ -399,7 +397,6 @@ function Dashboard() {
     sessionStorage.clear();
     window.location.href = "/signup";
   };
-
   // Retell Web Client initializationcxcxc
   useEffect(() => {
     const client = new RetellWebClient();
@@ -436,7 +433,6 @@ function Dashboard() {
       setCallLoading(false);
     }
   };
-
   // End call
   const handleEndCall = async () => {
     console.log("isCallInProgress", isCallInProgress);
@@ -445,10 +441,10 @@ function Dashboard() {
       const payload = { agentId: agentDetails.agent_id, callId: callId };
       if (isCallInProgress) {
         const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+           setIsCallInProgress(false);
       }
       setHasFetched(false);
       setIsCallInProgress(false);
-
     }
   };
 
@@ -512,7 +508,7 @@ function Dashboard() {
 
   const handleEditAgent = async (ag) => {
     localStorage.setItem("UpdationMode", "ON");
-    await fetchPrevAgentDEtails( ag.agent_id,ag.businessId)
+    await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
 
     navigate("/business-details", {
       state: { agentId: ag.agent_id, bussinesId: ag.businessId },
@@ -528,37 +524,51 @@ function Dashboard() {
     setPopupMessage(message);
     setPopupType(type);
   };
+
+  const handleTotalCallClick = () => {
+
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("totalCallView", true);
+    navigate("/totalcall-list");
+  };
+
+  function formatName(name) {
+    if (!name) return "";
+
+    if (name.includes(" ")) {
+      return name?.split(" ")[0];
+    } else {
+      if (name?.length > 12) {
+        return name?.substring(0, 10);
+      }
+      return name;
+    }
+  }
+
   return (
     <div>
       <div className={styles.forSticky}>
-        {show ? <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
-          Comming Soon
+        {show ? (
+          <Modal isOpen={show} onClose={handleCLose}>
+            <></>
+            <h2 className={styles.apologyHead}>Comming Soon</h2>
 
-        </h2>
+            <p className={styles.apologyHeadText} apologyHeadText>
+              We apologise, But our paid plans are being tested to pass our
+              "Rigorous QA Process" For now, If your sign-up for a "Free
+              Account", We promise to send you Upgradation Options in your email
+              within next 2 weeks.
+            </p>
 
-          <p className={styles.apologyHeadText} apologyHeadText>
-
-            We apologise, But our paid plans are being tested to pass our "Rigorous QA Process"
-            For now, If your sign-up for a "Free Account", We promise to send you Upgradation Options in your email within next 2 weeks.
-          </p>
-
-          <div className={styles.zz}>
-
-            {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
-
-          </div>
-
-
-        </Modal>
-
-          : null}
+            <div className={styles.zz}>
+              {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
+            </div>
+          </Modal>
+        ) : null}
         <header className={styles.header}>
           <div className={styles.profileSection} ref={profileRef}>
             <div>
-              <button
-                className={styles.avatarBtn}
-                onClick={openUploadModal} // Toggle dropdown visibility on avatar click
-              >
+              <button className={styles.avatarBtn} onClick={openUploadModal}>
                 <img
                   src={
                     user?.profile ||
@@ -576,7 +586,9 @@ function Dashboard() {
             </div>
             <div>
               <p className={styles.greeting}>Hello!</p>
-              <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
+              <h2 className={styles.name}>
+                {formatName(user?.name) || "John Vick"}
+              </h2>
             </div>
             {isUploadModalOpen && (
               <UploadProfile
@@ -649,7 +661,7 @@ function Dashboard() {
         </header>
 
         <section className={styles.agentCard}>
-          <div className={styles.agentInfo}>
+          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
             <img src="svg/total-call.svg" alt="total-call" />
           </div>
@@ -760,7 +772,6 @@ function Dashboard() {
                             setAgentToDelete(agent);
                             setShowDeleteConfirm(true);
                           }}
-
                         >
                           Delete Agent
                         </div>
@@ -1009,13 +1020,19 @@ function Dashboard() {
           </div>
         )}
         {showDeleteConfirm && agentToDelete && (
-          <div className={styles.modalBackdrop} onClick={() => setShowDeleteConfirm(false)}>
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowDeleteConfirm(false)}
+          >
             <div
               className={styles.modalContainer}
               onClick={(e) => e.stopPropagation()}
             >
               <h2>Are you sure?</h2>
-              <p>Do you want to delete agent <strong>{agentToDelete.agentName}</strong>?</p>
+              <p>
+                Do you want to delete agent{" "}
+                <strong>{agentToDelete.agentName}</strong>?
+              </p>
               <div className={styles.modalButtons}>
                 <button
                   className={`${styles.modalButton} ${styles.cancel}`}
@@ -1031,7 +1048,9 @@ function Dashboard() {
                       setShowDeleteConfirm(false);
                       setAgentToDelete(null);
                     } catch (error) {
-                      setPopupMessage(`Failed to delete agent: ${error.message}`);
+                      setPopupMessage(
+                        `Failed to delete agent: ${error.message}`
+                      );
                       setPopupType("failed");
                       setShowDeleteConfirm(false);
                     }
@@ -1043,7 +1062,6 @@ function Dashboard() {
             </div>
           </div>
         )}
-
 
         {/* Call Test Modal */}
         {openCallModal && (
@@ -1125,6 +1143,7 @@ function Dashboard() {
           type={popupType}
           message={popupMessage}
           onClose={() => setPopupMessage("")}
+          onConfirm={handleLogoutConfirm}
         />
       )}
     </div>
@@ -1133,113 +1152,141 @@ function Dashboard() {
 
 export default Dashboard;
 
+const fetchPrevAgentDEtails = async (agent_id, businessId) => {
+  try {
+    const response = await getUserAgentMergedDataForAgentUpdate(
+      agent_id,
+      businessId
+    );
+    const agent = response?.data?.agent;
+    const business = response?.data?.business;
 
+    // console.log('agent',agent)
+    sessionStorage.setItem("UpdationMode", "ON");
+    sessionStorage.setItem("agentName", agent.agentName);
+    sessionStorage.setItem("agentGender", agent.agentGender);
+    sessionStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
+    sessionStorage.setItem("agentLanguage", agent.agentLanguage);
+    sessionStorage.setItem("llmId", agent.llmId);
+    sessionStorage.setItem("agent_id", agent.agent_id);
+    sessionStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
 
-    const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
-        try {  
-        const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
-        console.log('response',response)
-        const agent=response?.data?.agent;
-        const business=response?.data?.business;
-              
-      // console.log('agent',agent)
-      sessionStorage.setItem('UpdationMode','ON')
-      sessionStorage.setItem('agentName',agent.agentName)
-      sessionStorage.setItem('agentGender',agent.agentGender)
-      sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
-      sessionStorage.setItem('agentLanguage',agent.agentLanguage)
-      sessionStorage.setItem('llmId',agent.llmId)
-      sessionStorage.setItem('agent_id',agent.agent_id)
-      sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
-  
-      //need to clear later
-      localStorage.setItem('UpdationMode','ON')
-      localStorage.setItem('agentName',agent.agentName)
-      localStorage.setItem('agentGender',agent.agentGender)
-      localStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
-      localStorage.setItem('agentLanguage',agent.agentLanguage)
-      localStorage.setItem('llmId',agent.llmId)
-      localStorage.setItem('agent_id',agent.agent_id)
-      localStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
-      localStorage.setItem('agentRole',agent.agentRole)
-      localStorage.setItem('agentVoice',agent.agentVoice)
-      localStorage.setItem('agentVoiceAccent',agent.agentAccent)
-      localStorage.setItem('avatar',agent.avatar)
-      sessionStorage.setItem("googleListing",business.googleUrl)
-      sessionStorage.getItem("displayBusinessName",);
-      localStorage.setItem('googleUrl',business.googleUrl)
-      localStorage.setItem('webUrl',business.webUrl)
-      localStorage.setItem('aboutBusiness',business.aboutBusiness)
-      localStorage.setItem('additionalInstruction',business.additionalInstruction)
-      localStorage.setItem('knowledge_base_name',business.knowledge_base_name)
-      localStorage.setItem('knowledge_base_id',business.knowledge_base_id)
-      //need to clear above
+    //need to clear later
+    localStorage.setItem("UpdationMode", "ON");
+    localStorage.setItem("agentName", agent.agentName);
+    localStorage.setItem("agentGender", agent.agentGender);
+    localStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
+    localStorage.setItem("agentLanguage", agent.agentLanguage);
+    localStorage.setItem("llmId", agent.llmId);
+    localStorage.setItem("agent_id", agent.agent_id);
+    localStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
+    localStorage.setItem("agentRole", agent.agentRole);
+    localStorage.setItem("agentVoice", agent.agentVoice);
+    localStorage.setItem("agentVoiceAccent", agent.agentAccent);
+    localStorage.setItem("avatar", agent.avatar);
+    sessionStorage.setItem("googleListing", business.googleUrl);
+    sessionStorage.getItem("displayBusinessName");
+    localStorage.setItem("googleUrl", business.googleUrl);
+    localStorage.setItem("webUrl", business.webUrl);
+    localStorage.setItem("aboutBusiness", business.aboutBusiness);
+    localStorage.setItem(
+      "additionalInstruction",
+      business.additionalInstruction
+    );
+    localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
+    localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
+    //need to clear above
 
-  
-      sessionStorage.setItem(
+    sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
-        businessUrl:business.webUrl,
-        googleListing:business.googleUrl,
-        aboutBusiness:business.aboutBusiness,
-        note:business.additionalInstruction,
-      }))
-  
-      sessionStorage.setItem('agentRole',agent.agentRole)
-      sessionStorage.setItem('agentVoice',agent.agentVoice)
-      sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
-      sessionStorage.setItem('avatar',agent.avatar)
-      sessionStorage.setItem('businessDetails',agent.business)
-      sessionStorage.setItem('businessId',agent.businessId)
-          
-        const businessData = {
-        userId:business.userId  ,
-        businessType:business.businessType,
-        businessName: business.businessName.trim(),
-        businessSize:business.businessSize,
-      };
+        businessUrl: business.webUrl,
+        googleListing: business.googleUrl,
+        aboutBusiness: business.aboutBusiness,
+        note: business.additionalInstruction,
+      })
+    );
 
+    sessionStorage.setItem("agentRole", agent.agentRole);
+    sessionStorage.setItem("agentVoice", agent.agentVoice);
+    sessionStorage.setItem("agentVoiceAccent", agent.agentAccent);
+    sessionStorage.setItem("avatar", agent.avatar);
+    sessionStorage.setItem("businessDetails", agent.business);
+    sessionStorage.setItem("businessId", agent.businessId);
 
-    //  let parsedCustomeServices=saveParse(business.buisnessService, [])
-    //   console.log('business.buisnessService:', parsedCustomeServices);
-    //   console.log('typeof:', typeof parsedCustomeServices);
+    const businessData = {
+      userId: business.userId,
+      businessType: business.businessType,
+      businessName: business.businessName.trim(),
+      businessSize: business.businessSize,
+    };
 
-      let parsedServices = safeParse(business.buisnessService, []); 
-       sessionStorage.setItem("businesServices",JSON.stringify({
-         selectedService:parsedServices,
-          email:business.buisnessEmail
-      }))
+    let parsedServices = safeParse(business.buisnessService, []);
+    sessionStorage.setItem(
+      "businesServices",
+      JSON.stringify({
+        selectedService: parsedServices,
+        email: business.buisnessEmail,
+      })
+    );
 
-      sessionStorage.setItem("businesServices",JSON.stringify({
-         selectedService:parsedServices,
-          email:business.buisnessEmail
-      }))
-  
-      sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-      sessionStorage.setItem('businessLocation',  JSON.stringify({
-      country: business?.country,
-      state: business?.state.trim(),
-      city: business?.city.trim(),
-      address1: business?.address1.trim(),
-      address2: business?.address2.trim(),
-    }))
-  
-  
-  
-      } catch (error) {
-        console.log('An Error Occured while fetching Agent Data for ', error)
+    //custom services
+    // let parsedCustomeServices=safeParse(business.customServices, [])
+    // console.log('business.customServices:', parsedCustomeServices,business.customServices);
+    // console.log('typeof:', typeof parsedCustomeServices);
+    //    sessionStorage.setItem("selectedCustomServices",JSON.stringify({
+    //     parsedCustomeServices
+    // }))
+    //custom servcice save and filter
+    let rawCustomServices = business?.customServices || [];
+
+    if (typeof rawCustomServices === "string") {
+      try {
+        rawCustomServices = JSON.parse(rawCustomServices);
+      } catch (err) {
+        console.error("Failed to parse customServices:", rawCustomServices);
+        rawCustomServices = [];
       }
     }
 
+    const cleanedCustomServices = Array.isArray(rawCustomServices)
+      ? rawCustomServices
+          .map((item) => item?.service?.trim())
+          .filter(Boolean)
+          .map((service) => ({ service }))
+      : [];
 
+
+    sessionStorage.setItem(
+      "selectedCustomServices",
+      JSON.stringify(cleanedCustomServices)
+    );
+
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+    sessionStorage.setItem(
+      "businessLocation",
+      JSON.stringify({
+        country: business?.country,
+        state: business?.state.trim(),
+        city: business?.city.trim(),
+        address1: business?.address1.trim(),
+        address2: business?.address2.trim(),
+      })
+    );
+  } catch (error) {
+    console.log("An Error Occured while fetching Agent Data for ", error);
+  }
+};
 
 const safeParse = (value, fallback = null) => {
   try {
     if (typeof value === "string") {
       const cleaned = value.trim();
-      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) || 
-          (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-          (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
+      if (
+        (cleaned.startsWith("[") && cleaned.endsWith("]")) ||
+        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
+        (cleaned.startsWith('"') && cleaned.endsWith('"'))
+      ) {
         return JSON.parse(cleaned);
       }
     }
