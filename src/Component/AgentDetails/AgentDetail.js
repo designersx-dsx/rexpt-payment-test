@@ -325,7 +325,7 @@ const AgentDashboard = () => {
     );
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate('/dashboard');
   };
   useEffect(() => {
     const client = new RetellWebClient();
@@ -512,7 +512,7 @@ localStorage.removeItem('knowledge_base_id');
                       alt="Sofia"
                       className={styles.agentAvatar}
                     />
-                    <p className={styles.generalDiv}>General </p>
+                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole ||'General'} </p>
                   </div>
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
