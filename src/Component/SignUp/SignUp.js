@@ -172,8 +172,6 @@ const SignUp = () => {
         setOtpSent(true);
         const endTime = Date.now() + 120 * 1000; // 2 mins from now
         setResendEndTime(endTime);
-        // setResendTimer(endTime);
-
         setIsResendDisabled(true);
       } else {
         setShowPopup(true);

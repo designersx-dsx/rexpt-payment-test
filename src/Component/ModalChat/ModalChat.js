@@ -43,7 +43,7 @@ const ModalChat = ({ isOpen2, onClose2, children }) => {
   return (
     <div className={styles.backdrop} >
       <div
-        className={`${styles.modalContainer} ${isClosing ? styles.slideDown : ''}`}
+        className={styles.modalContainer}
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.modal}>
