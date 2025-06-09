@@ -473,6 +473,7 @@ useEffect(() => {
     formData2.append("additionalInstruction", sanitize(note));
     formData2.append("knowledge_base_name", knowledgeBaseName);
     formData2.append("agentId", localStorage.getItem("agent_id"));
+    formData2.append('displayBusinessName',displayBusinessName)
 
     formData3.append('knowledge_base_urls', JSON.stringify(mergedUrls))
 
