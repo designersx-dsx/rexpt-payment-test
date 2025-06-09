@@ -133,6 +133,9 @@ const BusinessLocation = () => {
     // if (address2Submitted) setAddress2Error(validateAddress(val, 'Address line 2'));
     // else setAddress2Error('');
   };
+// console.log('sasas  ',cleanServiceArray(),)
+      const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
+      console.log('selectedCustomServices',customServices)
 
  const handleContinue = async () => {
     setStateSubmitted(true);
@@ -162,15 +165,16 @@ const BusinessLocation = () => {
         address2: address2.trim(),
       })
     );
-
     try {
       setLoading(true);
       
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-      const customServices = JSON.parse(sessionStorage.getItem('selectedServices')) || []; 
-      let response;
+      const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
+      const businesServices =JSON.parse(sessionStorage.getItem('businesServices'))
 
+      let response;
+      console.log('businesServices',businesServices)
       if(localStorage.getItem('UpdationMode')!="ON"){
         console.log('Inside create API');
         response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
@@ -179,7 +183,9 @@ const BusinessLocation = () => {
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
           buisnessEmail: businessDetails?.email,
-          buisnessService: [...businessDetails?.selectedService, ...customServices],  
+          // buisnessService: [...businessDetails?.selectedService, ...customServices],  
+          buisnessService: cleanServiceArray(),
+          customServices:customServices,
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -193,7 +199,9 @@ const BusinessLocation = () => {
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
           buisnessEmail: businessDetails?.email,
-          buisnessService: [...businessDetails?.selectedService, ...customServices], 
+          // buisnessService: [...businessDetails?.selectedService, ...customServices], 
+           buisnessService: cleanServiceArray(),
+          customServices:customServices,  
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -474,3 +482,26 @@ const BusinessLocation = () => {
 };
 
 export default BusinessLocation;
+
+const cleanServiceArray = () => {
+  try {
+
+    let raw 
+    if(localStorage.getItem('UpdationMode')!="ON"){
+    raw=sessionStorage.getItem('businessDetails')
+    }else{
+      raw=raw=sessionStorage.getItem('businessDetails')
+    }
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed?.selectedService)) {
+      return parsed.selectedService;
+    } else if (typeof parsed?.selectedService === 'object' && Array.isArray(parsed.selectedService.selectedService)) {
+      return parsed.selectedService.selectedService;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}

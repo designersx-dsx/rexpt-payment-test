@@ -1098,26 +1098,29 @@ End Call: If the caller is satisfied, invoke end_call function.
                                         1000
                                     );
                                 } else {
-                                    setTimeout(() => navigate("/dashboard"), 1500);
 
-
-                                    setLoading(false)
-                                    sessionStorage.clear()
-                                    localStorage.removeItem('UpdationMode')
-                                    localStorage.removeItem('agentName')
-                                    localStorage.removeItem('agentGender')
-                                    localStorage.removeItem('agentLanguageCode')
-                                    localStorage.removeItem('agentLanguage')
-                                    localStorage.removeItem('llmId')
-                                    localStorage.removeItem('agent_id')
-                                    localStorage.removeItem('knowledgeBaseId')
-                                    localStorage.removeItem('agentRole')
-                                    localStorage.removeItem('agentVoice')
-                                    localStorage.removeItem('agentVoiceAccent')
-                                    localStorage.removeItem('avatar')
-                                    setHasFetched(false)
-
+                                    setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);
+                                setLoading(false)
+                                sessionStorage.clear()
+                                localStorage.removeItem('UpdationMode')
+                                localStorage.removeItem('agentName')
+                                localStorage.removeItem('agentGender')
+                                localStorage.removeItem('agentLanguageCode')
+                                localStorage.removeItem('agentLanguage')
+                                localStorage.removeItem('llmId')
+                                localStorage.removeItem('agent_id')
+                                localStorage.removeItem('knowledgeBaseId')
+                                localStorage.removeItem('agentRole')
+                                localStorage.removeItem('agentVoice')
+                                localStorage.removeItem('agentVoiceAccent')
+                                localStorage.removeItem('avatar')
+                                setHasFetched(false)
                                 }
+
+
+                                    
+
+                            
                             }
                             console.log('response server', response)
                         } catch (error) {

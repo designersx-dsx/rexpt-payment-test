@@ -544,6 +544,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                       setShowPopup(true);
                       setLoading(false)
                       console.log(localStorage.getItem("agent_id") ,localStorage.getItem("bussinesId"))
+                      window.history.pushState(null, "", "/agent-detail");
                       setTimeout(() =>
                       navigate("/agent-detail", {
                         state: {
@@ -702,3 +703,26 @@ End Call: If the caller is satisfied, invoke end_call function.
 
   return { handleCreateAgent };
 };
+
+const cleanServiceArray = () => {
+  try {
+
+    let raw 
+    if(localStorage.getItem('UpdationMode')!="ON"){
+    raw=sessionStorage.getItem('businessDetails')
+    }else{
+      raw=raw=sessionStorage.getItem('businessDetails')
+    }
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed?.selectedService)) {
+      return parsed.selectedService;
+    } else if (typeof parsed?.selectedService === 'object' && Array.isArray(parsed.selectedService.selectedService)) {
+      return parsed.selectedService.selectedService;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
