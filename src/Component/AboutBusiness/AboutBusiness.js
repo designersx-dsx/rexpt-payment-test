@@ -66,7 +66,7 @@ function AboutBusiness() {
     useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
-  const sessionBusinessiD = JSON.parse(sessionStorage.getItem("businessId"));
+  const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
   const businessId1 = sessionBusinessiD?.businessId; 
   const businessId =
   location.state?.businessId ||
@@ -543,7 +543,7 @@ useEffect(() => {
       
       try {
         const response = await axios.patch(
-          `${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId1||businessId}`,
+          `${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,
           formData2,
           {
             headers: {
@@ -596,7 +596,7 @@ useEffect(() => {
             navigate("/agent-detail", {
               state: {
                 agentId: localStorage.getItem("agent_id"),
-                bussinesId: businessId1||businessId,
+                bussinesId: sessionBusinessiD,
               },
             }),
           1000

@@ -396,6 +396,7 @@ const AgentDashboard = () => {
 
   const handleCloseEditagentModalOpen=()=>{
 localStorage.removeItem('selectedStepEditMode');
+localStorage.removeItem('"bId"');
 sessionStorage.removeItem('UpdationMode');
 sessionStorage.removeItem('agentName');
 sessionStorage.removeItem('agentGender');
@@ -1245,6 +1246,8 @@ export default AgentDashboard;
       sessionStorage.setItem('avatar',agent.avatar)
       sessionStorage.setItem('businessDetails',agent.business)
       sessionStorage.setItem('businessId',agent.businessId)
+      sessionStorage.setItem("bId", agent.businessId);
+
           
         const businessData = {
         userId:business.userId  ,
