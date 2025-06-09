@@ -1200,10 +1200,7 @@ export default Dashboard;
       };
 
 
-    //  let parsedCustomeServices=saveParse(business.buisnessService, [])
-    //   console.log('business.buisnessService:', parsedCustomeServices);
-    //   console.log('typeof:', typeof parsedCustomeServices);
-
+ 
       let parsedServices = safeParse(business.buisnessService, []); 
        sessionStorage.setItem("businesServices",JSON.stringify({
          selectedService:parsedServices,
@@ -1214,6 +1211,16 @@ export default Dashboard;
          selectedService:parsedServices,
           email:business.buisnessEmail
       }))
+
+      //custom services
+      // let parsedCustomeServices=safeParse(business.customServices, [])
+      // console.log('business.customServices:', parsedCustomeServices,business.customServices);
+      // console.log('typeof:', typeof parsedCustomeServices);
+      //    sessionStorage.setItem("selectedCustomServices",JSON.stringify({
+      //     parsedCustomeServices
+      // }))
+      sessionStorage.setItem("selectedCustomServices",business?.customServices|| [])
+
   
       sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
       sessionStorage.setItem('businessLocation',  JSON.stringify({

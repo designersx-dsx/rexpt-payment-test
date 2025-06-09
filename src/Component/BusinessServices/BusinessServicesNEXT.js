@@ -84,13 +84,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../../Component/CallTransfer/CallTransfer.module.css';
+import { useAgentCreator } from '../../hooks/useAgentCreator';
+import Loader from '../Loader/Loader';
+import PopUp from '../Popup/Popup';
 
 const AboutBusinessNext = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([{ service: '' }]);
-
+    const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
+     const [showPopup, setShowPopup] = useState(false);
+      const [popupType, setPopupType] = useState(null);
+      const [Loading, setLoading] = useState(null);
+        const [popupMessage, setPopupMessage] = useState("");
+    const EditingMode=localStorage.getItem('UpdationMode')
+    const setHasFetched=true
+  const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "businesServices", // or custom validation
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+  });
   useEffect(() => {
     const savedServices = JSON.parse(sessionStorage.getItem('selectedCustomServices'));
+    // console.log('savedServices',savedServices)
     if (Array.isArray(savedServices)) {
       setServices(savedServices);
     }
@@ -108,6 +127,7 @@ const AboutBusinessNext = () => {
 
   const handleSubmit = () => {
     const filteredServices = services.filter(item => item.service.trim() !== '');
+    // console.log('filteredServices',filteredServices)
     sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
     navigate('/business-locations');
   };
@@ -115,6 +135,17 @@ const AboutBusinessNext = () => {
   const handleSkip = () => {
     navigate('/business-locations');
   };
+
+    const handleSaveEdit = (e) => {
+  e.preventDefault();
+  const filteredServices = services.filter(item => item.service.trim() !== '');
+    // console.log('filteredServices',filteredServices)
+    sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
+
+  console.log('edit hit')
+  handleCreateAgent();
+
+};
 
   return (
     <div className={styles.CallTransferMain1}>
@@ -144,9 +175,9 @@ const AboutBusinessNext = () => {
       ))}
 
       <div onClick={handleSkip} className={styles.skipButton}>
-        <button>Skip for now</button>
+       {stepEditingMode ? "" : <button>Skip for now</button>} 
       </div>
-
+      {stepEditingMode!='ON'?    
       <div className={styles.Btn}>
         <div type="submit">
           <div className={styles.btnTheme} onClick={handleSubmit}>
@@ -155,6 +186,21 @@ const AboutBusinessNext = () => {
           </div>
         </div>
       </div>
+      :
+      <div className={styles.Btn}>
+        <div type="submit">
+          <div className={styles.btnTheme} onClick={handleSaveEdit}>
+            <img src="svg/svg-theme2.svg" alt="Submit" />
+            <p>{Loading?<Loader size={20}/> :'Save Edits'}</p>
+          </div>
+        </div>
+      </div>
+  }
+       <PopUp
+                  type={popupType}
+                  message={popupMessage}
+                  onClose={() => setPopupMessage("")}  // Close the popup
+              />
     </div>
   );
 };

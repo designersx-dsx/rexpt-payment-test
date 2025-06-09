@@ -53,7 +53,7 @@ const BusinessLocation = () => {
       navigate,
       setHasFetched,
     });
-
+    // console.log('loading',loading)
   useEffect(() => {
     const businessLocation = JSON.parse(sessionStorage.getItem('businessLocation'));
     if (businessLocation) {
@@ -135,7 +135,6 @@ const BusinessLocation = () => {
   };
 // console.log('sasas  ',cleanServiceArray(),)
       const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
-      console.log('selectedCustomServices',customServices)
 
  const handleContinue = async () => {
     setStateSubmitted(true);
@@ -174,9 +173,7 @@ const BusinessLocation = () => {
       const businesServices =JSON.parse(sessionStorage.getItem('businesServices'))
 
       let response;
-      console.log('businesServices',businesServices)
       if(localStorage.getItem('UpdationMode')!="ON"){
-        console.log('Inside create API');
         response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
           userId,
           businessName: businessDetails?.businessName,
@@ -212,7 +209,7 @@ const BusinessLocation = () => {
       }
 
       const id = response.data.businessId;
-      console.log('Response from the server:', response);
+      // console.log('Response from the server:', response);
       
       sessionStorage.setItem(
         'businessId',
@@ -253,7 +250,6 @@ const BusinessLocation = () => {
 
 
   useEffect(() => {
-    console.log(search)
     if (search) {
       const filtered = countries.filter((country) =>
         country.name.toLowerCase().includes(search.toLowerCase())
@@ -294,10 +290,11 @@ const BusinessLocation = () => {
       })
     );
   console.log('edit hit')
+  
   setTimeout(()=>{
     handleCreateAgent();
   },800)
-  
+  setLoading(false)
   
 };
 

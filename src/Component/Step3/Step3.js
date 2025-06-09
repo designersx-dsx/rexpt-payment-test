@@ -38,24 +38,25 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [gender, setGender] = useState(''); // default
   const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
   const agentGender = sessionStorage.getItem('agentGender')
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(sessionStorage.getItem('avatar')||null);
   const EditingMode = localStorage.getItem("UpdationMode");
+   const updationMode = localStorage.getItem("UpdationMode") == "ON" ||"";
+  const storedAvatarImg = sessionStorage.getItem('avatar') ||"";
 
   console.log('agentGender',agentName)
 useEffect(() => {
-  const updationMode = localStorage.getItem("UpdationMode") === "ON" ||"";
-  const storedAvatarImg = localStorage.getItem('avatar') ||"";
+ 
 
   if (updationMode) {
-const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img === storedAvatarImg);
+    const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img === storedAvatarImg);
 
     if (matchedAvatarIndex !== -1) {
       const matchedAvatar = avatars[agentGender][matchedAvatarIndex];
       setSelectedAvatar(matchedAvatar);
       setAvatar(matchedAvatar?.img);
+      console.log('---s--s-s-s'.selectedAvatar?.img,matchedAvatar?.img)
       sliderRef.current?.slickGoTo(matchedAvatarIndex); 
     }
-
     const storedName = localStorage.getItem('agentName');
     if (storedName) {
       setAgentName(storedName);
@@ -80,25 +81,33 @@ const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img 
   };
   //  console.log('avatar',selectedAvatar)
   useEffect(() => {
-    if (agentGender && avatars[agentGender]) {
-      const genderAvatars = avatars[agentGender];
-      const firstAvatar = genderAvatars[0]?.img || null;
 
-      setGender(agentGender);
-      setAvailableAvatars(genderAvatars);
-      setAvatar(firstAvatar);
-      sessionStorage.setItem('avatar', firstAvatar);
-    } else {
-      // Fallback: use 'Male' as default if agentGender is invalid
-      const defaultGender = 'Male';
-      const defaultAvatars = avatars[defaultGender];
-      const firstAvatar = defaultAvatars[0]?.img || null;
-
-      setGender(defaultGender);
-      setAvailableAvatars(defaultAvatars);
-      setAvatar(firstAvatar);
-      sessionStorage.setItem('avatar', firstAvatar);
+    if(updationMode){
+         setGender(agentGender);
+          setAvatar(selectedAvatar);
+    }else{
+         if (agentGender && avatars[agentGender]) {
+          const genderAvatars = avatars[agentGender];
+          const firstAvatar = genderAvatars[0]?.img || null;
+          console.log('inside if')
+          setGender(agentGender);
+          setAvailableAvatars(genderAvatars);
+          setAvatar(firstAvatar);
+          sessionStorage.setItem('avatar', firstAvatar);
+        } else {
+          // Fallback: use 'Male' as default if agentGender is invalid
+          const defaultGender = 'Male';
+          const defaultAvatars = avatars[defaultGender];
+          const firstAvatar = defaultAvatars[0]?.img || null;
+          console.log('inside else')
+          setGender(defaultGender);
+          setAvailableAvatars(defaultAvatars);
+          setAvatar(firstAvatar);
+          sessionStorage.setItem('avatar', firstAvatar);
+        }
     }
+   
+   
   }, [agentGender]);
 
   const settings = {
