@@ -114,3 +114,23 @@
 
 
  }
+
+ /* calendar css */
+
+ .react-calendar {   
+    font-family: "Lato", sans-serif !important;    
+} 
+
+.react-calendar__tile--active {
+    background: #6624eb !important;
+    color: #ffffff !important;
+    border: 1px solid #E0E5F2 !important;
+    border-radius: 4px !important;
+}
+
+.react-calendar__month-view__days__day--weekend {
+    color: #6a0dad !important;
+}
+
+/* End calendar css */
+ 
