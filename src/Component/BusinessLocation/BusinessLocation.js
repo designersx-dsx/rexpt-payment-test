@@ -87,14 +87,14 @@ const BusinessLocation = () => {
   const validateState = (value) => {
     if (!value.trim()) return 'State is required.';
     if (containsEmoji(value)) return 'Emojis are not allowed in state.';
-    if (/[^a-zA-Z\s.-]/.test(value)) return 'State contains invalid characters.';
+    // if (/[^a-zA-Z\s.-]/.test(value)) return 'State contains invalid characters.';
     return '';
   };
 
   const validateCity = (value) => {
     if (!value.trim()) return 'City is required.';
     if (containsEmoji(value)) return 'Emojis are not allowed in city.';
-    if (/[^a-zA-Z\s.-]/.test(value)) return 'City contains invalid characters.';
+    // if (/[^a-zA-Z\s.-]/.test(value)) return 'City contains invalid characters.';
     return '';
   };
 
@@ -102,7 +102,7 @@ const BusinessLocation = () => {
     if (!value.trim()) return `${fieldName} is required.`;
     if (containsEmoji(value)) return `Emojis are not allowed in ${fieldName.toLowerCase()}.`;
     if (/[^a-zA-Z0-9\s,.\-#/]/.test(value))
-      return `${fieldName} contains invalid characters.`;
+      // return `${fieldName} contains invalid characters.`;
     return '';
   };
 
