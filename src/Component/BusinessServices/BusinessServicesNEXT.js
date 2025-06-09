@@ -152,9 +152,13 @@ sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices
 
     const handleSaveEdit = (e) => {
   e.preventDefault();
-  const filteredServices = services.filter(item => item.service.trim() !== '');
-    console.log('filteredServices',filteredServices)
-    sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
+  
+   const filteredServices = services
+  .map(item => item.service.trim())
+  .filter(service => service !== '')
+  .map(service => ({ service }));
+
+sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
 
   console.log('edit hit')
   handleCreateAgent();

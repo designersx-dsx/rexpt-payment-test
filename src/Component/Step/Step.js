@@ -72,19 +72,24 @@ const Step = () => {
         "Your Business Services";
     const languageSelect = (sessionStorage?.getItem("agentLanguage"))
 
-    let selectedCustomServices = [];
+    // let selectedCustomServices = [];
 
-    try {
-        const stored = JSON.parse(sessionStorage.getItem("selectedCustomServices"));
-        if (Array.isArray(stored)) {
-            selectedCustomServices = stored;
-        }
-    } catch (error) {
-        console.error("Invalid data in sessionStorage:", error);
-    }
+    // try {
+    //     const stored = JSON.parse(sessionStorage.getItem("selectedCustomServices"));
+    //     if (Array.isArray(stored)) {
+    //         selectedCustomServices = stored;
+    //     }
+    // } catch (error) {
+    //     console.error("Invalid data in sessionStorage:", error);
+    // }
+    const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+    const cleanedCustomServices = rawCustomServices
+    .map(item => item?.service?.trim())
+    .filter(Boolean)
+    .map(service => ({ service }));
 
     const businessServices = business?.selectedService || [];
-    const customServices = selectedCustomServices?.map(item =>
+    const customServices = cleanedCustomServices?.map(item =>
         typeof item === 'string' ? item : item.service
     );
     const businessServiceNames = businessServices?.map(item => item);
