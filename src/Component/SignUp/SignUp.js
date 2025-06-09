@@ -125,6 +125,8 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
+          
+
           navigate("/dashboard", { replace: true });
         } else {
           setUser({
@@ -134,7 +136,8 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
-          navigate("/details");
+            localStorage.setItem("onboardComplete", "false");
+          navigate("/details", { replace: true });
         }
       } else {
         setPopupType("failed");

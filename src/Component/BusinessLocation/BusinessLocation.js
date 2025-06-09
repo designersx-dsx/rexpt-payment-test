@@ -105,7 +105,6 @@ const BusinessLocation = () => {
       // return `${fieldName} contains invalid characters.`;
     return '';
   };
-
   const handleStateChange = (e) => {
     const val = e.target.value;
     setState(val);

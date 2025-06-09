@@ -19,18 +19,18 @@ const BusinessDetails = () => {
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
-  const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
-  const EditingMode=localStorage.getItem('UpdationMode')
-  const setHasFetched=true
-const { handleCreateAgent } = useAgentCreator({
-  stepValidator: () => "BusinessDetails", // or custom validation
-  setLoading,
-  setPopupMessage,
-  setPopupType,
-  setShowPopup,
-  navigate,
-  setHasFetched,
-});
+  const stepEditingMode = localStorage.getItem('UpdationModeStepWise')
+  const EditingMode = localStorage.getItem('UpdationMode')
+  const setHasFetched = true
+  const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "BusinessDetails", // or custom validation
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+  });
   const [businessNameError, setBusinessNameError] = useState("");
   const [businessSizeError, setBusinessSizeError] = useState("");
   const [businessTypeError, setBusinessTypeError] = useState("");
@@ -103,24 +103,24 @@ const { handleCreateAgent } = useAgentCreator({
     "501 to 1000",
     "1000+",
   ];
-const stored = sessionStorage.getItem("businessDetails");
-useEffect(() => {
-  try {
-    const stored = sessionStorage.getItem("businessDetails");
+  const stored = sessionStorage.getItem("businessDetails");
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("businessDetails");
 
-    if (stored && stored !== "undefined" && stored !== "null") {
-      const businessDetails = JSON.parse(stored);
+      if (stored && stored !== "undefined" && stored !== "null") {
+        const businessDetails = JSON.parse(stored);
 
-      if (businessDetails) {
-        setBusinessType(businessDetails.businessType || "");
-        setBusinessName(businessDetails.businessName || "");
-        setBusinessSize(businessDetails.businessSize || "");
+        if (businessDetails) {
+          setBusinessType(businessDetails.businessType || "");
+          setBusinessName(businessDetails.businessName || "");
+          setBusinessSize(businessDetails.businessSize || "");
+        }
       }
+    } catch (err) {
+      console.error("Failed to parse businessDetails from sessionStorage:", err);
     }
-  } catch (err) {
-    console.error("Failed to parse businessDetails from sessionStorage:", err);
-  }
-}, []);
+  }, []);
   const containsEmoji = (text) => {
     return /[\p{Emoji_Presentation}\u200d]/u.test(text);
   };
@@ -136,7 +136,6 @@ useEffect(() => {
   };
   const validateBusinessSize = (value) => {
     if (!value.trim()) return "Business size is required.";
-    console.log(value)
     const allowedValues = [
       "1 to 10 employees",
       "10 to 50 employees",
@@ -224,24 +223,23 @@ useEffect(() => {
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
     navigate("/business-services");
   };
-
-const handleSaveEdit = (e) => {
-  e.preventDefault();
-      const businessData = {
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    const businessData = {
       userId,
       businessType,
       businessName: businessName.trim(),
       businessSize,
     };
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-  console.log('edit hit')
-  handleCreateAgent();
-  
-};
+    console.log('edit hit')
+    handleCreateAgent();
+
+  };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{EditingMode?' Edit Business Details' :'Business Details' }</h1>
+      <h1 className={styles.title}>{EditingMode ? ' Edit Business Details' : 'Business Details'}</h1>
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
@@ -366,25 +364,25 @@ const handleSaveEdit = (e) => {
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
-      {stepEditingMode!='ON'?    
-      <div onClick={handleLoginClick}>
-        <div type="submit">
-          <div className={styles.btnTheme}>
-            <img src="svg/svg-theme.svg" alt="" />
-            <p>Continue</p>
+      {stepEditingMode != 'ON' ?
+        <div onClick={handleLoginClick}>
+          <div type="submit">
+            <div className={styles.btnTheme}>
+              <img src="svg/svg-theme.svg" alt="" />
+              <p>Continue</p>
+            </div>
           </div>
         </div>
-      </div>
-      :
-       <div onClick={handleSaveEdit}>
-        <div type="submit">
-          <div className={styles.btnTheme}>
-            <img src="svg/svg-theme.svg" alt="" />
-            <p>Save Edits</p>
+        :
+        <div onClick={handleSaveEdit}>
+          <div type="submit">
+            <div className={styles.btnTheme}>
+              <img src="svg/svg-theme.svg" alt="" />
+              <p>Save Edits</p>
+            </div>
           </div>
         </div>
-      </div>
-        }
+      }
       {/* <div onClick={handleLoginClick}>
         <div type="submit">
           <div className={styles.btnTheme}>
@@ -416,9 +414,9 @@ const safeParse = (value, fallback = null) => {
   try {
     if (typeof value === "string") {
       const cleaned = value.trim();
-      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) || 
-          (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-          (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
+      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) ||
+        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
+        (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
         return JSON.parse(cleaned);
       }
     }
