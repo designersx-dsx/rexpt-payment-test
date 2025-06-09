@@ -67,7 +67,7 @@ function AboutBusiness() {
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("businessId"));
-  const businessId1 = sessionBusinessiD?.businessId; // This is 251
+  const businessId1 = sessionBusinessiD?.businessId; 
   const businessId =
   location.state?.businessId ||
   sessionBusinessiD ||
@@ -78,7 +78,7 @@ function AboutBusiness() {
 
   const setHasFetched = true;
   const { handleCreateAgent } = useAgentCreator({
-    stepValidator: () => "AboutBusiness", // or custom validation
+    stepValidator: () => "AboutBusiness",
     setLoading,
     setPopupMessage,
     setPopupType,
@@ -87,29 +87,29 @@ function AboutBusiness() {
     setHasFetched,
   });
 
-  const initAutocomplete = () => {
-    const autocomplete = new window.google.maps.places.Autocomplete(
-      document.getElementById("google-autocomplete"),
-      {
-        types: ["establishment"],
-        fields: ["place_id", "name", "url"],
-      }
-    );
+ const initAutocomplete = () => {
+  const autocomplete = new window.google.maps.places.Autocomplete(
+    document.getElementById("google-autocomplete"),
+    {
+      types: ["establishment"],
+      fields: ["place_id", "name", "url"],
+    }
+  );
 
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      if (place.place_id) {
-        const businessUrl = place.url;
-        const businessName = place.name;
-        setGoogleListing(businessUrl);
-        setDisplayBusinessName(businessName);
-        sessionStorage.setItem("googleListing", businessUrl);
-        sessionStorage.setItem("displayBusinessName", businessName);
-      }
-    });
-  };
+  autocomplete.addListener("place_changed", () => {
+    const place = autocomplete.getPlace();
+    if (place.place_id) {
+      const businessUrl = place.url;
+      const businessName = place.name;
+      setGoogleListing(businessUrl);
+      setDisplayBusinessName(businessName);
+      sessionStorage.setItem("googleListing", businessUrl);
+      sessionStorage.setItem("displayBusinessName", businessName);
+      fetchPlaceDetails(place.place_id); 
+    }
+  });
+};
 
-  // Effect to initialize Google Places autocomplete when the component mounts
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
@@ -166,22 +166,32 @@ function AboutBusiness() {
     const googleLink = `https://www.google.com/search?q=${encodeURIComponent(
       place.name + " " + address
     )}`;
-    setGoogleListing(googleLink); // Save Google Listing URL but don't display it
+    setGoogleListing(googleLink); 
   };
 
-  const handleUrlVerification = async (url) => {
-    setUrlVerificationInProgress(true);
-    const result = await validateWebsite(url);
-    if (result.valid) {
-      setIsVerified(true);
-      setBusinessUrlError("");
-      sessionStorage.setItem("businessUrl", url);
-    } else {
-      setIsVerified(false);
-      setBusinessUrlError("Invalid URL");
-    }
-    setUrlVerificationInProgress(false);
-  };
+ const handleUrlVerification = async (url) => {
+  setUrlVerificationInProgress(true);
+  const result = await validateWebsite(url);
+  if (result.valid) {
+    setIsVerified(true);
+    setBusinessUrlError("");
+    sessionStorage.setItem("businessUrl", url);
+    localStorage.setItem("isVerified", true);  
+  } else {
+    setIsVerified(false);
+    setBusinessUrlError("Invalid URL");
+    localStorage.setItem("isVerified", false);
+  }
+  setUrlVerificationInProgress(false);
+};
+
+useEffect(() => {
+  const savedVerifiedStatus = localStorage.getItem("isVerified");
+  if (savedVerifiedStatus !== null) {
+    setIsVerified(savedVerifiedStatus === 'true');  
+  }
+}, []);
+
 
   const handleBlur = () => {
     if (businessUrl.trim()) {
@@ -316,28 +326,9 @@ function AboutBusiness() {
     return !!pattern.test(url);
   };
 
-  const validateBusinessUrl = (urlPath) => {
-    const fullUrl = urlPath.trim();
-    if (!urlPath.trim()) return "Business URL is required.";
-    if (!isValidUrl(fullUrl)) return "Please enter a valid URL.";
-
-    return "";
-  };
-
-  const validateGoogleListing = (urlPath) => {
-    const fullUrl = urlPath.trim();
-    if (!urlPath.trim()) return "Google Listing URL is required.";
-    if (!isValidUrl(fullUrl)) return "Please enter a valid URL.";
-    return "";
-  };
 
   const validateAboutBusiness = (text) => {
     if (!text.trim()) return "Business description is required.";
-    return "";
-  };
-
-  const validateFiles = (filesArray) => {
-    if (filesArray.length === 0) return "At least one file must be uploaded.";
     return "";
   };
 

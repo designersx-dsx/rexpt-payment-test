@@ -26,12 +26,12 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
         options.find((opt) => opt.label === selectedSentiment) || options[0]
     );
 
-    const handleChange = (e) => {
-        const selectedId = +e.target.value;
-        const selectedOption = options.find((opt) => opt.id === selectedId);
-        setSelected(selectedOption);
-        onFilter(selectedOption.label);
-    };
+   const handleChange = (e) => {
+    const selectedId = +e.target.value;
+    const selectedOption = options.find((opt) => opt.id === selectedId);
+    setSelected(selectedOption);
+    onFilter(selectedOption.label);
+};
     const handleBack = () => {
         navigate(-1)
     }
@@ -48,7 +48,10 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
             setOpen(false);
         }
     };
-
+const handleFilterChange = (newFilters) => {
+  onFilterChange(newFilters); // existing filter logic
+  setIsOpen(false); // close the OffCanvas
+};
     return (
         <div>
 
@@ -156,20 +159,17 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
                             <p>Agent</p>
 
                             <div className={styles.selectWrapper}>
-                                <select className={styles.agentSelect1}
+                              <select 
+                                    className={styles.agentSelect1}
                                     value={selectedAgentId}
-                                    onChange={(e) => onAgentChange(e.target.value)}
-
+                                    onChange={(e) => onAgentChange(e.target.value)} 
                                 >
-                                    {isAgents?.map((agent, i) => (
-
-                                        <option key={agent.agent_id
-                                        } value={agent.agent_id
-                                        } >
+                                    <option value="all">All Agents</option> 
+                                    {isAgents?.map(agent => (
+                                        <option key={agent.agent_id} value={agent.agent_id}>
                                             {agent.agentName.length > 12 ? agent.agentName.slice(0, 10) + '...' : agent.agentName}
                                         </option>
                                     ))}
-
                                 </select>
                             </div>
 
@@ -190,7 +190,7 @@ function HeaderFilter({ options, selectedSentiment, onFilter, isAgents, onRangeC
                 showCloseBtn={true}
             >
                 {/* Put any content you want inside offcanvas here */}
-                <SideFilter filters={filters} onFilterChange={onFilterChange} isLeadTypeSummary={isCallSummary} />
+                <SideFilter filters={filters} onFilterChange={handleFilterChange} isLeadTypeSummary={isCallSummary} />
             </OffCanvas>
 
         </div>

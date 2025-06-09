@@ -25,12 +25,8 @@ import Modal from '../Modal2/Modal2'
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
-
-
-
   const navigate = useNavigate();
   const { user } = useUser();
-  console.log(agents, "agents")
   // Retell Web Client states
   const [retellWebClient, setRetellWebClient] = useState(null);
   const [isCallActive, setIsCallActive] = useState(false);
@@ -154,7 +150,6 @@ function Dashboard() {
 
           const data = await response.json();
           setBookingCount(data.bookings?.length || 0);
-          console.log("Booking count fetched:", data.bookings?.length || 0);
         } catch (error) {
           console.error("Error fetching booking count:", error);
           setBookingCount(0);
@@ -392,14 +387,19 @@ function Dashboard() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    setPopupType('confirm');
+    setPopupMessage('Are you sure you want to logout?');
+   
+
+  };
+  const handleLogoutConfirm = () => {
+      localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("agents");
     localStorage.clear();
     sessionStorage.clear();
     window.location.href = "/signup";
   };
-
   // Retell Web Client initializationcxcxc
   useEffect(() => {
     const client = new RetellWebClient();
@@ -512,7 +512,7 @@ function Dashboard() {
 
   const handleEditAgent = async (ag) => {
     localStorage.setItem("UpdationMode", "ON");
-    await fetchPrevAgentDEtails( ag.agent_id,ag.businessId)
+    await fetchPrevAgentDEtails(ag.agent_id, ag.businessId)
 
     navigate("/business-details", {
       state: { agentId: ag.agent_id, bussinesId: ag.businessId },
@@ -528,6 +528,26 @@ function Dashboard() {
     setPopupMessage(message);
     setPopupType(type);
   };
+
+  const handleTotalCallClick = () => {
+  navigate("/totalcall-list");
+};
+
+  function formatName(name) {
+  if (!name) return "";  
+
+  if (name.includes(" ")) {
+    return name?.split(" ")[0];
+  } else {
+  
+    if (name?.length > 12) {
+   
+      return name?.substring(0, 10);
+    }
+    return name;
+  }
+}
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -557,7 +577,7 @@ function Dashboard() {
             <div>
               <button
                 className={styles.avatarBtn}
-                onClick={openUploadModal} // Toggle dropdown visibility on avatar click
+                onClick={openUploadModal} 
               >
                 <img
                   src={
@@ -576,7 +596,7 @@ function Dashboard() {
             </div>
             <div>
               <p className={styles.greeting}>Hello!</p>
-              <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
+              <h2 className={styles.name}>{formatName(user?.name )|| "John Vick"}</h2>
             </div>
             {isUploadModalOpen && (
               <UploadProfile
@@ -649,7 +669,7 @@ function Dashboard() {
         </header>
 
         <section className={styles.agentCard}>
-          <div className={styles.agentInfo}>
+          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
             <img src="svg/total-call.svg" alt="total-call" />
           </div>
@@ -1125,6 +1145,7 @@ function Dashboard() {
           type={popupType}
           message={popupMessage}
           onClose={() => setPopupMessage("")}
+           onConfirm={handleLogoutConfirm}
         />
       )}
     </div>
@@ -1132,7 +1153,6 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
 
 
     const fetchPrevAgentDEtails=async(agent_id,businessId)=>{

@@ -422,6 +422,7 @@ useEffect(() => {
         setBusinessName(businessDetails.businessName || "");
         setBusinessSize(businessDetails.businessSize || "");
         // For selectedService: if it's an array, use it; if a string, try to parse it.
+
         if (Array.isArray(businessDetails.selectedService)) {
           setSelectedService(businessDetails.selectedService);
         } else if (typeof businessDetails.selectedService === "string") {
@@ -445,6 +446,7 @@ useEffect(() => {
         try {
           let finalSelected = [];
 
+
           if (typeof businessServices.selectedService === "string") {
             const parsed = JSON.parse(businessServices.selectedService);
             if (Array.isArray(parsed)) {
@@ -453,6 +455,7 @@ useEffect(() => {
           } else if (Array.isArray(businessServices.selectedService)) {
             finalSelected = businessServices.selectedService;
           }
+
 
           setSelectedService(finalSelected);
         } catch (err) {
@@ -510,11 +513,12 @@ const handleServiceToggle = (service) => {
                     email,
                 })
             )
-//   console.log('edit hit')
+
   handleCreateAgent();
 
 };
     
+
     return (
          <div className={styles.container}>
             <h1 className={styles.title}>{EditingMode?'Edit: Business Services': 'Business Services'}</h1>
