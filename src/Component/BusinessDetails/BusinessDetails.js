@@ -5,6 +5,7 @@ import PopUp from "../Popup/Popup";
 import decodeToken from "../../lib/decodeToken";
 import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
+import Loader from "../Loader/Loader";
 
 const BusinessDetails = () => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const BusinessDetails = () => {
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
   const location = useLocation();
   const agentDetails = location.state;
+
   const businessTypes = [
     {
       type: "Real Estate Broker",
@@ -364,36 +366,26 @@ const BusinessDetails = () => {
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
-      {stepEditingMode != 'ON' ?
-        <div onClick={handleLoginClick}>
-          <div type="submit">
-            <div className={styles.btnTheme}>
-              <img src="svg/svg-theme.svg" alt="" />
-              <p>Continue</p>
-            </div>
-          </div>
-        </div>
-        :
-        <div onClick={handleSaveEdit}>
-          <div type="submit">
-            <div className={styles.btnTheme}>
-              <img src="svg/svg-theme.svg" alt="" />
-              <p>Save Edits</p>
-            </div>
-          </div>
-        </div>
-      }
-      {/* <div onClick={handleLoginClick}>
+{stepEditingMode!='ON'?    
+      <div onClick={handleLoginClick}>
         <div type="submit">
           <div className={styles.btnTheme}>
             <img src="svg/svg-theme.svg" alt="" />
-          
-              
-           
-            
+            <p>Continue</p>
           </div>
         </div>
-      </div> */}
+      </div>
+      :
+       <div onClick={handleSaveEdit}>
+        <div type="submit">
+          <div className={styles.btnTheme}>
+            <img src="svg/svg-theme.svg" alt="" />
+            <p>{Loading?<Loader size={20}/>:'Save Edits'}</p>
+          </div>
+        </div>
+      </div>
+        }
+     
 
       {showPopup && (
         <PopUp

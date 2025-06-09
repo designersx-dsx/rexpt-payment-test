@@ -36,7 +36,7 @@ const AgentDashboard = () => {
     setCurrentAgentId,
     getAgentById,
   } = useAgentStore();
-  console.log('agentDetails',agentDetails)
+  // console.log('agentDetails',agentDetails)
 
   const [isModalOpen, setModalOpen] = useState(localStorage.getItem('UpdationModeStepWise')=='ON');
    const { setHasFetched } =      useDashboardStore();
@@ -394,6 +394,7 @@ const AgentDashboard = () => {
 
 
   const handleCloseEditagentModalOpen=()=>{
+localStorage.removeItem('selectedStepEditMode');
 sessionStorage.removeItem('UpdationMode');
 sessionStorage.removeItem('agentName');
 sessionStorage.removeItem('agentGender');
@@ -1206,7 +1207,7 @@ export default AgentDashboard;
   
       //need to clear later
        localStorage.setItem('UpdationMode','ON')
-    localStorage.setItem('UpdationModeStepWise','ON')
+      localStorage.setItem('UpdationModeStepWise','ON')
       localStorage.setItem('agentName',agent.agentName)
       localStorage.setItem('agentGender',agent.agentGender)
       localStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
@@ -1250,17 +1251,43 @@ export default AgentDashboard;
         businessName: business.businessName.trim(),
         businessSize:business.businessSize,
       };
-  
+      
   
       let parsedServices = safeParse(business.buisnessService, []); 
-      console.log('business.buisnessService:', parsedServices);
-      console.log('typeof:', typeof parsedServices);
+      // console.log('business.buisnessService:', parsedServices);
+      // console.log('typeof:', typeof parsedServices);
   
       sessionStorage.setItem("businesServices",JSON.stringify({
          selectedService:parsedServices,
           email:business.buisnessEmail
       }))
-  
+      //custome servce filter and save
+      let rawCustomServices = business?.customServices || [];
+
+      if (typeof rawCustomServices === 'string') {
+        try {
+          rawCustomServices = JSON.parse(rawCustomServices);
+        } catch (err) {
+          console.error("Failed to parse customServices:", rawCustomServices);
+          rawCustomServices = [];
+        }
+      }
+
+      const cleanedCustomServices = Array.isArray(rawCustomServices)
+        ? rawCustomServices
+            .map(item => item?.service?.trim())
+            .filter(Boolean)
+            .map(service => ({ service }))
+        : [];
+
+      console.log("Final cleaned services to store:", cleanedCustomServices);
+
+      sessionStorage.setItem(
+        "selectedCustomServices",
+        JSON.stringify(cleanedCustomServices)
+      );
+      
+      sessionStorage.setItem("selectedCustomServices",business?.customServices|| [])
       sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
       sessionStorage.setItem('businessLocation',  JSON.stringify({
       country: business?.country,
@@ -1269,9 +1296,6 @@ export default AgentDashboard;
       address1: business?.address1.trim(),
       address2: business?.address2.trim(),
     }))
-  
-  
-  
       } catch (error) {
         console.log('An Error Occured while fetching Agent Data for ', error)
       }

@@ -1089,16 +1089,16 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setPopupMessage("Agent Updated successfully!");
                                 setShowPopup(true);
                                 if (stepEditingMode) {
-                                    setTimeout(
-                                        () =>
+                                    // setTimeout(
+                                    //     () =>
                                             navigate("/agent-detail", {
                                                 state: {
                                                     agentId: agentId || sessionStorage.getItem("agentId"),
-                                                    bussinesId: businessIdObj.businessId,
+                                                    bussinesId: businessIdObj.businessId ||sessionStorage.getItem('businessId'),
                                                 },
-                                            }),
-                                        1000
-                                    );
+                                            })
+                                    //     1000
+                                    // );
                                 } else {
 
                                     setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);

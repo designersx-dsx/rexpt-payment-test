@@ -69,12 +69,13 @@ function AboutBusiness() {
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("businessId"));
   const businessId1 = sessionBusinessiD?.businessId; 
   const businessId =
-    location.state?.businessId ||
-    sessionBusinessiD ||
-    sessionBusinessiD?.businessId;
+  location.state?.businessId ||
+  sessionBusinessiD ||
+  sessionBusinessiD?.businessId;
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const EditingMode = localStorage.getItem("UpdationMode");
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+
   const setHasFetched = true;
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
@@ -223,7 +224,9 @@ useEffect(() => {
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
       if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
       if (savedData.note) setNote(savedData.note);
-
+      if (savedData.googleListing) {
+      setGoogleListing(savedData.googleListing);
+    }
       // rebuild File objects
       if (Array.isArray(savedData.files) && savedData.files.length) {
         const rebuiltFiles = savedData.files.map((d, i) =>
@@ -503,9 +506,23 @@ useEffect(() => {
       setLoading(true);
       // formData2.append("knowledge_base_id",response?.data?.knowledge_base_id||"")
 
-      console.log('knowledgeBaseId--------------', knowledgeBaseId)
-      // if (!knowledgeBaseId) {
-        const response = await axios.post(
+      let knowledge_Base_ID=knowledgeBaseId;
+
+      console.log('knowledgeBaseId--------------', knowledgeBaseId,knowledge_Base_ID)
+      if(knowledge_Base_ID !== null && knowledge_Base_ID !== undefined && knowledge_Base_ID !== 'null' && knowledge_Base_ID !== 'undefined' && knowledge_Base_ID !== ''){
+        console.log('inside add-knowledge-base-sources ')
+           const response = await axios.post(
+          `https://api.retellai.com/add-knowledge-base-sources/${knowledge_Base_ID}`,
+          formData3,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          console.log('add-knowledge-base-sources knowledgeBaseId updated',response)
+      }else{
+          const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
           formData,
           {
@@ -516,14 +533,16 @@ useEffect(() => {
           }
         );
         formData2.append("knowledge_base_id", response.data.knowledge_base_id);
+        knowledge_Base_ID=response.data.knowledge_base_id;
         sessionStorage.setItem(
           "knowledgeBaseId",
           response.data.knowledge_base_id
         );
-        
-         try {
-        response = await axios.patch(
-          `${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId1}`,
+      }
+      
+      try {
+        const response = await axios.patch(
+          `${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId1||businessId}`,
           formData2,
           {
             headers: {
@@ -532,89 +551,56 @@ useEffect(() => {
             },
           }
         );
-        // console.log('response added KnowledeBase', response)
+        console.log('response added KnowledeBase local', response)
       } catch (error) {
         console.log("error while saving knowledge bas in Database", error);
       }
-      // } else {
-        // const response = await axios.post(
-        //   `https://api.retellai.com/add-knowledge-base-sources/${knowledgeBaseId}`,
-        //   formData3,
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-        //       "Content-Type": "multipart/form-data",
-        //     },
-        //   })
-      // }
 
-      // console.log("businessId", businessId);
-      // try {
-      //   response = await axios.patch(
-      //     `${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId}`,
-      //     formData2,
-      //     {
-      //       headers: {
-      //         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-      //         "Content-Type": "multipart/form-data",
-      //       },
-      //     }
-      //   );
-      //   // console.log('response added KnowledeBase', response)
-      // } catch (error) {
-      //   console.log("error while saving knowledge bas in Database", error);
-      // }
+      // if knowledgeBase  created at edit 
+      if (stepEditingMode == "ON" && knowledge_Base_ID) {
+        const llm_id = localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
+        const agentConfig = {};
+        if (knowledge_Base_ID) {
+          agentConfig.knowledge_base_ids = [knowledge_Base_ID];
+        }
+        try {
+          const llmResponse = await axios.patch(
+            `https://api.retellai.com/update-retell-llm/${llm_id}`,
+            agentConfig,
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("llm updated successfully added knowledgeBaseId");
+        } catch (error) {
+          console.log("failed to update llm while adding knowledgeBaseId");
+        }
+      }
 
-      // Handle the successful response
-      // console.log(response, "response");
-
-      // ifknowledgeBase  created at edit 
-      // if (stepEditingMode == "ON" && !knowledgeBaseId && response?.data?.knowledge_base_id) {
-      //   const llm_id = localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
-      //   const agentConfig = {};
-      //   if (response.data.knowledge_base_id) {
-      //     agentConfig.knowledge_base_ids = [response.data.knowledge_base_id];
-      //   }
-      //   try {
-      //     const llmResponse = await axios.patch(
-      //       `https://api.retellai.com/update-retell-llm/${llm_id}`,
-      //       agentConfig,
-      //       {
-      //         headers: {
-      //           Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-      //           "Content-Type": "application/json",
-      //         },
-      //       }
-      //     );
-      //     console.log("llm updated successfully added knowledgeBaseId");
-      //   } catch (error) {
-      //     console.log("failed to update llm while adding knowledgeBaseId");
-      //   }
-      // }
-
-      sessionStorage.setItem(
-        "knowledgeBaseId",
-        response.data.knowledge_base_id
-      );
+      
+      if (stepEditingMode != "ON") {
       setPopupType("success");
       setPopupMessage("Knowledge base created successfully!");
       setShowPopup(true);
-         setTimeout(() => navigate("/steps"), 1500)
-      // if (stepEditingMode != "ON") {
-      //   setTimeout(() => navigate("/steps"), 1500)
-      // } else {
-      //   setTimeout(
-      //     () =>
-      //       navigate("/agent-detail", {
-      //         state: {
-      //           agentId: localStorage.getItem("agent_id"),
-      //           bussinesId: businessId,
-      //         },
-      //       }),
-      //     1500
-      //   );
-
-      // }
+        setTimeout(() => navigate("/steps"), 1000)
+      } else {
+      setPopupType("success");
+      setPopupMessage("Knowledge base Updated successfully!");
+      setShowPopup(true);
+        setTimeout(
+          () =>
+            navigate("/agent-detail", {
+              state: {
+                agentId: localStorage.getItem("agent_id"),
+                bussinesId: businessId1||businessId,
+              },
+            }),
+          1000
+        );
+      }
     } catch (error) {
       console.error(
         "Upload failed:",
@@ -841,8 +827,8 @@ useEffect(() => {
               </div>
 
               <div className={styles.fixedBtn}>
-                {stepEditingMode != "ON" || knowledgeBaseId ? (
-                  stepEditingMode != "ON" ? (
+     {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
+                 { stepEditingMode != "ON" ? (
                     <button
                       type="submit"
                       className={styles.btnTheme}
@@ -875,7 +861,8 @@ useEffect(() => {
                       )}
                     </button>
                   )
-                ) : (
+                }
+                {/* ) : (
                   <button
                     type="submit"
                     className={styles.btnTheme}
@@ -891,7 +878,7 @@ useEffect(() => {
                       <p>Save Edits</p>
                     )}
                   </button>
-                )}
+                )} */}
               </div>
             </div>
           </form>

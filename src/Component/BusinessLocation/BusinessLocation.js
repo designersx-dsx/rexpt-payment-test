@@ -53,7 +53,7 @@ const BusinessLocation = () => {
       navigate,
       setHasFetched,
     });
-
+    // console.log('loading',loading)
   useEffect(() => {
     const businessLocation = JSON.parse(sessionStorage.getItem('businessLocation'));
     if (businessLocation) {
@@ -133,8 +133,6 @@ const BusinessLocation = () => {
     // else setAddress2Error('');
   };
 // console.log('sasas  ',cleanServiceArray(),)
-      const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
-      console.log('selectedCustomServices',customServices)
 
  const handleContinue = async () => {
     setStateSubmitted(true);
@@ -169,13 +167,17 @@ const BusinessLocation = () => {
       
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-      const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
+      // const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
       const businesServices =JSON.parse(sessionStorage.getItem('businesServices'))
+      const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+        const cleanedCustomServices = rawCustomServices
+      .map(item => item?.service?.trim())
+      .filter(Boolean)
+      .map(service => ({ service }));
+
 
       let response;
-      console.log('businesServices',businesServices)
       if(localStorage.getItem('UpdationMode')!="ON"){
-        console.log('Inside create API');
         response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
           userId,
           businessName: businessDetails?.businessName,
@@ -184,7 +186,7 @@ const BusinessLocation = () => {
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices],  
           buisnessService: cleanServiceArray(),
-          customServices:customServices,
+          customServices:cleanedCustomServices,
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -200,7 +202,7 @@ const BusinessLocation = () => {
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices], 
            buisnessService: cleanServiceArray(),
-          customServices:customServices,  
+          customServices:cleanedCustomServices,  
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -211,7 +213,7 @@ const BusinessLocation = () => {
       }
 
       const id = response.data.businessId;
-      console.log('Response from the server:', response);
+      // console.log('Response from the server:', response);
       
       sessionStorage.setItem(
         'businessId',
@@ -252,7 +254,6 @@ const BusinessLocation = () => {
 
 
   useEffect(() => {
-    console.log(search)
     if (search) {
       const filtered = countries.filter((country) =>
         country.name.toLowerCase().includes(search.toLowerCase())
@@ -293,10 +294,11 @@ const BusinessLocation = () => {
       })
     );
   console.log('edit hit')
+  
   setTimeout(()=>{
     handleCreateAgent();
   },800)
-  
+  setLoading(false)
   
 };
 

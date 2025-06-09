@@ -37,10 +37,11 @@ const options = [
 ];
 
 const EditOptions = ({agentDetails}) => {
-    const [selected, setSelected] = useState("details");
+    const [selected, setSelected] = useState(localStorage.getItem('selectedStepEditMode')||"details");
     const navigate = useNavigate();  // get navigate function
     const handleOptionClick = (option) => {
         setSelected(option.id);
+        localStorage.setItem('selectedStepEditMode',option.id)
         navigate(option.path);  // navigate to path on click
     };
 

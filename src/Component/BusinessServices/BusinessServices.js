@@ -422,7 +422,7 @@ useEffect(() => {
         setBusinessName(businessDetails.businessName || "");
         setBusinessSize(businessDetails.businessSize || "");
         // For selectedService: if it's an array, use it; if a string, try to parse it.
-               
+
         if (Array.isArray(businessDetails.selectedService)) {
           setSelectedService(businessDetails.selectedService);
         } else if (typeof businessDetails.selectedService === "string") {
@@ -445,7 +445,7 @@ useEffect(() => {
       if (businessServices?.selectedService) {
         try {
           let finalSelected = [];
-         
+
 
           if (typeof businessServices.selectedService === "string") {
             const parsed = JSON.parse(businessServices.selectedService);
@@ -456,7 +456,7 @@ useEffect(() => {
             finalSelected = businessServices.selectedService;
           }
 
-         
+
           setSelectedService(finalSelected);
         } catch (err) {
           console.error("❌ Failed to parse selectedService:", err);
@@ -513,7 +513,7 @@ const handleServiceToggle = (service) => {
                     email,
                 })
             )
- 
+
   handleCreateAgent();
 
 };
@@ -611,7 +611,7 @@ const handleServiceToggle = (service) => {
                     </div>
                 </div>
             </div>
-{stepEditingMode!='ON'? 
+{/* {stepEditingMode!='ON'?  */}
             <div>
                 <div type="submit">
                     <div
@@ -624,7 +624,7 @@ const handleServiceToggle = (service) => {
                     </div>
                 </div>
             </div>
-            :
+            {/* :
           <div>
                 <div type="submit">
                     <div
@@ -637,7 +637,7 @@ const handleServiceToggle = (service) => {
                     </div>
                 </div>
             </div>
-}
+} */}
             {/* Show PopUp */}
             <PopUp
                 type={popupType}
