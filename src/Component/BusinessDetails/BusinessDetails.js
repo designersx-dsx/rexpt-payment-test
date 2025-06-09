@@ -41,9 +41,6 @@ const { handleCreateAgent } = useAgentCreator({
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
   const location = useLocation();
   const agentDetails = location.state;
-
-
-
   const businessTypes = [
     {
       type: "Real Estate Broker",
@@ -124,7 +121,6 @@ useEffect(() => {
     console.error("Failed to parse businessDetails from sessionStorage:", err);
   }
 }, []);
-
   const containsEmoji = (text) => {
     return /[\p{Emoji_Presentation}\u200d]/u.test(text);
   };
@@ -138,7 +134,6 @@ useEffect(() => {
       return "Business name must be at least 2 characters.";
     return "";
   };
-
   const validateBusinessSize = (value) => {
     if (!value.trim()) return "Business size is required.";
     console.log(value)
@@ -156,7 +151,6 @@ useEffect(() => {
     }
     return "";
   };
-
   const handleBusinessNameChange = (e) => {
     const val = e.target.value;
     setBusinessName(val);
