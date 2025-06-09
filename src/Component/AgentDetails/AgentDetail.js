@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
-import { EndWebCallUpdateAgentMinutesLeft, fetchAgentDetailById } from "../../Store/apiStore";
+import { EndWebCallUpdateAgentMinutesLeft, fetchAgentDetailById, getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 
 import { useLocation, useNavigate } from "react-router-dom";
 import decodeToken from "../../lib/decodeToken";
@@ -394,7 +394,7 @@ const AgentDashboard = () => {
 
 
   const handleCloseEditagentModalOpen=()=>{
-    sessionStorage.removeItem('UpdationMode');
+sessionStorage.removeItem('UpdationMode');
 sessionStorage.removeItem('agentName');
 sessionStorage.removeItem('agentGender');
 sessionStorage.removeItem('agentLanguageCode');
@@ -819,7 +819,7 @@ localStorage.removeItem('knowledge_base_id');
                 </div>
                 <p
                   className={styles.managementText}
-                  onClick={() => setModalOpen(true)}
+                  onClick={async() => {await fetchPrevAgentDEtails(agentData?.agent?.agent_id,agentData?.agent?.businessId) ;setModalOpen(true)}}
                 >
                   Edit Agent
                 </p>
@@ -1183,3 +1183,114 @@ localStorage.removeItem('knowledge_base_id');
 };
 
 export default AgentDashboard;
+
+
+
+
+    const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
+        try {  
+        const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
+        console.log('response',response)
+        const agent=response?.data?.agent;
+        const business=response?.data?.business;
+              
+      // console.log('agent',agent)
+      sessionStorage.setItem('UpdationMode','ON')
+      sessionStorage.setItem('agentName',agent.agentName)
+      sessionStorage.setItem('agentGender',agent.agentGender)
+      sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
+      sessionStorage.setItem('agentLanguage',agent.agentLanguage)
+      sessionStorage.setItem('llmId',agent.llmId)
+      sessionStorage.setItem('agent_id',agent.agent_id)
+      sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
+  
+      //need to clear later
+       localStorage.setItem('UpdationMode','ON')
+    localStorage.setItem('UpdationModeStepWise','ON')
+      localStorage.setItem('agentName',agent.agentName)
+      localStorage.setItem('agentGender',agent.agentGender)
+      localStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
+      localStorage.setItem('agentLanguage',agent.agentLanguage)
+      localStorage.setItem('llmId',agent.llmId)
+      localStorage.setItem('agent_id',agent.agent_id)
+      localStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
+      localStorage.setItem('agentRole',agent.agentRole)
+      localStorage.setItem('agentVoice',agent.agentVoice)
+      localStorage.setItem('agentVoiceAccent',agent.agentAccent)
+      localStorage.setItem('avatar',agent.avatar)
+      sessionStorage.setItem("googleListing",business.googleUrl)
+      sessionStorage.getItem("displayBusinessName",);
+      localStorage.setItem('googleUrl',business.googleUrl)
+      localStorage.setItem('webUrl',business.webUrl)
+      localStorage.setItem('aboutBusiness',business.aboutBusiness)
+      localStorage.setItem('additionalInstruction',business.additionalInstruction)
+      localStorage.setItem('knowledge_base_name',business.knowledge_base_name)
+      localStorage.setItem('knowledge_base_id',business.knowledge_base_id)
+      //need to clear above
+  
+      sessionStorage.setItem(
+      "aboutBusinessForm",
+      JSON.stringify({
+        businessUrl:business.webUrl,
+        googleListing:business.googleUrl,
+        aboutBusiness:business.aboutBusiness,
+        note:business.additionalInstruction,
+      }))
+  
+      sessionStorage.setItem('agentRole',agent.agentRole)
+      sessionStorage.setItem('agentVoice',agent.agentVoice)
+      sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
+      sessionStorage.setItem('avatar',agent.avatar)
+      sessionStorage.setItem('businessDetails',agent.business)
+      sessionStorage.setItem('businessId',agent.businessId)
+          
+        const businessData = {
+        userId:business.userId  ,
+        businessType:business.businessType,
+        businessName: business.businessName.trim(),
+        businessSize:business.businessSize,
+      };
+  
+  
+      let parsedServices = safeParse(business.buisnessService, []); 
+      console.log('business.buisnessService:', parsedServices);
+      console.log('typeof:', typeof parsedServices);
+  
+      sessionStorage.setItem("businesServices",JSON.stringify({
+         selectedService:parsedServices,
+          email:business.buisnessEmail
+      }))
+  
+      sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+      sessionStorage.setItem('businessLocation',  JSON.stringify({
+      country: business?.country,
+      state: business?.state.trim(),
+      city: business?.city.trim(),
+      address1: business?.address1.trim(),
+      address2: business?.address2.trim(),
+    }))
+  
+  
+  
+      } catch (error) {
+        console.log('An Error Occured while fetching Agent Data for ', error)
+      }
+    }
+
+
+
+const safeParse = (value, fallback = null) => {
+  try {
+    if (typeof value === "string") {
+      const cleaned = value.trim();
+      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) || 
+          (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
+          (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
+        return JSON.parse(cleaned);
+      }
+    }
+    return value;
+  } catch {
+    return fallback;
+  }
+};

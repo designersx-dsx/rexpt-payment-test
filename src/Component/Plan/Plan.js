@@ -81,8 +81,8 @@ const handleContinue = ()=>{
                 
                 <p className={styles.apologyHeadText}apologyHeadText>
 
-As a Free Plan user, you are currently limited to creating one agent. However, you will soon be able to create additional agents and upgrade your existing ones once our Paid Agents feature is live. We are working diligently to bring this feature to you and will notify you as soon as Paid Plans become available.
-Thank you for your patience.
+We apologise, But our paid plans are being tested to pass our "Rigorous QA Process" 
+For now, If your sign-up for a "Free Account", We promise to send you Upgradation Options in your email within next 2 weeks. 
                 </p>
 
                 <div className={styles.zz}>
@@ -134,7 +134,9 @@ Thank you for your patience.
       </div> */}
 
       {/* Dynamic Plans from API */}
+      <div className="PlanBoxMain">
       {products.map((product) => (
+        
         <div
           key={product.id}
           className={`${styles.planBox} ${selected === product.id ? styles.selected : ""}`}
@@ -193,8 +195,10 @@ Thank you for your patience.
               ))}
             </div>
           </div>
-        </div>
+        </div> 
+        
       ))}
+      </div>
 
       {/* Continue button */}
       <div className={styles.btnTheme} onClick={handleContinue}>
