@@ -56,6 +56,7 @@ export const useAgentCreator = ({
     const SelectedServices =JSON.parse(sessionStorage.getItem("businesServices")) ||"Your Business Name";
     const BusinessLocation = JSON.parse(sessionStorage.getItem("businessLocation")) ||"Your Business Services";
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
+    
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
@@ -479,6 +480,11 @@ End Call: If the caller is satisfied, invoke end_call function.
                 const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
                 const buisenessServices=JSON.parse(sessionStorage.getItem('businesServices'))
                 const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
+                const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+                const cleanedCustomServices = rawCustomServices
+                .map(item => item?.service?.trim())
+                .filter(Boolean)
+                .map(service => ({ service }));
                   try {  
                           const response = await axios.put(`${API_BASE_URL}/businessDetails/updateBusinessDetails/${userId}`, {
                           businessName: businessDetails?.businessName,
@@ -492,7 +498,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                           state: locationData.state,
                           country: locationData.country,
                           zip: locationData.zip,
-                          customServices:customServices,
+                          customServices:cleanedCustomServices,
                           });
                     console.log('updation response',response)
                   } catch (error) {

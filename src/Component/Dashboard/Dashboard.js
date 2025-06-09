@@ -1207,10 +1207,6 @@ export default Dashboard;
           email:business.buisnessEmail
       }))
 
-      sessionStorage.setItem("businesServices",JSON.stringify({
-         selectedService:parsedServices,
-          email:business.buisnessEmail
-      }))
 
       //custom services
       // let parsedCustomeServices=safeParse(business.customServices, [])
@@ -1219,8 +1215,31 @@ export default Dashboard;
       //    sessionStorage.setItem("selectedCustomServices",JSON.stringify({
       //     parsedCustomeServices
       // }))
-      sessionStorage.setItem("selectedCustomServices",business?.customServices|| [])
+//custom servcice save and filter
+ let rawCustomServices = business?.customServices || [];
 
+if (typeof rawCustomServices === 'string') {
+  try {
+    rawCustomServices = JSON.parse(rawCustomServices);
+  } catch (err) {
+    console.error("Failed to parse customServices:", rawCustomServices);
+    rawCustomServices = [];
+  }
+}
+
+const cleanedCustomServices = Array.isArray(rawCustomServices)
+  ? rawCustomServices
+      .map(item => item?.service?.trim())
+      .filter(Boolean)
+      .map(service => ({ service }))
+  : [];
+
+console.log("Final cleaned services to store:", cleanedCustomServices);
+
+sessionStorage.setItem(
+  "selectedCustomServices",
+  JSON.stringify(cleanedCustomServices)
+);
   
       sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
       sessionStorage.setItem('businessLocation',  JSON.stringify({

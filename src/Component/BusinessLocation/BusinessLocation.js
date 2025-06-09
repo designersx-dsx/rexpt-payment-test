@@ -169,8 +169,14 @@ const BusinessLocation = () => {
       
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-      const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
+      const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
       const businesServices =JSON.parse(sessionStorage.getItem('businesServices'))
+      const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+        const cleanedCustomServices = rawCustomServices
+      .map(item => item?.service?.trim())
+      .filter(Boolean)
+      .map(service => ({ service }));
+
 
       let response;
       if(localStorage.getItem('UpdationMode')!="ON"){
@@ -182,7 +188,7 @@ const BusinessLocation = () => {
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices],  
           buisnessService: cleanServiceArray(),
-          customServices:customServices,
+          customServices:cleanedCustomServices,
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -198,7 +204,7 @@ const BusinessLocation = () => {
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices], 
            buisnessService: cleanServiceArray(),
-          customServices:customServices,  
+          customServices:cleanedCustomServices,  
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
