@@ -41,7 +41,7 @@ export default function Home() {
     } else {
       fetchCallHistory();
     }
-  }, [agentId]);
+  }, [agentId,totalAgentView]);
 
   const fetchCallHistory = async () => {
     try {
