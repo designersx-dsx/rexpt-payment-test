@@ -134,7 +134,6 @@ const BusinessLocation = () => {
     // else setAddress2Error('');
   };
 // console.log('sasas  ',cleanServiceArray(),)
-      const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
 
  const handleContinue = async () => {
     setStateSubmitted(true);
@@ -169,7 +168,7 @@ const BusinessLocation = () => {
       
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-      const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
+      // const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
       const businesServices =JSON.parse(sessionStorage.getItem('businesServices'))
       const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
         const cleanedCustomServices = rawCustomServices

@@ -479,7 +479,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                 const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
                 const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
                 const buisenessServices=JSON.parse(sessionStorage.getItem('businesServices'))
-                const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
+                // const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
                 const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
                 const cleanedCustomServices = rawCustomServices
                 .map(item => item?.service?.trim())
