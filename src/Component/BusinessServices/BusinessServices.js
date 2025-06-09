@@ -422,7 +422,6 @@ useEffect(() => {
         setBusinessName(businessDetails.businessName || "");
         setBusinessSize(businessDetails.businessSize || "");
         // For selectedService: if it's an array, use it; if a string, try to parse it.
-                  console.log('sdsds',businessDetails)
         if (Array.isArray(businessDetails.selectedService)) {
           setSelectedService(businessDetails.selectedService);
         } else if (typeof businessDetails.selectedService === "string") {
@@ -445,7 +444,6 @@ useEffect(() => {
       if (businessServices?.selectedService) {
         try {
           let finalSelected = [];
-          console.log('sdsds',businessServices.selectedService)
 
           if (typeof businessServices.selectedService === "string") {
             const parsed = JSON.parse(businessServices.selectedService);
@@ -456,7 +454,6 @@ useEffect(() => {
             finalSelected = businessServices.selectedService;
           }
 
-          console.log("✅ Final selectedService:", finalSelected);
           setSelectedService(finalSelected);
         } catch (err) {
           console.error("❌ Failed to parse selectedService:", err);
@@ -513,12 +510,11 @@ const handleServiceToggle = (service) => {
                     email,
                 })
             )
-  console.log('edit hit')
+//   console.log('edit hit')
   handleCreateAgent();
 
 };
     
-console.log('selectedService',selectedService)
     return (
          <div className={styles.container}>
             <h1 className={styles.title}>{EditingMode?'Edit: Business Services': 'Business Services'}</h1>
@@ -611,7 +607,7 @@ console.log('selectedService',selectedService)
                     </div>
                 </div>
             </div>
-{stepEditingMode!='ON'? 
+{/* {stepEditingMode!='ON'?  */}
             <div>
                 <div type="submit">
                     <div
@@ -624,7 +620,7 @@ console.log('selectedService',selectedService)
                     </div>
                 </div>
             </div>
-            :
+            {/* :
           <div>
                 <div type="submit">
                     <div
@@ -637,7 +633,7 @@ console.log('selectedService',selectedService)
                     </div>
                 </div>
             </div>
-}
+} */}
             {/* Show PopUp */}
             <PopUp
                 type={popupType}

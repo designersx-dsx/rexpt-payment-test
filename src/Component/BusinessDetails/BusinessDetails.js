@@ -5,6 +5,7 @@ import PopUp from "../Popup/Popup";
 import decodeToken from "../../lib/decodeToken";
 import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
+import Loader from "../Loader/Loader";
 
 const BusinessDetails = () => {
   const navigate = useNavigate();
@@ -41,7 +42,6 @@ const { handleCreateAgent } = useAgentCreator({
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
   const location = useLocation();
   const agentDetails = location.state;
-
 
 
   const businessTypes = [
@@ -386,7 +386,7 @@ const handleSaveEdit = (e) => {
         <div type="submit">
           <div className={styles.btnTheme}>
             <img src="svg/svg-theme.svg" alt="" />
-            <p>Save Edits</p>
+            <p>{Loading?<Loader size={20}/>:'Save Edits'}</p>
           </div>
         </div>
       </div>
