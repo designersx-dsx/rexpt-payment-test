@@ -374,21 +374,30 @@ function Dashboard() {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
-  const handleDelete = async (agentId) => {
-    try {
-      await deleteAgent(agentId);
-      const updatedAgents = localAgents.filter(
-        (agent) => agent.agent_id !== agentId
-      );
-      setLocalAgents(updatedAgents);
-      setPopupMessage("Agent deleted successfully!");
-      setPopupType("success");
-      setHasFetched(false);
-    } catch (error) {
-      setPopupMessage(`Failed to delete agent: ${error.message}`);
+const handleDelete = async (agentId) => {
+  try {
+    const storedDashboard = JSON.parse(sessionStorage.getItem("dashboard-session-storage"));
+
+    const agents = storedDashboard?.state?.agents || [];
+
+    if (agents.length === 1) {
       setPopupType("failed");
+      setPopupMessage("Cannot delete. You must have at least one agent.");
+      setShowDeleteConfirm(false);
+      return;
     }
-  };
+    await deleteAgent(agentId);
+    const updatedAgents = localAgents.filter(agent => agent.agent_id !== agentId);
+    setLocalAgents(updatedAgents);
+    setPopupMessage("Agent deleted successfully!");
+    setPopupType("success");
+    setHasFetched(false);
+  } catch (error) {
+    setPopupMessage(`Failed to delete agent: ${error.message}`);
+    setPopupType("failed");
+  }
+};
+
 
   const handleUpgrade = (id) => {
     setShow(true);

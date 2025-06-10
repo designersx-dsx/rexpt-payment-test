@@ -172,7 +172,7 @@ const SignUp = () => {
         setPopupType("success");
         setPopupMessage("One time Password sent successfully!");
         setOtpSent(true);
-        const endTime = Date.now() + 120 * 1000; // 2 mins from now
+        const endTime = Date.now() + 120 * 1000; 
         setResendEndTime(endTime);
         setIsResendDisabled(true);
       } else {
@@ -261,6 +261,16 @@ useEffect(() => {
     };
   }, []);
 
+useEffect(() => {
+  const savedEmail = localStorage.getItem("userEmail");
+  if (savedEmail) {
+    setEmail(savedEmail);
+  }
+}, []);
+
+useEffect(() => {
+  localStorage.setItem("userEmail", email);
+}, [email]);
 
   useEffect(() => {
     if (otpSent && inputRefs.current[0]) {
