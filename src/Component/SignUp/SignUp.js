@@ -247,16 +247,16 @@ const SignUp = () => {
     }
   }, []);
 useEffect(() => {
-  const preventBackNavigation = () => {
+  const preventGoBack = () => {
     window.history.pushState(null, "", window.location.href);
   };
   window.history.pushState(null, "", window.location.href);
-  window.addEventListener("popstate", preventBackNavigation);
-
+  window.addEventListener("popstate", preventGoBack);
   return () => {
-    window.removeEventListener("popstate", preventBackNavigation);
+    window.removeEventListener("popstate", preventGoBack);
   };
 }, []);
+
 
   useEffect(() => {
     if (otpSent && inputRefs.current[0]) {
