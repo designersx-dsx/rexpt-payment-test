@@ -913,7 +913,7 @@ const handleDelete = async (agentId) => {
                   Click to connect with cal 
                 </a>
                  </p>
-                <p>
+                {/* <p>
                   <a
                   href="/calinfo"
                   target="_blank"
@@ -921,7 +921,7 @@ const handleDelete = async (agentId) => {
                   >
                     Learn how to connect with cal
                   </a>
-                </p>
+                </p> */}
                 
              
               <div
