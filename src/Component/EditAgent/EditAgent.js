@@ -139,7 +139,7 @@ const EditOptions = ({agentDetails}) => {
     return (
         <div className={styles.container}>
             <div className={styles.TitleBar}>
-             <h3>Edit Agent:</h3><p>Sofia</p>
+             <h3>Edit Agent:</h3><p>{sessionStorage.getItem('agentName')}</p>
             </div>
             {options.map((option) => (
                 <label

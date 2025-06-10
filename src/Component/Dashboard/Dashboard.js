@@ -92,7 +92,6 @@ function Dashboard() {
   const [close, setClose] = useState(false);
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
-
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     const planName = agent?.subscription?.plan_name || "Free";
@@ -108,6 +107,7 @@ function Dashboard() {
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
       localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("bId");
       localStorage.removeItem("agentName");
       localStorage.removeItem("agentGender");
       localStorage.removeItem("agentLanguageCode");
@@ -125,6 +125,12 @@ function Dashboard() {
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("selectedAgentAvatar");
       localStorage.removeItem("webUrl");
+      localStorage.removeItem('googleUrl');
+      localStorage.removeItem('webUrl');
+      localStorage.removeItem('aboutBusiness');
+      localStorage.removeItem('additionalInstruction');
+      localStorage.removeItem('knowledge_base_name');
+      localStorage.removeItem('knowledge_base_id');
     }
   }, []);
   // Navigate on agent card click
@@ -435,7 +441,7 @@ function Dashboard() {
   };
   // End call
   const handleEndCall = async () => {
-    console.log("isCallInProgress", isCallInProgress);
+    // console.log("isCallInProgress", isCallInProgress);
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
@@ -526,9 +532,9 @@ function Dashboard() {
   };
 
   const handleTotalCallClick = () => {
-
     localStorage.setItem("userId", userId);
-    localStorage.setItem("totalCallView", true);
+    localStorage.setItem("filterType", "all");
+     sessionStorage.removeItem("agentId"); 
     navigate("/totalcall-list");
   };
 
@@ -1213,6 +1219,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     sessionStorage.setItem("avatar", agent.avatar);
     sessionStorage.setItem("businessDetails", agent.business);
     sessionStorage.setItem("businessId", agent.businessId);
+    sessionStorage.setItem("bId", agent.businessId);
 
     const businessData = {
       userId: business.userId,
