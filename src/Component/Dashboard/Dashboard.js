@@ -789,7 +789,7 @@ function Dashboard() {
                           Delete Agent
                         </div>
                       </div>
-                      <div
+                      {/* <div
                         className={styles.OptionItem}
                         onClick={() => {
                           setAgentToDeactivate(agent);
@@ -797,7 +797,7 @@ function Dashboard() {
                         }}
                       >
                         Deactivate Agent
-                      </div>
+                      </div> */}
 
                       {/* <div
                                                 className={styles.OptionItem}
