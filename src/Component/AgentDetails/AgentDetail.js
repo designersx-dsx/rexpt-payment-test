@@ -389,6 +389,7 @@ const AgentDashboard = () => {
   //handleCallHistoryNavigation
   const handleCallHistoryNavigation = () => {
     navigate("/totalcall-list");
+      localStorage.setItem("filterType", "single");
     sessionStorage.setItem("agentId", agentId);
     sessionStorage.setItem("userId", userId);
   };

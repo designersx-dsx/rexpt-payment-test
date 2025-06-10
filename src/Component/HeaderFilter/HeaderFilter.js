@@ -23,7 +23,8 @@ function HeaderFilter({
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [open, setOpen] = useState(false);
-  const totalAgentView = localStorage.getItem("totalCallView")===true;
+  const totalAgentView = localStorage.getItem("filterType")
+
   const today = new Date();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(today.getDate() - 7);
@@ -145,13 +146,13 @@ function HeaderFilter({
                 {" "}
                 {startDate
                   ? startDate.toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })
+                    month: "long",
+                    year: "numeric",
+                  })
                   : (startDate || new Date()).toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    month: "long",
+                    year: "numeric",
+                  })}
               </p>
               <div className={styles.dateRange}>
                 <h6>
@@ -228,21 +229,18 @@ function HeaderFilter({
                   value={selectedAgentId}
                   onChange={(e) => {
                     const selectedValue = e.target.value;
-                    // Check if totalAgentView is true, and if so, update state accordingly
                     if (totalAgentView) {
-                        console.log("Total Agent View is enabled");
-                      onAgentChange("all"); // Change the state as needed
+                      onAgentChange(selectedValue);
                     } else {
-                        console.log("Total Agent View is disabled");
-                      onAgentChange(selectedValue); // Do something else if needed
+                      onAgentChange(selectedValue);
                     }
                   }}
                 >
                   <option value="all">All</option>
                   {isAgents?.map((agent) => (
                     <option key={agent.agent_id} value={agent.agent_id}>
-                      {agent.agentName.length > 12
-                        ? agent.agentName.slice(0, 10) + "..."
+                      {agent.agentName.length > 9
+                        ? agent.agentName.slice(0, 7) + "..."
                         : agent.agentName}
                     </option>
                   ))}
