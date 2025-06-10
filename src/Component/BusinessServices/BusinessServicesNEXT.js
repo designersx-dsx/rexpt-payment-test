@@ -85,7 +85,8 @@ const AboutBusinessNext = () => {
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices],  
           buisnessService: cleanServiceArray(),
-          customServices: cleanedCustomServices,
+          customServices: filteredServices,
+          // customServices: cleanedCustomServices,
           // address1: locationData.address1,
           // address2: locationData.address2,
           // city: locationData.city,
@@ -101,7 +102,8 @@ const AboutBusinessNext = () => {
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices], 
           buisnessService: cleanServiceArray(),
-          customServices: cleanedCustomServices,
+          customServices: filteredServices,
+          // customServices: cleanedCustomServices,
           // address1: locationData.address1,
           // address2: locationData.address2,
           // city: locationData.city,
@@ -156,9 +158,18 @@ const AboutBusinessNext = () => {
     handleCreateAgent();
 
   };
+
   const handleRemoveService = (index) => {
     const updatedServices = services.filter((_, i) => i !== index);
     setServices(updatedServices.length ? updatedServices : [{ service: '' }]);
+    
+      let filteredServices = services
+      .map(item => item?.service.trim())
+      .filter(service => service !== '')
+      .map(service => ({ service }));
+
+      filteredServices=services?.filter((_, i) => i !== index);
+      sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
   };
 
   return (
@@ -201,9 +212,9 @@ const AboutBusinessNext = () => {
           </div>
         ))}
 
-        <div onClick={handleSkip} className={styles.skipButton}>
+        {/* <div onClick={handleSkip} className={styles.skipButton}>
           {stepEditingMode ? "" : <button>Skip for now</button>}
-        </div>
+        </div> */}
         {stepEditingMode != 'ON' ?
           <div className={styles.Btn}>
             <div type="submit">
