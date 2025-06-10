@@ -559,6 +559,13 @@ function Dashboard() {
       return name;
     }
   }
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.replace("/signup");
+  }
+}, []);
+
 
   return (
     <div>
