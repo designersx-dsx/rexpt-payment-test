@@ -176,6 +176,15 @@ export const getAllAgentCalls = async (userId) => {
     throw new Error("Failed to fetch agent calls");
   }
 };
+export const fetchUserDetails=async(id)=>{
+  const userId=id
+  try {
+      const response=await axios.get(`${API_BASE_URL}/endusers/users/${userId}`)
+      return response
+  } catch (error) {
+     console.log(error)
+  }
+}
 
 
 
