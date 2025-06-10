@@ -30,32 +30,31 @@ const BusinessLocation = () => {
   const [address2Submitted, setAddress2Submitted] = useState(false);
   const [search, setSearch] = useState('');
   const [filteredCountries, setFilteredCountries] = useState(countries);
-
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [popupType, setPopupType] = useState('error');
   const sessionBusinessiD = sessionStorage.getItem("bId")
-  const businessId1 = sessionBusinessiD?.businessId; 
-  const businessId =  sessionBusinessiD ||  sessionBusinessiD?.businessId;
+  const businessId1 = sessionBusinessiD?.businessId;
+  const businessId = sessionBusinessiD || sessionBusinessiD?.businessId;
   const token = localStorage.getItem('token');
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
 
   const [countryCode, setCountryCode] = useState('');
   const [ipData, setIpData] = useState({});
-    const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
-    const EditingMode=localStorage.getItem('UpdationMode')
-    const setHasFetched=true
-    const { handleCreateAgent } = useAgentCreator({
-      stepValidator: () => "BusinessLocation", // or custom validation
-      setLoading,
-      setPopupMessage,
-      setPopupType,
-      setShowPopup,
-      navigate,
-      setHasFetched,
-    });
-    // console.log('loading',loading)
+  const stepEditingMode = localStorage.getItem('UpdationModeStepWise')
+  const EditingMode = localStorage.getItem('UpdationMode')
+  const setHasFetched = true
+  const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "BusinessLocation", // or custom validation
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+  });
+  // console.log('loading',loading)
   useEffect(() => {
     const businessLocation = JSON.parse(sessionStorage.getItem('businessLocation'));
     if (businessLocation) {
@@ -105,7 +104,7 @@ const BusinessLocation = () => {
     if (containsEmoji(value)) return `Emojis are not allowed in ${fieldName.toLowerCase()}.`;
     if (/[^a-zA-Z0-9\s,.\-#/]/.test(value))
       // return `${fieldName} contains invalid characters.`;
-    return '';
+      return '';
   };
   const handleStateChange = (e) => {
     const val = e.target.value;
@@ -131,12 +130,8 @@ const BusinessLocation = () => {
   const handleAddress2Change = (e) => {
     const val = e.target.value;
     setAddress2(val);
-    // if (address2Submitted) setAddress2Error(validateAddress(val, 'Address line 2'));
-    // else setAddress2Error('');
   };
-// console.log('sasas  ',cleanServiceArray(),)
-
- const handleContinue = async () => {
+  const handleContinue = async () => {
     setStateSubmitted(true);
     setCitySubmitted(true);
     setAddress1Submitted(true);
@@ -166,20 +161,20 @@ const BusinessLocation = () => {
     );
     try {
       setLoading(true);
-      
+
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
       // const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
-      const businesServices =JSON.parse(sessionStorage.getItem('businesServices'))
+      const businesServices = JSON.parse(sessionStorage.getItem('businesServices'))
       const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
-        const cleanedCustomServices = rawCustomServices
-      .map(item => item?.service?.trim())
-      .filter(Boolean)
-      .map(service => ({ service }));
+      const cleanedCustomServices = rawCustomServices
+        .map(item => item?.service?.trim())
+        .filter(Boolean)
+        .map(service => ({ service }));
 
 
       let response;
-      if(localStorage.getItem('UpdationMode')!="ON"){
+      if (localStorage.getItem('UpdationMode') != "ON") {
         response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
           userId,
           businessName: businessDetails?.businessName,
@@ -188,7 +183,7 @@ const BusinessLocation = () => {
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices],  
           buisnessService: cleanServiceArray(),
-          customServices:cleanedCustomServices,
+          customServices: cleanedCustomServices,
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -203,8 +198,8 @@ const BusinessLocation = () => {
           businessType: businessDetails.businessType,
           buisnessEmail: businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices], 
-           buisnessService: cleanServiceArray(),
-          customServices:cleanedCustomServices,  
+          buisnessService: cleanServiceArray(),
+          customServices: cleanedCustomServices,
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -216,7 +211,7 @@ const BusinessLocation = () => {
 
       const id = response.data.businessId;
       // console.log('Response from the server:', response);
-      
+
       sessionStorage.setItem(
         'businessId',
         JSON.stringify({
@@ -240,20 +235,8 @@ const BusinessLocation = () => {
       setTimeout(() => setLoading(false), 1000);
     }
   };
-
-
-  // console.log('countryList',countries  )
-  // const countries = [
-  //   { code: "us", name: "United States" },
-  //   { code: "in", name: "India" },
-  //   { code: "gb", name: "United Kingdom" },
-  //   { code: "fr", name: "France" },
-  //   { code: "de", name: "Germany" },
-  // ];
   const [selected, setSelected] = useState(countries[0]);
   const [open, setOpen] = useState(false);
-
-
 
   useEffect(() => {
     if (search) {
@@ -284,30 +267,30 @@ const BusinessLocation = () => {
   }, [countryCode]);
 
   const handleSaveEdit = (e) => {
-  e.preventDefault();
-      sessionStorage.setItem(
+    e.preventDefault();
+    sessionStorage.setItem(
       'businessLocation',
       JSON.stringify({
-        country: selected?.name || ipData?.country_name ,
+        country: selected?.name || ipData?.country_name,
         state: state.trim(),
         city: city.trim(),
         address1: address1.trim(),
         address2: address2.trim(),
       })
     );
-  console.log('edit hit')
-  
-  setTimeout(()=>{
-    handleCreateAgent();
-  },800)
-  setLoading(false)
-  
-};
+    console.log('edit hit')
+
+    setTimeout(() => {
+      handleCreateAgent();
+    }, 800)
+    setLoading(false)
+
+  };
 
   return (
     <div>
       <div className={styles.container}>
-        <h2 className={styles.title}>{EditingMode?'Edit: Business Location Details':'Business Location Details'}</h2>
+        <h2 className={styles.title}>{EditingMode ? 'Edit: Business Location Details' : 'Business Location Details'}</h2>
 
 
         {/* <div className={styles.countryInput}>
@@ -456,25 +439,25 @@ const BusinessLocation = () => {
             />  </div>
           {address2Error && <p className={styles.inlineError}>{address2Error}</p>}
         </div>
-{stepEditingMode!='ON'?  
-        <div>
-          <div type="submit" onClick={handleContinue}>
-            <div className={styles.btnTheme}>
-              <img src="svg/svg-theme.svg" alt="" />
-              <p>{loading ? <Loader size={20} /> : 'Continue'}</p>
+        {stepEditingMode != 'ON' ?
+          <div>
+            <div type="submit" onClick={handleContinue}>
+              <div className={styles.btnTheme}>
+                <img src="svg/svg-theme.svg" alt="" />
+                <p>{loading ? <Loader size={20} /> : 'Continue'}</p>
+              </div>
             </div>
           </div>
-        </div>
-        :
-        <div>
-          <div type="submit" onClick={handleSaveEdit}>
-            <div className={styles.btnTheme}>
-              <img src="svg/svg-theme.svg" alt="" />
-              <p>{loading ? <Loader size={20} /> : 'Save Edits'}</p>
+          :
+          <div>
+            <div type="submit" onClick={handleSaveEdit}>
+              <div className={styles.btnTheme}>
+                <img src="svg/svg-theme.svg" alt="" />
+                <p>{loading ? <Loader size={20} /> : 'Save Edits'}</p>
+              </div>
             </div>
           </div>
-        </div>
-}
+        }
       </div>
 
       {showPopup && (
@@ -489,11 +472,11 @@ export default BusinessLocation;
 const cleanServiceArray = () => {
   try {
 
-    let raw 
-    if(localStorage.getItem('UpdationMode')!="ON"){
-    raw=sessionStorage.getItem('businessDetails')
-    }else{
-      raw=raw=sessionStorage.getItem('businessDetails')
+    let raw
+    if (localStorage.getItem('UpdationMode') != "ON") {
+      raw = sessionStorage.getItem('businessDetails')
+    } else {
+      raw = raw = sessionStorage.getItem('businessDetails')
     }
     if (!raw) return [];
 
