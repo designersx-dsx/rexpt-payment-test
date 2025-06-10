@@ -539,9 +539,11 @@ function Dashboard() {
     setPopupType(type);
   };
 
-  const handleTotalCallClick = () => {
+   const handleTotalCallClick = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("totalCallView", true);
+    localStorage.setItem("filterType", "all");
+     sessionStorage.removeItem("agentId"); 
     navigate("/totalcall-list");
   };
 
