@@ -92,7 +92,6 @@ function Dashboard() {
   const [close, setClose] = useState(false);
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
-
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     const planName = agent?.subscription?.plan_name || "Free";
@@ -442,7 +441,7 @@ function Dashboard() {
   };
   // End call
   const handleEndCall = async () => {
-    console.log("isCallInProgress", isCallInProgress);
+    // console.log("isCallInProgress", isCallInProgress);
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
