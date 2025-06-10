@@ -247,15 +247,19 @@ const SignUp = () => {
     }
   }, []);
 useEffect(() => {
-  const preventGoBack = () => {
-    window.history.pushState(null, "", window.location.href);
-  };
-  window.history.pushState(null, "", window.location.href);
-  window.addEventListener("popstate", preventGoBack);
-  return () => {
-    window.removeEventListener("popstate", preventGoBack);
-  };
-}, []);
+    window.history.pushState(null, '', window.location.href);
+
+    const handlePopState = () => {
+    
+      navigate('/', { replace: true }); 
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
 
   useEffect(() => {

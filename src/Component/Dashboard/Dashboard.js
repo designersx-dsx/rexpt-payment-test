@@ -409,7 +409,7 @@ function Dashboard() {
     localStorage.clear();
     sessionStorage.clear();
     window.location.replace("/signup");
-    window.location.href = "/signup";
+    // window.location.href = "/signup";
     
   };
   // Retell Web Client initializationcxcxc
@@ -888,10 +888,20 @@ function Dashboard() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Click to connect with cal
+                  Click to connect with cal 
                 </a>
-              </p>
-
+                 </p>
+                <p>
+                  <a
+                  href="/calinfo"
+                  target="_blank"
+                  rel="noopener noreferrer" 
+                  >
+                    Learn how to connect with cal
+                  </a>
+                </p>
+                
+             
               <div
                 style={{
                   display: "flex",
