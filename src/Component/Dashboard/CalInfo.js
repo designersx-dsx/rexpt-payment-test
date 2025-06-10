@@ -20,11 +20,11 @@ const CalInfo = () => {
       <div className={styles.step}>
         <h4 className={styles.stepTitle}>3. Setup your profile</h4>
         <p>(a) Enter your full name and select timezone</p>
-        <img className={styles.image} src="/images/second.png" alt="cal step 2" />
+        <img className={styles.image} src="/images/Second.png" alt="cal step 2" />
         <p>(b) Connect with Google Calendar</p>
         <img className={styles.image} src="/images/third.png" alt="cal step 3" />
         <p>(c) Connect with Google Meet</p>
-        <img className={styles.image} src="/images/fourth.png" alt="cal step 4" />
+        <img className={styles.image} src="/images/Fourth.png" alt="cal step 4" />
         <p>(d) Set your availability</p>
         <p>(e) Optionally, add information about yourself or skip and finish</p>
       </div>
