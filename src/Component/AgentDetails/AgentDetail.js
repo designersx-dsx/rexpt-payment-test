@@ -549,7 +549,7 @@ localStorage.removeItem('knowledge_base_id');
                       alt="Sofia"
                       className={styles.agentAvatar}
                     />
-                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole || 'General'} </p>
+                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole?.split(" ")[0] || 'General'} </p>
                   </div>
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
@@ -832,7 +832,7 @@ localStorage.removeItem('knowledge_base_id');
                 <p className={styles.managementText}>Call Transfer</p>
               </div>
 
-              <div className={styles.managementItem}>
+              <div className={styles.managementItem}  onClick={async () => { await fetchPrevAgentDEtails(agentData?.agent?.agent_id, agentData?.agent?.businessId); setModalOpen(true) }} >
                 <div className={styles.SvgDesign}>
                   <svg
                     width="20"
@@ -859,7 +859,7 @@ localStorage.removeItem('knowledge_base_id');
                 </div>
                 <p
                   className={styles.managementText}
-                  onClick={async () => { await fetchPrevAgentDEtails(agentData?.agent?.agent_id, agentData?.agent?.businessId); setModalOpen(true) }}
+                  
                 >
                   Edit Agent
                 </p>
@@ -1285,8 +1285,8 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       JSON.stringify({
         businessUrl: business.webUrl,
         googleListing: business.googleUrl,
-        aboutBusiness: business.aboutBusiness,
-        note: business.additionalInstruction,
+        aboutBusiness:business.aboutBusiness,
+        note:business.additionalInstruction
       }))
 
   
