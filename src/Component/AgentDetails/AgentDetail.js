@@ -1300,24 +1300,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
 
           
-        const businessData = {
-        userId:business.userId  ,
-        businessType:business.businessType,
-        businessName: business.businessName.trim(),
-        businessSize:business.businessSize,
-      };
-      
-  
-      let parsedServices = safeParse(business.buisnessService, []); 
-      // console.log('business.buisnessService:', parsedServices);
-      // console.log('typeof:', typeof parsedServices);
-  
-      sessionStorage.setItem("businesServices",JSON.stringify({
-         selectedService:parsedServices,
-          email:business.buisnessEmail
-      }))
-      //custome servce filter and save
-
 
     sessionStorage.setItem('agentRole', agent.agentRole)
     sessionStorage.setItem('agentVoice', agent.agentVoice)
@@ -1334,12 +1316,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       businessName: business.businessName.trim(),
       businessSize: business.businessSize,
     };
-
-
     let parsedServices = safeParse(business.buisnessService, []);
-    // console.log('business.buisnessService:', parsedServices);
-    // console.log('typeof:', typeof parsedServices);
-
     sessionStorage.setItem("businesServices", JSON.stringify({
       selectedService: parsedServices,
       email: business.buisnessEmail
