@@ -420,6 +420,9 @@
         justify-content: center;
         max-width: 500px;
  }
+ .logimg{
+    top: 10%;
+ }
  .btnTheme{
     cursor: pointer;
    }
