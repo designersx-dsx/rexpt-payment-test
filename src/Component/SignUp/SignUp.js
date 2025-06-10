@@ -118,6 +118,7 @@ const SignUp = () => {
         setShowPopup(true);
         setPopupMessage("One time Password Verified successfully!");
         if (verifiedUser) {
+          localStorage.setItem("onboardComplete", "true");
           setUser({
             name: response?.data?.user?.name || "",
             profile:
@@ -125,7 +126,6 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
-          localStorage.setItem("onboardComplete", "true");
           navigate("/dashboard", { replace: true });
         } else {
           setUser({
@@ -135,7 +135,7 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
-            localStorage.setItem("onboardComplete", "false");
+          localStorage.setItem("onboardComplete", "false");
           navigate("/details", { replace: true });
         }
       } else {
@@ -246,12 +246,12 @@ const SignUp = () => {
       setStep(5);
     }
   }, []);
-useEffect(() => {
+  useEffect(() => {
     window.history.pushState(null, '', window.location.href);
 
     const handlePopState = () => {
-    
-      navigate('/', { replace: true }); 
+
+      navigate('/', { replace: true });
     };
 
     window.addEventListener('popstate', handlePopState);
