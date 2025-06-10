@@ -72,19 +72,24 @@ const Step = () => {
         "Your Business Services";
     const languageSelect = (sessionStorage?.getItem("agentLanguage"))
 
-    let selectedCustomServices = [];
+    // let selectedCustomServices = [];
 
-    try {
-        const stored = JSON.parse(sessionStorage.getItem("selectedCustomServices"));
-        if (Array.isArray(stored)) {
-            selectedCustomServices = stored;
-        }
-    } catch (error) {
-        console.error("Invalid data in sessionStorage:", error);
-    }
+    // try {
+    //     const stored = JSON.parse(sessionStorage.getItem("selectedCustomServices"));
+    //     if (Array.isArray(stored)) {
+    //         selectedCustomServices = stored;
+    //     }
+    // } catch (error) {
+    //     console.error("Invalid data in sessionStorage:", error);
+    // }
+    const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+    const cleanedCustomServices = rawCustomServices
+    .map(item => item?.service?.trim())
+    .filter(Boolean)
+    .map(service => ({ service }));
 
     const businessServices = business?.selectedService || [];
-    const customServices = selectedCustomServices?.map(item =>
+    const customServices = cleanedCustomServices?.map(item =>
         typeof item === 'string' ? item : item.service
     );
     const businessServiceNames = businessServices?.map(item => item);
@@ -961,10 +966,13 @@ End Call: If the caller is satisfied, invoke end_call function.
                             if (response.status === 200 || response.status === 201) {
                                 sessionStorage.setItem("agentId", response.data.agent_id);
                                 sessionStorage.setItem("agentStatus", true);
+                                 
                                 setPopupType("success");
                                 setPopupMessage("Agent created successfully!");
                                 setShowPopup(true);
-                                setTimeout(() => navigate("/dashboard"), 1500);
+
+                                setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);
+                                setHasFetched(false)
                                 setLoading(false)
                                 sessionStorage.clear()
 
@@ -1086,38 +1094,42 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setPopupType("success");
                                 setPopupMessage("Agent Updated successfully!");
                                 setShowPopup(true);
+                                setTimeout(()=>{
                                 if (stepEditingMode) {
-                                    setTimeout(
-                                        () =>
+                                    // setTimeout(
+                                    //     () =>
                                             navigate("/agent-detail", {
                                                 state: {
                                                     agentId: agentId || sessionStorage.getItem("agentId"),
-                                                    bussinesId: businessIdObj.businessId,
+                                                    bussinesId: businessIdObj.businessId ||sessionStorage.getItem('businessId'),
                                                 },
-                                            }),
-                                        1000
-                                    );
+                                            })
+                                    //     1000
+                                    // );
                                 } else {
-                                    setTimeout(() => navigate("/dashboard"), 1500);
 
-
-                                    setLoading(false)
-                                    sessionStorage.clear()
-                                    localStorage.removeItem('UpdationMode')
-                                    localStorage.removeItem('agentName')
-                                    localStorage.removeItem('agentGender')
-                                    localStorage.removeItem('agentLanguageCode')
-                                    localStorage.removeItem('agentLanguage')
-                                    localStorage.removeItem('llmId')
-                                    localStorage.removeItem('agent_id')
-                                    localStorage.removeItem('knowledgeBaseId')
-                                    localStorage.removeItem('agentRole')
-                                    localStorage.removeItem('agentVoice')
-                                    localStorage.removeItem('agentVoiceAccent')
-                                    localStorage.removeItem('avatar')
-                                    setHasFetched(false)
-
+                                    setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);
+                                setLoading(false)
+                                sessionStorage.clear()
+                                localStorage.removeItem('UpdationMode')
+                                localStorage.removeItem('agentName')
+                                localStorage.removeItem('agentGender')
+                                localStorage.removeItem('agentLanguageCode')
+                                localStorage.removeItem('agentLanguage')
+                                localStorage.removeItem('llmId')
+                                localStorage.removeItem('agent_id')
+                                localStorage.removeItem('knowledgeBaseId')
+                                localStorage.removeItem('agentRole')
+                                localStorage.removeItem('agentVoice')
+                                localStorage.removeItem('agentVoiceAccent')
+                                localStorage.removeItem('avatar')
+                                setHasFetched(false)
                                 }
+
+                            },1000)
+                                    
+
+                            
                             }
                             console.log('response server', response)
                         } catch (error) {

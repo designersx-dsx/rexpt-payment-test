@@ -60,11 +60,11 @@ const Plan = () => {
                     <Modal isOpen={show} onClose={handleClose}>
                         <h2 className={styles.apologyHead}>Coming Soon</h2>
                         <p className={styles.apologyHeadText}>
-                            Sorry for the delay! Our plans will be starting soon, and we’ll notify you as soon as they’re live. 
-                            For now, you can create a free account and start using the basic features. Thanks for your patience!
+                           We apologise, But our paid plans are being tested to pass our "Rigorous QA Process" 
+For now, If your sign-up for a "Free Account", We promise to send you Upgradation Options in your email within next 2 weeks. 
                         </p>
                         <div className={styles.zz}>
-                            <button className={styles.closeBTN} onClick={() => navigate('/signup')}>Continue with Free</button>
+                            <button className={styles.closeBTN} onClick={() => navigate('/signup')}>Sign-up for FREE</button>
                         </div>
                     </Modal>
                 )}

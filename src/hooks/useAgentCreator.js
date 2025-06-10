@@ -17,11 +17,13 @@ export const useAgentCreator = ({
   setHasFetched = () => {},
 }) => { 
    const token = localStorage.getItem("token") || "";
+     const sessionBusinessiD = sessionStorage.getItem("bId")
+
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
-  const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
-  const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
+  // const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
+  // const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
       const [agentCount, setAgentCount] = useState(0);
   
      const fetchAgentCountFromUser = async () => {
@@ -40,9 +42,7 @@ export const useAgentCreator = ({
       }, [])
   const handleCreateAgent = useCallback(async () => {
     const isValid = stepValidator();
-    console.log(isValid=='BusinessDetails')
     if (!isValid) return;
-    setLoading(true);
 
             const packageMap = {
         "Free": 1,
@@ -54,8 +54,15 @@ export const useAgentCreator = ({
     };
     const role_title =  sessionStorage.getItem("agentRole") || "General Receptionist";
     const business =JSON.parse(sessionStorage.getItem("businessDetails")) ||"Your Business Name";
+     const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+    const cleanedCustomServices = rawCustomServices
+    .map(item => item?.service?.trim())
+    .filter(Boolean)
+    .map(service => ({ service }));
+    const SelectedServices =JSON.parse(sessionStorage.getItem("businesServices")) ||"Your Business Name";
     const BusinessLocation = JSON.parse(sessionStorage.getItem("businessLocation")) ||"Your Business Services";
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
+    
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
@@ -63,9 +70,13 @@ export const useAgentCreator = ({
 
 
     const dynamicAgentName = `${sanitize(business?.businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
-  
-     
-
+    
+    const CustomservicesArray = cleanedCustomServices?.map(item => item.service) ||[]; 
+    // console.log('CustomservicesArray',CustomservicesArray,[...business?.businessName,...CustomservicesArray])
+    // console.log('business?.selectedService',CustomservicesArray,SelectedServices.selectedService)
+    // console.log('business?.selectedService',isValid,SelectedServices.selectedService)
+    // return
+    
     const prompt = `You are an AI Receptionist ${agentName}, working as a ${role_title} for ${business?.businessName}.
 Your main goal is to professionally greet, assist, and guide callers or visitors. Use a helpful, polite, and clear tone. Tailor your conversation based on your role and the context.
 Here is your profile:
@@ -93,7 +104,7 @@ Always maintain a tone that matches the following persona:
 
 Let’s begin assisting the customer!
 `;
-    const generalReceptionistPrompt = `You are ${agentName}, a receptionist at ${business?.businessName}, who understands ${business?.selectedService} and knows about  ${business?.businessName} Business.
+    const generalReceptionistPrompt = `You are ${agentName}, a receptionist at ${business?.businessName}, who understands ${SelectedServices?.selectedService} ${CustomservicesArray} and knows about  ${business?.businessName} Business.
   Your role is to simulate a warm, patient, and reliable human receptionist for a  ${business?.businessType}. Every interaction must be handled with clarity, precision, and empathy.
 You will:
 - Greet the caller warmly.
@@ -468,16 +479,20 @@ End Call: If the caller is satisfied, invoke end_call function.
   
             //updation here
             if (isValid && localStorage.getItem("UpdationMode") == "ON") {
-                setLoading(false)
+                setLoading(true)
               if(isValid=='BusinessDetails' || isValid=='businesServices' || isValid=='BusinessLocation'){
               
                 const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
                 const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
                 const buisenessServices=JSON.parse(sessionStorage.getItem('businesServices'))
-                console.log(buisenessServices,"buisenessServices")
+                // const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || []; 
+                const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+                const cleanedCustomServices = rawCustomServices
+                .map(item => item?.service?.trim())
+                .filter(Boolean)
+                .map(service => ({ service }));
                   try {  
-                          const response = await axios.put(`${API_BASE_URL}/businessDetails/updateBusinessDetails/${userId}`, {
-                          businessName: businessDetails?.businessName,
+               const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`, {                          businessName: businessDetails?.businessName,
                           businessSize: businessDetails.businessSize,
                           businessType: businessDetails.businessType,
                           buisnessEmail:buisenessServices?.email,
@@ -488,10 +503,12 @@ End Call: If the caller is satisfied, invoke end_call function.
                           state: locationData.state,
                           country: locationData.country,
                           zip: locationData.zip,
+                          customServices:cleanedCustomServices,
                           });
                     console.log('updation response',response)
                   } catch (error) {
-                    console.log('error while buinsess details updated')
+                    console.log('error while buinsess details updated');
+                    setLoading(false)
                     return
                   }
                 }
@@ -506,7 +523,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                       formData2.append("aboutBusiness",buisnessData.aboutBusiness)
                       formData2.append("additionalInstruction",buisnessData.note)
                       try {  
-                       const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId}`,formData2,{
+                       const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,formData2,{
                        headers: {
                           Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
                           "Content-Type": "multipart/form-data",
@@ -514,12 +531,12 @@ End Call: If the caller is satisfied, invoke end_call function.
                         })
                           console.log('updation response',response)
                         } catch (error) {
-                          console.log('error while buinsess details updated')
+                          console.log('error while buinsess details updated');
+                          setLoading(false)
                           return
                         }
                     }
-                }
-
+                } 
                 const llm_id=localStorage.getItem('llmId')
                   const agentConfig = {
                  general_prompt: prompt1,
@@ -540,15 +557,17 @@ End Call: If the caller is satisfied, invoke end_call function.
                     console.log('llmResponseupdate',llmResponse)
                     sessionStorage.setItem("llmId", llmResponse.data.llm_id);
                       setPopupType("success");
-                      setPopupMessage("Business Details Updated Succesfully");
+                      
+                      setPopupMessage(`${isValid} Updated Succesfully`);
                       setShowPopup(true);
                       setLoading(false)
-                      console.log(localStorage.getItem("agent_id") ,localStorage.getItem("bussinesId"))
+                      // console.log(localStorage.getItem("agent_id") ,localStorage.getItem("bussinesId"))
+                      window.history.pushState(null, "", "/agent-detail");
                       setTimeout(() =>
                       navigate("/agent-detail", {
                         state: {
                         agentId:  sessionStorage.getItem("agent_id") || localStorage.getItem("agentId") ,
-                        bussinesId: sessionStorage.getItem("businessId") || localStorage.getItem("bussinesId") ,
+                        bussinesId: sessionStorage.getItem("bId") || localStorage.getItem("bussinesId") ,
                         },
                     }),1000);
                     }
@@ -558,134 +577,9 @@ End Call: If the caller is satisfied, invoke end_call function.
                       setPopupMessage("LLM updation failed. Please try again.");
                       setShowPopup(true);
                       setLoading(false)
+                    }finally{
+                      setLoading(false)
                     }
-
-                setLoading(true)
-              
-                
-                console.log('llm_id',llm_id)
-                //Create LLm 
-                // try {
-                //     const llmResponse = await axios.patch(
-                //         `https://api.retellai.com/update-retell-llm/${llm_id} `,
-                //         agentConfig,
-                //         {
-                //             headers: {
-                //                 Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                //                 "Content-Type": "application/json",
-                //             },
-                //         }
-                //     );
-                //     console.log('llmResponseupdate',llmResponse)
-                //     sessionStorage.setItem("llmId", llmResponse.data.llm_id);
-                //     const llmId = llmResponse.data.llm_id;
-
-                //     const finalAgentData = {
-                //         voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                //         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                //         agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                //         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                //         normalize_for_speech: true,
-                //     };
-                //     // update Agent Creation
-                //     const agent_id=localStorage.getItem('agent_id')
-                //     try {
-                //         const response = await axios.patch(
-                //             `https://api.retellai.com/update-agent/${agent_id}`,
-                //             finalAgentData,
-                //             {
-                //                 headers: {
-                //                     Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                //                 },
-                //             }
-                //         );
-                //         console.log('agent update ',response)
-                //         const agentId = response.data.agent_id;
-                //         // Get businessId from sessionStorage
-                //         const businessIdString = sessionStorage.getItem("businessId") ;
-
-                //         // Convert string to object
-                //         const businessIdObj = JSON.parse(businessIdString);
-
-                //         // Now access the actual ID
-                //         const agentData = {
-                //             userId: userId,
-                //             agent_id: agentId || sessionStorage.getItem("agentId"),
-                //             knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
-                //             llmId: sessionStorage.getItem("llmId"),
-                //             avatar: sessionStorage.getItem("avatar") || "",
-                //             agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                //             agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
-                //             agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
-                //             agentName: sessionStorage.getItem('agentName') || "",
-                //             agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
-                //             agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
-                //             agentGender: sessionStorage.getItem('agentGender') || "female",
-                //             agentStatus: true,
-                //             businessId: businessIdObj.businessId,
-                //         }
-                //         try {
-                //             const response = await updateAgent(agentId,agentData);
-                //             if (response.status === 200 || response.status === 201) {
-                //                 // sessionStorage.setItem("agentId", response.data.agent_id);
-                //                 // sessionStorage.setItem("agentStatus", true);
-                //                 setPopupType("success");
-                //                 setPopupMessage("Agent Updated successfully!");
-                //                 setShowPopup(true);
-                //                 setTimeout(() => navigate("/dashboard"), 1500);
-                //                 setLoading(false)
-                //                 sessionStorage.clear()
-                //                     localStorage.removeItem('UpdationMode')
-                //                     localStorage.removeItem('agentName')
-                //                     localStorage.removeItem('agentGender')
-                //                     localStorage.removeItem('agentLanguageCode')
-                //                     localStorage.removeItem('agentLanguage')
-                //                     localStorage.removeItem('llmId')
-                //                     localStorage.removeItem('agent_id')
-                //                     localStorage.removeItem('knowledgeBaseId')
-                //                     localStorage.removeItem('agentRole')
-                //                     localStorage.removeItem('agentVoice')
-                //                     localStorage.removeItem('agentVoiceAccent')
-                //                     localStorage.removeItem('avatar')
-                //                     setHasFetched(false)
-                //             }
-                //             console.log('response server',response)
-                //         } catch (error) {
-                //             // console.log(error,error.status)
-                //             if (error?.status == 400) {
-                //                 // console.log('errorinside',error)
-                //                 setPopupType("failed");
-                //                 setPopupMessage(error?.response?.data?.message);
-                //                 setShowPopup(true);
-                //                 setLoading(false)
-                //             } else {
-                //                 console.error("Agent Updation failed:", error);
-                //                 setPopupType("failed");
-                //                 setPopupMessage("Agent Updation failed while saving data in Database. Please try again.");
-                //                 setShowPopup(true);
-                //                 setLoading(false)
-                //             }
-
-
-                //         }
-
-
-                //     } catch (err) {
-                //         console.error("Upload failed:", err);
-                //         setPopupType("failed");
-                //         setPopupMessage("Agent creation failed.");
-                //         setShowPopup(true);
-                //         setLoading(false)
-                //     }
-                // } catch (error) {
-                //     console.error("LLM updation failed:", error);
-                //     setPopupType("failed");
-                //     setPopupMessage("LLM updation failed. Please try again.");
-                //     setShowPopup(true);
-                //     setLoading(false)
-                // }
-
-
 
                 setLoading(false)
             }
@@ -702,3 +596,26 @@ End Call: If the caller is satisfied, invoke end_call function.
 
   return { handleCreateAgent };
 };
+
+const cleanServiceArray = () => {
+  try {
+
+    let raw 
+    if(localStorage.getItem('UpdationMode')!="ON"){
+    raw=sessionStorage.getItem('businessDetails')
+    }else{
+      raw=raw=sessionStorage.getItem('businessDetails')
+    }
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed?.selectedService)) {
+      return parsed.selectedService;
+    } else if (typeof parsed?.selectedService === 'object' && Array.isArray(parsed.selectedService.selectedService)) {
+      return parsed.selectedService.selectedService;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}

@@ -3,6 +3,8 @@
   max-width: 400px;
   margin: auto;
 }
+
+
 .verifyButton{
     position: absolute;
     right: 20px;
@@ -110,6 +112,7 @@
   transition: all 0.3s;
   min-height: 70px;
   padding-inline: 10px;
+  cursor: pointer;
 }
 
 .option:hover {
@@ -251,6 +254,13 @@
 @media (max-width:375px){
 .title{
     font-size: 36px;
+}
+.option strong {
+  font-size: 15px;
+}
+
+.subType {
+  font-size: 13px;
 }
 }
 

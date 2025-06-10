@@ -5,6 +5,7 @@ import PopUp from "../Popup/Popup";
 import decodeToken from "../../lib/decodeToken";
 import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
+import Loader from "../Loader/Loader";
 
 const BusinessDetails = () => {
   const navigate = useNavigate();
@@ -19,18 +20,18 @@ const BusinessDetails = () => {
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
-  const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
-  const EditingMode=localStorage.getItem('UpdationMode')
-  const setHasFetched=true
-const { handleCreateAgent } = useAgentCreator({
-  stepValidator: () => "BusinessDetails", // or custom validation
-  setLoading,
-  setPopupMessage,
-  setPopupType,
-  setShowPopup,
-  navigate,
-  setHasFetched,
-});
+  const stepEditingMode = localStorage.getItem('UpdationModeStepWise')
+  const EditingMode = localStorage.getItem('UpdationMode')
+  const setHasFetched = true
+  const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "BusinessDetails", // or custom validation
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+  });
   const [businessNameError, setBusinessNameError] = useState("");
   const [businessSizeError, setBusinessSizeError] = useState("");
   const [businessTypeError, setBusinessTypeError] = useState("");
@@ -41,97 +42,6 @@ const { handleCreateAgent } = useAgentCreator({
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
   const location = useLocation();
   const agentDetails = location.state;
-
-  const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
-      try {  
-      const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
-      console.log('response',response)
-      const agent=response?.data?.agent;
-      const business=response?.data?.business;
-            
-    // console.log('agent',agent)
-    sessionStorage.setItem('UpdationMode','ON')
-    sessionStorage.setItem('agentName',agent.agentName)
-    sessionStorage.setItem('agentGender',agent.agentGender)
-    sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
-    sessionStorage.setItem('agentLanguage',agent.agentLanguage)
-    sessionStorage.setItem('llmId',agent.llmId)
-    sessionStorage.setItem('agent_id',agent.agent_id)
-    sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
-
-    //need to clear later
-    localStorage.setItem('UpdationMode','ON')
-    localStorage.setItem('agentName',agent.agentName)
-    localStorage.setItem('agentGender',agent.agentGender)
-    localStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
-    localStorage.setItem('agentLanguage',agent.agentLanguage)
-    localStorage.setItem('llmId',agent.llmId)
-    localStorage.setItem('agent_id',agent.agent_id)
-    localStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
-    localStorage.setItem('agentRole',agent.agentRole)
-    localStorage.setItem('agentVoice',agent.agentVoice)
-    localStorage.setItem('agentVoiceAccent',agent.agentAccent)
-    localStorage.setItem('avatar',agent.avatar)
-    sessionStorage.setItem("googleListing",business.googleUrl)
-    sessionStorage.getItem("displayBusinessName",);
-    localStorage.setItem('googleUrl',business.googleUrl)
-    localStorage.setItem('webUrl',business.webUrl)
-    localStorage.setItem('aboutBusiness',business.aboutBusiness)
-    localStorage.setItem('additionalInstruction',business.additionalInstruction)
-    localStorage.setItem('knowledge_base_name',business.knowledge_base_name)
-    localStorage.setItem('knowledge_base_id',business.knowledge_base_id)
-    //need to clear above
-
-    sessionStorage.setItem(
-    "aboutBusinessForm",
-    JSON.stringify({
-      businessUrl:business.webUrl,
-      googleListing:business.googleUrl,
-      aboutBusiness:business.aboutBusiness,
-      note:business.additionalInstruction,
-    }))
-
-    sessionStorage.setItem('agentRole',agent.agentRole)
-    sessionStorage.setItem('agentVoice',agent.agentVoice)
-    sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
-    sessionStorage.setItem('avatar',agent.avatar)
-    sessionStorage.setItem('businessDetails',agent.business)
-    sessionStorage.setItem('businessId',agent.businessId)
-        
-      const businessData = {
-      userId:business.userId  ,
-      businessType:business.businessType,
-      businessName: business.businessName.trim(),
-      businessSize:business.businessSize,
-    };
-
-  
-    sessionStorage.setItem("businesServices",JSON.stringify({
-       selectedService:business.buisnessService,
-        email:business.buisnessEmail
-    }))
-
-    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    sessionStorage.setItem('businessLocation',  JSON.stringify({
-    country: business?.country,
-    state: business?.state.trim(),
-    city: business?.city.trim(),
-    address1: business?.address1.trim(),
-    address2: business?.address2.trim(),
-  }))
-
-
-
-    } catch (error) {
-      console.log('An Error Occured while fetching Agent Data for ', error)
-    }
-  }
-
-  useEffect(() => {
-    if (localStorage.getItem('UpdationMode')) {
-      fetchPrevAgentDEtails(agentDetails?.agentId, agentDetails?.bussinesId)
-    }
-  }, [agentDetails])
 
   const businessTypes = [
     {
@@ -195,25 +105,24 @@ const { handleCreateAgent } = useAgentCreator({
     "501 to 1000",
     "1000+",
   ];
-const stored = sessionStorage.getItem("businessDetails");
-useEffect(() => {
-  try {
-    const stored = sessionStorage.getItem("businessDetails");
+  const stored = sessionStorage.getItem("businessDetails");
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("businessDetails");
 
-    if (stored && stored !== "undefined" && stored !== "null") {
-      const businessDetails = JSON.parse(stored);
+      if (stored && stored !== "undefined" && stored !== "null") {
+        const businessDetails = JSON.parse(stored);
 
-      if (businessDetails) {
-        setBusinessType(businessDetails.businessType || "");
-        setBusinessName(businessDetails.businessName || "");
-        setBusinessSize(businessDetails.businessSize || "");
+        if (businessDetails) {
+          setBusinessType(businessDetails.businessType || "");
+          setBusinessName(businessDetails.businessName || "");
+          setBusinessSize(businessDetails.businessSize || "");
+        }
       }
+    } catch (err) {
+      console.error("Failed to parse businessDetails from sessionStorage:", err);
     }
-  } catch (err) {
-    console.error("Failed to parse businessDetails from sessionStorage:", err);
-  }
-}, [stored]);
-
+  }, []);
   const containsEmoji = (text) => {
     return /[\p{Emoji_Presentation}\u200d]/u.test(text);
   };
@@ -227,10 +136,8 @@ useEffect(() => {
       return "Business name must be at least 2 characters.";
     return "";
   };
-
   const validateBusinessSize = (value) => {
     if (!value.trim()) return "Business size is required.";
-    console.log(value)
     const allowedValues = [
       "1 to 10 employees",
       "10 to 50 employees",
@@ -245,7 +152,6 @@ useEffect(() => {
     }
     return "";
   };
-
   const handleBusinessNameChange = (e) => {
     const val = e.target.value;
     setBusinessName(val);
@@ -319,24 +225,23 @@ useEffect(() => {
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
     navigate("/business-services");
   };
-
-const handleSaveEdit = (e) => {
-  e.preventDefault();
-      const businessData = {
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    const businessData = {
       userId,
       businessType,
       businessName: businessName.trim(),
       businessSize,
     };
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-  console.log('edit hit')
-  handleCreateAgent();
-  
-};
+    console.log('edit hit')
+    handleCreateAgent();
+
+  };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{EditingMode?' Edit Business Details' :'Business Details' }</h1>
+      <h1 className={styles.title}>{EditingMode ? ' Edit Business Details' : 'Business Details'}</h1>
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
@@ -461,7 +366,7 @@ const handleSaveEdit = (e) => {
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
-      {stepEditingMode!='ON'?    
+{stepEditingMode!='ON'?    
       <div onClick={handleLoginClick}>
         <div type="submit">
           <div className={styles.btnTheme}>
@@ -475,22 +380,12 @@ const handleSaveEdit = (e) => {
         <div type="submit">
           <div className={styles.btnTheme}>
             <img src="svg/svg-theme.svg" alt="" />
-            <p>Save Edits</p>
+            <p>{Loading?<Loader size={20}/>:'Save Edits'}</p>
           </div>
         </div>
       </div>
         }
-      {/* <div onClick={handleLoginClick}>
-        <div type="submit">
-          <div className={styles.btnTheme}>
-            <img src="svg/svg-theme.svg" alt="" />
-          
-              
-           
-            
-          </div>
-        </div>
-      </div> */}
+     
 
       {showPopup && (
         <PopUp
@@ -504,3 +399,21 @@ const handleSaveEdit = (e) => {
 };
 
 export default BusinessDetails;
+
+
+// Safe parser for JSON-like strings
+const safeParse = (value, fallback = null) => {
+  try {
+    if (typeof value === "string") {
+      const cleaned = value.trim();
+      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) ||
+        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
+        (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
+        return JSON.parse(cleaned);
+      }
+    }
+    return value;
+  } catch {
+    return fallback;
+  }
+};

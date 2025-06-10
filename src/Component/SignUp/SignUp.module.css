@@ -263,7 +263,7 @@
     margin-block: 0px;
     text-align: left !important;
 }
-
+.welcomeTitle p{font-size: 16px;}
 .container {
     width: 100%;
     margin: auto;
@@ -415,14 +415,28 @@
 @media screen and (min-width: 601px) {
  .signUpContainer{
     align-items: center;
-        display: flex
-;
+        display: flex;
         margin: auto;
         justify-content: center;
+        max-width: 500px;
+ }
+ .logimg{
+    top: 10%;
  }
  .btnTheme{
     cursor: pointer;
    }
+
+   .StartMain {
+    
+    width: unset;
+    
+}
+.pageEnterAnimation {
+    position: unset;
+    top: 0;
+}
+
 
 }
 @media (max-width:375px) {

@@ -125,6 +125,7 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
+          localStorage.setItem("onboardComplete", "true");
           navigate("/dashboard", { replace: true });
         } else {
           setUser({
@@ -134,7 +135,8 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
-          navigate("/details");
+            localStorage.setItem("onboardComplete", "false");
+          navigate("/details", { replace: true });
         }
       } else {
         setPopupType("failed");
@@ -172,8 +174,6 @@ const SignUp = () => {
         setOtpSent(true);
         const endTime = Date.now() + 120 * 1000; // 2 mins from now
         setResendEndTime(endTime);
-        // setResendTimer(endTime);
-
         setIsResendDisabled(true);
       } else {
         setShowPopup(true);
@@ -246,6 +246,17 @@ const SignUp = () => {
       setStep(5);
     }
   }, []);
+useEffect(() => {
+  const preventGoBack = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+  window.history.pushState(null, "", window.location.href);
+  window.addEventListener("popstate", preventGoBack);
+  return () => {
+    window.removeEventListener("popstate", preventGoBack);
+  };
+}, []);
+
 
   useEffect(() => {
     if (otpSent && inputRefs.current[0]) {
@@ -284,6 +295,7 @@ const SignUp = () => {
           >
             <div className={styles.welcomeTitle}>
               <h1>Log In to your Account</h1>
+              <p >If it does not exist, We will create a<b> New FREE Account</b> for you. Make sure the email ID provided is correct.</p>
             </div>
           </div>
 

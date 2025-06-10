@@ -9,36 +9,38 @@
    padding: 0;
    box-sizing: border-box;
  }
- 
- .ForDesktop{
-  display: none !important;
-  align-items: center;
-    margin: auto;
-    justify-content: center;
-    display: flex;
-    height: 100vh;
-    max-width: 700px;
-    width: 100%;
-    
+
+ .ForDesktop {
+   display: none !important;
+   align-items: center;
+   margin: auto;
+   justify-content: center;
+   display: flex;
+   height: 100vh;
+   max-width: 700px;
+   width: 100%;
+
  }
+
  /* .ForDesktop h1{
   
     font-size: 3rem;
  } */
 
-   @media screen and (min-width: 601px) {
-   
-   .ForMobile{
-    /* display: none; */
+ @media screen and (min-width: 601px) {
+
+   .ForMobile {
+     /* display: none; */
    }
-   .App{
-    margin: auto;
-    align-items: center;
-    justify-content: center;
-    /* display: flex; */
-    width: 100%;
+
+   .App {
+     margin: auto;
+     align-items: center;
+     justify-content: center;
+     /* display: flex; */
+     width: 100%;
    }
-   
+
  }
 
 
@@ -47,18 +49,25 @@
      display: block;
      user-select: none;
    }
-   .ForDesktop{
-    display: none;
+
+   .ForDesktop {
+     display: none;
    }
  }
 
-#slideradio input[type="checkbox"] {
-  width: 25px;
-  height: 25px;
-  accent-color: #6524EB;
-  right: 5px;
-  top: 5px;
-}
+ #slideradio input[type="checkbox"] {
+   width: 25px;
+   height: 25px;
+   accent-color: #6524EB;
+   right: 5px;
+   top: 5px;
+ }
+
+ #servies input[type="checkbox"] {
+   accent-color: #6524EB;
+
+ }
+
  input[type="radio"] {
    width: 16px;
    height: 16px;
@@ -114,3 +123,22 @@
 
 
  }
+
+ /* calendar css */
+
+ .react-calendar {
+   font-family: "Lato", sans-serif !important;
+ }
+
+ .react-calendar__tile--active {
+   background: #6624eb !important;
+   color: #ffffff !important;
+   border: 1px solid #E0E5F2 !important;
+   border-radius: 4px !important;
+ }
+
+ .react-calendar__month-view__days__day--weekend {
+   color: #6a0dad !important;
+ }
+
+ /* End calendar css */

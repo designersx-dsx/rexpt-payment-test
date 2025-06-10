@@ -34,7 +34,9 @@ const BusinessLocation = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [popupType, setPopupType] = useState('error');
-
+  const sessionBusinessiD = sessionStorage.getItem("bId")
+  const businessId1 = sessionBusinessiD?.businessId; 
+  const businessId =  sessionBusinessiD ||  sessionBusinessiD?.businessId;
   const token = localStorage.getItem('token');
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
@@ -53,7 +55,7 @@ const BusinessLocation = () => {
       navigate,
       setHasFetched,
     });
-
+    // console.log('loading',loading)
   useEffect(() => {
     const businessLocation = JSON.parse(sessionStorage.getItem('businessLocation'));
     if (businessLocation) {
@@ -87,14 +89,14 @@ const BusinessLocation = () => {
   const validateState = (value) => {
     if (!value.trim()) return 'State is required.';
     if (containsEmoji(value)) return 'Emojis are not allowed in state.';
-    if (/[^a-zA-Z\s.-]/.test(value)) return 'State contains invalid characters.';
+    // if (/[^a-zA-Z\s.-]/.test(value)) return 'State contains invalid characters.';
     return '';
   };
 
   const validateCity = (value) => {
     if (!value.trim()) return 'City is required.';
     if (containsEmoji(value)) return 'Emojis are not allowed in city.';
-    if (/[^a-zA-Z\s.-]/.test(value)) return 'City contains invalid characters.';
+    // if (/[^a-zA-Z\s.-]/.test(value)) return 'City contains invalid characters.';
     return '';
   };
 
@@ -102,10 +104,9 @@ const BusinessLocation = () => {
     if (!value.trim()) return `${fieldName} is required.`;
     if (containsEmoji(value)) return `Emojis are not allowed in ${fieldName.toLowerCase()}.`;
     if (/[^a-zA-Z0-9\s,.\-#/]/.test(value))
-      return `${fieldName} contains invalid characters.`;
+      // return `${fieldName} contains invalid characters.`;
     return '';
   };
-
   const handleStateChange = (e) => {
     const val = e.target.value;
     setState(val);
@@ -133,6 +134,7 @@ const BusinessLocation = () => {
     // if (address2Submitted) setAddress2Error(validateAddress(val, 'Address line 2'));
     // else setAddress2Error('');
   };
+// console.log('sasas  ',cleanServiceArray(),)
 
  const handleContinue = async () => {
     setStateSubmitted(true);
@@ -162,24 +164,31 @@ const BusinessLocation = () => {
         address2: address2.trim(),
       })
     );
-
     try {
       setLoading(true);
       
       const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
       const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-      const customServices = JSON.parse(sessionStorage.getItem('selectedServices')) || []; 
-      let response;
+      // const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
+      const businesServices =JSON.parse(sessionStorage.getItem('businesServices'))
+      const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+        const cleanedCustomServices = rawCustomServices
+      .map(item => item?.service?.trim())
+      .filter(Boolean)
+      .map(service => ({ service }));
 
+
+      let response;
       if(localStorage.getItem('UpdationMode')!="ON"){
-        console.log('Inside create API');
         response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
           userId,
           businessName: businessDetails?.businessName,
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
           buisnessEmail: businessDetails?.email,
-          buisnessService: [...businessDetails?.selectedService, ...customServices],  
+          // buisnessService: [...businessDetails?.selectedService, ...customServices],  
+          buisnessService: cleanServiceArray(),
+          customServices:cleanedCustomServices,
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -188,12 +197,14 @@ const BusinessLocation = () => {
           zip: locationData.zip,
         });
       } else {
-        response = await axios.put(`${API_BASE_URL}/businessDetails/updateBusinessDetails/${userId}`, {
+        response = await axios.patch(`${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`, {
           businessName: businessDetails?.businessName,
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
           buisnessEmail: businessDetails?.email,
-          buisnessService: [...businessDetails?.selectedService, ...customServices], 
+          // buisnessService: [...businessDetails?.selectedService, ...customServices], 
+           buisnessService: cleanServiceArray(),
+          customServices:cleanedCustomServices,  
           address1: locationData.address1,
           address2: locationData.address2,
           city: locationData.city,
@@ -204,7 +215,7 @@ const BusinessLocation = () => {
       }
 
       const id = response.data.businessId;
-      console.log('Response from the server:', response);
+      // console.log('Response from the server:', response);
       
       sessionStorage.setItem(
         'businessId',
@@ -245,7 +256,6 @@ const BusinessLocation = () => {
 
 
   useEffect(() => {
-    console.log(search)
     if (search) {
       const filtered = countries.filter((country) =>
         country.name.toLowerCase().includes(search.toLowerCase())
@@ -286,10 +296,11 @@ const BusinessLocation = () => {
       })
     );
   console.log('edit hit')
+  
   setTimeout(()=>{
     handleCreateAgent();
   },800)
-  
+  setLoading(false)
   
 };
 
@@ -474,3 +485,26 @@ const BusinessLocation = () => {
 };
 
 export default BusinessLocation;
+
+const cleanServiceArray = () => {
+  try {
+
+    let raw 
+    if(localStorage.getItem('UpdationMode')!="ON"){
+    raw=sessionStorage.getItem('businessDetails')
+    }else{
+      raw=raw=sessionStorage.getItem('businessDetails')
+    }
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed?.selectedService)) {
+      return parsed.selectedService;
+    } else if (typeof parsed?.selectedService === 'object' && Array.isArray(parsed.selectedService.selectedService)) {
+      return parsed.selectedService.selectedService;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}

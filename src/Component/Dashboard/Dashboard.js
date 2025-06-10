@@ -7,6 +7,7 @@ import {
   EndWebCallUpdateAgentMinutesLeft,
   fetchDashboardDetails,
   getUserAgentMergedDataForAgentUpdate,
+  toggleAgentActivation,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -21,16 +22,12 @@ import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
-import Modal from '../Modal2/Modal2'
+import Modal from "../Modal2/Modal2";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
-
-
-    
   const navigate = useNavigate();
   const { user } = useUser();
- console.log(agents,"agents")
   // Retell Web Client states
   const [retellWebClient, setRetellWebClient] = useState(null);
   const [isCallActive, setIsCallActive] = useState(false);
@@ -92,8 +89,12 @@ function Dashboard() {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
- const [show  , setShow] = useState(false)
-    const [close  , setClose] = useState(false)
+  const [show, setShow] = useState(false);
+  const [close, setClose] = useState(false);
+
+  const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+  const [agentToDeactivate, setAgentToDeactivate] = useState(null);
+
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
 
@@ -109,29 +110,36 @@ function Dashboard() {
     }
   };
 
-
-  useEffect(()=>{
-    if(localStorage.getItem("UpdationMode")=="ON"){
-            localStorage.removeItem('UpdationMode')
-            localStorage.removeItem('agentName')
-            localStorage.removeItem('agentGender')
-            localStorage.removeItem('agentLanguageCode')
-            localStorage.removeItem('agentLanguage')
-            localStorage.removeItem('llmId')
-            localStorage.removeItem('agent_id')
-            localStorage.removeItem('knowledgeBaseId')
-            localStorage.removeItem('agentRole')
-            localStorage.removeItem('agentVoice')
-            localStorage.removeItem('agentVoiceAccent')
-            localStorage.removeItem('avatar')
-            localStorage.removeItem("UpdationMode")
-            localStorage.removeItem("googleUrl")
-            localStorage.removeItem("knowledge_base_id")
-            localStorage.removeItem("knowledge_base_name")
-            localStorage.removeItem("selectedAgentAvatar")
-            localStorage.removeItem("webUrl")
+  useEffect(() => {
+    if (localStorage.getItem("UpdationMode") == "ON") {
+      localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("bId");
+      localStorage.removeItem("displayBusinessName");    
+      localStorage.removeItem("agentName");
+      localStorage.removeItem("agentGender");
+      localStorage.removeItem("agentLanguageCode");
+      localStorage.removeItem("agentLanguage");
+      localStorage.removeItem("llmId");
+      localStorage.removeItem("agent_id");
+      localStorage.removeItem("knowledgeBaseId");
+      localStorage.removeItem("agentRole");
+      localStorage.removeItem("agentVoice");
+      localStorage.removeItem("agentVoiceAccent");
+      localStorage.removeItem("avatar");
+      localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("knowledge_base_id");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("selectedAgentAvatar");
+      localStorage.removeItem("webUrl");
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("webUrl");
+      localStorage.removeItem("aboutBusiness");
+      localStorage.removeItem("additionalInstruction");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("knowledge_base_id");
     }
-  },[])
+  }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -139,31 +147,30 @@ function Dashboard() {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
   };
- useEffect(() => {
-  const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
+  useEffect(() => {
+    const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
 
-  if (agentWithCalKey?.calApiKey) {
-    const fetchBookings = async () => {
-      try {
-        const response = await fetch(
-          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
-            agentWithCalKey.calApiKey
-          )}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch bookings");
+    if (agentWithCalKey?.calApiKey) {
+      const fetchBookings = async () => {
+        try {
+          const response = await fetch(
+            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+              agentWithCalKey.calApiKey
+            )}`
+          );
+          if (!response.ok) throw new Error("Failed to fetch bookings");
 
-        const data = await response.json();
-        setBookingCount(data.bookings?.length || 0);
-        console.log("Booking count fetched:", data.bookings?.length || 0);
-      } catch (error) {
-        console.error("Error fetching booking count:", error);
-        setBookingCount(0);
-      }
-    };
+          const data = await response.json();
+          setBookingCount(data.bookings?.length || 0);
+        } catch (error) {
+          console.error("Error fetching booking count:", error);
+          setBookingCount(0);
+        }
+      };
 
-    fetchBookings();
-  }
-}, [localAgents]); 
+      fetchBookings();
+    }
+  }, [localAgents]);
   // Open Cal modal & set current agent + API key
   const handleCalClick = (agent, e) => {
     e.stopPropagation();
@@ -384,22 +391,27 @@ function Dashboard() {
   };
 
   const handleUpgrade = (id) => {
-   setShow(true)
+    setShow(true);
   };
-    const handleCLose = ()=>{
-        setClose(true)
-        setShow(false)
-    }
+  const handleCLose = () => {
+    setClose(true);
+    setShow(false);
+  };
 
   const handleLogout = () => {
+    setPopupType("confirm");
+    setPopupMessage("Are you sure you want to logout?");
+  };
+  const handleLogoutConfirm = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("agents");
     localStorage.clear();
     sessionStorage.clear();
+    window.location.replace("/signup");
     window.location.href = "/signup";
+    
   };
-
   // Retell Web Client initializationcxcxc
   useEffect(() => {
     const client = new RetellWebClient();
@@ -436,7 +448,6 @@ function Dashboard() {
       setCallLoading(false);
     }
   };
-
   // End call
   const handleEndCall = async () => {
     console.log("isCallInProgress", isCallInProgress);
@@ -445,10 +456,10 @@ function Dashboard() {
       const payload = { agentId: agentDetails.agent_id, callId: callId };
       if (isCallInProgress) {
         const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+        setIsCallInProgress(false);
       }
       setHasFetched(false);
       setIsCallInProgress(false);
-      
     }
   };
 
@@ -512,6 +523,8 @@ function Dashboard() {
 
   const handleEditAgent = async (ag) => {
     localStorage.setItem("UpdationMode", "ON");
+    await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
+
     navigate("/business-details", {
       state: { agentId: ag.agent_id, bussinesId: ag.businessId },
     });
@@ -526,37 +539,59 @@ function Dashboard() {
     setPopupMessage(message);
     setPopupType(type);
   };
+
+   const handleTotalCallClick = () => {
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("totalCallView", true);
+    localStorage.setItem("filterType", "all");
+     sessionStorage.removeItem("agentId"); 
+    navigate("/totalcall-list");
+  };
+
+  function formatName(name) {
+    if (!name) return "";
+
+    if (name.includes(" ")) {
+      return name?.split(" ")[0];
+    } else {
+      if (name?.length > 12) {
+        return name?.substring(0, 10);
+      }
+      return name;
+    }
+  }
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.replace("/signup");
+  }
+}, []);
+
+
   return (
     <div>
       <div className={styles.forSticky}>
-              {show?  <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
-                        Comming Soon
-                        
-                        </h2>
-                        
-                        <p className={styles.apologyHeadText}apologyHeadText>
-        
-        As a Free Plan user, you are currently limited to creating one agent. However, you will soon be able to create additional agents and upgrade your existing ones once our Paid Agents feature is live. We are working diligently to bring this feature to you and will notify you as soon as Paid Plans become available.
-        Thank you for your patience.
-                        </p>
-        
-                        <div className={styles.zz}>
-        
-                        {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
-        
-                        </div>
-        
-                        
-                        </Modal>
-                        
-                        : null}
+        {show ? (
+          <Modal isOpen={show} onClose={handleCLose}>
+            <></>
+            <h2 className={styles.apologyHead}>Comming Soon</h2>
+
+            <p className={styles.apologyHeadText} apologyHeadText>
+              We apologise, But our paid plans are being tested to pass our
+              "Rigorous QA Process" For now, If your sign-up for a "Free
+              Account", We promise to send you Upgradation Options in your email
+              within next 2 weeks.
+            </p>
+
+            <div className={styles.zz}>
+              {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
+            </div>
+          </Modal>
+        ) : null}
         <header className={styles.header}>
           <div className={styles.profileSection} ref={profileRef}>
             <div>
-              <button
-                className={styles.avatarBtn}
-                onClick={openUploadModal} // Toggle dropdown visibility on avatar click
-              >
+              <button className={styles.avatarBtn} onClick={openUploadModal}>
                 <img
                   src={
                     user?.profile ||
@@ -574,7 +609,9 @@ function Dashboard() {
             </div>
             <div>
               <p className={styles.greeting}>Hello!</p>
-              <h2 className={styles.name}>{user?.name || "John Vick"}</h2>
+              <h2 className={styles.name}>
+                {formatName(user?.name) || "John Vick"}
+              </h2>
             </div>
             {isUploadModalOpen && (
               <UploadProfile
@@ -647,7 +684,7 @@ function Dashboard() {
         </header>
 
         <section className={styles.agentCard}>
-          <div className={styles.agentInfo}>
+          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
             <img src="svg/total-call.svg" alt="total-call" />
           </div>
@@ -755,20 +792,23 @@ function Dashboard() {
                         <div
                           className={styles.OptionItem}
                           onClick={() => {
-  setAgentToDelete(agent);
-  setShowDeleteConfirm(true);
-}}
-
+                            setAgentToDelete(agent);
+                            setShowDeleteConfirm(true);
+                          }}
                         >
                           Delete Agent
                         </div>
                       </div>
-
                       {/* <div
-                                                className={styles.OptionItem}
-                                            >
-                                                Test Call
-                                            </div> */}
+                        className={styles.OptionItem}
+                        onClick={() => {
+                          setAgentToDeactivate(agent);
+                          setShowDeactivateConfirm(true);
+                        }}
+                      >
+                        Deactivate Agent
+                      </div> */}
+
                       {/* <div
                                                 className={styles.OptionItem}
                                                 onClick={() => handleOpenWidgetModal(agent)}
@@ -848,7 +888,7 @@ function Dashboard() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                 Click to connect with cal
+                  Click to connect with cal
                 </a>
               </p>
 
@@ -1007,41 +1047,48 @@ function Dashboard() {
           </div>
         )}
         {showDeleteConfirm && agentToDelete && (
-  <div className={styles.modalBackdrop} onClick={() => setShowDeleteConfirm(false)}>
-    <div
-      className={styles.modalContainer}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <h2>Are you sure?</h2>
-      <p>Do you want to delete agent <strong>{agentToDelete.agentName}</strong>?</p>
-      <div className={styles.modalButtons}>
-        <button
-          className={`${styles.modalButton} ${styles.cancel}`}
-          onClick={() => setShowDeleteConfirm(false)}
-        >
-          No
-        </button>
-        <button
-          className={`${styles.modalButton} ${styles.submit}`}
-          onClick={async () => {
-            try {
-              await handleDelete(agentToDelete.agent_id);
-              setShowDeleteConfirm(false);
-              setAgentToDelete(null);
-            } catch (error) {
-              setPopupMessage(`Failed to delete agent: ${error.message}`);
-              setPopupType("failed");
-              setShowDeleteConfirm(false);
-            }
-          }}
-        >
-          Yes
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <div
+              className={styles.modalContainer}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2>Are you sure?</h2>
+              <p>
+                Do you want to delete agent{" "}
+                <strong>{agentToDelete.agentName}</strong>?
+              </p>
+              <div className={styles.modalButtons}>
+                <button
+                  className={`${styles.modalButton} ${styles.cancel}`}
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  No
+                </button>
+                <button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  onClick={async () => {
+                    try {
+                      await handleDelete(agentToDelete.agent_id);
+                      setShowDeleteConfirm(false);
+                      setAgentToDelete(null);
+                    } catch (error) {
+                      setPopupMessage(
+                        `Failed to delete agent: ${error.message}`
+                      );
+                      setPopupType("failed");
+                      setShowDeleteConfirm(false);
+                    }
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Call Test Modal */}
         {openCallModal && (
@@ -1098,6 +1145,55 @@ function Dashboard() {
       {/* {isCaptureModalOpen && (
         <CaptureProfile onClose={closeCaptureModal} onCapture={handleCapture} />
       )} */}
+      {showDeactivateConfirm && agentToDeactivate && (
+        <div
+          className={styles.modalBackdrop}
+          onClick={() => setShowDeactivateConfirm(false)}
+        >
+          <div
+            className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>Deactivate Agent</h2>
+            <p>
+              Are you sure you want to <strong>deactivate</strong>{" "}
+              <strong>{agentToDeactivate.agentName}</strong>?
+            </p>
+            <div className={styles.modalButtons}>
+              <button
+                className={`${styles.modalButton} ${styles.cancel}`}
+                onClick={() => setShowDeactivateConfirm(false)}
+              >
+                No
+              </button>
+              <button
+                className={`${styles.modalButton} ${styles.submit}`}
+                onClick={async () => {
+                  try {
+                    await toggleAgentActivation(
+                      agentToDeactivate.agent_id,
+                      true
+                    );
+                    setShowDeactivateConfirm(false);
+                    setAgentToDeactivate(null);
+                    setPopupType("success");
+                    setPopupMessage("Agent deactivated successfully.");
+                    setHasFetched(false);
+                  } catch (error) {
+                    setPopupType("failed");
+                    setPopupMessage("Failed to deactivate agent.");
+                    console.error(error);
+                    setShowDeactivateConfirm(false);
+                  }
+                }}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
@@ -1123,6 +1219,7 @@ function Dashboard() {
           type={popupType}
           message={popupMessage}
           onClose={() => setPopupMessage("")}
+          onConfirm={handleLogoutConfirm}
         />
       )}
     </div>
@@ -1130,3 +1227,148 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+const fetchPrevAgentDEtails = async (agent_id, businessId) => {
+  try {
+    const response = await getUserAgentMergedDataForAgentUpdate(
+      agent_id,
+      businessId
+    );
+    const agent = response?.data?.agent;
+    const business = response?.data?.business;
+
+    // console.log('agent',agent)
+    sessionStorage.setItem("UpdationMode", "ON");
+    sessionStorage.setItem("agentName", agent.agentName);
+    sessionStorage.setItem("agentGender", agent.agentGender);
+    sessionStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
+    sessionStorage.setItem("agentLanguage", agent.agentLanguage);
+    sessionStorage.setItem("llmId", agent.llmId);
+    sessionStorage.setItem("agent_id", agent.agent_id);
+    sessionStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
+
+    //need to clear later
+    localStorage.setItem("UpdationMode", "ON");
+    localStorage.setItem("agentName", agent.agentName);
+    localStorage.setItem("agentGender", agent.agentGender);
+    localStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
+    localStorage.setItem("agentLanguage", agent.agentLanguage);
+    localStorage.setItem("llmId", agent.llmId);
+    localStorage.setItem("agent_id", agent.agent_id);
+    localStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
+    localStorage.setItem("agentRole", agent.agentRole);
+    localStorage.setItem("agentVoice", agent.agentVoice);
+    localStorage.setItem("agentVoiceAccent", agent.agentAccent);
+    localStorage.setItem("avatar", agent.avatar);
+    sessionStorage.setItem("googleListing", business.googleUrl);
+    sessionStorage.getItem("displayBusinessName");
+    localStorage.setItem("googleUrl", business.googleUrl);
+    localStorage.setItem("webUrl", business.webUrl);
+    localStorage.setItem("aboutBusiness", business.aboutBusiness);
+    localStorage.setItem(
+      "additionalInstruction",
+      business.additionalInstruction
+    );
+    localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
+    localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
+    //need to clear above
+
+    sessionStorage.setItem(
+      "aboutBusinessForm",
+      JSON.stringify({
+        businessUrl: business.webUrl,
+        googleListing: business.googleUrl,
+        aboutBusiness: business.aboutBusiness,
+        note: business.additionalInstruction,
+      })
+    );
+
+    sessionStorage.setItem("agentRole", agent.agentRole);
+    sessionStorage.setItem("agentVoice", agent.agentVoice);
+    sessionStorage.setItem("agentVoiceAccent", agent.agentAccent);
+    sessionStorage.setItem("avatar", agent.avatar);
+    sessionStorage.setItem("businessDetails", agent.business);
+    sessionStorage.setItem("businessId", agent.businessId);
+    sessionStorage.setItem("bId", agent.businessId);
+    sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
+
+    const businessData = {
+      userId: business.userId,
+      businessType: business.businessType,
+      businessName: business.businessName.trim(),
+      businessSize: business.businessSize,
+    };
+
+    let parsedServices = safeParse(business.buisnessService, []);
+    sessionStorage.setItem(
+      "businesServices",
+      JSON.stringify({
+        selectedService: parsedServices,
+        email: business.buisnessEmail,
+      })
+    );
+
+    //custom services
+    // let parsedCustomeServices=safeParse(business.customServices, [])
+    // console.log('business.customServices:', parsedCustomeServices,business.customServices);
+    // console.log('typeof:', typeof parsedCustomeServices);
+    //    sessionStorage.setItem("selectedCustomServices",JSON.stringify({
+    //     parsedCustomeServices
+    // }))
+    //custom servcice save and filter
+    let rawCustomServices = business?.customServices || [];
+
+    if (typeof rawCustomServices === "string") {
+      try {
+        rawCustomServices = JSON.parse(rawCustomServices);
+      } catch (err) {
+        console.error("Failed to parse customServices:", rawCustomServices);
+        rawCustomServices = [];
+      }
+    }
+
+    const cleanedCustomServices = Array.isArray(rawCustomServices)
+      ? rawCustomServices
+          .map((item) => item?.service?.trim())
+          .filter(Boolean)
+          .map((service) => ({ service }))
+      : [];
+
+    sessionStorage.setItem(
+      "selectedCustomServices",
+      JSON.stringify(cleanedCustomServices)
+    );
+
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+    sessionStorage.setItem(
+      "businessLocation",
+      JSON.stringify({
+        country: business?.country,
+        state: business?.state.trim(),
+        city: business?.city.trim(),
+        address1: business?.address1.trim(),
+        address2: business?.address2.trim(),
+      })
+    );
+  } catch (error) {
+    console.log("An Error Occured while fetching Agent Data for ", error);
+  }
+};
+
+const safeParse = (value, fallback = null) => {
+  try {
+    if (typeof value === "string") {
+      const cleaned = value.trim();
+      if (
+        (cleaned.startsWith("[") && cleaned.endsWith("]")) ||
+        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
+        (cleaned.startsWith('"') && cleaned.endsWith('"'))
+      ) {
+        return JSON.parse(cleaned);
+      }
+    }
+    return value;
+  } catch {
+    return fallback;
+  }
+};

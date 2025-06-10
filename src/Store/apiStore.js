@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 // Centralized API base URL
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'
@@ -146,6 +147,45 @@ export const getUserAgentMergedDataForAgentUpdate = async (agentId,businessId) =
   } catch (error) {
     console.error("Error validating email:", error);
     return { valid: false, reason: 'Error validating email' };  
+  }
+};
+
+export const getAllAgentCalls = async (userId) => {
+  try {
+    const res = await api.get(`/agent/user/${userId}/agent/calls`, {
+      headers: {
+         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching agent calls:", error.response?.data || error.message);
+    throw new Error("Failed to fetch agent calls");
+  }
+};
+export const fetchUserDetails=async(id)=>{
+  const userId=id
+  try {
+      const response=await axios.get(`${API_BASE_URL}/endusers/users/${userId}`)
+      return response
+  } catch (error) {
+     console.log(error)
+  }
+}
+
+export const toggleAgentActivation = async (agentId, deactivate = true) => {
+  try {
+    const res = await api.patch(`/agent/toggle-activation/${agentId}`, {
+      deactivate,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error toggling agent activation:", error.response?.data || error.message);
+    throw new Error("Failed to update agent activation status");
   }
 };
 
