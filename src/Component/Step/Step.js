@@ -972,6 +972,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setShowPopup(true);
 
                                 setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);
+                                setHasFetched(false)
                                 setLoading(false)
                                 sessionStorage.clear()
 
