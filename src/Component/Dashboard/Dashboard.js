@@ -718,7 +718,7 @@ const handleDelete = async (agentId) => {
         </section>
       </div>
 
-      <div className={styles.main}>
+      <div className={styles.main}  >
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
@@ -732,7 +732,7 @@ const handleDelete = async (agentId) => {
             }
           }
           return (
-            <div
+            <div  
               key={agent.agent_id}
               className={`${styles.LangStyle} ${styles[randomPlan]}`}
               onClick={() => handleCardClick(agent)}
@@ -765,7 +765,7 @@ const handleDelete = async (agentId) => {
                   </div>
                 </div>
 
-                <div ref={dropdownRef}
+                <div
                   className={styles.FilterIcon}
                   onClick={(e) => toggleDropdown(e, agent.agent_id)}
                 >
