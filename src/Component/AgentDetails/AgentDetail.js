@@ -1351,13 +1351,13 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    sessionStorage.setItem('businessLocation', JSON.stringify({
-      country: business?.country,
-      state: business?.state.trim(),
-      city: business?.city.trim(),
-      address1: business?.address1.trim(),
-      address2: business?.address2.trim(),
-    }))
+    // sessionStorage.setItem('businessLocation', JSON.stringify({
+    //   country: business?.country,
+    //   state: business?.state.trim(),
+    //   city: business?.city.trim(),
+    //   address1: business?.address1.trim(),
+    //   address2: business?.address2.trim(),
+    // }))
   } catch (error) {
     console.log('An Error Occured while fetching Agent Data for ', error)
   }

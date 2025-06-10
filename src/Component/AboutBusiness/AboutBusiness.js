@@ -66,6 +66,8 @@ function AboutBusiness() {
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
+  
+
   const businessId1 = sessionBusinessiD?.businessId; 
   const businessId =
   location.state?.businessId ||
