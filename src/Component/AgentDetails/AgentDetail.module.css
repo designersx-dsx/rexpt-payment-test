@@ -825,6 +825,10 @@
   .statDetail {
     font-size: 30px;
   }
+  .agentDetailsFlex p:last-child strong {
+  font-size: 25px;
+
+}
 
 }
 

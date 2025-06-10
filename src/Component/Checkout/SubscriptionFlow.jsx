@@ -155,7 +155,7 @@ export default function SubscriptionFlow() {
   // Render
   return (
     <div className={styles.container}>
-      <h2>Complete Your Payment</h2>
+      <h2 className={styles.TitleH2}>Complete Your Payment</h2>
 
       {/* Email Input with Edit button */}
       <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
