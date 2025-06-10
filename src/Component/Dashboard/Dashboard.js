@@ -114,6 +114,7 @@ function Dashboard() {
     if (localStorage.getItem("UpdationMode") == "ON") {
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("bId");
+      localStorage.removeItem("displayBusinessName");    
       localStorage.removeItem("agentName");
       localStorage.removeItem("agentGender");
       localStorage.removeItem("agentLanguageCode");
@@ -1289,6 +1290,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     sessionStorage.setItem("businessDetails", agent.business);
     sessionStorage.setItem("businessId", agent.businessId);
     sessionStorage.setItem("bId", agent.businessId);
+    sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
 
     const businessData = {
       userId: business.userId,

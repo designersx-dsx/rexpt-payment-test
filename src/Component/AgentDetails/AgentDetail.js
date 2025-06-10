@@ -398,48 +398,49 @@ const AgentDashboard = () => {
     sessionStorage.setItem("userId", userId);
   };
 
+  const handleCloseEditagentModalOpen=()=>{
+localStorage.removeItem('selectedStepEditMode');
+localStorage.removeItem('bId');
+localStorage.removeItem('displayBusinessName');
+sessionStorage.removeItem('UpdationMode');
+sessionStorage.removeItem('agentName');
+sessionStorage.removeItem('agentGender');
+sessionStorage.removeItem('agentLanguageCode');
+sessionStorage.removeItem('agentLanguage');
+sessionStorage.removeItem('llmId');
+sessionStorage.removeItem('agent_id');
+sessionStorage.removeItem('knowledgeBaseId');
+sessionStorage.removeItem('googleListing');
+sessionStorage.removeItem('displayBusinessName');
+sessionStorage.removeItem('aboutBusinessForm');
+sessionStorage.removeItem('agentRole');
+sessionStorage.removeItem('agentVoice');
+sessionStorage.removeItem('agentVoiceAccent');
+sessionStorage.removeItem('avatar');
+sessionStorage.removeItem('businessDetails');
+sessionStorage.removeItem('businessId');
+sessionStorage.removeItem('businesServices');
+sessionStorage.removeItem('businessLocation');
+localStorage.removeItem('UpdationMode');
+localStorage.removeItem('UpdationModeStepWise');
+localStorage.removeItem('agentName');
+localStorage.removeItem('agentGender');
+localStorage.removeItem('agentLanguageCode');
+localStorage.removeItem('agentLanguage');
+localStorage.removeItem('llmId');
+localStorage.removeItem('agent_id');
+localStorage.removeItem('knowledgeBaseId');
+localStorage.removeItem('agentRole');
+localStorage.removeItem('agentVoice');
+localStorage.removeItem('agentVoiceAccent');
+localStorage.removeItem('avatar');
+localStorage.removeItem('googleUrl');
+localStorage.removeItem('webUrl');
+localStorage.removeItem('aboutBusiness');
+localStorage.removeItem('additionalInstruction');
+localStorage.removeItem('knowledge_base_name');
+localStorage.removeItem('knowledge_base_id');
 
-  const handleCloseEditagentModalOpen = () => {
-    localStorage.removeItem('selectedStepEditMode');
-    localStorage.removeItem('"bId"');
-    sessionStorage.removeItem('UpdationMode');
-    sessionStorage.removeItem('agentName');
-    sessionStorage.removeItem('agentGender');
-    sessionStorage.removeItem('agentLanguageCode');
-    sessionStorage.removeItem('agentLanguage');
-    sessionStorage.removeItem('llmId');
-    sessionStorage.removeItem('agent_id');
-    sessionStorage.removeItem('knowledgeBaseId');
-    sessionStorage.removeItem('googleListing');
-    sessionStorage.removeItem('displayBusinessName');
-    sessionStorage.removeItem('aboutBusinessForm');
-    sessionStorage.removeItem('agentRole');
-    sessionStorage.removeItem('agentVoice');
-    sessionStorage.removeItem('agentVoiceAccent');
-    sessionStorage.removeItem('avatar');
-    sessionStorage.removeItem('businessDetails');
-    sessionStorage.removeItem('businessId');
-    sessionStorage.removeItem('businesServices');
-    sessionStorage.removeItem('businessLocation');
-    localStorage.removeItem('UpdationMode');
-    localStorage.removeItem('UpdationModeStepWise');
-    localStorage.removeItem('agentName');
-    localStorage.removeItem('agentGender');
-    localStorage.removeItem('agentLanguageCode');
-    localStorage.removeItem('agentLanguage');
-    localStorage.removeItem('llmId');
-    localStorage.removeItem('agent_id');
-    localStorage.removeItem('knowledgeBaseId');
-    localStorage.removeItem('agentRole');
-    localStorage.removeItem('agentVoice');
-    localStorage.removeItem('agentVoiceAccent');
-    localStorage.removeItem('avatar');
-    localStorage.removeItem('googleUrl');
-    localStorage.removeItem('webUrl');
-    localStorage.removeItem('aboutBusiness');
-    localStorage.removeItem('additionalInstruction');
-    localStorage.removeItem('knowledge_base_name');
-    localStorage.removeItem('knowledge_base_id');
 
 
     setModalOpen(false)
@@ -1287,6 +1288,36 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         aboutBusiness: business.aboutBusiness,
         note: business.additionalInstruction,
       }))
+
+  
+      sessionStorage.setItem('agentRole',agent.agentRole)
+      sessionStorage.setItem('agentVoice',agent.agentVoice)
+      sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
+      sessionStorage.setItem('avatar',agent.avatar)
+      sessionStorage.setItem('businessDetails',agent.business)
+      sessionStorage.setItem('businessId',agent.businessId)
+      sessionStorage.setItem("bId", agent.businessId);
+      sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
+
+          
+        const businessData = {
+        userId:business.userId  ,
+        businessType:business.businessType,
+        businessName: business.businessName.trim(),
+        businessSize:business.businessSize,
+      };
+      
+  
+      let parsedServices = safeParse(business.buisnessService, []); 
+      // console.log('business.buisnessService:', parsedServices);
+      // console.log('typeof:', typeof parsedServices);
+  
+      sessionStorage.setItem("businesServices",JSON.stringify({
+         selectedService:parsedServices,
+          email:business.buisnessEmail
+      }))
+      //custome servce filter and save
+
 
     sessionStorage.setItem('agentRole', agent.agentRole)
     sessionStorage.setItem('agentVoice', agent.agentVoice)
