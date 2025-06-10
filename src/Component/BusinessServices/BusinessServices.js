@@ -7,30 +7,30 @@ import { useAgentCreator } from '../../hooks/useAgentCreator';
 const BusinessServices = () => {
     const navigate = useNavigate();
     const [businessType, setBusinessType] = useState("Restaurant");
-const [selectedService, setSelectedService] = useState([]);
+    const [selectedService, setSelectedService] = useState([]);
     const [businessName, setBusinessName] = useState("");
     const [businessSize, setBusinessSize] = useState("");
     const [email, setEmail] = useState("");
     // Error states
-   const [emailError, setEmailError] = useState("");
+    const [emailError, setEmailError] = useState("");
     const [serviceError, setServiceError] = useState("");
     const [isEmailVerified, setIsEmailVerified] = useState(false);
-    const [popupMessage, setPopupMessage] = useState(""); 
+    const [popupMessage, setPopupMessage] = useState("");
     const [popupType, setPopupType] = useState("");
     // const [selectedServices, setSelectedServices] = useState([]);
-    const [Loading,setLoading]=useState(false);
+    const [Loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const stepEditingMode=localStorage.getItem('UpdationModeStepWise')
-    const EditingMode=localStorage.getItem('UpdationMode')
-    const setHasFetched=true
+    const stepEditingMode = localStorage.getItem('UpdationModeStepWise')
+    const EditingMode = localStorage.getItem('UpdationMode')
+    const setHasFetched = true
     const { handleCreateAgent } = useAgentCreator({
-      stepValidator: () => "businesServices", // or custom validation
-      setLoading,
-      setPopupMessage,
-      setPopupType,
-      setShowPopup,
-      navigate,
-      setHasFetched,
+        stepValidator: () => "businesServices", // or custom validation
+        setLoading,
+        setPopupMessage,
+        setPopupType,
+        setShowPopup,
+        navigate,
+        setHasFetched,
     });
 
     const businessServices = [
@@ -288,14 +288,14 @@ const [selectedService, setSelectedService] = useState([]);
             ]
         }
     ];
-    
+
     const [searchTerm, setSearchTerm] = useState("");
     const selectedBusiness = businessServices.find(biz => biz.type === businessType);
     const selectedServices = selectedBusiness?.services || [];
     const filteredServices = selectedServices.filter(service =>
         service.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        
+
     // console.log(filteredServices)
 
     // const validateEmail = (value) => {
@@ -320,208 +320,208 @@ const [selectedService, setSelectedService] = useState([]);
         setServiceError("");
         return true;
     };
-    
-const handleContinue = () => {
-//   const isEmailValid = validateEmail(email);
-  const isServiceValid = selectedService.length > 0;
 
-    // Step 1: Get old businesServices (if any)
-    const raw = sessionStorage.getItem("businesServices");
-    let previous = {};
-    try {
-      previous = raw ? JSON.parse(raw) : {};
-    } catch (err) {
-      console.error("Failed to parse businesServices:", err);
-    }
+    const handleContinue = () => {
+        //   const isEmailValid = validateEmail(email);
+        const isServiceValid = selectedService.length > 0;
 
-    // Step 2: Merge selectedService & email
-    const updatedBusinessServices = {
-      ...previous,
-      selectedService,
-      email,
+        // Step 1: Get old businesServices (if any)
+        const raw = sessionStorage.getItem("businesServices");
+        let previous = {};
+        try {
+            previous = raw ? JSON.parse(raw) : {};
+        } catch (err) {
+            console.error("Failed to parse businesServices:", err);
+        }
+
+        // Step 2: Merge selectedService & email
+        const updatedBusinessServices = {
+            ...previous,
+            selectedService,
+            email,
+        };
+
+        sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+
+        //   if (isEmailValid && isServiceValid) {
+        if (isServiceValid) {
+            // Save selected services in sessionStorage
+            sessionStorage.setItem("businessDetails", JSON.stringify({
+                businessType,
+                businessName,
+                businessSize,
+                selectedService,
+                email,
+            }));
+
+            // Save selected services as selectedServices
+            sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
+
+            navigate("/about-business-next");
+        } else {
+            const errorMessage = isServiceValid
+                ? "Please select at least one service."
+                : "";
+
+            setPopupMessage(errorMessage);
+            setPopupType("failed");
+        }
     };
 
-    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-
-//   if (isEmailValid && isServiceValid) {
-  if (isServiceValid) {
-    // Save selected services in sessionStorage
-    sessionStorage.setItem("businessDetails", JSON.stringify({
-      businessType,
-      businessName,
-      businessSize,
-      selectedService, 
-      email,
-    }));
-
-    // Save selected services as selectedServices
-    sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
-
-    navigate("/about-business-next");
-  } else {
-    const errorMessage = isServiceValid
-      ? "Please select at least one service."
-      : ""; 
-
-    setPopupMessage(errorMessage);
-    setPopupType("failed");
-  }
-};
 
 
 
-
-      const handleEmailVerify = async () => {
+    const handleEmailVerify = async () => {
         try {
             const response = await validateEmailAPI(email);
 
             if (response.valid) {
-                setIsEmailVerified(true);  
-                setEmailError(""); 
+                setIsEmailVerified(true);
+                setEmailError("");
                 setPopupMessage("Email verified successfully!");
-                setPopupType("success");  
+                setPopupType("success");
             } else {
                 setIsEmailVerified(false);
                 setPopupMessage("Invalid email address.");
-                setPopupType("failed");  
+                setPopupType("failed");
                 setEmailError("Invalid email address.");
             }
         } catch (error) {
             console.error("Error verifying email:", error);
             setEmailError("Error verifying email.");
             setPopupMessage("Error verifying email.");
-            setPopupType("failed"); 
+            setPopupType("failed");
             setIsEmailVerified(false);
         }
     };
 
-useEffect(() => {
-  try {
-    const isUpdateMode = localStorage.getItem("UpdationMode") === "ON";
-
-    const rawBusinessDetails = sessionStorage.getItem("businessDetails");
-    const rawBusinessServices = sessionStorage.getItem("businesServices");
-
-    const businessDetails =
-      rawBusinessDetails &&
-      rawBusinessDetails !== "null" &&
-      rawBusinessDetails !== "undefined"
-        ? JSON.parse(rawBusinessDetails)
-        : null;
-
-    const businessServices =
-      rawBusinessServices &&
-      rawBusinessServices !== "null" &&
-      rawBusinessServices !== "undefined"
-        ? JSON.parse(rawBusinessServices)
-        : null;
-
-    if (!isUpdateMode) {
-      if (businessDetails) {
-        setBusinessType(businessDetails.businessType || "");
-        setBusinessName(businessDetails.businessName || "");
-        setBusinessSize(businessDetails.businessSize || "");
-        // For selectedService: if it's an array, use it; if a string, try to parse it.
-
-        if (Array.isArray(businessDetails.selectedService)) {
-          setSelectedService(businessDetails.selectedService);
-        } else if (typeof businessDetails.selectedService === "string") {
-          try {
-            const parsed = JSON.parse(businessDetails.selectedService);
-            if (Array.isArray(parsed)) {
-              setSelectedService(parsed);
-            }
-          } catch {}
-        }
-        setEmail(businessDetails.email || "");
-      }
-    } else {
-      if (businessDetails) {
-        setBusinessType(businessDetails.businessType || "");
-        setBusinessName(businessDetails.businessName || "");
-        setBusinessSize(businessDetails.businessSize || "");
-      }
-
-      if (businessServices?.selectedService) {
+    useEffect(() => {
         try {
-          let finalSelected = [];
+            const isUpdateMode = localStorage.getItem("UpdationMode") === "ON";
+
+            const rawBusinessDetails = sessionStorage.getItem("businessDetails");
+            const rawBusinessServices = sessionStorage.getItem("businesServices");
+
+            const businessDetails =
+                rawBusinessDetails &&
+                    rawBusinessDetails !== "null" &&
+                    rawBusinessDetails !== "undefined"
+                    ? JSON.parse(rawBusinessDetails)
+                    : null;
+
+            const businessServices =
+                rawBusinessServices &&
+                    rawBusinessServices !== "null" &&
+                    rawBusinessServices !== "undefined"
+                    ? JSON.parse(rawBusinessServices)
+                    : null;
+
+            if (!isUpdateMode) {
+                if (businessDetails) {
+                    setBusinessType(businessDetails.businessType || "");
+                    setBusinessName(businessDetails.businessName || "");
+                    setBusinessSize(businessDetails.businessSize || "");
+                    // For selectedService: if it's an array, use it; if a string, try to parse it.
+
+                    if (Array.isArray(businessDetails.selectedService)) {
+                        setSelectedService(businessDetails.selectedService);
+                    } else if (typeof businessDetails.selectedService === "string") {
+                        try {
+                            const parsed = JSON.parse(businessDetails.selectedService);
+                            if (Array.isArray(parsed)) {
+                                setSelectedService(parsed);
+                            }
+                        } catch { }
+                    }
+                    setEmail(businessDetails.email || "");
+                }
+            } else {
+                if (businessDetails) {
+                    setBusinessType(businessDetails.businessType || "");
+                    setBusinessName(businessDetails.businessName || "");
+                    setBusinessSize(businessDetails.businessSize || "");
+                }
+
+                if (businessServices?.selectedService) {
+                    try {
+                        let finalSelected = [];
 
 
-          if (typeof businessServices.selectedService === "string") {
-            const parsed = JSON.parse(businessServices.selectedService);
-            if (Array.isArray(parsed)) {
-              finalSelected = parsed;
+                        if (typeof businessServices.selectedService === "string") {
+                            const parsed = JSON.parse(businessServices.selectedService);
+                            if (Array.isArray(parsed)) {
+                                finalSelected = parsed;
+                            }
+                        } else if (Array.isArray(businessServices.selectedService)) {
+                            finalSelected = businessServices.selectedService;
+                        }
+
+
+                        setSelectedService(finalSelected);
+                    } catch (err) {
+                        console.error("❌ Failed to parse selectedService:", err);
+                    }
+
+                    setEmail(businessServices.email || "");
+                }
             }
-          } else if (Array.isArray(businessServices.selectedService)) {
-            finalSelected = businessServices.selectedService;
-          }
-
-
-          setSelectedService(finalSelected);
-        } catch (err) {
-          console.error("❌ Failed to parse selectedService:", err);
+        } catch (error) {
+            console.error("Error loading session data:", error);
         }
-
-        setEmail(businessServices.email || "");
-      }
-    }
-  } catch (error) {
-    console.error("Error loading session data:", error);
-  }
-}, []);
+    }, []);
 
 
 
-const handleServiceToggle = (service) => {
-  setSelectedService((prev) =>
-    prev.includes(service)
-      ? prev.filter((s) => s !== service)
-      : [...prev, service]
-  );
-  setServiceError("");
-};
-
-  const handleSaveEdit = (e) => {
-  e.preventDefault();
-  
-    const isServiceValid = selectedService.length > 0;
-
-    // Step 1: Get old businesServices (if any)
-    const raw = sessionStorage.getItem("businesServices");
-    let previous = {};
-    try {
-      previous = raw ? JSON.parse(raw) : {};
-    } catch (err) {
-      console.error("Failed to parse businesServices:", err);
-    }
-
-    // Step 2: Merge selectedService & email
-    const updatedBusinessServices = {
-      ...previous,
-      selectedService,
-      email,
+    const handleServiceToggle = (service) => {
+        setSelectedService((prev) =>
+            prev.includes(service)
+                ? prev.filter((s) => s !== service)
+                : [...prev, service]
+        );
+        setServiceError("");
     };
 
-    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-         sessionStorage.setItem(
-                "businessDetails",
-                JSON.stringify({
-                    businessType,
-                    businessName,
-                    businessSize,
-                    selectedService:updatedBusinessServices,
-                    email,
-                })
-            )
+    const handleSaveEdit = (e) => {
+        e.preventDefault();
 
-  handleCreateAgent();
+        const isServiceValid = selectedService.length > 0;
 
-};
-    
+        // Step 1: Get old businesServices (if any)
+        const raw = sessionStorage.getItem("businesServices");
+        let previous = {};
+        try {
+            previous = raw ? JSON.parse(raw) : {};
+        } catch (err) {
+            console.error("Failed to parse businesServices:", err);
+        }
+
+        // Step 2: Merge selectedService & email
+        const updatedBusinessServices = {
+            ...previous,
+            selectedService,
+            email,
+        };
+
+        sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+        sessionStorage.setItem(
+            "businessDetails",
+            JSON.stringify({
+                businessType,
+                businessName,
+                businessSize,
+                selectedService: updatedBusinessServices,
+                email,
+            })
+        )
+
+        handleCreateAgent();
+
+    };
+
 
     return (
-         <div className={styles.container}>
-            <h1 className={styles.title}>{EditingMode?'Edit: Business Services': 'Business Services'}</h1>
+        <div className={styles.container} id='servies'>
+            <h1 className={styles.title}>{EditingMode ? 'Edit: Business Services' : 'Business Services'}</h1>
 
             <div className={styles.searchBox}>
                 <span className={styles.searchIcon}>
@@ -535,45 +535,45 @@ const handleServiceToggle = (service) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-  <div className={styles.ListDiv}>
-            <div className={styles.optionList}>
-                {filteredServices.length > 0 ? (
-                    filteredServices.map((service, index) => (
-                        <label className={styles.option} key={index}>
-                            <div className={styles.forflex}>
-                                <div className={styles.icon}>
-                                    <img
-                                        src={selectedBusiness.icon}
-                                        alt="service-icon"
-                                        className={styles.iconImg}
+            <div className={styles.ListDiv}>
+                <div className={styles.optionList}>
+                    {filteredServices.length > 0 ? (
+                        filteredServices.map((service, index) => (
+                            <label className={styles.option} key={index}>
+                                <div className={styles.forflex}>
+                                    <div className={styles.icon}>
+                                        <img
+                                            src={selectedBusiness.icon}
+                                            alt="service-icon"
+                                            className={styles.iconImg}
+                                        />
+                                    </div>
+                                    <div>
+                                        <strong>{service}</strong>
+                                        <p className={styles.subType}>{selectedBusiness.subtype}</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <input
+                                        type="checkbox"
+                                        name="service"
+                                        value={service}
+                                        checked={selectedService.includes(service)}
+                                        onChange={() => handleServiceToggle(service)}
                                     />
                                 </div>
-                                <div>
-                                    <strong>{service}</strong>
-                                    <p className={styles.subType}>{selectedBusiness.subtype}</p>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <input
-                                    type="checkbox"
-                                    name="service"
-                                    value={service}
-                                    checked={selectedService.includes(service)}
-                                    onChange={() => handleServiceToggle(service)}
-                                />
-                            </div>
-                        </label>
-                    ))
-                ) : (
-                    <p>No services match your search.</p>
-                )}
-                {serviceError && (
-                    <p style={{ color: 'red', marginTop: '5px' }}>{serviceError}</p>
-                )}
-            </div>
+                            </label>
+                        ))
+                    ) : (
+                        <p>No services match your search.</p>
+                    )}
+                    {serviceError && (
+                        <p style={{ color: 'red', marginTop: '5px' }}>{serviceError}</p>
+                    )}
+                </div>
 
-</div>
+            </div>
 
             <div className={styles.labReq}>
                 <div className={styles.inputGroup}>
@@ -588,7 +588,7 @@ const handleServiceToggle = (service) => {
                                 setEmailError("");
                                 // setIsEmailVerified(false); 
                             }}
-                            // onBlur={(e) => validateEmail(e.target.value)}
+                        // onBlur={(e) => validateEmail(e.target.value)}
                         />
                         {emailError && (
                             <p style={{ color: 'red', marginTop: '5px' }}>{emailError}</p>
@@ -611,13 +611,13 @@ const handleServiceToggle = (service) => {
                     </div>
                 </div>
             </div>
-{/* {stepEditingMode!='ON'?  */}
+            {/* {stepEditingMode!='ON'?  */}
             <div>
                 <div type="submit">
                     <div
                         className={styles.btnTheme}
                         onClick={handleContinue}
-                        // disabled={!isEmailVerified} 
+                    // disabled={!isEmailVerified} 
                     >
                         <img src="svg/svg-theme.svg" alt="" type="button" />
                         <p>Continue</p>

@@ -144,6 +144,11 @@
 
 }
 
+.removeButton{
+  border: none;
+  background-color: none;
+}
+
 @media screen and (min-width: 601px) {
  .CallTransferMain1{
     max-width: 500px;

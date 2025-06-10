@@ -7,6 +7,7 @@ import {
   EndWebCallUpdateAgentMinutesLeft,
   fetchDashboardDetails,
   getUserAgentMergedDataForAgentUpdate,
+  toggleAgentActivation,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -90,8 +91,13 @@ function Dashboard() {
   const [agentToDelete, setAgentToDelete] = useState(null);
   const [show, setShow] = useState(false);
   const [close, setClose] = useState(false);
+
+  const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+  const [agentToDeactivate, setAgentToDeactivate] = useState(null);
+
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     const planName = agent?.subscription?.plan_name || "Free";
@@ -126,12 +132,12 @@ function Dashboard() {
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("selectedAgentAvatar");
       localStorage.removeItem("webUrl");
-      localStorage.removeItem('googleUrl');
-      localStorage.removeItem('webUrl');
-      localStorage.removeItem('aboutBusiness');
-      localStorage.removeItem('additionalInstruction');
-      localStorage.removeItem('knowledge_base_name');
-      localStorage.removeItem('knowledge_base_id');
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("webUrl");
+      localStorage.removeItem("aboutBusiness");
+      localStorage.removeItem("additionalInstruction");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("knowledge_base_id");
     }
   }, []);
   // Navigate on agent card click
@@ -402,7 +408,9 @@ function Dashboard() {
     localStorage.removeItem("agents");
     localStorage.clear();
     sessionStorage.clear();
+    window.location.replace("/signup");
     window.location.href = "/signup";
+    
   };
   // Retell Web Client initializationcxcxc
   useEffect(() => {
@@ -442,13 +450,13 @@ function Dashboard() {
   };
   // End call
   const handleEndCall = async () => {
-    // console.log("isCallInProgress", isCallInProgress);
+    console.log("isCallInProgress", isCallInProgress);
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
       if (isCallInProgress) {
         const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
-           setIsCallInProgress(false);
+        setIsCallInProgress(false);
       }
       setHasFetched(false);
       setIsCallInProgress(false);
@@ -532,8 +540,9 @@ function Dashboard() {
     setPopupType(type);
   };
 
-  const handleTotalCallClick = () => {
+   const handleTotalCallClick = () => {
     localStorage.setItem("userId", userId);
+    localStorage.setItem("totalCallView", true);
     localStorage.setItem("filterType", "all");
      sessionStorage.removeItem("agentId"); 
     navigate("/totalcall-list");
@@ -551,6 +560,13 @@ function Dashboard() {
       return name;
     }
   }
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.replace("/signup");
+  }
+}, []);
+
 
   return (
     <div>
@@ -783,12 +799,16 @@ function Dashboard() {
                           Delete Agent
                         </div>
                       </div>
-
                       {/* <div
-                                                className={styles.OptionItem}
-                                            >
-                                                Test Call
-                                            </div> */}
+                        className={styles.OptionItem}
+                        onClick={() => {
+                          setAgentToDeactivate(agent);
+                          setShowDeactivateConfirm(true);
+                        }}
+                      >
+                        Deactivate Agent
+                      </div> */}
+
                       {/* <div
                                                 className={styles.OptionItem}
                                                 onClick={() => handleOpenWidgetModal(agent)}
@@ -1125,6 +1145,55 @@ function Dashboard() {
       {/* {isCaptureModalOpen && (
         <CaptureProfile onClose={closeCaptureModal} onCapture={handleCapture} />
       )} */}
+      {showDeactivateConfirm && agentToDeactivate && (
+        <div
+          className={styles.modalBackdrop}
+          onClick={() => setShowDeactivateConfirm(false)}
+        >
+          <div
+            className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>Deactivate Agent</h2>
+            <p>
+              Are you sure you want to <strong>deactivate</strong>{" "}
+              <strong>{agentToDeactivate.agentName}</strong>?
+            </p>
+            <div className={styles.modalButtons}>
+              <button
+                className={`${styles.modalButton} ${styles.cancel}`}
+                onClick={() => setShowDeactivateConfirm(false)}
+              >
+                No
+              </button>
+              <button
+                className={`${styles.modalButton} ${styles.submit}`}
+                onClick={async () => {
+                  try {
+                    await toggleAgentActivation(
+                      agentToDeactivate.agent_id,
+                      true
+                    );
+                    setShowDeactivateConfirm(false);
+                    setAgentToDeactivate(null);
+                    setPopupType("success");
+                    setPopupMessage("Agent deactivated successfully.");
+                    setHasFetched(false);
+                  } catch (error) {
+                    setPopupType("failed");
+                    setPopupMessage("Failed to deactivate agent.");
+                    console.error(error);
+                    setShowDeactivateConfirm(false);
+                  }
+                }}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
@@ -1264,7 +1333,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
           .filter(Boolean)
           .map((service) => ({ service }))
       : [];
-
 
     sessionStorage.setItem(
       "selectedCustomServices",

@@ -39,8 +39,8 @@ const AgentDashboard = () => {
   } = useAgentStore();
   // console.log('agentDetails',agentDetails)
 
-  const [isModalOpen, setModalOpen] = useState(localStorage.getItem('UpdationModeStepWise')=='ON');
-   const { setHasFetched } =      useDashboardStore();
+  const [isModalOpen, setModalOpen] = useState(localStorage.getItem('UpdationModeStepWise') == 'ON');
+  const { setHasFetched } = useDashboardStore();
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [isApiKeyEditable, setIsApiKeyEditable] = useState(false);
@@ -56,7 +56,7 @@ const AgentDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
   const [callId, setCallId] = useState(null);
-  const [refresh,setRefresh]=useState(false)
+  const [refresh, setRefresh] = useState(false)
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [agentDetail, setAgentDetails] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
@@ -67,7 +67,7 @@ const AgentDashboard = () => {
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
-
+  const [isAssignNumberModal, setIsAssignNumberModal] = useState(false)
   const openCalModal = () => {
     if (!agentData?.agent) return;
     setApiKey(agentData.agent.calApiKey || "");
@@ -307,7 +307,7 @@ const AgentDashboard = () => {
     };
 
     getAgentDetailsAndBookings();
-  }, [agentDetails,refresh]);
+  }, [agentDetails, refresh]);
 
 
   const handleLogout = () => {
@@ -345,8 +345,8 @@ const AgentDashboard = () => {
       return;
     }
     setCallLoading(true);
-  setIsCallInProgress(true);
-      try {
+    setIsCallInProgress(true);
+    try {
       const res = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
         {
@@ -370,12 +370,12 @@ const AgentDashboard = () => {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
-        if (isCallInProgress) {
-          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
-        }
-        setRefresh((prev)=>!prev)
-        setHasFetched(false)
-        setIsCallInProgress(false);
+      if (isCallInProgress) {
+        const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+      }
+      setRefresh((prev) => !prev)
+      setHasFetched(false)
+      setIsCallInProgress(false);
       console.log("Call end response", response);
     }
   };
@@ -393,11 +393,10 @@ const AgentDashboard = () => {
   //handleCallHistoryNavigation
   const handleCallHistoryNavigation = () => {
     navigate("/totalcall-list");
-      localStorage.setItem("filterType", "single");
+    localStorage.setItem("filterType", "single");
     sessionStorage.setItem("agentId", agentId);
     sessionStorage.setItem("userId", userId);
   };
-
 
   const handleCloseEditagentModalOpen=()=>{
 localStorage.removeItem('selectedStepEditMode');
@@ -443,15 +442,16 @@ localStorage.removeItem('knowledge_base_name');
 localStorage.removeItem('knowledge_base_id');
 
 
+
     setModalOpen(false)
   }
   // console.log(agentData,agentDetails?.agentId)
 
-    // Open Widget modal
+  // Open Widget modal
   const handleOpenWidgetModal = (agent) => {
-    console.log('agent',agent)
+    console.log('agent', agent)
     const agentData = {
-      business:agent.business,
+      business: agent.business,
       ...agent.agent,
 
     };
@@ -464,7 +464,7 @@ localStorage.removeItem('knowledge_base_id');
     setOpenWidgetModal(false);
   };
 
-    const handleRefresh = () => {
+  const handleRefresh = () => {
     setHasFetched(false);
   };
 
@@ -473,7 +473,9 @@ localStorage.removeItem('knowledge_base_id');
     setPopupType(type);
   };
 
-
+ const handleCloseAssignNumberModal=()=>{
+  setIsAssignNumberModal(false)
+ }
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -527,10 +529,10 @@ localStorage.removeItem('knowledge_base_id');
                 </div>
                 <div className={styles.notificationIcon} onClick={handleLogout}>
 
-                <svg width="16" height="22" viewBox="0 0 16 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M11.2451 14.7432C11.2018 14.7346 11.1592 14.7221 11.1182 14.7051C11.0367 14.6713 10.9628 14.6218 10.9004 14.5596L10.8154 14.457C10.791 14.4205 10.7699 14.3816 10.7529 14.3408C10.719 14.2592 10.7022 14.1714 10.7021 14.083L10.7148 13.9512C10.7235 13.9079 10.7359 13.8652 10.7529 13.8242C10.7699 13.7834 10.791 13.7445 10.8154 13.708L10.9004 13.6055L12.8428 11.6738L6.74316 11.6738C6.5645 11.6738 6.39296 11.6029 6.2666 11.4766C6.14027 11.3502 6.06943 11.1786 6.06934 11C6.06934 10.8214 6.14037 10.6498 6.2666 10.5234C6.39296 10.3971 6.56447 10.3253 6.74316 10.3252L12.8428 10.3252L10.9004 8.39355L10.8994 8.39355L10.8154 8.29004C10.7422 8.18004 10.7021 8.05011 10.7021 7.91602C10.7022 7.737 10.7737 7.565 10.9004 7.43848C11.027 7.31205 11.199 7.24113 11.3779 7.24121C11.5568 7.24141 11.7281 7.31291 11.8545 7.43945L11.8545 7.43848L14.9512 10.5225C15.0141 10.5849 15.0645 10.6593 15.0986 10.7412C15.1327 10.8231 15.1504 10.9113 15.1504 11C15.1503 11.0885 15.1326 11.1761 15.0986 11.2578C15.0815 11.2989 15.0599 11.3383 15.0352 11.375L14.9512 11.4775L11.8525 14.5596C11.7901 14.622 11.7154 14.6712 11.6338 14.7051C11.5521 14.7389 11.4644 14.7568 11.376 14.7568L11.2451 14.7432Z" fill="#222222" stroke="#222222" stroke-width="0.3"/>
-<path d="M5.41602 21.457L5.18945 21.4512C4.06174 21.3954 2.99122 20.9227 2.18848 20.1211C1.33243 19.2661 0.850217 18.1064 0.848633 16.8965L0.848634 5.11426L0.854494 4.88769C0.911831 3.75841 1.38613 2.68712 2.18945 1.88379C2.993 1.08037 4.06483 0.605939 5.19434 0.548827L5.4209 0.542968L10.5869 0.542968C11.7964 0.543775 12.956 1.02494 13.8115 1.87988C14.667 2.73482 15.1488 3.8941 15.1504 5.10352L15.1504 5.10449L15.1465 6.10059L15.1338 6.23242C15.1079 6.36202 15.044 6.48232 14.9492 6.57715C14.8229 6.70349 14.6513 6.77436 14.4727 6.77441C14.294 6.77441 14.1225 6.70341 13.9961 6.57715C13.8697 6.4508 13.7989 6.27926 13.7988 6.10059L13.7988 5.10449L13.7939 4.94531C13.7536 4.15165 13.421 3.39863 12.8564 2.83398C12.2544 2.23179 11.4375 1.89301 10.5859 1.8916L5.42676 1.8916L5.26758 1.89551C4.47112 1.93575 3.71506 2.27041 3.14844 2.83691C2.54444 3.44103 2.20427 4.25998 2.20313 5.11426L2.20313 16.8955L2.20801 17.0547C2.2482 17.8484 2.58093 18.6013 3.14551 19.166C3.71012 19.7306 4.46313 20.0642 5.25684 20.1045L5.41602 20.1084L10.5781 20.1084C11.4326 20.1075 12.2521 19.7681 12.8564 19.1641C13.4608 18.56 13.8005 17.7402 13.8018 16.8857L13.8018 15.8994L13.8145 15.7676C13.8403 15.638 13.9042 15.5177 13.999 15.4229C14.1254 15.2965 14.2969 15.2257 14.4756 15.2256C14.6542 15.2256 14.8258 15.2966 14.9521 15.4229C15.0785 15.5492 15.1503 15.7207 15.1504 15.8994L15.1504 16.8867L15.1445 17.1133C15.0873 18.2423 14.6127 19.313 13.8096 20.1162C12.9528 20.9729 11.7917 21.4556 10.5801 21.457L5.41602 21.457Z" fill="#222222" stroke="#222222" stroke-width="0.3"/>
-</svg>
+                  <svg width="16" height="22" viewBox="0 0 16 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.2451 14.7432C11.2018 14.7346 11.1592 14.7221 11.1182 14.7051C11.0367 14.6713 10.9628 14.6218 10.9004 14.5596L10.8154 14.457C10.791 14.4205 10.7699 14.3816 10.7529 14.3408C10.719 14.2592 10.7022 14.1714 10.7021 14.083L10.7148 13.9512C10.7235 13.9079 10.7359 13.8652 10.7529 13.8242C10.7699 13.7834 10.791 13.7445 10.8154 13.708L10.9004 13.6055L12.8428 11.6738L6.74316 11.6738C6.5645 11.6738 6.39296 11.6029 6.2666 11.4766C6.14027 11.3502 6.06943 11.1786 6.06934 11C6.06934 10.8214 6.14037 10.6498 6.2666 10.5234C6.39296 10.3971 6.56447 10.3253 6.74316 10.3252L12.8428 10.3252L10.9004 8.39355L10.8994 8.39355L10.8154 8.29004C10.7422 8.18004 10.7021 8.05011 10.7021 7.91602C10.7022 7.737 10.7737 7.565 10.9004 7.43848C11.027 7.31205 11.199 7.24113 11.3779 7.24121C11.5568 7.24141 11.7281 7.31291 11.8545 7.43945L11.8545 7.43848L14.9512 10.5225C15.0141 10.5849 15.0645 10.6593 15.0986 10.7412C15.1327 10.8231 15.1504 10.9113 15.1504 11C15.1503 11.0885 15.1326 11.1761 15.0986 11.2578C15.0815 11.2989 15.0599 11.3383 15.0352 11.375L14.9512 11.4775L11.8525 14.5596C11.7901 14.622 11.7154 14.6712 11.6338 14.7051C11.5521 14.7389 11.4644 14.7568 11.376 14.7568L11.2451 14.7432Z" fill="#222222" stroke="#222222" stroke-width="0.3" />
+                    <path d="M5.41602 21.457L5.18945 21.4512C4.06174 21.3954 2.99122 20.9227 2.18848 20.1211C1.33243 19.2661 0.850217 18.1064 0.848633 16.8965L0.848634 5.11426L0.854494 4.88769C0.911831 3.75841 1.38613 2.68712 2.18945 1.88379C2.993 1.08037 4.06483 0.605939 5.19434 0.548827L5.4209 0.542968L10.5869 0.542968C11.7964 0.543775 12.956 1.02494 13.8115 1.87988C14.667 2.73482 15.1488 3.8941 15.1504 5.10352L15.1504 5.10449L15.1465 6.10059L15.1338 6.23242C15.1079 6.36202 15.044 6.48232 14.9492 6.57715C14.8229 6.70349 14.6513 6.77436 14.4727 6.77441C14.294 6.77441 14.1225 6.70341 13.9961 6.57715C13.8697 6.4508 13.7989 6.27926 13.7988 6.10059L13.7988 5.10449L13.7939 4.94531C13.7536 4.15165 13.421 3.39863 12.8564 2.83398C12.2544 2.23179 11.4375 1.89301 10.5859 1.8916L5.42676 1.8916L5.26758 1.89551C4.47112 1.93575 3.71506 2.27041 3.14844 2.83691C2.54444 3.44103 2.20427 4.25998 2.20313 5.11426L2.20313 16.8955L2.20801 17.0547C2.2482 17.8484 2.58093 18.6013 3.14551 19.166C3.71012 19.7306 4.46313 20.0642 5.25684 20.1045L5.41602 20.1084L10.5781 20.1084C11.4326 20.1075 12.2521 19.7681 12.8564 19.1641C13.4608 18.56 13.8005 17.7402 13.8018 16.8857L13.8018 15.8994L13.8145 15.7676C13.8403 15.638 13.9042 15.5177 13.999 15.4229C14.1254 15.2965 14.2969 15.2257 14.4756 15.2256C14.6542 15.2256 14.8258 15.2966 14.9521 15.4229C15.0785 15.5492 15.1503 15.7207 15.1504 15.8994L15.1504 16.8867L15.1445 17.1133C15.0873 18.2423 14.6127 19.313 13.8096 20.1162C12.9528 20.9729 11.7917 21.4556 10.5801 21.457L5.41602 21.457Z" fill="#222222" stroke="#222222" stroke-width="0.3" />
+                  </svg>
 
 
                 </div>
@@ -547,7 +549,7 @@ localStorage.removeItem('knowledge_base_id');
                       alt="Sofia"
                       className={styles.agentAvatar}
                     />
-                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole ||'General'} </p>
+                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole || 'General'} </p>
                   </div>
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
@@ -581,7 +583,8 @@ localStorage.removeItem('knowledge_base_id');
                       ) : (
                         <div
                           className={styles.AssignNum}
-                          onClick={() => setIsAssignModalOpen(true)}
+                          onClick={() => setIsAssignNumberModal(true)}
+                        // onClick={() => setIsAssignModalOpen(true)}
                         >
                           Assign Number
                         </div>
@@ -856,7 +859,7 @@ localStorage.removeItem('knowledge_base_id');
                 </div>
                 <p
                   className={styles.managementText}
-                  onClick={async() => {await fetchPrevAgentDEtails(agentData?.agent?.agent_id,agentData?.agent?.businessId) ;setModalOpen(true)}}
+                  onClick={async () => { await fetchPrevAgentDEtails(agentData?.agent?.agent_id, agentData?.agent?.businessId); setModalOpen(true) }}
                 >
                   Edit Agent
                 </p>
@@ -975,7 +978,7 @@ localStorage.removeItem('knowledge_base_id');
 
                 <span className={styles.statDetail}>
                   {agentData?.avgCallTime?.minutes ||
-                  agentData?.avgCallTime?.seconds ? (
+                    agentData?.avgCallTime?.seconds ? (
                     <>
                       {agentData?.avgCallTime?.minutes}
                       <span className={styles.MinFont}>m</span>
@@ -1213,7 +1216,7 @@ localStorage.removeItem('knowledge_base_id');
 
 
             <div>
-              <EditAgent agentDetails={agentDetails}/>
+              <EditAgent agentDetails={agentDetails} />
             </div>
           </DetailModal>
 
@@ -1223,6 +1226,7 @@ localStorage.removeItem('knowledge_base_id');
             onClose={() => setIsAssignModalOpen(false)}
           />
 
+          {isAssignNumberModal && <CommingSoon  show={isAssignNumberModal}  onClose={handleCloseAssignNumberModal} />}
           <Footer2 />
         </>
       )}
@@ -1235,55 +1239,56 @@ export default AgentDashboard;
 
 
 
-    const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
-        try {  
-        const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
-        // console.log('response',response)
-        const agent=response?.data?.agent;
-        const business=response?.data?.business;
-              
-      // console.log('agent',agent)
-      sessionStorage.setItem('UpdationMode','ON')
-      sessionStorage.setItem('agentName',agent.agentName)
-      sessionStorage.setItem('agentGender',agent.agentGender)
-      sessionStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
-      sessionStorage.setItem('agentLanguage',agent.agentLanguage)
-      sessionStorage.setItem('llmId',agent.llmId)
-      sessionStorage.setItem('agent_id',agent.agent_id)
-      sessionStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
-  
-      //need to clear later
-       localStorage.setItem('UpdationMode','ON')
-      localStorage.setItem('UpdationModeStepWise','ON')
-      localStorage.setItem('agentName',agent.agentName)
-      localStorage.setItem('agentGender',agent.agentGender)
-      localStorage.setItem('agentLanguageCode',agent.agentLanguageCode)
-      localStorage.setItem('agentLanguage',agent.agentLanguage)
-      localStorage.setItem('llmId',agent.llmId)
-      localStorage.setItem('agent_id',agent.agent_id)
-      localStorage.setItem('knowledgeBaseId',agent.knowledgeBaseId)
-      localStorage.setItem('agentRole',agent.agentRole)
-      localStorage.setItem('agentVoice',agent.agentVoice)
-      localStorage.setItem('agentVoiceAccent',agent.agentAccent)
-      localStorage.setItem('avatar',agent.avatar)
-      sessionStorage.setItem("googleListing",business.googleUrl)
-      sessionStorage.getItem("displayBusinessName",);
-      localStorage.setItem('googleUrl',business.googleUrl)
-      localStorage.setItem('webUrl',business.webUrl)
-      localStorage.setItem('aboutBusiness',business.aboutBusiness)
-      localStorage.setItem('additionalInstruction',business.additionalInstruction)
-      localStorage.setItem('knowledge_base_name',business.knowledge_base_name)
-      localStorage.setItem('knowledge_base_id',business.knowledge_base_id)
-      //need to clear above
-  
-      sessionStorage.setItem(
+const fetchPrevAgentDEtails = async (agent_id, businessId) => {
+  try {
+    const response = await getUserAgentMergedDataForAgentUpdate(agent_id, businessId)
+    // console.log('response',response)
+    const agent = response?.data?.agent;
+    const business = response?.data?.business;
+
+    // console.log('agent',agent)
+    sessionStorage.setItem('UpdationMode', 'ON')
+    sessionStorage.setItem('agentName', agent.agentName)
+    sessionStorage.setItem('agentGender', agent.agentGender)
+    sessionStorage.setItem('agentLanguageCode', agent.agentLanguageCode)
+    sessionStorage.setItem('agentLanguage', agent.agentLanguage)
+    sessionStorage.setItem('llmId', agent.llmId)
+    sessionStorage.setItem('agent_id', agent.agent_id)
+    sessionStorage.setItem('knowledgeBaseId', agent.knowledgeBaseId)
+
+    //need to clear later
+    localStorage.setItem('UpdationMode', 'ON')
+    localStorage.setItem('UpdationModeStepWise', 'ON')
+    localStorage.setItem('agentName', agent.agentName)
+    localStorage.setItem('agentGender', agent.agentGender)
+    localStorage.setItem('agentLanguageCode', agent.agentLanguageCode)
+    localStorage.setItem('agentLanguage', agent.agentLanguage)
+    localStorage.setItem('llmId', agent.llmId)
+    localStorage.setItem('agent_id', agent.agent_id)
+    localStorage.setItem('knowledgeBaseId', agent.knowledgeBaseId)
+    localStorage.setItem('agentRole', agent.agentRole)
+    localStorage.setItem('agentVoice', agent.agentVoice)
+    localStorage.setItem('agentVoiceAccent', agent.agentAccent)
+    localStorage.setItem('avatar', agent.avatar)
+    sessionStorage.setItem("googleListing", business.googleUrl)
+    sessionStorage.getItem("displayBusinessName",);
+    localStorage.setItem('googleUrl', business.googleUrl)
+    localStorage.setItem('webUrl', business.webUrl)
+    localStorage.setItem('aboutBusiness', business.aboutBusiness)
+    localStorage.setItem('additionalInstruction', business.additionalInstruction)
+    localStorage.setItem('knowledge_base_name', business.knowledge_base_name)
+    localStorage.setItem('knowledge_base_id', business.knowledge_base_id)
+    //need to clear above
+
+    sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
-        businessUrl:business.webUrl,
-        googleListing:business.googleUrl,
-        aboutBusiness:business.aboutBusiness,
-        note:business.additionalInstruction,
+        businessUrl: business.webUrl,
+        googleListing: business.googleUrl,
+        aboutBusiness: business.aboutBusiness,
+        note: business.additionalInstruction,
       }))
+
   
       sessionStorage.setItem('agentRole',agent.agentRole)
       sessionStorage.setItem('agentVoice',agent.agentVoice)
@@ -1314,44 +1319,72 @@ export default AgentDashboard;
       //custome servce filter and save
 
 
-      
-      let rawCustomServices = business?.customServices || [];
+    sessionStorage.setItem('agentRole', agent.agentRole)
+    sessionStorage.setItem('agentVoice', agent.agentVoice)
+    sessionStorage.setItem('agentVoiceAccent', agent.agentAccent)
+    sessionStorage.setItem('avatar', agent.avatar)
+    sessionStorage.setItem('businessDetails', agent.business)
+    sessionStorage.setItem('businessId', agent.businessId)
+    sessionStorage.setItem("bId", agent.businessId);
 
-      if (typeof rawCustomServices === 'string') {
-        try {
-          rawCustomServices = JSON.parse(rawCustomServices);
-        } catch (err) {
-          console.error("Failed to parse customServices:", rawCustomServices);
-          rawCustomServices = [];
-        }
+
+    const businessData = {
+      userId: business.userId,
+      businessType: business.businessType,
+      businessName: business.businessName.trim(),
+      businessSize: business.businessSize,
+    };
+
+
+    let parsedServices = safeParse(business.buisnessService, []);
+    // console.log('business.buisnessService:', parsedServices);
+    // console.log('typeof:', typeof parsedServices);
+
+    sessionStorage.setItem("businesServices", JSON.stringify({
+      selectedService: parsedServices,
+      email: business.buisnessEmail
+    }))
+    //custome servce filter and save
+
+
+
+    let rawCustomServices = business?.customServices || [];
+
+    if (typeof rawCustomServices === 'string') {
+      try {
+        rawCustomServices = JSON.parse(rawCustomServices);
+      } catch (err) {
+        console.error("Failed to parse customServices:", rawCustomServices);
+        rawCustomServices = [];
       }
+    }
 
-      const cleanedCustomServices = Array.isArray(rawCustomServices)
-        ? rawCustomServices
-            .map(item => item?.service?.trim())
-            .filter(Boolean)
-            .map(service => ({ service }))
-        : [];
+    const cleanedCustomServices = Array.isArray(rawCustomServices)
+      ? rawCustomServices
+        .map(item => item?.service?.trim())
+        .filter(Boolean)
+        .map(service => ({ service }))
+      : [];
 
-      console.log("Final cleaned services to store:", cleanedCustomServices);
+    console.log("Final cleaned services to store:", cleanedCustomServices);
 
-      sessionStorage.setItem(
-        "selectedCustomServices",
-        JSON.stringify(cleanedCustomServices)
-      );
-      
-      sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-      sessionStorage.setItem('businessLocation',  JSON.stringify({
+    sessionStorage.setItem(
+      "selectedCustomServices",
+      JSON.stringify(cleanedCustomServices)
+    );
+
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+    sessionStorage.setItem('businessLocation', JSON.stringify({
       country: business?.country,
       state: business?.state.trim(),
       city: business?.city.trim(),
       address1: business?.address1.trim(),
       address2: business?.address2.trim(),
     }))
-      } catch (error) {
-        console.log('An Error Occured while fetching Agent Data for ', error)
-      }
-    }
+  } catch (error) {
+    console.log('An Error Occured while fetching Agent Data for ', error)
+  }
+}
 
 
 
@@ -1359,9 +1392,9 @@ const safeParse = (value, fallback = null) => {
   try {
     if (typeof value === "string") {
       const cleaned = value.trim();
-      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) || 
-          (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-          (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
+      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) ||
+        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
+        (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
         return JSON.parse(cleaned);
       }
     }

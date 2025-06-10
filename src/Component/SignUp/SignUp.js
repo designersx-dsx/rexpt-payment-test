@@ -126,9 +126,7 @@ const SignUp = () => {
             subscriptionDetails: {},
           });
           localStorage.setItem("onboardComplete", "true");
-
           navigate("/dashboard", { replace: true });
-           
         } else {
           setUser({
             name: response?.data?.user?.email || "",
@@ -248,6 +246,17 @@ const SignUp = () => {
       setStep(5);
     }
   }, []);
+useEffect(() => {
+  const preventGoBack = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+  window.history.pushState(null, "", window.location.href);
+  window.addEventListener("popstate", preventGoBack);
+  return () => {
+    window.removeEventListener("popstate", preventGoBack);
+  };
+}, []);
+
 
   useEffect(() => {
     if (otpSent && inputRefs.current[0]) {
