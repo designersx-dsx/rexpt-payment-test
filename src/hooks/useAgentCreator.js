@@ -17,11 +17,13 @@ export const useAgentCreator = ({
   setHasFetched = () => {},
 }) => { 
    const token = localStorage.getItem("token") || "";
+     const sessionBusinessiD = sessionStorage.getItem("bId")
+
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
-  const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
-  const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
+  // const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
+  // const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
       const [agentCount, setAgentCount] = useState(0);
   
      const fetchAgentCountFromUser = async () => {
@@ -490,8 +492,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                 .filter(Boolean)
                 .map(service => ({ service }));
                   try {  
-                          const response = await axios.put(`${API_BASE_URL}/businessDetails/updateBusinessDetails/${userId}`, {
-                          businessName: businessDetails?.businessName,
+               const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`, {                          businessName: businessDetails?.businessName,
                           businessSize: businessDetails.businessSize,
                           businessType: businessDetails.businessType,
                           buisnessEmail:buisenessServices?.email,
@@ -522,7 +523,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                       formData2.append("aboutBusiness",buisnessData.aboutBusiness)
                       formData2.append("additionalInstruction",buisnessData.note)
                       try {  
-                       const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${businessId}`,formData2,{
+                       const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,formData2,{
                        headers: {
                           Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
                           "Content-Type": "multipart/form-data",
@@ -566,7 +567,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                       navigate("/agent-detail", {
                         state: {
                         agentId:  sessionStorage.getItem("agent_id") || localStorage.getItem("agentId") ,
-                        bussinesId: sessionStorage.getItem("businessId") || localStorage.getItem("bussinesId") ,
+                        bussinesId: sessionStorage.getItem("bId") || localStorage.getItem("bussinesId") ,
                         },
                     }),1000);
                     }

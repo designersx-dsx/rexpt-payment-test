@@ -108,6 +108,7 @@ function Dashboard() {
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
       localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("bId");
       localStorage.removeItem("agentName");
       localStorage.removeItem("agentGender");
       localStorage.removeItem("agentLanguageCode");
@@ -125,6 +126,12 @@ function Dashboard() {
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("selectedAgentAvatar");
       localStorage.removeItem("webUrl");
+      localStorage.removeItem('googleUrl');
+      localStorage.removeItem('webUrl');
+      localStorage.removeItem('aboutBusiness');
+      localStorage.removeItem('additionalInstruction');
+      localStorage.removeItem('knowledge_base_name');
+      localStorage.removeItem('knowledge_base_id');
     }
   }, []);
   // Navigate on agent card click
@@ -1213,6 +1220,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     sessionStorage.setItem("avatar", agent.avatar);
     sessionStorage.setItem("businessDetails", agent.business);
     sessionStorage.setItem("businessId", agent.businessId);
+    sessionStorage.setItem("bId", agent.businessId);
 
     const businessData = {
       userId: business.userId,

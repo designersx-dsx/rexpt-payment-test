@@ -34,7 +34,9 @@ const BusinessLocation = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [popupType, setPopupType] = useState('error');
-
+  const sessionBusinessiD = sessionStorage.getItem("bId")
+  const businessId1 = sessionBusinessiD?.businessId; 
+  const businessId =  sessionBusinessiD ||  sessionBusinessiD?.businessId;
   const token = localStorage.getItem('token');
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
@@ -195,7 +197,7 @@ const BusinessLocation = () => {
           zip: locationData.zip,
         });
       } else {
-        response = await axios.put(`${API_BASE_URL}/businessDetails/updateBusinessDetails/${userId}`, {
+        response = await axios.patch(`${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`, {
           businessName: businessDetails?.businessName,
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
