@@ -62,8 +62,7 @@ function AboutBusiness() {
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
 
-  const [urlVerificationInProgress, setUrlVerificationInProgress] =
-    useState(false);
+  const [urlVerificationInProgress, setUrlVerificationInProgress] =    useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
@@ -473,7 +472,7 @@ useEffect(() => {
     formData2.append("additionalInstruction", sanitize(note));
     formData2.append("knowledge_base_name", knowledgeBaseName);
     formData2.append("agentId", localStorage.getItem("agent_id"));
-    formData2.append('displayBusinessName',displayBusinessName)
+    formData2.append('googleBusinessName',displayBusinessName)
 
     formData3.append('knowledge_base_urls', JSON.stringify(mergedUrls))
 
@@ -552,6 +551,7 @@ useEffect(() => {
             },
           }
         );
+        formData2.append("knowledge_base_id", response.data.knowledge_base_id);
         console.log('response added KnowledeBase local', response)
       } catch (error) {
         console.log("error while saving knowledge bas in Database", error);

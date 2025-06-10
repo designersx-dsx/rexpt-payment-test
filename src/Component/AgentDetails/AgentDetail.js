@@ -401,7 +401,8 @@ const AgentDashboard = () => {
 
   const handleCloseEditagentModalOpen=()=>{
 localStorage.removeItem('selectedStepEditMode');
-localStorage.removeItem('"bId"');
+localStorage.removeItem('bId');
+localStorage.removeItem('displayBusinessName');
 sessionStorage.removeItem('UpdationMode');
 sessionStorage.removeItem('agentName');
 sessionStorage.removeItem('agentGender');
@@ -1291,6 +1292,7 @@ export default AgentDashboard;
       sessionStorage.setItem('businessDetails',agent.business)
       sessionStorage.setItem('businessId',agent.businessId)
       sessionStorage.setItem("bId", agent.businessId);
+      sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
 
           
         const businessData = {
