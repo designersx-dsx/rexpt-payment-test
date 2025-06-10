@@ -125,9 +125,10 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
-          
+          localStorage.setItem("onboardComplete", "true");
 
           navigate("/dashboard", { replace: true });
+           
         } else {
           setUser({
             name: response?.data?.user?.email || "",

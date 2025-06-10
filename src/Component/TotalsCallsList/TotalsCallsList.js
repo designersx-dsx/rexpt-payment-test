@@ -171,8 +171,8 @@ export default function Home() {
                 <th>Date & Time</th>
                 <th>Duration</th>
                 <th>From</th>
-                <th>Name</th>
-                <th>Actions</th>
+                {/* <th>Name</th>
+                <th>Actions</th> */}
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -207,10 +207,10 @@ export default function Home() {
                         {call.call_type}
                       </p>
                     </td>
-                    <td className={styles.CallName}>-</td>
+                    {/* <td className={styles.CallName}>-</td>
                     <td>
                       <div className={styles.actionIcons}>
-                        {/* Add your icons here */}
+                    
                         <svg
                           width="26"
                           height="23"
@@ -240,7 +240,7 @@ export default function Home() {
                           />
                         </svg>
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               )}
