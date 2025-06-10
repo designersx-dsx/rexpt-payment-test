@@ -497,12 +497,12 @@ End Call: If the caller is satisfied, invoke end_call function.
                           businessType: businessDetails.businessType,
                           buisnessEmail:buisenessServices?.email,
                           buisnessService:buisenessServices?.selectedService,
-                          address1: locationData.address1,
-                          address2: locationData.address2,
-                          city: locationData.city,
-                          state: locationData.state,
-                          country: locationData.country,
-                          zip: locationData.zip,
+                          // address1: locationData.address1,
+                          // address2: locationData.address2,
+                          // city: locationData.city,
+                          // state: locationData.state,
+                          // country: locationData.country,
+                          // zip: locationData.zip,
                           customServices:cleanedCustomServices,
                           });
                     console.log('updation response',response)
@@ -514,29 +514,30 @@ End Call: If the caller is satisfied, invoke end_call function.
                 }
 
                 const storedKnowledgeBaseId =sessionStorage.getItem('knowledgeBaseId');
-                if(isValid=='AboutBusiness'){
-                    if (storedKnowledgeBaseId && storedKnowledgeBaseId !== "undefined" && storedKnowledgeBaseId !== "null") {
-                      const formData2 = new FormData();
-                      const buisnessData=JSON.parse(sessionStorage.getItem('aboutBusinessForm'))
-                      formData2.append("googleUrl", buisnessData.googleListing);
-                      formData2.append("webUrl",buisnessData.businessUrl.trim());
-                      formData2.append("aboutBusiness",buisnessData.aboutBusiness)
-                      formData2.append("additionalInstruction",buisnessData.note)
-                      try {  
-                       const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,formData2,{
-                       headers: {
-                          Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                          "Content-Type": "multipart/form-data",
-                        },
-                        })
-                          console.log('updation response',response)
-                        } catch (error) {
-                          console.log('error while buinsess details updated');
-                          setLoading(false)
-                          return
-                        }
-                    }
-                } 
+                // if(isValid=='AboutBusiness'){
+                //     if (storedKnowledgeBaseId && storedKnowledgeBaseId !== "undefined" && storedKnowledgeBaseId !== "null") {
+                //       const formData2 = new FormData();
+                //       const buisnessData=JSON.parse(sessionStorage.getItem('aboutBusinessForm'))
+                //       formData2.append("googleUrl", buisnessData.googleListing);
+                //       formData2.append("webUrl",buisnessData.businessUrl.trim());
+                //       formData2.append("aboutBusiness",buisnessData.aboutBusiness)
+                //       formData2.append("additionalInstruction",buisnessData.note)
+                //       try {  
+                //        const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,formData2,{
+                //        headers: {
+                //           Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                //           "Content-Type": "multipart/form-data",
+                //         },
+                //         })
+                //           console.log('updation response',response)
+                //         } catch (error) {
+                //           console.log('error while buinsess details updated');
+                //           setLoading(false)
+                //           return
+                //         }
+                //     }
+                // } 
+               
                 const llm_id=localStorage.getItem('llmId')
                   const agentConfig = {
                  general_prompt: prompt1,

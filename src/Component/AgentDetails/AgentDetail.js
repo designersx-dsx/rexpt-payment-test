@@ -549,7 +549,7 @@ localStorage.removeItem('knowledge_base_id');
                       alt="Sofia"
                       className={styles.agentAvatar}
                     />
-                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole || 'General'} </p>
+                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole?.split(" ")[0] || 'General'} </p>
                   </div>
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
@@ -1285,8 +1285,8 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       JSON.stringify({
         businessUrl: business.webUrl,
         googleListing: business.googleUrl,
-        aboutBusiness: business.aboutBusiness,
-        note: business.additionalInstruction,
+        aboutBusiness: JSON.parse(business.aboutBusiness),
+        note: JSON.parse(business.additionalInstruction),
       }))
 
   

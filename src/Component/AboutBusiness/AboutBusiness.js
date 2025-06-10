@@ -465,7 +465,10 @@ useEffect(() => {
               "Content-Type": "multipart/form-data",
             },
           })
-     
+
+          formData2.append("knowledge_base_id", response.data.knowledge_base_id);
+          console.log('add-knowledge-base-sources knowledgeBaseId updated',response)
+
       }else{
         console.log("ADD KNOW")
           const response = await axios.post(
