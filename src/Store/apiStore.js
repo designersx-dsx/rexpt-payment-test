@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 // Centralized API base URL
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'
@@ -148,20 +149,6 @@ export const getUserAgentMergedDataForAgentUpdate = async (agentId,businessId) =
     return { valid: false, reason: 'Error validating email' };  
   }
 };
-export const deactivateAgent = async (agentId) => {
-  try {
-    const res = await api.put(`/agent/deactivateAgent/${agentId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return res.data;
-  } catch (error) {
-    console.error("Error deactivating agent:", error.response?.data || error.message);
-    throw new Error("Failed to deactivate agent");
-  }
-};
-
 
 export const getAllAgentCalls = async (userId) => {
   try {
@@ -177,6 +164,21 @@ export const getAllAgentCalls = async (userId) => {
   }
 };
 
+export const toggleAgentActivation = async (agentId, deactivate = true) => {
+  try {
+    const res = await api.patch(`/agent/toggle-activation/${agentId}`, {
+      deactivate,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error toggling agent activation:", error.response?.data || error.message);
+    throw new Error("Failed to update agent activation status");
+  }
+};
 
 
 export default api;

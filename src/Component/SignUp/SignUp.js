@@ -248,6 +248,17 @@ const SignUp = () => {
       setStep(5);
     }
   }, []);
+useEffect(() => {
+  const preventBackNavigation = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+  window.history.pushState(null, "", window.location.href);
+  window.addEventListener("popstate", preventBackNavigation);
+
+  return () => {
+    window.removeEventListener("popstate", preventBackNavigation);
+  };
+}, []);
 
   useEffect(() => {
     if (otpSent && inputRefs.current[0]) {
