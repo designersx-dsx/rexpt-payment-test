@@ -94,7 +94,7 @@ const BusinessDetails = () => {
       type: "Web Design Agency",
       subtype: "Your Journey Begins Here",
       icon: "svg/Web-Design-Agency-icon.svg",
-    },
+    }
   ];
   const businessSizeOptions = [
     "1 to 10",

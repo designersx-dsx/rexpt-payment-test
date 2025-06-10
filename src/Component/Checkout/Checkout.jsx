@@ -53,39 +53,39 @@ function CheckoutForm({
   const [popupMessage, setPopupMessage] = useState("");
 
   const VALID_COUNTRY_CODES = new Set([
-  "AF","AX","AL","DZ","AS","AD","AO","AI","AQ","AG","AR","AM","AW","AU","AT","AZ",
-  "BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BQ","BA","BW","BV","BR",
-  "IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC",
-  "CO","KM","CG","CD","CK","CR","CI","HR","CU","CW","CY","CZ","DK","DJ","DM","DO",
-  "EC","EG","SV","GQ","ER","EE","SZ","ET","FK","FO","FJ","FI","FR","GF","PF","TF",
-  "GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GG","GN","GW","GY",
-  "HT","HM","VA","HN","HK","HU","IS","IN","ID","IR","IQ","IE","IM","IL","IT","JM",
-  "JP","JE","JO","KZ","KE","KI","KP","KR","KW","KG","LA","LV","LB","LS","LR","LY",
-  "LI","LT","LU","MO","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX",
-  "FM","MD","MC","MN","ME","MS","MA","MZ","MM","NA","NR","NP","NL","NC","NZ","NI",
-  "NE","NG","NU","NF","MK","MP","NO","OM","PK","PW","PS","PA","PG","PY","PE","PH",
-  "PN","PL","PT","PR","QA","RE","RO","RU","RW","BL","SH","KN","LC","MF","PM","VC",
-  "WS","SM","ST","SA","SN","RS","SC","SL","SG","SX","SK","SI","SB","SO","ZA","GS",
-  "SS","ES","LK","SD","SR","SJ","SE","CH","SY","TW","TJ","TZ","TH","TL","TG","TK",
-  "TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","US","UM","UY","UZ","VU",
-  "VE","VN","VG","VI","WF","EH","YE","ZM","ZW"
-]);
+    "AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ",
+    "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BQ", "BA", "BW", "BV", "BR",
+    "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC",
+    "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CW", "CY", "CZ", "DK", "DJ", "DM", "DO",
+    "EC", "EG", "SV", "GQ", "ER", "EE", "SZ", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF",
+    "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY",
+    "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM",
+    "JP", "JE", "JO", "KZ", "KE", "KI", "KP", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY",
+    "LI", "LT", "LU", "MO", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX",
+    "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "NC", "NZ", "NI",
+    "NE", "NG", "NU", "NF", "MK", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH",
+    "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC",
+    "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SX", "SK", "SI", "SB", "SO", "ZA", "GS",
+    "SS", "ES", "LK", "SD", "SR", "SJ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK",
+    "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU",
+    "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"
+  ]);
 
   // Validate step 1 fields before going next
   const validateStep1 = () => {
-  const newErrors = {};
-  if (!addressLine1.trim()) newErrors.addressLine1 = "Address Line 1 is required.";
-  if (!city.trim()) newErrors.city = "City is required.";
-  if (!state.trim()) newErrors.state = "State / Province is required.";
-  if (!postalCode.trim()) newErrors.postalCode = "Postal Code is required.";
-  if (!country.trim()) {
-    newErrors.country = "Country is required.";
-  } else if (!VALID_COUNTRY_CODES.has(country.toUpperCase())) {
-    newErrors.country = "Please enter a valid 2-letter ISO country code.";
-  }
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
+    const newErrors = {};
+    if (!addressLine1.trim()) newErrors.addressLine1 = "Address Line 1 is required.";
+    if (!city.trim()) newErrors.city = "City is required.";
+    if (!state.trim()) newErrors.state = "State / Province is required.";
+    if (!postalCode.trim()) newErrors.postalCode = "Postal Code is required.";
+    if (!country.trim()) {
+      newErrors.country = "Country is required.";
+    } else if (!VALID_COUNTRY_CODES.has(country.toUpperCase())) {
+      newErrors.country = "Please enter a valid 2-letter ISO country code.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
 
   // Handle next button on step 1
@@ -188,83 +188,99 @@ function CheckoutForm({
     <div className={styles.checkoutForm}>
       {step === 1 && (
         <>
-          <h3>Billing Address & Company Details</h3>
+          <h3 className={styles.TitleH2}>Billing Address & Company Details</h3>
+          <div className={styles.billinkAddress}>
+            <div>
+              <label>Address Line 1 *</label>
+              <input
+                type="text"
+                value={addressLine1}
+                onChange={(e) => setAddressLine1(e.target.value)}
+                className={styles.input}
+                required
+              />
+              {errors.addressLine1 && <p className={styles.errorMsg}>{errors.addressLine1}</p>}
 
-          <label>Address Line 1 *</label>
-          <input
-            type="text"
-            value={addressLine1}
-            onChange={(e) => setAddressLine1(e.target.value)}
-            className={styles.input}
-            required
-          />
-          {errors.addressLine1 && <p className={styles.errorMsg}>{errors.addressLine1}</p>}
+            </div>
+            <div>
+              <label>Address Line 2</label>
+              <input
+                type="text"
+                value={addressLine2}
+                onChange={(e) => setAddressLine2(e.target.value)}
+                className={styles.input}
+              />
+            </div>
 
-          <label>Address Line 2</label>
-          <input
-            type="text"
-            value={addressLine2}
-            onChange={(e) => setAddressLine2(e.target.value)}
-            className={styles.input}
-          />
 
-          <label>City *</label>
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className={styles.input}
-            required
-          />
-          {errors.city && <p className={styles.errorMsg}>{errors.city}</p>}
+            <div>
+              <label>City *</label>
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className={styles.input}
+                required
+              />
+              {errors.city && <p className={styles.errorMsg}>{errors.city}</p>}
+            </div>
 
-          <label>State / Province *</label>
-          <input
-            type="text"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            className={styles.input}
-            required
-          />
-          Hel
-          {errors.state && <p className={styles.errorMsg}>{errors.state}</p>}
+            <div>
+              <label>State / Province *</label>
+              <input
+                type="text"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                className={styles.input}
+                required
+              />
+              {errors.state && <p className={styles.errorMsg}>{errors.state}</p>}
+            </div>
 
-          <label>Postal Code *</label>
-          <input
-            type="text"
-            value={postalCode}
-            onChange={(e) => setPostalCode(e.target.value)}
-            className={styles.input}
-            required
-          />
-          {errors.postalCode && <p className={styles.errorMsg}>{errors.postalCode}</p>}
+            <div>
+              <label>Postal Code *</label>
+              <input
+                type="text"
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+                className={styles.input}
+                required
+              />
+              {errors.postalCode && <p className={styles.errorMsg}>{errors.postalCode}</p>}
+            </div>
 
-          <label>Country *</label>
-          <input
-            type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className={styles.input}
-            required
-            placeholder="ISO country code, e.g. US"
-          />
-          {errors.country && <p className={styles.errorMsg}>{errors.country}</p>}
+            <div>
+              <label>Country *</label>
+              <input
+                type="text"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className={styles.input}
+                required
+                placeholder="ISO country code, e.g. US"
+              />
+              {errors.country && <p className={styles.errorMsg}>{errors.country}</p>}
+            </div>
 
-          <label>Company Name</label>
-          <input
-            type="text"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            className={styles.input}
-          />
+            <div>
+              <label>Company Name</label>
+              <input
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className={styles.input}
+              />
+            </div>
 
-          <label>GST Number</label>
-          <input
-            type="text"
-            value={gstNumber}
-            onChange={(e) => setGstNumber(e.target.value)}
-            className={styles.input}
-          />
+            <div>  <label>GST Number</label>
+              <input
+                type="text"
+                value={gstNumber}
+                onChange={(e) => setGstNumber(e.target.value)}
+                className={styles.input}
+              /></div>
+
+          </div>
 
           <button
             type="button"

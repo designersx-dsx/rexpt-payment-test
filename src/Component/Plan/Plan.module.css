@@ -177,6 +177,7 @@
     align-items: center;
     min-height: 55px;
     margin-top: 3rem;
+    cursor: pointer;
 }
 .btnTheme img {
     position: absolute;

@@ -47,7 +47,6 @@ function Dashboard() {
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
-
   // Cal API modal & event states
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -60,14 +59,12 @@ function Dashboard() {
   const [eventCreateStatus, setEventCreateStatus] = useState(null);
   const [eventCreateMessage, setEventCreateMessage] = useState("");
   const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-
   //cal
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
 
   const [callId, setCallId] = useState(null);
-
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
@@ -97,6 +94,7 @@ function Dashboard() {
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  const dropdownRef = useRef(null);
 
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
@@ -114,6 +112,7 @@ function Dashboard() {
     if (localStorage.getItem("UpdationMode") == "ON") {
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("bId");
+      localStorage.removeItem("displayBusinessName");    
       localStorage.removeItem("agentName");
       localStorage.removeItem("agentGender");
       localStorage.removeItem("agentLanguageCode");
@@ -373,21 +372,30 @@ function Dashboard() {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
-  const handleDelete = async (agentId) => {
-    try {
-      await deleteAgent(agentId);
-      const updatedAgents = localAgents.filter(
-        (agent) => agent.agent_id !== agentId
-      );
-      setLocalAgents(updatedAgents);
-      setPopupMessage("Agent deleted successfully!");
-      setPopupType("success");
-      setHasFetched(false);
-    } catch (error) {
-      setPopupMessage(`Failed to delete agent: ${error.message}`);
+const handleDelete = async (agentId) => {
+  try {
+    const storedDashboard = JSON.parse(sessionStorage.getItem("dashboard-session-storage"));
+
+    const agents = storedDashboard?.state?.agents || [];
+
+    if (agents.length === 1) {
       setPopupType("failed");
+      setPopupMessage("Cannot delete. You must have at least one agent.");
+      setShowDeleteConfirm(false);
+      return;
     }
-  };
+    await deleteAgent(agentId);
+    const updatedAgents = localAgents.filter(agent => agent.agent_id !== agentId);
+    setLocalAgents(updatedAgents);
+    setPopupMessage("Agent deleted successfully!");
+    setPopupType("success");
+    setHasFetched(false);
+  } catch (error) {
+    setPopupMessage(`Failed to delete agent: ${error.message}`);
+    setPopupType("failed");
+  }
+};
+
 
   const handleUpgrade = (id) => {
     setShow(true);
@@ -408,7 +416,7 @@ function Dashboard() {
     localStorage.clear();
     sessionStorage.clear();
     window.location.replace("/signup");
-    window.location.href = "/signup";
+    // window.location.href = "/signup";
     
   };
   // Retell Web Client initializationcxcxc
@@ -559,6 +567,28 @@ function Dashboard() {
       return name;
     }
   }
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.replace("/signup");
+  }
+}, []);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div>
@@ -735,7 +765,7 @@ function Dashboard() {
                   </div>
                 </div>
 
-                <div
+                <div ref={dropdownRef}
                   className={styles.FilterIcon}
                   onClick={(e) => toggleDropdown(e, agent.agent_id)}
                 >
@@ -880,10 +910,20 @@ function Dashboard() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Click to connect with cal
+                  Click to connect with cal 
                 </a>
-              </p>
-
+                 </p>
+                {/* <p>
+                  <a
+                  href="/calinfo"
+                  target="_blank"
+                  rel="noopener noreferrer" 
+                  >
+                    Learn how to connect with cal
+                  </a>
+                </p> */}
+                
+             
               <div
                 style={{
                   display: "flex",
@@ -1226,6 +1266,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       agent_id,
       businessId
     );
+    console.log(response,"response")
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
@@ -1282,6 +1323,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     sessionStorage.setItem("businessDetails", agent.business);
     sessionStorage.setItem("businessId", agent.businessId);
     sessionStorage.setItem("bId", agent.businessId);
+    sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
 
     const businessData = {
       userId: business.userId,
@@ -1331,16 +1373,16 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    sessionStorage.setItem(
-      "businessLocation",
-      JSON.stringify({
-        country: business?.country,
-        state: business?.state.trim(),
-        city: business?.city.trim(),
-        address1: business?.address1.trim(),
-        address2: business?.address2.trim(),
-      })
-    );
+    // sessionStorage.setItem(
+    //   "businessLocation",
+    //   JSON.stringify({
+    //     country: business?.country,
+    //     state: business?.state.trim(),
+    //     city: business?.city.trim(),
+    //     address1: business?.address1.trim(),
+    //     address2: business?.address2.trim(),
+    //   })
+    // );
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }

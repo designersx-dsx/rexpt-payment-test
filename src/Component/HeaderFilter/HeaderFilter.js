@@ -23,7 +23,7 @@ function HeaderFilter({
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [open, setOpen] = useState(false);
-  const totalAgentView = localStorage.getItem("filterType")
+  const totalAgentView = localStorage.getItem("filterType");
 
   const today = new Date();
   const sevenDaysAgo = new Date();
@@ -62,8 +62,8 @@ function HeaderFilter({
     }
   };
   const handleFilterChange = (newFilters) => {
-    onFilterChange(newFilters); // existing filter logic
-    setIsOpen(false); // close the OffCanvas
+    onFilterChange(newFilters);
+    setIsOpen(false);
   };
 
   return (
@@ -146,13 +146,13 @@ function HeaderFilter({
                 {" "}
                 {startDate
                   ? startDate.toLocaleString("default", {
-                    month: "long",
-                    year: "numeric",
-                  })
+                      month: "long",
+                      year: "numeric",
+                    })
                   : (startDate || new Date()).toLocaleString("default", {
-                    month: "long",
-                    year: "numeric",
-                  })}
+                      month: "long",
+                      year: "numeric",
+                    })}
               </p>
               <div className={styles.dateRange}>
                 <h6>
@@ -194,6 +194,7 @@ function HeaderFilter({
                       endDate={endDate}
                       onChange={handleChangeDate}
                       inline
+                      maxDate={new Date()} 
                     />
                   </div>
                 )}

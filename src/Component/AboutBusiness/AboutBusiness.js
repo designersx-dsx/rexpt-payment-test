@@ -62,11 +62,12 @@ function AboutBusiness() {
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
 
-  const [urlVerificationInProgress, setUrlVerificationInProgress] =
-    useState(false);
+  const [urlVerificationInProgress, setUrlVerificationInProgress] =    useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
+  
+
   const businessId1 = sessionBusinessiD?.businessId; 
   const businessId =
   location.state?.businessId ||
@@ -75,7 +76,6 @@ function AboutBusiness() {
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const EditingMode = localStorage.getItem("UpdationMode");
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
-
   const setHasFetched = true;
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
@@ -269,49 +269,7 @@ useEffect(() => {
     );
   }, [businessUrl, googleListing, aboutBusiness, note]);
 
-  // const handleFileChange = async (e) => {
-  //   const selectedFiles = Array.from(e.target.files);
 
-  //   // block disallowed file types
-  //   const ALLOWED = [
-  //     "application/pdf",
-  //     "text/plain",
-  //     "text/csv",
-  //     "application/json",
-  //     "text/markdown",
-  //   ];
-  //   const invalid = selectedFiles.filter((f) => !ALLOWED.includes(f.type));
-  //   if (invalid.length) {
-  //     alert(
-  //       `Only PDF or text files are allowed.\nBlocked: ${invalid
-  //         .map((i) => i.name)
-  //         .join(", ")}`
-  //     );
-  //     return;
-  //   }
-  //   //allow files
-
-  //   if (selectedFiles.length > 5) {
-  //     alert("You can only upload a maximum of 5 files.");
-  //     return;
-  //   }
-
-  //   setFiles(selectedFiles);
-  //   if (filesSubmitted) setFilesError(validateFiles(selectedFiles));
-
-  //   // ⬇️  convert to base64 and cache
-  //   const base64 = await Promise.all(selectedFiles.map(fileToBase64));
-  //   sessionStorage.setItem(
-  //     "aboutBusinessForm",
-  //     JSON.stringify({
-  //       businessUrl,
-  //       googleListing,
-  //       aboutBusiness,
-  //       note,
-  //       files: base64,
-  //     })
-  //   );
-  // };
 
   const isValidUrl = (url) => {
     const pattern = new RegExp(
@@ -396,9 +354,9 @@ useEffect(() => {
     }
 
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
-    const businessLocation = JSON.parse(
-      sessionStorage.getItem("businessLocation")
-    );
+    // const businessLocation = JSON.parse(
+    //   sessionStorage.getItem("businessLocation")
+    // );
 
     const mergedUrls = [businessUrl.trim(), googleListing];
     const formData = new FormData();
@@ -453,63 +411,51 @@ useEffect(() => {
     const matchedBusiness = businessTypes.find(
       (item) => item.name === business?.businessType
     );
-
     const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
     const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
-
-    // Create the knowledge base name
-    // Create the knowledge base name
     const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(
       shortBusinessName
     )}_${sanitize(packageValue)}_#${agentCount}`;
-    console.log(knowledgeBaseName, mergedUrls);
-    // Append the knowledge base name and URLs to form data
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-
     formData2.append("googleUrl", googleListing);
     formData2.append("webUrl", businessUrl.trim());
     formData2.append("aboutBusiness", sanitize(aboutBusiness));
     formData2.append("additionalInstruction", sanitize(note));
     formData2.append("knowledge_base_name", knowledgeBaseName);
     formData2.append("agentId", localStorage.getItem("agent_id"));
-    formData2.append('displayBusinessName',displayBusinessName)
-
+    formData2.append('googleBusinessName',displayBusinessName)
     formData3.append('knowledge_base_urls', JSON.stringify(mergedUrls))
-
-    // Prepare business location and description
-    let knowledgeTexts = [];
-    let textContent = "";
-    let moreAbout = null;
-    if (businessLocation) {
-      textContent = `
-      Country: ${businessLocation.country || ""}
-      State: ${businessLocation.state || ""}
-      City: ${businessLocation.city || ""}
-      Address No. 1: ${businessLocation.address1 || ""}
-      Address No. 2: ${businessLocation.address2 || ""}
-    `.trim(); // Optional: remove leading/trailing whitespace
-      moreAbout = {
-        title: business.businessType || "Business Info",
-        text: textContent,
-      };
-    }
+    // let textContent = "";
+    // let moreAbout = null;
+      // moreAbout = {
+      //   title: business.businessType || "Business Info",
+      //   // text: textContent,
+      // };
+    // if (businessLocation) {
+    //   textContent = `
+    //   Country: ${businessLocation.country || ""}
+    //   State: ${businessLocation.state || ""}
+    //   City: ${businessLocation.city || ""}
+    //   Address No. 1: ${businessLocation.address1 || ""}
+    //   Address No. 2: ${businessLocation.address2 || ""}
+    // `.trim(); // Optional: remove leading/trailing whitespace
+    //   moreAbout = {
+    //     title: business.businessType || "Business Info",
+    //     // text: textContent,
+    //   };
+    // }
 
     // Append the business description to form data
-    formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
-    formData3.append("knowledge_base_texts", JSON.stringify([moreAbout]));
+    // formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
+    // formData3.append("knowledge_base_texts", JSON.stringify([moreAbout]));
     files.forEach((file) => {
       formData.append("knowledge_base_files", file);
     });
-
     // Submit the form data to the server
     try {
       setLoading(true);
-      // formData2.append("knowledge_base_id",response?.data?.knowledge_base_id||"")
-
       let knowledge_Base_ID=knowledgeBaseId;
-
-      console.log('knowledgeBaseId--------------', knowledgeBaseId,knowledge_Base_ID)
       if(knowledge_Base_ID !== null && knowledge_Base_ID !== undefined && knowledge_Base_ID !== 'null' && knowledge_Base_ID !== 'undefined' && knowledge_Base_ID !== ''){
         console.log('inside add-knowledge-base-sources ')
            const response = await axios.post(
@@ -521,8 +467,12 @@ useEffect(() => {
               "Content-Type": "multipart/form-data",
             },
           })
+
+          formData2.append("knowledge_base_id", response.data.knowledge_base_id);
           console.log('add-knowledge-base-sources knowledgeBaseId updated',response)
+
       }else{
+        console.log("ADD KNOW")
           const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
           formData,
@@ -540,7 +490,6 @@ useEffect(() => {
           response.data.knowledge_base_id
         );
       }
-      
       try {
         const response = await axios.patch(
           `${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,
@@ -552,6 +501,7 @@ useEffect(() => {
             },
           }
         );
+        formData2.append("knowledge_base_id", response.data.knowledge_base_id);
         console.log('response added KnowledeBase local', response)
       } catch (error) {
         console.log("error while saving knowledge bas in Database", error);
@@ -581,7 +531,6 @@ useEffect(() => {
         }
       }
 
-      
       if (stepEditingMode != "ON") {
       setPopupType("success");
       setPopupMessage("Knowledge base created successfully!");

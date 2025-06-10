@@ -16,12 +16,12 @@ const options = [
         description: "Edit Services List, Email Address.",
         path: "/business-services"
     },
-    {
-        id: "location",
-        title: "Business Location",
-        description: "Edit Country, State and City.",
-        path: "/business-locations"
-    },
+    // {
+    //     id: "location",
+    //     title: "Business Location",
+    //     description: "Edit Country, State and City.",
+    //     path: "/business-locations"
+    // },
     {
         id: "about",
         title: "About Your Business",

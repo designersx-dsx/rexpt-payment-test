@@ -398,48 +398,49 @@ const AgentDashboard = () => {
     sessionStorage.setItem("userId", userId);
   };
 
+  const handleCloseEditagentModalOpen=()=>{
+localStorage.removeItem('selectedStepEditMode');
+localStorage.removeItem('bId');
+localStorage.removeItem('displayBusinessName');
+sessionStorage.removeItem('UpdationMode');
+sessionStorage.removeItem('agentName');
+sessionStorage.removeItem('agentGender');
+sessionStorage.removeItem('agentLanguageCode');
+sessionStorage.removeItem('agentLanguage');
+sessionStorage.removeItem('llmId');
+sessionStorage.removeItem('agent_id');
+sessionStorage.removeItem('knowledgeBaseId');
+sessionStorage.removeItem('googleListing');
+sessionStorage.removeItem('displayBusinessName');
+sessionStorage.removeItem('aboutBusinessForm');
+sessionStorage.removeItem('agentRole');
+sessionStorage.removeItem('agentVoice');
+sessionStorage.removeItem('agentVoiceAccent');
+sessionStorage.removeItem('avatar');
+sessionStorage.removeItem('businessDetails');
+sessionStorage.removeItem('businessId');
+sessionStorage.removeItem('businesServices');
+sessionStorage.removeItem('businessLocation');
+localStorage.removeItem('UpdationMode');
+localStorage.removeItem('UpdationModeStepWise');
+localStorage.removeItem('agentName');
+localStorage.removeItem('agentGender');
+localStorage.removeItem('agentLanguageCode');
+localStorage.removeItem('agentLanguage');
+localStorage.removeItem('llmId');
+localStorage.removeItem('agent_id');
+localStorage.removeItem('knowledgeBaseId');
+localStorage.removeItem('agentRole');
+localStorage.removeItem('agentVoice');
+localStorage.removeItem('agentVoiceAccent');
+localStorage.removeItem('avatar');
+localStorage.removeItem('googleUrl');
+localStorage.removeItem('webUrl');
+localStorage.removeItem('aboutBusiness');
+localStorage.removeItem('additionalInstruction');
+localStorage.removeItem('knowledge_base_name');
+localStorage.removeItem('knowledge_base_id');
 
-  const handleCloseEditagentModalOpen = () => {
-    localStorage.removeItem('selectedStepEditMode');
-    localStorage.removeItem('"bId"');
-    sessionStorage.removeItem('UpdationMode');
-    sessionStorage.removeItem('agentName');
-    sessionStorage.removeItem('agentGender');
-    sessionStorage.removeItem('agentLanguageCode');
-    sessionStorage.removeItem('agentLanguage');
-    sessionStorage.removeItem('llmId');
-    sessionStorage.removeItem('agent_id');
-    sessionStorage.removeItem('knowledgeBaseId');
-    sessionStorage.removeItem('googleListing');
-    sessionStorage.removeItem('displayBusinessName');
-    sessionStorage.removeItem('aboutBusinessForm');
-    sessionStorage.removeItem('agentRole');
-    sessionStorage.removeItem('agentVoice');
-    sessionStorage.removeItem('agentVoiceAccent');
-    sessionStorage.removeItem('avatar');
-    sessionStorage.removeItem('businessDetails');
-    sessionStorage.removeItem('businessId');
-    sessionStorage.removeItem('businesServices');
-    sessionStorage.removeItem('businessLocation');
-    localStorage.removeItem('UpdationMode');
-    localStorage.removeItem('UpdationModeStepWise');
-    localStorage.removeItem('agentName');
-    localStorage.removeItem('agentGender');
-    localStorage.removeItem('agentLanguageCode');
-    localStorage.removeItem('agentLanguage');
-    localStorage.removeItem('llmId');
-    localStorage.removeItem('agent_id');
-    localStorage.removeItem('knowledgeBaseId');
-    localStorage.removeItem('agentRole');
-    localStorage.removeItem('agentVoice');
-    localStorage.removeItem('agentVoiceAccent');
-    localStorage.removeItem('avatar');
-    localStorage.removeItem('googleUrl');
-    localStorage.removeItem('webUrl');
-    localStorage.removeItem('aboutBusiness');
-    localStorage.removeItem('additionalInstruction');
-    localStorage.removeItem('knowledge_base_name');
-    localStorage.removeItem('knowledge_base_id');
 
 
     setModalOpen(false)
@@ -548,7 +549,7 @@ const AgentDashboard = () => {
                       alt="Sofia"
                       className={styles.agentAvatar}
                     />
-                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole || 'General'} </p>
+                    <p className={styles.generalDiv}>{agentData?.agent?.agentRole?.split(" ")[0] || 'General'} </p>
                   </div>
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
@@ -831,7 +832,7 @@ const AgentDashboard = () => {
                 <p className={styles.managementText}>Call Transfer</p>
               </div>
 
-              <div className={styles.managementItem}>
+              <div className={styles.managementItem}  onClick={async () => { await fetchPrevAgentDEtails(agentData?.agent?.agent_id, agentData?.agent?.businessId); setModalOpen(true) }} >
                 <div className={styles.SvgDesign}>
                   <svg
                     width="20"
@@ -858,7 +859,7 @@ const AgentDashboard = () => {
                 </div>
                 <p
                   className={styles.managementText}
-                  onClick={async () => { await fetchPrevAgentDEtails(agentData?.agent?.agent_id, agentData?.agent?.businessId); setModalOpen(true) }}
+                  
                 >
                   Edit Agent
                 </p>
@@ -1284,9 +1285,21 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       JSON.stringify({
         businessUrl: business.webUrl,
         googleListing: business.googleUrl,
-        aboutBusiness: business.aboutBusiness,
-        note: business.additionalInstruction,
+        aboutBusiness:business.aboutBusiness,
+        note:business.additionalInstruction
       }))
+
+  
+      sessionStorage.setItem('agentRole',agent.agentRole)
+      sessionStorage.setItem('agentVoice',agent.agentVoice)
+      sessionStorage.setItem('agentVoiceAccent',agent.agentAccent)
+      sessionStorage.setItem('avatar',agent.avatar)
+      sessionStorage.setItem('businessDetails',agent.business)
+      sessionStorage.setItem('businessId',agent.businessId)
+      sessionStorage.setItem("bId", agent.businessId);
+      sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
+
+          
 
     sessionStorage.setItem('agentRole', agent.agentRole)
     sessionStorage.setItem('agentVoice', agent.agentVoice)
@@ -1303,12 +1316,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       businessName: business.businessName.trim(),
       businessSize: business.businessSize,
     };
-
-
     let parsedServices = safeParse(business.buisnessService, []);
-    // console.log('business.buisnessService:', parsedServices);
-    // console.log('typeof:', typeof parsedServices);
-
     sessionStorage.setItem("businesServices", JSON.stringify({
       selectedService: parsedServices,
       email: business.buisnessEmail
@@ -1343,13 +1351,13 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    sessionStorage.setItem('businessLocation', JSON.stringify({
-      country: business?.country,
-      state: business?.state.trim(),
-      city: business?.city.trim(),
-      address1: business?.address1.trim(),
-      address2: business?.address2.trim(),
-    }))
+    // sessionStorage.setItem('businessLocation', JSON.stringify({
+    //   country: business?.country,
+    //   state: business?.state.trim(),
+    //   city: business?.city.trim(),
+    //   address1: business?.address1.trim(),
+    //   address2: business?.address2.trim(),
+    // }))
   } catch (error) {
     console.log('An Error Occured while fetching Agent Data for ', error)
   }

@@ -7,7 +7,7 @@
 }
 
 .container .Step3Container{
-  overflow: scroll;
+  overflow: auto;
   margin-bottom: 5rem;
 }
 
