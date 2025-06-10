@@ -17,6 +17,7 @@ import EditAgent from "../EditAgent/EditAgent";
 import DetailModal from "../DetailModal/DetailModal";
 import { useAgentStore } from "../../Store/agentDetailStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
+import WidgetScript from "../Widgets/WidgetScript";
 const AgentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -53,12 +54,15 @@ const AgentDashboard = () => {
   const [agentId, setAgentId] = useState("");
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showModal, setShowModal] = useState(false);
-    const [isCallInProgress, setIsCallInProgress] = useState(false);
-    const [callId, setCallId] = useState(null);
-    const [refresh,setRefresh]=useState(false)
-  
+  const [isCallInProgress, setIsCallInProgress] = useState(false);
+  const [callId, setCallId] = useState(null);
+  const [refresh,setRefresh]=useState(false)
+  const [openWidgetModal, setOpenWidgetModal] = useState(false);
+  const [agentDetail, setAgentDetails] = useState(null);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success");
   const navigate = useNavigate();
-
+  console.log(agentDetail)
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
@@ -389,6 +393,7 @@ const AgentDashboard = () => {
   //handleCallHistoryNavigation
   const handleCallHistoryNavigation = () => {
     navigate("/totalcall-list");
+      localStorage.setItem("filterType", "single");
     sessionStorage.setItem("agentId", agentId);
     sessionStorage.setItem("userId", userId);
   };
@@ -440,6 +445,34 @@ localStorage.removeItem('knowledge_base_id');
     setModalOpen(false)
   }
   // console.log(agentData,agentDetails?.agentId)
+
+    // Open Widget modal
+  const handleOpenWidgetModal = (agent) => {
+    console.log('agent',agent)
+    const agentData = {
+      business:agent.business,
+      ...agent.agent,
+
+    };
+    setOpenWidgetModal(true);
+    setAgentDetails(agentData);
+  };
+
+  // Close Widget modal
+  const handleCloseWidgetModal = () => {
+    setOpenWidgetModal(false);
+  };
+
+    const handleRefresh = () => {
+    setHasFetched(false);
+  };
+
+  const handleAlertPopUp = (show, message, type) => {
+    setPopupMessage(message);
+    setPopupType(type);
+  };
+
+
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -752,7 +785,7 @@ localStorage.removeItem('knowledge_base_id');
               </div>
               <div
                 className={styles.managementItem}
-                onClick={() => setShowModal(true)}
+                onClick={() => handleOpenWidgetModal(agentData)}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1162,6 +1195,17 @@ localStorage.removeItem('knowledge_base_id');
             </div>
           )}
 
+          {openWidgetModal && (
+            <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
+              <WidgetScript
+                isAgentDetails={agentDetail}
+                onClose={handleCloseWidgetModal}
+                refreshFuntion={handleRefresh}
+                alertPopUp={handleAlertPopUp}
+              />
+            </Modal2>
+          )}
+
           <DetailModal isOpen={isModalOpen}
             onClose={() => handleCloseEditagentModalOpen()}
             height="80vh">
@@ -1193,7 +1237,7 @@ export default AgentDashboard;
     const fetchPrevAgentDEtails=async(agent_id,businessId)=>{
         try {  
         const response=await getUserAgentMergedDataForAgentUpdate(agent_id,businessId)
-        console.log('response',response)
+        // console.log('response',response)
         const agent=response?.data?.agent;
         const business=response?.data?.business;
               

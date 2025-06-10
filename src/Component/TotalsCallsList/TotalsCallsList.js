@@ -17,8 +17,10 @@ const options = [
 const callsPerPage = 6;
 
 export default function Home() {
+  const totalAgentView = localStorage.getItem("filterType");
+  const sessionAgentId = sessionStorage.getItem("agentId") || ""
   const [agentId, setAgentId] = useState(
-    sessionStorage.getItem("agentId") || ""
+    totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
   const [data, setData] = useState([]);
   const [selectedDateRange, setSelectedDateRange] = useState({
@@ -33,16 +35,13 @@ export default function Home() {
   );
   const [filters, setFilters] = useState({ leadType: [], channel: "" });
   const userId = localStorage.getItem("userId") || "";
-  const totalAgentView = localStorage.getItem("totalCallView") === true;
-  console.log("userId", userId);
   useEffect(() => {
-    if (totalAgentView === true || agentId == "all") {
+    if (agentId === "all") {
       fetchAllAgentCalls();
-    } else {
-      fetchCallHistory();
+    } else if (agentId) {
+      fetchCallHistory(agentId);
     }
-  }, [agentId,totalAgentView]);
-
+  }, [agentId]);
   const fetchCallHistory = async () => {
     try {
       setLoading(true);
@@ -62,12 +61,13 @@ export default function Home() {
     }
   };
   const fetchAllAgentCalls = async () => {
+    setLoading(true);
     try {
-      getAllAgentCalls(userId).then((res) => {
-        console.log("getAllAgentCalls response:", res.calls);
-        setData(res.calls || []);
-      });
-    } catch (error) {}
+      const res = await getAllAgentCalls(userId)
+      setData(res.calls || []);
+    } catch (error) { console.log(error) } finally {
+      setLoading(false);
+    }
   };
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
@@ -133,12 +133,7 @@ export default function Home() {
     fetchAllAgentCalls();
     // Perform additional logic related to "All Agents" if needed
   };
-  //Function Lock
-  useEffect(() => {
-    if (agentId) {
-      fetchCallHistory();
-    }
-  }, [agentId]);
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -177,7 +172,12 @@ export default function Home() {
             </thead>
             <tbody className={styles.tbody}>
               {loading ? (
-                <Loader2 />
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    <Loader2 />
+                  </td>
+                </tr>
+
               ) : currentCalls.length === 0 ? (
                 <tr>
                   <td colSpan="5" style={{ textAlign: "center" }}>
@@ -200,9 +200,8 @@ export default function Home() {
                     <td>{convertMsToMinSec(call.duration_ms)}</td>
                     <td>
                       <p
-                        className={`${styles.fromNumber} ${
-                          styles[call.fromColor]
-                        }`}
+                        className={`${styles.fromNumber} ${styles[call.fromColor]
+                          }`}
                       >
                         {call.call_type}
                       </p>
