@@ -47,7 +47,6 @@ function Dashboard() {
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
-
   // Cal API modal & event states
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -60,14 +59,12 @@ function Dashboard() {
   const [eventCreateStatus, setEventCreateStatus] = useState(null);
   const [eventCreateMessage, setEventCreateMessage] = useState("");
   const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-
   //cal
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
 
   const [callId, setCallId] = useState(null);
-
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
@@ -97,7 +94,6 @@ function Dashboard() {
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
-
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     const planName = agent?.subscription?.plan_name || "Free";
@@ -1244,6 +1240,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       agent_id,
       businessId
     );
+    console.log(response,"response")
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
@@ -1350,16 +1347,16 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    sessionStorage.setItem(
-      "businessLocation",
-      JSON.stringify({
-        country: business?.country,
-        state: business?.state.trim(),
-        city: business?.city.trim(),
-        address1: business?.address1.trim(),
-        address2: business?.address2.trim(),
-      })
-    );
+    // sessionStorage.setItem(
+    //   "businessLocation",
+    //   JSON.stringify({
+    //     country: business?.country,
+    //     state: business?.state.trim(),
+    //     city: business?.city.trim(),
+    //     address1: business?.address1.trim(),
+    //     address2: business?.address2.trim(),
+    //   })
+    // );
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }

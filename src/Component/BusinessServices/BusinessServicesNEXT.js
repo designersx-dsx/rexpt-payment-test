@@ -122,7 +122,10 @@ const AboutBusinessNext = () => {
           businessId: id,
         })
       );
-
+      sessionStorage.setItem(
+        'bId',
+        id
+      );
       setPopupType('success');
       setPopupMessage('Business details added successfully');
       setShowPopup(true);
@@ -162,14 +165,14 @@ const AboutBusinessNext = () => {
   const handleRemoveService = (index) => {
     const updatedServices = services.filter((_, i) => i !== index);
     setServices(updatedServices.length ? updatedServices : [{ service: '' }]);
-    
-      let filteredServices = services
+
+    let filteredServices = services
       .map(item => item?.service.trim())
       .filter(service => service !== '')
       .map(service => ({ service }));
 
-      filteredServices=services?.filter((_, i) => i !== index);
-      sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
+    filteredServices = services?.filter((_, i) => i !== index);
+    sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
   };
 
   return (
