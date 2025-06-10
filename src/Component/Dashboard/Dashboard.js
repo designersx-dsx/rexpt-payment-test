@@ -94,6 +94,8 @@ function Dashboard() {
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  const dropdownRef = useRef(null);
+
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     const planName = agent?.subscription?.plan_name || "Free";
@@ -571,7 +573,22 @@ const handleDelete = async (agentId) => {
     window.location.replace("/signup");
   }
 }, []);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
 
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div>
@@ -748,7 +765,7 @@ const handleDelete = async (agentId) => {
                   </div>
                 </div>
 
-                <div
+                <div ref={dropdownRef}
                   className={styles.FilterIcon}
                   onClick={(e) => toggleDropdown(e, agent.agent_id)}
                 >
