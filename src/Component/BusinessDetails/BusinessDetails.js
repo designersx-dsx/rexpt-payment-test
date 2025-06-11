@@ -278,6 +278,7 @@ const BusinessDetails = () => {
       userId,
       businessType,
       businessName: businessName.trim(),
+      customBuisness: customBuisness.trim(), 
       businessSize,
     };
     // if (businessType === "Other" && !customBuisness.trim()) {
