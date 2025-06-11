@@ -84,9 +84,9 @@ const Step = () => {
     // }
     const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
     const cleanedCustomServices = rawCustomServices
-    .map(item => item?.service?.trim())
-    .filter(Boolean)
-    .map(service => ({ service }));
+        .map(item => item?.service?.trim())
+        .filter(Boolean)
+        .map(service => ({ service }));
 
     const businessServices = business?.selectedService || [];
     const customServices = cleanedCustomServices?.map(item =>
@@ -798,8 +798,6 @@ End Call: If the caller is satisfied, invoke end_call function.
             //creation here
             if (isValid && localStorage.getItem("UpdationMode") != "ON") {
                 setLoading(true)
-
-
                 const agentConfig = {
                     version: 0,
                     model: "gemini-2.0-flash-lite",
@@ -807,7 +805,6 @@ End Call: If the caller is satisfied, invoke end_call function.
                     model_high_priority: true,
                     tool_call_strict_mode: true,
                     general_prompt: prompt1,
-
                     general_tools: [
                         {
                             type: "end_call",
@@ -855,9 +852,6 @@ End Call: If the caller is satisfied, invoke end_call function.
                             ],
                         },
                     ],
-
-
-                    // ],
                     starting_state: "information_collection",
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                     default_dynamic_variables: {
@@ -934,10 +928,8 @@ End Call: If the caller is satisfied, invoke end_call function.
                         const agentId = response.data.agent_id;
                         // Get businessId from sessionStorage
                         const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
-
                         // Convert string to object
                         const businessIdObj = JSON.parse(businessIdString);
-
                         // Now access the actual ID
                         const agentData = {
                             userId: userId,
@@ -966,12 +958,10 @@ End Call: If the caller is satisfied, invoke end_call function.
                             if (response.status === 200 || response.status === 201) {
                                 sessionStorage.setItem("agentId", response.data.agent_id);
                                 sessionStorage.setItem("agentStatus", true);
-                                 
                                 setPopupType("success");
                                 setPopupMessage("Agent created successfully!");
                                 setShowPopup(true);
-
-                                setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
                                 setHasFetched(false)
                                 setLoading(false)
                                 sessionStorage.clear()
@@ -995,8 +985,6 @@ End Call: If the caller is satisfied, invoke end_call function.
 
 
                         }
-
-
                     } catch (err) {
                         console.error("Upload failed:", err);
                         setPopupType("failed");
@@ -1011,13 +999,9 @@ End Call: If the caller is satisfied, invoke end_call function.
                     setShowPopup(true);
                     setLoading(false)
                 }
-
-
-
                 setLoading(false)
             }
-
-            //updation here
+            //updation Agent here
             if (isValid && localStorage.getItem("UpdationMode") == "ON") {
                 setLoading(true)
                 const agentConfig = {
@@ -1094,42 +1078,42 @@ End Call: If the caller is satisfied, invoke end_call function.
                                 setPopupType("success");
                                 setPopupMessage("Agent Updated successfully!");
                                 setShowPopup(true);
-                                setTimeout(()=>{
-                                if (stepEditingMode) {
-                                    // setTimeout(
-                                    //     () =>
-                                            navigate("/agent-detail", {
-                                                state: {
-                                                    agentId: agentId || sessionStorage.getItem("agentId"),
-                                                    bussinesId: businessIdObj.businessId ||sessionStorage.getItem('businessId'),
-                                                },
-                                            })
-                                    //     1000
-                                    // );
-                                } else {
+                                setTimeout(() => {
+                                    if (stepEditingMode) {
+                                        // setTimeout(
+                                        //     () =>
+                                        navigate("/agent-detail", {
+                                            state: {
+                                                agentId: agentId || sessionStorage.getItem("agentId"),
+                                                bussinesId: businessIdObj.businessId || sessionStorage.getItem('businessId'),
+                                            },
+                                        })
+                                        //     1000
+                                        // );
+                                    } else {
 
-                                    setTimeout(() => navigate("/dashboard",{ replace: true }), 1500);
-                                setLoading(false)
-                                sessionStorage.clear()
-                                localStorage.removeItem('UpdationMode')
-                                localStorage.removeItem('agentName')
-                                localStorage.removeItem('agentGender')
-                                localStorage.removeItem('agentLanguageCode')
-                                localStorage.removeItem('agentLanguage')
-                                localStorage.removeItem('llmId')
-                                localStorage.removeItem('agent_id')
-                                localStorage.removeItem('knowledgeBaseId')
-                                localStorage.removeItem('agentRole')
-                                localStorage.removeItem('agentVoice')
-                                localStorage.removeItem('agentVoiceAccent')
-                                localStorage.removeItem('avatar')
-                                setHasFetched(false)
-                                }
+                                        setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                                        setLoading(false)
+                                        sessionStorage.clear()
+                                        localStorage.removeItem('UpdationMode')
+                                        localStorage.removeItem('agentName')
+                                        localStorage.removeItem('agentGender')
+                                        localStorage.removeItem('agentLanguageCode')
+                                        localStorage.removeItem('agentLanguage')
+                                        localStorage.removeItem('llmId')
+                                        localStorage.removeItem('agent_id')
+                                        localStorage.removeItem('knowledgeBaseId')
+                                        localStorage.removeItem('agentRole')
+                                        localStorage.removeItem('agentVoice')
+                                        localStorage.removeItem('agentVoiceAccent')
+                                        localStorage.removeItem('avatar')
+                                        setHasFetched(false)
+                                    }
 
-                            },1000)
-                                    
+                                }, 1000)
 
-                            
+
+
                             }
                             console.log('response server', response)
                         } catch (error) {

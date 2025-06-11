@@ -54,11 +54,11 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Estate-icon.svg",
     },
-    // {
-    //   type: "  Landscaping Company",
-    //   subtype: "Your Journey Begins Here",
-    //   icon: "svg/Landscaping-icon.svg",
-    // },
+    {
+      type: "Landscaping Company",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Landscaping-icon.svg",
+    },
     // {
     //   type: " Architect",
     //   subtype: "Your Journey Begins Here",
@@ -278,6 +278,7 @@ const BusinessDetails = () => {
       userId,
       businessType,
       businessName: businessName.trim(),
+      customBuisness: customBuisness.trim(), 
       businessSize,
     };
     // if (businessType === "Other" && !customBuisness.trim()) {
