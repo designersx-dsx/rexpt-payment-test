@@ -72,7 +72,6 @@ function Dashboard() {
   const [liveTranscript, setLiveTranscript] = useState();
 
   //cam-icon
-  const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -98,8 +97,12 @@ function Dashboard() {
 
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
-    const planName = agent?.subscription?.plan_name || "Free";
+    if (agent?.isDeactivated === 1) {
+      handleInactiveAgentAlert();
+      return;
+    }
 
+    const planName = agent?.subscription?.plan_name || "Free";
     if (planName.toLowerCase() === "free") {
       openAssignNumberModal();
     } else {
@@ -111,8 +114,7 @@ function Dashboard() {
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
       localStorage.removeItem("UpdationMode");
-      localStorage.removeItem("bId");
-      localStorage.removeItem("displayBusinessName");    
+      localStorage.removeItem("displayBusinessName");
       localStorage.removeItem("agentName");
       localStorage.removeItem("agentGender");
       localStorage.removeItem("agentLanguageCode");
@@ -124,7 +126,6 @@ function Dashboard() {
       localStorage.removeItem("agentVoice");
       localStorage.removeItem("agentVoiceAccent");
       localStorage.removeItem("avatar");
-      localStorage.removeItem("UpdationMode");
       localStorage.removeItem("googleUrl");
       localStorage.removeItem("knowledge_base_id");
       localStorage.removeItem("knowledge_base_name");
@@ -136,11 +137,54 @@ function Dashboard() {
       localStorage.removeItem("additionalInstruction");
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("knowledge_base_id");
+       localStorage.removeItem("bId");
+    sessionStorage.removeItem("UpdationMode");
+    sessionStorage.removeItem("agentName");
+    sessionStorage.removeItem("agentGender");
+    sessionStorage.removeItem("agentLanguageCode");
+    sessionStorage.removeItem("agentLanguage");
+    sessionStorage.removeItem("llmId");
+    sessionStorage.removeItem("agent_id");
+    sessionStorage.removeItem("knowledgeBaseId");
+    sessionStorage.removeItem("googleListing");
+    sessionStorage.removeItem("displayBusinessName");
+    sessionStorage.removeItem("aboutBusinessForm");
+    sessionStorage.removeItem("agentRole");
+    sessionStorage.removeItem("agentVoice");
+    sessionStorage.removeItem("agentVoiceAccent");
+    sessionStorage.removeItem("avatar");
+    sessionStorage.removeItem("businessDetails");
+    sessionStorage.removeItem("businessId");
+    sessionStorage.removeItem("businesServices");
+    sessionStorage.removeItem("businessLocation");
+    sessionStorage.removeItem("selectedCustomServices");
+    sessionStorage.removeItem("bId");
+    localStorage.removeItem("UpdationMode");
+    localStorage.removeItem("UpdationModeStepWise");
+    localStorage.removeItem("agentName");
+    localStorage.removeItem("agentGender");
+    localStorage.removeItem("agentLanguageCode");
+    localStorage.removeItem("agentLanguage");
+    localStorage.removeItem("llmId");
+    localStorage.removeItem("agent_id");
+    localStorage.removeItem("knowledgeBaseId");
+    localStorage.removeItem("agentRole");
+    localStorage.removeItem("agentVoice");
+    localStorage.removeItem("agentVoiceAccent");
+    localStorage.removeItem("avatar");
+    localStorage.removeItem("googleUrl");
+    localStorage.removeItem("webUrl");
+    localStorage.removeItem("aboutBusiness");
+    localStorage.removeItem("additionalInstruction");
+    localStorage.removeItem("knowledge_base_name");
+    localStorage.removeItem("knowledge_base_id");
     }
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
+    setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
+
     navigate("/agent-detail", {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
@@ -372,30 +416,33 @@ function Dashboard() {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
-const handleDelete = async (agentId) => {
-  try {
-    const storedDashboard = JSON.parse(sessionStorage.getItem("dashboard-session-storage"));
+  const handleDelete = async (agentId) => {
+    try {
+      const storedDashboard = JSON.parse(
+        sessionStorage.getItem("dashboard-session-storage")
+      );
 
-    const agents = storedDashboard?.state?.agents || [];
+      const agents = storedDashboard?.state?.agents || [];
 
-    if (agents.length === 1) {
+      if (agents.length === 1) {
+        setPopupType("failed");
+        setPopupMessage("Cannot delete. You must have at least one agent.");
+        setShowDeleteConfirm(false);
+        return;
+      }
+      await deleteAgent(agentId);
+      const updatedAgents = localAgents.filter(
+        (agent) => agent.agent_id !== agentId
+      );
+      setLocalAgents(updatedAgents);
+      setPopupMessage("Agent deleted successfully!");
+      setPopupType("success");
+      setHasFetched(false);
+    } catch (error) {
+      setPopupMessage(`Failed to delete agent: ${error.message}`);
       setPopupType("failed");
-      setPopupMessage("Cannot delete. You must have at least one agent.");
-      setShowDeleteConfirm(false);
-      return;
     }
-    await deleteAgent(agentId);
-    const updatedAgents = localAgents.filter(agent => agent.agent_id !== agentId);
-    setLocalAgents(updatedAgents);
-    setPopupMessage("Agent deleted successfully!");
-    setPopupType("success");
-    setHasFetched(false);
-  } catch (error) {
-    setPopupMessage(`Failed to delete agent: ${error.message}`);
-    setPopupType("failed");
-  }
-};
-
+  };
 
   const handleUpgrade = (id) => {
     setShow(true);
@@ -417,7 +464,6 @@ const handleDelete = async (agentId) => {
     sessionStorage.clear();
     window.location.replace("/signup");
     // window.location.href = "/signup";
-    
   };
   // Retell Web Client initializationcxcxc
   useEffect(() => {
@@ -547,11 +593,11 @@ const handleDelete = async (agentId) => {
     setPopupType(type);
   };
 
-   const handleTotalCallClick = () => {
+  const handleTotalCallClick = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("totalCallView", true);
     localStorage.setItem("filterType", "all");
-     sessionStorage.removeItem("agentId"); 
+    sessionStorage.removeItem("agentId");
     navigate("/totalcall-list");
   };
 
@@ -568,27 +614,30 @@ const handleDelete = async (agentId) => {
     }
   }
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.replace("/signup");
-  }
-}, []);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.replace("/signup");
+    }
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpenDropdown(null);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleInactiveAgentAlert = () => {
+    setPopupType("failed");
+    setPopupMessage(
+      "Your agent is not active. Please activate your agent first."
+    );
+  };
 
   return (
     <div>
@@ -718,7 +767,7 @@ const handleDelete = async (agentId) => {
         </section>
       </div>
 
-      <div className={styles.main}  >
+      <div className={styles.main}>
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
@@ -732,7 +781,7 @@ const handleDelete = async (agentId) => {
             }
           }
           return (
-            <div  
+            <div
               key={agent.agent_id}
               className={`${styles.LangStyle} ${styles[randomPlan]}`}
               onClick={() => handleCardClick(agent)}
@@ -757,8 +806,17 @@ const handleDelete = async (agentId) => {
                   <div className={styles.LangText}>
                     <h3 className={styles.agentName}>
                       {agent.agentName}{" "}
-                      <span className={styles.activeText}>Active</span>
+                      <span
+                        className={
+                          agent.isDeactivated === 1
+                            ? styles.InactiveText
+                            : styles.activeText
+                        }
+                      >
+                        {agent.isDeactivated === 1 ? "Inactive" : "Active"}
+                      </span>
                     </h3>
+
                     <p className={styles.agentAccent}>
                       {agent?.agentLanguage} •{agent?.agentAccent}
                     </p>
@@ -768,6 +826,7 @@ const handleDelete = async (agentId) => {
                 <div
                   className={styles.FilterIcon}
                   onClick={(e) => toggleDropdown(e, agent.agent_id)}
+                  ref={dropdownRef}
                 >
                   <svg
                     width="18"
@@ -784,36 +843,62 @@ const handleDelete = async (agentId) => {
                     <div className={styles.OptionsDropdown}>
                       <div
                         className={styles.OptionItem}
-                        onClick={() => handleOpenCallModal(agent)}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          if (agent?.isDeactivated === 1) {
+                            handleInactiveAgentAlert();
+                          } else {
+                            handleOpenCallModal(agent);
+                          }
+                        }}
                       >
                         Test Agent
                       </div>
                       <div
                         className={styles.OptionItem}
-                        onClick={() => handleOpenWidgetModal(agent)}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          if (agent?.isDeactivated === 1) {
+                            handleInactiveAgentAlert();
+                          } else {
+                            handleOpenWidgetModal(agent);
+                          }
+                        }}
                       >
                         Integrate
                       </div>
+
                       {/* <div className={styles.OptionItem} onClick={() => ""}>
                         Call Settings
                       </div> */}
                       <div
                         className={styles.OptionItem}
-                        onClick={() => handleEditAgent(agent)}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          handleEditAgent(agent);
+                        }}
                       >
                         {/* <div className={styles.OptionItem} onClick={() => ""}> */}
                         Edit Agent
                       </div>
                       <div
                         className={styles.OptionItem}
-                        onClick={() => handleUpgrade(agent.agent_id)}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          if (agent?.isDeactivated === 1) {
+                            handleInactiveAgentAlert();
+                          } else {
+                            handleUpgrade(agent.agent_id);
+                          }
+                        }}
                       >
                         Upgrade
                       </div>
                       <div key={agent.agent_id}>
                         <div
                           className={styles.OptionItem}
-                          onClick={() => {
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
                             setAgentToDelete(agent);
                             setShowDeleteConfirm(true);
                           }}
@@ -821,22 +906,18 @@ const handleDelete = async (agentId) => {
                           Delete Agent
                         </div>
                       </div>
-                      {/* <div
+                      <div
                         className={styles.OptionItem}
-                        onClick={() => {
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
                           setAgentToDeactivate(agent);
                           setShowDeactivateConfirm(true);
                         }}
                       >
-                        Deactivate Agent
-                      </div> */}
-
-                      {/* <div
-                                                className={styles.OptionItem}
-                                                onClick={() => handleOpenWidgetModal(agent)}
-                                            >
-                                                Widget
-                                            </div> */}
+                        {agent.isDeactivated === 1
+                          ? "Activate Agent"
+                          : "Deactivate Agent"}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -853,14 +934,28 @@ const handleDelete = async (agentId) => {
                       src="svg/cal-svg.svg"
                       alt="cal-svg"
                       style={{ cursor: "pointer" }}
-                      onClick={(e) => handleCalClick(agent, e)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (agent?.isDeactivated === 1) {
+                          handleInactiveAgentAlert();
+                        } else {
+                          handleCalClick(agent, e);
+                        }
+                      }}
                     />
                   ) : (
                     <img
                       src="svg/call-cross.svg"
                       alt="No API Key"
                       style={{ cursor: "pointer" }}
-                      onClick={(e) => handleCalClick(agent, e)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (agent?.isDeactivated === 1) {
+                          handleInactiveAgentAlert();
+                        } else {
+                          handleCalClick(agent, e);
+                        }
+                      }}
                       title="Cal API Key not set"
                     />
                   )}
@@ -910,10 +1005,10 @@ const handleDelete = async (agentId) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Click to connect with cal 
+                  Click to connect with cal
                 </a>
-                 </p>
-                {/* <p>
+              </p>
+              {/* <p>
                   <a
                   href="/calinfo"
                   target="_blank"
@@ -922,8 +1017,7 @@ const handleDelete = async (agentId) => {
                     Learn how to connect with cal
                   </a>
                 </p> */}
-                
-             
+
               <div
                 style={{
                   display: "flex",
@@ -1186,11 +1280,21 @@ const handleDelete = async (agentId) => {
             className={styles.modalContainer}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>Deactivate Agent</h2>
+            <h2>
+              {agentToDeactivate?.isDeactivated === 1
+                ? "Activate Agent"
+                : "Deactivate Agent"}
+            </h2>
             <p>
-              Are you sure you want to <strong>deactivate</strong>{" "}
-              <strong>{agentToDeactivate.agentName}</strong>?
+              Are you sure you want to{" "}
+              <strong>
+                {agentToDeactivate?.isDeactivated === 1
+                  ? "activate"
+                  : "deactivate"}
+              </strong>{" "}
+              <strong>{agentToDeactivate?.agentName}</strong>?
             </p>
+
             <div className={styles.modalButtons}>
               <button
                 className={`${styles.modalButton} ${styles.cancel}`}
@@ -1204,17 +1308,20 @@ const handleDelete = async (agentId) => {
                   try {
                     await toggleAgentActivation(
                       agentToDeactivate.agent_id,
-                      true
+                      agentToDeactivate.isDeactivated === 0
                     );
                     setShowDeactivateConfirm(false);
                     setAgentToDeactivate(null);
                     setPopupType("success");
-                    setPopupMessage("Agent deactivated successfully.");
+                    setPopupMessage(
+                      agentToDeactivate.isDeactivated === 1
+                        ? "Agent activated successfully."
+                        : "Agent deactivated successfully."
+                    );
                     setHasFetched(false);
                   } catch (error) {
                     setPopupType("failed");
-                    setPopupMessage("Failed to deactivate agent.");
-                    console.error(error);
+                    setPopupMessage("Failed to update agent status.");
                     setShowDeactivateConfirm(false);
                   }
                 }}
@@ -1266,7 +1373,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       agent_id,
       businessId
     );
-    console.log(response,"response")
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
@@ -1330,6 +1436,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       businessType: business.businessType,
       businessName: business.businessName.trim(),
       businessSize: business.businessSize,
+      customBuisness: business.customBuisness,
     };
 
     let parsedServices = safeParse(business.buisnessService, []);

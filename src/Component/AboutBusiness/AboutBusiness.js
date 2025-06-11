@@ -62,17 +62,15 @@ function AboutBusiness() {
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
 
-  const [urlVerificationInProgress, setUrlVerificationInProgress] =    useState(false);
+  const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
-  
-
-  const businessId1 = sessionBusinessiD?.businessId; 
+  const businessId1 = sessionBusinessiD?.businessId;
   const businessId =
-  location.state?.businessId ||
-  sessionBusinessiD ||
-  sessionBusinessiD?.businessId;
+    location.state?.businessId ||
+    sessionBusinessiD ||
+    sessionBusinessiD?.businessId;
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const EditingMode = localStorage.getItem("UpdationMode");
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
@@ -87,28 +85,28 @@ function AboutBusiness() {
     setHasFetched,
   });
 
- const initAutocomplete = () => {
-  const autocomplete = new window.google.maps.places.Autocomplete(
-    document.getElementById("google-autocomplete"),
-    {
-      types: ["establishment"],
-      fields: ["place_id", "name", "url"],
-    }
-  );
+  const initAutocomplete = () => {
+    const autocomplete = new window.google.maps.places.Autocomplete(
+      document.getElementById("google-autocomplete"),
+      {
+        types: ["establishment"],
+        fields: ["place_id", "name", "url"],
+      }
+    );
 
-  autocomplete.addListener("place_changed", () => {
-    const place = autocomplete.getPlace();
-    if (place.place_id) {
-      const businessUrl = place.url;
-      const businessName = place.name;
-      setGoogleListing(businessUrl);
-      setDisplayBusinessName(businessName);
-      sessionStorage.setItem("googleListing", businessUrl);
-      sessionStorage.setItem("displayBusinessName", businessName);
-      fetchPlaceDetails(place.place_id); 
-    }
-  });
-};
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (place.place_id) {
+        const businessUrl = place.url;
+        const businessName = place.name;
+        setGoogleListing(businessUrl);
+        setDisplayBusinessName(businessName);
+        sessionStorage.setItem("googleListing", businessUrl);
+        sessionStorage.setItem("displayBusinessName", businessName);
+        fetchPlaceDetails(place.place_id);
+      }
+    });
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -166,31 +164,31 @@ function AboutBusiness() {
     const googleLink = `https://www.google.com/search?q=${encodeURIComponent(
       place.name + " " + address
     )}`;
-    setGoogleListing(googleLink); 
+    setGoogleListing(googleLink);
   };
 
- const handleUrlVerification = async (url) => {
-  setUrlVerificationInProgress(true);
-  const result = await validateWebsite(url);
-  if (result.valid) {
-    setIsVerified(true);
-    setBusinessUrlError("");
-    sessionStorage.setItem("businessUrl", url);
-    localStorage.setItem("isVerified", true);  
-  } else {
-    setIsVerified(false);
-    setBusinessUrlError("Invalid URL");
-    localStorage.setItem("isVerified", false);
-  }
-  setUrlVerificationInProgress(false);
-};
+  const handleUrlVerification = async (url) => {
+    setUrlVerificationInProgress(true);
+    const result = await validateWebsite(url);
+    if (result.valid) {
+      setIsVerified(true);
+      setBusinessUrlError("");
+      sessionStorage.setItem("businessUrl", url);
+      localStorage.setItem("isVerified", true);
+    } else {
+      setIsVerified(false);
+      setBusinessUrlError("Invalid URL");
+      localStorage.setItem("isVerified", false);
+    }
+    setUrlVerificationInProgress(false);
+  };
 
-useEffect(() => {
-  const savedVerifiedStatus = localStorage.getItem("isVerified");
-  if (savedVerifiedStatus !== null) {
-    setIsVerified(savedVerifiedStatus === 'true');  
-  }
-}, []);
+  useEffect(() => {
+    const savedVerifiedStatus = localStorage.getItem("isVerified");
+    if (savedVerifiedStatus !== null) {
+      setIsVerified(savedVerifiedStatus === 'true');
+    }
+  }, []);
 
 
   const handleBlur = () => {
@@ -220,13 +218,12 @@ useEffect(() => {
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
-
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
       if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
       if (savedData.note) setNote(savedData.note);
       if (savedData.googleListing) {
-      setGoogleListing(savedData.googleListing);
-    }
+        setGoogleListing(savedData.googleListing);
+      }
       // rebuild File objects
       if (Array.isArray(savedData.files) && savedData.files.length) {
         const rebuiltFiles = savedData.files.map((d, i) =>
@@ -354,6 +351,7 @@ useEffect(() => {
     }
 
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
+
     // const businessLocation = JSON.parse(
     //   sessionStorage.getItem("businessLocation")
     // );
@@ -404,6 +402,7 @@ useEffect(() => {
       { name: "Boat Repair & Maintenance", code: "boa_rep" },
       { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
       { name: "Other Local Business", code: "oth_loc_bus" },
+      { name: "Other", code: business?.customBuisness?.slice(0, 3) },
     ];
 
     // Find the business type code
@@ -420,18 +419,18 @@ useEffect(() => {
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     formData2.append("googleUrl", googleListing);
     formData2.append("webUrl", businessUrl.trim());
-    formData2.append("aboutBusiness", sanitize(aboutBusiness));
-    formData2.append("additionalInstruction", sanitize(note));
+    formData2.append("aboutBusiness", (aboutBusiness));
+    formData2.append("additionalInstruction", (note));
     formData2.append("knowledge_base_name", knowledgeBaseName);
     formData2.append("agentId", localStorage.getItem("agent_id"));
-    formData2.append('googleBusinessName',displayBusinessName)
+    formData2.append('googleBusinessName', displayBusinessName)
     formData3.append('knowledge_base_urls', JSON.stringify(mergedUrls))
     // let textContent = "";
     // let moreAbout = null;
-      // moreAbout = {
-      //   title: business.businessType || "Business Info",
-      //   // text: textContent,
-      // };
+    // moreAbout = {
+    //   title: business.businessType || "Business Info",
+    //   // text: textContent,
+    // };
     // if (businessLocation) {
     //   textContent = `
     //   Country: ${businessLocation.country || ""}
@@ -455,10 +454,9 @@ useEffect(() => {
     // Submit the form data to the server
     try {
       setLoading(true);
-      let knowledge_Base_ID=knowledgeBaseId;
-      if(knowledge_Base_ID !== null && knowledge_Base_ID !== undefined && knowledge_Base_ID !== 'null' && knowledge_Base_ID !== 'undefined' && knowledge_Base_ID !== ''){
-        console.log('inside add-knowledge-base-sources ')
-           const response = await axios.post(
+      let knowledge_Base_ID = knowledgeBaseId;
+      if (knowledge_Base_ID !== null && knowledge_Base_ID !== undefined && knowledge_Base_ID !== 'null' && knowledge_Base_ID !== 'undefined' && knowledge_Base_ID !== '') {
+        const response = await axios.post(
           `https://api.retellai.com/add-knowledge-base-sources/${knowledge_Base_ID}`,
           formData3,
           {
@@ -468,12 +466,10 @@ useEffect(() => {
             },
           })
 
-          formData2.append("knowledge_base_id", response.data.knowledge_base_id);
-          console.log('add-knowledge-base-sources knowledgeBaseId updated',response)
+        formData2.append("knowledge_base_id", response.data.knowledge_base_id);
 
-      }else{
-        console.log("ADD KNOW")
-          const response = await axios.post(
+      } else {
+        const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
           formData,
           {
@@ -484,7 +480,7 @@ useEffect(() => {
           }
         );
         formData2.append("knowledge_base_id", response.data.knowledge_base_id);
-        knowledge_Base_ID=response.data.knowledge_base_id;
+        knowledge_Base_ID = response.data.knowledge_base_id;
         sessionStorage.setItem(
           "knowledgeBaseId",
           response.data.knowledge_base_id
@@ -502,7 +498,6 @@ useEffect(() => {
           }
         );
         formData2.append("knowledge_base_id", response.data.knowledge_base_id);
-        console.log('response added KnowledeBase local', response)
       } catch (error) {
         console.log("error while saving knowledge bas in Database", error);
       }
@@ -525,21 +520,20 @@ useEffect(() => {
               },
             }
           );
-          console.log("llm updated successfully added knowledgeBaseId");
         } catch (error) {
           console.log("failed to update llm while adding knowledgeBaseId");
         }
       }
 
       if (stepEditingMode != "ON") {
-      setPopupType("success");
-      setPopupMessage("Knowledge base created successfully!");
-      setShowPopup(true);
+        setPopupType("success");
+        setPopupMessage("Knowledge base created successfully!");
+        setShowPopup(true);
         setTimeout(() => navigate("/steps"), 1000)
       } else {
-      setPopupType("success");
-      setPopupMessage("Knowledge base Updated successfully!");
-      setShowPopup(true);
+        setPopupType("success");
+        setPopupMessage("Knowledge base Updated successfully!");
+        setShowPopup(true);
         setTimeout(
           () =>
             navigate("/agent-detail", {
@@ -552,13 +546,11 @@ useEffect(() => {
         );
       }
     } catch (error) {
-      console.error(
-        "Upload failed:",
-        error.response?.data?.message || error.message
-      );
-      setPopupType("failed");
-      setPopupMessage(error.response?.data?.message || "Internal Server Error");
-      setShowPopup(true);
+      if (error?.status == 422) {
+        setPopupType("failed");
+        setPopupMessage("We’re currently updating your knowledge base. Editing is temporarily disabled. Please try again in a little while.");
+        setShowPopup(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -626,7 +618,6 @@ useEffect(() => {
         note,
       })
     );
-    console.log("edit hit");
     setTimeout(() => {
       handleCreateAgent();
     }, 800);
@@ -773,51 +764,33 @@ useEffect(() => {
                 ></textarea>
               </div>
               <div onClick={handleSkip} className={styles.skipButton}>
-               {stepEditingMode?"": <button>Skip for now</button>}
+                {stepEditingMode ? "" : <button>Skip for now</button>}
               </div>
 
               <div className={styles.fixedBtn}>
-     {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
-                 { stepEditingMode != "ON" ? (
-                    <button
-                      type="submit"
-                      className={styles.btnTheme}
-                      disabled={loading}
-                      onClick={handleSubmit}
-                    >
-                      <img src="svg/svg-theme.svg" alt="" />
-                      {loading ? (
-                        <>
-                          Add <Loader size={20} />
-                        </>
-                      ) : (
-                        <p>Continue</p>
-                      )}
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className={styles.btnTheme}
-                      disabled={loading}
-                      onClick={handleSubmit}
-                    >
-                      <img src="svg/svg-theme.svg" alt="" />
-                      {loading ? (
-                        <>
-                          Add <Loader size={20} />
-                        </>
-                      ) : (
-                        <p>Save Edits</p>
-                      )}
-                    </button>
-                  )
-                }
-                {/* ) : (
+                {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
+                {stepEditingMode != "ON" ? (
                   <button
                     type="submit"
                     className={styles.btnTheme}
                     disabled={loading}
-                    onClick={handleSaveEdit}
+                    onClick={handleSubmit}
+                  >
+                    <img src="svg/svg-theme.svg" alt="" />
+                    {loading ? (
+                      <>
+                        Add <Loader size={20} />
+                      </>
+                    ) : (
+                      <p>Continue</p>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className={styles.btnTheme}
+                    disabled={loading}
+                    onClick={handleSubmit}
                   >
                     <img src="svg/svg-theme.svg" alt="" />
                     {loading ? (
@@ -828,7 +801,9 @@ useEffect(() => {
                       <p>Save Edits</p>
                     )}
                   </button>
-                )} */}
+                )
+                }
+
               </div>
             </div>
           </form>
