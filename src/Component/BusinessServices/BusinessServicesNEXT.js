@@ -93,7 +93,6 @@ const AboutBusinessNext = () => {
       .map(service => ({ service }));
     try {
       setLoading(true);
-
       const cleanedCustomServices = rawCustomServices
         .map(item => item?.service?.trim())
         .filter(Boolean)
@@ -105,7 +104,7 @@ const AboutBusinessNext = () => {
           businessName: businessDetails?.businessName,
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
-          customBuisness: businessDetails?.customBuisness || "",    //custome business name
+          customBuisness: businessDetails?.customBuisness || "",   
           buisnessEmail: email || businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices],  
           buisnessService: cleanServiceArray(),
@@ -201,18 +200,10 @@ const AboutBusinessNext = () => {
       {/* <HeaderBar></HeaderBar> */}
       <div className={styles.CallTransferMain1}>
 
-        <div className={styles.headrPart}>
-          <h2>Add More Services</h2>
-          <img
-            src="svg/Add-icon.svg"
-            alt="Add-icon"
-            onClick={handleAddService}
-            className={styles.addIcon}
-          />
-        </div>
+   
         {businessDetails?.businessType === "Other" && (
           <div className={styles.inputGroup}>
-            <label className={styles.label}>Business Email Address</label>
+            <h2 >Business Email Address</h2>
             <div className={styles.phoneInput}>
               <input
                 type="email"
@@ -233,7 +224,15 @@ const AboutBusinessNext = () => {
             )}
           </div>
         )}
-
+     <div className={styles.headrPart}>
+          <h2>Add More Services</h2>
+          <img
+            src="svg/Add-icon.svg"
+            alt="Add-icon"
+            onClick={handleAddService}
+            className={styles.addIcon}
+          />
+        </div>
         {services.map((item, index) => (
           <>
 

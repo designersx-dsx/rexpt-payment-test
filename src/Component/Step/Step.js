@@ -97,13 +97,10 @@ const Step = () => {
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
     const commaSeparatedServices = allServices?.join(", ");
-    console.log(commaSeparatedServices);
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
-    console.log('businessType',businessType)
- 
     const packageMap = {
         "Free": 1,
         "Starter": 2,
@@ -1122,7 +1119,7 @@ End Call: If the caller is satisfied, invoke end_call function.
 
 
                             }
-                            console.log('response server', response)
+                           
                         } catch (error) {
                             // console.log(error,error.status)
                             if (error?.status == 400) {

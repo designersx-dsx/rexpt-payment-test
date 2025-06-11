@@ -72,7 +72,6 @@ function Dashboard() {
   const [liveTranscript, setLiveTranscript] = useState();
 
   //cam-icon
-  const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -144,7 +143,7 @@ function Dashboard() {
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
-     setHasFetched(false);
+    setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
 
     navigate("/agent-detail", {
@@ -582,19 +581,17 @@ function Dashboard() {
     }
   }, []);
 
-
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setOpenDropdown(null); 
-    }
-  };
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
-
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleInactiveAgentAlert = () => {
     setPopupType("failed");
@@ -770,15 +767,28 @@ useEffect(() => {
                   <div className={styles.LangText}>
                     <h3 className={styles.agentName}>
                       {agent.agentName}{" "}
-                      <span className={styles.activeText}>Active</span>
+                      <span
+                        className={
+                          agent.isDeactivated === 1
+                            ? styles.InactiveText
+                            : styles.activeText
+                        }
+                      >
+                        {agent.isDeactivated === 1 ? "Inactive" : "Active"}
+                      </span>
                     </h3>
+
                     <p className={styles.agentAccent}>
                       {agent?.agentLanguage} •{agent?.agentAccent}
                     </p>
                   </div>
                 </div>
 
-               <div className={styles.FilterIcon} onClick={(e) => toggleDropdown(e, agent.agent_id)} ref={dropdownRef}>
+                <div
+                  className={styles.FilterIcon}
+                  onClick={(e) => toggleDropdown(e, agent.agent_id)}
+                  ref={dropdownRef}
+                >
                   <svg
                     width="18"
                     height="4"
@@ -794,7 +804,7 @@ useEffect(() => {
                     <div className={styles.OptionsDropdown}>
                       <div
                         className={styles.OptionItem}
-                         onMouseDown={(e) => {
+                        onMouseDown={(e) => {
                           e.stopPropagation();
                           if (agent?.isDeactivated === 1) {
                             handleInactiveAgentAlert();
@@ -807,7 +817,7 @@ useEffect(() => {
                       </div>
                       <div
                         className={styles.OptionItem}
-                         onMouseDown={(e) => {
+                        onMouseDown={(e) => {
                           e.stopPropagation();
                           if (agent?.isDeactivated === 1) {
                             handleInactiveAgentAlert();
@@ -824,7 +834,7 @@ useEffect(() => {
                       </div> */}
                       <div
                         className={styles.OptionItem}
-                         onMouseDown={(e) =>  {
+                        onMouseDown={(e) => {
                           e.stopPropagation();
                           handleEditAgent(agent);
                         }}
@@ -834,7 +844,7 @@ useEffect(() => {
                       </div>
                       <div
                         className={styles.OptionItem}
-                         onMouseDown={(e) => {
+                        onMouseDown={(e) => {
                           e.stopPropagation();
                           if (agent?.isDeactivated === 1) {
                             handleInactiveAgentAlert();
@@ -848,7 +858,7 @@ useEffect(() => {
                       <div key={agent.agent_id}>
                         <div
                           className={styles.OptionItem}
-                           onMouseDown={(e) => {
+                          onMouseDown={(e) => {
                             e.stopPropagation();
                             setAgentToDelete(agent);
                             setShowDeleteConfirm(true);

@@ -43,7 +43,6 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
    const updationMode = localStorage.getItem("UpdationMode") == "ON" ||"";
   const storedAvatarImg = sessionStorage.getItem('avatar') ||"";
 
-  console.log('agentGender',agentName)
 useEffect(() => {
  
 
@@ -54,7 +53,6 @@ useEffect(() => {
       const matchedAvatar = avatars[agentGender][matchedAvatarIndex];
       setSelectedAvatar(matchedAvatar);
       setAvatar(matchedAvatar?.img);
-      console.log('---s--s-s-s'.selectedAvatar?.img,matchedAvatar?.img)
       sliderRef.current?.slickGoTo(matchedAvatarIndex); 
     }
     const storedName = localStorage.getItem('agentName');
@@ -89,7 +87,7 @@ useEffect(() => {
          if (agentGender && avatars[agentGender]) {
           const genderAvatars = avatars[agentGender];
           const firstAvatar = genderAvatars[0]?.img || null;
-          console.log('inside if')
+        
           setGender(agentGender);
           setAvailableAvatars(genderAvatars);
           setAvatar(firstAvatar);
@@ -99,7 +97,7 @@ useEffect(() => {
           const defaultGender = 'Male';
           const defaultAvatars = avatars[defaultGender];
           const firstAvatar = defaultAvatars[0]?.img || null;
-          console.log('inside else')
+         
           setGender(defaultGender);
           setAvailableAvatars(defaultAvatars);
           setAvatar(firstAvatar);
@@ -123,7 +121,7 @@ useEffect(() => {
     // console.log(agentnm)
 
     if(localStorage.getItem("UpdationMode") == "ON"){
-      console.log('inside if on')
+     
       setAgentName(localStorage.getItem('agentName'))
       // setAgentName(sessionStorage.getItem('VoiceAgentName'))
 

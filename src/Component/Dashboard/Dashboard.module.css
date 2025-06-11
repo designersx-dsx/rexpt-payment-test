@@ -169,6 +169,7 @@
     color: #ff1403;
     position: relative;
     margin: 0 0 0 15px;
+    text-transform: uppercase;
 }
 
 .activeText::after {
@@ -179,6 +180,17 @@
     width: 6px;
     height: 6px;
     background-color: #1AA850;
+    border-radius: 50%;
+    transform: translateY(-50%);
+}
+.InactiveText::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -10px;
+    width: 6px;
+    height: 6px;
+    background-color: #ff1403;
     border-radius: 50%;
     transform: translateY(-50%);
 }
