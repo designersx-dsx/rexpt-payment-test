@@ -62,7 +62,7 @@ const AgentDashboard = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
   const navigate = useNavigate();
-  console.log(agentDetail)
+  // console.log(agentDetail)
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
@@ -610,7 +610,7 @@ localStorage.removeItem('knowledge_base_id');
                   {/* <h3>Health <span> /Categories</span></h3> */}
                   <h3>
                     {agentData?.business?.businessType || "NA"}
-                    <span> / Categories</span>
+                    <span>  {agentData?.business?.businessType=="Other" ? `/${agentData?.business?.customBuisness}`:"/ Categories"}</span>
                   </h3>
                 </div>
 
