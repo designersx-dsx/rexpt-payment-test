@@ -70,6 +70,7 @@ const agentStatus=agentData?.agent?.isDeactivated
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
@@ -643,7 +644,7 @@ const agentStatus=agentData?.agent?.isDeactivated
                   {/* <h3>Health <span> /Categories</span></h3> */}
                   <h3>
                     {agentData?.business?.businessType || "NA"}
-                    <span> / Categories</span>
+                    <span>  {agentData?.business?.businessType=="Other" ? `/${agentData?.business?.customBuisness}`:"/ Categories"}</span>
                   </h3>
                 </div>
 

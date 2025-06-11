@@ -274,6 +274,7 @@ const BusinessDetails = () => {
   };
   const handleSaveEdit = (e) => {
     e.preventDefault();
+
     const businessData = {
       userId,
       businessType,
@@ -286,9 +287,9 @@ const BusinessDetails = () => {
     // }
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    console.log('edit hit')
-    handleCreateAgent();
-
+ 
+    setTimeout(() => {
+    handleCreateAgent();}, 500);
   };
 
   return (
