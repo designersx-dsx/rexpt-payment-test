@@ -269,6 +269,20 @@ const BusinessServices = () => {
             ]
         },
         {
+            type: "Dentist",
+            subtype: "Your Journey Begins Here",
+            icon: "images/other.png",
+            services: [
+                "Teeth",
+                "Cleaning",
+                "Teeth Whitening",
+                "Braces & Aligners",
+                "Root Canal",
+                "Tooth Extraction"
+            ]
+        },
+      
+        {
             type: "Property Rental & Leasing Service",
             subtype: "Your Journey Begins Here",
             icon: "images/other.png",
