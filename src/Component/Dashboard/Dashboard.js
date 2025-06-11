@@ -1324,7 +1324,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       agent_id,
       businessId
     );
-    console.log(response, "response");
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
@@ -1388,6 +1387,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       businessType: business.businessType,
       businessName: business.businessName.trim(),
       businessSize: business.businessSize,
+      customBuisness: business.customBuisness,
     };
 
     let parsedServices = safeParse(business.buisnessService, []);
