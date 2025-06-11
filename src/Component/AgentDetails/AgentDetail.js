@@ -627,9 +627,10 @@ localStorage.removeItem('knowledge_base_id');
                           (src) => src?.url && !src.url.includes("google.com")
                         );
                       if (filteredUrls && filteredUrls?.length > 0) {
-                        return filteredUrls.map((src, index) => (
-                          <div key={index}>{src.url}</div>
-                        ));
+                        // return filteredUrls.map((src, index) => (
+                        //   <div key={index}>{src.url}</div>
+                        // ));
+                          return filteredUrls[filteredUrls?.length-1]?.url || "NA";
                       } else {
                         return <div>NA</div>;
                       }
@@ -646,9 +647,10 @@ localStorage.removeItem('knowledge_base_id');
                             (src) => src?.url && src.url.includes("google.com")
                           );
                         if (filteredUrls && filteredUrls?.length > 0) {
-                          return filteredUrls.map((src, index) => (
-                            <div key={index}>{src.url}</div>
-                          ));
+                          // return filteredUrls.map((src, index) => (
+                          //   <div key={index}>{src.url}</div>
+                          // ));
+                          return filteredUrls[filteredUrls?.length-1]?.url || "NA";
                         } else {
                           return <div>NA</div>;
                         }
