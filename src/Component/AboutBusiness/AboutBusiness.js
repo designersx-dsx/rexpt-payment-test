@@ -66,8 +66,6 @@ function AboutBusiness() {
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
-  
-
   const businessId1 = sessionBusinessiD?.businessId; 
   const businessId =
   location.state?.businessId ||
@@ -220,7 +218,7 @@ useEffect(() => {
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
-
+      console.log(savedData,"savedData")
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
       if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
       if (savedData.note) setNote(savedData.note);
@@ -420,8 +418,8 @@ useEffect(() => {
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     formData2.append("googleUrl", googleListing);
     formData2.append("webUrl", businessUrl.trim());
-    formData2.append("aboutBusiness", sanitize(aboutBusiness));
-    formData2.append("additionalInstruction", sanitize(note));
+    formData2.append("aboutBusiness", (aboutBusiness));
+    formData2.append("additionalInstruction", (note));
     formData2.append("knowledge_base_name", knowledgeBaseName);
     formData2.append("agentId", localStorage.getItem("agent_id"));
     formData2.append('googleBusinessName',displayBusinessName)
@@ -812,23 +810,7 @@ useEffect(() => {
                     </button>
                   )
                 }
-                {/* ) : (
-                  <button
-                    type="submit"
-                    className={styles.btnTheme}
-                    disabled={loading}
-                    onClick={handleSaveEdit}
-                  >
-                    <img src="svg/svg-theme.svg" alt="" />
-                    {loading ? (
-                      <>
-                        Add <Loader size={20} />
-                      </>
-                    ) : (
-                      <p>Save Edits</p>
-                    )}
-                  </button>
-                )} */}
+             
               </div>
             </div>
           </form>

@@ -17,6 +17,10 @@ const AboutBusinessNext = () => {
   const [Loading, setLoading] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const EditingMode = localStorage.getItem('UpdationMode')
+  const [email, setEmail] = useState("");
+  // Error states
+  const [emailError, setEmailError] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const setHasFetched = true
   const token = localStorage.getItem('token');
   const decodeTokenData = decodeToken(token);
@@ -30,16 +34,22 @@ const AboutBusinessNext = () => {
     navigate,
     setHasFetched,
   });
+  const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
+  const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
+  // const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
+  const businesServices = JSON.parse(sessionStorage.getItem('businesServices'))
+  const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
   useEffect(() => {
     let savedServices = sessionStorage.getItem('selectedCustomServices');
     try {
       savedServices = JSON.parse(savedServices);
       if (typeof savedServices === 'string') {
-        savedServices = JSON.parse(savedServices); // handle double-stringified case
+        savedServices = JSON.parse(savedServices);
       }
 
       if (Array.isArray(savedServices)) {
         setServices(savedServices);
+        setEmail(businesServices.email)
       } else {
         console.warn("Custom services not an array:", savedServices);
       }
@@ -60,17 +70,30 @@ const AboutBusinessNext = () => {
   };
 
   const handleSubmit = async () => {
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+    // Step 1: Get old businesServices (if any)
+    const raw = sessionStorage.getItem("businesServices");
+    let previous = {};
+    try {
+      previous = raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.error("Failed to parse businesServices:", err);
+    }
+    const updatedBusinessServices = {
+      ...previous,
+      email,
+    };
+    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
     const filteredServices = services
       .map(item => item.service.trim())
       .filter(service => service !== '')
       .map(service => ({ service }));
     try {
       setLoading(true);
-      const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
-      const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-      // const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
-      const businesServices = JSON.parse(sessionStorage.getItem('businesServices'))
-      const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+
       const cleanedCustomServices = rawCustomServices
         .map(item => item?.service?.trim())
         .filter(Boolean)
@@ -82,7 +105,8 @@ const AboutBusinessNext = () => {
           businessName: businessDetails?.businessName,
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
-          buisnessEmail: businessDetails?.email,
+          customBuisness: businessDetails?.customBuisness || "",    //custome business name
+          buisnessEmail: email || businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices],  
           buisnessService: cleanServiceArray(),
           customServices: filteredServices,
@@ -99,7 +123,8 @@ const AboutBusinessNext = () => {
           businessName: businessDetails?.businessName,
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
-          buisnessEmail: businessDetails?.email,
+          buisnessEmail: email || businessDetails?.email,
+          customBuisness: businessDetails?.customBuisness || "",   //custome business name
           // buisnessService: [...businessDetails?.selectedService, ...customServices], 
           buisnessService: cleanServiceArray(),
           customServices: filteredServices,
@@ -114,8 +139,6 @@ const AboutBusinessNext = () => {
       }
 
       const id = response.data.businessId;
-      // console.log('Response from the server:', response);
-
       sessionStorage.setItem(
         'businessId',
         JSON.stringify({
@@ -131,9 +154,7 @@ const AboutBusinessNext = () => {
       setShowPopup(true);
 
       setTimeout(() => {
-
         sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
-        // navigate('/business-locations');
         navigate('/about-business')
       }, 2000);
     } catch (error) {
@@ -189,30 +210,57 @@ const AboutBusinessNext = () => {
             className={styles.addIcon}
           />
         </div>
-
-        {services.map((item, index) => (
-          <div key={index} className={styles.card}>
-            <label className={styles.label}>Service Name</label>
+        {businessDetails?.businessType === "Other" && (
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Business Email Address</label>
             <div className={styles.phoneInput}>
               <input
-                type="text"
+                type="email"
+                placeholder="Business Email Address"
+                value={email}
                 className={styles.phoneNumberInput}
-                placeholder="Enter Your Service Name"
-                value={item.service}
-                onChange={(e) => handleServiceChange(index, e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError("");
+                }}
               />
-              {services.length > 1 && (
-                <button
-                  type="button"
-                  className={styles.removeButton}
-                  onClick={() => handleRemoveService(index)}
-
-                >
-                  ❌
-                </button>
-              )}
             </div>
+            {emailError && (
+              <p style={{ color: 'red', marginTop: '5px' }}>{emailError}</p>
+            )}
+            {isEmailVerified && (
+              <p style={{ color: 'green', marginTop: '5px' }}>Email verified successfully!</p>
+            )}
           </div>
+        )}
+
+        {services.map((item, index) => (
+          <>
+
+            <div key={index} className={styles.card}>
+              <label className={styles.label}>Service Name</label>
+              <div className={styles.phoneInput}>
+                <input
+                  type="text"
+                  className={styles.phoneNumberInput}
+                  placeholder="Enter Your Service Name"
+                  value={item.service}
+                  onChange={(e) => handleServiceChange(index, e.target.value)}
+                />
+                {services.length > 1 && (
+                  <button
+                    type="button"
+                    className={styles.removeButton}
+                    onClick={() => handleRemoveService(index)}
+
+                  >
+                    ❌
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
+
         ))}
 
         {/* <div onClick={handleSkip} className={styles.skipButton}>
