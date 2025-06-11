@@ -380,7 +380,6 @@ const BusinessServices = () => {
 
             const rawBusinessDetails = sessionStorage.getItem("businessDetails");
             const rawBusinessServices = sessionStorage.getItem("businesServices");
-
             const businessDetails =
                 rawBusinessDetails &&
                     rawBusinessDetails !== "null" &&
@@ -415,7 +414,6 @@ const BusinessServices = () => {
                     setEmail(businessDetails.email || "");
                 }
             } else {
-                  const businessServices = sessionStorage.getItem("businesServices");
                 if (businessDetails) {
                     setBusinessType(businessDetails.businessType || "");
                     setBusinessName(businessDetails.businessName || "");
@@ -499,7 +497,6 @@ const BusinessServices = () => {
         handleCreateAgent();
 
     };
-
 
     return (
         <div className={styles.container} id='servies'>

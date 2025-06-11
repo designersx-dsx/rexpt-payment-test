@@ -105,6 +105,7 @@ const AboutBusinessNext = () => {
           businessName: businessDetails?.businessName,
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
+          customBuisness: businessDetails?.customBuisness || "",    //custome business name
           buisnessEmail: email || businessDetails?.email,
           // buisnessService: [...businessDetails?.selectedService, ...customServices],  
           buisnessService: cleanServiceArray(),
@@ -123,6 +124,7 @@ const AboutBusinessNext = () => {
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
           buisnessEmail: email || businessDetails?.email,
+          customBuisness: businessDetails?.customBuisness || "",   //custome business name
           // buisnessService: [...businessDetails?.selectedService, ...customServices], 
           buisnessService: cleanServiceArray(),
           customServices: filteredServices,
@@ -209,7 +211,7 @@ const AboutBusinessNext = () => {
           />
         </div>
         {businessDetails?.businessType === "Other" && (
-          <div className={styles.card}>
+          <div className={styles.inputGroup}>
             <label className={styles.label}>Business Email Address</label>
             <div className={styles.phoneInput}>
               <input

@@ -41,10 +41,10 @@ const BusinessDetails = () => {
   const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
   const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
-  const [serviceName, setServiceName] = useState("");
+  const [customBuisness, setcustomBuisness] = useState("");
 
 
-  console.log(serviceName, "serviceName")
+  // console.log(customBuisness, "customBuisness")
   const location = useLocation();
   const agentDetails = location.state;
 
@@ -127,7 +127,7 @@ const BusinessDetails = () => {
           setBusinessType(businessDetails.businessType || "");
           setBusinessName(businessDetails.businessName || "");
           setBusinessSize(businessDetails.businessSize || "");
-          setServiceName(businessDetails.serviceName || "");
+          setcustomBuisness(businessDetails.customBuisness || "");
         }
       }
     } catch (err) {
@@ -196,7 +196,7 @@ const BusinessDetails = () => {
   const handleBusinessTypeChange = (e) => {
     setBusinessType(e.target.value);
     if (e.target.value !== "Other") {
-      setServiceName(""); // Clear textbox if not "Other"
+      setcustomBuisness(""); // Clear textbox if not "Other"
     }
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
@@ -241,21 +241,21 @@ const BusinessDetails = () => {
     } else {
       setBusinessSizeError("");
     }
-    const serviceError = validateServices(serviceName);
+    const serviceError = validateServices(customBuisness);
     if (serviceError) {
-      setErrors((prev) => ({ ...prev, serviceName: serviceError }));
+      setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
       hasError = true;
     } else {
-      setErrors((prev) => ({ ...prev, serviceName: "" }));
+      setErrors((prev) => ({ ...prev, customBuisness: "" }));
     }
     if (hasError) return;
     let businessData;
     // No errors - proceed
-    if (businessType === "Other" && serviceName.trim()) {
+    if (businessType === "Other" && customBuisness.trim()) {
       businessData = {
         userId,
         businessType: "Other", 
-        serviceName: serviceName.trim(), 
+        customBuisness: customBuisness.trim(), 
         businessName: businessName.trim(),
         businessSize,
       };
@@ -280,8 +280,8 @@ const BusinessDetails = () => {
       businessName: businessName.trim(),
       businessSize,
     };
-    // if (businessType === "Other" && !serviceName.trim()) {
-    //   newErrors.serviceName = "Service name is required for 'Other' type.";
+    // if (businessType === "Other" && !customBuisness.trim()) {
+    //   newErrors.customBuisness = "Service name is required for 'Other' type.";
     // }
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
@@ -356,12 +356,12 @@ const BusinessDetails = () => {
               <input
                 type="text"
                 placeholder="Enter your service name"
-                value={serviceName}
-                onChange={(e) => setServiceName(e.target.value)}
+                value={customBuisness}
+                onChange={(e) => setcustomBuisness(e.target.value)}
                 className={businessNameError ? styles.inputError : ""}
               />
-              {errors.serviceName && (
-                <p className={styles.inlineError}>{errors.serviceName}</p>
+              {errors.customBuisness && (
+                <p className={styles.inlineError}>{errors.customBuisness}</p>
               )}
             </div>
           </div>
