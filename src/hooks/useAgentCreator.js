@@ -497,6 +497,7 @@ End Call: If the caller is satisfied, invoke end_call function.
                           businessType: businessDetails.businessType,
                           buisnessEmail:buisenessServices?.email,
                           buisnessService:buisenessServices?.selectedService,
+                          customBuisness: businessDetails?.customBuisness || "",
                           // address1: locationData.address1,
                           // address2: locationData.address2,
                           // city: locationData.city,
