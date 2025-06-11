@@ -36,7 +36,6 @@ export const getRetellVoices = async () => {
 };
 
 export const createAgent = async (data) => {
-  console.log(token)
   const res = await api.post('/agent/createAgent', data, {
     headers: {
       Authorization: `Bearer ${token}`,
