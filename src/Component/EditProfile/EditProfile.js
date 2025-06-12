@@ -1,13 +1,35 @@
-import React from 'react'
+import React,{useRef} from 'react'
 import styles from '../EditProfile/EditProfile.module.css'
 
 const EditProfile = () => {
+      const fileInputRef = useRef(null);
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      console.log('Selected file:', file);
+      // Add image preview/update logic here if needed
+    }
+  };
     return (
         <div className={styles.card}>
-            <div className={styles.profilePic}>
-                <img src="Images/editProfile.png" alt="Profile" />
-                <span className={styles.editIcon}><img src='Svg/edit-icon.svg' /></span>
-            </div>
+           <div className={styles.profilePic} onClick={handleImageClick}>
+        <img src="Images/editProfile.png" alt="Profile" />
+        <span className={styles.editIcon}>
+          <img src="Svg/edit-icon.svg" alt="edit" />
+        </span>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+      </div>
 
             <div className={styles.infoSection}>
                 <div className={styles.header}>
