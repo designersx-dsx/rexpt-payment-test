@@ -75,8 +75,8 @@ function App() {
                       <CalInfo />
                     </SecureRoute>
                   }   >
-                    
-                  </Route>
+
+                </Route>
                 <Route path="/" element={<Start />} />
                 <Route path="/signup" element={<SignUp />} />
 
@@ -100,9 +100,9 @@ function App() {
                 <Route
                   path="/about-business-next"
                   element={
-                
+                    <SecureRoute>
                       <BusinessServicesNEXT />
-                
+                    </SecureRoute>
                   }
                 />
                 <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
@@ -165,7 +165,7 @@ function App() {
                   }
                 />
                 <Route path="/totalcall-list" element={<SecureRoute><TotalsCallsList /></SecureRoute>} />
-                <Route path="/call-transfer" element={<CallTransfer />} />
+                <Route path="/call-transfer" element={<SecureRoute><CallTransfer /></SecureRoute>} />
                 <Route path="/call-details" element={<SecureRoute><CallDetails /></SecureRoute>} />
                 <Route
                   path="/business-services"
