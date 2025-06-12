@@ -27,6 +27,7 @@ import TotalsCallsList from "./Component/TotalsCallsList/TotalsCallsList";
 import CallTransfer from "./Component/CallTransfer/CallTransfer";
 import CallDetails from "./Component/CallDetails/CallDetails";
 import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT"
+import CalInfo from "./Component/Dashboard/CalInfo";
 import { useEffect } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 function App() {
@@ -67,6 +68,15 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                <Route
+                  path="/calinfo"
+                  element={
+                    <SecureRoute>
+                      <CalInfo />
+                    </SecureRoute>
+                  }   >
+                    
+                  </Route>
                 <Route path="/" element={<Start />} />
                 <Route path="/signup" element={<SignUp />} />
 

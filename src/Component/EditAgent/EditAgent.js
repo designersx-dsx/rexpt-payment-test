@@ -16,12 +16,12 @@ const options = [
         description: "Edit Services List, Email Address.",
         path: "/business-services"
     },
-    {
-        id: "location",
-        title: "Business Location",
-        description: "Edit Country, State and City.",
-        path: "/business-locations"
-    },
+    // {
+    //     id: "location",
+    //     title: "Business Location",
+    //     description: "Edit Country, State and City.",
+    //     path: "/business-locations"
+    // },
     {
         id: "about",
         title: "About Your Business",
@@ -38,11 +38,16 @@ const options = [
 
 const EditOptions = ({agentDetails}) => {
     const [selected, setSelected] = useState(localStorage.getItem('selectedStepEditMode')||"details");
+    const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
     const navigate = useNavigate();  // get navigate function
     const handleOptionClick = (option) => {
         setSelected(option.id);
         localStorage.setItem('selectedStepEditMode',option.id)
-        navigate(option.path);  // navigate to path on click
+             if(option.id == "services" && businessDetails?.businessType=='Other'){
+                navigate('/about-business-next'); 
+            }else{
+              navigate(option.path); 
+            }
     };
 
 //       const fetchPrevAgentDEtails=async(agent_id,businessId)=>{

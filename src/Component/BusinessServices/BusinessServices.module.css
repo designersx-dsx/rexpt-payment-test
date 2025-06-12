@@ -174,7 +174,7 @@
 .inputGroup label {
   font-weight: 600;
   margin-bottom: 6px;
-  font-size: 18px;
+  font-size: 25px;
 }
 
 .inputGroup input {
@@ -309,6 +309,7 @@ color:red;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    /* border: 1px solid black !important; */
 }
 
 

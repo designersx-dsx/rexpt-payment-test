@@ -35,11 +35,16 @@ const BusinessDetails = () => {
   const [businessNameError, setBusinessNameError] = useState("");
   const [businessSizeError, setBusinessSizeError] = useState("");
   const [businessTypeError, setBusinessTypeError] = useState("");
-
+  const [serviesTypeError, setServiesTypeError] = useState("");
+  const [errors, setErrors] = useState({});
   // Submission state trackers
   const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
   const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
+  const [customBuisness, setcustomBuisness] = useState("");
+
+
+  // console.log(customBuisness, "customBuisness")
   const location = useLocation();
   const agentDetails = location.state;
 
@@ -49,11 +54,11 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Estate-icon.svg",
     },
-    // {
-    //   type: "  Landscaping Company",
-    //   subtype: "Your Journey Begins Here",
-    //   icon: "svg/Landscaping-icon.svg",
-    // },
+    {
+      type: "Landscaping Company",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Landscaping-icon.svg",
+    },
     // {
     //   type: " Architect",
     //   subtype: "Your Journey Begins Here",
@@ -95,6 +100,11 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Web-Design-Agency-icon.svg",
     },
+    {
+      type: "Other",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Web-Design-Agency-icon.svg",
+    }
   ];
   const businessSizeOptions = [
     "1 to 10",
@@ -117,6 +127,7 @@ const BusinessDetails = () => {
           setBusinessType(businessDetails.businessType || "");
           setBusinessName(businessDetails.businessName || "");
           setBusinessSize(businessDetails.businessSize || "");
+          setcustomBuisness(businessDetails.customBuisness || "");
         }
       }
     } catch (err) {
@@ -152,7 +163,23 @@ const BusinessDetails = () => {
     }
     return "";
   };
+
+  const validateServices = (value) => {
+    if (businessType === "Other" && !value.trim()) {
+      return "Service name is required.";
+    }
+    return "";
+  };
   const handleBusinessNameChange = (e) => {
+    const val = e.target.value;
+    setBusinessName(val);
+    if (businessNameSubmitted) {
+      setBusinessNameError(validateBusinessName(val));
+    } else {
+      setBusinessNameError("");
+    }
+  };
+  const handleNameChange = (e) => {
     const val = e.target.value;
     setBusinessName(val);
     if (businessNameSubmitted) {
@@ -168,6 +195,9 @@ const BusinessDetails = () => {
 
   const handleBusinessTypeChange = (e) => {
     setBusinessType(e.target.value);
+    if (e.target.value !== "Other") {
+      setcustomBuisness(""); // Clear textbox if not "Other"
+    }
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
     }
@@ -211,32 +241,55 @@ const BusinessDetails = () => {
     } else {
       setBusinessSizeError("");
     }
-
+    const serviceError = validateServices(customBuisness);
+    if (serviceError) {
+      setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
+      hasError = true;
+    } else {
+      setErrors((prev) => ({ ...prev, customBuisness: "" }));
+    }
     if (hasError) return;
-
+    let businessData;
     // No errors - proceed
-    const businessData = {
-      userId,
-      businessType,
-      businessName: businessName.trim(),
-      businessSize,
-    };
-
+    if (businessType === "Other" && customBuisness.trim()) {
+      businessData = {
+        userId,
+        businessType: "Other", 
+        customBuisness: customBuisness.trim(), 
+        businessName: businessName.trim(),
+        businessSize,
+      };
+      navigate("/about-business-next");
+    } else {
+      businessData = {
+        userId,
+        businessType,
+        businessName: businessName.trim(),
+        businessSize,
+      };
+      navigate("/business-services");
+    }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    navigate("/business-services");
+
   };
   const handleSaveEdit = (e) => {
     e.preventDefault();
+
     const businessData = {
       userId,
       businessType,
       businessName: businessName.trim(),
+      customBuisness: customBuisness.trim(), 
       businessSize,
     };
-    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    console.log('edit hit')
-    handleCreateAgent();
+    // if (businessType === "Other" && !customBuisness.trim()) {
+    //   newErrors.customBuisness = "Service name is required for 'Other' type.";
+    // }
 
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+ 
+    setTimeout(() => {
+    handleCreateAgent();}, 500);
   };
 
   return (
@@ -294,6 +347,31 @@ const BusinessDetails = () => {
       {businessTypeSubmitted && businessTypeError && (
         <p className={styles.inlineError}>{businessTypeError}</p>
       )}
+
+
+      {/* Conditional textbox for "Other" */}
+      {businessType === "Other" && (
+        <div className={styles.labReq}>
+          <div className={styles.inputGroup}>
+            <div className={styles.Dblock}>
+              <label>Service Name<span className={styles.requiredField}> *</span></label>
+              <input
+                type="text"
+                placeholder="Enter your service name"
+                value={customBuisness}
+                onChange={(e) => setcustomBuisness(e.target.value)}
+                className={businessNameError ? styles.inputError : ""}
+              />
+              {errors.customBuisness && (
+                <p className={styles.inlineError}>{errors.customBuisness}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
 
       <div className={styles.labReq}>
         <div className={styles.inputGroup}>
@@ -366,26 +444,26 @@ const BusinessDetails = () => {
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
-{stepEditingMode!='ON'?    
-      <div onClick={handleLoginClick}>
-        <div type="submit">
-          <div className={styles.btnTheme}>
-            <img src="svg/svg-theme.svg" alt="" />
-            <p>Continue</p>
+      {stepEditingMode != 'ON' ?
+        <div onClick={handleLoginClick}>
+          <div type="submit">
+            <div className={styles.btnTheme}>
+              <img src="svg/svg-theme.svg" alt="" />
+              <p>Continue</p>
+            </div>
           </div>
         </div>
-      </div>
-      :
-       <div onClick={handleSaveEdit}>
-        <div type="submit">
-          <div className={styles.btnTheme}>
-            <img src="svg/svg-theme.svg" alt="" />
-            <p>{Loading?<Loader size={20}/>:'Save Edits'}</p>
+        :
+        <div onClick={handleSaveEdit}>
+          <div type="submit">
+            <div className={styles.btnTheme}>
+              <img src="svg/svg-theme.svg" alt="" />
+              <p>{Loading ? <Loader size={20} /> : 'Save Edits'}</p>
+            </div>
           </div>
         </div>
-      </div>
-        }
-     
+      }
+
 
       {showPopup && (
         <PopUp

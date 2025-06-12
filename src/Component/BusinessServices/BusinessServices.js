@@ -24,7 +24,7 @@ const BusinessServices = () => {
     const EditingMode = localStorage.getItem('UpdationMode')
     const setHasFetched = true
     const { handleCreateAgent } = useAgentCreator({
-        stepValidator: () => "businesServices", // or custom validation
+        stepValidator: () => "businesServices",
         setLoading,
         setPopupMessage,
         setPopupType,
@@ -269,6 +269,20 @@ const BusinessServices = () => {
             ]
         },
         {
+            type: "Dentist",
+            subtype: "Your Journey Begins Here",
+            icon: "images/other.png",
+            services: [
+                "Teeth",
+                "Cleaning",
+                "Teeth Whitening",
+                "Braces & Aligners",
+                "Root Canal",
+                "Tooth Extraction"
+            ]
+        },
+      
+        {
             type: "Property Rental & Leasing Service",
             subtype: "Your Journey Begins Here",
             icon: "images/other.png",
@@ -294,23 +308,6 @@ const BusinessServices = () => {
     const selectedServices = selectedBusiness?.services || [];
     const filteredServices = selectedServices.filter(service =>
         service.toLowerCase().includes(searchTerm.toLowerCase()));
-
-
-    // console.log(filteredServices)
-
-    // const validateEmail = (value) => {
-    //     if (!value) {
-    //         setEmailError("Email is required.");
-    //         return false;
-    //     }
-    //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //     if (!emailRegex.test(value)) {
-    //         setEmailError("Invalid email address.");
-    //         return false;
-    //     }
-    //     setEmailError("");
-    //     return true;
-    // };
 
     const validateService = (value) => {
         if (!value) {
@@ -367,10 +364,6 @@ const BusinessServices = () => {
             setPopupType("failed");
         }
     };
-
-
-
-
     const handleEmailVerify = async () => {
         try {
             const response = await validateEmailAPI(email);
@@ -401,7 +394,6 @@ const BusinessServices = () => {
 
             const rawBusinessDetails = sessionStorage.getItem("businessDetails");
             const rawBusinessServices = sessionStorage.getItem("businesServices");
-
             const businessDetails =
                 rawBusinessDetails &&
                     rawBusinessDetails !== "null" &&
@@ -443,6 +435,7 @@ const BusinessServices = () => {
                 }
 
                 if (businessServices?.selectedService) {
+                
                     try {
                         let finalSelected = [];
 
@@ -458,6 +451,7 @@ const BusinessServices = () => {
 
 
                         setSelectedService(finalSelected);
+                        
                     } catch (err) {
                         console.error("❌ Failed to parse selectedService:", err);
                     }
@@ -517,7 +511,6 @@ const BusinessServices = () => {
         handleCreateAgent();
 
     };
-
 
     return (
         <div className={styles.container} id='servies'>
@@ -594,16 +587,6 @@ const BusinessServices = () => {
                             <p style={{ color: 'red', marginTop: '5px' }}>{emailError}</p>
                         )}
 
-                        {/* {!isEmailVerified && (
-                            <button
-                                type="button"
-                                className={styles.verifyButton}
-                                onClick={handleEmailVerify}
-                                disabled={emailError || isEmailVerified}
-                            >
-                                Verify Email
-                            </button>
-                        )} */}
 
                         {isEmailVerified && (
                             <p style={{ color: 'green', marginTop: '5px' }}>Email verified successfully!</p>

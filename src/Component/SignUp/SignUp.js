@@ -118,6 +118,7 @@ const SignUp = () => {
         setShowPopup(true);
         setPopupMessage("One time Password Verified successfully!");
         if (verifiedUser) {
+          localStorage.setItem("onboardComplete", "true");
           setUser({
             name: response?.data?.user?.name || "",
             profile:
@@ -125,7 +126,6 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
-          localStorage.setItem("onboardComplete", "true");
           navigate("/dashboard", { replace: true });
         } else {
           setUser({
@@ -135,7 +135,7 @@ const SignUp = () => {
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
-            localStorage.setItem("onboardComplete", "false");
+          localStorage.setItem("onboardComplete", "false");
           navigate("/details", { replace: true });
         }
       } else {
@@ -172,7 +172,7 @@ const SignUp = () => {
         setPopupType("success");
         setPopupMessage("One time Password sent successfully!");
         setOtpSent(true);
-        const endTime = Date.now() + 120 * 1000; // 2 mins from now
+        const endTime = Date.now() + 120 * 1000; 
         setResendEndTime(endTime);
         setIsResendDisabled(true);
       } else {
@@ -246,17 +246,31 @@ const SignUp = () => {
       setStep(5);
     }
   }, []);
+  useEffect(() => {
+    window.history.pushState(null, '', window.location.href);
+
+    const handlePopState = () => {
+
+      navigate('/', { replace: true });
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
 useEffect(() => {
-  const preventGoBack = () => {
-    window.history.pushState(null, "", window.location.href);
-  };
-  window.history.pushState(null, "", window.location.href);
-  window.addEventListener("popstate", preventGoBack);
-  return () => {
-    window.removeEventListener("popstate", preventGoBack);
-  };
+  const savedEmail = localStorage.getItem("userEmail");
+  if (savedEmail) {
+    setEmail(savedEmail);
+  }
 }, []);
 
+useEffect(() => {
+  localStorage.setItem("userEmail", email);
+}, [email]);
 
   useEffect(() => {
     if (otpSent && inputRefs.current[0]) {
