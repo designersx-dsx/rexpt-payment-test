@@ -62,7 +62,8 @@ function AboutBusiness() {
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
 
-  const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
+  const [urlVerificationInProgress, setUrlVerificationInProgress] =
+    useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const location = useLocation();
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
@@ -74,6 +75,7 @@ function AboutBusiness() {
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const EditingMode = localStorage.getItem("UpdationMode");
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+  const [placeInfoText, setPlaceInfoText] = useState("");
   const setHasFetched = true;
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
@@ -127,15 +129,34 @@ function AboutBusiness() {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
-        setLoading(false);
+
+        // Extract important fields from result
+        const businessData = {
+          name: result.name || "",
+          address: result.formatted_address || "",
+          phone: result.formatted_phone_number || "",
+          internationalPhone: result.international_phone_number || "",
+          website: result.website || "",
+          rating: result.rating || "",
+          totalRatings: result.user_ratings_total || "",
+          hours: result.opening_hours?.weekday_text || [],
+          businessStatus: result.business_status || "",
+          categories: result.types || [],
+        };
+        sessionStorage.setItem(
+          "placeDetailsExtract",
+          JSON.stringify(businessData)
+        );
+        console.log("Extracted Business Data:", businessData);
+        const fullPlaceInfoText = JSON.stringify(result, null, 2);
+        setPlaceInfoText(fullPlaceInfoText);
       } else {
         console.error("Place details fetch failed:", status);
-        setLoading(false);
       }
+      setLoading(false);
     });
   };
 
-  // Generate the Google Listing URL but don't show it in the UI
   const generateGoogleListingUrl = (place) => {
     const address = [
       place.address_components.find((c) => c.types.includes("street_number"))
@@ -186,10 +207,9 @@ function AboutBusiness() {
   useEffect(() => {
     const savedVerifiedStatus = localStorage.getItem("isVerified");
     if (savedVerifiedStatus !== null) {
-      setIsVerified(savedVerifiedStatus === 'true');
+      setIsVerified(savedVerifiedStatus === "true");
     }
   }, []);
-
 
   const handleBlur = () => {
     if (businessUrl.trim()) {
@@ -266,21 +286,18 @@ function AboutBusiness() {
     );
   }, [businessUrl, googleListing, aboutBusiness, note]);
 
-
-
   const isValidUrl = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" +
-      "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
-      "((\\d{1,3}\\.){3}\\d{1,3}))" +
-      "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
-      "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
-      "(\\#[-a-zA-Z\\d_]*)?$",
+        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
+        "((\\d{1,3}\\.){3}\\d{1,3}))" +
+        "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
+        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
+        "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     );
     return !!pattern.test(url);
   };
-
 
   const validateAboutBusiness = (text) => {
     if (!text.trim()) return "Business description is required.";
@@ -356,10 +373,10 @@ function AboutBusiness() {
     //   sessionStorage.getItem("businessLocation")
     // );
 
-    const mergedUrls = [businessUrl.trim(), googleListing];
+    const mergedUrls = [businessUrl.trim()];
     const formData = new FormData();
-    const formData2 = new FormData();     //for save in db
-    const formData3 = new FormData();     // for update knowlede base
+    const formData2 = new FormData();
+    const formData3 = new FormData();
     const packageName = sessionStorage.getItem("package") || "Free";
     const packageMap = {
       Free: 1,
@@ -415,16 +432,65 @@ function AboutBusiness() {
     const knowledgeBaseName = `${sanitize(businessCode)}_${sanitize(
       shortBusinessName
     )}_${sanitize(packageValue)}_#${agentCount}`;
+    const businessDetails = JSON.parse(
+      sessionStorage.getItem("businessDetails") || "{}"
+    );
+
+    const businessType = businessDetails?.businessType;
+    const title =
+      businessType === "Other"
+        ? businessDetails?.customBuisness || "Business Info"
+        : businessType;
+    const businessData = {
+      name: placeDetails?.name || "",
+      address: placeDetails?.formatted_address || "",
+      phone:
+        placeDetails?.formatted_phone_number ||
+        placeDetails?.international_phone_number ||
+        "",
+      website: placeDetails?.website || "",
+      rating: placeDetails?.rating || "",
+      totalRatings: placeDetails?.user_ratings_total || "",
+      hours: placeDetails?.opening_hours?.weekday_text?.join(" | ") || "",
+      businessStatus: placeDetails?.business_status || "",
+      categories: placeDetails?.types?.join(", ") || "",
+    };
+
+    // Combine them into readable text
+    const knowledgeBaseText = {
+      title,
+      text: `
+Business Name: ${businessData.name}
+Address: ${businessData.address}
+Phone: ${businessData.phone}
+Website: ${businessData.website}
+Rating: ${businessData.rating} (${businessData.totalRatings} reviews)
+Business Status: ${businessData.businessStatus}
+Categories: ${businessData.categories}
+Opening Hours: ${businessData.hours}
+  `.trim(),
+    };
+
+    console.log("knowledgeBaseText", knowledgeBaseText);
+
+    formData3.append(
+      "knowledge_base_texts",
+      new Blob([JSON.stringify([knowledgeBaseText])], {
+        type: "application/json",
+      })
+    );
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+    formData.append("enable_auto_refresh", "true");
+    formData.append("knowledge_base_texts",JSON.stringify([knowledgeBaseText]));
     formData2.append("googleUrl", googleListing);
     formData2.append("webUrl", businessUrl.trim());
-    formData2.append("aboutBusiness", (aboutBusiness));
-    formData2.append("additionalInstruction", (note));
+    formData2.append("aboutBusiness", aboutBusiness);
+    formData2.append("additionalInstruction", note);
     formData2.append("knowledge_base_name", knowledgeBaseName);
     formData2.append("agentId", localStorage.getItem("agent_id"));
-    formData2.append('googleBusinessName', displayBusinessName)
-    formData3.append('knowledge_base_urls', JSON.stringify(mergedUrls))
+    formData2.append("googleBusinessName", displayBusinessName);
+    formData3.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     // let textContent = "";
     // let moreAbout = null;
     // moreAbout = {
@@ -448,14 +514,21 @@ function AboutBusiness() {
     // Append the business description to form data
     // formData.append("knowledge_base_texts", JSON.stringify([moreAbout]));
     // formData3.append("knowledge_base_texts", JSON.stringify([moreAbout]));
-    files.forEach((file) => {
-      formData.append("knowledge_base_files", file);
-    });
-    // Submit the form data to the server
+    // files.forEach((file) => {
+    //   formData.append("knowledge_base_files", file);
+    // });
+    // Submit the form data to the serve
+
     try {
       setLoading(true);
       let knowledge_Base_ID = knowledgeBaseId;
-      if (knowledge_Base_ID !== null && knowledge_Base_ID !== undefined && knowledge_Base_ID !== 'null' && knowledge_Base_ID !== 'undefined' && knowledge_Base_ID !== '') {
+      if (
+        knowledge_Base_ID !== null &&
+        knowledge_Base_ID !== undefined &&
+        knowledge_Base_ID !== "null" &&
+        knowledge_Base_ID !== "undefined" &&
+        knowledge_Base_ID !== ""
+      ) {
         const response = await axios.post(
           `https://api.retellai.com/add-knowledge-base-sources/${knowledge_Base_ID}`,
           formData3,
@@ -464,18 +537,22 @@ function AboutBusiness() {
               Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
               "Content-Type": "multipart/form-data",
             },
-          })
+          }
+        );
 
         formData2.append("knowledge_base_id", response.data.knowledge_base_id);
-
       } else {
+        for (let [key, value] of formData.entries()) {
+          console.log(`FormData Key: ${key}`, value);
+        }
+
         const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
           formData,
           {
             headers: {
               Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-              "Content-Type": "multipart/form-data",
+              // "Content-Type": "multipart/form-data",
             },
           }
         );
@@ -502,9 +579,10 @@ function AboutBusiness() {
         console.log("error while saving knowledge bas in Database", error);
       }
 
-      // if knowledgeBase  created at edit 
+      // if knowledgeBase  created at edit
       if (stepEditingMode == "ON" && knowledge_Base_ID) {
-        const llm_id = localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
+        const llm_id =
+          localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
         const agentConfig = {};
         if (knowledge_Base_ID) {
           agentConfig.knowledge_base_ids = [knowledge_Base_ID];
@@ -529,7 +607,7 @@ function AboutBusiness() {
         setPopupType("success");
         setPopupMessage("Knowledge base created successfully!");
         setShowPopup(true);
-        setTimeout(() => navigate("/steps"), 1000)
+        setTimeout(() => navigate("/steps"), 1000);
       } else {
         setPopupType("success");
         setPopupMessage("Knowledge base Updated successfully!");
@@ -548,7 +626,9 @@ function AboutBusiness() {
     } catch (error) {
       if (error?.status == 422) {
         setPopupType("failed");
-        setPopupMessage("We’re currently updating your knowledge base. Editing is temporarily disabled. Please try again in a little while.");
+        setPopupMessage(
+          "We’re currently updating your knowledge base. Editing is temporarily disabled. Please try again in a little while."
+        );
         setShowPopup(true);
       }
     } finally {
@@ -628,7 +708,9 @@ function AboutBusiness() {
         <div className={styles.container}>
           <div className={styles.header}>
             <h1>
-              {EditingMode ? "Edit: About Your Business" : "About Your Business"}
+              {EditingMode
+                ? "Edit: About Your Business"
+                : "About Your Business"}
             </h1>
           </div>
           <form className={styles.formContainer}>
@@ -801,9 +883,7 @@ function AboutBusiness() {
                       <p>Save Edits</p>
                     )}
                   </button>
-                )
-                }
-
+                )}
               </div>
             </div>
           </form>
