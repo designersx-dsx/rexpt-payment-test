@@ -4,10 +4,10 @@ import styles from "./CalInfo.module.css";
 const CalInfo = () => {
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>Getting started with Cal.com is easy! Follow these steps to set up your account and integrate it with your tools:</h1>
-      {/* <h3>Getting started with Cal.com is easy! Follow these steps to set up your account and integrate it with your tools</h3> */}
+      <h1 className={styles.heading}>Simple Steps to Connect with Cal.com</h1>
+      <h3>Getting started with Cal.com is easy! Follow these steps to set up your account and integrate it with your tools</h3>
       <div className={styles.step}>
-        <h4 className={styles.stepTitle}>1. Click Here to start the <a href="https://refer.cal.com/designersx" target="_blank" rel="noopener noreferrer"> Cal.com 
+        <h4 className={styles.stepTitle}>1. Click Here to start the <a href="https://refer.cal.com/designersx" target="_blank" rel="noopener noreferrer"> Cal.com
         </a> Setup Process.</h4>
 
 

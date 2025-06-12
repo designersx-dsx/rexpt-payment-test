@@ -28,6 +28,7 @@ import CallTransfer from "./Component/CallTransfer/CallTransfer";
 import CallDetails from "./Component/CallDetails/CallDetails";
 import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT"
 import CalInfo from "./Component/Dashboard/CalInfo";
+import EditProfile from "./Component/EditProfile/EditProfile";
 import { useEffect } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 function App() {
@@ -202,6 +203,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                <Route path="/edit-profile" element={<EditProfile />} />
               </Routes>
             </div>
           </BrowserRouter>
