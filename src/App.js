@@ -75,8 +75,8 @@ function App() {
                       <CalInfo />
                     </SecureRoute>
                   }   >
-                    
-                  </Route>
+
+                </Route>
                 <Route path="/" element={<Start />} />
                 <Route path="/signup" element={<SignUp />} />
 

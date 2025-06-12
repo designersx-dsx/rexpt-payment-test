@@ -1008,15 +1008,16 @@ function Dashboard() {
                   Click to connect with cal
                 </a>
               </p>
-              {/* <p>
+              <p>
+                 Simple Steps to Connect with :{" "}
                   <a
                   href="/calinfo"
                   target="_blank"
                   rel="noopener noreferrer" 
                   >
-                    Learn how to connect with cal
+               Cal.com
                   </a>
-                </p> */}
+                </p>
 
               <div
                 style={{
