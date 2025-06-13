@@ -11,6 +11,7 @@ import {
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
+import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 
 // Convert File → base64 data URL
 const fileToBase64 = (file) =>
@@ -84,6 +85,8 @@ function AboutBusiness() {
     navigate,
     setHasFetched,
   });
+  const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
+
 
   const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
@@ -622,6 +625,25 @@ function AboutBusiness() {
       handleCreateAgent();
     }, 800);
   };
+
+    useEffect(() => {
+      if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+        setShowPopup(true);
+        setPopupType('failed');
+        setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+      }
+    }, [CheckingUserLimit, isLimitExceeded]);
+  
+    if (CheckingUserLimit) return <p>Loading...</p>;
+
+      const handleClosePopup = () => {
+      if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      navigate('/dashboard');
+      setShowPopup(false);
+      }else{
+        setShowPopup(false);
+      }
+    }
   return (
     <>
       <div>
@@ -811,7 +833,7 @@ function AboutBusiness() {
         {showPopup && (
           <PopUp
             type={popupType}
-            onClose={() => setShowPopup(false)}
+            onClose={() => handleClosePopup()}
             message={popupMessage}
             onConfirm={confirmSkip}
           />

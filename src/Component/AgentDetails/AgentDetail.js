@@ -431,6 +431,7 @@ const agentStatus=agentData?.agent?.isDeactivated
     sessionStorage.removeItem("businessLocation");
     sessionStorage.removeItem("selectedCustomServices");
     sessionStorage.removeItem("bId");
+    sessionStorage.removeItem("selectedServices");
     localStorage.removeItem("UpdationMode");
     localStorage.removeItem("UpdationModeStepWise");
     localStorage.removeItem("agentName");

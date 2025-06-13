@@ -6,6 +6,7 @@ import decodeToken from "../../lib/decodeToken";
 import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import Loader from "../Loader/Loader";
+import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 
 const BusinessDetails = () => {
   const navigate = useNavigate();
@@ -42,7 +43,10 @@ const BusinessDetails = () => {
   const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
   const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
   const [customBuisness, setcustomBuisness] = useState("");
+  const [prevBuisnessType, setprevBuisnessType] = useState("");
+  const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
 
+ 
 
   // console.log(customBuisness, "customBuisness")
   const location = useLocation();
@@ -125,6 +129,7 @@ const BusinessDetails = () => {
 
         if (businessDetails) {
           setBusinessType(businessDetails.businessType || "");
+          setprevBuisnessType(businessDetails.businessType || "");
           setBusinessName(businessDetails.businessName || "");
           setBusinessSize(businessDetails.businessSize || "");
           setcustomBuisness(businessDetails.customBuisness || "");
@@ -198,9 +203,13 @@ const BusinessDetails = () => {
     if (e.target.value !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
     }
+    console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
+    
     }
+
+
   };
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -218,6 +227,24 @@ const BusinessDetails = () => {
 
     // Validate all fields
     let hasError = false;
+
+    if(prevBuisnessType != businessType) {
+      sessionStorage.removeItem("selectedServices");
+      sessionStorage.removeItem("selectedCustomServices");
+        const raw = sessionStorage.getItem("businesServices");
+        let previous = {};
+        try {
+            previous = raw ? JSON.parse(raw) : {};
+        } catch (err) {
+            console.error("Failed to parse businesServices:", err);
+        }
+
+         const updatedBusinessServices = {
+            selectedService:[],
+            email:previous.email,
+        };
+       sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+    }
 
     if (!businessType) {
       setBusinessTypeError("Please select a business type.");
@@ -275,6 +302,23 @@ const BusinessDetails = () => {
   const handleSaveEdit = (e) => {
     e.preventDefault();
 
+    if(prevBuisnessType != businessType) {
+      sessionStorage.removeItem("selectedServices");
+      sessionStorage.removeItem("selectedCustomServices");
+        const raw = sessionStorage.getItem("businesServices");
+        let previous = {};
+        try {
+            previous = raw ? JSON.parse(raw) : {};
+        } catch (err) {
+            console.error("Failed to parse businesServices:", err);
+        }
+
+         const updatedBusinessServices = {
+            selectedService:[],
+            email:previous.email,
+        };
+       sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+    }
     const businessData = {
       userId,
       businessType,
@@ -290,7 +334,31 @@ const BusinessDetails = () => {
  
     setTimeout(() => {
     handleCreateAgent();}, 500);
+     if(prevBuisnessType != businessType) {
+          setShowPopup(true);
+          setPopupType('success');
+          setPopupMessage("Business Type Changed please select related business services again !");
+     }
   };
+
+  useEffect(() => {
+    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      setShowPopup(true);
+      setPopupType('failed');
+      setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+    }
+  }, [CheckingUserLimit, isLimitExceeded]);
+
+  if (CheckingUserLimit) return <p>Loading...</p>;
+  
+    const handleClosePopup = () => {
+      if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      navigate('/dashboard');
+      setShowPopup(false);
+      }else{
+        setShowPopup(false);
+      }
+    }
 
   return (
     <div className={styles.container}>
@@ -468,7 +536,7 @@ const BusinessDetails = () => {
       {showPopup && (
         <PopUp
           type={popupType}
-          onClose={() => setShowPopup(false)}
+          onClose={() =>handleClosePopup()}
           message={popupMessage}
         />
       )}

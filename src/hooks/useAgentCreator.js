@@ -72,7 +72,7 @@ export const useAgentCreator = ({
     const packageValue = packageMap[packageName] || 1; // default to 1 (Free) if not found
     const businessServices = business?.selectedService || [];
     const customServices = cleanedCustomServices?.map(item =>
-        typeof item === 'string' ? item : item.service);
+        typeof item === 'string' ? item : item?.service)||[];
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
    

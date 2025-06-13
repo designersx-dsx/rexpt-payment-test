@@ -188,5 +188,19 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
   }
 };
 
+export const getUserAgentLimitStatus = async (userId) => {
+  try {
+    const res = await api.get(`/endusers/user-agent-limit-status?userId=${userId}`,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error toggling agent activation:", error.response?.data || error.message);
+    throw new Error("Failed to update agent activation status");
+  }
+};
+
 
 export default api;
