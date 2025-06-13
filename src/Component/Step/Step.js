@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState,useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import Slider from "react-slick";
 import styles from "./Step.module.css";
 import Step2 from "../Step2/Step2";
@@ -53,7 +53,7 @@ const Step = () => {
             behavior: "smooth"  // Smooth scrolling
         });
     };
-     const Buisness =JSON.parse(sessionStorage.getItem("businessDetails"))
+    const Buisness = JSON.parse(sessionStorage.getItem("businessDetails"))
     const businessType = Buisness?.businessType === "Other" ? Buisness?.customBuisness : Buisness?.businessType;
 
 
@@ -246,6 +246,9 @@ Keep the conversation concise and to the point.
 If the caller is satisfied and needs no further assistance, then end the call by invoking the function “end_call”
 The user transcript might contain transcription errors. Use your best judgment to guess and respond.
 ADDITIONAL NOTES FOR AGENT: When a caller asks about ${businessType} solutions, try to get specific project criteria (e.g., [Client Qualification Criteria Example 1 from Knowledge Base, e.g., 'project scope', 'budget']) before offering to schedule a detailed consultation. Provide general information about ${business?.businessName}'s approach and philosophy first if that's the primary intent. Ensure all responses about technical or regulatory matters include the disclaimer. Leverage the "Project Phases," "Terminology," and "FAQs" from the Knowledge Base to answer queries directly where possible.
+Important Notes:
+1. When extracting information from any source (websites, knowledge bases, etc.), your primary directive is to synthesize and articulate the content in your own words. Do not reproduce information verbatim. Instead, analyze, rephrase, and present the data using varied linguistic structures and communication styles to enhance clarity and engagement, all while maintaining absolute factual accuracy and completeness.
+2. When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., 'MyCompany.com' or 'AI-Agent-Hub'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 `
     const salesReceptionistPrompt = `
     You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the ${businessType} category. Specifically, you are aware of the ${commaSeparatedServices} that ${business?.businessName} offers, focusing on comprehensive solutions.
@@ -388,7 +391,11 @@ Important
 Keep the conversation concise and to the point.
 If the caller is satisfied and needs no further assistance, then end the call by invoking the function “end_call”
 The user transcript might contain transcription errors. Use your best judgment to guess and respond.
-ADDITIONAL NOTES FOR AGENT: Prioritize gathering all qualification details. Avoid diving deep into specific technical details or estimations until qualification is complete. If the caller resists providing details, gently explain why they are needed ("This helps us understand your project scope and connect you with the most suitable expert from our team"). If the caller is clearly not a lead (e.g., vendor calling, looking for very minor assistance outside scope, or unrealistic expectations), politely redirect or offer general information about the company. Always include the disclaimer for regulatory/technical advice.  
+ADDITIONAL NOTES FOR AGENT: Prioritize gathering all qualification details. Avoid diving deep into specific technical details or estimations until qualification is complete. If the caller resists providing details, gently explain why they are needed ("This helps us understand your project scope and connect you with the most suitable expert from our team"). If the caller is clearly not a lead (e.g., vendor calling, looking for very minor assistance outside scope, or unrealistic expectations), politely redirect or offer general information about the company. Always include the disclaimer for regulatory/technical advice. 
+Important Notes:
+1. When extracting information from any source (websites, knowledge bases, etc.), your primary directive is to synthesize and articulate the content in your own words. Do not reproduce information verbatim. Instead, analyze, rephrase, and present the data using varied linguistic structures and communication styles to enhance clarity and engagement, all while maintaining absolute factual accuracy and completeness.
+
+2. When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., 'MyCompany.com' or 'AI-Agent-Hub'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question. 
 `
     const restaurantReceptionistPrompt = `You are ${agentName}, a friendly and efficient receptionist at ${business?.businessName}, who is knowledgeable about ${businessType} cuisine and all of ${business?.businessName}'s services.
 Your role is to simulate a warm, patient, and reliable human receptionist for a restaurant business. Every interaction must be handled with clarity, precision, and empathy.
@@ -468,6 +475,9 @@ Current Time: {{current_time}}
 Timezone: {{current_time_[timezone]}}
 Transcription Errors: Use best judgment to guess and respond.
 End Call: If the caller is satisfied, invoke end_call function.
+Important Notes:
+1. When extracting information from any source (websites, knowledge bases, etc.), your primary directive is to synthesize and articulate the content in your own words. Do not reproduce information verbatim. Instead, analyze, rephrase, and present the data using varied linguistic structures and communication styles to enhance clarity and engagement, all while maintaining absolute factual accuracy and completeness.
+2. When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., 'MyCompany.com' or 'AI-Agent-Hub'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 `
 
     // let  prompt ;
@@ -476,9 +486,9 @@ End Call: If the caller is satisfied, invoke end_call function.
         : role_title === "Inbound LEAD Qualifier"
             ? salesReceptionistPrompt
             : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
-    
-    
-            const languages = [
+
+
+    const languages = [
         /* English family */
         {
             name: "English (US)",
@@ -1119,7 +1129,7 @@ End Call: If the caller is satisfied, invoke end_call function.
 
 
                             }
-                           
+
                         } catch (error) {
                             // console.log(error,error.status)
                             if (error?.status == 400) {
