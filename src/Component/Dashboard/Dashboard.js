@@ -137,47 +137,47 @@ function Dashboard() {
       localStorage.removeItem("additionalInstruction");
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("knowledge_base_id");
-       localStorage.removeItem("bId");
-    sessionStorage.removeItem("UpdationMode");
-    sessionStorage.removeItem("agentName");
-    sessionStorage.removeItem("agentGender");
-    sessionStorage.removeItem("agentLanguageCode");
-    sessionStorage.removeItem("agentLanguage");
-    sessionStorage.removeItem("llmId");
-    sessionStorage.removeItem("agent_id");
-    sessionStorage.removeItem("knowledgeBaseId");
-    sessionStorage.removeItem("googleListing");
-    sessionStorage.removeItem("displayBusinessName");
-    sessionStorage.removeItem("aboutBusinessForm");
-    sessionStorage.removeItem("agentRole");
-    sessionStorage.removeItem("agentVoice");
-    sessionStorage.removeItem("agentVoiceAccent");
-    sessionStorage.removeItem("avatar");
-    sessionStorage.removeItem("businessDetails");
-    sessionStorage.removeItem("businessId");
-    sessionStorage.removeItem("businesServices");
-    sessionStorage.removeItem("businessLocation");
-    sessionStorage.removeItem("selectedCustomServices");
-    sessionStorage.removeItem("bId");
-    localStorage.removeItem("UpdationMode");
-    localStorage.removeItem("UpdationModeStepWise");
-    localStorage.removeItem("agentName");
-    localStorage.removeItem("agentGender");
-    localStorage.removeItem("agentLanguageCode");
-    localStorage.removeItem("agentLanguage");
-    localStorage.removeItem("llmId");
-    localStorage.removeItem("agent_id");
-    localStorage.removeItem("knowledgeBaseId");
-    localStorage.removeItem("agentRole");
-    localStorage.removeItem("agentVoice");
-    localStorage.removeItem("agentVoiceAccent");
-    localStorage.removeItem("avatar");
-    localStorage.removeItem("googleUrl");
-    localStorage.removeItem("webUrl");
-    localStorage.removeItem("aboutBusiness");
-    localStorage.removeItem("additionalInstruction");
-    localStorage.removeItem("knowledge_base_name");
-    localStorage.removeItem("knowledge_base_id");
+      localStorage.removeItem("bId");
+      sessionStorage.removeItem("UpdationMode");
+      sessionStorage.removeItem("agentName");
+      sessionStorage.removeItem("agentGender");
+      sessionStorage.removeItem("agentLanguageCode");
+      sessionStorage.removeItem("agentLanguage");
+      sessionStorage.removeItem("llmId");
+      sessionStorage.removeItem("agent_id");
+      sessionStorage.removeItem("knowledgeBaseId");
+      sessionStorage.removeItem("googleListing");
+      sessionStorage.removeItem("displayBusinessName");
+      sessionStorage.removeItem("aboutBusinessForm");
+      sessionStorage.removeItem("agentRole");
+      sessionStorage.removeItem("agentVoice");
+      sessionStorage.removeItem("agentVoiceAccent");
+      sessionStorage.removeItem("avatar");
+      sessionStorage.removeItem("businessDetails");
+      sessionStorage.removeItem("businessId");
+      sessionStorage.removeItem("businesServices");
+      sessionStorage.removeItem("businessLocation");
+      sessionStorage.removeItem("selectedCustomServices");
+      sessionStorage.removeItem("bId");
+      localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("UpdationModeStepWise");
+      localStorage.removeItem("agentName");
+      localStorage.removeItem("agentGender");
+      localStorage.removeItem("agentLanguageCode");
+      localStorage.removeItem("agentLanguage");
+      localStorage.removeItem("llmId");
+      localStorage.removeItem("agent_id");
+      localStorage.removeItem("knowledgeBaseId");
+      localStorage.removeItem("agentRole");
+      localStorage.removeItem("agentVoice");
+      localStorage.removeItem("agentVoiceAccent");
+      localStorage.removeItem("avatar");
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("webUrl");
+      localStorage.removeItem("aboutBusiness");
+      localStorage.removeItem("additionalInstruction");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("knowledge_base_id");
     }
   }, []);
   // Navigate on agent card click
@@ -1008,15 +1008,14 @@ function Dashboard() {
                   Click to connect with cal
                 </a>
               </p>
-              {/* <p>
-                  <a
+              <p> Need a hand connecting with Cal.com?{" "}
+                <a
                   href="/calinfo"
                   target="_blank"
-                  rel="noopener noreferrer" 
-                  >
-                    Learn how to connect with cal
-                  </a>
-                </p> */}
+                  rel="noopener noreferrer"
+                >
+                   See quick setup guide</a>
+              </p>
 
               <div
                 style={{
@@ -1469,9 +1468,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(
