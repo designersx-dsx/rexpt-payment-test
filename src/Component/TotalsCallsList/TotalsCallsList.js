@@ -6,6 +6,7 @@ import axios from "axios";
 import { API_BASE_URL, getAllAgentCalls } from "../../Store/apiStore";
 import Loader from "../Loader/Loader";
 import Loader2 from "../Loader2/Loader2";
+import { useNavigate } from "react-router-dom";
 
 const options = [
   { id: 1, label: "All", imageUrl: "svg/ThreOpbtn.svg" },
@@ -19,7 +20,7 @@ const callsPerPage = 6;
 export default function Home() {
   const totalAgentView = localStorage.getItem("filterType");
   const sessionAgentId = sessionStorage.getItem("agentId") || ""
-  const [agentId, setAgentId] = useState(
+  const [agentId, setAgentId] = useState( 
     totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
   const [data, setData] = useState([]);
@@ -133,6 +134,7 @@ export default function Home() {
     fetchAllAgentCalls();
     // Perform additional logic related to "All Agents" if needed
   };
+const navigate = useNavigate();
 
   return (
     <div className={styles.container}>
@@ -186,7 +188,9 @@ export default function Home() {
                 </tr>
               ) : (
                 currentCalls.map((call, i) => (
-                  <tr key={i}>
+                  <tr key={i}
+  className={styles.clickableRow}
+  onClick={() => navigate("/call-details", { state: { callId: call.call_id } })}>
                     <td>
                       <div className={styles.callDateTime}>
                         <div>
