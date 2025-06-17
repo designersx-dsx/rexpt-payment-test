@@ -2,6 +2,7 @@ import { useCallback, useState,useEffect,useMemo} from 'react';
 import axios from 'axios';
 import { API_BASE_URL, listAgents, updateAgent } from '../Store/apiStore';
 import decodeToken from '../lib/decodeToken';
+import { getAgentPrompt, useAgentPrompt } from './useAgentPrompt';
 // import { createAgent, updateAgent } from '../api'; // adjust path
 
 const getFromStorage = (key, fallback = "") =>
@@ -453,8 +454,21 @@ End Call: If the caller is satisfied, invoke end_call function.
             ? salesReceptionistPrompt
             : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
     
-    
+// const filledPrompt = getAgentPrompt({
+//   industryKey: "restaurant",   // ← dynamic from businessType
+//   roleTitle: "General Receptionist", // ← dynamic from sessionStorage or UI
+//   agentName: "Alex",
+//   agentGender: "Female",
+//   business: {
+//     businessName: "Tasty Bites"
+//   },
+//   languageSelect: "English",
+//   businessType,
+//   aboutBusinessForm,
+// });
 
+// console.log(filledPrompt);
+// return
 
     // console.log('prompt1',prompt1)
 

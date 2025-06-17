@@ -31,6 +31,7 @@ import CalInfo from "./Component/Dashboard/CalInfo";
 import EditProfile from "./Component/EditProfile/EditProfile";
 import { useEffect } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
+import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
 function App() {
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
@@ -204,6 +205,7 @@ function App() {
                   }
                 />
                 <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/widget-guide" element={<WidgetGuidePage/>} />
               </Routes>
             </div>
           </BrowserRouter>
