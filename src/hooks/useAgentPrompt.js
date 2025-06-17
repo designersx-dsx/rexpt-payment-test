@@ -1,6 +1,5 @@
 // lib/getAgentPrompt.js
 import { agentPromptTemplates } from "../lib/agentPromptTemplates";
-
 export const getAgentPrompt = ({
   industryKey = "",
   roleTitle = "",
