@@ -3,12 +3,11 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
 
 const CallDetails = () => {
   const location = useLocation();
-  const { callId } = location.state || {};
   const [callData, setCallData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,6 +16,7 @@ const CallDetails = () => {
   const agentData = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
+  const { callId } = useParams();
   const agents = agentData?.state?.agents || [];
   let agentName = "Unknown Agent";
 
@@ -66,20 +66,39 @@ const CallDetails = () => {
   if (!callId) return <p>No call selected.</p>;
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-  const minutes = Math.floor(callData.duration_ms / 60000);
-  const seconds = Math.floor((callData.duration_ms % 60000) / 1000);
+
+  let data = callData.call_analysis?.custom_analysis_data;
+  let name = data["_detailed _call _summery"];
 
   return (
     <div>
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div className={styles.profileBack}>
-            <img
+            {/* <img
               src="svg/Notification.svg"
               alt="Back button"
               onClick={() => navigate(-1)}
               style={{ cursor: "pointer" }}
-            />
+            /> */}
+            <svg
+              onClick={() => navigate(-1)}
+              style={{ cursor: "pointer" }}
+              width="50"
+              height="50"
+              viewBox="0 0 50 50"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="50" height="50" rx="25" fill="#F9F9F9" />
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M21.293 25.7071C20.9025 25.3166 20.9025 24.6834 21.293 24.2929L26.9499 18.636C27.3404 18.2455 27.9736 18.2455 28.3641 18.636C28.7546 19.0266 28.7546 19.6597 28.3641 20.0503L23.4144 25L28.3641 29.9497C28.7546 30.3403 28.7546 30.9734 28.3641 31.364C27.9736 31.7545 27.3404 31.7545 26.9499 31.364L21.293 25.7071Z"
+                fill="#0A0A0A"
+                fill-opacity="0.9"
+              />
+            </svg>
 
             <h4 className={styles.headerTitle}>Total Calls</h4>
           </div>
@@ -102,10 +121,7 @@ const CallDetails = () => {
           </div>
           <div className={styles.detail2}>
             <div className={styles.userName}>
-              <h2>
-                {callData.call_analysis?.custom_analysis_data
-                  ?._detailed_call_summery || "Unknown"}
-              </h2>
+              <h2>{name || "Unknown"}</h2>
             </div>
             <div
               className={`${styles.status} ${
@@ -192,10 +208,54 @@ const CallDetails = () => {
                 onClick={toggleAudio}
                 style={{ cursor: "pointer" }}
               >
-                <img
+                {/* <img
                   src={isPlaying ? "svg/Pause-icon.svg" : "svg/Play-icon.svg"}
                   alt={isPlaying ? "Pause" : "Play"}
-                />
+                /> */}
+               {isPlaying ? (
+  // Pause Icon
+  <svg
+    width="50"
+    height="50"
+    viewBox="0 0 50 50"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="25" cy="25" r="25" fill="#EBE2FF" />
+    <rect
+      x="18"
+      y="17"
+      width="5"
+      height="18"
+      rx="2"
+      fill="#6524EB"
+    />
+    <rect
+      x="27"
+      y="17"
+      width="5"
+      height="18"
+      rx="2"
+      fill="#6524EB"
+    />
+  </svg>
+) : (
+ 
+  <svg
+    width="50"
+    height="50"
+    viewBox="0 0 50 50"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="25" cy="25" r="25" fill="#EBE2FF" />
+    <polygon
+      points="20,17 35,25 20,33"
+      fill="#6524EB"
+    />
+  </svg>
+)}
+
               </div>
               <audio
                 ref={audioRef}

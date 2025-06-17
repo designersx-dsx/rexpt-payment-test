@@ -36,6 +36,16 @@ export default function Home() {
   );
   const [filters, setFilters] = useState({ leadType: [], channel: "" });
   const userId = localStorage.getItem("userId") || "";
+  function extractCallIdFromRecordingUrl(url) {
+  if (!url) return null;
+  try {
+    const parts = url.split('/');
+    return parts[3] || null;
+  } catch {
+    return null;
+  }
+}
+
   useEffect(() => {
     if (agentId === "all") {
       fetchAllAgentCalls();
@@ -50,7 +60,13 @@ export default function Home() {
         const response = await axios.get(
           `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`
         );
-        setData(response.data.filteredCalls || []);
+        const calls = (response.data.filteredCalls || []).map(call => ({
+  ...call,
+  call_id: call.call_id || extractCallIdFromRecordingUrl(call.recording_url)
+}));
+
+setData(calls);
+
       } else {
         setData([]);
       }
@@ -190,7 +206,15 @@ const navigate = useNavigate();
                 currentCalls.map((call, i) => (
                   <tr key={i}
   className={styles.clickableRow}
-  onClick={() => navigate("/call-details", { state: { callId: call.call_id } })}>
+ onClick={() => {
+  if (!call.call_id) {
+    console.warn("Missing call_id for this call:", call);
+    return;
+  }
+  navigate(`/call-details/${call.call_id}`);
+}}
+
+>
                     <td>
                       <div className={styles.callDateTime}>
                         <div>

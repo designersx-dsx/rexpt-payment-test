@@ -167,7 +167,7 @@ function App() {
                 />
                 <Route path="/totalcall-list" element={<SecureRoute><TotalsCallsList /></SecureRoute>} />
                 <Route path="/call-transfer" element={<SecureRoute><CallTransfer /></SecureRoute>} />
-                <Route path="/call-details" element={<SecureRoute><CallDetails /></SecureRoute>} />
+               <Route path="/call-details/:callId" element={<SecureRoute><CallDetails /></SecureRoute>} />
                 <Route
                   path="/business-services"
                   element={
