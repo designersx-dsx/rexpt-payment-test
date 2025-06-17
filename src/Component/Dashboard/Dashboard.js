@@ -639,6 +639,9 @@ function Dashboard() {
     );
   };
 
+  const handleEditProfile=()=>{
+    navigate("/edit-profile")
+  }
   return (
     <div>
       <div className={styles.forSticky}>
@@ -662,7 +665,7 @@ function Dashboard() {
         <header className={styles.header}>
           <div className={styles.profileSection} ref={profileRef}>
             <div>
-              <button className={styles.avatarBtn} onClick={openUploadModal}>
+              <button className={styles.avatarBtn} onClick={handleEditProfile}>
                 <img
                   src={
                     user?.profile ||
@@ -684,7 +687,7 @@ function Dashboard() {
                 {formatName(user?.name) || "John Vick"}
               </h2>
             </div>
-            {isUploadModalOpen && (
+            {/* {isUploadModalOpen && (
               <UploadProfile
                 onClose={closeUploadModal}
                 onUpload={handleUpload}
@@ -692,7 +695,7 @@ function Dashboard() {
                   uploadedImage || user?.profile || "images/camera-icon.avif"
                 }
               />
-            )}
+            )} */}
           </div>
           <div className={styles.notifiMain}>
             <div

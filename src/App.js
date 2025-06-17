@@ -204,8 +204,8 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                <Route path="/edit-profile" element={<EditProfile />} />
-                <Route path="/widget-guide" element={<WidgetGuidePage/>} />
+                <Route path="/edit-profile" element={ <SecureRoute><EditProfile /></SecureRoute>} />
+                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
               </Routes>
             </div>
           </BrowserRouter>
