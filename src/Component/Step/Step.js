@@ -16,6 +16,7 @@ import { createAgent, listAgents, updateAgent } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 const Step = () => {
+    const timestamp = Date.now();
     const navigate = useNavigate();
     const sliderRef = useRef(null);
     const [currentStep, setCurrentStep] = useState(0);
@@ -828,6 +829,7 @@ Important Notes:
                             description: "End the call with user.",
                         },
 
+
                     ],
                     states: [
                         {
@@ -1019,6 +1021,25 @@ Important Notes:
                 setLoading(true)
                 const agentConfig = {
                     general_prompt: prompt1,
+                    general_tools: [
+                        {
+                            type: "transfer_call",
+                            name: `transfer_support_${timestamp}`, 
+                            transfer_destination: {
+                                type: "inferred",
+                                prompt: "Based on the conversation, decide the best phone number to transfer this call to using {{transfer_number}}." // 👈 required field
+                            },
+                            transfer_option: {
+                                type: "cold_transfer", 
+                                public_handoff_option: {
+                                    type: "say_message", 
+                                    message: "Please hold while I transfer your call to support."
+                                }
+                            },
+                            speak_during_execution: true,
+                            speak_after_execution: true
+                        }
+                    ],
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                 };
                 const llm_id = localStorage.getItem('llmId')
