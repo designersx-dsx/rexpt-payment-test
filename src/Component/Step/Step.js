@@ -15,6 +15,7 @@ import decodeToken from "../../lib/decodeToken";
 import { createAgent, listAgents, updateAgent } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
+import { getAgentPrompt } from "../../hooks/useAgentPrompt";
 const Step = () => {
     const timestamp = Date.now();
     const navigate = useNavigate();
@@ -490,7 +491,20 @@ Important Notes:
             ? salesReceptionistPrompt
             : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
 
-
+    const filledPrompt = getAgentPrompt({
+      industryKey: business?.businessType=="Other"?business?.customBuisness:business?.businessType,   // ← dynamic from businessType
+      roleTitle: role_title, // ← dynamic from sessionStorage or UI
+      agentName: agentName,
+      agentGender: agentGender,
+      business: {
+        businessName: business?.businessName
+      },
+      languageSelect: languageSelect,
+      businessType,
+      aboutBusinessForm,
+      commaSeparatedServices
+    });
+    
     const languages = [
         /* English family */
         {
@@ -811,6 +825,8 @@ Important Notes:
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     const handleContinue = async () => {
         if (step4Ref.current) {
+            // console.log("Validating step 4",filledPrompt);
+            // return 
             const isValid = step4Ref.current.validate();
             //creation here
             if (isValid && localStorage.getItem("UpdationMode") != "ON") {
