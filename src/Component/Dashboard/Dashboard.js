@@ -426,7 +426,7 @@ function Dashboard() {
 
       if (agents.length === 1) {
         setPopupType("failed");
-        setPopupMessage("Cannot delete. You must have at least one agent.");
+        setPopupMessage("Cannot delete. You must have at least two agents to delete one agent.");
         setShowDeleteConfirm(false);
         return;
       }

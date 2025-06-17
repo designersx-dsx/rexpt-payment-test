@@ -11,6 +11,7 @@ import {
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
+import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 
 // Convert File → base64 data URL
 const fileToBase64 = (file) =>
@@ -86,6 +87,8 @@ function AboutBusiness() {
     navigate,
     setHasFetched,
   });
+  const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
+
 
   const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
@@ -303,30 +306,6 @@ function AboutBusiness() {
     if (!text.trim()) return "Business description is required.";
     return "";
   };
-
-  const validateForm = () => {
-    let errorMessage = "";
-
-    if (!businessUrl.trim()) {
-      errorMessage += "Business URL is required.\n";
-    }
-
-    if (!googleListing.trim()) {
-      errorMessage += "Google Listing is required.\n";
-    }
-    if (!isVerified) {
-      errorMessage += "Business URL must be verified.\n";
-    }
-
-    if (errorMessage) {
-      setPopupType("failed");
-      setPopupMessage(errorMessage);
-      setShowPopup(true);
-      return false;
-    }
-
-    return true;
-  };
   const fetchAgentCountFromUser = async () => {
     try {
       const response = await listAgents();
@@ -368,10 +347,6 @@ function AboutBusiness() {
     }
 
     const business = JSON.parse(sessionStorage.getItem("businessDetails"));
-
-    // const businessLocation = JSON.parse(
-    //   sessionStorage.getItem("businessLocation")
-    // );
 
     const mergedUrls = [businessUrl.trim()];
     const formData = new FormData();
@@ -471,8 +446,6 @@ Opening Hours: ${businessData.hours}
   `.trim(),
     };
 
-    console.log("knowledgeBaseText", knowledgeBaseText);
-
     formData3.append(
       "knowledge_base_texts",
       new Blob([JSON.stringify([knowledgeBaseText])], {
@@ -493,6 +466,7 @@ Opening Hours: ${businessData.hours}
     formData2.append("agentId", localStorage.getItem("agent_id"));
     formData2.append("googleBusinessName", displayBusinessName);
     formData3.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+    formData2.append("address1", businessData.address || "")
     // let textContent = "";
     // let moreAbout = null;
     // moreAbout = {
@@ -543,11 +517,8 @@ Opening Hours: ${businessData.hours}
         );
 
         formData2.append("knowledge_base_id", response.data.knowledge_base_id);
-      } else {
-        for (let [key, value] of formData.entries()) {
-          console.log(`FormData Key: ${key}`, value);
-        }
-
+      }
+       else {
         const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
           formData,
@@ -704,6 +675,25 @@ Opening Hours: ${businessData.hours}
       handleCreateAgent();
     }, 800);
   };
+
+    useEffect(() => {
+      if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+        setShowPopup(true);
+        setPopupType('failed');
+        setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+      }
+    }, [CheckingUserLimit, isLimitExceeded]);
+  
+    if (CheckingUserLimit) return <p>Loading...</p>;
+
+      const handleClosePopup = () => {
+      if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      navigate('/dashboard');
+      setShowPopup(false);
+      }else{
+        setShowPopup(false);
+      }
+    }
   return (
     <>
       <div>
@@ -893,7 +883,7 @@ Opening Hours: ${businessData.hours}
         {showPopup && (
           <PopUp
             type={popupType}
-            onClose={() => setShowPopup(false)}
+            onClose={() => handleClosePopup()}
             message={popupMessage}
             onConfirm={confirmSkip}
           />

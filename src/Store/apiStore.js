@@ -12,6 +12,7 @@ const api = axios.create({
     Authorization: `Bearer ${token}`,
   },
 });
+const userId = sessionStorage.getItem("userId");
 
 // ========== Auth APIs ==========
 
@@ -187,6 +188,48 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
     throw new Error("Failed to update agent activation status");
   }
 };
+
+export const getUserDetails = async () => {
+  const userId = sessionStorage.getItem("userId");
+  if (!userId) throw new Error("User ID not found in sessionStorage");
+
+  try {
+    const response = await api.get(`/endusers/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    throw new Error("Failed to fetch user details");
+  }
+};
+
+export const updateUserDetails = async (updateData) => {
+  const userId = sessionStorage.getItem("userId");
+  if (!userId) throw new Error("User ID not found in sessionStorage");
+
+  try {
+    const response = await api.put(`/endusers/users/${userId}`, updateData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
+
+
+export const getUserAgentLimitStatus = async (userId) => {
+  try {
+    const res = await api.get(`/endusers/user-agent-limit-status?userId=${userId}`,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error toggling agent activation:", error.response?.data || error.message);
+    throw new Error("Failed to update agent activation status");
+  }
+};
+
 export const updateLlm = async (llmId, payload) => {
   try {
     const response = await axios.patch(
@@ -232,6 +275,7 @@ try {
   
 }
 }
+
 
 
 export default api;

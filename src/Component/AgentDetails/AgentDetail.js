@@ -43,7 +43,9 @@ const AgentDashboard = () => {
     setCurrentAgentId,
     getAgentById,
   } = useAgentStore();
+
   const agentStatus = agentData?.agent?.isDeactivated
+
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
   );
@@ -429,6 +431,7 @@ const AgentDashboard = () => {
     sessionStorage.removeItem("businessLocation");
     sessionStorage.removeItem("selectedCustomServices");
     sessionStorage.removeItem("bId");
+    sessionStorage.removeItem("selectedServices");
     localStorage.removeItem("UpdationMode");
     localStorage.removeItem("UpdationModeStepWise");
     localStorage.removeItem("agentName");
@@ -487,6 +490,7 @@ const AgentDashboard = () => {
       "Your agent is not active. Please activate your agent first."
     );
   };
+
 
   const handleCallTransfer = () => {
     if (agentData) {
@@ -654,7 +658,14 @@ const AgentDashboard = () => {
                   {/* <h3>Health <span> /Categories</span></h3> */}
                   <h3>
                     {agentData?.business?.businessType || "NA"}
-                    <span>  {agentData?.business?.businessType == "Other" ? `/${agentData?.business?.customBuisness}` : "/ Categories"}</span>
+
+                    <span>
+                      {" "}
+                      {agentData?.business?.businessType == "Other"
+                        ? `/${agentData?.business?.customBuisness}`
+                        : "/ Categories"}
+                    </span>
+
                   </h3>
                 </div>
 
@@ -674,34 +685,44 @@ const AgentDashboard = () => {
                         // return filteredUrls.map((src, index) => (
                         //   <div key={index}>{src.url}</div>
                         // ));
-                        return filteredUrls[filteredUrls?.length - 1]?.url || "NA";
+
+                        return (
+                          filteredUrls[filteredUrls?.length - 1]?.url || "NA"
+                        );
+
                       } else {
                         return <div>NA</div>;
                       }
                     })()}
                   </span>
                 </h2>
-                <div className={styles.google}>
-                  <img src="images/google-icon.png" alt="google-icon" />
-                  <p>
-                    <span style={{ fontSize: "12px" }}>
-                      {(() => {
-                        const filteredUrls =
-                          agentData?.knowledgeBase?.knowledge_base_sources?.filter(
-                            (src) => src?.url && src.url.includes("google.com")
-                          );
-                        if (filteredUrls && filteredUrls?.length > 0) {
-                          // return filteredUrls.map((src, index) => (
-                          //   <div key={index}>{src.url}</div>
-                          // ));
-                          return filteredUrls[filteredUrls?.length - 1]?.url || "NA";
-                        } else {
-                          return <div>NA</div>;
-                        }
-                      })()}
-                    </span>
-                  </p>
-                </div>
+             <div className={styles.google}>
+  <img src="images/google-icon.png" alt="google-icon" />
+  <p>
+    <span style={{ fontSize: "12px" }}>
+      {(() => {
+        try {
+          const agentId = agentData?.agent?.agent_id;
+          const cache = JSON.parse(sessionStorage.getItem("multiAgentCache") || "{}");
+          const googleUrl = cache?.data?.[agentId]?.agentData?.business?.googleUrl;
+          return googleUrl ? (
+            <a href={googleUrl} target="_blank" rel="noopener noreferrer">
+              {googleUrl}
+            </a>
+          ) : (
+            "NA"
+          );
+        } catch (err) {
+          console.error("Error reading googleUrl from sessionStorage:", err);
+          return "NA";
+        }
+      })()}
+    </span>
+  </p>
+</div>
+
+
+
                 <div className={styles.address}>
                   <img src="svg/location.svg" alt="location" />
                   <p>

@@ -30,7 +30,7 @@ const PopUp = ({ type, message, onClose = () => { }, onConfirm = () => { } }) =>
 
     const handleClose = () => {
         setShow(false);
-        setTimeout(() => onClose(), 500);
+        setTimeout(() => onClose(), 200);
     };
 
     const getIconPath = () => {

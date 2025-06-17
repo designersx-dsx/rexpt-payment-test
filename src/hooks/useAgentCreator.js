@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { API_BASE_URL, listAgents, updateAgent } from '../Store/apiStore';
 import decodeToken from '../lib/decodeToken';
+import { getAgentPrompt, useAgentPrompt } from './useAgentPrompt';
 // import { createAgent, updateAgent } from '../api'; // adjust path
 
 const getFromStorage = (key, fallback = "") =>
@@ -72,7 +73,9 @@ export const useAgentCreator = ({
     const packageValue = packageMap[packageName] || 1; // default to 1 (Free) if not found
     const businessServices = business?.selectedService || [];
     const customServices = cleanedCustomServices?.map(item =>
-      typeof item === 'string' ? item : item.service);
+
+        typeof item === 'string' ? item : item?.service)||[];
+
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
 
@@ -461,14 +464,29 @@ Transcription Errors: Use best judgment to guess and respond.
 End Call: If the caller is satisfied, invoke end_call function.
 `
 
-    // let  prompt ;
-    const prompt1 = role_title === "General Receptionist"
-      ? generalReceptionistPrompt
-      : role_title === "Inbound LEAD Qualifier"
-        ? salesReceptionistPrompt
-        : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
 
+  // let  prompt ;
+  const prompt1 = role_title === "General Receptionist"
+        ? generalReceptionistPrompt
+        : role_title === "Inbound LEAD Qualifier"
+            ? salesReceptionistPrompt
+            : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
+    
+// const filledPrompt = getAgentPrompt({
+//   industryKey: "restaurant",   // ← dynamic from businessType
+//   roleTitle: "General Receptionist", // ← dynamic from sessionStorage or UI
+//   agentName: "Alex",
+//   agentGender: "Female",
+//   business: {
+//     businessName: "Tasty Bites"
+//   },
+//   languageSelect: "English",
+//   businessType,
+//   aboutBusinessForm,
+// });
 
+// console.log(filledPrompt);
+// return
 
 
     // console.log('prompt1',prompt1)
