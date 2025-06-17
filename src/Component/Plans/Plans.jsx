@@ -46,7 +46,7 @@ const Plan = () => {
         if (selected === 'free-trial') {
             navigate('/signup');
         } else {
-            setShow(true); // Show modal only for paid plans
+            setShow(true); 
         }
     };
 
@@ -60,8 +60,8 @@ const Plan = () => {
                     <Modal isOpen={show} onClose={handleClose}>
                         <h2 className={styles.apologyHead}>Coming Soon</h2>
                         <p className={styles.apologyHeadText}>
-                           We apologise, But our paid plans are being tested to pass our "Rigorous QA Process" 
-For now, If your sign-up for a "Free Account", We promise to send you Upgradation Options in your email within next 2 weeks. 
+                            We apologise, But our paid plans are being tested to pass our "Rigorous QA Process"
+                            For now, If your sign-up for a "Free Account", We promise to send you Upgradation Options in your email within next 2 weeks.
                         </p>
                         <div className={styles.zz}>
                             <button className={styles.closeBTN} onClick={() => navigate('/signup')}>Sign-up for FREE</button>
@@ -121,6 +121,7 @@ For now, If your sign-up for a "Free Account", We promise to send you Upgradatio
                                     <input
                                         type="radio"
                                         name="plan"
+                                    
                                         value={product.id}
                                         checked={selected === product.id}
                                         onChange={() => setSelected(product.id)}

@@ -2,12 +2,19 @@ import React, { useRef, useState, useEffect } from "react";
 import styles from "../EditProfile/EditProfile.module.css";
 import { API_BASE_URL, getUserDetails, updateUserDetails } from "../../Store/apiStore";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
+import decodeToken from "../../lib/decodeToken";
+import PopUp from "../Popup/Popup";
 
 const EditProfile = () => {
   const fileInputRef = useRef(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
-
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupType, setPopupType] = useState(null);
+    const [popupMessage, setPopupMessage] = useState("");
+  const token = localStorage.getItem("token");
+  const decodeTokenData = decodeToken(token);
+  const userId = decodeTokenData?.id;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,41 +32,42 @@ const EditProfile = () => {
     setIsUploadModalOpen(false);
   };
 
-const handleUpload = (imageUrl) => {
-  setUploadedImage(imageUrl);
-  setFormData((prev) => ({
-    ...prev,
-    profilePicture: imageUrl,
-  }));
-};
-
-
- useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      setLoading(true);
-      const user = await getUserDetails();
-      setFormData({
-        name: user.name || "",
-        email: user.email || "",
-        phone: user.phone || "",
-        address: user.address || "",
-        profilePicture: `${API_BASE_URL?.split("/api")[0]}${user?.profilePicture?.split("public")[1]
-                      }`  , 
-      });
-     console.log(user) 
-    }
-    catch (error) {
-      console.error(error);
-      alert("Failed to load user details.");
-    } finally {
-      setLoading(false);
-    }
+  const handleUpload = (imageUrl) => {
+    setUploadedImage(imageUrl);
+    setFormData((prev) => ({
+      ...prev,
+      profilePicture: imageUrl,
+    }));
   };
 
-  fetchUser();
-}, []);
-  
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const user = await getUserDetails(userId);
+        console.log(user)
+        setFormData({
+          name: user.name || "",
+          email: user.email || "",
+          phone: user.phone || "",
+          address: user.address || "",
+          profilePicture: `${API_BASE_URL?.split("/api")[0]}${user?.profilePicture?.split("public")[1]
+            }`,
+        });
+        console.log(user)
+      }
+      catch (error) {
+        console.error(error);
+        alert("Failed to load user details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,20 +77,29 @@ const handleUpload = (imageUrl) => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      await updateUserDetails({
+      await updateUserDetails(userId,{
+       
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         address: formData.address,
       });
-      alert("Profile updated successfully!");
+      setShowPopup(true)
+      setPopupType("success")
+      setPopupMessage("Profile updated successfully!")
     } catch (error) {
       console.error(error);
-      alert("Failed to update profile.");
+        setShowPopup(true)
+      setPopupType("failed")
+      setPopupMessage("Failed to update profile.")
+  
     } finally {
       setLoading(false);
     }
   };
+  const handleClosePopup=()=>{
+   setShowPopup(false) 
+  }
 
   return (
     <div className={styles.card}>
@@ -92,13 +109,13 @@ const handleUpload = (imageUrl) => {
           style={{ all: "unset", cursor: "pointer" }}
         >
           <img
-  src={
-    uploadedImage ||
-    formData.profilePicture || 
-    "Images/editProfile.png"
-  }
-  alt="Profile"
-/>
+            src={
+              uploadedImage ||
+              formData.profilePicture ||
+              "Images/editProfile.png"
+            }
+            alt="Profile"
+          />
 
           <span className={styles.editIcon}>
             <img src="Svg/edit-icon.svg" alt="edit" />
@@ -168,16 +185,23 @@ const handleUpload = (imageUrl) => {
         </div>
       </div>
       {isUploadModalOpen && (
-      <UploadProfile
-  onClose={closeUploadModal}
-  onUpload={handleUpload}
-  currentProfile={
-    uploadedImage ||
-    formData.profilePicture ||
-    "Images/editProfile.png"
-  }
-/>
+        <UploadProfile
+          onClose={closeUploadModal}
+          onUpload={handleUpload}
+          currentProfile={
+            uploadedImage ||
+            formData.profilePicture ||
+            "Images/editProfile.png"
+          }
+        />
 
+      )}
+        {showPopup && (
+        <PopUp
+          type={popupType}
+          onClose={() =>handleClosePopup()}
+          message={popupMessage}
+        />
       )}
     </div>
   );

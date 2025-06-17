@@ -5,19 +5,22 @@ import Loader2 from "../Loader2/Loader2";
 import Modal from '../Modal2/Modal2'
 import decodeToken from "../../lib/decodeToken";
 import { fetchUserDetails } from "../../Store/apiStore";
+import PopUp from "../Popup/Popup";
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selected, setSelected] = useState("free-trial");
+  const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
   const [show, setShow] = useState(false)
   const [close, setClose] = useState(false)
   const [data, setData] = useState([])
-  console.log(data)
+   const [showPopup, setShowPopup] = useState(false);
+   const [popupType, setPopupType] = useState(null);
+   const [popupMessage, setPopupMessage] = useState("");
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
@@ -57,7 +60,12 @@ const Plan = () => {
 
 
   const handleContinue = () => {
-
+  if (!selected) {
+    setShowPopup(true)
+    setPopupType("failed")
+    setPopupMessage("Please select a plan before continuing.")
+    return;
+  }
     if (selected === "free-trial") {
       navigate("/business-details");
       return;
@@ -71,6 +79,7 @@ const Plan = () => {
     })
 
   }, [userId])
+    const handleClosePopup = () => {}
   if (loading) return <div className={styles.status}><Loader2 /></div>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
@@ -119,6 +128,7 @@ const Plan = () => {
             <input
               type="radio"
               name="plan"
+             
               value="free-trial"
               checked={selected === "free-trial"}
               onChange={() => setSelected("free-trial")}
@@ -205,10 +215,17 @@ const Plan = () => {
       </div>
 
       {/* Continue button */}
-      <div className={styles.btnTheme} onClick={handleContinue}>
-        <img src="svg/svg-theme.svg" alt="" />
-        <p>Continue</p>
+      <div className={styles.btnTheme} onClick={handleContinue}   style={{ opacity: selected ? 1 : 0.6, cursor: selected ? "pointer" : "not-allowed" }}>
+        <img src="svg/svg-theme.svg" alt=""  />
+        <p >Continue</p>
       </div>
+       {showPopup && (
+        <PopUp
+          type={popupType}
+          onClose={() =>handleClosePopup()}
+          message={popupMessage}
+        />
+      )}
     </div>
   );
 };

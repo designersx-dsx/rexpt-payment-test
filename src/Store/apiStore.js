@@ -189,12 +189,10 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
   }
 };
 
-export const getUserDetails = async () => {
-  const userId = sessionStorage.getItem("userId");
-  if (!userId) throw new Error("User ID not found in sessionStorage");
-
+export const getUserDetails = async (userId) => {
   try {
     const response = await api.get(`/endusers/users/${userId}`);
+    console.log(response,"response")
     return response.data;
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -202,10 +200,7 @@ export const getUserDetails = async () => {
   }
 };
 
-export const updateUserDetails = async (updateData) => {
-  const userId = sessionStorage.getItem("userId");
-  if (!userId) throw new Error("User ID not found in sessionStorage");
-
+export const updateUserDetails = async (userId,updateData) => {
   try {
     const response = await api.put(`/endusers/users/${userId}`, updateData);
     return response.data;

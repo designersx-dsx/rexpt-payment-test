@@ -628,8 +628,8 @@ const AgentDashboard = () => {
                             if (agentStatus === true) {
                               handleInactiveAgentAlert();
                             } else {
-                              // setIsAssignNumberModal(true);
-                              setIsAssignModalOpen(true)
+                              setIsAssignNumberModal(true);
+                              // setIsAssignModalOpen(true)
                             }
                           }}
                         // onClick={() => setIsAssignModalOpen(true)}
