@@ -352,8 +352,20 @@ function CallTransfer() {
 
         setTransfers(updated);
     };
+    const hasDuplicateEntry = (transfers) => {
+        const seen = new Set();
+        for (const { condition, dialCode, phone } of transfers) {
+            const key = `${condition?.trim().toLowerCase()}-${dialCode?.trim()}-${phone?.trim()}`;
+            if (seen.has(key)) {
+                return key; // Return the duplicate key
+            }
+            seen.add(key);
+        }
+        return null; // No duplicate
+    };
     const handleSubmit = async () => {
         try {
+
             // Check for duplicate conditions
             const conditionCounts = {};
             for (const transfer of transfers) {
@@ -368,6 +380,35 @@ function CallTransfer() {
                     }
                 }
             }
+            const duplicateKey = hasDuplicateEntry(transfers);
+            if (duplicateKey) {
+                setShowPopup(true);
+                setPopupType("failed");
+                const [condition, dialCode, phone] = duplicateKey.split("-");
+                setPopupMessage(`Duplicate entry found: Department '${condition}' with number +${dialCode}${phone} already exists.`);
+                return;
+            }
+
+            //  Add this validation block here
+            for (const [index, transfer] of transfers.entries()) {
+                const condition = transfer.condition?.trim();
+                const phone = transfer.phone?.trim();
+                const dialCode = transfer.dialCode?.trim();
+                if (!condition) {
+                    setShowPopup(true);
+                    setPopupType("failed");
+                    setPopupMessage(`Department is required for entry ${index + 1}.`);
+                    return;
+                }
+
+                if (!transfer.phone?.trim() || !transfer.dialCode?.trim()) {
+                    setShowPopup(true);
+                    setPopupType("failed");
+                    setPopupMessage(`Phone number and dial code are required for entry ${index + 1}.`);
+                    return;
+                }
+            }
+
             setLoading(true)
             const timestamp = Date.now();
             // Create a reusable prompt for dynamic transfer routing
@@ -390,7 +431,7 @@ function CallTransfer() {
                 speak_after_execution: true
             };
             const formattedTransfers = prepareTransfersWithDialCode(transfers)
-            console.log(formattedTransfers, "formattedTransfers")
+
             // Generate dynamic variables from formattedTransfers
             const salesEntry = transfers.find(t => t.condition.toLowerCase() === 'sales');
             const billingEntry = transfers.find(t => t.condition.toLowerCase() === 'billing');
@@ -412,6 +453,7 @@ function CallTransfer() {
                 general_tools: [transferTool],
                 default_dynamic_variables: dynamicVars
             };
+
             // Call your API to update the LLM config
             await updateLlm(llmId, payload);
             await addGeneralTools(llmId, formattedTransfers)
