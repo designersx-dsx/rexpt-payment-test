@@ -42,9 +42,8 @@ const AgentDashboard = () => {
     setCurrentAgentId,
     getAgentById,
   } = useAgentStore();
- 
-  
-const agentStatus=agentData?.agent?.isDeactivated
+
+  const agentStatus = agentData?.agent?.isDeactivated;
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
   );
@@ -491,7 +490,6 @@ const agentStatus=agentData?.agent?.isDeactivated
     );
   };
 
-
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -647,7 +645,12 @@ const agentStatus=agentData?.agent?.isDeactivated
                   {/* <h3>Health <span> /Categories</span></h3> */}
                   <h3>
                     {agentData?.business?.businessType || "NA"}
-                    <span>  {agentData?.business?.businessType=="Other" ? `/${agentData?.business?.customBuisness}`:"/ Categories"}</span>
+                    <span>
+                      {" "}
+                      {agentData?.business?.businessType == "Other"
+                        ? `/${agentData?.business?.customBuisness}`
+                        : "/ Categories"}
+                    </span>
                   </h3>
                 </div>
 
@@ -667,34 +670,41 @@ const agentStatus=agentData?.agent?.isDeactivated
                         // return filteredUrls.map((src, index) => (
                         //   <div key={index}>{src.url}</div>
                         // ));
-                          return filteredUrls[filteredUrls?.length-1]?.url || "NA";
+                        return (
+                          filteredUrls[filteredUrls?.length - 1]?.url || "NA"
+                        );
                       } else {
                         return <div>NA</div>;
                       }
                     })()}
                   </span>
                 </h2>
-                <div className={styles.google}>
-                  <img src="images/google-icon.png" alt="google-icon" />
-                  <p>
-                    <span style={{ fontSize: "12px" }}>
-                      {(() => {
-                        const filteredUrls =
-                          agentData?.knowledgeBase?.knowledge_base_sources?.filter(
-                            (src) => src?.url && src.url.includes("google.com")
-                          );
-                        if (filteredUrls && filteredUrls?.length > 0) {
-                          // return filteredUrls.map((src, index) => (
-                          //   <div key={index}>{src.url}</div>
-                          // ));
-                          return filteredUrls[filteredUrls?.length-1]?.url || "NA";
-                        } else {
-                          return <div>NA</div>;
-                        }
-                      })()}
-                    </span>
-                  </p>
-                </div>
+             <div className={styles.google}>
+  <img src="images/google-icon.png" alt="google-icon" />
+  <p>
+    <span style={{ fontSize: "12px" }}>
+      {(() => {
+        try {
+          const agentId = agentData?.agent?.agent_id;
+          const cache = JSON.parse(sessionStorage.getItem("multiAgentCache") || "{}");
+          const googleUrl = cache?.data?.[agentId]?.agentData?.business?.googleUrl;
+          return googleUrl ? (
+            <a href={googleUrl} target="_blank" rel="noopener noreferrer">
+              {googleUrl}
+            </a>
+          ) : (
+            "NA"
+          );
+        } catch (err) {
+          console.error("Error reading googleUrl from sessionStorage:", err);
+          return "NA";
+        }
+      })()}
+    </span>
+  </p>
+</div>
+
+
                 <div className={styles.address}>
                   <img src="svg/location.svg" alt="location" />
                   <p>
@@ -1161,19 +1171,19 @@ const agentStatus=agentData?.agent?.isDeactivated
                       aria-label="Edit API Key"
                     >
                       <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="20"
-                      width="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 20h9" />
-                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-                    </svg>
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="20"
+                        width="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                      </svg>
                     </button>
                   )}
                 </div>
@@ -1315,14 +1325,13 @@ const agentStatus=agentData?.agent?.isDeactivated
               onClose={handleCloseAssignNumberModal}
             />
           )}
-           {popupMessage && (
-                  <PopUp
-                    type={popupType}
-                    message={popupMessage}
-                    onClose={() => setPopupMessage("")}
-                   
-                  />
-                )}
+          {popupMessage && (
+            <PopUp
+              type={popupType}
+              message={popupMessage}
+              onClose={() => setPopupMessage("")}
+            />
+          )}
           <Footer2 />
         </>
       )}

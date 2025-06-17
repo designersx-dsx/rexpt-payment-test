@@ -438,10 +438,11 @@ useEffect(() => {
                     }}
                   >
                     {isResendDisabled && resendTimer > 0
-                      ? `Resend One time Password in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
-                      : "Resend One time Password"}
+                      ? `Resend One Time Password in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
+                      : "Resend One Time Password"}
                   </button>
                 </div>
+                
 
 
                 <div className={styles.Btn} onClick={handleLoginClick}>

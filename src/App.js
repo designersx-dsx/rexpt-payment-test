@@ -28,6 +28,7 @@ import CallTransfer from "./Component/CallTransfer/CallTransfer";
 import CallDetails from "./Component/CallDetails/CallDetails";
 import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT"
 import CalInfo from "./Component/Dashboard/CalInfo";
+import EditProfile from "./Component/EditProfile/EditProfile";
 import { useEffect } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 function App() {
@@ -75,8 +76,8 @@ function App() {
                       <CalInfo />
                     </SecureRoute>
                   }   >
-                    
-                  </Route>
+
+                </Route>
                 <Route path="/" element={<Start />} />
                 <Route path="/signup" element={<SignUp />} />
 
@@ -100,9 +101,9 @@ function App() {
                 <Route
                   path="/about-business-next"
                   element={
-                
+                    <SecureRoute>
                       <BusinessServicesNEXT />
-                
+                    </SecureRoute>
                   }
                 />
                 <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
@@ -165,7 +166,7 @@ function App() {
                   }
                 />
                 <Route path="/totalcall-list" element={<SecureRoute><TotalsCallsList /></SecureRoute>} />
-                <Route path="/call-transfer" element={<CallTransfer />} />
+                <Route path="/call-transfer" element={<SecureRoute><CallTransfer /></SecureRoute>} />
                 <Route path="/call-details" element={<SecureRoute><CallDetails /></SecureRoute>} />
                 <Route
                   path="/business-services"
@@ -202,6 +203,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                <Route path="/edit-profile" element={<EditProfile />} />
               </Routes>
             </div>
           </BrowserRouter>

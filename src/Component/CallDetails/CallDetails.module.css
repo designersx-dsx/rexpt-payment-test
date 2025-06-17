@@ -101,8 +101,22 @@
     font-weight: 800;
 }
 
-.status {
+.green {
     background-color: #1AA850;
+    border-radius: 4px;
+    color: #fff;
+    padding: 2px 12px;
+    font-size: 14px;
+}
+.red {
+      background-color: red;
+    border-radius: 4px;
+    color: #fff;
+    padding: 2px 12px;
+    font-size: 14px;
+}
+.yellow {
+    background-color: #FFB800;
     border-radius: 4px;
     color: #fff;
     padding: 2px 12px;

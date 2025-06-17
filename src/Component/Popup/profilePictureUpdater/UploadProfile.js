@@ -391,8 +391,8 @@ const UploadProfile = ({ onClose, onUpload }) => {
       reader.onloadend = () => {
         setUploadedImage(reader.result);
         setCapturedImage(null);
-        stopWebcamStream(); // stop if uploading while webcam is open
-        setIsCropping(true); // enable crop view
+        stopWebcamStream();
+        setIsCropping(true); 
         setIsWebcamOpen(false);
       };
       reader.readAsDataURL(compressed);
@@ -406,7 +406,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
     if (imageSrc) {
       setCapturedImage(imageSrc);
       setUploadedImage(null);
-      setIsCropping(true); // enable crop view
+      setIsCropping(true); 
 
 
       // Convert to Blob
