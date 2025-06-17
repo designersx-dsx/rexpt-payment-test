@@ -59,11 +59,6 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Landscaping-icon.svg",
     },
-    // {
-    //   type: " Architect",
-    //   subtype: "Your Journey Begins Here",
-    //   icon: "svg/Architect-icon.svg",
-    // },
     {
       type: "Interior Designer",
       subtype: "Your Journey Begins Here",
@@ -139,16 +134,16 @@ const BusinessDetails = () => {
   };
 
   const validateBusinessName = (value) => {
-    if (!value.trim()) return "Business name is required.";
+    if (!value?.trim()) return "Business name is required.";
     if (containsEmoji(value)) return "Emojis are not allowed in business name.";
     if (/[^a-zA-Z0-9\s.'-]/.test(value))
       return "Business name contains invalid characters.";
-    if (value.trim().length < 2)
+    if (value?.trim().length < 2)
       return "Business name must be at least 2 characters.";
     return "";
   };
   const validateBusinessSize = (value) => {
-    if (!value.trim()) return "Business size is required.";
+    if (!value?.trim()) return "Business size is required.";
     const allowedValues = [
       "1 to 10 employees",
       "10 to 50 employees",
@@ -158,7 +153,7 @@ const BusinessDetails = () => {
       "500 to 1000 employees",
       "1000+ employees"
     ];
-    if (!allowedValues.includes(value)) {
+    if (!allowedValues?.includes(value)) {
       return "Invalid business size selected.";
     }
     return "";
