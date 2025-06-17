@@ -6,10 +6,10 @@ export const getAgentPrompt = ({
   roleTitle = "",
   ...vars
 }) => {
-  const normalizedIndustry = industryKey.trim().toLowerCase();
+  const normalizedIndustry = industryKey.trim();
+  console.log("Normalized Industry:", normalizedIndustry);
   const industryPrompts = agentPromptTemplates[normalizedIndustry] || agentPromptTemplates.default;
   const promptGenerator = industryPrompts[roleTitle];
-
   if (!promptGenerator) {
     console.warn(`No prompt found for role "${roleTitle}" in industry "${industryKey}"`);
     return "";

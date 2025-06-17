@@ -59,7 +59,7 @@ const BusinessDetails = () => {
       icon: "svg/Estate-icon.svg",
     },
     {
-      type: "Landscaping Company",
+      type: "Restaurant",
       subtype: "Your Journey Begins Here",
       icon: "svg/Landscaping-icon.svg",
     },
@@ -72,6 +72,11 @@ const BusinessDetails = () => {
       type: "Saloon",
       subtype: "Your Journey Begins Here",
       icon: "svg/Saloon-icon.svg",
+    },
+      {
+      type: "Landscaping Company",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Landscaping-icon.svg",
     },
     {
       type: "Dentist",

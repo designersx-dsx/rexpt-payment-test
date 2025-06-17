@@ -116,7 +116,7 @@ Always maintain a tone that matches the following persona:
 
 Let’s begin assisting the customer!
 `;
-    //     const generalReceptionistPrompt = `
+    //const generalReceptionistPrompt = `
     // You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the ${businessType} category. Specifically, you are aware of the ${commaSeparatedServices} that ${business?.businessName} offers.
     // You are aware that ${business?.businessName} provides services in [ ${aboutBusinessForm?.businessUrl},${aboutBusinessForm?.googleListing},${aboutBusinessForm?.note},${aboutBusinessForm?.aboutBusiness}, as defined in Knowledge Base], and you stay updated on additional information provided like [MORE ABOUT THE BUSINESS  ${aboutBusinessForm?.businessUrl},${aboutBusinessForm?.googleListing},${aboutBusinessForm?.note},${aboutBusinessForm?.aboutBusiness}, as defined in Knowledge Base].
     // Your role is to simulate a warm, patient, and reliable human receptionist for ${business?.businessName}. Every interaction must be handled with clarity, precision, and empathy.
@@ -472,20 +472,23 @@ End Call: If the caller is satisfied, invoke end_call function.
             ? salesReceptionistPrompt
             : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
     
-// const filledPrompt = getAgentPrompt({
-//   industryKey: "restaurant",   // ← dynamic from businessType
-//   roleTitle: "General Receptionist", // ← dynamic from sessionStorage or UI
-//   agentName: "Alex",
-//   agentGender: "Female",
-//   business: {
-//     businessName: "Tasty Bites"
-//   },
-//   languageSelect: "English",
-//   businessType,
-//   aboutBusinessForm,
-// });
+console.log('prompt1', business?.businessType)
+    const filledPrompt = getAgentPrompt({
+      industryKey: business?.businessType,   // ← dynamic from businessType
+      roleTitle: role_title, // ← dynamic from sessionStorage or UI
+      agentName: agentName,
+      agentGender: agentGender,
+      business: {
+        businessName: business?.businessName
+      },
+      languageSelect: languageSelect,
+      businessType,
+      aboutBusinessForm,
+      commaSeparatedServices
+    });
+    
 
-// console.log(filledPrompt);
+// console.log('nitish',filledPrompt);
 // return
 
 
