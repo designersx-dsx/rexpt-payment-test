@@ -496,7 +496,7 @@ const AgentDashboard = () => {
     if (agentData) {
       sessionStorage.setItem("agentDetails", JSON.stringify(agentData))
       const agentGeneralTools = (agentData.generalTools)
-      sessionStorage.setItem("agentGeneralTools", agentGeneralTools)
+      sessionStorage.setItem("agentGeneralTools", JSON.stringify(agentGeneralTools))
       navigate("/call-transfer")
     }
   }
