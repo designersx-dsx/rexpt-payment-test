@@ -34,6 +34,7 @@ const AgentDashboard = () => {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [callLoading, setCallLoading] = useState(false);
+
   const {
     agentData,
     assignedNumbers,
@@ -43,7 +44,8 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
 
-  const agentStatus = agentData?.agent?.isDeactivated;
+  const agentStatus = agentData?.agent?.isDeactivated
+
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
   );
@@ -69,7 +71,6 @@ const AgentDashboard = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
@@ -430,6 +431,7 @@ const AgentDashboard = () => {
     sessionStorage.removeItem("businessLocation");
     sessionStorage.removeItem("selectedCustomServices");
     sessionStorage.removeItem("bId");
+    sessionStorage.removeItem("selectedServices");
     localStorage.removeItem("UpdationMode");
     localStorage.removeItem("UpdationModeStepWise");
     localStorage.removeItem("agentName");
@@ -488,6 +490,17 @@ const AgentDashboard = () => {
       "Your agent is not active. Please activate your agent first."
     );
   };
+
+
+  const handleCallTransfer = () => {
+    if (agentData) {
+      sessionStorage.setItem("agentDetails", JSON.stringify(agentData))
+      const agentGeneralTools = (agentData.generalTools)
+      sessionStorage.setItem("agentGeneralTools", agentGeneralTools)
+      navigate("/call-transfer")
+    }
+  }
+
 
   return (
     <div>
@@ -615,10 +628,11 @@ const AgentDashboard = () => {
                             if (agentStatus === true) {
                               handleInactiveAgentAlert();
                             } else {
-                              setIsAssignNumberModal(true);
+                              // setIsAssignNumberModal(true);
+                              setIsAssignModalOpen(true)
                             }
                           }}
-                          // onClick={() => setIsAssignModalOpen(true)}
+                        // onClick={() => setIsAssignModalOpen(true)}
                         >
                           Assign Number
                         </div>
@@ -644,12 +658,14 @@ const AgentDashboard = () => {
                   {/* <h3>Health <span> /Categories</span></h3> */}
                   <h3>
                     {agentData?.business?.businessType || "NA"}
+
                     <span>
                       {" "}
                       {agentData?.business?.businessType == "Other"
                         ? `/${agentData?.business?.customBuisness}`
                         : "/ Categories"}
                     </span>
+
                   </h3>
                 </div>
 
@@ -669,9 +685,11 @@ const AgentDashboard = () => {
                         // return filteredUrls.map((src, index) => (
                         //   <div key={index}>{src.url}</div>
                         // ));
+
                         return (
                           filteredUrls[filteredUrls?.length - 1]?.url || "NA"
                         );
+
                       } else {
                         return <div>NA</div>;
                       }
@@ -702,6 +720,7 @@ const AgentDashboard = () => {
     </span>
   </p>
 </div>
+
 
 
                 <div className={styles.address}>
@@ -886,7 +905,7 @@ const AgentDashboard = () => {
               </div>
               <div
                 className={styles.managementItem}
-                onClick={() => setShowModal(true)}
+                onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1057,7 +1076,7 @@ const AgentDashboard = () => {
 
                 <span className={styles.statDetail}>
                   {agentData?.avgCallTime?.minutes ||
-                  agentData?.avgCallTime?.seconds ? (
+                    agentData?.avgCallTime?.seconds ? (
                     <>
                       {agentData?.avgCallTime?.minutes}
                       <span className={styles.MinFont}>m</span>
@@ -1329,6 +1348,7 @@ const AgentDashboard = () => {
               type={popupType}
               message={popupMessage}
               onClose={() => setPopupMessage("")}
+
             />
           )}
           <Footer2 />
@@ -1444,9 +1464,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     console.log("Final cleaned services to store:", cleanedCustomServices);

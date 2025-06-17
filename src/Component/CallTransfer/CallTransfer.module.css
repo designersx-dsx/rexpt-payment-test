@@ -181,3 +181,11 @@
   color: #bebebe;
   font-size: 14px;
 }
+.dialCodeInput {
+  width: 40px;
+  border: none;
+  margin-left: 5px;
+  outline: none;
+  text-align: center;
+  background: transparent;
+}

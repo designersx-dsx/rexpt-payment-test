@@ -14,7 +14,9 @@ import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
 import { createAgent, listAgents, updateAgent } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
+import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 const Step = () => {
+    const timestamp = Date.now();
     const navigate = useNavigate();
     const sliderRef = useRef(null);
     const [currentStep, setCurrentStep] = useState(0);
@@ -34,7 +36,8 @@ const Step = () => {
     const { setHasFetched } = useDashboardStore();
     const EditingMode = localStorage.getItem("UpdationMode");
     const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
-
+    const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
+    
     useEffect(() => {
         if (localStorage.getItem('UpdationMode') == "ON") {
             setSelectedLang(localStorage.getItem("agentLanguage"))
@@ -826,6 +829,7 @@ Important Notes:
                             description: "End the call with user.",
                         },
 
+
                     ],
                     states: [
                         {
@@ -924,9 +928,6 @@ Important Notes:
                                 choices: ["positive", "neutral", "negative"]
                             }
                         ],
-
-
-
                     };
                     // Create Agent Creation
                     try {
@@ -1020,6 +1021,25 @@ Important Notes:
                 setLoading(true)
                 const agentConfig = {
                     general_prompt: prompt1,
+                    general_tools: [
+                        {
+                            type: "transfer_call",
+                            name: `transfer_support_${timestamp}`, 
+                            transfer_destination: {
+                                type: "inferred",
+                                prompt: "Based on the conversation, decide the best phone number to transfer this call to using {{transfer_number}}." // 👈 required field
+                            },
+                            transfer_option: {
+                                type: "cold_transfer", 
+                                public_handoff_option: {
+                                    type: "say_message", 
+                                    message: "Please hold while I transfer your call to support."
+                                }
+                            },
+                            speak_during_execution: true,
+                            speak_after_execution: true
+                        }
+                    ],
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                 };
                 const llm_id = localStorage.getItem('llmId')
@@ -1186,6 +1206,27 @@ Important Notes:
     useEffect(() => {
         fetchAgentCountFromUser()
     }, [])
+    
+        useEffect(() => {
+          if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+            setShowPopup(true);
+            setPopupType('failed');
+            setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+          }
+        }, [CheckingUserLimit, isLimitExceeded]);
+      
+        if (CheckingUserLimit) return <p></p>;
+    
+          const handleClosePopup = () => {
+          if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+          navigate('/dashboard');
+          setShowPopup(false);
+          }else{
+            setShowPopup(false);
+          }
+        }
+
+
     return (
         <div className={styles.container}>
             <StepHeader title={stepTitles[currentStep]} />
@@ -1330,7 +1371,7 @@ Important Notes:
             {showPopup && (
                 <PopUp
                     type={popupType}
-                    onClose={() => setShowPopup(false)}
+                    onClose={() => handleClosePopup()}
                     message={popupMessage}
                 />
             )}
