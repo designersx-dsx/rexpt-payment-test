@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from '../../Component/CallTransfer/CallTransfer.module.css';
-import { useAgentCreator } from '../../hooks/useAgentCreator';
-import Loader from '../Loader/Loader';
-import PopUp from '../Popup/Popup';
-import { API_BASE_URL } from '../../Store/apiStore';
-import decodeToken from '../../lib/decodeToken';
-import axios from "axios"
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "../../Component/CallTransfer/CallTransfer.module.css";
+import { useAgentCreator } from "../../hooks/useAgentCreator";
+import Loader from "../Loader/Loader";
+import PopUp from "../Popup/Popup";
+import { API_BASE_URL } from "../../Store/apiStore";
+import decodeToken from "../../lib/decodeToken";
+import axios from "axios";
 const AboutBusinessNext = () => {
   const navigate = useNavigate();
-  const [services, setServices] = useState([{ service: '' }]);
-  const stepEditingMode = localStorage.getItem('UpdationModeStepWise')
-  const sessionBusinessiD = sessionStorage.getItem("bId")
+  const [services, setServices] = useState([{ service: "" }]);
+  const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
+  const sessionBusinessiD = sessionStorage.getItem("bId");
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
   const [Loading, setLoading] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
-  const EditingMode = localStorage.getItem('UpdationMode')
+  const EditingMode = localStorage.getItem("UpdationMode");
   const [email, setEmail] = useState("");
   // Error states
   const [emailError, setEmailError] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const setHasFetched = true
-  const token = localStorage.getItem('token');
+  const setHasFetched = true;
+  const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
   const { handleCreateAgent } = useAgentCreator({
-    stepValidator: () => "businesServices", // or custom validation
+    stepValidator: () => "businesServices",
     setLoading,
     setPopupMessage,
     setPopupType,
@@ -34,33 +34,34 @@ const AboutBusinessNext = () => {
     navigate,
     setHasFetched,
   });
-  const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
-  const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
-  // const customServices = sessionStorage.getItem('selectedCustomServices') || []; 
-  const businesServices = JSON.parse(sessionStorage.getItem('businesServices'))
-  const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
+  const locationData = JSON.parse(sessionStorage.getItem("businessLocation"));
+  const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
+  // const customServices = sessionStorage.getItem('selectedCustomServices') || [];
+  const businesServices = JSON.parse(sessionStorage.getItem("businesServices"));
+  const rawCustomServices =
+    JSON.parse(sessionStorage.getItem("selectedCustomServices")) || [];
   useEffect(() => {
-    let savedServices = sessionStorage.getItem('selectedCustomServices');
+    let savedServices = sessionStorage.getItem("selectedCustomServices");
     try {
       savedServices = JSON.parse(savedServices);
-      if (typeof savedServices === 'string') {
+      if (typeof savedServices === "string") {
         savedServices = JSON.parse(savedServices);
       }
 
       if (Array.isArray(savedServices)) {
         setServices(savedServices);
-        setEmail(businesServices.email)
+        setEmail(businesServices.email);
       } else {
         console.warn("Custom services not an array:", savedServices);
       }
     } catch (err) {
       console.error("Error parsing selectedCustomServices:", err);
-      setServices([{ service: '' }]);
+      setServices([{ service: "" }]);
     }
   }, []);
 
   const handleAddService = () => {
-    setServices([...services, { service: '' }]);
+    setServices([...services, { service: "" }]);
   };
 
   const handleServiceChange = (index, value) => {
@@ -86,27 +87,30 @@ const AboutBusinessNext = () => {
       ...previous,
       email,
     };
-    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+    sessionStorage.setItem(
+      "businesServices",
+      JSON.stringify(updatedBusinessServices)
+    );
     const filteredServices = services
-      .map(item => item.service.trim())
-      .filter(service => service !== '')
-      .map(service => ({ service }));
+      .map((item) => item.service.trim())
+      .filter((service) => service !== "")
+      .map((service) => ({ service }));
     try {
       setLoading(true);
       const cleanedCustomServices = rawCustomServices
-        .map(item => item?.service?.trim())
+        .map((item) => item?.service?.trim())
         .filter(Boolean)
-        .map(service => ({ service }));
+        .map((service) => ({ service }));
       let response;
-      if (localStorage.getItem('UpdationMode') != "ON") {
+      if (localStorage.getItem("UpdationMode") != "ON") {
         response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
           userId,
           businessName: businessDetails?.businessName,
           businessSize: businessDetails.businessSize,
           businessType: businessDetails.businessType,
-          customBuisness: businessDetails?.customBuisness || "",   
+          customBuisness: businessDetails?.customBuisness || "",
           buisnessEmail: email || businessDetails?.email,
-          // buisnessService: [...businessDetails?.selectedService, ...customServices],  
+          // buisnessService: [...businessDetails?.selectedService, ...customServices],
           buisnessService: cleanServiceArray(),
           customServices: filteredServices,
           // customServices: cleanedCustomServices,
@@ -118,92 +122,98 @@ const AboutBusinessNext = () => {
           // zip: locationData.zip,
         });
       } else {
-        response = await axios.patch(`${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`, {
-          businessName: businessDetails?.businessName,
-          businessSize: businessDetails.businessSize,
-          businessType: businessDetails.businessType,
-          buisnessEmail: email || businessDetails?.email,
-          customBuisness: businessDetails?.customBuisness || "",   //custome business name
-          // buisnessService: [...businessDetails?.selectedService, ...customServices], 
-          buisnessService: cleanServiceArray(),
-          customServices: filteredServices,
-          // customServices: cleanedCustomServices,
-          // address1: locationData.address1,
-          // address2: locationData.address2,
-          // city: locationData.city,
-          // state: locationData.state,
-          // country: locationData.country,
-          // zip: locationData.zip,
-        });
+        response = await axios.patch(
+          `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`,
+          {
+            businessName: businessDetails?.businessName,
+            businessSize: businessDetails.businessSize,
+            businessType: businessDetails.businessType,
+            buisnessEmail: email || businessDetails?.email,
+            customBuisness: businessDetails?.customBuisness || "", //custome business name
+            // buisnessService: [...businessDetails?.selectedService, ...customServices],
+            buisnessService: cleanServiceArray(),
+            customServices: filteredServices,
+            // customServices: cleanedCustomServices,
+            // address1: locationData.address1,
+            // address2: locationData.address2,
+            // city: locationData.city,
+            // state: locationData.state,
+            // country: locationData.country,
+            // zip: locationData.zip,
+          }
+        );
       }
 
       const id = response.data.businessId;
       sessionStorage.setItem(
-        'businessId',
+        "businessId",
         JSON.stringify({
           businessId: id,
         })
       );
-      sessionStorage.setItem(
-        'bId',
-        id
-      );
-      setPopupType('success');
-      setPopupMessage('Business details added successfully');
+      sessionStorage.setItem("bId", id);
+      setPopupType("success");
+      setPopupMessage("Business details added successfully");
       setShowPopup(true);
 
       setTimeout(() => {
-        sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
-        navigate('/about-business')
+        sessionStorage.setItem(
+          "selectedCustomServices",
+          JSON.stringify(filteredServices)
+        );
+        navigate("/about-business");
       }, 2000);
     } catch (error) {
-      setPopupType('failed');
-      setPopupMessage('An error occurred while adding business details.');
+      setPopupType("failed");
+      setPopupMessage("An error occurred while adding business details.");
       setShowPopup(true);
       console.error(error);
     } finally {
       setTimeout(() => setLoading(false), 1000);
     }
-
   };
 
   const handleSkip = () => {
-    // navigate('/business-locations');
-    navigate('/about-business')
+    handleSubmit();
+    navigate("/about-business");
   };
+
   const handleSaveEdit = (e) => {
     e.preventDefault();
     const filteredServices = services
-      .map(item => item.service.trim())
-      .filter(service => service !== '')
-      .map(service => ({ service }));
-    sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
+      .map((item) => item.service.trim())
+      .filter((service) => service !== "")
+      .map((service) => ({ service }));
+    sessionStorage.setItem(
+      "selectedCustomServices",
+      JSON.stringify(filteredServices)
+    );
     handleCreateAgent();
-
   };
 
   const handleRemoveService = (index) => {
     const updatedServices = services.filter((_, i) => i !== index);
-    setServices(updatedServices.length ? updatedServices : [{ service: '' }]);
+    setServices(updatedServices.length ? updatedServices : [{ service: "" }]);
 
     let filteredServices = services
-      .map(item => item?.service.trim())
-      .filter(service => service !== '')
-      .map(service => ({ service }));
+      .map((item) => item?.service.trim())
+      .filter((service) => service !== "")
+      .map((service) => ({ service }));
 
     filteredServices = services?.filter((_, i) => i !== index);
-    sessionStorage.setItem('selectedCustomServices', JSON.stringify(filteredServices));
+    sessionStorage.setItem(
+      "selectedCustomServices",
+      JSON.stringify(filteredServices)
+    );
   };
 
   return (
     <>
       {/* <HeaderBar></HeaderBar> */}
       <div className={styles.CallTransferMain1}>
-
-   
         {businessDetails?.businessType === "Other" && (
           <div className={styles.inputGroup}>
-            <h2 >Business Email Address</h2>
+            <h2>Business Email Address</h2>
             <div className={styles.phoneInput}>
               <input
                 type="email"
@@ -217,14 +227,16 @@ const AboutBusinessNext = () => {
               />
             </div>
             {emailError && (
-              <p style={{ color: 'red', marginTop: '5px' }}>{emailError}</p>
+              <p style={{ color: "red", marginTop: "5px" }}>{emailError}</p>
             )}
             {isEmailVerified && (
-              <p style={{ color: 'green', marginTop: '5px' }}>Email verified successfully!</p>
+              <p style={{ color: "green", marginTop: "5px" }}>
+                Email verified successfully!
+              </p>
             )}
           </div>
         )}
-     <div className={styles.headrPart}>
+        <div className={styles.headrPart}>
           <h2>Add More Services</h2>
           <img
             src="svg/Add-icon.svg"
@@ -235,7 +247,6 @@ const AboutBusinessNext = () => {
         </div>
         {services.map((item, index) => (
           <>
-
             <div key={index} className={styles.card}>
               <label className={styles.label}>Service Name</label>
               <div className={styles.phoneInput}>
@@ -251,7 +262,6 @@ const AboutBusinessNext = () => {
                     type="button"
                     className={styles.removeButton}
                     onClick={() => handleRemoveService(index)}
-
                   >
                     ❌
                   </button>
@@ -259,41 +269,39 @@ const AboutBusinessNext = () => {
               </div>
             </div>
           </>
-
         ))}
 
-        {/* <div onClick={handleSkip} className={styles.skipButton}>
+        <div onClick={handleSkip} className={styles.skipButton}>
           {stepEditingMode ? "" : <button>Skip for now</button>}
-        </div> */}
-        {stepEditingMode != 'ON' ?
+        </div>
+        {stepEditingMode != "ON" ? (
           <div className={styles.Btn}>
             <div type="submit">
               <div className={styles.btnTheme} onClick={handleSubmit}>
                 <img src="svg/svg-theme2.svg" alt="Submit" />
                 <p>
-                  <p>{Loading ? <Loader size={20} /> : ' Submit'}</p>
+                  <p>{Loading ? <Loader size={20} /> : " Submit"}</p>
                 </p>
               </div>
             </div>
           </div>
-          :
+        ) : (
           <div className={styles.Btn}>
             <div type="submit">
               <div className={styles.btnTheme} onClick={handleSaveEdit}>
                 <img src="svg/svg-theme2.svg" alt="Submit" />
-                <p>{Loading ? <Loader size={20} /> : 'Save Edits'}</p>
+                <p>{Loading ? <Loader size={20} /> : "Save Edits"}</p>
               </div>
             </div>
           </div>
-        }
+        )}
         <PopUp
           type={popupType}
           message={popupMessage}
-          onClose={() => setPopupMessage("")}  // Close the popup
+          onClose={() => setPopupMessage("")} // Close the popup
         />
       </div>
     </>
-
   );
 };
 
@@ -301,23 +309,25 @@ export default AboutBusinessNext;
 
 const cleanServiceArray = () => {
   try {
-
-    let raw
-    if (localStorage.getItem('UpdationMode') != "ON") {
-      raw = sessionStorage.getItem('businessDetails')
+    let raw;
+    if (localStorage.getItem("UpdationMode") != "ON") {
+      raw = sessionStorage.getItem("businessDetails");
     } else {
-      raw = raw = sessionStorage.getItem('businessDetails')
+      raw = raw = sessionStorage.getItem("businessDetails");
     }
     if (!raw) return [];
 
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed?.selectedService)) {
       return parsed.selectedService;
-    } else if (typeof parsed?.selectedService === 'object' && Array.isArray(parsed.selectedService.selectedService)) {
+    } else if (
+      typeof parsed?.selectedService === "object" &&
+      Array.isArray(parsed.selectedService.selectedService)
+    ) {
       return parsed.selectedService.selectedService;
     }
     return [];
   } catch {
     return [];
   }
-}
+};

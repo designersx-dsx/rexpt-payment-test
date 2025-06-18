@@ -1154,6 +1154,14 @@ const AgentDashboard = () => {
                     Click to connect with cal
                   </a>
                 </p>
+                 <p> Need a hand connecting with Cal.com?{" "}
+                <a
+                  href="/calinfo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                   See quick setup guide</a>
+              </p>
 
                 <div
                   style={{
