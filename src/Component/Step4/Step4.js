@@ -27,6 +27,8 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoadi
 
         if (updationMode) {
             setSelectedRole(storedAgentRole)
+        }else {
+             setSelectedRole(storedAgentRole)
         }
     }, [])
 

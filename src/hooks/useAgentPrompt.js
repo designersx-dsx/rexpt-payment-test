@@ -6,7 +6,7 @@ export const getAgentPrompt = ({
   ...vars
 }) => {
   const normalizedIndustry = industryKey.trim();
-  console.log("Normalized Industry:", normalizedIndustry);
+  console.log("Normalized Industry:", normalizedIndustry,roleTitle);
   const industryPrompts = agentPromptTemplates[normalizedIndustry] || agentPromptTemplates.default;
   const promptGenerator = industryPrompts[roleTitle];
   if (!promptGenerator) {

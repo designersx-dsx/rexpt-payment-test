@@ -445,16 +445,11 @@ Categories: ${businessData.categories}
 Opening Hours: ${businessData.hours}
   `.trim(),
     };
+console.log(knowledgeBaseText)
 
-    formData3.append(
-      "knowledge_base_texts",
-      new Blob([JSON.stringify([knowledgeBaseText])], {
-        type: "application/json",
-      })
-    );
+       formData3.append("knowledge_base_texts",JSON.stringify([knowledgeBaseText]));
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-
     formData.append("enable_auto_refresh", "true");
     formData.append("knowledge_base_texts",JSON.stringify([knowledgeBaseText]));
 
