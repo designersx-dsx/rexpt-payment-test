@@ -451,6 +451,7 @@ const Step = () => {
                 commaSeparatedServices
             });
     }, [sessionStorage.getItem("agentRole"), isRoleTitleChanged, setIsRoleTitleChanged]);
+
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     const handleContinue = async () => {
