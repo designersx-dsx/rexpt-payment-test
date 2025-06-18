@@ -352,17 +352,6 @@ function CallTransfer() {
 
         setTransfers(updated);
     };
-    const hasDuplicateEntry = (transfers) => {
-        const seen = new Set();
-        for (const { condition, dialCode, phone } of transfers) {
-            const key = `${condition?.trim().toLowerCase()}-${dialCode?.trim()}-${phone?.trim()}`;
-            if (seen.has(key)) {
-                return key; // Return the duplicate key
-            }
-            seen.add(key);
-        }
-        return null; // No duplicate
-    };
     const handleSubmit = async () => {
         try {
 
@@ -380,14 +369,7 @@ function CallTransfer() {
                     }
                 }
             }
-            const duplicateKey = hasDuplicateEntry(transfers);
-            if (duplicateKey) {
-                setShowPopup(true);
-                setPopupType("failed");
-                const [condition, dialCode, phone] = duplicateKey.split("-");
-                setPopupMessage(`Duplicate entry found: Department '${condition}' with number +${dialCode}${phone} already exists.`);
-                return;
-            }
+        
 
             //  Add this validation block here
             for (const [index, transfer] of transfers.entries()) {
@@ -410,6 +392,7 @@ function CallTransfer() {
             }
 
             setLoading(true)
+               sessionStorage.removeItem("agentGeneralTools")
             const timestamp = Date.now();
             // Create a reusable prompt for dynamic transfer routing
             const fullPrompt = `The user might ask to be transferred to departments.If they say Sales, transfer to {{sales_number}}.If they say Billing, transfer to {{billing_number}}.If they say Support, transfer to {{support_number}}.Use the appropriate number based on the conversation.`.trim();
