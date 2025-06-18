@@ -349,7 +349,7 @@ const BusinessDetails = () => {
     }
   }, [CheckingUserLimit, isLimitExceeded]);
 
-  if (CheckingUserLimit) return <p>Loading...</p>;
+  if (CheckingUserLimit) return 
   
     const handleClosePopup = () => {
       if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {

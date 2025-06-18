@@ -64,7 +64,7 @@ const CallDetails = () => {
     fetchCallDetails();
   }, [callId]);
   if (!callId) return <p>No call selected.</p>;
-  if (loading) return <p>Loading...</p>;
+  if (loading) return ;
   if (error) return <p>{error}</p>;
 
   let data = callData.call_analysis?.custom_analysis_data;

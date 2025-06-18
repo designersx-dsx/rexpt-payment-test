@@ -696,30 +696,30 @@ const AgentDashboard = () => {
                     })()}
                   </span>
                 </h2>
-             <div className={styles.google}>
-  <img src="images/google-icon.png" alt="google-icon" />
-  <p>
-    <span style={{ fontSize: "12px" }}>
-      {(() => {
-        try {
-          const agentId = agentData?.agent?.agent_id;
-          const cache = JSON.parse(sessionStorage.getItem("multiAgentCache") || "{}");
-          const googleUrl = cache?.data?.[agentId]?.agentData?.business?.googleUrl;
-          return googleUrl ? (
-            <a href={googleUrl} target="_blank" rel="noopener noreferrer">
-              {googleUrl}
-            </a>
-          ) : (
-            "NA"
-          );
-        } catch (err) {
-          console.error("Error reading googleUrl from sessionStorage:", err);
-          return "NA";
-        }
-      })()}
-    </span>
-  </p>
-</div>
+                <div className={styles.google}>
+                  <img src="images/google-icon.png" alt="google-icon" />
+                  <p>
+                    <span style={{ fontSize: "12px" }}>
+                      {(() => {
+                        try {
+                          const agentId = agentData?.agent?.agent_id;
+                          const cache = JSON.parse(sessionStorage.getItem("multiAgentCache") || "{}");
+                          const googleUrl = cache?.data?.[agentId]?.agentData?.business?.googleUrl;
+                          return googleUrl ? (
+                            <a href={googleUrl} target="_blank" rel="noopener noreferrer">
+                              {googleUrl}
+                            </a>
+                          ) : (
+                            "NA"
+                          );
+                        } catch (err) {
+                          console.error("Error reading googleUrl from sessionStorage:", err);
+                          return "NA";
+                        }
+                      })()}
+                    </span>
+                  </p>
+                </div>
 
 
 

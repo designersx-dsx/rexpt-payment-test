@@ -292,11 +292,11 @@ function AboutBusiness() {
   const isValidUrl = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" +
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
-        "((\\d{1,3}\\.){3}\\d{1,3}))" +
-        "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
-        "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
-        "(\\#[-a-zA-Z\\d_]*)?$",
+      "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" +
+      "((\\d{1,3}\\.){3}\\d{1,3}))" +
+      "(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*" +
+      "(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?" +
+      "(\\#[-a-zA-Z\\d_]*)?$",
       "i"
     );
     return !!pattern.test(url);
@@ -445,13 +445,13 @@ Categories: ${businessData.categories}
 Opening Hours: ${businessData.hours}
   `.trim(),
     };
-console.log(knowledgeBaseText)
+    console.log(knowledgeBaseText)
 
-       formData3.append("knowledge_base_texts",JSON.stringify([knowledgeBaseText]));
+    formData3.append("knowledge_base_texts", JSON.stringify([knowledgeBaseText]));
     formData.append("knowledge_base_name", knowledgeBaseName);
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     formData.append("enable_auto_refresh", "true");
-    formData.append("knowledge_base_texts",JSON.stringify([knowledgeBaseText]));
+    formData.append("knowledge_base_texts", JSON.stringify([knowledgeBaseText]));
 
     formData2.append("googleUrl", googleListing);
     formData2.append("webUrl", businessUrl.trim());
@@ -513,7 +513,7 @@ console.log(knowledgeBaseText)
 
         formData2.append("knowledge_base_id", response.data.knowledge_base_id);
       }
-       else {
+      else {
         const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
           formData,
@@ -671,24 +671,35 @@ console.log(knowledgeBaseText)
     }, 800);
   };
 
-    useEffect(() => {
-      if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-        setShowPopup(true);
-        setPopupType('failed');
-        setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
-      }
-    }, [CheckingUserLimit, isLimitExceeded]);
-  
-    if (CheckingUserLimit) return <p>Loading...</p>;
-
-      const handleClosePopup = () => {
-      if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-      navigate('/dashboard');
-      setShowPopup(false);
-      }else{
-        setShowPopup(false);
+  useEffect(() => {
+    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      setShowPopup(true);
+      setPopupType('failed');
+      setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+    }
+  }, [CheckingUserLimit, isLimitExceeded]);
+  useEffect(() => {
+  const interval = setInterval(() => {
+    if (window.google?.maps?.places) {
+      console.log("Google Places library loaded");
+      const input = document.getElementById("google-autocomplete");
+      if (input) {
+        initAutocomplete();
+        clearInterval(interval);
       }
     }
+  }, 300);
+}, []);
+  if (CheckingUserLimit) return;
+  const handleClosePopup = () => {
+    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      navigate('/dashboard');
+      setShowPopup(false);
+    } else {
+      setShowPopup(false);
+    }
+  }
+
   return (
     <>
       <div>
@@ -776,6 +787,8 @@ console.log(knowledgeBaseText)
                   <input
                     id="google-autocomplete"
                     type="text"
+                      autoComplete="off"
+
                     placeholder="Search for your business"
                     value={displayBusinessName}
                     onChange={(e) => setDisplayBusinessName(e.target.value)}
