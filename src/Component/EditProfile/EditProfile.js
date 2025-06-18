@@ -9,9 +9,9 @@ const EditProfile = () => {
   const fileInputRef = useRef(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
-    const [showPopup, setShowPopup] = useState(false);
-    const [popupType, setPopupType] = useState(null);
-    const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState(null);
+  const [popupMessage, setPopupMessage] = useState("");
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
@@ -20,7 +20,7 @@ const EditProfile = () => {
     email: "",
     phone: "",
     address: "",
-    profilePicture: "Images/editProfile.png",
+    profilePicture: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -75,8 +75,8 @@ const EditProfile = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      await updateUserDetails(userId,{
-       
+      await updateUserDetails(userId, {
+
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -87,16 +87,16 @@ const EditProfile = () => {
       setPopupMessage("Profile updated successfully!")
     } catch (error) {
       console.error(error);
-        setShowPopup(true)
+      setShowPopup(true)
       setPopupType("failed")
       setPopupMessage("Failed to update profile.")
-  
+
     } finally {
       setLoading(false);
     }
   };
-  const handleClosePopup=()=>{
-   setShowPopup(false) 
+  const handleClosePopup = () => {
+    setShowPopup(false)
   }
 
   return (
@@ -106,14 +106,25 @@ const EditProfile = () => {
           onClick={openUploadModal}
           style={{ all: "unset", cursor: "pointer" }}
         >
-          <img
+
+          {formData?.profilePicture ? <img
             src={
               uploadedImage ||
-              formData.profilePicture ||
-              "Images/editProfile.png"
-            }
+              formData.profilePicture
+
+            }  onError={(e) => {
+              e.target.src = "images/camera-icon.avif";
+            }}
             alt="Profile"
-          />
+          /> : <img
+            src={
+              "/images/camera-icon.avif"
+            }
+            onError={(e) => {
+              e.target.src = "images/camera-icon.avif";
+            }}
+            alt="Profile"
+          />}
 
           <span className={styles.editIcon}>
             <img src="svg/edit-icon.svg" alt="edit" />
@@ -194,10 +205,10 @@ const EditProfile = () => {
         />
 
       )}
-        {showPopup && (
+      {showPopup && (
         <PopUp
           type={popupType}
-          onClose={() =>handleClosePopup()}
+          onClose={() => handleClosePopup()}
           message={popupMessage}
         />
       )}
