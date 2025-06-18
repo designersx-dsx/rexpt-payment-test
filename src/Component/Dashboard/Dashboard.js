@@ -607,7 +607,7 @@ function Dashboard() {
     if (name.includes(" ")) {
       return name?.split(" ")[0];
     } else {
-      if (name?.length > 12) {
+      if (name?.length > 7) {
         return name?.substring(0, 10);
       }
       return name;
