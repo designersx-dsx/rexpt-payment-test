@@ -67,8 +67,6 @@ const EditProfile = () => {
 
     fetchUser();
   }, []);
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -118,7 +116,7 @@ const EditProfile = () => {
           />
 
           <span className={styles.editIcon}>
-            <img src="Svg/edit-icon.svg" alt="edit" />
+            <img src="svg/edit-icon.svg" alt="edit" />
           </span>
         </button>
       </div>
@@ -130,7 +128,7 @@ const EditProfile = () => {
         </div>
 
         <div className={styles.Part}>
-          <img src="Svg/line-Profile.svg" />
+          <img src="svg/line-Profile.svg" />
           <div className={styles.infoItem}>
             <label>Name</label>
             <input
@@ -142,7 +140,7 @@ const EditProfile = () => {
           </div>
         </div>
         <div className={styles.Part}>
-          <img src="Svg/line-email.svg" />
+          <img src="svg/line-email.svg" />
           <div className={styles.infoItem}>
             <label>Email</label>
             <input
@@ -155,7 +153,7 @@ const EditProfile = () => {
         </div>
 
         <div className={styles.Part}>
-          <img src="Svg/line-Call.svg" />
+          <img src="svg/line-Call.svg" />
           <div className={styles.infoItem}>
             <label>Phone Number</label>
             <input
@@ -167,7 +165,7 @@ const EditProfile = () => {
           </div>
         </div>
         <div className={styles.Part}>
-          <img src="Svg/line-address.svg" />
+          <img src="svg/line-address.svg" />
           <div className={styles.infoItem}>
             <label>Home address</label>
             <textarea

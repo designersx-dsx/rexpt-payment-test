@@ -494,8 +494,6 @@ function CallTransfer() {
                     <div key={index} className={styles.card}>
                         <div className={styles.selectWrapper}>
                             <label className={styles.label}>Condition for Agent to follow</label>
-
-
                             <select className={styles.select} value={item.condition} onChange={e => handleChange(index, 'condition', e.target.value)}>
                                 <option value="">Select Department</option>
                                 <option value="sales">Sales</option>
