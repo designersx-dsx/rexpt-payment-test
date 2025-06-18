@@ -116,7 +116,7 @@ const SignUp = () => {
         sessionStorage.clear();
         setPopupType("success");
         setShowPopup(true);
-        setPopupMessage("One time Password Verified successfully!");
+        setPopupMessage("One Time Password Verified successfully!");
         if (verifiedUser) {
           localStorage.setItem("onboardComplete", "true");
           setUser({
@@ -141,7 +141,7 @@ const SignUp = () => {
       } else {
         setPopupType("failed");
         setShowPopup(true);
-        setPopupMessage("Failed to verify One time Password. Please try again.");
+        setPopupMessage("Failed to verify One Time Password. Please try again.");
       }
     } catch (error) {
       setPopupType("failed");
@@ -170,7 +170,7 @@ const SignUp = () => {
         setVerifiedUser(response.data.verifiedStatus);
         setShowPopup(true);
         setPopupType("success");
-        setPopupMessage("One time Password sent successfully!");
+        setPopupMessage("One Time Password sent successfully!");
         setOtpSent(true);
         const endTime = Date.now() + 120 * 1000; 
         setResendEndTime(endTime);
@@ -178,7 +178,7 @@ const SignUp = () => {
       } else {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage("Failed to send One time Password. Please try again.");
+        setPopupMessage("Failed to send One Time Password. Please try again.");
       }
     } catch (error) {
       console.log(error);
@@ -348,7 +348,7 @@ useEffect(() => {
                         <Loader size={17} />
                       </>
                     ) : (
-                      "Send One time Password"
+                      "Send One Time Password"
                     )}
                   </p>
                 </div>
