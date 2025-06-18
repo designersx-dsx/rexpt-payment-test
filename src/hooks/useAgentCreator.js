@@ -471,8 +471,7 @@ End Call: If the caller is satisfied, invoke end_call function.
         : role_title === "Inbound LEAD Qualifier"
             ? salesReceptionistPrompt
             : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
-    
-console.log('prompt1', business?.businessType)
+  
     const filledPrompt = getAgentPrompt({
       industryKey: business?.businessType,   // ← dynamic from businessType
       roleTitle: role_title, // ← dynamic from sessionStorage or UI
@@ -534,61 +533,10 @@ console.log('prompt1', business?.businessType)
       }
 
       const storedKnowledgeBaseId = sessionStorage.getItem('knowledgeBaseId');
-      // if(isValid=='AboutBusiness'){
-      //     if (storedKnowledgeBaseId && storedKnowledgeBaseId !== "undefined" && storedKnowledgeBaseId !== "null") {
-      //       const formData2 = new FormData();
-      //       const buisnessData=JSON.parse(sessionStorage.getItem('aboutBusinessForm'))
-      //       formData2.append("googleUrl", buisnessData.googleListing);
-      //       formData2.append("webUrl",buisnessData.businessUrl.trim());
-      //       formData2.append("aboutBusiness",buisnessData.aboutBusiness)
-      //       formData2.append("additionalInstruction",buisnessData.note)
-      //       try {  
-      //        const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,formData2,{
-      //        headers: {
-      //           Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-      //           "Content-Type": "multipart/form-data",
-      //         },
-      //         })
-      //           console.log('updation response',response)
-      //         } catch (error) {
-      //           console.log('error while buinsess details updated');
-      //           setLoading(false)
-      //           return
-      //         }
-      //     }
-      // } 
-
       const llm_id = localStorage.getItem('llmId')
       const agentConfig = {
-        general_prompt: prompt1,
+        general_prompt: filledPrompt,
         begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
-        states: [
-          {
-            name: "transfer_call",
-            state_prompt: "The user wants to speak to a specialist. Use the tool transfer_call to transfer the call",
-            tools: [
-              {
-                type: "transfer_call",
-                name: "transfer_to_support",
-                description: "Transfer the call to a specialist.",
-                transfer_destination: {
-                  type: "predefined",
-                  number: "+917876121490", // Put the real number here
-                  prompt: "Transferring your call to a specialist now."
-                },
-                transfer_option: {
-                  type: "cold_transfer", // or "warm_transfer" if applicable
-                  public_handoff_option: {
-                    message: "Connecting you to the specialist now."
-                  }
-                },
-                speak_during_execution: true,
-                speak_after_execution: true
-              }
-            ]
-          }
-
-        ],
       };
       //Create LLm 
       console.log(llm_id)
