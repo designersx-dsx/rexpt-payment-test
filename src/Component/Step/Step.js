@@ -434,9 +434,29 @@ const Step = () => {
     const detectRoleTypeChange = (roleTitle) => {
         setIsRoleTitleChanged((prev) => !prev);
     }
-    let filledPrompt = "";
-    useEffect(() => {
-        filledPrompt =
+    // let filledPrompt = "";
+    // useEffect(() => {
+    //     filledPrompt =
+    //         getAgentPrompt({
+    //             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+    //             roleTitle: sessionStorage.getItem("agentRole"), // ← dynamic from sessionStorage or UI
+    //             agentName: agentName,
+    //             agentGender: agentGender,
+    //             business: {
+    //                 businessName: business?.businessName
+    //             },
+    //             languageSelect: languageSelect,
+    //             businessType,
+    //             aboutBusinessForm,
+    //             commaSeparatedServices
+    //         });
+    // }, [sessionStorage.getItem("agentRole"), isRoleTitleChanged, setIsRoleTitleChanged]);
+
+    const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
+    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
+    const handleContinue = async () => {
+        if (step4Ref.current) {
+            const filledPrompt =
             getAgentPrompt({
                 industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
                 roleTitle: sessionStorage.getItem("agentRole"), // ← dynamic from sessionStorage or UI
@@ -450,12 +470,7 @@ const Step = () => {
                 aboutBusinessForm,
                 commaSeparatedServices
             });
-    }, [sessionStorage.getItem("agentRole"), isRoleTitleChanged, setIsRoleTitleChanged]);
 
-    const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
-    const handleContinue = async () => {
-        if (step4Ref.current) {
             // console.log("Validating step 4",filledPrompt);
             // return 
             const isValid = step4Ref.current.validate();
