@@ -81,7 +81,6 @@ export const SendScriptToDeveloper = async (data) => {
 }
 export const listAgents = async () => {
   const res = await api.get(`${API_BASE_URL}/agent/listAgents`, {
-
   });
   return res.data;
 }
@@ -265,7 +264,12 @@ try {
   const response=await  axios.post(`${API_BASE_URL}/agent/addGeneralTools`,{
       llmId,
       transfers
-  })
+  },  {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      })
 } catch (error) {
   
 }

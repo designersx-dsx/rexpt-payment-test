@@ -84,6 +84,7 @@ const Plan = () => {
   if (error) return <p className={styles.statusError}>{error}</p>;
 
   return (
+    <>
     <div className={styles.container}>
       {/* Header */}
 
@@ -219,6 +220,8 @@ const Plan = () => {
         <img src="svg/svg-theme.svg" alt=""  />
         <p >Continue</p>
       </div>
+    
+    </div>
        {showPopup && (
         <PopUp
           type={popupType}
@@ -226,7 +229,7 @@ const Plan = () => {
           message={popupMessage}
         />
       )}
-    </div>
+      </>
   );
 };
 

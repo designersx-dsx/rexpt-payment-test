@@ -20,7 +20,7 @@ const callsPerPage = 6;
 export default function Home() {
   const totalAgentView = localStorage.getItem("filterType");
   const sessionAgentId = sessionStorage.getItem("agentId") || ""
-  const [agentId, setAgentId] = useState( 
+  const [agentId, setAgentId] = useState(
     totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
   const [data, setData] = useState([]);
@@ -31,20 +31,21 @@ export default function Home() {
   const [selectedSentiment, setSelectedSentiment] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem('token') || "";
   const fetchAgents = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
   const [filters, setFilters] = useState({ leadType: [], channel: "" });
   const userId = localStorage.getItem("userId") || "";
   function extractCallIdFromRecordingUrl(url) {
-  if (!url) return null;
-  try {
-    const parts = url.split('/');
-    return parts[3] || null;
-  } catch {
-    return null;
+    if (!url) return null;
+    try {
+      const parts = url.split('/');
+      return parts[3] || null;
+    } catch {
+      return null;
+    }
   }
-}
 
   useEffect(() => {
     if (agentId === "all") {
@@ -57,15 +58,17 @@ export default function Home() {
     try {
       setLoading(true);
       if (agentId) {
-        const response = await axios.get(
-          `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`
-        );
+        const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const calls = (response.data.filteredCalls || []).map(call => ({
-  ...call,
-  call_id: call.call_id || extractCallIdFromRecordingUrl(call.recording_url)
-}));
+          ...call,
+          call_id: call.call_id || extractCallIdFromRecordingUrl(call.recording_url)
+        }));
 
-setData(calls);
+        setData(calls);
 
       } else {
         setData([]);
@@ -150,7 +153,7 @@ setData(calls);
     fetchAllAgentCalls();
     // Perform additional logic related to "All Agents" if needed
   };
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div className={styles.container}>
@@ -205,16 +208,16 @@ const navigate = useNavigate();
               ) : (
                 currentCalls.map((call, i) => (
                   <tr key={i}
-  className={styles.clickableRow}
- onClick={() => {
-  if (!call.call_id) {
-    console.warn("Missing call_id for this call:", call);
-    return;
-  }
-  navigate(`/call-details/${call.call_id}`);
-}}
+                    className={styles.clickableRow}
+                    onClick={() => {
+                      if (!call.call_id) {
+                        console.warn("Missing call_id for this call:", call);
+                        return;
+                      }
+                      navigate(`/call-details/${call.call_id}`);
+                    }}
 
->
+                  >
                     <td>
                       <div className={styles.callDateTime}>
                         <div>
