@@ -422,7 +422,7 @@ const BusinessDetails = () => {
         <div className={styles.labReq}>
           <div className={styles.inputGroup}>
             <div className={styles.Dblock}>
-              <label>Service Name<span className={styles.requiredField}> *</span></label>
+              <label>Business Type<span className={styles.requiredField}> *</span></label>
               <input
                 type="text"
                 placeholder="Enter your service name"
