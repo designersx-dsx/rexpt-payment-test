@@ -690,7 +690,7 @@ Opening Hours: ${businessData.hours}
     }
   }, 300);
 }, []);
-  if (CheckingUserLimit) return;
+  // if (CheckingUserLimit) return;
   const handleClosePopup = () => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       navigate('/dashboard');
