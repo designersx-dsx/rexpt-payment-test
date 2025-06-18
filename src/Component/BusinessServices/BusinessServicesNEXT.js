@@ -73,13 +73,13 @@ const AboutBusinessNext = () => {
 
   const handleSubmit = async () => {
 
-    if (
-      businessDetails?.businessType === "Other" &&
-      (email.trim() === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    ) {
-      setEmailError("Please enter a valid email address.");
-      return;
-    }
+    // if (
+    //   businessDetails?.businessType === "Other" &&
+    //   (email.trim() === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    // ) {
+    //   setEmailError("Please enter a valid email address.");
+    //   return;
+    // }
     // Step 1: Get old businesServices (if any)
     const raw = sessionStorage.getItem("businesServices");
     let previous = {};
