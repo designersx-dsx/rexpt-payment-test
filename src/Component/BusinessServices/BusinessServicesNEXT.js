@@ -48,12 +48,13 @@ const AboutBusinessNext = () => {
         savedServices = JSON.parse(savedServices);
       }
 
-      if (Array.isArray(savedServices)) {
+      if (Array.isArray(savedServices) && savedServices.length > 0) {
         setServices(savedServices);
-        setEmail(businesServices.email);
       } else {
-        console.warn("Custom services not an array:", savedServices);
+        setServices([{ service: "" }]);
       }
+      setEmail(businesServices?.email || "");
+
     } catch (err) {
       console.error("Error parsing selectedCustomServices:", err);
       setServices([{ service: "" }]);
@@ -71,7 +72,11 @@ const AboutBusinessNext = () => {
   };
 
   const handleSubmit = async () => {
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+
+    if (
+      businessDetails?.businessType === "Other" &&
+      (email.trim() === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    ) {
       setEmailError("Please enter a valid email address.");
       return;
     }
@@ -179,6 +184,7 @@ const AboutBusinessNext = () => {
   };
 
   const handleSaveEdit = (e) => {
+
     e.preventDefault();
     const filteredServices = services
       .map((item) => item.service.trim())
@@ -275,9 +281,9 @@ const AboutBusinessNext = () => {
           {stepEditingMode ? "" : <button>Skip for now</button>}
         </div>
         {stepEditingMode != "ON" ? (
-          <div className={styles.Btn}>
+          <div className={styles.Btn} onClick={handleSubmit}>
             <div type="submit">
-              <div className={styles.btnTheme} onClick={handleSubmit}>
+              <div className={styles.btnTheme} >
                 <img src="svg/svg-theme2.svg" alt="Submit" />
                 <p>
                   <p>{Loading ? <Loader size={20} /> : " Submit"}</p>
@@ -286,9 +292,9 @@ const AboutBusinessNext = () => {
             </div>
           </div>
         ) : (
-          <div className={styles.Btn}>
+          <div className={styles.Btn} onClick={handleSaveEdit} >
             <div type="submit">
-              <div className={styles.btnTheme} onClick={handleSaveEdit}>
+              <div className={styles.btnTheme}>
                 <img src="svg/svg-theme2.svg" alt="Submit" />
                 <p>{Loading ? <Loader size={20} /> : "Save Edits"}</p>
               </div>
