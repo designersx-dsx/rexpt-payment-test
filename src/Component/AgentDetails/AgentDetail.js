@@ -76,7 +76,18 @@ const AgentDashboard = () => {
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
   const [isAssignNumberModal, setIsAssignNumberModal] = useState(false);
+ const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [fullAddress, setFullAddress] = useState("");
 
+  const openAddressModal = (address) => {
+    setFullAddress(address);
+    setIsAddressModalOpen(true);
+  };
+
+  const closeAddressModal = () => {
+    setIsAddressModalOpen(false);
+    setFullAddress("");
+  };
   const openCalModal = () => {
     if (!agentData?.agent) return;
     setApiKey(agentData.agent.calApiKey || "");
@@ -746,7 +757,10 @@ const AgentDashboard = () => {
 
                 <div className={styles.address}>
                   <img src="svg/location.svg" alt="location" />
-                  <p>{truncateAddress(agentData?.business?.address1, 5)}</p>
+                   <p
+                  onClick={() => openAddressModal(agentData?.business?.address1)}
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                >{truncateAddress(agentData?.business?.address1, 5)}</p>
                 </div>
 
                 <h4>Knowledge Base</h4>
@@ -1334,6 +1348,15 @@ const AgentDashboard = () => {
               </div>
             </div>
           )}
+           {isAddressModalOpen && (
+        <div className={styles.modalBackdrop1}>
+          <div className={styles.modalContainer1}>
+            <h3>Full Address</h3>
+            <p>{fullAddress}</p>
+            <button className={styles.hello} onClick={closeAddressModal}>Close</button>
+          </div>
+        </div>
+      )}
 
           {openWidgetModal && (
             <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
