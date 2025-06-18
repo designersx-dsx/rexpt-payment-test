@@ -877,7 +877,7 @@ const Step = () => {
         }
     }, [CheckingUserLimit, isLimitExceeded]);
 
-    if (CheckingUserLimit) return <p></p>;
+    // if (CheckingUserLimit) return <p></p>;
 
     const handleClosePopup = () => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {

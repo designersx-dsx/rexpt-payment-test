@@ -349,7 +349,7 @@ const BusinessDetails = () => {
     }
   }, [CheckingUserLimit, isLimitExceeded]);
 
-  if (CheckingUserLimit) return 
+  // if (CheckingUserLimit) return 
   
     const handleClosePopup = () => {
       if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
