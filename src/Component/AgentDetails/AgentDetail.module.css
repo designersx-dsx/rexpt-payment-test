@@ -20,8 +20,8 @@
   width: 90%;
   max-width: 420px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #24252C;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #24252c;
   position: relative;
 }
 
@@ -41,7 +41,7 @@
 }
 
 .modalContainer a {
-  color: #6524EB;
+  color: #6524eb;
   /* use your purple theme color */
   text-decoration: none;
   font-weight: 600;
@@ -57,7 +57,7 @@
   font-weight: 500;
   display: block;
   margin-bottom: 6px;
-  color: #24252C;
+  color: #24252c;
 }
 
 /* Input field */
@@ -72,7 +72,7 @@
 }
 
 .modalInput:focus {
-  border-color: #6524EB;
+  border-color: #6524eb;
   box-shadow: 0 0 8px rgba(101, 36, 235, 0.3);
 }
 
@@ -98,7 +98,7 @@
 /* Cancel button */
 .modalButton.cancel {
   background-color: #d5d5d5;
-  color: #24252C;
+  color: #24252c;
 }
 
 .modalButton.cancel:hover {
@@ -107,7 +107,7 @@
 
 /* Submit button */
 .modalButton.submit {
-  background-color: #6524EB;
+  background-color: #6524eb;
   color: #fff;
 }
 
@@ -133,7 +133,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   color: #333;
-  border-bottom: 2px solid #6524EB;
+  border-bottom: 2px solid #6524eb;
   padding-bottom: 5px;
 }
 
@@ -153,7 +153,7 @@
   font-weight: 700;
   color: #000;
   margin-inline: auto;
-  background-color: #D6D6D6;
+  background-color: #d6d6d6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,7 +178,6 @@
   margin: auto;
   color: #333;
   overflow: auto;
-
 }
 
 .AssignNum {
@@ -262,15 +261,15 @@
   border-radius: 50%;
   object-fit: cover;
 }
-.generalDiv{
-  background-color: #F3EEFF;
+.generalDiv {
+  background-color: #f3eeff;
   border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px 12px;
   font-size: 12px;
-  color: #6524EB;
+  color: #6524eb;
   position: relative;
   top: -10px;
   font-weight: bold;
@@ -401,11 +400,10 @@
 }
 
 .businessInfo {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  /* display: -webkit-box; */
+  flex-wrap: nowrap;
+  display: -webkit-box;
+  gap: 5px;
 }
 
 .card1 {
@@ -426,7 +424,6 @@
   color: #24252c;
   text-transform: capitalize;
 }
-
 
 .card1 p {
   background-color: #b0f3e4;
@@ -488,6 +485,7 @@
   font-weight: 600;
   color: #24252c;
   font-family: "Inter", sans-serif;
+  word-break: break-all;
 }
 
 .google {
@@ -709,7 +707,7 @@
 }
 
 .managementActions::-webkit-scrollbar-thumb {
-  background-color: #6524EB;
+  background-color: #6524eb;
   border-radius: 4px;
 }
 
@@ -790,26 +788,22 @@
   font-size: 1.1rem;
   font-weight: 400;
   text-align: left !important;
-
 }
-.FullLine{
+.FullLine {
   width: 100%;
 }
 
 @media screen and (min-width: 601px) {
- .Forsticky{
-    width: 50%; 
+  .Forsticky {
+    width: 50%;
     position: unset;
     left: 0;
     right: 0;
-    transform: translate(50%,0%);
-
-}
-.container {
-  
+    transform: translate(50%, 0%);
+  }
+  .container {
     width: 50%;
-}
-
+  }
 }
 
 @media (max-width: 380px) {
@@ -819,7 +813,6 @@
 
   .Yellow .statDetail {
     font-size: 30px !important;
-
   }
 
   .Agenttitle {
@@ -830,10 +823,8 @@
     font-size: 30px;
   }
   .agentDetailsFlex p:last-child strong {
-  font-size: 25px;
-
-}
-
+    font-size: 25px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -857,9 +848,7 @@
   .Yellow .statDetail {
     font-size: 35px !important;
   }
-
 }
-
 
 @media (max-width: 320px) {
   .businessInfo {
@@ -901,10 +890,12 @@
   left: -150%;
   width: 150%;
   height: 100%;
-  background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
   animation: shimmer 2s infinite;
   pointer-events: none;
   z-index: 10;

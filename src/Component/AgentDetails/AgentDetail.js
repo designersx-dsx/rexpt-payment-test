@@ -44,7 +44,7 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
 
-  const agentStatus = agentData?.agent?.isDeactivated
+  const agentStatus = agentData?.agent?.isDeactivated;
 
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
@@ -491,16 +491,30 @@ const AgentDashboard = () => {
     );
   };
 
-
   const handleCallTransfer = () => {
     if (agentData) {
-      sessionStorage.setItem("agentDetails", JSON.stringify(agentData))
-      const agentGeneralTools = (agentData.generalTools)
-      sessionStorage.setItem("agentGeneralTools", JSON.stringify(agentGeneralTools))
-      navigate("/call-transfer")
+      sessionStorage.setItem("agentDetails", JSON.stringify(agentData));
+      const agentGeneralTools = agentData.generalTools;
+      sessionStorage.setItem(
+        "agentGeneralTools",
+        JSON.stringify(agentGeneralTools)
+      );
+      navigate("/call-transfer");
     }
-  }
+  };
 
+  const truncateAddress = (address, wordLimit) => {
+    const words = address?.split(" ") || [];
+    return words.length > wordLimit
+      ? words.slice(0, wordLimit).join(" ") + "..."
+      : address;
+  };
+  const truncateUrl = (url, wordLimit) => {
+    const words = url?.split("/") || [];
+    return words.length > wordLimit
+      ? words.slice(0, wordLimit).join("/") + "..."
+      : url;
+  };
 
   return (
     <div>
@@ -632,7 +646,7 @@ const AgentDashboard = () => {
                               // setIsAssignModalOpen(true)
                             }
                           }}
-                        // onClick={() => setIsAssignModalOpen(true)}
+                          // onClick={() => setIsAssignModalOpen(true)}
                         >
                           Assign Number
                         </div>
@@ -665,7 +679,6 @@ const AgentDashboard = () => {
                         ? `/${agentData?.business?.customBuisness}`
                         : "/ Categories"}
                     </span>
-
                   </h3>
                 </div>
 
@@ -689,7 +702,6 @@ const AgentDashboard = () => {
                         return (
                           filteredUrls[filteredUrls?.length - 1]?.url || "NA"
                         );
-
                       } else {
                         return <div>NA</div>;
                       }
@@ -703,17 +715,28 @@ const AgentDashboard = () => {
                       {(() => {
                         try {
                           const agentId = agentData?.agent?.agent_id;
-                          const cache = JSON.parse(sessionStorage.getItem("multiAgentCache") || "{}");
-                          const googleUrl = cache?.data?.[agentId]?.agentData?.business?.googleUrl;
+                          const cache = JSON.parse(
+                            sessionStorage.getItem("multiAgentCache") || "{}"
+                          );
+                          const googleUrl =
+                            cache?.data?.[agentId]?.agentData?.business
+                              ?.googleUrl;
                           return googleUrl ? (
-                            <a href={googleUrl} target="_blank" rel="noopener noreferrer">
-                              {googleUrl}
+                            <a
+                              href={googleUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {truncateUrl(googleUrl, 3)}
                             </a>
                           ) : (
                             "NA"
                           );
                         } catch (err) {
-                          console.error("Error reading googleUrl from sessionStorage:", err);
+                          console.error(
+                            "Error reading googleUrl from sessionStorage:",
+                            err
+                          );
                           return "NA";
                         }
                       })()}
@@ -721,16 +744,11 @@ const AgentDashboard = () => {
                   </p>
                 </div>
 
-
-
                 <div className={styles.address}>
                   <img src="svg/location.svg" alt="location" />
-                  <p>
-                    {agentData?.business?.address1 || ""}{" "}
-                    {agentData?.business?.address2 || ""},
-                    {agentData?.business?.city}
-                  </p>
+                  <p>{truncateAddress(agentData?.business?.address1, 5)}</p>
                 </div>
+
                 <h4>Knowledge Base</h4>
               </div>
             </div>
@@ -1076,7 +1094,7 @@ const AgentDashboard = () => {
 
                 <span className={styles.statDetail}>
                   {agentData?.avgCallTime?.minutes ||
-                    agentData?.avgCallTime?.seconds ? (
+                  agentData?.avgCallTime?.seconds ? (
                     <>
                       {agentData?.avgCallTime?.minutes}
                       <span className={styles.MinFont}>m</span>
@@ -1154,14 +1172,13 @@ const AgentDashboard = () => {
                     Click to connect with cal
                   </a>
                 </p>
-                 <p> Need a hand connecting with Cal.com?{" "}
-                <a
-                  href="/calinfo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                   See quick setup guide</a>
-              </p>
+                <p>
+                  {" "}
+                  Need a hand connecting with Cal.com?{" "}
+                  <a href="/calinfo" target="_blank" rel="noopener noreferrer">
+                    See quick setup guide
+                  </a>
+                </p>
 
                 <div
                   style={{
@@ -1356,7 +1373,6 @@ const AgentDashboard = () => {
               type={popupType}
               message={popupMessage}
               onClose={() => setPopupMessage("")}
-
             />
           )}
           <Footer2 />
@@ -1472,9 +1488,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-        .map((item) => item?.service?.trim())
-        .filter(Boolean)
-        .map((service) => ({ service }))
+          .map((item) => item?.service?.trim())
+          .filter(Boolean)
+          .map((service) => ({ service }))
       : [];
 
     console.log("Final cleaned services to store:", cleanedCustomServices);
