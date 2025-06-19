@@ -233,7 +233,7 @@ const handleAudioProgress = () => {
             <div className={styles.channel}>
               <p className={styles.Ptext}>Call Recording</p>
              <div className={styles.audioPlayer}>
-                <button onClick={toggleAudio} className={styles.playPauseBtn}>
+                <div onClick={toggleAudio} className={styles.playPauseBtn}>
                   {isPlaying ? (
                     // Pause Icon
                     <svg
@@ -273,7 +273,7 @@ const handleAudioProgress = () => {
                       <polygon points="20,17 35,25 20,33" fill="#6524EB" />
                     </svg>
                   )}
-                </button>
+                </div>
                 <input
                   type="range"
                   min="0"
