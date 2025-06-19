@@ -72,15 +72,15 @@ const AboutBusinessNext = () => {
   };
 
   const handleSubmit = async () => {
-   if(email){
-               const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-                if (!isValid) {
-                setEmailError("Please enter a valid email address.");
-                return;
-                } else {
-                setEmailError("");
-                }
-        }
+    if (email) {
+      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!isValid) {
+        setEmailError("Please enter a valid email address.");
+        return;
+      } else {
+        setEmailError("");
+      }
+    }
     // if (
     //   businessDetails?.businessType === "Other" &&
     //   (email.trim() === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -188,7 +188,7 @@ const AboutBusinessNext = () => {
 
   const handleSkip = () => {
     handleSubmit();
-    navigate("/about-business");
+    // navigate("/about-business");
   };
 
   const handleSaveEdit = (e) => {
