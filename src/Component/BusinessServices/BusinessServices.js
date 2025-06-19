@@ -321,6 +321,20 @@ const BusinessServices = () => {
     const handleContinue = () => {
         //   const isEmailValid = validateEmail(email);
         const isServiceValid = selectedService.length > 0;
+        if(!isServiceValid) {
+            setServiceError("Please select at least one service.");
+            return;
+        }
+        if(email){
+               const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                if (!isValid) {
+                setEmailError("Please enter a valid email address.");
+                return;
+                } else {
+                setEmailError("");
+                }
+        }
+        console.log('isServiceValid:', isServiceValid);
 
         // Step 1: Get old businesServices (if any)
         const raw = sessionStorage.getItem("businesServices");
@@ -511,7 +525,7 @@ const BusinessServices = () => {
         handleCreateAgent();
 
     };
-
+console.log(serviceError,emailError)
     return (
         <div className={styles.container} id='servies'>
             <h1 className={styles.title}>{EditingMode ? 'Edit: Business Services' : 'Business Services'}</h1>
@@ -561,12 +575,14 @@ const BusinessServices = () => {
                     ) : (
                         <p>No services match your search.</p>
                     )}
-                    {serviceError && (
+                    {/* {serviceError && (
+                        <p style={{ color: 'red', marginTop: '5px' }}>{serviceError}</p>
+                    )} */}
+                </div>
+            </div>
+             {serviceError && (
                         <p style={{ color: 'red', marginTop: '5px' }}>{serviceError}</p>
                     )}
-                </div>
-
-            </div>
 
             <div className={styles.labReq}>
                 <div className={styles.inputGroup}>
@@ -582,6 +598,7 @@ const BusinessServices = () => {
                                 // setIsEmailVerified(false); 
                             }}
                         // onBlur={(e) => validateEmail(e.target.value)}
+                 
                         />
                         {emailError && (
                             <p style={{ color: 'red', marginTop: '5px' }}>{emailError}</p>

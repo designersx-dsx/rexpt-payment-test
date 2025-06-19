@@ -122,6 +122,33 @@ function AboutBusiness() {
     }, 300);
   }, []);
 
+  
+  useEffect(() => {
+  const storedName = sessionStorage.getItem("displayBusinessName");
+  if (storedName) {
+    setDisplayBusinessName(storedName);
+
+    // Slight delay to let input mount
+    setTimeout(() => {
+      const input = document.getElementById("google-autocomplete");
+      if (input) {
+        input.focus();
+
+        // Simulate key press to trigger suggestion dropdown
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          "value"
+        )?.set;
+
+        nativeInputValueSetter?.call(input, storedName);
+
+        const ev2 = new Event("input", { bubbles: true });
+        input.dispatchEvent(ev2);
+      }
+    }, 500);
+  }
+}, []);
+
   const fetchPlaceDetails = (placeId) => {
     setLoading(true);
     const service = new window.google.maps.places.PlacesService(
@@ -730,6 +757,7 @@ Opening Hours: ${businessData.hours}
                         autoComplete="url"
                         onBlur={handleBlur}
                         list="url-suggestions"
+                        style={{width: "100%"}}
                         onKeyDown={(e) => {
                           const { key, target } = e;
                           if (key !== "Backspace" && key !== "Delete") return;
