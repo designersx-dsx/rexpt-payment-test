@@ -240,3 +240,23 @@
     padding: 4px 8px;
     border-radius: 4px;
 }
+.readMoreButton {
+  background-color: #6524eb;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.readMoreButton:hover {
+  background-color: #531be0;
+}
+.audioTime {
+  display: flex;
+  justify-content: space-between;
+  width: 40%;
+  font-size: 13px;
+  color: #4E4E50;
+}

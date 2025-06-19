@@ -124,3 +124,10 @@
   font-weight: 500;
    font-size: 19px;
 }
+/* In your SideFilter.module.css */
+.noData {
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  margin-top: 10px;
+}

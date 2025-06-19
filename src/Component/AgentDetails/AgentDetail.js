@@ -76,7 +76,7 @@ const AgentDashboard = () => {
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
   const [isAssignNumberModal, setIsAssignNumberModal] = useState(false);
- const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [fullAddress, setFullAddress] = useState("");
 
   const openAddressModal = (address) => {
@@ -279,7 +279,7 @@ const AgentDashboard = () => {
       const cached = getAgentById(agentDetails.agentId);
       if (cached) {
         setCurrentAgentId(agentDetails.agentId); // Load into active context
-        setAgentId(agentDetails.agentId);
+        // setAgentId(agentDetails.agentId);
         setLoading(false);
       }
 
@@ -411,12 +411,12 @@ const AgentDashboard = () => {
   };
   //handleCallHistoryNavigation
   const handleCallHistoryNavigation = () => {
+    sessionStorage.setItem("agentId", agentDetails?.agentId);
+    sessionStorage.setItem("userId", userId);
     navigate("/totalcall-list");
     localStorage.setItem("filterType", "single");
-    sessionStorage.setItem("agentId", agentId);
-    sessionStorage.setItem("userId", userId);
-  };
 
+  };
   const handleCloseEditagentModalOpen = () => {
     localStorage.removeItem("selectedStepEditMode");
     localStorage.removeItem("bId");
@@ -657,7 +657,7 @@ const AgentDashboard = () => {
                               // setIsAssignModalOpen(true)
                             }
                           }}
-                          // onClick={() => setIsAssignModalOpen(true)}
+                        // onClick={() => setIsAssignModalOpen(true)}
                         >
                           Assign Number
                         </div>
@@ -757,10 +757,10 @@ const AgentDashboard = () => {
 
                 <div className={styles.address}>
                   <img src="svg/location.svg" alt="location" />
-                   <p
-                  onClick={() => openAddressModal(agentData?.business?.address1)}
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
-                >{truncateAddress(agentData?.business?.address1, 5)}</p>
+                  <p
+                    onClick={() => openAddressModal(agentData?.business?.address1)}
+                    style={{ cursor: "pointer", textDecoration: "underline" }}
+                  >{truncateAddress(agentData?.business?.address1, 5)}</p>
                 </div>
 
                 <h4>Knowledge Base</h4>
@@ -1108,7 +1108,7 @@ const AgentDashboard = () => {
 
                 <span className={styles.statDetail}>
                   {agentData?.avgCallTime?.minutes ||
-                  agentData?.avgCallTime?.seconds ? (
+                    agentData?.avgCallTime?.seconds ? (
                     <>
                       {agentData?.avgCallTime?.minutes}
                       <span className={styles.MinFont}>m</span>
@@ -1307,12 +1307,12 @@ const AgentDashboard = () => {
                           className={styles.modalInput}
                           value={eventLength}
                           onChange={(e) => {
-                          const value = e.target.value;
-                          if (value <= 999 ) {
-                            setEventLength(value);
-                          }
-                        }}
-                        max="999"
+                            const value = e.target.value;
+                            if (value <= 999) {
+                              setEventLength(value);
+                            }
+                          }}
+                          max="999"
                           min="1"
                         />
                       </div>
@@ -1358,15 +1358,15 @@ const AgentDashboard = () => {
               </div>
             </div>
           )}
-           {isAddressModalOpen && (
-        <div className={styles.modalBackdrop1}>
-          <div className={styles.modalContainer1}>
-            <h3>Full Address</h3>
-            <p>{fullAddress}</p>
-            <button className={styles.hello} onClick={closeAddressModal}>Close</button>
-          </div>
-        </div>
-      )}
+          {isAddressModalOpen && (
+            <div className={styles.modalBackdrop1}>
+              <div className={styles.modalContainer1}>
+                <h3>Full Address</h3>
+                <p>{fullAddress}</p>
+                <button className={styles.hello} onClick={closeAddressModal}>Close</button>
+              </div>
+            </div>
+          )}
 
           {openWidgetModal && (
             <Modal2 isOpen={openWidgetModal} onClose={handleCloseWidgetModal}>
@@ -1521,9 +1521,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     console.log("Final cleaned services to store:", cleanedCustomServices);

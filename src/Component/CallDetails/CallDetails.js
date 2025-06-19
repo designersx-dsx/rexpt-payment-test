@@ -1,9 +1,6 @@
-import React, { useRef } from "react";
-import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
 import Loader2 from "../Loader2/Loader2";
 
@@ -11,25 +8,19 @@ const CallDetails = () => {
   const [callData, setCallData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [messagesPerReveal, setMessagesPerReveal] = useState(0); 
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const agentData = JSON.parse(
-    sessionStorage.getItem("dashboard-session-storage")
-  );
+  const agentData = JSON.parse(sessionStorage.getItem("dashboard-session-storage"));
   const { callId } = useParams();
   const agents = agentData?.state?.agents || [];
-  let agentName = "Unknown Agent";
-
-  if (callData && callData.agent_id) {
-    const agent = agents.find((a) => a.agent_id === callData.agent_id);
-    agentName = agent?.agentName || "Unknown Agent";
-  }
   const navigate = useNavigate();
-
+   const [audioProgress, setAudioProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0); 
   const toggleAudio = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
     if (audio.paused) {
       audio.play();
       setIsPlaying(true);
@@ -37,6 +28,26 @@ const CallDetails = () => {
       audio.pause();
       setIsPlaying(false);
     }
+  };
+const handleAudioProgress = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      const progress = (audio.currentTime / audio.duration) * 100;
+      setAudioProgress(progress);
+      setCurrentTime(audio.currentTime); 
+    }
+  };
+
+  const handleSeek = (event) => {
+    const audio = audioRef.current;
+    const seekTime = (event.target.value / 100) * audio.duration;
+    audio.currentTime = seekTime;
+  };
+
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
   useEffect(() => {
@@ -64,26 +75,38 @@ const CallDetails = () => {
     fetchCallDetails();
   }, [callId]);
 
+  useEffect(() => {
+    if (callData && callData.transcript_object) {
+      const transcriptLength = callData.transcript_object.length;
+      setMessagesPerReveal(Math.ceil(transcriptLength / 4));
+    }
+  }, [callData]);
+
+ useEffect(() => {
+    setVisibleCount(messagesPerReveal);
+  }, [messagesPerReveal]);
+
   if (!callId) return <p>No call selected.</p>;
-  if (loading) return <Loader2/>
+  if (loading) return <Loader2 />;
   if (error) return <p>{error}</p>;
 
-  let data = callData.call_analysis?.custom_analysis_data;
-  let name = data["_detailed _call _summery"];
-
-  // Date and time formatting
-  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
+  const transcript = callData.transcript_object || [];
+  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
   });
-
-  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
+  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: true,
   });
 
+  const showMoreMessages = () => {
+    setVisibleCount((prev) => Math.min(prev + messagesPerReveal, transcript.length));
+  };
+    let data = callData.call_analysis?.custom_analysis_data;
+  let name = data["_detailed _call _summery"];
   return (
     <div>
       <div className={styles.forSticky}>
@@ -146,7 +169,7 @@ const CallDetails = () => {
           <hr className={styles.hrline} />
           <div className={styles.details3}>
             <div className={styles.Part1}>
-               <p>{formattedDate}</p>
+              <p>{formattedDate}</p>
               <strong>{formattedTime}</strong>
             </div>
             <div className={styles.Part2}>
@@ -209,65 +232,67 @@ const CallDetails = () => {
             </div>
             <div className={styles.channel}>
               <p className={styles.Ptext}>Call Recording</p>
-              <div
-                className={styles.PhoneDiv2}
-                onClick={toggleAudio}
-                style={{ cursor: "pointer" }}
-              >
-                {/* <img
-                  src={isPlaying ? "svg/Pause-icon.svg" : "svg/Play-icon.svg"}
-                  alt={isPlaying ? "Pause" : "Play"}
-                /> */}
-               {isPlaying ? (
-  // Pause Icon
-  <svg
-    width="50"
-    height="50"
-    viewBox="0 0 50 50"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <circle cx="25" cy="25" r="25" fill="#EBE2FF" />
-    <rect
-      x="18"
-      y="17"
-      width="5"
-      height="18"
-      rx="2"
-      fill="#6524EB"
-    />
-    <rect
-      x="27"
-      y="17"
-      width="5"
-      height="18"
-      rx="2"
-      fill="#6524EB"
-    />
-  </svg>
-) : (
- 
-  <svg
-    width="50"
-    height="50"
-    viewBox="0 0 50 50"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <circle cx="25" cy="25" r="25" fill="#EBE2FF" />
-    <polygon
-      points="20,17 35,25 20,33"
-      fill="#6524EB"
-    />
-  </svg>
-)}
-
+             <div className={styles.audioPlayer}>
+                <button onClick={toggleAudio} className={styles.playPauseBtn}>
+                  {isPlaying ? (
+                    // Pause Icon
+                    <svg
+                      width="30"
+                      height="30"
+                      viewBox="0 0 50 50"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle cx="25" cy="25" r="25" fill="#EBE2FF" />
+                      <rect
+                        x="18"
+                        y="17"
+                        width="5"
+                        height="18"
+                        rx="2"
+                        fill="#6524EB"
+                      />
+                      <rect
+                        x="27"
+                        y="17"
+                        width="5"
+                        height="18"
+                        rx="2"
+                        fill="#6524EB"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="30"
+                      height="30"
+                      viewBox="0 0 50 50"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle cx="25" cy="25" r="25" fill="#EBE2FF" />
+                      <polygon points="20,17 35,25 20,33" fill="#6524EB" />
+                    </svg>
+                  )}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={audioProgress}
+                  onChange={handleSeek}
+                  className={styles.audioSeek}
+                />
+                <div className={styles.audioTime}>
+                  <span>{formatTime(currentTime)}</span> /{" "}
+                  <span>{formatTime(audioRef.current?.duration || 0)}</span>
+                </div>
+                <audio
+                  ref={audioRef}
+                  src={callData.recording_url}
+                  onEnded={() => setIsPlaying(false)}
+                  onTimeUpdate={handleAudioProgress}
+                />
               </div>
-              <audio
-                ref={audioRef}
-                src={callData.recording_url}
-                onEnded={() => setIsPlaying(false)}
-              />
             </div>
           </div>
           <div className={styles.summaryDiv}>
@@ -278,12 +303,38 @@ const CallDetails = () => {
               {callData.call_analysis?.call_summary || "No data"}
             </p>
           </div>
-          {/* <div className={styles.summaryDiv}>
-                        <div className={styles.dataTitle}>
-                            <h2>Chat Details</h2>
-                        </div>
-                        <p className={styles.Ptext}>Customer: Hi, I need help with my order. Agent: Sure, I can assist you with that.</p>
-                    </div> */}
+          <div className={styles.summaryDiv}>
+            <div className={styles.dataTitle}>
+              <h2>Chat Details</h2>
+            </div>
+            <div className={styles.chatDetails}>
+              {transcript.slice(0, visibleCount).map((entry, index) => (
+                <div
+                  key={index}
+                  className={
+                    entry.role === "agent"
+                      ? styles.agentMessage
+                      : styles.userMessage
+                  }
+                >
+                  <p>
+                    <strong>
+                      {entry.role === "agent" ? "Agent: " : "User: "}
+                    </strong>
+                    {entry.content}
+                  </p>
+                </div>
+              ))}
+            </div>
+            {visibleCount < transcript.length && (
+              <button
+                onClick={showMoreMessages}
+                className={styles.readMoreButton}
+              >
+                Read More
+              </button>
+            )}
+          </div>
           <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
               <h2>Outcome(Analysis)</h2>
