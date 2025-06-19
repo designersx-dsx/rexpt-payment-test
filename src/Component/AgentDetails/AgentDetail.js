@@ -389,7 +389,7 @@ const AgentDashboard = () => {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
-      if (isCallInProgress) {
+      if (isCallInProgress && callId) {
         const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
       }
       setRefresh((prev) => !prev);

@@ -523,7 +523,7 @@ useEffect(() => {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
-      if (isCallInProgress) {
+      if (isCallInProgress && callId) {
         const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
         setIsCallInProgress(false);
       }
