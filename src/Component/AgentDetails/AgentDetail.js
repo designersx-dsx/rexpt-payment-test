@@ -1170,7 +1170,11 @@ const AgentDashboard = () => {
           {/* OffCanvas for Logout */}
 
           {isCalModalOpen && (
-            <div className={styles.modalBackdrop} onClick={closeCalModal}>
+            <div className={styles.modalBackdrop} onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                e.stopPropagation();
+              }
+            }}>
               <div
                 className={styles.modalContainer}
                 onClick={(e) => e.stopPropagation()}
@@ -1302,7 +1306,13 @@ const AgentDashboard = () => {
                           placeholder="Enter length"
                           className={styles.modalInput}
                           value={eventLength}
-                          onChange={(e) => setEventLength(e.target.value)}
+                          onChange={(e) => {
+                          const value = e.target.value;
+                          if (value <= 999 ) {
+                            setEventLength(value);
+                          }
+                        }}
+                        max="999"
                           min="1"
                         />
                       </div>

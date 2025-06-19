@@ -426,7 +426,9 @@ function Dashboard() {
 
       if (agents.length === 1) {
         setPopupType("failed");
-        setPopupMessage("Cannot delete. You must have at least two agents to delete one agent.");
+        setPopupMessage(
+          "Cannot delete. You must have at least two agents to delete one agent."
+        );
         setShowDeleteConfirm(false);
         return;
       }
@@ -646,8 +648,10 @@ function Dashboard() {
   };
 
   const handleEditProfile = () => {
-    navigate("/edit-profile")
-  }
+
+    navigate("/edit-profile");
+  };
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1001,10 +1005,17 @@ function Dashboard() {
 
         {/* Cal API Modal */}
         {isCalModalOpen && (
-          <div className={styles.modalBackdrop} onClick={closeModal}>
+          <div
+            className={styles.modalBackdrop}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                e.stopPropagation();
+              }
+            }}
+          >
             <div
               className={styles.modalContainer}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()} 
             >
               <h2>Connect with Cal</h2>
               <p>
@@ -1017,6 +1028,7 @@ function Dashboard() {
                   Click to connect with cal
                 </a>
               </p>
+
               <p> Need a hand connecting with Cal.com?{" "}
                 <a
                   href="/calinfo"
@@ -1024,6 +1036,7 @@ function Dashboard() {
                   rel="noopener noreferrer"
                 >
                   See quick setup guide</a>
+
               </p>
 
               <div
@@ -1086,7 +1099,7 @@ function Dashboard() {
                 <div className={styles.modalButtons}>
                   <button
                     className={`${styles.modalButton} ${styles.cancel}`}
-                    onClick={closeModal}
+                    onClick={closeModal} // Close the modal only when "Cancel" is clicked
                   >
                     Cancel
                   </button>
@@ -1134,7 +1147,13 @@ function Dashboard() {
                         placeholder="Enter length"
                         className={styles.modalInput}
                         value={eventLength}
-                        onChange={(e) => setEventLength(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value <= 999) {
+                            setEventLength(value);
+                          }
+                        }}
+                        max="999"
                         min="1"
                       />
                     </div>
@@ -1146,7 +1165,7 @@ function Dashboard() {
                   >
                     <button
                       className={`${styles.modalButton} ${styles.cancel}`}
-                      onClick={() => setShowEventInputs(false)}
+                      onClick={() => setShowEventInputs(false)} // Close event input section, not the entire modal
                     >
                       Cancel
                     </button>
@@ -1180,6 +1199,7 @@ function Dashboard() {
             </div>
           </div>
         )}
+
         {showDeleteConfirm && agentToDelete && (
           <div
             className={styles.modalBackdrop}
@@ -1477,9 +1497,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-        .map((item) => item?.service?.trim())
-        .filter(Boolean)
-        .map((service) => ({ service }))
+          .map((item) => item?.service?.trim())
+          .filter(Boolean)
+          .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(

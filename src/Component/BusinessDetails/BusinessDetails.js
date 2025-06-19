@@ -171,7 +171,7 @@ const BusinessDetails = () => {
 
   const validateServices = (value) => {
     if (businessType === "Other" && !value.trim()) {
-      return "Service name is required.";
+      return "Business type is required.";
     }
     return "";
   };
@@ -337,7 +337,7 @@ const BusinessDetails = () => {
      if(prevBuisnessType != businessType) {
           setShowPopup(true);
           setPopupType('success');
-          setPopupMessage("Business Type Changed please select related business services again !");
+          setPopupMessage("Business type changed please select related business services again !");
      }
   };
 
