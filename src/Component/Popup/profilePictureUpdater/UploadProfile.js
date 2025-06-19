@@ -340,6 +340,7 @@ import useUser from "../../../Store/Context/UserContext";
 import imageCompression from "browser-image-compression";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../../../utils/cropImageHelper";
+import Loader from "../../Loader/Loader";
 
 const compressImage = async (imageFile) => {
   const options = {
@@ -371,7 +372,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
-
+ const [loading,setLoading]=useState(false)
   // Helper to stop webcam stream
   const stopWebcamStream = () => {
     const stream = webcamRef.current?.video?.srcObject;
@@ -446,6 +447,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
     formData.append("profilePicture", profile);
 
     try {
+      setLoading(true)
       const response = await updateProfilePicture(userId, formData);
       const newProfilePicture = `${API_BASE_URL?.split("/api")[0]}${response?.profilePicture?.split("/public")[1]
         }`;
@@ -454,6 +456,8 @@ const UploadProfile = ({ onClose, onUpload }) => {
       onClose();
     } catch (error) {
       console.error("Error updating profile picture:", error);
+    }finally{
+       setLoading(false)
     }
   };
 
@@ -623,7 +627,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
                 : styles.disabledButton
             }
           >
-            Save Profile
+        {  loading?<>Saving&nbsp; <Loader size={18}/></>:  "Save Profile"}
           </button>
         </div>
       </div>
