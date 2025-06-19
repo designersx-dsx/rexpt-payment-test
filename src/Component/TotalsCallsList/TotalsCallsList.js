@@ -24,7 +24,7 @@ export default function Home() {
     totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
   const [data, setData] = useState([]);
-  console.log(data,"datadatadatadata")
+
   const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: "",
     endDate: "",
@@ -73,6 +73,7 @@ export default function Home() {
         setData(calls);
 
       } else {
+        
         setData([]);
       }
     } catch (error) {
@@ -129,11 +130,11 @@ export default function Home() {
       !filters ||
       !Array.isArray(filters?.leadType) ||
       filters?.leadType.length === 0 ||
-      filters?.leadType.includes(call.custom_analysis_data.lead_type);
+      filters?.leadType.includes(call.custom_analysis_data?.lead_type||call?.call_analysis?.custom_analysis_data?.lead_type);
 
     // Channel Filter (apply only if a channel is selected)
     const channelMatch =
-      filters?.channel === "" || call?.call_type === filters.channel;
+      filters?.channel === "" || call?.call_type === filters?.channel;
 
     //  Return only if all conditions match
     return sentimentMatch && inDateRange && leadTypeMatch && channelMatch;
