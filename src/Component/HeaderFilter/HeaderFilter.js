@@ -49,18 +49,28 @@ function HeaderFilter({
     navigate(-1);
   };
 
-  const handleChangeDate = (dates) => {
-    const [start, end] = dates;
-    setStartDate(start);
-    setEndDate(end);
-    if (start && end) {
-      onRangeChange({
-        startDate: formatDateWithoutTimezone(start),
-        endDate: formatDateWithoutTimezone(end),
-      });
-      setOpen(false);
-    }
-  };
+ const handleChangeDate = (dates) => {
+  const [start, end] = dates;
+  setStartDate(start);
+  setEndDate(end);
+};
+const handleApplyFilter = () => {
+  if (startDate && endDate) {
+    onRangeChange({
+      startDate: formatDateWithoutTimezone(startDate),
+      endDate: formatDateWithoutTimezone(endDate),
+    });
+    setOpen(false); 
+  }
+};
+
+const handleClearFilter = () => {
+  setStartDate(null);
+  setEndDate(null);
+  onRangeChange({ startDate: null, endDate: null }); // Clear the filter
+  setOpen(false); // Close the calendar when clearing
+};
+
   const handleFilterChange = (newFilters) => {
     onFilterChange(newFilters);
     setIsOpen(false);
@@ -184,25 +194,31 @@ function HeaderFilter({
               </div>
 
               <div className={styles.DatePic}>
-                {open && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      zIndex: 100,
-                      left: "50px",
-                      top: "40px",
-                    }}
-                  >
-                    <DatePicker
-                      selectsRange
-                      startDate={startDate}
-                      endDate={endDate}
-                      onChange={handleChangeDate}
-                      inline
-                      maxDate={new Date()}
-                    />
-                  </div>
-                )}
+               {open && (
+    <div
+      style={{
+        position: "absolute",
+        zIndex: 100,
+        left: "50px",
+        top: "40px",
+      }}
+    >
+      <DatePicker
+        selectsRange
+        startDate={startDate}
+        endDate={endDate}
+        onChange={handleChangeDate}
+        inline
+        maxDate={new Date()}
+        // Do not close the calendar when date is selected
+        onClickOutside={() => {}}
+      />
+      <div className={styles.dateButtons}>
+        <button onClick={handleApplyFilter} className={styles.applyButton}>Apply Filter</button>
+        <button onClick={handleClearFilter} className={styles.clearButton}>Clear Filter</button>
+      </div>
+    </div>
+  )}
 
                 <svg
                   onClick={() => setOpen(!open)}
