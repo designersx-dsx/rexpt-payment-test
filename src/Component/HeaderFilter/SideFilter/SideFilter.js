@@ -46,7 +46,7 @@ function SideFilter({ filters, onFilterChange, isLeadTypeSummary, onSelectAll })
   // Filter the lead types and channels based on the searchText
   const filteredLeadTypes = [...new Set(
     isLeadTypeSummary
-      .map(item => item.custom_analysis_data?.lead_type)
+      .map(item => item?.custom_analysis_data?.lead_type||item?.call_analysis?.custom_analysis_data?.lead_type)
       .filter(Boolean)
   )].filter(type => type.toLowerCase().includes(searchText.toLowerCase()));
 
