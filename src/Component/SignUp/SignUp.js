@@ -77,7 +77,7 @@ const SignUp = () => {
   };
 
   const handleEmailChange = (e) => {
-    const val = e.target.value;
+    const val = e.target.value.toLowerCase().trim();
     setEmail(val);
     setEmailTouched(true);
 
