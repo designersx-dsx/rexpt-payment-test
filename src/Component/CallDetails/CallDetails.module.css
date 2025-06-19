@@ -260,3 +260,8 @@
   font-size: 13px;
   color: #4E4E50;
 }
+.audioPlayer{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
