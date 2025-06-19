@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styles from './SideFilter.module.css'
 
-function SideFilter({ filters, onFilterChange, isLeadTypeSummary }) {
+function SideFilter({ filters, onFilterChange, isLeadTypeSummary, onSelectAll }) {
   const [localFilters, setLocalFilters] = useState(filters);
   const [searchText, setSearchText] = useState('');
 
@@ -33,13 +33,14 @@ function SideFilter({ filters, onFilterChange, isLeadTypeSummary }) {
   };
 
   const handleApply = () => {
-    onFilterChange(localFilters); 
+    onSelectAll()
+    onFilterChange(localFilters);
   };
 
   const handleClear = () => {
     const clearedFilters = { leadType: [], channel: '' };
     setLocalFilters(clearedFilters);
-    onFilterChange(clearedFilters); 
+    onFilterChange(clearedFilters);
   };
 
   // Filter the lead types and channels based on the searchText

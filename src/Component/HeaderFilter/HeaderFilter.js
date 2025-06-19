@@ -22,8 +22,8 @@ function HeaderFilter({
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [open, setOpen] = useState(false);
+  const [allSentiment, setAllSentiment] = useState("")
   const totalAgentView = localStorage.getItem("filterType");
-
   const today = new Date();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(today.getDate() - 7);
@@ -43,6 +43,7 @@ function HeaderFilter({
     const selectedOption = options.find((opt) => opt.id === selectedId);
     setSelected(selectedOption);
     onFilter(selectedOption.label);
+
   };
   const handleBack = () => {
     navigate(-1);
@@ -64,7 +65,12 @@ function HeaderFilter({
     onFilterChange(newFilters);
     setIsOpen(false);
   };
-
+  const handleAll = () => {
+    const allOption = options.find((opt) => opt.label === "All" || opt.id === 0);
+    setAllSentiment("all")
+    setSelected(allOption); // this sets dropdown to "All"
+    onFilter("All"); // clear sentiment filter
+  }
   return (
     <div>
       <div className={styles.Forsticky}>
@@ -145,13 +151,13 @@ function HeaderFilter({
                 {" "}
                 {startDate
                   ? startDate.toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })
+                    month: "long",
+                    year: "numeric",
+                  })
                   : (startDate || new Date()).toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    month: "long",
+                    year: "numeric",
+                  })}
               </p>
               <div className={styles.dateRange}>
                 <h6>
@@ -193,7 +199,7 @@ function HeaderFilter({
                       endDate={endDate}
                       onChange={handleChangeDate}
                       inline
-                      maxDate={new Date()} 
+                      maxDate={new Date()}
                     />
                   </div>
                 )}
@@ -261,6 +267,7 @@ function HeaderFilter({
       >
         {/* Put any content you want inside offcanvas here */}
         <SideFilter
+          onSelectAll={handleAll}
           filters={filters}
           onFilterChange={handleFilterChange}
           isLeadTypeSummary={isCallSummary}
