@@ -5,9 +5,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
+import Loader2 from "../Loader2/Loader2";
 
 const CallDetails = () => {
-  const location = useLocation();
   const [callData, setCallData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -63,24 +63,32 @@ const CallDetails = () => {
 
     fetchCallDetails();
   }, [callId]);
+
   if (!callId) return <p>No call selected.</p>;
-  if (loading) return ;
+  if (loading) return <Loader2/>
   if (error) return <p>{error}</p>;
 
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
+
+  // Date and time formatting
+  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
 
   return (
     <div>
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div className={styles.profileBack}>
-            {/* <img
-              src="svg/Notification.svg"
-              alt="Back button"
-              onClick={() => navigate(-1)}
-              style={{ cursor: "pointer" }}
-            /> */}
             <svg
               onClick={() => navigate(-1)}
               style={{ cursor: "pointer" }}
@@ -138,10 +146,8 @@ const CallDetails = () => {
           <hr className={styles.hrline} />
           <div className={styles.details3}>
             <div className={styles.Part1}>
-              <p>{new Date(callData.end_timestamp).toLocaleDateString()}</p>
-              <strong>
-                {new Date(callData.end_timestamp).toLocaleTimeString()}
-              </strong>
+               <p>{formattedDate}</p>
+              <strong>{formattedTime}</strong>
             </div>
             <div className={styles.Part2}>
               <p>Attended by</p>
@@ -163,27 +169,27 @@ const CallDetails = () => {
 
       <section>
         <div className={styles.DataMain}>
-          {/* <div className={styles.dataTitle}>
+          <div className={styles.dataTitle}>
             <h2>Data Collected</h2>
-          </div> */}
-          {/* <div className={styles.dataCard}>
+          </div>
+          <div className={styles.dataCard}>
             <div className={styles.PhoneNumber}>
               <p>Phone number</p>
-              <b>+91 9874XXXX88</b>
+              <b>-</b>
             </div>
             <div className={styles.EmailAddress}>
               <p>Email address</p>
-              <b>Nitish.p@gmail.com</b>
+              <b>-</b>
             </div>
             <div className={styles.Address}>
               <p>Address (if collected)</p>
-              <b>SAS Nagar, Mohali</b>
+              <b>-</b>
             </div>
             <div className={styles.Reason}>
               <p>Reason</p>
-              <b>Website Development</b>
+              <b>-</b>
             </div>
-          </div> */}
+          </div>
           <div className={styles.moredetailsDiv}>
             <div className={styles.dataTitle}>
               <h2>More Details</h2>
