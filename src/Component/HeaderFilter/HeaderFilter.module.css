@@ -262,3 +262,34 @@ left: 0px;
 top: 10px;
 z-index: 9999999999;
 }
+/* Styling the buttons below the calendar */
+.dateButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.applyButton,
+.clearButton {
+  background-color: #6524eb;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.applyButton:hover,
+.clearButton:hover {
+  background-color: #531be0;
+}
+
+.clearButton {
+  background-color: #e23d4f;
+}
+
+.clearButton:hover {
+  background-color: #d32f3a;
+}
