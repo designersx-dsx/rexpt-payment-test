@@ -95,6 +95,20 @@ function Dashboard() {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
 
+useEffect(() => {
+    // Dashboard pe aate hi naya history state add karo
+    window.history.pushState(null, document.title, window.location.pathname);
+
+    // Back button dabane pe redirect karo
+    const handlePopState = () => {
+      navigate('/dashboard'); // Wapas dashboard pe hi rakho
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Cleanup karo jab component unmount ho
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [navigate]);
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     if (agent?.isDeactivated === 1) {
@@ -509,7 +523,7 @@ function Dashboard() {
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
-      if (isCallInProgress) {
+      if (isCallInProgress && callId) {
         const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
         setIsCallInProgress(false);
       }
