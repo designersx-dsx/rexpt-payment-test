@@ -603,18 +603,24 @@ function Dashboard() {
     navigate("/totalcall-list");
   };
 
-  function formatName(name) {
-    if (!name) return "";
+ function formatName(name) {
+  if (!name) return "";
 
-    if (name.includes(" ")) {
-      return name?.split(" ")[0];
+  if (name.includes(" ")) {
+    const firstName = name.split(" ")[0];
+    if (firstName.length <= 7) {
+      return firstName;
     } else {
-      if (name?.length > 7) {
-        return name?.substring(0, 10);
-      }
-      return name;
+      return firstName.substring(0, 10) + "...";
     }
+  } else {
+    if (name.length > 7) {
+      return name.substring(0, 10) + "...";
+    }
+    return name;
   }
+}
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -642,8 +648,10 @@ function Dashboard() {
   };
 
   const handleEditProfile = () => {
+
     navigate("/edit-profile");
   };
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1020,12 +1028,15 @@ function Dashboard() {
                   Click to connect with cal
                 </a>
               </p>
-              <p>
-                {" "}
-                Need a hand connecting with Cal.com?{" "}
-                <a href="/calinfo" target="_blank" rel="noopener noreferrer">
-                  See quick setup guide
-                </a>
+
+              <p> Need a hand connecting with Cal.com?{" "}
+                <a
+                  href="/calinfo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  See quick setup guide</a>
+
               </p>
 
               <div
