@@ -1074,7 +1074,7 @@ const AgentDashboard = () => {
                 <p className={styles.managementText}>Upgrade</p>
               </div>
 
-              <div
+              {/* <div
                 className={styles.managementItem}
                 onClick={() => setShowModal(true)}
               >
@@ -1097,7 +1097,7 @@ const AgentDashboard = () => {
                   </svg>
                 </div>
                 <p className={styles.managementText}>Delete Agent</p>
-              </div>
+              </div> */}
             </div>
 
             <h1 className={styles.Agenttitle}>Agent Analysis</h1>

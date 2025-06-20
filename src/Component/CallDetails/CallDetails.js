@@ -12,7 +12,9 @@ const CallDetails = () => {
   const [messagesPerReveal, setMessagesPerReveal] = useState(0);
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const agentData = JSON.parse(sessionStorage.getItem("dashboard-session-storage"));
+  const agentData = JSON.parse(
+    sessionStorage.getItem("dashboard-session-storage")
+  );
   const { callId } = useParams();
   const agents = agentData?.state?.agents || [];
   const navigate = useNavigate();
@@ -47,7 +49,9 @@ const CallDetails = () => {
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${
+      seconds < 10 ? "0" : ""
+    }${seconds}`;
   };
 
   useEffect(() => {
@@ -91,28 +95,38 @@ const CallDetails = () => {
   if (error) return <p>{error}</p>;
 
   const transcript = callData.transcript_object || [];
-  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString(
+    "en-GB",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }
+  );
+  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString(
+    "en-GB",
+    {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }
+  );
 
   const showMoreMessages = () => {
-    setVisibleCount((prev) => Math.min(prev + messagesPerReveal, transcript.length));
+    setVisibleCount((prev) =>
+      Math.min(prev + messagesPerReveal, transcript.length)
+    );
   };
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
+
 
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
     const seconds = Math.floor((durationMs % 60000) / 1000);
     return `${minutes} min ${seconds} sec`;
   };
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -189,7 +203,9 @@ const CallDetails = () => {
 
             <div className={styles.Part3}>
               <p>Durations</p>
+
               <strong>{convertMsToMinSec(callData.duration_ms)}</strong>
+
             </div>
           </div>
         </div>

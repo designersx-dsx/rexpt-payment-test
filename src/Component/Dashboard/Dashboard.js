@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
-import Footer from "../AgentDetails/Footer/Footer";
 import { useNavigate } from "react-router-dom";
 import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
   fetchDashboardDetails,
+  getBusinessDetailsByBusinessId,
   getUserAgentMergedDataForAgentUpdate,
   toggleAgentActivation,
+  updateAgentKnowledgeBaseId,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -17,12 +18,13 @@ import Modal2 from "../Modal2/Modal2";
 import CallTest from "../CallTest/CallTest";
 import WidgetScript from "../Widgets/WidgetScript";
 import Popup from "../Popup/Popup";
-import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 import Modal from "../Modal2/Modal2";
+import Loader from "../Loader/Loader";
+
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -90,7 +92,7 @@ function Dashboard() {
 
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
-
+  const [deactivateLoading, setDeactivateLoading] = useState(false);
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
@@ -101,13 +103,13 @@ function Dashboard() {
 
     // Back button dabane pe redirect karo
     const handlePopState = () => {
-      navigate('/dashboard'); // Wapas dashboard pe hi rakho
+      navigate("/dashboard"); // Wapas dashboard pe hi rakho
     };
 
-    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
 
     // Cleanup karo jab component unmount ho
-    return () => window.removeEventListener('popstate', handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
@@ -675,10 +677,193 @@ function Dashboard() {
   };
 
   const handleEditProfile = () => {
-
     navigate("/edit-profile");
   };
+  const handleDeactivateAgent = async () => {
+    try {
+      setDeactivateLoading(true);
+      const dashboardState = JSON.parse(
+        sessionStorage.getItem("dashboard-session-storage")
+      );
 
+      const agentData = dashboardState?.state?.agents?.find(
+        (ag) => ag.agent_id === agentToDeactivate.agent_id
+      );
+
+      const knowledgeBaseId = agentData?.knowledgeBaseId;
+      const businessId = agentData?.businessId;
+
+      const isCurrentlyDeactivated = agentToDeactivate.isDeactivated === 1;
+      if (!isCurrentlyDeactivated && knowledgeBaseId) {
+        await fetch(
+          `https://api.retellai.com/delete-knowledge-base/${knowledgeBaseId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+      if (isCurrentlyDeactivated && businessId) {
+        const businessDetails = await getBusinessDetailsByBusinessId(
+          businessId
+        );
+        console.log(
+          "Business Details fetched during activation:",
+          businessDetails
+        );
+
+        const shortName = (businessDetails?.businessName || "Business")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "_")
+          .slice(0, 20);
+
+        const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
+        const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
+
+        const businessData = {
+          name: businessDetails?.businessName || "",
+          address: businessDetails?.address1 || "",
+          phone: businessDetails?.phone || "",
+          website: businessDetails?.webUrl || "",
+          rating: businessDetails?.rating || "",
+          totalRatings: businessDetails?.totalRatings || "",
+          hours: (businessDetails?.hours || []).join(" | "),
+          businessStatus: businessDetails?.businessStatus || "",
+          categories: (businessDetails?.categories || []).join(", "),
+        };
+
+        const knowledgeBaseText = {
+          title: businessDetails?.businessType || "Business Info",
+          text: `
+Business Name: ${businessData.name}
+Address: ${businessData.address}
+Phone: ${businessData.phone}
+Website: ${businessData.website}
+Rating: ${businessData.rating} (${businessData.totalRatings} reviews)
+Business Status: ${businessData.businessStatus}
+Categories: ${businessData.categories}
+Opening Hours: ${businessData.hours}
+`.trim(),
+        };
+
+        // Step 1: Create Knowledge Base
+        const formData = new FormData();
+        formData.append("knowledge_base_name", knowledgeBaseName);
+        formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+        formData.append("enable_auto_refresh", "true");
+        formData.append(
+          "knowledge_base_texts",
+          JSON.stringify([knowledgeBaseText])
+        );
+
+        const createRes = await fetch(
+          `https://api.retellai.com/create-knowledge-base`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+            },
+            body: formData,
+          }
+        );
+
+        if (!createRes.ok) {
+          const errData = await createRes.json();
+          console.error("Knowledge base creation failed:", errData);
+          throw new Error("Failed to create knowledge base during activation");
+        }
+
+        const createdKB = await createRes.json();
+        const knowledgeBaseId = createdKB.knowledge_base_id;
+
+        console.log("✅ Knowledge Base Created:", knowledgeBaseId);
+        sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
+
+        // Step 2: Update LLM for the agent
+        const llmId =
+          agentToDeactivate?.llmId ||
+          localStorage.getItem("llmId") ||
+          sessionStorage.getItem("llmId");
+
+        console.log("LLM ID:", llmId);
+
+        if (llmId && knowledgeBaseId) {
+          const llmPayload = {
+            knowledge_base_ids: [knowledgeBaseId],
+          };
+
+          try {
+            const updateLLMRes = await fetch(
+              `https://api.retellai.com/update-retell-llm/${llmId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                },
+                body: JSON.stringify(llmPayload),
+              }
+            );
+
+            if (!updateLLMRes.ok) {
+              const err = await updateLLMRes.json();
+              console.error("Failed to update LLM:", err);
+              throw new Error("LLM update failed");
+            }
+
+            console.log(
+              "✅ LLM updated successfully with KB ID:",
+              knowledgeBaseId
+            );
+          } catch (error) {
+            console.error("Error updating LLM:", error);
+          }
+        } else {
+          console.warn(
+            "LLM ID or Knowledge Base ID missing. LLM update skipped."
+          );
+        }
+
+        // ✅ Step 3: Update Agent's knowledgeBaseId in DB
+        if (agentToDeactivate?.agent_id && knowledgeBaseId) {
+          try {
+            await updateAgentKnowledgeBaseId(
+              agentToDeactivate.agent_id,
+              knowledgeBaseId
+            );
+            console.log("✅ Agent knowledgeBaseId updated in DB");
+          } catch (err) {
+            console.error(" Failed to update agent's KB ID:", err);
+          }
+        }
+      }
+
+      await toggleAgentActivation(
+        agentToDeactivate.agent_id,
+        !isCurrentlyDeactivated
+      );
+
+      setPopupType("success");
+      setPopupMessage(
+        isCurrentlyDeactivated
+          ? "Agent activated successfully."
+          : "Agent deactivated successfully."
+      );
+      setShowDeactivateConfirm(false);
+      setHasFetched(false);
+    } catch (error) {
+      console.error("Activation/Deactivation Error:", error);
+      setPopupType("failed");
+      setPopupMessage("Failed to update agent status.");
+      setShowDeactivateConfirm(false);
+    } finally {
+      setDeactivateLoading(false);
+    }
+  };
   return (
     <div>
       <div className={styles.forSticky}>
@@ -934,7 +1119,7 @@ function Dashboard() {
                       >
                         Upgrade
                       </div>
-                      <div key={agent.agent_id}>
+                      {/* <div key={agent.agent_id}>
                         <div
                           className={styles.OptionItem}
                           onMouseDown={(e) => {
@@ -945,7 +1130,7 @@ function Dashboard() {
                         >
                           Delete Agent
                         </div>
-                      </div>
+                      </div> */}
                       <div
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
@@ -1056,14 +1241,12 @@ function Dashboard() {
                 </a>
               </p>
 
-              <p> Need a hand connecting with Cal.com?{" "}
-                <a
-                  href="/calinfo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  See quick setup guide</a>
-
+              <p>
+                {" "}
+                Need a hand connecting with Cal.com?{" "}
+                <a href="/calinfo" target="_blank" rel="noopener noreferrer">
+                  See quick setup guide
+                </a>
               </p>
 
               <div
@@ -1359,29 +1542,21 @@ function Dashboard() {
               </button>
               <button
                 className={`${styles.modalButton} ${styles.submit}`}
-                onClick={async () => {
-                  try {
-                    await toggleAgentActivation(
-                      agentToDeactivate.agent_id,
-                      agentToDeactivate.isDeactivated === 0
-                    );
-                    setShowDeactivateConfirm(false);
-                    setAgentToDeactivate(null);
-                    setPopupType("success");
-                    setPopupMessage(
-                      agentToDeactivate.isDeactivated === 1
-                        ? "Agent activated successfully."
-                        : "Agent deactivated successfully."
-                    );
-                    setHasFetched(false);
-                  } catch (error) {
-                    setPopupType("failed");
-                    setPopupMessage("Failed to update agent status.");
-                    setShowDeactivateConfirm(false);
-                  }
-                }}
+                onClick={handleDeactivateAgent}
               >
-                Yes
+                {deactivateLoading ? (
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    Updating <Loader size={18} />
+                  </span>
+                ) : (
+                  "Yes"
+                )}
               </button>
             </div>
           </div>
