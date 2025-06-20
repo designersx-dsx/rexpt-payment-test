@@ -479,6 +479,7 @@ Opening Hours: ${businessData.hours}
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     formData.append("enable_auto_refresh", "true");
     formData.append("knowledge_base_texts", JSON.stringify([knowledgeBaseText]));
+    formData2.append("knowledge_base_texts", JSON.stringify([knowledgeBaseText]));
 
     formData2.append("googleUrl", googleListing);
     formData2.append("webUrl", businessUrl.trim());

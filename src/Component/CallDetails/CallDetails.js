@@ -9,15 +9,17 @@ const CallDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [visibleCount, setVisibleCount] = useState(0);
-  const [messagesPerReveal, setMessagesPerReveal] = useState(0); 
+  const [messagesPerReveal, setMessagesPerReveal] = useState(0);
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const agentData = JSON.parse(sessionStorage.getItem("dashboard-session-storage"));
+  const agentData = JSON.parse(
+    sessionStorage.getItem("dashboard-session-storage")
+  );
   const { callId } = useParams();
   const agents = agentData?.state?.agents || [];
   const navigate = useNavigate();
-   const [audioProgress, setAudioProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0); 
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const toggleAudio = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -29,12 +31,12 @@ const CallDetails = () => {
       setIsPlaying(false);
     }
   };
-const handleAudioProgress = () => {
+  const handleAudioProgress = () => {
     const audio = audioRef.current;
     if (audio) {
       const progress = (audio.currentTime / audio.duration) * 100;
       setAudioProgress(progress);
-      setCurrentTime(audio.currentTime); 
+      setCurrentTime(audio.currentTime);
     }
   };
 
@@ -47,7 +49,9 @@ const handleAudioProgress = () => {
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${
+      seconds < 10 ? "0" : ""
+    }${seconds}`;
   };
 
   useEffect(() => {
@@ -82,7 +86,7 @@ const handleAudioProgress = () => {
     }
   }, [callData]);
 
- useEffect(() => {
+  useEffect(() => {
     setVisibleCount(messagesPerReveal);
   }, [messagesPerReveal]);
 
@@ -91,22 +95,37 @@ const handleAudioProgress = () => {
   if (error) return <p>{error}</p>;
 
   const transcript = callData.transcript_object || [];
-  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString(
+    "en-GB",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }
+  );
+  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString(
+    "en-GB",
+    {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }
+  );
 
   const showMoreMessages = () => {
-    setVisibleCount((prev) => Math.min(prev + messagesPerReveal, transcript.length));
+    setVisibleCount((prev) =>
+      Math.min(prev + messagesPerReveal, transcript.length)
+    );
   };
-    let data = callData.call_analysis?.custom_analysis_data;
+  let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
+  const formatDuration = (seconds) => {
+    if (!seconds || isNaN(seconds)) return "0 Sec";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins > 0 ? `${mins} Min ` : ""}${secs} Sec`;
+  };
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -184,7 +203,9 @@ const handleAudioProgress = () => {
 
             <div className={styles.Part3}>
               <p>Durations</p>
-              <strong>{callData.call_cost?.total_duration_seconds} sec</strong>
+              <strong>
+                {formatDuration(callData.call_cost?.total_duration_seconds)}
+              </strong>
             </div>
           </div>
         </div>
@@ -232,7 +253,7 @@ const handleAudioProgress = () => {
             </div>
             <div className={styles.channel}>
               <p className={styles.Ptext}>Call Recording</p>
-             <div className={styles.audioPlayer}>
+              <div className={styles.audioPlayer}>
                 <div onClick={toggleAudio} className={styles.playPauseBtn}>
                   {isPlaying ? (
                     // Pause Icon
