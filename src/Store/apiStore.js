@@ -274,6 +274,28 @@ try {
   
 }
 }
+export const getBusinessDetailsByBusinessId = async (businessId) => {
+  try {
+    const res = await api.get(`/businessDetails/by-business-id/${businessId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching business details by business ID:", error.response?.data || error.message);
+    throw new Error("Failed to fetch business details");
+  }
+};
+
+export const updateAgentKnowledgeBaseId = async (agentId, knowledgeBaseId) => {
+  try {
+    const res = await api.patch(`/agent/${agentId}/knowledge-base`, {
+      knowledgeBaseId,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error updating agent knowledge base ID:", error);
+    throw new Error("Failed to update knowledge base ID for agent");
+  }
+};
+
 
 
 
