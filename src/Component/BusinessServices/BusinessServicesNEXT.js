@@ -18,6 +18,8 @@ const AboutBusinessNext = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const EditingMode = localStorage.getItem("UpdationMode");
   const [email, setEmail] = useState("");
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [isSkipClicked, setIsSkipClicked] = useState(false);
   // Error states
   const [emailError, setEmailError] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -72,6 +74,8 @@ const AboutBusinessNext = () => {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitClicked(true);
+
     if (email) {
       const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
       if (!isValid) {
@@ -175,7 +179,7 @@ const AboutBusinessNext = () => {
           JSON.stringify(filteredServices)
         );
         navigate("/about-business");
-      }, 2000);
+      }, 1000);
     } catch (error) {
       setPopupType("failed");
       setPopupMessage("An error occurred while adding business details.");
@@ -187,6 +191,7 @@ const AboutBusinessNext = () => {
   };
 
   const handleSkip = () => {
+    setIsSkipClicked(true);
     handleSubmit();
     // navigate("/about-business");fdfdfdf
   };
@@ -285,11 +290,12 @@ const AboutBusinessNext = () => {
           </>
         ))}
 
-        <div onClick={handleSkip} className={styles.skipButton}>
+        <div onClick={isSubmitClicked ? undefined : handleSkip} style={{ pointerEvents: isSubmitClicked ? "none" : "auto", opacity: isSubmitClicked ? 0.5 : 1 }} className={styles.skipButton}>
           {stepEditingMode ? "" : <button>Skip for now</button>}
         </div>
         {stepEditingMode != "ON" ? (
-          <div className={styles.Btn} onClick={handleSubmit}>
+          <div className={styles.Btn} onClick={isSkipClicked ? undefined : handleSubmit} style={{ pointerEvents: isSkipClicked ? "none" : "auto", opacity: isSkipClicked ? 0.5 : 1 }}
+          >
             <div type="submit">
               <div className={styles.btnTheme} >
                 <img src="svg/svg-theme2.svg" alt="Submit" />

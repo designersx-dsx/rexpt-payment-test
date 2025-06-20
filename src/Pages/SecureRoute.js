@@ -26,7 +26,7 @@ const SecureRoute = ({ children }) => {
       setIsValid(false);
     }
   }, [token]);
-
+ 
   // This useEffect handles redirect when token is invalid
   useEffect(() => {
     if (isValid === false) {
@@ -35,6 +35,9 @@ const SecureRoute = ({ children }) => {
       window.location.href = "/signup";
     }
   }, [isValid]);
+   if (isValid === null ) {
+    return <Loader2 />;
+  }
   //  Prevent access to restricted routes if onboarding is incomplete
   if (
     isValid === true &&

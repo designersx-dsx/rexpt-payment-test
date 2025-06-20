@@ -95,7 +95,7 @@ function Dashboard() {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
 
-useEffect(() => {
+  useEffect(() => {
     // Dashboard pe aate hi naya history state add karo
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -198,7 +198,6 @@ useEffect(() => {
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
-
     navigate("/agent-detail", {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
@@ -617,23 +616,23 @@ useEffect(() => {
     navigate("/totalcall-list");
   };
 
- function formatName(name) {
-  if (!name) return "";
+  function formatName(name) {
+    if (!name) return "";
 
-  if (name.includes(" ")) {
-    const firstName = name.split(" ")[0];
-    if (firstName.length <= 7) {
-      return firstName;
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
     } else {
-      return firstName.substring(0, 10) + "...";
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
     }
-  } else {
-    if (name.length > 7) {
-      return name.substring(0, 10) + "...";
-    }
-    return name;
   }
-}
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -1029,7 +1028,7 @@ useEffect(() => {
           >
             <div
               className={styles.modalContainer}
-              onClick={(e) => e.stopPropagation()} 
+              onClick={(e) => e.stopPropagation()}
             >
               <h2>Connect with Cal</h2>
               <p>
@@ -1511,9 +1510,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(

@@ -9,15 +9,15 @@ const CallDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [visibleCount, setVisibleCount] = useState(0);
-  const [messagesPerReveal, setMessagesPerReveal] = useState(0); 
+  const [messagesPerReveal, setMessagesPerReveal] = useState(0);
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const agentData = JSON.parse(sessionStorage.getItem("dashboard-session-storage"));
   const { callId } = useParams();
   const agents = agentData?.state?.agents || [];
   const navigate = useNavigate();
-   const [audioProgress, setAudioProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0); 
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const toggleAudio = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -29,12 +29,12 @@ const CallDetails = () => {
       setIsPlaying(false);
     }
   };
-const handleAudioProgress = () => {
+  const handleAudioProgress = () => {
     const audio = audioRef.current;
     if (audio) {
       const progress = (audio.currentTime / audio.duration) * 100;
       setAudioProgress(progress);
-      setCurrentTime(audio.currentTime); 
+      setCurrentTime(audio.currentTime);
     }
   };
 
@@ -82,7 +82,7 @@ const handleAudioProgress = () => {
     }
   }, [callData]);
 
- useEffect(() => {
+  useEffect(() => {
     setVisibleCount(messagesPerReveal);
   }, [messagesPerReveal]);
 
@@ -105,7 +105,7 @@ const handleAudioProgress = () => {
   const showMoreMessages = () => {
     setVisibleCount((prev) => Math.min(prev + messagesPerReveal, transcript.length));
   };
-    let data = callData.call_analysis?.custom_analysis_data;
+  let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
   return (
     <div>
@@ -155,13 +155,12 @@ const handleAudioProgress = () => {
               <h2>{name || "Unknown"}</h2>
             </div>
             <div
-              className={`${styles.status} ${
-                callData.call_analysis?.user_sentiment === "Positive"
+              className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
                   ? styles.green
                   : callData.call_analysis?.user_sentiment === "Neutral"
-                  ? styles.yellow
-                  : styles.red
-              }`}
+                    ? styles.yellow
+                    : styles.red
+                }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
             </div>
@@ -177,7 +176,7 @@ const handleAudioProgress = () => {
               <strong>
                 {callData?.agent_id
                   ? agents.find((a) => a.agent_id === callData.agent_id)
-                      ?.agentName || "Unknown Agent"
+                    ?.agentName || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>
@@ -232,7 +231,7 @@ const handleAudioProgress = () => {
             </div>
             <div className={styles.channel}>
               <p className={styles.Ptext}>Call Recording</p>
-             <div className={styles.audioPlayer}>
+              <div className={styles.audioPlayer}>
                 <div onClick={toggleAudio} className={styles.playPauseBtn}>
                   {isPlaying ? (
                     // Pause Icon
@@ -335,7 +334,7 @@ const handleAudioProgress = () => {
               </button>
             )}
           </div>
-          <div className={styles.summaryDiv}>
+          {/* <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
               <h2>Outcome(Analysis)</h2>
             </div>
@@ -343,7 +342,7 @@ const handleAudioProgress = () => {
             <p className={styles.Ptext}>
               Analysis: Customer satisfied with the information provided.{" "}
             </p>
-          </div>
+          </div> */}
         </div>
       </section>
     </div>

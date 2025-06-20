@@ -7,6 +7,7 @@ import PopUp from "../Popup/Popup";
 import useUser from "../../Store/Context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Loader2 from "../Loader2/Loader2";
+import Loader from "../Loader/Loader";
 
 const EditProfile = () => {
   const fileInputRef = useRef(null);
@@ -22,6 +23,7 @@ const EditProfile = () => {
   const navigate = useNavigate()
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [addLoading,addSetLoading]=useState(false)
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -147,7 +149,7 @@ const EditProfile = () => {
 
     try {
 
-      setLoading(true);
+      addSetLoading(true);
       const response = await updateUserDetails(userId, {
         name: formData.name,
         email: formData.email,
@@ -171,7 +173,7 @@ const EditProfile = () => {
       setPopupMessage("Failed to update profile.")
 
     } finally {
-      setLoading(false);
+      addSetLoading(false);
     }
   };
   const handleClosePopup = () => {
@@ -275,16 +277,16 @@ const EditProfile = () => {
               name="address"
               value={formData.address}
               onChange={handleChange}
-              maxLength={400}
+              maxLength={10000}
             />
           </div>
         </div>
       </div>
-      <div type="submit" onClick={isDataChanged() && !loading ? handleSubmit : undefined}
+      <div type="submit" onClick={isDataChanged() && !addLoading ? handleSubmit : undefined}
         style={{ opacity: isDataChanged() ? 1 : 0.5, pointerEvents: isDataChanged() ? "auto" : "none" }} >
         <div className={styles.btnTheme}>
           <img src="svg/svg-theme.svg" alt="" />
-          <p>{loading ? "Saving..." : "Save"}</p>
+          <p  >{addLoading ? <>Saving... &nbsp; <Loader size={18}/></> : "Save"}</p>
         </div>
       </div>
       {isUploadModalOpen && (
