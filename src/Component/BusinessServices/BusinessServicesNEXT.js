@@ -188,7 +188,7 @@ const AboutBusinessNext = () => {
 
   const handleSkip = () => {
     handleSubmit();
-    // navigate("/about-business");
+    // navigate("/about-business");fdfdfdf
   };
 
   const handleSaveEdit = (e) => {
