@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import Plan from "../Plan/Plan";
-import { useNavigate , useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
@@ -88,7 +88,7 @@ function Dashboard() {
   const [agentToDelete, setAgentToDelete] = useState(null);
   const [show, setShow] = useState(false);
   const [close, setClose] = useState(false);
-  const [modelOpen , setModelOpen] = useState(false)
+  const [modelOpen, setModelOpen] = useState(false)
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
   const [agentId, setagentId] = useState()
@@ -671,13 +671,15 @@ function Dashboard() {
     navigate("/edit-profile");
   };
 
-    const handleUpgradeClick = (agent) => {
-    // console.log("upBTN", agent)
-    setagentId(agent?.agent_id);
-    setsubscriptionId(agent?.subscriptionId)
-    // Then open the modal
-    setModelOpen(true)
- 
+  const handleUpgradeClick = (agent) => {
+    if (agent?.subscriptionId) {
+      alert("Coming Soon");
+    } else {
+      setagentId(agent?.agent_id);
+      setsubscriptionId(agent?.subscriptionId);
+      setModelOpen(true);
+    }
+
   };
 
   return (
@@ -924,7 +926,10 @@ function Dashboard() {
                       </div>
                       <div
                         className={styles.OptionItem}
-                         onClick={() => handleUpgradeClick(agent)}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          handleUpgradeClick(agent);
+                        }}
                       >
                         Upgrade
                       </div>
@@ -1387,10 +1392,10 @@ function Dashboard() {
       )}
 
       {/* <Footer /> */}
-      <Footer2  />
+      <Footer2 />
       <Modal isOpen={modelOpen} onClose={() => setModelOpen(false)}>
-              <Plan  agentID={agentId} subscriptionID={subscriptionId} locationPath={locationPath}/>
-            </Modal>
+        <Plan agentID={agentId} subscriptionID={subscriptionId} locationPath={locationPath} />
+      </Modal>
 
       <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
 

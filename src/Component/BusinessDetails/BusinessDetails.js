@@ -341,13 +341,13 @@ const BusinessDetails = () => {
      }
   };
 
-  useEffect(() => {
-    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-      setShowPopup(true);
-      setPopupType('failed');
-      setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
-    }
-  }, [CheckingUserLimit, isLimitExceeded]);
+  // useEffect(() => {
+  //   if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+  //     setShowPopup(true);
+  //     setPopupType('failed');
+  //     setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+  //   }
+  // }, [CheckingUserLimit, isLimitExceeded]);
 
   // if (CheckingUserLimit) return 
   

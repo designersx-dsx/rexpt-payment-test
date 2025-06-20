@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./CountdownPopup.css";
 
 const CountdownPopup = ({ onClose, onFinish }) => {
-  const [remainingTime, setRemainingTime] = useState(80); // 2 minutes in seconds
+  const [remainingTime, setRemainingTime] = useState(10); // 2 minutes in seconds
   const [popupMessage, setPopupMessage] = useState(
     `Processing... Please wait for ${remainingTime} seconds.`
   );
