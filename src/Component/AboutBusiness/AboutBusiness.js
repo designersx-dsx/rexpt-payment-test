@@ -828,7 +828,7 @@ Opening Hours: ${businessData.hours}
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
                 <textarea
-                  rows="4"
+                  rows="5"
                   cols="50"
                   id="about-business"
                   type="text"
