@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
-import { useNavigate , useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
@@ -98,7 +98,7 @@ function Dashboard() {
   const location = useLocation();
 
   const locationPath = location.pathname
-useEffect(() => {
+  useEffect(() => {
     // Dashboard pe aate hi naya history state add karo
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -621,23 +621,23 @@ useEffect(() => {
     navigate("/totalcall-list");
   };
 
- function formatName(name) {
-  if (!name) return "";
+  function formatName(name) {
+    if (!name) return "";
 
-  if (name.includes(" ")) {
-    const firstName = name.split(" ")[0];
-    if (firstName.length <= 7) {
-      return firstName;
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
     } else {
-      return firstName.substring(0, 10) + "...";
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
     }
-  } else {
-    if (name.length > 7) {
-      return name.substring(0, 10) + "...";
-    }
-    return name;
   }
-}
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -669,12 +669,12 @@ useEffect(() => {
 
     navigate("/edit-profile");
   };
-    const handleUpgradeClick = (agent) => {
+  const handleUpgradeClick = (agent) => {
     // console.log("upBTN", agent)
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId)
     // Then open the modal
- 
+
   };
 
   return (
@@ -926,7 +926,7 @@ useEffect(() => {
                           if (agent?.isDeactivated === 1) {
                             handleInactiveAgentAlert();
                           } else {
-                         handleUpgradeClick(agent)
+                            handleUpgradeClick(agent)
                           }
                         }}
                       >
@@ -1040,7 +1040,7 @@ useEffect(() => {
           >
             <div
               className={styles.modalContainer}
-              onClick={(e) => e.stopPropagation()} 
+              onClick={(e) => e.stopPropagation()}
             >
               <h2>Connect with Cal</h2>
               <p>
@@ -1522,9 +1522,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(
