@@ -183,6 +183,8 @@
     flex-direction: column;
     gap: 1rem;
     margin: 1rem 20px;
+    position: relative;
+    z-index: 1;
 }
 
 .heading {
@@ -282,6 +284,10 @@
     outline: none !important;
     transition: border 0.2s ease !important;
     min-height: 55px !important;
+}
+
+.Dblock .selected-flag {    
+    background-color:#fff !important;
 }
 /* ===== Step-by-step Fade Out (Bottom to Top) ===== */
 @keyframes fadeOut {

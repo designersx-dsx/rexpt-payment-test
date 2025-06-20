@@ -123,6 +123,16 @@
 
 
  }
+ .react-tel-input .selected-flag {
+    
+    background-color: #fff;
+}
+.react-tel-input .flag-dropdown {
+    
+    border: 1px solid #E0E5F2 !important;
+    /* border-right: unset !important; */
+    
+}
 
  /* calendar css */
 
