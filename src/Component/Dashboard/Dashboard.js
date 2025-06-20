@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation } from "react-router-dom";
 import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
@@ -90,11 +90,14 @@ function Dashboard() {
 
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
-
+  const [agentId, setagentId] = useState()
+  const [subscriptionId, setsubscriptionId] = useState()
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
+  const location = useLocation();
 
+  const locationPath = location.pathname
 useEffect(() => {
     // Dashboard pe aate hi naya history state add karo
     window.history.pushState(null, document.title, window.location.pathname);
@@ -124,6 +127,7 @@ useEffect(() => {
       setIsAssignModalOpen(true);
     }
   };
+
 
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
@@ -665,6 +669,13 @@ useEffect(() => {
 
     navigate("/edit-profile");
   };
+    const handleUpgradeClick = (agent) => {
+    // console.log("upBTN", agent)
+    setagentId(agent?.agent_id);
+    setsubscriptionId(agent?.subscriptionId)
+    // Then open the modal
+ 
+  };
 
   return (
     <div>
@@ -915,7 +926,7 @@ useEffect(() => {
                           if (agent?.isDeactivated === 1) {
                             handleInactiveAgentAlert();
                           } else {
-                            handleUpgrade(agent.agent_id);
+                         handleUpgradeClick(agent)
                           }
                         }}
                       >

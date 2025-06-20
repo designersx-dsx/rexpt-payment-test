@@ -1,114 +1,71 @@
-import React, { useState, useEffect } from "react";
-import styles from "./Plan.module.css";
-import { useNavigate } from "react-router-dom";
-import Loader2 from "../Loader2/Loader2";
-import Modal from '../Modal2/Modal2'
-import decodeToken from "../../lib/decodeToken";
-import { fetchUserDetails } from "../../Store/apiStore";
-import PopUp from "../Popup/Popup";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Plan.module.css';
+import Loader from '../Loader/Loader';
+
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
-const Plan = () => {
-  const [products, setProducts] = useState([]);
+const Plan = ({ agentID, locationPath, subscriptionID }) => {
+  const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [selected, setSelected] = useState(null);
-  const [open, setOpen] = useState(null);
+  const [selectedAccordion, setSelectedAccordion] = useState(null);
+  const [priceId, setPriceId] = useState(null); // State to store the selected priceId
+  const [selectedTab, setSelectedTab] = useState('month'); // State to handle tab selection (monthly/yearly)
   const navigate = useNavigate();
-  const [show, setShow] = useState(false)
-  const [close, setClose] = useState(false)
-  const [data, setData] = useState([])
-   const [showPopup, setShowPopup] = useState(false);
-   const [popupType, setPopupType] = useState(null);
-   const [popupMessage, setPopupMessage] = useState("");
-  // UserId decoded from token
-  const token = localStorage.getItem("token") || "";
-  const decodeTokenData = decodeToken(token);
-  const userIdFromToken = decodeTokenData?.id || "";
-  const [userId, setUserId] = useState(userIdFromToken);
-  const handleCLose = () => {
-    setClose(true)
-    setShow(false)
-  }
-  const handleNaviagte = () => {
-    navigate('/signup')
-  }
+
   useEffect(() => {
-    fetch(`${API_BASE}/products`)
-      .then((res) => res.json())
-      .then((data) => {
-        // Map products to expected structure (with metadata)
-        const productsWithMetadata = data.map((product) => {
-          const matchedData = product.data?.data?.find((p) => p.id === product.id);
-          return {
-            ...product,
-            metadata: matchedData?.metadata || {},
-          };
-        });
-        setProducts(productsWithMetadata);
+    const fetchPlans = async () => {
+      const apiUrl = `${API_BASE}/products`;
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+console.log({data})
+        // Process the API response (products)
+        const products = data.map(product => ({
+          id: product.id,
+          name: product.name,
+          description: product.description,
+          price: (product.prices[0].unit_amount / 100).toFixed(2),
+          currency: product.prices[0].currency.toUpperCase(),
+          minutes: product.metadata?.minutes,
+          period: product.prices[0].recurring?.interval,
+          priceId: product.prices[0].id,
+          prices: product.prices // Store all prices for each product
+        }));
+
+        setPlans(products);
         setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load plans.");
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError('Failed to load plans.');
         setLoading(false);
-      });
+      }
+    };
+
+    fetchPlans();
   }, []);
 
-  const toggleAccordion = (id) => {
-    setOpen(open === id ? null : id);
+  // Filter plans based on selected tab (monthly/yearly)
+  const filterPlansByInterval = (interval) => {
+    return plans.map((product) => ({
+      ...product,
+      prices: product.prices.filter((price) => price.interval === interval), // Filter prices by interval
+    })).filter(product => product.prices.length > 0); // Remove products with no matching prices
   };
 
+  // Accordion toggle function
+  const toggleAccordion = (id) => {
+    setSelectedAccordion(selectedAccordion === id ? null : id);
+  };
 
-  const handleContinue = () => {
-  if (!selected) {
-    setShowPopup(true)
-    setPopupType("failed")
-    setPopupMessage("Please select a plan before continuing.")
-    return;
-  }
-    if (selected === "free-trial") {
-      navigate("/business-details");
-      return;
-    }
-    setShow(true)
-  }
-  useEffect(() => {
-    fetchUserDetails(userId)?.then((res) => {
-      setData(res?.data?.isUserType)
-
-    })
-
-  }, [userId])
-    const handleClosePopup = () => {}
-  if (loading) return <div className={styles.status}><Loader2 /></div>;
+  if (loading) return <p className={styles.status}><Loader /></p>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
   return (
-    <>
     <div className={styles.container}>
-      {/* Header */}
-
-      {show ? <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
-        Comming Soon
-
-      </h2>
-
-        <p className={styles.apologyHeadText} apologyHeadText>
-
-          We apologise, But our paid plans are being tested to pass our "Rigorous QA Process"
-          For now, If your sign-up for a "Free Account", We promise to send you Upgradation Options in your email within next 2 weeks.
-        </p>
-
-        <div className={styles.zz}>
-
-          {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
-
-        </div>
-
-
-      </Modal>
-
-        : null}
       <div className={styles.header}>
         <div className={styles.icon}>
           <img src="images/inlogo.png" alt="inlogo" />
@@ -119,90 +76,74 @@ const Plan = () => {
         </div>
       </div>
 
-      {/* Free Trial Plan */}
-      {data == 1 ? <div
-        className={`${styles.planBox} ${selected === "free-trial" ? styles.selected : ""}`}
-        onClick={() => setSelected("free-trial")}
-      >
-        <div className={styles.part1}>
-          <label className={styles.radioLabel}>
-            <input
-              type="radio"
-              name="plan"
-             
-              value="free-trial"
-              checked={selected === "free-trial"}
-              onChange={() => setSelected("free-trial")}
-            />
-            <div className={styles.planContent}>
-              <div className={styles.planTitle}>
-                <div>
-                  <p>Free Trial</p>
-                  <span className={styles.description}>
-                    Try all features free — includes 20 minutes
-                  </span>
-                </div>
-              </div>
-            </div>
-          </label>
-        </div>
-      </div> : ""}
+      {/* Tab buttons for Monthly and Yearly plans */}
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tabButton} ${selectedTab === 'month' ? styles.active : ''}`}
+          onClick={() => setSelectedTab('month')}
+        >
+          Monthly
+        </button>
+        <button
+          className={`${styles.tabButton} ${selectedTab === 'year' ? styles.active : ''}`}
+          onClick={() => setSelectedTab('year')}
+        >
+          Yearly
+        </button>
+      </div>
 
-      {/* Dynamic Plans from API */}
-      <div className="PlanBoxMain">
-        {products.map((product) => (
-
+      {/* Display Plans based on selected tab */}
+      <div className={styles.PlanDiv}>
+        {filterPlansByInterval(selectedTab).map((plan) => (
           <div
-            key={product.id}
-            className={`${styles.planBox} ${selected === product.id ? styles.selected : ""}`}
-            onClick={() => setSelected(product.id)}
+            key={plan.id}
+            className={`${styles.planBox} ${selected === plan.id ? styles.selected : ''}`}
           >
             <div className={styles.part1}>
               <label className={styles.radioLabel}>
                 <input
                   type="radio"
                   name="plan"
-                  value={product.id}
-                  checked={selected === product.id}
-                  onChange={() => setSelected(product.id)}
+                  value={plan.id}
+                  checked={selected === plan.id}
+                  onChange={() => {
+                    setSelected(plan.id);  // Set selected plan ID
+                    setPriceId(plan.priceId);  // Set the corresponding priceId
+                  }}
                 />
                 <div className={styles.planContent}>
                   <div className={styles.planTitle}>
                     <div>
-                      <p>{product.name}</p>
-                      <span className={styles.description}>{product.description}</span>
+                      <p>{plan.name}</p>
+                      <span className={styles.description}>{plan.description.trim()}</span>
                     </div>
-                    {product.metadata.badge && (
-                      <span className={styles.badge}>{product.metadata.badge}</span>
-                    )}
+                  </div>
+                  <div className={styles.planData}>
+                    <p>
+                      Price: <strong>{plan.price} {plan.currency}</strong> / {plan.prices[0].interval}
+                    </p>
+                    <p>
+                      <strong>{plan.minutes}</strong> minutes included
+                    </p>
                   </div>
                 </div>
               </label>
-              <img
-                src={open === product.id ? "/svg/up.svg" : "/svg/down.svg"}
-                alt="Toggle Arrow"
-                className={`${styles.arrowIcon} ${open === product.id ? styles.rotated : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleAccordion(product.id);
-                }}
-              />
             </div>
 
-            <div className={`${styles.accordion} ${open === product.id ? styles.open : ""}`}>
-              {product.metadata.minutes && (
-                <p>
-                  Includes <strong>{product.metadata.minutes}</strong> minutes
-                </p>
+            {/* Accordion for extra details */}
+            <div className={`${styles.accordion} ${selectedAccordion === plan.id ? styles.open : ''}`}>
+              {plan.minutes && (
+                <p>Includes <strong>{plan.minutes}</strong> minutes</p>
               )}
               <div className={styles.pricesContainer}>
-                {product.prices.map((price) => (
+                {plan.prices.map((price) => (
                   <div
                     key={price.id}
                     className={styles.priceOption}
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate("/checkout", { state: { priceId: price.id } });
+                      navigate('/checkout', { state: { priceId: price.id } });
+                      setPriceId(null);
                     }}
                   >
                     {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
@@ -211,25 +152,26 @@ const Plan = () => {
               </div>
             </div>
           </div>
-
         ))}
       </div>
 
       {/* Continue button */}
-      <div className={styles.btnTheme} onClick={handleContinue}   style={{ opacity: selected ? 1 : 0.6, cursor: selected ? "pointer" : "not-allowed" }}>
-        <img src="svg/svg-theme.svg" alt=""  />
-        <p >Continue</p>
+      <div className={styles.bottomBtn}>
+        <div
+          className={styles.btnTheme}
+          onClick={() => {
+            if (priceId) {
+              navigate('/checkout', { state: { priceId, agentId: agentID, subscriptionId: subscriptionID, locationPath1: agentID ? locationPath : "/dsbd" } });
+            } else {
+              alert('Please select a plan first');
+            }
+          }}
+        >
+          <img src="svg/svg-theme.svg" alt="" />
+          <p>Continue</p>
+        </div>
       </div>
-    
     </div>
-       {showPopup && (
-        <PopUp
-          type={popupType}
-          onClose={() =>handleClosePopup()}
-          message={popupMessage}
-        />
-      )}
-      </>
   );
 };
 
