@@ -39,7 +39,7 @@ const Step = () => {
     const EditingMode = localStorage.getItem("UpdationMode");
     const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
     const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
-
+    const [isContinueClicked, setIsContinueClicked] = useState(false);
     useEffect(() => {
         if (localStorage.getItem('UpdationMode') == "ON") {
             setSelectedLang(localStorage.getItem("agentLanguage"))
@@ -456,20 +456,21 @@ const Step = () => {
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     const handleContinue = async () => {
         if (step4Ref.current) {
+            setIsContinueClicked(true);
             const filledPrompt =
-            getAgentPrompt({
-                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
-                roleTitle: sessionStorage.getItem("agentRole"), // ← dynamic from sessionStorage or UI
-                agentName: agentName,
-                agentGender: agentGender,
-                business: {
-                    businessName: business?.businessName
-                },
-                languageSelect: languageSelect,
-                businessType,
-                aboutBusinessForm,
-                commaSeparatedServices
-            });
+                getAgentPrompt({
+                    industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                    roleTitle: sessionStorage.getItem("agentRole"), // ← dynamic from sessionStorage or UI
+                    agentName: agentName,
+                    agentGender: agentGender,
+                    business: {
+                        businessName: business?.businessName
+                    },
+                    languageSelect: languageSelect,
+                    businessType,
+                    aboutBusinessForm,
+                    commaSeparatedServices
+                });
 
             // console.log("Validating step 4",filledPrompt);
             // return 
@@ -635,6 +636,7 @@ const Step = () => {
                             if (response.status === 200 || response.status === 201) {
                                 sessionStorage.setItem("agentId", response.data.agent_id);
                                 sessionStorage.setItem("agentStatus", true);
+                                sessionStorage.removeItem("avatar")
                                 setPopupType("success");
                                 setPopupMessage("Agent created successfully!");
                                 setShowPopup(true);
@@ -684,23 +686,23 @@ const Step = () => {
                 const agentConfig = {
                     general_prompt: filledPrompt,
                     // general_tools: [
-                        // {
-                        //     type: "transfer_call",
-                        //     name: `transfer_support_${timestamp}`,
-                        //     transfer_destination: {
-                        //         type: "inferred",
-                        //         prompt: "Based on the conversation, decide the best phone number to transfer this call to using {{transfer_number}}." // 👈 required field
-                        //     },
-                        //     transfer_option: {
-                        //         type: "cold_transfer",
-                        //         public_handoff_option: {
-                        //             type: "say_message",
-                        //             message: "Please hold while I transfer your call to support."
-                        //         }
-                        //     },
-                        //     speak_during_execution: true,
-                        //     speak_after_execution: true
-                        // }
+                    // {
+                    //     type: "transfer_call",
+                    //     name: `transfer_support_${timestamp}`,
+                    //     transfer_destination: {
+                    //         type: "inferred",
+                    //         prompt: "Based on the conversation, decide the best phone number to transfer this call to using {{transfer_number}}." // 👈 required field
+                    //     },
+                    //     transfer_option: {
+                    //         type: "cold_transfer",
+                    //         public_handoff_option: {
+                    //             type: "say_message",
+                    //             message: "Please hold while I transfer your call to support."
+                    //         }
+                    //     },
+                    //     speak_during_execution: true,
+                    //     speak_after_execution: true
+                    // }
                     // ],
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
                 };
@@ -803,6 +805,7 @@ const Step = () => {
                                         localStorage.removeItem('agentVoice')
                                         localStorage.removeItem('agentVoiceAccent')
                                         localStorage.removeItem('avatar')
+
                                         setHasFetched(false)
                                     }
 
@@ -979,6 +982,7 @@ const Step = () => {
                             key={idx}
                             className={`${styles.stepDot} ${currentStep === idx ? styles.activeDot : ''}`}
                             onClick={async () => {
+                                if (isContinueClicked) return;
                                 // Step 0 validation (language)
                                 if (currentStep === 0 && !selectedLang) {
                                     setShowPopup(true);
