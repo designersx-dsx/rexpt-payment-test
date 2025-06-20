@@ -200,7 +200,6 @@ function Dashboard() {
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
-
     navigate("/agent-detail", {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
@@ -491,33 +490,47 @@ function Dashboard() {
     setRetellWebClient(client);
   }, []);
   // Start call
+  let micStream='';
   const handleStartCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Store the stream globally or in state if needed
+      micStream = stream;
+    } catch (err) {
+      console.error("Microphone access denied or error:", err);
+      // alert("Please allow microphone access to proceed with the call.");
+      setPopupMessage("Microphone access is required to test.");
+      setPopupType("failed");
+      return;
+    }
+
     if (isCallInProgress || !retellWebClient || !agentDetails) {
       console.error("RetellWebClient or agent details not ready.");
       return;
     }
-    setCallLoading(false);
-    setIsCallInProgress(true);
-
-    try {
-      setCallLoading(true);
-      const res = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ agent_id: agentDetails.agent_id }),
-        }
-      );
-      const data = await res.json();
-
-      await retellWebClient.startCall({ accessToken: data.access_token });
-      setCallId(data?.call_id);
-    } catch (err) {
-      console.error("Error starting call:", err);
-    } finally {
       setCallLoading(false);
-    }
+      setIsCallInProgress(true);
+
+      try {
+        setCallLoading(true);
+        const res = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ agent_id: agentDetails.agent_id }),
+          }
+        );
+        const data = await res.json();
+
+        await retellWebClient.startCall({ accessToken: data.access_token });
+        setCallId(data?.call_id);
+      } catch (err) {
+        console.error("Error starting call:", err);
+      } finally {
+        setCallLoading(false);
+      }
   };
   // End call
   const handleEndCall = async () => {
@@ -1686,9 +1699,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(

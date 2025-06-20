@@ -11,8 +11,13 @@ import PopUp from "../Popup/Popup";
 import useUser from "../../Store/Context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Loader2 from "../Loader2/Loader2";
+
+import Loader from "../Loader/Loader";
+
+
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+
 const EditProfile = () => {
   const fileInputRef = useRef(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -27,6 +32,7 @@ const EditProfile = () => {
   const navigate = useNavigate();
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [addLoading,addSetLoading]=useState(false)
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -145,7 +151,10 @@ const EditProfile = () => {
     if (!validateForm()) return;
 
     try {
-      setLoading(true);
+
+
+      addSetLoading(true);
+
       const response = await updateUserDetails(userId, {
         name: formData.name,
         email: formData.email,
@@ -168,7 +177,7 @@ const EditProfile = () => {
       setPopupType("failed");
       setPopupMessage("Failed to update profile.");
     } finally {
-      setLoading(false);
+      addSetLoading(false);
     }
   };
   const handleClosePopup = () => {
@@ -293,6 +302,19 @@ const EditProfile = () => {
               </div>
             </div>
           </div>
+
+        </div>
+        <div className={styles.Part}>
+          <img src="svg/line-address.svg" />
+          <div className={styles.infoItem}>
+            <label>Home address</label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              maxLength={10000}
+            />
+
           <div
             type="submit"
             onClick={isDataChanged() && !loading ? handleSubmit : undefined}
@@ -305,6 +327,7 @@ const EditProfile = () => {
               <img src="svg/svg-theme.svg" alt="" />
               <p>{loading ? "Saving..." : "Save"}</p>
             </div>
+
           </div>
           {isUploadModalOpen && (
             <UploadProfile
@@ -325,6 +348,34 @@ const EditProfile = () => {
             />
           )}
         </div>
+
+      </div>
+      <div type="submit" onClick={isDataChanged() && !addLoading ? handleSubmit : undefined}
+        style={{ opacity: isDataChanged() ? 1 : 0.5, pointerEvents: isDataChanged() ? "auto" : "none" }} >
+        <div className={styles.btnTheme}>
+          <img src="svg/svg-theme.svg" alt="" />
+          <p  >{addLoading ? <>Saving... &nbsp; <Loader size={18}/></> : "Save"}</p>
+        </div>
+      </div>
+      {isUploadModalOpen && (
+        <UploadProfile
+          onClose={closeUploadModal}
+          onUpload={handleUpload}
+          currentProfile={
+            uploadedImage ||
+            formData.profilePicture ||
+            "Images/editProfile.png"
+          }
+        />
+
+      )}
+      {showPopup && (
+        <PopUp
+          type={popupType}
+          onClose={() => handleClosePopup()}
+          message={popupMessage}
+        />
+
       )}
     </>
   );

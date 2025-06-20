@@ -22,7 +22,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
   ]);
 
   const agentId = isAgentDetails.agent_id;
-  const scriptText = `<script id="rex-widget-script" src="https://dazzling-raindrop-43edfa.netlify.app/index.js?agentId=${agentId}"></script>`;
+  const scriptText = `<script id="rex-widget-script" src="https://aesthetic-wisp-d15448.netlify.app/index.js?agentId=${agentId}"></script>`;
 
   // Load existing domains on mount or update
   useEffect(() => {

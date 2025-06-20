@@ -119,11 +119,12 @@ const CallDetails = () => {
   };
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
-  const formatDuration = (seconds) => {
-    if (!seconds || isNaN(seconds)) return "0 Sec";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins > 0 ? `${mins} Min ` : ""}${secs} Sec`;
+
+
+  const convertMsToMinSec = (durationMs) => {
+    const minutes = Math.floor(durationMs / 60000);
+    const seconds = Math.floor((durationMs % 60000) / 1000);
+    return `${minutes} min ${seconds} sec`;
   };
 
   return (
@@ -174,13 +175,12 @@ const CallDetails = () => {
               <h2>{name || "Unknown"}</h2>
             </div>
             <div
-              className={`${styles.status} ${
-                callData.call_analysis?.user_sentiment === "Positive"
+              className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
                   ? styles.green
                   : callData.call_analysis?.user_sentiment === "Neutral"
-                  ? styles.yellow
-                  : styles.red
-              }`}
+                    ? styles.yellow
+                    : styles.red
+                }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
             </div>
@@ -196,16 +196,16 @@ const CallDetails = () => {
               <strong>
                 {callData?.agent_id
                   ? agents.find((a) => a.agent_id === callData.agent_id)
-                      ?.agentName || "Unknown Agent"
+                    ?.agentName || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>
 
             <div className={styles.Part3}>
               <p>Durations</p>
-              <strong>
-                {formatDuration(callData.call_cost?.total_duration_seconds)}
-              </strong>
+
+              <strong>{convertMsToMinSec(callData.duration_ms)}</strong>
+
             </div>
           </div>
         </div>
@@ -356,7 +356,7 @@ const CallDetails = () => {
               </button>
             )}
           </div>
-          <div className={styles.summaryDiv}>
+          {/* <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
               <h2>Outcome(Analysis)</h2>
             </div>
@@ -364,7 +364,7 @@ const CallDetails = () => {
             <p className={styles.Ptext}>
               Analysis: Customer satisfied with the information provided.{" "}
             </p>
-          </div>
+          </div> */}
         </div>
       </section>
     </div>
