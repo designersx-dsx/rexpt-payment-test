@@ -107,6 +107,12 @@ const CallDetails = () => {
   };
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
+
+  const convertMsToMinSec = (durationMs) => {
+    const minutes = Math.floor(durationMs / 60000);
+    const seconds = Math.floor((durationMs % 60000) / 1000);
+    return `${minutes} min ${seconds} sec`;
+  };
   return (
     <div>
       <div className={styles.forSticky}>
@@ -183,7 +189,7 @@ const CallDetails = () => {
 
             <div className={styles.Part3}>
               <p>Durations</p>
-              <strong>{callData.call_cost?.total_duration_seconds} sec</strong>
+              <strong>{convertMsToMinSec(callData.duration_ms)}</strong>
             </div>
           </div>
         </div>

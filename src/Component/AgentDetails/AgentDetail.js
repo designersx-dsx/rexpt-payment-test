@@ -358,7 +358,21 @@ const AgentDashboard = () => {
   }, []);
 
   // Start call handler
+  let micStream='';
   const handleStartCall = async () => {
+        try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Store the stream globally or in state if needed
+      micStream = stream;
+    } catch (err) {
+      console.error("Microphone access denied or error:", err);
+      // alert("Please allow microphone access to proceed with the call.");
+      setPopupMessage("Microphone access is required to test agent.");
+      setPopupType("failed");
+      return;
+    }
+
     if (isCallInProgress || !retellWebClient || !agentData?.agent) {
       console.error("RetellWebClient or agent data not ready.");
       return;
