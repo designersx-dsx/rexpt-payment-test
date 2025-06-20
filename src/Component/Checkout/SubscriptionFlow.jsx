@@ -42,7 +42,8 @@ const [userVerified, setUserVerified] = useState(false);
    useEffect(() => {
     if (!token) return;
     const result = decodeToken(token);
-    setUserDetails(result);
+    setUserDetails(result);console.log({result})
+    setUserId(result.id)
     if (result?.email) setEmail(result.email);
    
   }, []);
@@ -105,6 +106,7 @@ const [userVerified, setUserVerified] = useState(false);
                const verifyRes = await verifyEmailOTP(email, otp);
 
       const verifiedUserId = verifyRes?.data?.user?.id;
+      console.log(verifiedUserId , "berfied use ")
       if (verifiedUserId) {
         setUserId(verifiedUserId);
         localStorage.setItem("token", verifyRes.data.token);

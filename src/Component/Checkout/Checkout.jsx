@@ -605,7 +605,7 @@ function CheckoutForm({
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={loading || !stripe || disabled}
+          
             className={styles.button}
             style={{ marginTop: "1rem" }}
           >
