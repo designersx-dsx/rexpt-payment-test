@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
+import Plan from "../Plan/Plan";
 import { useNavigate , useLocation } from "react-router-dom";
 import {
   deleteAgent,
@@ -87,7 +88,7 @@ function Dashboard() {
   const [agentToDelete, setAgentToDelete] = useState(null);
   const [show, setShow] = useState(false);
   const [close, setClose] = useState(false);
-
+  const [modelOpen , setModelOpen] = useState(false)
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
   const [agentId, setagentId] = useState()
@@ -669,11 +670,13 @@ useEffect(() => {
 
     navigate("/edit-profile");
   };
+
     const handleUpgradeClick = (agent) => {
     // console.log("upBTN", agent)
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId)
     // Then open the modal
+    setModelOpen(true)
  
   };
 
@@ -921,14 +924,7 @@ useEffect(() => {
                       </div>
                       <div
                         className={styles.OptionItem}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          if (agent?.isDeactivated === 1) {
-                            handleInactiveAgentAlert();
-                          } else {
-                         handleUpgradeClick(agent)
-                          }
-                        }}
+                         onClick={() => handleUpgradeClick(agent)}
                       >
                         Upgrade
                       </div>
@@ -1391,7 +1387,11 @@ useEffect(() => {
       )}
 
       {/* <Footer /> */}
-      <Footer2 />
+      <Footer2  />
+      <Modal isOpen={modelOpen} onClose={() => setModelOpen(false)}>
+              <Plan  agentID={agentId} subscriptionID={subscriptionId} locationPath={locationPath}/>
+            </Modal>
+
       <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
 
       {isAssignModalOpen && selectedAgentForAssign && (
