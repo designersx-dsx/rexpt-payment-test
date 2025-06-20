@@ -296,59 +296,30 @@ const EditProfile = () => {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    maxLength={400}
+                    maxLength={10000}
                   />
-                </div>
-              </div>
-            </div>
 
-          </div>
-          <div className={styles.Part}>
-            <img src="svg/line-address.svg" />
-            <div className={styles.infoItem}>
-              <label>Home address</label>
-              <textarea
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                maxLength={10000}
-              />
 
-              <div
-                type="submit"
-                onClick={isDataChanged() && !loading ? handleSubmit : undefined}
-                style={{
-                  opacity: isDataChanged() ? 1 : 0.5,
-                  pointerEvents: isDataChanged() ? "auto" : "none",
-                }}
-              >
-                <div className={styles.btnTheme}>
-                  <img src="svg/svg-theme.svg" alt="" />
-                  <p>{loading ? "Saving..." : "Save"}</p>
+                  {isUploadModalOpen && (
+                    <UploadProfile
+                      onClose={closeUploadModal}
+                      onUpload={handleUpload}
+                      currentProfile={
+                        uploadedImage ||
+                        formData.profilePicture ||
+                        "Images/editProfile.png"
+                      }
+                    />
+                  )}
+
                 </div>
 
               </div>
-              {isUploadModalOpen && (
-                <UploadProfile
-                  onClose={closeUploadModal}
-                  onUpload={handleUpload}
-                  currentProfile={
-                    uploadedImage ||
-                    formData.profilePicture ||
-                    "Images/editProfile.png"
-                  }
-                />
-              )}
-              {showPopup && (
-                <PopUp
-                  type={popupType}
-                  onClose={() => handleClosePopup()}
-                  message={popupMessage}
-                />
-              )}
+
             </div>
 
           </div>
+
           <div type="submit" onClick={isDataChanged() && !addLoading ? handleSubmit : undefined}
             style={{ opacity: isDataChanged() ? 1 : 0.5, pointerEvents: isDataChanged() ? "auto" : "none" }} >
             <div className={styles.btnTheme}>
@@ -358,25 +329,12 @@ const EditProfile = () => {
           </div>
         </>
       )}
-      {isUploadModalOpen && (
-        <UploadProfile
-          onClose={closeUploadModal}
-          onUpload={handleUpload}
-          currentProfile={
-            uploadedImage ||
-            formData.profilePicture ||
-            "Images/editProfile.png"
-          }
-        />
-
-      )}
       {showPopup && (
         <PopUp
           type={popupType}
           onClose={() => handleClosePopup()}
           message={popupMessage}
         />
-
       )}
     </>
 
