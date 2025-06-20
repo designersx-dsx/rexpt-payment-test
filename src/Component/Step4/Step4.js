@@ -37,7 +37,7 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoadi
     }, [selectedRole])
     useImperativeHandle(ref, () => ({
         validate: () => {
-            if (!selectedRole.trim()) {
+            if (!selectedRole?.trim()) {
                 onValidationError?.({
                     type: "failed",
                     message: "Please select a type!"
