@@ -208,6 +208,7 @@ function App() {
                 <Route path="/edit-profile" element={ <SecureRoute><EditProfile /></SecureRoute>} />
                 <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
                 <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
+               
               </Routes>
             </div>
           </BrowserRouter>
