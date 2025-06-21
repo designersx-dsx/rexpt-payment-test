@@ -1151,7 +1151,7 @@ Opening Hours: ${businessData.hours}
 
               <div className={styles.LangPara}>
                 <p className={styles.agentPara}>
-                  For: <strong>{agent.business.businessName}</strong>
+                  For: <strong>{agent.business.googleBusinessName}</strong>
                 </p>
                 <div className={styles.VIA}>
                   {agent.calApiKey ? (
