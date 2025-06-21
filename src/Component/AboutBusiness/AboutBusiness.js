@@ -235,6 +235,7 @@ function AboutBusiness() {
     v = v.replace(/\s+/g, "").toLowerCase();
     const final = HTTPS_PREFIX + v;
     setBusinessUrl(final);
+
     if (businessUrlError) {
       setBusinessUrlError("");
     }
@@ -295,6 +296,8 @@ function AboutBusiness() {
         aboutBusiness,
         note,
         files: previousFiles,
+        // noGoogleListing: businessUrl ? true : setNoGoogleListing(true),
+        // noBusinessWebsite: googleListing ? true : setNoBusinessWebsite(true)
       })
     );
   }, [businessUrl, googleListing, aboutBusiness, note]);
@@ -315,7 +318,6 @@ function AboutBusiness() {
 
     const isWebsiteValid = businessUrl && isVerified;
     const isGoogleListingValid = googleListing.trim();
-
     if (!isWebsiteValid && !noBusinessWebsite) {
       setPopupType("failed");
       setPopupMessage(
@@ -333,7 +335,6 @@ function AboutBusiness() {
       setShowPopup(true);
       return;
     }
-
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
@@ -341,6 +342,9 @@ function AboutBusiness() {
         googleListing,
         aboutBusiness,
         note,
+        noGoogleListing: businessUrl ? true : false,
+        noBusinessWebsite: googleListing ? true : false
+
       })
     );
     navigate("/your-business-Listing");
