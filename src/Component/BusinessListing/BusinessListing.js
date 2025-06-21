@@ -198,7 +198,7 @@ const BusinessListing = () => {
       );
       formData2.append(
         "knowledge_base_texts",
-        JSON.stringify(knowledgeBaseText)
+        JSON.stringify(businessData)
       );
       formData3.append(
         "knowledge_base_texts",
@@ -215,7 +215,8 @@ const BusinessListing = () => {
       formData2.append("businessEmail", email);
       formData2.append("businessName", businessName);
       formData2.append("phoneNumber", phoneNumber);
-
+        formData2.append("isGoogleListing", aboutBusinessForm.noGoogleListing);
+      formData2.append("isWebsiteUrl", aboutBusinessForm.noBusinessWebsite)
       let knowledge_Base_ID = knowledgeBaseId;
 
       if (knowledge_Base_ID) {
