@@ -55,7 +55,7 @@ const Step = () => {
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
-            behavior: "smooth"  // Smooth scrolling
+            behavior: "smooth"
         });
     };
     const Buisness = JSON.parse(sessionStorage.getItem("businessDetails"))
@@ -78,17 +78,6 @@ const Step = () => {
         JSON.parse(sessionStorage.getItem("businessLocation")) ||
         "Your Business Services";
     const languageSelect = (sessionStorage?.getItem("agentLanguage"))
-
-    // let selectedCustomServices = [];
-
-    // try {
-    //     const stored = JSON.parse(sessionStorage.getItem("selectedCustomServices"));
-    //     if (Array.isArray(stored)) {
-    //         selectedCustomServices = stored;
-    //     }
-    // } catch (error) {
-    //     console.error("Invalid data in sessionStorage:", error);
-    // }
     const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
     const cleanedCustomServices = rawCustomServices
         .map(item => item?.service?.trim())
@@ -106,7 +95,6 @@ const Step = () => {
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
-
     const packageMap = {
         "Free": 1,
         "Starter": 2,
@@ -115,7 +103,7 @@ const Step = () => {
         "Corporate": 5,
         "Enterprise": 6
     };
-    const packageValue = packageMap[packageName] || 1; // default to 1 (Free) if not found
+    const packageValue = packageMap[packageName] || 1;
     const languages = [
         /* English family */
         {
@@ -407,7 +395,6 @@ const Step = () => {
             sliderRef.current.slickPrev();
         }
     };
-
     const isAdaptiveHeight = currentStep !== 3 || currentStep !== 2
     const settings = {
         dots: false,
@@ -435,35 +422,18 @@ const Step = () => {
     const detectRoleTypeChange = (roleTitle) => {
         setIsRoleTitleChanged((prev) => !prev);
     }
-    // let filledPrompt = "";
-    // useEffect(() => {
-    //     filledPrompt =
-    //         getAgentPrompt({
-    //             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
-    //             roleTitle: sessionStorage.getItem("agentRole"), // ← dynamic from sessionStorage or UI
-    //             agentName: agentName,
-    //             agentGender: agentGender,
-    //             business: {
-    //                 businessName: business?.businessName
-    //             },
-    //             languageSelect: languageSelect,
-    //             businessType,
-    //             aboutBusinessForm,
-    //             commaSeparatedServices
-    //         });
-    // }, [sessionStorage.getItem("agentRole"), isRoleTitleChanged, setIsRoleTitleChanged]);
-
-    const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
+    const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
+    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
+
     const handleContinue = async () => {
         if (step4Ref.current) {
             setIsContinueClicked(true);
             const filledPrompt =
                 getAgentPrompt({
                     industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
-                    roleTitle: sessionStorage.getItem("agentRole"), // ← dynamic from sessionStorage or UI
+                    roleTitle: sessionStorage.getItem("agentRole"),
                     agentName: agentName,
                     agentGender: agentGender,
                     business: {
@@ -474,9 +444,6 @@ const Step = () => {
                     aboutBusinessForm,
                     commaSeparatedServices
                 });
-
-            // console.log("Validating step 4",filledPrompt);
-            // return 
             const isValid = step4Ref.current.validate();
             //creation here
             if (isValid && localStorage.getItem("UpdationMode") != "ON") {
@@ -688,25 +655,6 @@ const Step = () => {
                 setLoading(true)
                 const agentConfig = {
                     general_prompt: filledPrompt,
-                    // general_tools: [
-                    // {
-                    //     type: "transfer_call",
-                    //     name: `transfer_support_${timestamp}`,
-                    //     transfer_destination: {
-                    //         type: "inferred",
-                    //         prompt: "Based on the conversation, decide the best phone number to transfer this call to using {{transfer_number}}." // 👈 required field
-                    //     },
-                    //     transfer_option: {
-                    //         type: "cold_transfer",
-                    //         public_handoff_option: {
-                    //             type: "say_message",
-                    //             message: "Please hold while I transfer your call to support."
-                    //         }
-                    //     },
-                    //     speak_during_execution: true,
-                    //     speak_after_execution: true
-                    // }
-                    // ],
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
 
                 };
@@ -793,23 +741,17 @@ const Step = () => {
                         try {
                             const response = await updateAgent(agentId, agentData);
                             if (response.status === 200 || response.status === 201) {
-                                // sessionStorage.setItem("agentId", response.data.agent_id);
-                                // sessionStorage.setItem("agentStatus", true);
                                 setPopupType("success");
                                 setPopupMessage("Agent Updated successfully!");
                                 setShowPopup(true);
                                 setTimeout(() => {
                                     if (stepEditingMode) {
-                                        // setTimeout(
-                                        //     () =>
                                         navigate("/agent-detail", {
                                             state: {
                                                 agentId: agentId || sessionStorage.getItem("agentId"),
                                                 bussinesId: businessIdObj.businessId || sessionStorage.getItem('businessId'),
                                             },
                                         })
-                                        //     1000
-                                        // );
                                     } else {
 
                                         setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
@@ -901,9 +843,6 @@ const Step = () => {
             setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
         }
     }, [CheckingUserLimit, isLimitExceeded]);
-
-    // if (CheckingUserLimit) return <p></p>;
-
     const handleClosePopup = () => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
             navigate('/dashboard');
@@ -949,7 +888,6 @@ const Step = () => {
                                     </div>
 
                                     <p className={styles.langName}>{lang.name}</p>
-                                    {/* <p className={styles.stats}>{lang.percentage} · {lang.stats}</p> */}
                                     {selectedLang === lang.name && (
                                         <span className={styles.langDot}></span>
                                     )}
@@ -1033,11 +971,6 @@ const Step = () => {
                         />
                     ))}
                 </div>
-
-
-                {/* <div className={styles.navBtn} onClick={handleNext}>
-                    <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
-                </div> */}
                 {currentStep < totalSlides - 1 && (
                     <button className={styles.navBtn} onClick={handleNext}>
                         <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
@@ -1052,10 +985,6 @@ const Step = () => {
                 )}
 
             </div>
-
-
-
-
             {showPopup && (
                 <PopUp
                     type={popupType}
