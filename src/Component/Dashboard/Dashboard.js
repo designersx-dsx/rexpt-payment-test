@@ -195,6 +195,7 @@ function Dashboard() {
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("knowledge_base_id");
       sessionStorage.removeItem('selectedfilterOption')
+      sessionStorage.removeItem("placeDetailsExtract")
     }
   }, []);
   // Navigate on agent card click
@@ -491,7 +492,7 @@ function Dashboard() {
     setRetellWebClient(client);
   }, []);
   // Start call
-  let micStream='';
+  let micStream = '';
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -510,28 +511,28 @@ function Dashboard() {
       console.error("RetellWebClient or agent details not ready.");
       return;
     }
+    setCallLoading(false);
+    setIsCallInProgress(true);
+
+    try {
+      setCallLoading(true);
+      const res = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agent_id: agentDetails.agent_id }),
+        }
+      );
+      const data = await res.json();
+
+      await retellWebClient.startCall({ accessToken: data.access_token });
+      setCallId(data?.call_id);
+    } catch (err) {
+      console.error("Error starting call:", err);
+    } finally {
       setCallLoading(false);
-      setIsCallInProgress(true);
-
-      try {
-        setCallLoading(true);
-        const res = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ agent_id: agentDetails.agent_id }),
-          }
-        );
-        const data = await res.json();
-
-        await retellWebClient.startCall({ accessToken: data.access_token });
-        setCallId(data?.call_id);
-      } catch (err) {
-        console.error("Error starting call:", err);
-      } finally {
-        setCallLoading(false);
-      }
+    }
   };
   // End call
   const handleEndCall = async () => {
@@ -710,10 +711,6 @@ function Dashboard() {
       if (isCurrentlyDeactivated && businessId) {
         const businessDetails = await getBusinessDetailsByBusinessId(
           businessId
-        );
-        console.log(
-          "Business Details fetched during activation:",
-          businessDetails
         );
 
         const shortName = (businessDetails?.businessName || "Business")
@@ -1152,7 +1149,7 @@ Opening Hours: ${businessData.hours}
 
               <div className={styles.LangPara}>
                 <p className={styles.agentPara}>
-                  For: <strong>{agent.business.googleBusinessName}</strong>
+                  For: <strong>{agent?.business?.googleBusinessName||agent?.business?.knowledge_base_texts?.name}</strong>
                 </p>
                 <div className={styles.VIA}>
                   {agent.calApiKey ? (
@@ -1607,7 +1604,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
-    console.log('agent',business)
+    console.log('agent', business)
     sessionStorage.setItem("UpdationMode", "ON");
     sessionStorage.setItem("agentName", agent.agentName);
     sessionStorage.setItem("agentGender", agent.agentGender);
@@ -1642,7 +1639,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
     localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
     //need to clear above
-
+    console.log(business,"business")
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
@@ -1650,6 +1647,8 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         googleListing: business.googleUrl,
         aboutBusiness: business.aboutBusiness,
         note: business.additionalInstruction,
+        isGoogleListing: business.isGoogleListing,
+        isWebsiteUrl: business.isWebsiteUrl
       })
     );
 
@@ -1726,16 +1725,16 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     console.log("raw_knowledge_base_texts:", raw_knowledge_base_texts);
     const cleaned_raw_knowledge_base_texts = Array.isArray(raw_knowledge_base_texts)
       ? raw_knowledge_base_texts
-        // .map((item) => item?.text?.trim())
-        // .filter(Boolean)
-        // .map((service) => ({ service }))
+      // .map((item) => item?.text?.trim())
+      // .filter(Boolean)
+      // .map((service) => ({ service }))
       : [];
 
 
     sessionStorage.setItem(
-          "placeDetailsExtract",
-          JSON.stringify(raw_knowledge_base_texts)
-        );
+      "placeDetailsExtract",
+      JSON.stringify(raw_knowledge_base_texts)
+    );
     // sessionStorage.setItem(
     //   "businessLocation",
     //   JSON.stringify({

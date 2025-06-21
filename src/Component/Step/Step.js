@@ -106,6 +106,7 @@ const Step = () => {
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
+
     const packageMap = {
         "Free": 1,
         "Starter": 2,
@@ -453,7 +454,9 @@ const Step = () => {
     // }, [sessionStorage.getItem("agentRole"), isRoleTitleChanged, setIsRoleTitleChanged]);
 
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
+    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
+    const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
+    const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const handleContinue = async () => {
         if (step4Ref.current) {
             setIsContinueClicked(true);
@@ -464,7 +467,7 @@ const Step = () => {
                     agentName: agentName,
                     agentGender: agentGender,
                     business: {
-                        businessName: business?.businessName
+                        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name
                     },
                     languageSelect: languageSelect,
                     businessType,
@@ -534,7 +537,7 @@ const Step = () => {
                         },
                     ],
                     starting_state: "information_collection",
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
+                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name}.`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
