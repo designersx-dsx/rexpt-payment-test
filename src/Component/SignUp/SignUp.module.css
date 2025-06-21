@@ -188,35 +188,39 @@
 }
 
 @keyframes slideLeftFadeIn {
-  0% {
-    opacity: 1;
-    transform: translateX(-50px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
+    0% {
+        opacity: 1;
+        transform: translateX(-50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
+
 .logimg {
     position: absolute;
     top: 15%;
     left: 50%;
     transform: translate(-50%, -50%) !important;
 }
+
 @keyframes smoothZoomFadeIn {
-  0% {
-    opacity: 0;
-    transform: scale(1.2);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+    0% {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .maskZoomFadeIn {
-  animation: smoothZoomFadeIn 1.6s ease-out forwards;
-  opacity: 0;
+    animation: smoothZoomFadeIn 1.6s ease-out forwards;
+    opacity: 0;
 }
 
 
@@ -225,35 +229,36 @@
 }
 
 .animate1 {
-  animation: slideLeftFadeIn 0.6s ease forwards;
-  animation-delay: 0.2s;
-  opacity: 0;
-  will-change: opacity, transform;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
+    animation: slideLeftFadeIn 0.6s ease forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 .animate2 {
-  animation: slideLeftFadeIn 0.6s ease forwards;
-  animation-delay: 0.5s;
-  opacity: 0;
+    animation: slideLeftFadeIn 0.6s ease forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
 }
 
 .animate3 {
-  animation: slideLeftFadeIn 0.6s ease forwards;
-  animation-delay: 0.8s;
-  opacity: 0;
+    animation: slideLeftFadeIn 0.6s ease forwards;
+    animation-delay: 0.8s;
+    opacity: 0;
 }
 
 .animate4 {
-  animation: slideLeftFadeIn 0.6s ease forwards;
-  animation-delay: 1.1s;
-  opacity: 0;
+    animation: slideLeftFadeIn 0.6s ease forwards;
+    animation-delay: 1.1s;
+    opacity: 0;
 }
+
 .animate5 {
-  animation: slideLeftFadeIn 0.6s ease forwards;
-  animation-delay: 1.3s;
-  opacity: 0;
+    animation: slideLeftFadeIn 0.6s ease forwards;
+    animation-delay: 1.3s;
+    opacity: 0;
 }
 
 .welcomeTitle h1 {
@@ -263,7 +268,11 @@
     margin-block: 0px;
     text-align: left !important;
 }
-.welcomeTitle p{font-size: 16px;}
+
+.welcomeTitle p {
+    font-size: 16px;
+}
+
 .container {
     width: 100%;
     margin: auto;
@@ -413,32 +422,36 @@
 }
 
 @media screen and (min-width: 601px) {
- .signUpContainer{
-    align-items: center;
+    .signUpContainer {
+        align-items: center;
         display: flex;
         margin: auto;
         justify-content: center;
         max-width: 500px;
- }
- .logimg{
-    top: 10%;
- }
- .btnTheme{
-    cursor: pointer;
-   }
+    }
 
-   .StartMain {
-    
-    width: unset;
-    
-}
-.pageEnterAnimation {
-    position: unset;
-    top: 0;
-}
+    .logimg {
+        top: 10%;
+    }
+
+    .btnTheme {
+        cursor: pointer;
+    }
+
+    .StartMain {
+
+        width: unset;
+
+    }
+
+    .pageEnterAnimation {
+        position: unset;
+        top: 0;
+    }
 
 
 }
+
 @media (max-width:375px) {
     .welcomeTitle h1 {
         font-size: 30px;

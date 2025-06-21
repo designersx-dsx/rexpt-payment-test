@@ -3,7 +3,10 @@ import styles from "../EditProfile/EditProfile.module.css";
 import {
   API_BASE_URL,
   getUserDetails,
+  LoginWithEmailOTP,
+  updateEmailSendOtp,
   updateUserDetails,
+  verifyEmailOTP,
 } from "../../Store/apiStore";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import decodeToken from "../../lib/decodeToken";
@@ -33,6 +36,7 @@ const EditProfile = () => {
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addLoading, addSetLoading] = useState(false)
+  const [sendOtpLoading, setSendOtpLoading] = useState(false)
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -46,6 +50,15 @@ const EditProfile = () => {
     address: "",
     profilePicture: "",
   });
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const inputRefs = useRef([]);
+  const [otpSent, setOtpSent] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(true); // default true until email is changed
+  const [otpEmail, setOtpEmail] = useState("");
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isResendDisabled, setIsResendDisabled] = useState(false);
+  const [resendTimer, setResendTimer] = useState(60);
+  const isOtpFilled = otp.every((digit) => digit !== "");
 
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
@@ -115,8 +128,101 @@ const EditProfile = () => {
   }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "email" && value !== initialData?.email) {
+      setEmailVerified(false);
+      setOtpSent(false);
+      setOtp(["", "", "", "", "", ""]);
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
+
   };
+  const handleSendOTP = async () => {
+    try {
+      // Call your API here to send OTP to formData.email
+      setSendOtpLoading(true)
+      await updateEmailSendOtp(formData.email, userId); // <-- create this API
+      setOtpSent(true);
+      setOtpEmail(formData.email);
+      setResendTimer(60);
+      setIsResendDisabled(true);
+      setShowPopup(true);
+      setPopupType("success");
+      setPopupMessage("One Time Password sent successfully!");
+      const timerInterval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerInterval);
+            setIsResendDisabled(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (error) {
+
+      // alert("Failed to send OTP. Please try again.");
+      if (error.status == 409) {
+        // setEmailVerified(true);
+        setOtpSent(false);
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
+        setOtpSent(true);
+      } else {
+
+        setOtpSent(false);
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
+      }
+    } finally {
+      setSendOtpLoading(false)
+    }
+  };
+  const handleOtpChange = (value, index) => {
+    if (!/^\d*$/.test(value)) return;
+
+    const updatedOtp = [...otp];
+    updatedOtp[index] = value;
+    setOtp(updatedOtp);
+
+    if (value && index < otp.length - 1) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+  const handleVerifyOtp = async () => {
+    try {
+      setIsVerifyingOtp(true);
+      const code = otp.join("");
+
+      // API to verify
+      const verified = await verifyEmailOTP(otpEmail, code); // <-- create this API
+
+      if (verified) {
+        setEmailVerified(true);
+        setShowPopup(true);
+        setPopupType("success");
+        setPopupMessage("Email verified successfully!");
+      } else {
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage("Incorrect OTP. Try again.");
+      }
+    } catch (err) {
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage("Verification failed.");
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -136,7 +242,7 @@ const EditProfile = () => {
         newErrors.email = "Invalid email format.";
       }
 
-      if (formData.phone && !/^\+?\d{10,15}$/.test(formData.phone)) {
+      if (formData.phone && !/^\+?\d{12,15}$/.test(formData.phone)) {
         newErrors.phone = "Enter a valid phone number with country code.";
       }
     }
@@ -184,6 +290,7 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
+
   return (
     <>
       {loading ? (
@@ -262,6 +369,90 @@ const EditProfile = () => {
                 </div>
               </div>
 
+              {!emailVerified && formData.email !== initialData?.email && (
+                <>
+                  {/* Show Send OTP Button */}
+                  {!otpSent && (
+                    <div className={styles.Btn} onClick={() => {
+                      if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+                        setShowPopup(true);
+                        setPopupType("failed");
+                        setPopupMessage("Please enter a valid email before sending OTP.");
+                        return;
+                      }
+                      handleSendOTP();
+                    }}>
+                      <div className={styles.btnTheme}>
+                        <img src="svg/svg-theme.svg" alt="" />
+                        <p>{sendOtpLoading ? <Loader size={18} /> : "Send OTP"}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Show OTP Input UI if OTP sent */}
+                  {otpSent && (
+                    <>
+                      {/* {formData.email && (
+                        <p className={styles.codeText}>
+                          Email has been sent to <strong>{formData.email}</strong>
+                        </p>
+                      )} */}
+                      <p className={styles.codeText}>Enter the code sent to your email</p><br />
+                      <div className={styles.otpContainer}>
+                        {[...Array(6)].map((_, i) => (
+                          <input
+                            key={i}
+                            maxLength="1"
+                            value={otp[i]}
+                            onChange={(e) => handleOtpChange(e.target.value, i)}
+                            className={styles.otpInput}
+                            onKeyDown={(e) => handleKeyDown(e, i)}
+                            ref={(el) => (inputRefs.current[i] = el)}
+                            inputMode="numeric"
+                            type="tel"
+                          />
+                        ))}
+                      </div>
+
+                      {/* Resend OTP */}
+                      <div className={styles.resendContainer}>
+                        <button
+                          type="button"
+                          onClick={handleSendOTP}
+                          disabled={isResendDisabled}
+                          style={{
+                            cursor: isResendDisabled ? "not-allowed" : "pointer",
+                            opacity: isResendDisabled ? 0.5 : 1,
+                            background: "none",
+                            border: "none",
+                            color: "#6524EB",
+                            fontWeight: "bold",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {isResendDisabled
+                            ? `Resend OTP in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
+                            : "Resend OTP"}
+                        </button>
+                      </div>
+                      {/* Verify Button */}
+                      <div className={styles.Btn} onClick={isOtpFilled && !isVerifyingOtp ? handleVerifyOtp : undefined}
+                        style={{
+                          opacity: isOtpFilled && !isVerifyingOtp ? 1 : 0.5,
+                          pointerEvents: isOtpFilled && !isVerifyingOtp ? "auto" : "none",
+                          cursor: isOtpFilled && !isVerifyingOtp ? "pointer" : "not-allowed",
+                        }}>
+                        <div type="submit">
+                          <div className={styles.btnTheme}>
+                            <img src="svg/svg-theme.svg" alt="" />
+                            <p>{isVerifyingOtp ? <Loader size={17} /> : "Verify Email"}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
               <div className={styles.Part}>
                 <img src="svg/line-Call.svg" />
                 <div className={styles.infoItem}>
@@ -269,6 +460,7 @@ const EditProfile = () => {
                   <PhoneInput
                     country={"in"}
                     value={formData.phone}
+                    className={styles.phoneInput}
                     onChange={(val) => {
                       setFormData((prev) => ({
                         ...prev,
@@ -315,18 +507,75 @@ const EditProfile = () => {
                 </div>
 
               </div>
+              <div type="submit"
+                onClick={
+                  isDataChanged() && !addLoading
+                    ? formData.email === initialData?.email || emailVerified
+                      ? handleSubmit
+                      : () => {
+                        setShowPopup(true);
+                        setPopupType("failed");
+                        setPopupMessage("Please verify your new email before saving.");
+                      }
+                    : undefined
+                }
+                // style={{
+                //   opacity:
+                //     isDataChanged() &&
+                //       (formData.email === initialData?.email || (emailVerified && !otpSent))
+                //       ? 1
+                //       : 0.5,
+                //   pointerEvents:
+                //     isDataChanged() &&
+                //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
+                //       !addLoading
+                //       ? "auto"
+                //       : "none",
+                //   cursor:
+                //     isDataChanged() &&
+                //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
+                //       !addLoading
+                //       ? "pointer"
+                //       : "not-allowed",
+                // }}
+                style={{
+                  opacity:
+                    isDataChanged() &&
+                      (
+                        formData.email === initialData?.email || // email not changed
+                        (formData.email !== initialData?.email && emailVerified) // email changed & verified
+                      )
+                      ? 1
+                      : 0.5,
+                  pointerEvents:
+                    isDataChanged() &&
+                      (
+                        formData.email === initialData?.email ||
+                        (formData.email !== initialData?.email && emailVerified)
+                      ) && !addLoading
+                      ? "auto"
+                      : "none",
+                  cursor:
+                    isDataChanged() &&
+                      (
+                        formData.email === initialData?.email ||
+                        (formData.email !== initialData?.email && emailVerified)
+                      ) && !addLoading
+                      ? "pointer"
+                      : "not-allowed",
+                }}
 
+              >
+                <div className={styles.btnTheme}>
+                  <img src="svg/svg-theme.svg" alt="" />
+                  <p  >{addLoading ? <>Saving... &nbsp; <Loader size={18} /></> : "Save"}</p>
+                </div>
+              </div>
             </div>
 
           </div>
 
-          <div type="submit" onClick={isDataChanged() && !addLoading ? handleSubmit : undefined}
-            style={{ opacity: isDataChanged() ? 1 : 0.5, pointerEvents: isDataChanged() ? "auto" : "none" }} >
-            <div className={styles.btnTheme}>
-              <img src="svg/svg-theme.svg" alt="" />
-              <p  >{addLoading ? <>Saving... &nbsp; <Loader size={18} /></> : "Save"}</p>
-            </div>
-          </div>
+
         </>
       )}
       {showPopup && (

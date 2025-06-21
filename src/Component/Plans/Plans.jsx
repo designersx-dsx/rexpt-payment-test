@@ -100,7 +100,7 @@ const Plan = () => {
                                         <div>
                                             <p>Free Trial</p>
                                             <span className={styles.description}>
-                                                Try all features free — includes 10 minutes
+                                                Try all features free — includes 20 minutes
                                             </span>
                                         </div>
                                     </div>

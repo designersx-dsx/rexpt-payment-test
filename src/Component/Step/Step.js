@@ -705,6 +705,7 @@ const Step = () => {
                     // }
                     // ],
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
+
                 };
                 const llm_id = localStorage.getItem('llmId')
 
@@ -730,6 +731,24 @@ const Step = () => {
                         agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
                         language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                         normalize_for_speech: true,
+                        post_call_analysis_model: "gpt-4o-mini",
+                        post_call_analysis_data: [
+                            {
+                                type: "string",
+                                name: "Detailed Call Summery",
+                                description: "The name of the customer.",
+                                examples: [
+                                    "John Doe",
+                                    "Jane Smith"
+                                ]
+                            },
+                            {
+                                type: "enum",
+                                name: "lead_type",
+                                description: "Feedback given by the customer about the call.",
+                                choices: ["positive", "neutral", "negative"]
+                            }
+                        ],
                     };
                     // update Agent Creation
                     const agent_id = localStorage.getItem('agent_id')
@@ -890,7 +909,6 @@ const Step = () => {
             setShowPopup(false);
         }
     }
-
 
     return (
         <div className={styles.container}>

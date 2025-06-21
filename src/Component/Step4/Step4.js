@@ -19,7 +19,7 @@ const roles = [
     //     icon: 'svg/technical-receptionist.svg',
     // },
 ];
-const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoading ,detectRoleTypeChange}, ref) => {
+const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoading, detectRoleTypeChange }, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
     useEffect(() => {
         const updationMode = localStorage.getItem("UpdationMode") === "ON";
@@ -27,8 +27,8 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoadi
 
         if (updationMode) {
             setSelectedRole(storedAgentRole)
-        }else {
-             setSelectedRole(storedAgentRole)
+        } else {
+            setSelectedRole(storedAgentRole)
         }
     }, [])
 
@@ -48,6 +48,45 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoadi
             return true;
         },
     }));
+    //user not refresh
+   useEffect(() => {
+  const blockKeyboardRefresh = (e) => {
+    if (
+      e.key === "F5" || 
+      (e.ctrlKey && e.key === "r") || 
+      (e.metaKey && e.key === "r") // For Mac ⌘+R
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  const blockMouseRefresh = (e) => {
+    // Block middle-click (mouse button 1) or right-click (mouse button 2)
+    if (e.button === 1 || e.button === 2) {
+      e.preventDefault();
+    }
+  };
+
+  const handleBeforeUnload = (e) => {
+    e.preventDefault();
+    e.returnValue = ""; // Required to trigger confirmation prompt
+  };
+
+  // Block browser refresh & warn
+  window.addEventListener("keydown", blockKeyboardRefresh);
+  window.addEventListener("mousedown", blockMouseRefresh);
+  window.addEventListener("beforeunload", handleBeforeUnload);
+  window.addEventListener("contextmenu", (e) => e.preventDefault()); // Disable right-click
+
+  return () => {
+    window.removeEventListener("keydown", blockKeyboardRefresh);
+    window.removeEventListener("mousedown", blockMouseRefresh);
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.removeEventListener("contextmenu", (e) => e.preventDefault());
+  };
+}, []);
+
     return (
         <>
             <div className={`${styles.container} ${loading ? styles.blocked : ''}`}>

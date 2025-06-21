@@ -172,7 +172,7 @@ const SignUp = () => {
         setPopupType("success");
         setPopupMessage("One Time Password sent successfully!");
         setOtpSent(true);
-        const endTime = Date.now() + 120 * 1000; 
+        const endTime = Date.now() + 120 * 1000;
         setResendEndTime(endTime);
         setIsResendDisabled(true);
       } else {
@@ -185,12 +185,12 @@ const SignUp = () => {
       if (error.status == 409) {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Internal Server Error");
+        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
         setOtpSent(true);
       } else {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Internal Server Error");
+        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
       }
     } finally {
       setIsVerifyingOtp(false);
@@ -261,16 +261,16 @@ const SignUp = () => {
     };
   }, []);
 
-useEffect(() => {
-  const savedEmail = localStorage.getItem("userEmail");
-  if (savedEmail) {
-    setEmail(savedEmail);
-  }
-}, []);
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("userEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+  }, []);
 
-useEffect(() => {
-  localStorage.setItem("userEmail", email);
-}, [email]);
+  useEffect(() => {
+    localStorage.setItem("userEmail", email);
+  }, [email]);
 
   useEffect(() => {
     if (otpSent && inputRefs.current[0]) {
@@ -442,7 +442,7 @@ useEffect(() => {
                       : "Resend One Time Password"}
                   </button>
                 </div>
-                
+
 
 
                 <div className={styles.Btn} onClick={handleLoginClick}>

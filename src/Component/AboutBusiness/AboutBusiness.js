@@ -343,7 +343,6 @@ function AboutBusiness() {
         note,
       })
     );
-
     navigate("/your-business-Listing");
   };
 
@@ -563,7 +562,7 @@ function AboutBusiness() {
               {/* <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
                 <textarea
-                  rows="5"
+                  rows="4"
                   cols="50"
                   id="about-business"
                   type="text"
