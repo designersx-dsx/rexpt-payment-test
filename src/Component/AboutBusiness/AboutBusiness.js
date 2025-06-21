@@ -476,6 +476,7 @@ function AboutBusiness() {
                   </label>
                 </div>
               </div>
+              <hr className={styles.fieldDivider} />
               <div className={styles.labReq}>
                 <div className={styles.formGroup}>
                   <div className={styles.Dblock}>
