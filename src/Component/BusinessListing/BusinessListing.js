@@ -198,7 +198,7 @@ const BusinessListing = () => {
       );
       formData2.append(
         "knowledge_base_texts",
-        JSON.stringify(knowledgeBaseText)
+        JSON.stringify(businessData)
       );
       formData3.append(
         "knowledge_base_texts",
