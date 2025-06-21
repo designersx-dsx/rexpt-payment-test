@@ -22,6 +22,7 @@ const BusinessServices = () => {
   const [showPopup, setShowPopup] = useState(false);
   const EditingMode = localStorage.getItem("UpdationMode");
   const [customServiceSelected, setCustomServiceSelected] = useState(false);
+  const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
 
   const setHasFetched = true;
   const { handleCreateAgent } = useAgentCreator({
@@ -454,16 +455,36 @@ const handleContinue = async () => {
           setBusinessSize(businessDetails.businessSize || "");
 
 
-          if (Array.isArray(businessDetails.selectedService)) {
-            setSelectedService(businessDetails.selectedService);
-          } else if (typeof businessDetails.selectedService === "string") {
-            try {
-              const parsed = JSON.parse(businessDetails.selectedService);
+          // if (Array.isArray(businessDetails.selectedService)) {
+          //   setSelectedService(businessDetails.selectedService);
+          // } else if (typeof businessDetails.selectedService === "string") {
+          //   try {
+          //     const parsed = JSON.parse(businessDetails.selectedService);
+          //     if (Array.isArray(parsed)) {
+          //       setSelectedService(parsed);
+          //     }
+          //   } catch {}
+          // }
+           if (businessServices?.selectedService) {
+          try {
+            let finalSelected = [];
+
+            if (typeof businessServices.selectedService === "string") {
+              const parsed = JSON.parse(businessServices.selectedService);
               if (Array.isArray(parsed)) {
-                setSelectedService(parsed);
+                finalSelected = parsed;
               }
-            } catch {}
+            } else if (Array.isArray(businessServices.selectedService)) {
+              finalSelected = businessServices.selectedService;
+            }
+
+            setSelectedService(finalSelected);
+          } catch (err) {
+            console.error("❌ Failed to parse selectedService:", err);
           }
+
+          setEmail(businessServices.email || "");
+        }
           setEmail(businessDetails.email || "");
         }
       } else {
@@ -551,30 +572,31 @@ const handleSaveEdit = async (e) => {
     navigate("/about-business-next");
   } else {
     // directly call create agent after update
-    try {
-      setLoading(true);
+    // try {
+    //   setLoading(true);
 
-      const API_URL = `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`;
+    //   const API_URL = `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`;
 
-      await axios.patch(API_URL, {
-        businessName: businessDetails.businessName,
-        businessSize: businessDetails.businessSize,
-        businessType: businessDetails.businessType,
-        customBuisness: businessDetails.customBuisness || "",
-        buisnessEmail: email,
-        buisnessService: selectedService,
-        customServices: [],
-      });
+    //   await axios.patch(API_URL, {
+    //     businessName: businessDetails.businessName,
+    //     businessSize: businessDetails.businessSize,
+    //     businessType: businessDetails.businessType,
+    //     customBuisness: businessDetails.customBuisness || "",
+    //     buisnessEmail: email,
+    //     buisnessService: selectedService,
+    //     customServices: [],
+    //   });
 
-      handleCreateAgent(); // Final step
-    } catch (error) {
-      console.error("❌ Error updating business details:", error);
-      setPopupType("failed");
-      setPopupMessage("Failed to update business details.");
-      setShowPopup(true);
-    } finally {
-      setLoading(false);
-    }
+    //   handleCreateAgent(); // Final step
+    // } catch (error) {
+    //   console.error("❌ Error updating business details:", error);
+    //   setPopupType("failed");
+    //   setPopupMessage("Failed to update business details.");
+    //   setShowPopup(true);
+    // } finally {
+    //   setLoading(false);
+    // }
+    handleCreateAgent();
   }
 };
 
@@ -663,7 +685,7 @@ const handleSaveEdit = async (e) => {
                     </div>
                 </div>
             </div> */}
-      {/* {stepEditingMode!='ON'?  */}
+      {stepEditingMode!='ON'? 
       <div>
         <div type="submit">
           <div
@@ -676,7 +698,7 @@ const handleSaveEdit = async (e) => {
           </div>
         </div>
       </div>
-      {/* :
+      :
           <div>
                 <div type="submit">
                     <div
@@ -689,7 +711,7 @@ const handleSaveEdit = async (e) => {
                     </div>
                 </div>
             </div>
-} */}
+      }
       {/* Show PopUp */}
       <PopUp
         type={popupType}

@@ -29,7 +29,7 @@ export default function Home() {
     startDate: "",
     endDate: "",
   });
-  const [selectedSentiment, setSelectedSentiment] = useState("All");
+  const [selectedSentiment, setSelectedSentiment] = useState(sessionStorage.getItem('selectedfilterOption')||"All");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -156,6 +156,7 @@ export default function Home() {
     // Perform additional logic related to "All Agents" if needed
   };
   const navigate = useNavigate();
+  console.log("Filtered Data:", filteredData);
 
   return (
     <div className={styles.container}>
@@ -173,7 +174,7 @@ export default function Home() {
             setCurrentPage(1);
           }}
           selectedAgentId={agentId}
-          onAgentChange={(newAgentId) => setAgentId(newAgentId)}
+          onAgentChange={(newAgentId) => {setAgentId(newAgentId);sessionStorage.setItem("agentId",newAgentId);localStorage.setItem("filterType","agent")}}
           isCallSummary={data}
           filters={filters}
           onFilterChange={(newFilters) => {
