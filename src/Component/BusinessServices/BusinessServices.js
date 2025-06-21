@@ -18,6 +18,7 @@ const BusinessServices = () => {
   const [serviceError, setServiceError] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("");
+  
   const [Loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const EditingMode = localStorage.getItem("UpdationMode");

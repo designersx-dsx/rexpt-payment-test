@@ -57,6 +57,9 @@ export const useAgentCreator = ({
     const businessType = Buisness?.businessType === "Other" ? Buisness?.customBuisness : Buisness?.businessType;
     const role_title = sessionStorage.getItem("agentRole") || "General Receptionist";
     const business = JSON.parse(sessionStorage.getItem("businessDetails")) || "Your Business Name";
+    const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
+    const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
+
     const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
     const cleanedCustomServices = rawCustomServices
       .map(item => item?.service?.trim())
@@ -65,6 +68,7 @@ export const useAgentCreator = ({
     const SelectedServices = JSON.parse(sessionStorage.getItem("businesServices")) || "Your Business Name";
     const BusinessLocation = JSON.parse(sessionStorage.getItem("businessLocation")) || "Your Business Services";
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
+
     const agentGender = (sessionStorage.getItem("agentGender"))
     const languageSelect = (sessionStorage?.getItem("agentLanguage"))
     const agentName = sessionStorage.getItem("agentName") || "";
@@ -74,7 +78,7 @@ export const useAgentCreator = ({
     const businessServices = business?.selectedService || [];
     const customServices = cleanedCustomServices?.map(item =>
 
-        typeof item === 'string' ? item : item?.service)||[];
+      typeof item === 'string' ? item : item?.service) || [];
 
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
@@ -84,11 +88,6 @@ export const useAgentCreator = ({
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
 
     const CustomservicesArray = cleanedCustomServices?.map(item => item.service) || [];
-    // console.log('CustomservicesArray',CustomservicesArray,[...business?.businessName,...CustomservicesArray])
-    // console.log('business?.selectedService',CustomservicesArray,SelectedServices.selectedService)
-    // console.log('business?.selectedService',isValid,SelectedServices.selectedService)
-    // return
-
     const prompt = `You are an AI Receptionist ${agentName}, working as a ${role_title} for ${business?.businessName}.
 Your main goal is to professionally greet, assist, and guide callers or visitors. Use a helpful, polite, and clear tone. Tailor your conversation based on your role and the context.
 Here is your profile:
@@ -465,30 +464,27 @@ End Call: If the caller is satisfied, invoke end_call function.
 `
 
 
-  // let  prompt ;
-  const prompt1 = role_title === "General Receptionist"
-        ? generalReceptionistPrompt
-        : role_title === "Inbound LEAD Qualifier"
-            ? salesReceptionistPrompt
-            : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
-  
+    // let  prompt ;
+    const prompt1 = role_title === "General Receptionist"
+      ? generalReceptionistPrompt
+      : role_title === "Inbound LEAD Qualifier"
+        ? salesReceptionistPrompt
+        : role_title === "Technical Receptionist" ? restaurantReceptionistPrompt : prompt;
+
     const filledPrompt = getAgentPrompt({
       industryKey: business?.businessType,   // ← dynamic from businessType
       roleTitle: role_title, // ← dynamic from sessionStorage or UI
       agentName: agentName,
       agentGender: agentGender,
       business: {
-        businessName: business?.businessName
+        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name
       },
       languageSelect: languageSelect,
       businessType,
       aboutBusinessForm,
       commaSeparatedServices
     });
-    
 
-console.log('nitish',filledPrompt);
-return
 
 
     // console.log('prompt1',prompt1)
@@ -510,7 +506,7 @@ return
           .map(service => ({ service }));
         try {
           const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`, {
-            businessName: businessDetails?.businessName,
+            businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name,
             businessSize: businessDetails.businessSize,
             businessType: businessDetails.businessType,
             buisnessEmail: buisenessServices?.email,

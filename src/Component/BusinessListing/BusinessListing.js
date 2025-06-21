@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../BusinessListing/BusinessListing.module.css";
 import { API_BASE_URL } from "../../Store/apiStore";
+import PopUp from "../Popup/Popup";
+import Loader from "../Loader/Loader";
 
 const BusinessListing = () => {
   const [businessName, setBusinessName] = useState("");
@@ -11,7 +13,9 @@ const BusinessListing = () => {
   const [email, setEmail] = useState("");
   const [aboutBusiness, setAboutBusiness] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,7 +26,8 @@ const BusinessListing = () => {
       setPhoneNumber(details.phone || details.internationalPhone || "");
       setAddress(details.address || "");
       setEmail(details.email || "");
-      setAboutBusiness(details.aboutBusiness || "");
+      setAboutBusiness(details.aboutBussiness || "");
+
     }
   }, []);
 
@@ -75,6 +80,7 @@ const BusinessListing = () => {
       );
       const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
       const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+       const displayBusinessName=sessionStorage.getItem("displayBusinessName")
       const packageName = sessionStorage.getItem("package") || "Free";
       const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
       const agentCount = 0;
@@ -148,26 +154,23 @@ const BusinessListing = () => {
       )}_${shortBusinessName}_${packageValue}_#${agentCount}`;
 
       const businessData = {
-        name: placeDetails.name || businessName,
-        address: placeDetails.address || address,
-        phone: placeDetails.phone || phoneNumber,
-        website: placeDetails.website || aboutBusinessForm.businessUrl,
-        rating: placeDetails.rating || "",
-        totalRatings: placeDetails.totalRatings || "",
-        hours: (placeDetails.hours || []).join(" | ") || "",
-        businessStatus: placeDetails.businessStatus || "",
-        categories: (placeDetails.categories || []).join(", ") || "",
+        name: placeDetails?.name || businessName,
+        address: placeDetails?.address || address,
+        phone: placeDetails?.phone || phoneNumber,
+        website: placeDetails?.website || aboutBusinessForm.businessUrl,
+        rating: placeDetails?.rating || "",
+        totalRatings: placeDetails?.totalRatings || "",
+        hours: (placeDetails?.hours || []).join(" | ") || "",
+        businessStatus: placeDetails?.businessStatus || "",
+        categories: Array.isArray(placeDetails?.categories) ? placeDetails.categories.join(", ") : "",
+        email: email,
+        aboutBussiness: aboutBusiness
       };
-
-      const placeDetailsForKBT = JSON.parse(
-        sessionStorage.getItem("placeDetailsExtract") || "{}"
-      );
-
-      const readableDetails = Object.entries(placeDetailsForKBT)
+      const placeDetailsForKBT = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+      const readableDetails = Object?.entries(placeDetailsForKBT)
         .map(
           ([key, value]) =>
-            `${formatLabel(key)}: ${
-              Array.isArray(value) ? value.join(", ") : value || "N/A"
+            `${formatLabel(key)}: ${Array.isArray(value) ? value.join(", ") : value || "N/A"
             }`
         )
         .join("\n");
@@ -198,7 +201,7 @@ const BusinessListing = () => {
       );
       formData2.append(
         "knowledge_base_texts",
-        JSON.stringify(knowledgeBaseText)
+        JSON.stringify(businessData)
       );
       formData3.append(
         "knowledge_base_texts",
@@ -210,12 +213,13 @@ const BusinessListing = () => {
       formData2.append("additionalInstruction", aboutBusinessForm.note || "");
       formData2.append("knowledge_base_name", knowledgeBaseName);
       formData2.append("agentId", localStorage.getItem("agent_id"));
-      formData2.append("googleBusinessName", businessData.name);
+      formData2.append("googleBusinessName",displayBusinessName);
       formData2.append("address1", businessData.address);
       formData2.append("businessEmail", email);
       formData2.append("businessName", businessName);
       formData2.append("phoneNumber", phoneNumber);
-
+      formData2.append("isGoogleListing", aboutBusinessForm.noGoogleListing);
+      formData2.append("isWebsiteUrl", aboutBusinessForm.noBusinessWebsite)
       let knowledge_Base_ID = knowledgeBaseId;
 
       if (knowledge_Base_ID) {
@@ -273,23 +277,40 @@ const BusinessListing = () => {
       }
 
       if (stepEditingMode !== "ON") {
-        alert("Knowledge base created successfully!");
-        navigate("/steps");
+        setShowPopup(true)
+        setPopupType("success")
+        setPopupMessage("Knowledge base created successfully!")
+        setTimeout(() => {
+          navigate("/steps");
+        }, 1000);
+
+
       } else {
-        alert("Knowledge base updated successfully!");
-        navigate("/agent-detail", {
-          state: {
-            agentId: localStorage.getItem("agent_id"),
-            bussinesId: sessionBusinessiD,
-          },
-        });
+        setShowPopup(true)
+        setPopupType("success")
+        setPopupMessage("Knowledge base updated successfully!")
+        setTimeout(() => {
+          navigate("/agent-detail", {
+            state: {
+              agentId: localStorage.getItem("agent_id"),
+              bussinesId: sessionBusinessiD,
+            },
+          });
+        }, 1000);
+
       }
     } catch (error) {
+      console.log(error)
       if (error?.response?.status === 422) {
-        alert("Knowledge base is currently updating. Try again later.");
+        setShowPopup(true)
+        setPopupType("failed")
+        setPopupMessage("Knowledge base is currently updating. Try again later.")
       } else {
+        setShowPopup(true)
+        setPopupType("failed")
         console.error("Submission failed:", error);
-        alert("Something went wrong. Please try again.");
+        setPopupMessage("Something went wrong. Please try again.")
+
       }
     } finally {
       setLoading(false);
@@ -374,11 +395,16 @@ const BusinessListing = () => {
               disabled={loading}
             >
               <img alt="" src="svg/svg-theme.svg" />
-              <p>{loading ? "Submitting..." : "Submit"}</p>
+              <p className="subBtn">{loading ? <>Submitting... &nbsp; <Loader size={18} /></> : "Submit"}</p>
             </button>
           </div>
         </div>
       </form>
+      {showPopup && <PopUp
+        type={popupType}
+        message={popupMessage}
+        onClose={() => setPopupMessage("")} // Close the popup
+      />}
     </div>
   );
 };

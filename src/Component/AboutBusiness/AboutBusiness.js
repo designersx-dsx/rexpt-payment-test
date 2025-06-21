@@ -23,9 +23,11 @@ const dataURLtoFile = (dataUrl, fileName = "file") => {
 };
 
 function AboutBusiness() {
-  const [noGoogleListing, setNoGoogleListing] = useState(false);
-  const [noBusinessWebsite, setNoBusinessWebsite] = useState(false);
+  const aboutBusinessForm1 = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
 
+  const [noGoogleListing, setNoGoogleListing] = useState(aboutBusinessForm1?.noGoogleListing || false);
+
+  const [noBusinessWebsite, setNoBusinessWebsite] = useState(aboutBusinessForm1?.noBusinessWebsite || false);
   const [files, setFiles] = useState([]);
   const [businessUrl, setBusinessUrl] = useState("");
   const [googleListing, setGoogleListing] = useState("");
@@ -106,31 +108,31 @@ function AboutBusiness() {
     }, 300);
   }, []);
 
-  useEffect(() => {
-    const storedName = sessionStorage.getItem("displayBusinessName");
-    if (storedName) {
-      setDisplayBusinessName(storedName);
+  // useEffect(() => {
+  //   const storedName = sessionStorage.getItem("displayBusinessName");
+  //   if (storedName) {
+  //     setDisplayBusinessName(storedName);
 
-      // Slight delay to let input mount
-      setTimeout(() => {
-        const input = document.getElementById("google-autocomplete");
-        if (input) {
-          input.focus();
+  //     // Slight delay to let input mount
+  //     setTimeout(() => {
+  //       const input = document.getElementById("google-autocomplete");
+  //       if (input) {
+  //         input.focus();
 
-          // Simulate key press to trigger suggestion dropdown
-          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-            window.HTMLInputElement.prototype,
-            "value"
-          )?.set;
+  //         // Simulate key press to trigger suggestion dropdown
+  //         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+  //           window.HTMLInputElement.prototype,
+  //           "value"
+  //         )?.set;
 
-          nativeInputValueSetter?.call(input, storedName);
+  //         nativeInputValueSetter?.call(input, storedName);
 
-          const ev2 = new Event("input", { bubbles: true });
-          input.dispatchEvent(ev2);
-        }
-      }, 500);
-    }
-  }, []);
+  //         const ev2 = new Event("input", { bubbles: true });
+  //         input.dispatchEvent(ev2);
+  //       }
+  //     }, 500);
+  //   }
+  // }, []);
 
   const fetchPlaceDetails = (placeId) => {
     setLoading(true);
@@ -160,7 +162,6 @@ function AboutBusiness() {
           "placeDetailsExtract",
           JSON.stringify(businessData)
         );
-        console.log("Extracted Business Data:", businessData);
         const fullPlaceInfoText = JSON.stringify(result, null, 2);
         setPlaceInfoText(fullPlaceInfoText);
       } else {
@@ -209,6 +210,7 @@ function AboutBusiness() {
       setBusinessUrlError("");
       sessionStorage.setItem("businessUrl", url);
       localStorage.setItem("isVerified", true);
+      setNoGoogleListing(false)
     } else {
       setIsVerified(false);
       setBusinessUrlError("Invalid URL");
@@ -235,6 +237,7 @@ function AboutBusiness() {
     v = v.replace(/\s+/g, "").toLowerCase();
     const final = HTTPS_PREFIX + v;
     setBusinessUrl(final);
+    setNoBusinessWebsite(false)
     if (businessUrlError) {
       setBusinessUrlError("");
     }
@@ -251,6 +254,7 @@ function AboutBusiness() {
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
+
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
       if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
       if (savedData.note) setNote(savedData.note);
@@ -264,13 +268,25 @@ function AboutBusiness() {
         );
         setFiles(rebuiltFiles);
       }
+      if (typeof savedData.noGoogleListing === "boolean") {
+        setNoGoogleListing(savedData.noGoogleListing);
+      } if (typeof savedData.noBusinessWebsite === "boolean") {
+        setNoBusinessWebsite(savedData.noBusinessWebsite);
+      }
+
     } else {
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
-      if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
-      if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
-      if (savedData.note) setNote(savedData.note);
+      if (savedData) {
+
+        if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+        if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
+        if (savedData.note) setNote(savedData.note);
+        if (typeof savedData.noBusinessWebsite === "boolean") {
+          setNoBusinessWebsite(savedData.noBusinessWebsite);
+        }
+      }
     }
   }, []);
 
@@ -295,6 +311,8 @@ function AboutBusiness() {
         aboutBusiness,
         note,
         files: previousFiles,
+        noGoogleListing,
+        noBusinessWebsite
       })
     );
   }, [businessUrl, googleListing, aboutBusiness, note]);
@@ -315,7 +333,6 @@ function AboutBusiness() {
 
     const isWebsiteValid = businessUrl && isVerified;
     const isGoogleListingValid = googleListing.trim();
-
     if (!isWebsiteValid && !noBusinessWebsite) {
       setPopupType("failed");
       setPopupMessage(
@@ -333,7 +350,6 @@ function AboutBusiness() {
       setShowPopup(true);
       return;
     }
-
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
@@ -341,6 +357,9 @@ function AboutBusiness() {
         googleListing,
         aboutBusiness,
         note,
+        noGoogleListing,
+        noBusinessWebsite
+
       })
     );
     navigate("/your-business-Listing");
@@ -407,7 +426,6 @@ function AboutBusiness() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
-        console.log("Google Places library loaded");
         const input = document.getElementById("google-autocomplete");
         if (input) {
           initAutocomplete();
@@ -463,6 +481,11 @@ function AboutBusiness() {
                     onChange={(e) => {
                       const checked = e.target.checked;
                       setNoGoogleListing(checked);
+
+                      const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+                      aboutBusinessForm.noGoogleListing = checked;
+                      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
+
                       if (checked) {
                         setGoogleListing("");
                         setDisplayBusinessName("");
@@ -545,6 +568,11 @@ function AboutBusiness() {
                     onChange={(e) => {
                       const checked = e.target.checked;
                       setNoBusinessWebsite(checked);
+
+                      const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+                      aboutBusinessForm.noBusinessWebsite = checked;
+                      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
+
                       if (checked) {
                         setBusinessUrl("");
                         setIsVerified(true);
@@ -553,6 +581,7 @@ function AboutBusiness() {
                       }
                     }}
                   />
+
                   <label htmlFor="no-business-website">
                     I do not have a business website
                   </label>

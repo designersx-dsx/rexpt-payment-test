@@ -251,6 +251,7 @@ const BusinessDetails = () => {
 
   };
   const handleSaveEdit = (e) => {
+    console.log("helo")
     e.preventDefault();
 
     if(prevBuisnessType != businessType) {
