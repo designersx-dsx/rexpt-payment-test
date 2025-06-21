@@ -355,6 +355,7 @@ const AgentDashboard = () => {
     client.on("call_started", () => setIsCallActive(true));
     client.on("call_ended", () => setIsCallActive(false));
     setRetellWebClient(client);
+    sessionStorage.removeItem('selectedfilterOption')
   }, []);
 
   // Start call handler
@@ -770,11 +771,14 @@ const AgentDashboard = () => {
                 </div>
 
                 <div className={styles.address}>
-                  <img src="svg/location.svg" alt="location" />
+                 {agentData?.business?.address1 && 
+                 <><img src="svg/location.svg" alt="location" />
                   <p
                     onClick={() => openAddressModal(agentData?.business?.address1)}
                     style={{ cursor: "pointer", textDecoration: "underline" }}
                   >{truncateAddress(agentData?.business?.address1, 5)}</p>
+                  </>
+                 }
                 </div>
 
                 <h4>Knowledge Base</h4>

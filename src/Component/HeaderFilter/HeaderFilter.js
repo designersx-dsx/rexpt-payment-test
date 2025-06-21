@@ -17,7 +17,7 @@ function HeaderFilter({
   filters,
   onFilterChange,
 }) {
-  console.log(isAgents, "isAgents")
+  // console.log(isAgents, "isAgents")
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [startDate, setStartDate] = useState(null);
@@ -43,6 +43,7 @@ function HeaderFilter({
     const selectedId = +e.target.value;
     const selectedOption = options.find((opt) => opt.id === selectedId);
     setSelected(selectedOption);
+    sessionStorage.setItem("selectedfilterOption", selectedOption.label);
     onFilter(selectedOption.label);
 
   };

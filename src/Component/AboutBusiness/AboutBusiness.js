@@ -479,7 +479,6 @@ Opening Hours: ${businessData.hours}
     formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
     formData.append("enable_auto_refresh", "true");
     formData.append("knowledge_base_texts", JSON.stringify([knowledgeBaseText]));
-    formData2.append("knowledge_base_texts", JSON.stringify([knowledgeBaseText]));
 
     formData2.append("googleUrl", googleListing);
     formData2.append("webUrl", businessUrl.trim());
@@ -829,7 +828,7 @@ Opening Hours: ${businessData.hours}
               <div className={styles.formGroup}>
                 <label htmlFor="about-business">More About your Business</label>
                 <textarea
-                  rows="5"
+                  rows="4"
                   cols="50"
                   id="about-business"
                   type="text"

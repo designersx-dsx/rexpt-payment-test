@@ -194,6 +194,7 @@ function Dashboard() {
       localStorage.removeItem("additionalInstruction");
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("knowledge_base_id");
+      sessionStorage.removeItem('selectedfilterOption')
     }
   }, []);
   // Navigate on agent card click
