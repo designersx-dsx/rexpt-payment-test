@@ -43,9 +43,8 @@ const AgentDashboard = () => {
     setCurrentAgentId,
     getAgentById,
   } = useAgentStore();
-
   const agentStatus = agentData?.agent?.isDeactivated;
-
+  
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
   );
@@ -107,7 +106,7 @@ const AgentDashboard = () => {
     setEventSlug("");
     setEventLength("");
   };
-// sdsds
+  // sdsds
   const handleApiKeySubmit = async () => {
     if (!agentData?.agent) return;
 
@@ -359,9 +358,9 @@ const AgentDashboard = () => {
   }, []);
 
   // Start call handler
-  let micStream='';
+  let micStream = '';
   const handleStartCall = async () => {
-        try {
+    try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
       // Store the stream globally or in state if needed
@@ -477,11 +476,9 @@ const AgentDashboard = () => {
     localStorage.removeItem("additionalInstruction");
     localStorage.removeItem("knowledge_base_name");
     localStorage.removeItem("knowledge_base_id");
-
+    sessionStorage.removeItem("placeDetailsExtract")
     setModalOpen(false);
   };
-  // console.log(agentData,agentDetails?.agentId)
-
   // Open Widget modal
   const handleOpenWidgetModal = (agent) => {
     console.log("agent", agent);
@@ -692,7 +689,7 @@ const AgentDashboard = () => {
           <div className={styles.container}>
             <div className={styles.businessInfo}>
               <div className={styles.card1}>
-                <h2>{agentData?.business?.businessName || "NA"}</h2>
+                <h2>{agentData?.business?.businessName ||agentData.googleBusinessName||(agentData?.knowledge_base_texts?.name)}</h2>
                 <p>{agentData?.business?.businessSize || "NA"}</p>
                 <div className={styles.health}>
                   {/* <h3>Health <span> /Categories</span></h3> */}
@@ -771,14 +768,14 @@ const AgentDashboard = () => {
                 </div>
 
                 <div className={styles.address}>
-                 {agentData?.business?.address1 && 
-                 <><img src="svg/location.svg" alt="location" />
-                  <p
-                    onClick={() => openAddressModal(agentData?.business?.address1)}
-                    style={{ cursor: "pointer", textDecoration: "underline" }}
-                  >{truncateAddress(agentData?.business?.address1, 5)}</p>
-                  </>
-                 }
+                  {agentData?.business?.address1 &&
+                    <><img src="svg/location.svg" alt="location" />
+                      <p
+                        onClick={() => openAddressModal(agentData?.business?.address1)}
+                        style={{ cursor: "pointer", textDecoration: "underline" }}
+                      >{truncateAddress(agentData?.business?.address1, 5)}</p>
+                    </>
+                  }
                 </div>
 
                 <h4>Knowledge Base</h4>
@@ -1441,11 +1438,10 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       agent_id,
       businessId
     );
-    // console.log('response',response)
+
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
-    // console.log('agent',agent)
     sessionStorage.setItem("UpdationMode", "ON");
     sessionStorage.setItem("agentName", agent.agentName);
     sessionStorage.setItem("agentGender", agent.agentGender);
@@ -1489,6 +1485,8 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         googleListing: business.googleUrl,
         aboutBusiness: business.aboutBusiness,
         note: business.additionalInstruction,
+        isGoogleListing: business.isGoogleListing,
+        isWebsiteUrl: business.isWebsiteUrl
       })
     );
 
@@ -1544,7 +1542,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         .map((service) => ({ service }))
       : [];
 
-    console.log("Final cleaned services to store:", cleanedCustomServices);
 
     sessionStorage.setItem(
       "selectedCustomServices",
@@ -1552,13 +1549,21 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    // sessionStorage.setItem('businessLocation', JSON.stringify({
-    //   country: business?.country,
-    //   state: business?.state.trim(),
-    //   city: business?.city.trim(),
-    //   address1: business?.address1.trim(),
-    //   address2: business?.address2.trim(),
-    // }))
+    let raw_knowledge_base_texts = business?.knowledge_base_texts || [];
+
+    if (typeof raw_knowledge_base_texts === "string") {
+      try {
+        raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
+      } catch (err) {
+        console.error("Failed to parse customServices:", raw_knowledge_base_texts);
+        raw_knowledge_base_texts = [];
+      }
+    }
+
+    sessionStorage.setItem(
+      "placeDetailsExtract",
+      JSON.stringify(raw_knowledge_base_texts)
+    );
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }
