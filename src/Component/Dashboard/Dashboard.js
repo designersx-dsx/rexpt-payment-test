@@ -1607,7 +1607,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
-    // console.log('agent',agent)
+    console.log('agent',business)
     sessionStorage.setItem("UpdationMode", "ON");
     sessionStorage.setItem("agentName", agent.agentName);
     sessionStorage.setItem("agentGender", agent.agentGender);
@@ -1711,6 +1711,31 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+
+
+    let raw_knowledge_base_texts = business?.knowledge_base_texts || [];
+
+    if (typeof raw_knowledge_base_texts === "string") {
+      try {
+        raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
+      } catch (err) {
+        console.error("Failed to parse customServices:", raw_knowledge_base_texts);
+        raw_knowledge_base_texts = [];
+      }
+    }
+    console.log("raw_knowledge_base_texts:", raw_knowledge_base_texts);
+    const cleaned_raw_knowledge_base_texts = Array.isArray(raw_knowledge_base_texts)
+      ? raw_knowledge_base_texts
+        // .map((item) => item?.text?.trim())
+        // .filter(Boolean)
+        // .map((service) => ({ service }))
+      : [];
+
+
+    sessionStorage.setItem(
+          "placeDetailsExtract",
+          JSON.stringify(raw_knowledge_base_texts)
+        );
     // sessionStorage.setItem(
     //   "businessLocation",
     //   JSON.stringify({
