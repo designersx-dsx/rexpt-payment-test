@@ -296,7 +296,10 @@ export const updateAgentKnowledgeBaseId = async (agentId, knowledgeBaseId) => {
   }
 };
 
-
+export const updateEmailSendOtp = async (email,userId) => {
+  const res = await api.post('/endusers/updateEmailSendOtp', { email,userId });
+  return res;
+};
 
 
 export default api;
