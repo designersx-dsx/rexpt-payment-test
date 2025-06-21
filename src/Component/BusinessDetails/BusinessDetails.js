@@ -25,7 +25,7 @@ const BusinessDetails = () => {
   const EditingMode = localStorage.getItem('UpdationMode')
   const setHasFetched = true
   const { handleCreateAgent } = useAgentCreator({
-    stepValidator: () => "BusinessDetails", // or custom validation
+    stepValidator: () => "BusinessDetails", 
     setLoading,
     setPopupMessage,
     setPopupType,
@@ -50,7 +50,6 @@ const BusinessDetails = () => {
 
   // console.log(customBuisness, "customBuisness")
   const location = useLocation();
-  const agentDetails = location.state;
 
   const businessTypes = [
     {
@@ -110,15 +109,7 @@ const BusinessDetails = () => {
       icon: "svg/Web-Design-Agency-icon.svg",
     }
   ];
-  const businessSizeOptions = [
-    "1 to 10",
-    "11 to 50",
-    "51 to 100",
-    "101 to 250",
-    "251 to 500",
-    "501 to 1000",
-    "1000+",
-  ];
+
   const stored = sessionStorage.getItem("businessDetails");
   useEffect(() => {
     try {
@@ -139,19 +130,6 @@ const BusinessDetails = () => {
       console.error("Failed to parse businessDetails from sessionStorage:", err);
     }
   }, []);
-  const containsEmoji = (text) => {
-    return /[\p{Emoji_Presentation}\u200d]/u.test(text);
-  };
-
-  const validateBusinessName = (value) => {
-    if (!value?.trim()) return "Business name is required.";
-    if (containsEmoji(value)) return "Emojis are not allowed in business name.";
-    if (/[^a-zA-Z0-9\s.'-]/.test(value))
-      return "Business name contains invalid characters.";
-    if (value?.trim().length < 2)
-      return "Business name must be at least 2 characters.";
-    return "";
-  };
   const validateBusinessSize = (value) => {
     if (!value?.trim()) return "Business size is required.";
     const allowedValues = [
@@ -174,24 +152,6 @@ const BusinessDetails = () => {
       return "Business type is required.";
     }
     return "";
-  };
-  const handleBusinessNameChange = (e) => {
-    const val = e.target.value;
-    setBusinessName(val);
-    if (businessNameSubmitted) {
-      setBusinessNameError(validateBusinessName(val));
-    } else {
-      setBusinessNameError("");
-    }
-  };
-  const handleNameChange = (e) => {
-    const val = e.target.value;
-    setBusinessName(val);
-    if (businessNameSubmitted) {
-      setBusinessNameError(validateBusinessName(val));
-    } else {
-      setBusinessNameError("");
-    }
   };
 
   const handleBusinessSizeChange = (e) => {
@@ -252,15 +212,6 @@ const BusinessDetails = () => {
     } else {
       setBusinessTypeError("");
     }
-
-    const nameError = validateBusinessName(businessName);
-    if (nameError) {
-      setBusinessNameError(nameError);
-      hasError = true;
-    } else {
-      setBusinessNameError("");
-    }
-
     const sizeError = validateBusinessSize(businessSize);
     if (sizeError) {
       setBusinessSizeError(sizeError);
@@ -326,9 +277,6 @@ const BusinessDetails = () => {
       customBuisness: customBuisness.trim(), 
       businessSize,
     };
-    // if (businessType === "Other" && !customBuisness.trim()) {
-    //   newErrors.customBuisness = "Service name is required for 'Other' type.";
-    // }
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
  
@@ -437,43 +385,6 @@ const BusinessDetails = () => {
           </div>
         </div>
       )}
-
-
-
-
-      <div className={styles.labReq}>
-        <div className={styles.inputGroup}>
-          <div className={styles.Dblock}>
-            <label>Business Name<span className={styles.requiredField}> *</span></label>
-            <input
-              type="text"
-              placeholder="Your Business name"
-              value={businessName}
-              onChange={handleBusinessNameChange}
-              className={businessNameError ? styles.inputError : ""}
-            />
-            {businessNameSubmitted && businessNameError && (
-              <p className={styles.inlineError}>{businessNameError}</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.inputGroup}>
-        {/* <label>Business Size (Number of Emp.)</label> */}
-        {/* <input
-          type="text"
-          placeholder="Number of employees"
-          value={businessSize}
-          onChange={handleBusinessSizeChange}
-          maxLength={5}
-          className={businessSizeError ? styles.inputError : ''}
-          inputMode="numeric"
-        /> */}
-        {/* {businessSizeSubmitted && businessSizeError && (
-          <p className={styles.inlineError}>{businessSizeError}</p>
-        )} */}
-      </div>
       {/* business size –- now a dropdown */}
       <div className={styles.inputGroup}>
         <label>Business Size (Number of Emp.)<span className={styles.requiredField}> *</span></label>

@@ -21,8 +21,6 @@ const AboutBusinessNext = () => {
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [isSkipClicked, setIsSkipClicked] = useState(false);
   // Error states
-  const [emailError, setEmailError] = useState("");
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const setHasFetched = true;
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
@@ -36,7 +34,6 @@ const AboutBusinessNext = () => {
     navigate,
     setHasFetched,
   });
-  const locationData = JSON.parse(sessionStorage.getItem("businessLocation"));
   const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
   // const customServices = sessionStorage.getItem('selectedCustomServices') || [];
   const businesServices = JSON.parse(sessionStorage.getItem("businesServices"));
@@ -75,24 +72,6 @@ const AboutBusinessNext = () => {
 
   const handleSubmit = async () => {
     setIsSubmitClicked(true);
-
-    if (email) {
-      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      if (!isValid) {
-        setEmailError("Please enter a valid email address.");
-        return;
-      } else {
-        setEmailError("");
-      }
-    }
-    // if (
-    //   businessDetails?.businessType === "Other" &&
-    //   (email.trim() === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    // ) {
-    //   setEmailError("Please enter a valid email address.");
-    //   return;
-    // }
-    // Step 1: Get old businesServices (if any)
     const raw = sessionStorage.getItem("businesServices");
     let previous = {};
     try {
@@ -193,7 +172,6 @@ const AboutBusinessNext = () => {
   const handleSkip = () => {
     setIsSkipClicked(true);
     handleSubmit();
-    // navigate("/about-business");fdfdfdf
   };
 
   const handleSaveEdit = (e) => {
@@ -230,31 +208,6 @@ const AboutBusinessNext = () => {
     <>
       {/* <HeaderBar></HeaderBar> */}
       <div className={styles.CallTransferMain1}>
-        {businessDetails?.businessType === "Other" && (
-          <div className={styles.inputGroup}>
-            <h2>Business Email Address</h2>
-            <div className={styles.phoneInput}>
-              <input
-                type="email"
-                placeholder="Business Email Address"
-                value={email}
-                className={styles.phoneNumberInput}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError("");
-                }}
-              />
-            </div>
-            {emailError && (
-              <p style={{ color: "red", marginTop: "5px" }}>{emailError}</p>
-            )}
-            {isEmailVerified && (
-              <p style={{ color: "green", marginTop: "5px" }}>
-                Email verified successfully!
-              </p>
-            )}
-          </div>
-        )}
         <div className={styles.headrPart}>
           <h2>Add More Services</h2>
           <img
