@@ -82,6 +82,7 @@ const BusinessListing = () => {
       const displayBusinessName = sessionStorage.getItem("displayBusinessName")
       const packageName = sessionStorage.getItem("package") || "Free";
       const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
+      const EditingMode = localStorage.getItem("UpdationMode");
       const agentCount = 0;
       if (!businessName || !address || !phoneNumber) {
         alert("Please fill all required fields.");
@@ -315,11 +316,12 @@ const BusinessListing = () => {
       setLoading(false);
     }
   };
+    const EditingMode = localStorage.getItem("UpdationMode");
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Your Business Listing</h1>
+        <h1>{EditingMode?'Edit: Your Business Listing':'Your Business Listing'}</h1>
       </div>
 
       <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -367,7 +369,7 @@ const BusinessListing = () => {
             <div className={styles.formGroup}>
               <label>Business Email</label>
               <input
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 placeholder="Business Email Address"

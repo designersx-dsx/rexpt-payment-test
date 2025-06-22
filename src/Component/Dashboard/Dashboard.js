@@ -196,6 +196,7 @@ function Dashboard() {
       localStorage.removeItem("knowledge_base_id");
       sessionStorage.removeItem('selectedfilterOption')
       sessionStorage.removeItem("placeDetailsExtract")
+      sessionStorage.removeItem("agentNote")
     }
   }, []);
   // Navigate on agent card click
@@ -1593,69 +1594,69 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     const agent = response?.data?.agent;
     const business = response?.data?.business;
     sessionStorage.setItem("UpdationMode", "ON");
-    sessionStorage.setItem("agentName", agent.agentName);
-    sessionStorage.setItem("agentGender", agent.agentGender);
-    sessionStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
-    sessionStorage.setItem("agentLanguage", agent.agentLanguage);
-    sessionStorage.setItem("llmId", agent.llmId);
-    sessionStorage.setItem("agent_id", agent.agent_id);
-    sessionStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
+    sessionStorage.setItem("agentName", agent?.agentName);
+    sessionStorage.setItem("agentGender", agent?.agentGender);
+    sessionStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
+    sessionStorage.setItem("agentLanguage", agent?.agentLanguage);
+    sessionStorage.setItem("llmId", agent?.llmId);
+    sessionStorage.setItem("agent_id", agent?.agent_id);
+    sessionStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
 
     //need to clear later
     localStorage.setItem("UpdationMode", "ON");
-    localStorage.setItem("agentName", agent.agentName);
-    localStorage.setItem("agentGender", agent.agentGender);
-    localStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
-    localStorage.setItem("agentLanguage", agent.agentLanguage);
-    localStorage.setItem("llmId", agent.llmId);
-    localStorage.setItem("agent_id", agent.agent_id);
-    localStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
-    localStorage.setItem("agentRole", agent.agentRole);
-    localStorage.setItem("agentVoice", agent.agentVoice);
-    localStorage.setItem("agentVoiceAccent", agent.agentAccent);
-    localStorage.setItem("avatar", agent.avatar);
-    sessionStorage.setItem("googleListing", business.googleUrl);
+    localStorage.setItem("agentName", agent?.agentName);
+    localStorage.setItem("agentGender", agent?.agentGender);
+    localStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
+    localStorage.setItem("agentLanguage", agent?.agentLanguage);
+    localStorage.setItem("llmId", agent?.llmId);
+    localStorage.setItem("agent_id", agent?.agent_id);
+    localStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
+    localStorage.setItem("agentRole", agent?.agentRole);
+    localStorage.setItem("agentVoice", agent?.agentVoice);
+    localStorage.setItem("agentVoiceAccent", agent?.agentAccent);
+    localStorage.setItem("avatar", agent?.avatar);
+    sessionStorage.setItem("googleListing", business?.googleUrl);
     sessionStorage.getItem("displayBusinessName");
-    localStorage.setItem("googleUrl", business.googleUrl);
-    localStorage.setItem("webUrl", business.webUrl);
-    localStorage.setItem("aboutBusiness", business.aboutBusiness);
+    localStorage.setItem("googleUrl", business?.googleUrl);
+    localStorage.setItem("webUrl", business?.webUrl);
+    localStorage.setItem("aboutBusiness", business?.aboutBusiness);
     localStorage.setItem(
       "additionalInstruction",
-      business.additionalInstruction
+      business?.additionalInstruction
     );
-    localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
-    localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
+    localStorage.setItem("knowledge_base_name", business?.knowledge_base_name);
+    localStorage.setItem("knowledge_base_id", business?.knowledge_base_id);
     //need to clear above
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
-        businessUrl: business.webUrl,
-        googleListing: business.googleUrl,
-        aboutBusiness: business.aboutBusiness,
-        note: business.additionalInstruction,
-        isGoogleListing: business.isGoogleListing,
-        isWebsiteUrl: business.isWebsiteUrl
+        businessUrl: business?.webUrl,
+        googleListing: business?.googleUrl,
+        aboutBusiness: business?.aboutBusiness,
+        note: business?.additionalInstruction,
+        isGoogleListing: business?.isGoogleListing,
+        isWebsiteUrl: business?.isWebsiteUrl
       })
     );
 
-    sessionStorage.setItem("agentRole", agent.agentRole);
-    sessionStorage.setItem("agentVoice", agent.agentVoice);
-    sessionStorage.setItem("agentVoiceAccent", agent.agentAccent);
-    sessionStorage.setItem("avatar", agent.avatar);
-    sessionStorage.setItem("businessDetails", agent.business);
-    sessionStorage.setItem("businessId", agent.businessId);
-    sessionStorage.setItem("bId", agent.businessId);
-    sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
+    sessionStorage.setItem("agentRole", agent?.agentRole);
+    sessionStorage.setItem("agentVoice", agent?.agentVoice);
+    sessionStorage.setItem("agentVoiceAccent", agent?.agentAccent);
+    sessionStorage.setItem("avatar", agent?.avatar);
+    sessionStorage.setItem("businessDetails", agent?.business);
+    sessionStorage.setItem("businessId", agent?.businessId);
+    sessionStorage.setItem("bId", agent?.businessId);
+    sessionStorage.setItem("displayBusinessName", business?.googleBusinessName);
 
     const businessData = {
       userId: business.userId,
-      businessType: business.businessType,
-      businessName: business.businessName.trim(),
-      businessSize: business.businessSize,
-      customBuisness: business.customBuisness,
+      businessType: business?.businessType,
+      businessName: business?.businessName.trim(),
+      businessSize: business?.businessSize,
+      customBuisness: business?.customBuisness,
     };
 
-    let parsedServices = safeParse(business.buisnessService, []);
+    let parsedServices = safeParse(business?.buisnessService, []);
     sessionStorage.setItem(
       "businesServices",
       JSON.stringify({
@@ -1709,6 +1710,8 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       "placeDetailsExtract",
       JSON.stringify(raw_knowledge_base_texts)
     );
+    sessionStorage.setItem(
+      "agentNote",agent?.additionalNote);
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }

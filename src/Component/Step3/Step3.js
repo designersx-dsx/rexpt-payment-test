@@ -83,7 +83,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
       setGender(agentGender);
       setAvatar(selectedAvatar);
     } else {
-      if (agentGender && avatars[agentGender]&&updationMode) {
+      if (agentGender && avatars[agentGender]) {
         const genderAvatars = avatars[agentGender];
         const firstAvatar = genderAvatars[0]?.img || null;
 
