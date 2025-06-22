@@ -292,25 +292,40 @@ function AboutBusiness() {
 
   useEffect(() => {
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+    if (stepEditingMode == "ON") {
+      const noListing = !aboutBusinessForm.googleListing?.trim() && !googleListing?.trim();
+      const noWebsite = !aboutBusinessForm.businessUrl?.trim() && !businessUrl?.trim();
 
-    const noListing = !aboutBusinessForm.googleListing?.trim() && !googleListing?.trim();
-    const noWebsite = !aboutBusinessForm.businessUrl?.trim() && !businessUrl?.trim();
+      if (noListing) {
+        setNoGoogleListing(true);
+        aboutBusinessForm.noGoogleListing = true;
+        sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
+      }
 
-    if (noListing) {
-      setNoGoogleListing(true);
-      aboutBusinessForm.noGoogleListing = true;
-      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
+      if (noWebsite) {
+        setNoBusinessWebsite(true);
+        setIsVerified(true); // assume valid when intentionally skipped
+        aboutBusinessForm.noBusinessWebsite = true;
+        sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
+      }
+
+
     }
+    else {
+      if (aboutBusinessForm.noGoogleListing === true) {
+        setNoGoogleListing(true);
+      } else {
+        setNoGoogleListing(false); // explicitly false by default
+      }
 
-    if (noWebsite) {
-      setNoBusinessWebsite(true);
-      setIsVerified(true); // assume valid when intentionally skipped
-      aboutBusinessForm.noBusinessWebsite = true;
-      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
+      if (aboutBusinessForm.noBusinessWebsite === true) {
+        setNoBusinessWebsite(true);
+        setIsVerified(true);
+      } else {
+        setNoBusinessWebsite(false); // explicitly false by default
+      }
     }
   }, [googleListing, businessUrl]);
-
-
 
   const fetchAgentCountFromUser = async () => {
     try {
@@ -463,7 +478,7 @@ function AboutBusiness() {
                     type="text"
                     autoComplete="off"
                     placeholder="Type the name of your Business to Search"
-                   value={ googleListing}
+                    value={googleListing}
                     onChange={(e) => setGoogleListing(e.target.value)}
                     required
                     disabled={noGoogleListing}
@@ -550,7 +565,7 @@ function AboutBusiness() {
                                   : styles.invalidIcon
                               }
                             >
-                                {isVerified && !noBusinessWebsite ? "✔️" : "❌"}
+                              {isVerified && !noBusinessWebsite ? "✔️" : "❌"}
                             </span>
                           )
                         )}
