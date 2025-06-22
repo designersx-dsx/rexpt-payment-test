@@ -431,6 +431,7 @@ const AgentDashboard = () => {
     localStorage.removeItem("knowledge_base_name");
     localStorage.removeItem("knowledge_base_id");
     sessionStorage.removeItem("placeDetailsExtract")
+    sessionStorage.removeItem("agentNote")
     setModalOpen(false);
   };
   // Open Widget modal
@@ -1516,6 +1517,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       "placeDetailsExtract",
       JSON.stringify(raw_knowledge_base_texts)
     );
+     sessionStorage.setItem("agentNote",agent?.additionalNote);
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }

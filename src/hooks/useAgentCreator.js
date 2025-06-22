@@ -59,7 +59,7 @@ export const useAgentCreator = ({
     const business = JSON.parse(sessionStorage.getItem("businessDetails")) || "Your Business Name";
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
-
+    const agentNote = sessionStorage.getItem("agentNote")||"";
     const rawCustomServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
     const cleanedCustomServices = rawCustomServices
       .map(item => item?.service?.trim())
@@ -477,17 +477,20 @@ End Call: If the caller is satisfied, invoke end_call function.
       agentName: agentName,
       agentGender: agentGender,
       business: {
-        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name
+        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name,
+        email:  getBusinessNameFromGoogleListing?.email || "",
       },
       languageSelect: languageSelect,
       businessType,
       aboutBusinessForm,
-      commaSeparatedServices
+      commaSeparatedServices,
+      agentNote
     });
 
 
 
-    // console.log('prompt1',prompt1)
+    // console.log('prompt1',filledPrompt)
+    // return
 
 
     //updation here

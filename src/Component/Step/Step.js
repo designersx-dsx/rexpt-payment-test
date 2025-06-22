@@ -430,6 +430,7 @@ const Step = () => {
     const handleContinue = async () => {
         if (step4Ref.current) {
             setIsContinueClicked(true);
+            const agentNote = sessionStorage.getItem("agentNote");
             const filledPrompt =
                 getAgentPrompt({
                     industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
@@ -437,12 +438,15 @@ const Step = () => {
                     agentName: agentName,
                     agentGender: agentGender,
                     business: {
-                        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name
+                        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name,
+                        email: getBusinessNameFromGoogleListing?.email || "",
+
                     },
                     languageSelect: languageSelect,
                     businessType,
                     aboutBusinessForm,
-                    commaSeparatedServices
+                    commaSeparatedServices,
+                    agentNote
                 });
             const isValid = step4Ref.current.validate();
             //creation here
@@ -600,6 +604,8 @@ const Step = () => {
                             interruption_sensitivity: 0.7,
                             backchannel_frequency: 0.7,
                             backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
+                            additionalNote:agentNote||"",
+
                         }
                         try {
                             const response = await createAgent(agentData);
@@ -737,6 +743,7 @@ const Step = () => {
                             agentGender: sessionStorage.getItem('agentGender') || "female",
                             agentStatus: true,
                             businessId: businessIdObj.businessId,
+                            additionalNote:agentNote||"",
                         }
                         try {
                             const response = await updateAgent(agentId, agentData);
