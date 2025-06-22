@@ -156,7 +156,6 @@ export default function Home() {
     // Perform additional logic related to "All Agents" if needed
   };
   const navigate = useNavigate();
-  console.log("Filtered Data:", filteredData);
 
   return (
     <div className={styles.container}>

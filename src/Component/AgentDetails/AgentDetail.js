@@ -44,7 +44,6 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
-  
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
   );
@@ -226,51 +225,6 @@ const AgentDashboard = () => {
       console.error("Error in createCalEvent:", error);
     }
   };
-
-  // useEffect(() => {
-  //   const getAgentDetailsAndBookings = async () => {
-  //     try {
-  //       const response = await fetchAgentDetailById(agentDetails);
-  //       setAgentData(response?.data);
-  //       const voipNumbersStr = response?.data?.agent?.voip_numbers;
-  //       if (voipNumbersStr) {
-  //         try {
-  //           const numbersArray = JSON.parse(voipNumbersStr);
-  //           setAssignedNumbers(numbersArray);
-  //         } catch (e) {
-  //           console.warn("Failed to parse voip_numbers:", e);
-  //           setAssignedNumbers([]);
-  //         }
-  //       } else {
-  //         setAssignedNumbers([]);
-  //       }
-
-  //       const calApiKey = response?.data?.agent?.calApiKey;
-  //       if (calApiKey) {
-  //         const calResponse = await fetch(
-  //           `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
-  //         );
-  //         if (!calResponse.ok) {
-  //           throw new Error("Failed to fetch total bookings from Cal.com");
-  //         }
-
-  //         const bookingsData = await calResponse.json();
-  //         setTotalBookings(bookingsData.bookings?.length || 0);
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to fetch data", err.response || err.message || err);
-  //       setTotalBookings(0);
-  //       setAssignedNumbers([]);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (agentDetails ) {
-  //     getAgentDetailsAndBookings();
-  //   }
-  // }, [agentDetails]);
-  // console.log('agentData',agentData)
   useEffect(() => {
     const getAgentDetailsAndBookings = async () => {
       if (!agentDetails?.agentId) return;
@@ -481,7 +435,6 @@ const AgentDashboard = () => {
   };
   // Open Widget modal
   const handleOpenWidgetModal = (agent) => {
-    console.log("agent", agent);
     const agentData = {
       business: agent.business,
       ...agent.agent,
@@ -689,10 +642,9 @@ const AgentDashboard = () => {
           <div className={styles.container}>
             <div className={styles.businessInfo}>
               <div className={styles.card1}>
-                <h2>{agentData?.business?.businessName ||agentData.googleBusinessName||(agentData?.knowledge_base_texts?.name)}</h2>
+                <h2>{agentData?.business?.businessName ||agentData?.business?.googleBusinessName||(agentData?.knowledge_base_texts?.name)}</h2>
                 <p>{agentData?.business?.businessSize || "NA"}</p>
                 <div className={styles.health}>
-                  {/* <h3>Health <span> /Categories</span></h3> */}
                   <h3>
                     {agentData?.business?.businessType || "NA"}
 
@@ -1177,7 +1129,7 @@ const AgentDashboard = () => {
                 setCallLoading={setCallLoading}
                 agentName={agentData?.agent?.agentName}
                 agentAvatar={agentData?.agent?.avatar}
-                businessName={agentData?.business?.businessName}
+                businessName={agentData?.business?.businessName ||agentData?.business?.googleBusinessName||(agentData?.knowledge_base_texts?.name)}
               />
             </Modal2>
           )}

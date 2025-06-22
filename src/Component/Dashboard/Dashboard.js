@@ -536,7 +536,6 @@ function Dashboard() {
   };
   // End call
   const handleEndCall = async () => {
-    console.log("isCallInProgress", isCallInProgress);
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
@@ -777,8 +776,6 @@ Opening Hours: ${businessData.hours}
 
         const createdKB = await createRes.json();
         const knowledgeBaseId = createdKB.knowledge_base_id;
-
-        console.log("✅ Knowledge Base Created:", knowledgeBaseId);
         sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
 
         // Step 2: Update LLM for the agent
@@ -786,8 +783,6 @@ Opening Hours: ${businessData.hours}
           agentToDeactivate?.llmId ||
           localStorage.getItem("llmId") ||
           sessionStorage.getItem("llmId");
-
-        console.log("LLM ID:", llmId);
 
         if (llmId && knowledgeBaseId) {
           const llmPayload = {
@@ -812,11 +807,6 @@ Opening Hours: ${businessData.hours}
               console.error("Failed to update LLM:", err);
               throw new Error("LLM update failed");
             }
-
-            console.log(
-              "✅ LLM updated successfully with KB ID:",
-              knowledgeBaseId
-            );
           } catch (error) {
             console.error("Error updating LLM:", error);
           }
@@ -833,7 +823,6 @@ Opening Hours: ${businessData.hours}
               agentToDeactivate.agent_id,
               knowledgeBaseId
             );
-            console.log("✅ Agent knowledgeBaseId updated in DB");
           } catch (err) {
             console.error(" Failed to update agent's KB ID:", err);
           }
@@ -1603,8 +1592,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
     const agent = response?.data?.agent;
     const business = response?.data?.business;
-
-    console.log('agent', business)
     sessionStorage.setItem("UpdationMode", "ON");
     sessionStorage.setItem("agentName", agent.agentName);
     sessionStorage.setItem("agentGender", agent.agentGender);
@@ -1639,7 +1626,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
     localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
     //need to clear above
-    console.log(business,"business")
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
@@ -1677,14 +1663,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         email: business.buisnessEmail,
       })
     );
-
-    //custom services
-    // let parsedCustomeServices=safeParse(business.customServices, [])
-    // console.log('business.customServices:', parsedCustomeServices,business.customServices);
-    // console.log('typeof:', typeof parsedCustomeServices);
-    //    sessionStorage.setItem("selectedCustomServices",JSON.stringify({
-    //     parsedCustomeServices
-    // }))
     //custom servcice save and filter
     let rawCustomServices = business?.customServices || [];
 
@@ -1722,12 +1700,8 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         raw_knowledge_base_texts = [];
       }
     }
-    console.log("raw_knowledge_base_texts:", raw_knowledge_base_texts);
     const cleaned_raw_knowledge_base_texts = Array.isArray(raw_knowledge_base_texts)
       ? raw_knowledge_base_texts
-      // .map((item) => item?.text?.trim())
-      // .filter(Boolean)
-      // .map((service) => ({ service }))
       : [];
 
 
@@ -1735,16 +1709,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       "placeDetailsExtract",
       JSON.stringify(raw_knowledge_base_texts)
     );
-    // sessionStorage.setItem(
-    //   "businessLocation",
-    //   JSON.stringify({
-    //     country: business?.country,
-    //     state: business?.state.trim(),
-    //     city: business?.city.trim(),
-    //     address1: business?.address1.trim(),
-    //     address2: business?.address2.trim(),
-    //   })
-    // );
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }

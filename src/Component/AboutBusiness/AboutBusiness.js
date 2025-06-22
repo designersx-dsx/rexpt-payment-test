@@ -91,7 +91,7 @@ function AboutBusiness() {
         const businessUrl = place.url;
         const businessName = place.name;
         setGoogleListing(businessUrl);
-        setDisplayBusinessName(businessName);
+        // setDisplayBusinessName(businessName);
         sessionStorage.setItem("googleListing", businessUrl);
         sessionStorage.setItem("displayBusinessName", businessName);
         fetchPlaceDetails(place.place_id);
@@ -291,31 +291,26 @@ function AboutBusiness() {
   }, []);
 
   useEffect(() => {
-    // Try to get previously stored files
-    const existing = sessionStorage.getItem("aboutBusinessForm");
-    let previousFiles = [];
+    const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
 
-    if (existing) {
-      try {
-        previousFiles = JSON.parse(existing).files || [];
-      } catch (e) {
-        previousFiles = [];
-      }
+    const noListing = !aboutBusinessForm.googleListing?.trim() && !googleListing?.trim();
+    const noWebsite = !aboutBusinessForm.businessUrl?.trim() && !businessUrl?.trim();
+
+    if (noListing) {
+      setNoGoogleListing(true);
+      aboutBusinessForm.noGoogleListing = true;
+      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
     }
 
-    sessionStorage.setItem(
-      "aboutBusinessForm",
-      JSON.stringify({
-        businessUrl,
-        googleListing,
-        aboutBusiness,
-        note,
-        files: previousFiles,
-        noGoogleListing,
-        noBusinessWebsite
-      })
-    );
-  }, [businessUrl, googleListing, aboutBusiness, note]);
+    if (noWebsite) {
+      setNoBusinessWebsite(true);
+      setIsVerified(true); // assume valid when intentionally skipped
+      aboutBusinessForm.noBusinessWebsite = true;
+      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
+    }
+  }, [googleListing, businessUrl]);
+
+
 
   const fetchAgentCountFromUser = async () => {
     try {
@@ -468,9 +463,10 @@ function AboutBusiness() {
                     type="text"
                     autoComplete="off"
                     placeholder="Type the name of your Business to Search"
-                    value={displayBusinessName}
-                    onChange={(e) => setDisplayBusinessName(e.target.value)}
+                   value={ googleListing}
+                    onChange={(e) => setGoogleListing(e.target.value)}
                     required
+                    disabled={noGoogleListing}
                   />
                 </div>
                 <div className={styles.checkboxRow}>
@@ -482,9 +478,9 @@ function AboutBusiness() {
                       const checked = e.target.checked;
                       setNoGoogleListing(checked);
 
-                      const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-                      aboutBusinessForm.noGoogleListing = checked;
-                      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(aboutBusinessForm));
+                      const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+                      form.noGoogleListing = checked;
+                      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
 
                       if (checked) {
                         setGoogleListing("");
@@ -494,6 +490,7 @@ function AboutBusiness() {
                       }
                     }}
                   />
+
                   <label htmlFor="no-google-listing">
                     I do not have Google My Business Listing
                   </label>
@@ -538,6 +535,7 @@ function AboutBusiness() {
                           }
                           if (selectionStart <= PREFIX_LEN) e.preventDefault();
                         }}
+                        disabled={noBusinessWebsite}
                         onInput={handleInputChange}
                       />
                       <div className={styles.verifyStatus}>
@@ -552,7 +550,7 @@ function AboutBusiness() {
                                   : styles.invalidIcon
                               }
                             >
-                              {isVerified ? "✔️" : "❌"}
+                                {isVerified && !noBusinessWebsite ? "✔️" : "❌"}
                             </span>
                           )
                         )}
@@ -587,60 +585,6 @@ function AboutBusiness() {
                   </label>
                 </div>
               </div>
-              {/* Verify Button */}
-
-              {/* <div className={styles.formGroup}>
-                <label htmlFor="about-business">More About your Business</label>
-                <textarea
-                  rows="4"
-                  cols="50"
-                  id="about-business"
-                  type="text"
-                  placeholder="Use text for describing your business. Describe something about your business which is not defined or listed on Google My Business or Your website."
-                  value={aboutBusiness}
-                  onChange={(e) => {
-                    setAboutBusiness(e.target.value);
-                    if (aboutBusinessSubmitted)
-                      setAboutBusinessError(
-                        validateAboutBusiness(e.target.value)
-                      );
-                  }}
-                />
-              </div> */}
-              {/* {aboutBusinessSubmitted && aboutBusinessError && (
-                <p className={styles.inlineError}>{aboutBusinessError}</p>
-              )} */}
-              {/* <div className={styles.formGroup}>
-                <label htmlFor="file-upload">File Upload <span className={styles.filesAllowed}>(allowd only .pdf,.txt,.csv,.json,.md)</span></label>
-                <input
-                  id="file-upload"
-                  type="file"
-                  multiple
-                  accept=".pdf,.txt,.csv,.json,.md"
-                  onChange={handleFileChange}
-                />
-
-              </div> */}
-              {/* {filesSubmitted && filesError && (
-                <p className={styles.inlineError}>{filesError}</p>
-              )} */}
-              {/* <div className={styles.formGroup}>
-                <label htmlFor="additional-note">
-                  Additional Agent Instructions{" "}
-                </label>
-                <textarea
-                  id="additional-note"
-                  placeholder="Note"
-                  rows="4"
-                  cols="50"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                ></textarea>
-              </div> */}
-              {/* <div onClick={handleSkip} className={styles.skipButton}>
-                {stepEditingMode ? "" : <button>Skip for now</button>}
-              </div> */}
-
               <div className={styles.fixedBtn}>
                 {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
                 {stepEditingMode != "ON" ? (
