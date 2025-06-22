@@ -14,7 +14,6 @@ const CallTest = ({
   agentAvatar,
   businessName
 }) => {
-  console.log(isliveTranscript);
 
   const displayAgentName = agentName && agentName.length > 15
     ? agentName.slice(0, 7) + '...'

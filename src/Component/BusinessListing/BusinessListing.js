@@ -17,12 +17,11 @@ const BusinessListing = () => {
   const [popupType, setPopupType] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
       const details = JSON.parse(storedDetails);
-      setBusinessName(details.name || "");
+      setBusinessName(details.businessName || details.name || "");;
       setPhoneNumber(details.phone || details.internationalPhone || "");
       setAddress(details.address || "");
       setEmail(details.email || "");
@@ -39,7 +38,7 @@ const BusinessListing = () => {
     sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedData));
 
     switch (field) {
-      case "name":
+      case "businessName":
         setBusinessName(value);
         break;
       case "phone":
@@ -80,18 +79,17 @@ const BusinessListing = () => {
       );
       const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
       const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
-       const displayBusinessName=sessionStorage.getItem("displayBusinessName")
+      const displayBusinessName = sessionStorage.getItem("displayBusinessName")
       const packageName = sessionStorage.getItem("package") || "Free";
       const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
       const agentCount = 0;
-
       if (!businessName || !address || !phoneNumber) {
         alert("Please fill all required fields.");
         return;
       }
       const updatedPlaceDetails = {
         ...placeDetails,
-        name: businessName,
+        businessName: businessName,
         phone: phoneNumber,
         address: address,
         email: email,
@@ -154,13 +152,13 @@ const BusinessListing = () => {
       )}_${shortBusinessName}_${packageValue}_#${agentCount}`;
 
       const businessData = {
-        name: placeDetails?.name || businessName,
+        name:  businessName || placeDetails?.businessName || "",
         address: placeDetails?.address || address,
         phone: placeDetails?.phone || phoneNumber,
         website: placeDetails?.website || aboutBusinessForm.businessUrl,
         rating: placeDetails?.rating || "",
         totalRatings: placeDetails?.totalRatings || "",
-        hours: (placeDetails?.hours || []).join(" | ") || "",
+        hours: Array.isArray(placeDetails?.hours) ? placeDetails.hours.join(" | ") : "",
         businessStatus: placeDetails?.businessStatus || "",
         categories: Array.isArray(placeDetails?.categories) ? placeDetails.categories.join(", ") : "",
         email: email,
@@ -188,7 +186,6 @@ const BusinessListing = () => {
       const formData = new FormData();
       const formData2 = new FormData();
       const formData3 = new FormData();
-
       if (mergedUrls.length > 0) {
         formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
         formData3.append("knowledge_base_urls", JSON.stringify(mergedUrls));
@@ -203,23 +200,25 @@ const BusinessListing = () => {
         "knowledge_base_texts",
         JSON.stringify(businessData)
       );
-      formData3.append(
-        "knowledge_base_texts",
-        JSON.stringify(knowledgeBaseText)
-      );
+    //Crate Knowledge Base
       formData2.append("googleUrl", aboutBusinessForm.googleListing);
       formData2.append("webUrl", aboutBusinessForm.businessUrl.trim());
       formData2.append("aboutBusiness", aboutBusiness);
       formData2.append("additionalInstruction", aboutBusinessForm.note || "");
       formData2.append("knowledge_base_name", knowledgeBaseName);
       formData2.append("agentId", localStorage.getItem("agent_id"));
-      formData2.append("googleBusinessName",displayBusinessName);
+      formData2.append("googleBusinessName",placeDetails?.businessName || displayBusinessName||businessName);
       formData2.append("address1", businessData.address);
       formData2.append("businessEmail", email);
-      formData2.append("businessName", businessName);
+      formData2.append("businessName",placeDetails?.businessName|| businessName);
       formData2.append("phoneNumber", phoneNumber);
       formData2.append("isGoogleListing", aboutBusinessForm.noGoogleListing);
       formData2.append("isWebsiteUrl", aboutBusinessForm.noBusinessWebsite)
+
+        formData3.append(
+        "knowledge_base_texts",
+        JSON.stringify(knowledgeBaseText)
+      );
       let knowledge_Base_ID = knowledgeBaseId;
 
       if (knowledge_Base_ID) {
@@ -333,7 +332,7 @@ const BusinessListing = () => {
               <input
                 type="text"
                 value={businessName}
-                onChange={(e) => handleInputChange("name", e.target.value)}
+                onChange={(e) => handleInputChange("businessName", e.target.value)}
                 placeholder="Your Business Name"
                 required
               />{" "}

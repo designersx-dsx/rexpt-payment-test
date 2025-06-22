@@ -278,7 +278,6 @@ const BusinessLocation = () => {
         address2: address2.trim(),
       })
     );
-    console.log('edit hit')
 
     setTimeout(() => {
       handleCreateAgent();
