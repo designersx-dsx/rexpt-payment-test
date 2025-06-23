@@ -64,6 +64,7 @@ function AboutBusiness() {
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
   const [placeInfoText, setPlaceInfoText] = useState("");
   const setHasFetched = true;
+  
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
     setLoading,
@@ -91,7 +92,7 @@ function AboutBusiness() {
         const businessUrl = place.url;
         const businessName = place.name;
         setGoogleListing(businessUrl);
-        // setDisplayBusinessName(businessName);
+        setDisplayBusinessName(businessName);
         sessionStorage.setItem("googleListing", businessUrl);
         sessionStorage.setItem("displayBusinessName", businessName);
         fetchPlaceDetails(place.place_id);
@@ -151,6 +152,7 @@ function AboutBusiness() {
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
 
+        const form1= JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
         // Extract important fields from result
         const businessData = {
           name: result.name || "",
@@ -164,9 +166,13 @@ function AboutBusiness() {
           businessStatus: result.business_status || "",
           categories: result.types || [],
         };
+        const updatedForm = {
+        ...form1,
+        ...businessData,
+      };
         sessionStorage.setItem(
           "placeDetailsExtract",
-          JSON.stringify(businessData)
+          JSON.stringify(updatedForm)
         );
         const fullPlaceInfoText = JSON.stringify(result, null, 2);
         setPlaceInfoText(fullPlaceInfoText);
@@ -484,8 +490,9 @@ function AboutBusiness() {
                     type="text"
                     autoComplete="off"
                     placeholder="Type the name of your Business to Search"
-                    value={googleListing}
-                    onChange={(e) => setGoogleListing(e.target.value)}
+                    value={displayBusinessName}
+                    // onChange={(e) => setGoogleListing(e.target.value)}
+                     onChange={(e) => {setDisplayBusinessName(e.target.value)}}
                     required
                     disabled={noGoogleListing}
                   />
@@ -502,13 +509,35 @@ function AboutBusiness() {
                       const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
                       form.noGoogleListing = checked;
                       sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
-
+                      const form1= JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
                       if (checked) {
                         setGoogleListing("");
                         setDisplayBusinessName("");
                         sessionStorage.removeItem("googleListing");
                         sessionStorage.removeItem("displayBusinessName");
-                        sessionStorage.removeItem("placeDetailsExtract");
+                        // sessionStorage.removeItem("placeDetailsExtract");
+                            const clearedGoogleData = {
+                            name: "", // Optional: keep or clear as needed
+                            address: "",
+                            phone: "",
+                            internationalPhone: "",
+                            website: "",
+                            rating: "",
+                            totalRatings: "",
+                            hours: [],
+                            businessStatus: "",
+                            categories: [],
+                            aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness|| "",
+                          };
+
+                          // Merge cleared Google fields into existing form
+                          const updatedForm = {
+                            ...form1,
+                            ...clearedGoogleData,
+                          };
+
+                          // Update sessionStorage
+                          sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedForm));
                       }
                     }}
                   />

@@ -5,6 +5,9 @@ import styles from "../BusinessListing/BusinessListing.module.css";
 import { API_BASE_URL } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 const BusinessListing = () => {
   const [businessName, setBusinessName] = useState("");
@@ -27,11 +30,11 @@ const BusinessListing = () => {
       setPhoneNumber(details.phone || details.internationalPhone || "");
       setAddress(details.address || "");
       setEmail(details.email || "");
-      setAboutBusiness(details.aboutBussiness || "");
+      setAboutBusiness(details.aboutBussiness ||details?.aboutBussiness|| "");
     }
     if (EditingMode1 != "ON") {
       const details = JSON.parse(storedDetails);
-      setAboutBusiness(details?.aboutBusiness || "");
+      setAboutBusiness(details?.aboutBusiness || details?.aboutBussiness ||"");
     }
   }, []);
 
@@ -357,6 +360,7 @@ const BusinessListing = () => {
                 type="text"
                 value={phoneNumber}
                 maxLength={15}
+                minLength={8}
                 // onChange={(e) => handleInputChange("phone", e.target.value)}
                   onChange={(e) => {
                     const raw = e.target.value;
