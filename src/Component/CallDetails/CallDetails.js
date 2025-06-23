@@ -3,8 +3,10 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
 import Loader2 from "../Loader2/Loader2";
+import DetailModal from "../DetailModal/DetailModal";
 
 const CallDetails = () => {
+  const [isChatModalOpen, setChatModalOpen] = useState(false);
   const [callData, setCallData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -49,9 +51,8 @@ const CallDetails = () => {
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes < 10 ? "0" : ""}${minutes}:${
-      seconds < 10 ? "0" : ""
-    }${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""
+      }${seconds}`;
   };
 
   useEffect(() => {
@@ -176,10 +177,10 @@ const CallDetails = () => {
             </div>
             <div
               className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
-                  ? styles.green
-                  : callData.call_analysis?.user_sentiment === "Neutral"
-                    ? styles.yellow
-                    : styles.red
+                ? styles.green
+                : callData.call_analysis?.user_sentiment === "Neutral"
+                  ? styles.yellow
+                  : styles.red
                 }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
@@ -318,12 +319,58 @@ const CallDetails = () => {
           </div>
           <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
+              <h2>Chat Details</h2>
+            </div>
+            <div className={styles.ChatBox}>
+              <div className={styles.messageLeft}>
+                <div className={styles.bubbleLeft}>
+                  Hello! How can I help you today?
+                </div>
+                <span className={styles.time}>Agent • 10:00 AM</span>
+              </div>
+
+
+              <div className={styles.messageRight}>
+                <div className={styles.bubbleRight}>
+                  I need help with my subscription.
+                </div>
+                <span className={styles.time}>You • 10:01 AM</span>
+              </div>
+              <div className={styles.chatBtn} onClick={() => setChatModalOpen(true)}>
+                <p>View Full Chat </p>
+              </div>
+            </div>
+
+            <DetailModal isOpen={isChatModalOpen} onClose={() => setChatModalOpen(false)} height="500px">
+              <div className={styles.ChatBox2}>
+                <div className={styles.messageLeft}>
+                  <div className={styles.bubbleLeft}>
+                    Hello! How can I help you today?
+                  </div>
+                  <span className={styles.time}>Agent • 10:00 AM</span>
+                </div>
+
+                <div className={styles.messageRight}>
+                  <div className={styles.bubbleRight}>
+                    I need help with my subscription.
+                  </div>
+                  <span className={styles.time}>You • 10:01 AM</span>
+                </div>
+              </div>
+            </DetailModal>
+
+          </div>
+          <div className={styles.summaryDiv}>
+            <div className={styles.dataTitle}>
               <h2>Call summary</h2>
             </div>
             <p className={styles.Ptext}>
               {callData.call_analysis?.call_summary || "No data"}
             </p>
           </div>
+
+
+
           <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
               <h2>Chat Details</h2>
