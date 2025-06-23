@@ -453,6 +453,7 @@ function CheckoutForm({
             postalCode,
             country,
           },
+          promotionCode:"FREE99"
         }),
       });
 

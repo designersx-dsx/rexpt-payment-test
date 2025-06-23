@@ -20,8 +20,6 @@ export default function SubscriptionFlow() {
   const priceId = location.state?.priceId;
   const agentId = location.state?.agentId || null;
   const locationPath = location.state?.locationPath1 || null;
-  console.log(locationPath , "")
-console.log(priceId ,"price id")
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -30,7 +28,7 @@ console.log(priceId ,"price id")
   const [otpVerified, setOtpVerified] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-const [userVerified, setUserVerified] = useState(false);
+  const [userVerified, setUserVerified] = useState(false);
   const [customerId, setCustomerId] = useState("");
   const [userId, setUserId] = useState("");
 
@@ -39,13 +37,13 @@ const [userVerified, setUserVerified] = useState(false);
   let token = localStorage.getItem("token");
   const [userDetails, setUserDetails] = useState();
 
-   useEffect(() => {
+  useEffect(() => {
     if (!token) return;
     const result = decodeToken(token);
-    setUserDetails(result);console.log({result})
-    setUserId(result.id)
+    setUserDetails(result);
+    console.log({ result });
+    setUserId(result.id);
     if (result?.email) setEmail(result.email);
-   
   }, []);
 
   useEffect(() => {
@@ -96,22 +94,40 @@ const [userVerified, setUserVerified] = useState(false);
   };
 
   const verifyOtp = async () => {
-   
     try {
-         setLoading(true);
-           if (locationPath !== "/dashboard" && locationPath !== "/dsbd"){
-             if (!otp) return setMessage("⚠️ Enter OTP");
-    setMessage("Verifying...");
-    setLoading(true);
-               const verifyRes = await verifyEmailOTP(email, otp);
+      setLoading(true);
+      if (locationPath !== "/dashboard" && locationPath !== "/dsbd") {
+        if (!otp) return setMessage("⚠️ Enter OTP");
+        setMessage("Verifying...");
+        setLoading(true);
+        const verifyRes = await verifyEmailOTP(email, otp);
 
-      const verifiedUserId = verifyRes?.data?.user?.id;
-      console.log(verifiedUserId , "berfied use ")
-      if (verifiedUserId) {
-        setUserId(verifiedUserId);
-        localStorage.setItem("token", verifyRes.data.token);
-        handleUpdateUserProfile(verifiedUserId);
+        const verifiedUserId = verifyRes?.data?.user?.id;
+        console.log(verifiedUserId, "berfied use ");
+        if (verifiedUserId) {
+          setUserId(verifiedUserId);
+          localStorage.setItem("token", verifyRes.data.token);
+          handleUpdateUserProfile(verifiedUserId);
 
+          const customerRes = await fetch(`${API_BASE}/customer`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+
+          const customerData = await customerRes.json();
+
+          if (!customerData.customerId) {
+            return setMessage("❌ Could not get customer ID");
+          }
+
+          setCustomerId(customerData.customerId);
+          setOtpVerified(true);
+          setMessage("OTP verified! ");
+        } else {
+          setMessage("Invalid OTP");
+        }
+      } else {
         const customerRes = await fetch(`${API_BASE}/customer`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -123,32 +139,10 @@ const [userVerified, setUserVerified] = useState(false);
         if (!customerData.customerId) {
           return setMessage("❌ Could not get customer ID");
         }
-
+        setUserVerified(true);
+        setMessage("Customer verified");
         setCustomerId(customerData.customerId);
-        setOtpVerified(true);
-        setMessage("OTP verified! ");
-      } else {
-        setMessage("Invalid OTP");
       }
-        }
-           else{
-                    const customerRes = await fetch(`${API_BASE}/customer`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
-
-        const customerData = await customerRes.json();
-
-        if (!customerData.customerId) {
-          return setMessage("❌ Could not get customer ID");
-        }
- setUserVerified(true);
-          setMessage("Customer verified");
-        setCustomerId(customerData.customerId);
-        
-      }
-   
     } catch (err) {
       setMessage("❌ Verification failed");
     } finally {
@@ -224,14 +218,7 @@ const [userVerified, setUserVerified] = useState(false);
           </button>
         )}
       </div>
-      {otpSent ? (
-        ""
-      ) : (
-        <div>
-         
-         
-        </div>
-      )}
+      {otpSent ? "" : <div></div>}
 
       {/* OTP Input */}
       {otpSent && !otpVerified && (
@@ -263,9 +250,7 @@ const [userVerified, setUserVerified] = useState(false);
               : sendOtp
           }
           className={styles.button}
-          disabled={
-            loading || !email || otpVerified || userVerified
-          }
+          disabled={loading || !email || otpVerified || userVerified}
         >
           {loading
             ? "Sending..."
