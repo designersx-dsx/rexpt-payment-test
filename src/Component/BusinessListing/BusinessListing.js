@@ -8,6 +8,7 @@ import Loader from "../Loader/Loader";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { useAgentCreator } from "../../hooks/useAgentCreator";
 
 const BusinessListing = () => {
   const [businessName, setBusinessName] = useState("");
@@ -21,12 +22,22 @@ const BusinessListing = () => {
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
   const EditingMode1 = localStorage.getItem("UpdationMode");
+  const setHasFetched=true;
+    const { handleCreateAgent } = useAgentCreator({
+      stepValidator: () => "BusinessListing",
+      setLoading,
+      setPopupMessage,
+      setPopupType,
+      setShowPopup,
+      navigate,
+      setHasFetched,
+    });
 
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
       const details = JSON.parse(storedDetails);
-      setBusinessName(details.businessName || details.name || "");;
+      setBusinessName( details.name || "");;
       setPhoneNumber(details.phone || details.internationalPhone || "");
       setAddress(details.address || "");
       setEmail(details.email || "");
@@ -103,6 +114,7 @@ const BusinessListing = () => {
         address: address,
         email: email,
         aboutBusiness: aboutBusiness,
+        name: businessName || placeDetails?.businessName || "",
       };
       sessionStorage.setItem(
         "placeDetailsExtract",
@@ -216,7 +228,7 @@ const BusinessListing = () => {
       formData2.append("additionalInstruction", aboutBusinessForm.note || "");
       formData2.append("knowledge_base_name", knowledgeBaseName);
       formData2.append("agentId", localStorage.getItem("agent_id"));
-      formData2.append("googleBusinessName",placeDetails?.businessName || displayBusinessName||businessName);
+      formData2.append("googleBusinessName",placeDetails?.name || "");
       formData2.append("address1", businessData.address);
       formData2.append("businessEmail", email);
       formData2.append("businessName",placeDetails?.businessName|| businessName);
@@ -273,19 +285,20 @@ const BusinessListing = () => {
       );
 
       if (stepEditingMode === "ON" && knowledge_Base_ID) {
-        const llmId =
-          localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
-        const agentConfig = { knowledge_base_ids: [knowledge_Base_ID] };
-        await axios.patch(
-          `https://api.retellai.com/update-retell-llm/${llmId}`,
-          agentConfig,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // const llmId =
+        //   localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
+        // const agentConfig = { knowledge_base_ids: [knowledge_Base_ID] };
+        // await axios.patch(
+        //   `https://api.retellai.com/update-retell-llm/${llmId}`,
+        //   agentConfig,
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+        //       "Content-Type": "application/json",
+        //     },
+        //   }
+        // ); 
+        handleCreateAgent()
       }
 
       if (stepEditingMode !== "ON") {

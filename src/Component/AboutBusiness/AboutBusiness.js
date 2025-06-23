@@ -528,6 +528,7 @@ function AboutBusiness() {
                             businessStatus: "",
                             categories: [],
                             aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness|| "",
+                            businessName:"",
                           };
 
                           // Merge cleared Google fields into existing form
