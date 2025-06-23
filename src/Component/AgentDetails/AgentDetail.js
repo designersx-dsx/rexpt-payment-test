@@ -81,7 +81,8 @@ const AgentDashboard = () => {
   const [isAssignNumberModal, setIsAssignNumberModal] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [fullAddress, setFullAddress] = useState("");
-
+  const [knowledge_base_texts,setknowledge_base_texts]=useState("")
+  const [businessDetails,setBusinessDetails]=useState([])
   const openAddressModal = (address) => {
     setFullAddress(address);
     setIsAddressModalOpen(true);
@@ -498,6 +499,15 @@ const AgentDashboard = () => {
       : url;
   };
 
+ const handleOpenKnowledgeView=(knowledge_base_texts)=>{
+setknowledge_base_texts(knowledge_base_texts)
+  setOpenCard("card2")
+ }
+ const handleOpenBusinessView=(agentData)=>{
+   setOpenCard("card1")
+   setBusinessDetails(agentData?.business)
+
+ }
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -647,7 +657,7 @@ const AgentDashboard = () => {
 
           <div className={styles.container}>
             <div className={styles.businessInfo}>
-              <div className={styles.card1} onClick={() => setOpenCard("card1")}>
+              <div className={styles.card1} onClick={() =>handleOpenBusinessView(agentData)}>
                 <h2>{agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}</h2>
                 <p>{agentData?.business?.businessSize || "NA"}</p>
                 <div className={styles.health}>
@@ -666,7 +676,7 @@ const AgentDashboard = () => {
                 <h4>Business Details</h4>
               </div>
 
-              <div className={styles.card2} onClick={() => setOpenCard("card2")}>
+              <div className={styles.card2} onClick={() => handleOpenKnowledgeView(agentData)}>
                 <h2>
                   URL:
                   <span style={{ fontSize: "12px" }}>
@@ -1376,11 +1386,11 @@ const AgentDashboard = () => {
             onClose={() => setOpenCard(null)}
             height="80vh">
             {openCard === "card1" && (
-              <Card1 />
+              <Card1  data={businessDetails}/>
             )}
 
             {openCard === "card2" && (
-        <Card2/>
+       <Card2 agentKnowledge={knowledge_base_texts} />
             )}
           </DetailModal>
 
