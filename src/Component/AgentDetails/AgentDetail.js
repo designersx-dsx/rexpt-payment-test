@@ -589,14 +589,14 @@ const AgentDashboard = () => {
                         {agentData?.agent?.agentName}
                         <span
                           className={
-                            agentData?.agent?.agentStatus
-                              ? styles.activeText
-                              : styles.InactiveText
+                            agentData?.agent?.isDeactivated==1
+                              ? styles.InactiveText 
+                              :  styles.activeText
                           }
                         >
-                          {agentData?.agent?.agentStatus
-                            ? "Active"
-                            : "Inactive"}
+                          {agentData?.agent?.isDeactivated== 1
+                            ? "Inactive"
+                            : "Active"}
                         </span>
                       </h3>
                       <p className={styles.agentAccent}>
@@ -905,7 +905,14 @@ const AgentDashboard = () => {
               </div>
               <div
                 className={styles.managementItem}
-                onClick={handleCallTransfer}
+                  onClick={() => {
+                  if (agentStatus === true) {
+                    handleInactiveAgentAlert();
+                  } else {
+                    handleCallTransfer();
+                  }
+                }}
+                // onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -928,13 +935,24 @@ const AgentDashboard = () => {
 
               <div
                 className={styles.managementItem}
-                onClick={async () => {
-                  await fetchPrevAgentDEtails(
+                   onClick={async() => {
+                  if (agentStatus === true) {
+                    handleInactiveAgentAlert();
+                  } else {
+                     await fetchPrevAgentDEtails(
                     agentData?.agent?.agent_id,
                     agentData?.agent?.businessId
                   );
                   setModalOpen(true);
+                  }
                 }}
+                // onClick={async () => {
+                //   await fetchPrevAgentDEtails(
+                //     agentData?.agent?.agent_id,
+                //     agentData?.agent?.businessId
+                //   );
+                //   setModalOpen(true);
+                // }}
               >
                 <div className={styles.SvgDesign}>
                   <svg

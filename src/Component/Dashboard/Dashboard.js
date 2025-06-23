@@ -721,31 +721,33 @@ function Dashboard() {
 
         const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
+      
+        // const businessData = {
+        //   name: businessDetails?.businessName || "",
+        //   address: businessDetails?.address1 || "",
+        //   phone: businessDetails?.phone || "",
+        //   website: businessDetails?.webUrl || "",
+        //   rating: businessDetails?.rating || "",
+        //   totalRatings: businessDetails?.totalRatings || "",
+        //   hours: (businessDetails?.hours || []).join(" | "),
+        //   businessStatus: businessDetails?.businessStatus || "",
+        //   categories: (businessDetails?.categories || []).join(", "),
+        // };
 
-        const businessData = {
-          name: businessDetails?.businessName || "",
-          address: businessDetails?.address1 || "",
-          phone: businessDetails?.phone || "",
-          website: businessDetails?.webUrl || "",
-          rating: businessDetails?.rating || "",
-          totalRatings: businessDetails?.totalRatings || "",
-          hours: (businessDetails?.hours || []).join(" | "),
-          businessStatus: businessDetails?.businessStatus || "",
-          categories: (businessDetails?.categories || []).join(", "),
-        };
+        const businessData = JSON.parse(businessDetails.knowledge_base_texts);
 
         const knowledgeBaseText = {
           title: businessDetails?.businessType || "Business Info",
           text: `
-Business Name: ${businessData.name}
-Address: ${businessData.address}
-Phone: ${businessData.phone}
-Website: ${businessData.website}
-Rating: ${businessData.rating} (${businessData.totalRatings} reviews)
-Business Status: ${businessData.businessStatus}
-Categories: ${businessData.categories}
-Opening Hours: ${businessData.hours}
-`.trim(),
+                Business Name: ${businessData?.name}
+                Address: ${businessData?.address}
+                Phone: ${businessData?.phone}
+                Website: ${businessData?.website}
+                Rating: ${businessData?.rating} (${businessData?.totalRatings} reviews)
+                Business Status: ${businessData?.businessStatus}
+                Categories: ${businessData?.categories}
+                Opening Hours: ${businessData?.hours}
+                `.trim(),
         };
 
         // Step 1: Create Knowledge Base
@@ -1088,7 +1090,12 @@ Opening Hours: ${businessData.hours}
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
                           e.stopPropagation();
-                          handleEditAgent(agent);
+                            if (agent?.isDeactivated === 1) {
+                            handleInactiveAgentAlert();
+                          } else {
+                            handleEditAgent(agent);
+                          }
+                          
                         }}
                       >
                         {/* <div className={styles.OptionItem} onClick={() => ""}> */}
