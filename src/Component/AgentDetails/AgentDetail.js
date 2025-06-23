@@ -15,6 +15,8 @@ import Modal2 from "../Modal2/Modal2";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import Footer2 from "./Footer/Footer2";
+import Card1 from "../Card1/Card1";
+import Card2  from "../Card2/Card2";
 import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
@@ -47,6 +49,9 @@ const AgentDashboard = () => {
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
   );
+
+  const [openCard, setOpenCard] = useState(null);
+
   const { setHasFetched } = useDashboardStore();
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -642,8 +647,8 @@ const AgentDashboard = () => {
 
           <div className={styles.container}>
             <div className={styles.businessInfo}>
-              <div className={styles.card1}>
-                <h2>{agentData?.business?.businessName ||agentData?.business?.googleBusinessName||(agentData?.knowledge_base_texts?.name)}</h2>
+              <div className={styles.card1} onClick={() => setOpenCard("card1")}>
+                <h2>{agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}</h2>
                 <p>{agentData?.business?.businessSize || "NA"}</p>
                 <div className={styles.health}>
                   <h3>
@@ -661,7 +666,7 @@ const AgentDashboard = () => {
                 <h4>Business Details</h4>
               </div>
 
-              <div className={styles.card2}>
+              <div className={styles.card2} onClick={() => setOpenCard("card2")}>
                 <h2>
                   URL:
                   <span style={{ fontSize: "12px" }}>
@@ -1148,7 +1153,7 @@ const AgentDashboard = () => {
                 setCallLoading={setCallLoading}
                 agentName={agentData?.agent?.agentName}
                 agentAvatar={agentData?.agent?.avatar}
-                businessName={agentData?.business?.businessName ||agentData?.business?.googleBusinessName||(agentData?.knowledge_base_texts?.name)}
+                businessName={agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}
               />
             </Modal2>
           )}
@@ -1365,6 +1370,20 @@ const AgentDashboard = () => {
             </Modal2>
           )}
 
+          {/* Card1 Section Modal Start */}
+          <DetailModal
+            isOpen={!!openCard}
+            onClose={() => setOpenCard(null)}
+            height="80vh">
+            {openCard === "card1" && (
+              <Card1 />
+            )}
+
+            {openCard === "card2" && (
+        <Card2/>
+            )}
+          </DetailModal>
+
           <DetailModal
             isOpen={isModalOpen}
             onClose={() => handleCloseEditagentModalOpen()}
@@ -1535,7 +1554,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       "placeDetailsExtract",
       JSON.stringify(raw_knowledge_base_texts)
     );
-     sessionStorage.setItem("agentNote",agent?.additionalNote);
+    sessionStorage.setItem("agentNote", agent?.additionalNote);
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }

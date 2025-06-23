@@ -9,6 +9,7 @@ import Loader from "../Loader/Loader";
 import useUser from "../../Store/Context/UserContext";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 const Details = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Details = () => {
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
   const { user, setUser } = useUser();
+  const [country, setCountry] = useState("in");
   useEffect(() => {
     if (sessionStorage.getItem("OwnerDetails")) {
       const ownerDetails = JSON.parse(sessionStorage.getItem("OwnerDetails"));
@@ -48,13 +50,13 @@ const Details = () => {
     return "";
   };
 
-  const validatePhone = (value) => {
-    const digitsOnly = value.replace(/\D/g, "");
-    if (!digitsOnly.trim()) return "Phone number is required.";
-    if (digitsOnly.length < 10) return "Phone number seems too short.";
-    if (digitsOnly.length > 15) return "Phone number seems too long.";
-    return "";
-  };
+  // const validatePhone = (value) => {
+  //   const digitsOnly = value.replace(/\D/g, "");
+  //   if (!digitsOnly.trim()) return "Phone number is required.";
+  //   if (digitsOnly.length < 10) return "Phone number seems too short.";
+  //   if (digitsOnly.length > 15) return "Phone number seems too long.";
+  //   return "";
+  // };
 
   const handleNameChange = (e) => {
     const val = e.target.value;
@@ -174,6 +176,18 @@ const Details = () => {
       window.removeEventListener("popstate", handlePopState);
     };
   }, []);
+
+  const validatePhone = (value) => {
+  try {
+    const phoneNumber = parsePhoneNumberFromString("+" + value);
+    if (!phoneNumber) return "Invalid phone number format.";
+    if (!phoneNumber.isValid()) return "Invalid number for selected country.";
+    return "";
+  } catch (error) {
+    return "Invalid phone number.";
+  }
+};
+// console.log('country', country);
   return (
     <>
       <div className={styles.signUpContainer}>
@@ -239,9 +253,10 @@ const Details = () => {
               <div className={styles.Dblock}>
                 <label className={styles.label}>Phone Number</label>
                 <PhoneInput
-                  country={"in"} 
+                  country={country} 
                   value={phone}
-                  onChange={(val) => {
+                  onChange={(val,countryData) => {
+                    // setCountry(countryData.countryCode); // e.g., 'in', 'us', etc.
                     setPhone(val);
                     if (phoneSubmitted) {
                       setPhoneError(validatePhone(val));

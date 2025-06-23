@@ -152,7 +152,7 @@ const Step4 = forwardRef(
             value={agentNote}
             onChange={(e) => setAgentNote(e.target.value)}
             className={styles.noteTextarea}
-            rows={3}
+            rows={2}
           />
         </div>
       </div>

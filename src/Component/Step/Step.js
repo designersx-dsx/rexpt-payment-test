@@ -924,7 +924,7 @@ const Step = () => {
                 </div>
                 {/* Step 4 */}
 
-                <div>
+                <div  className={styles.Step4Container}>
                     <Step4
                         ref={step4Ref}
                         onNext={handleNext}
