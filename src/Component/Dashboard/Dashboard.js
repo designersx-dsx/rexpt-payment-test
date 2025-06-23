@@ -490,6 +490,17 @@ function Dashboard() {
     const client = new RetellWebClient();
     client.on("call_started", () => setIsCallActive(true));
     client.on("call_ended", () => setIsCallActive(false));
+    client.on("update", (update) => {
+      // ✅ Mark the update clearly as AGENT message
+      const customUpdate = {
+        ...update,
+        source: "agent", // Add explicit source
+      };
+
+      // Dispatch custom event for CallTest
+      window.dispatchEvent(new CustomEvent("retellUpdate", { detail: customUpdate }));
+    });
+
     setRetellWebClient(client);
   }, []);
   // Start call
@@ -497,7 +508,6 @@ function Dashboard() {
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
       // Store the stream globally or in state if needed
       micStream = stream;
     } catch (err) {
@@ -1146,7 +1156,7 @@ function Dashboard() {
 
               <div className={styles.LangPara}>
                 <p className={styles.agentPara}>
-                  For: <strong>{agent?.business?.googleBusinessName||agent?.business?.knowledge_base_texts?.name}</strong>
+                  For: <strong>{agent?.business?.googleBusinessName || agent?.business?.knowledge_base_texts?.name}</strong>
                 </p>
                 <div className={styles.VIA}>
                   {agent.calApiKey ? (
@@ -1718,7 +1728,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       JSON.stringify(raw_knowledge_base_texts)
     );
     sessionStorage.setItem(
-      "agentNote",agent?.additionalNote);
+      "agentNote", agent?.additionalNote);
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }
