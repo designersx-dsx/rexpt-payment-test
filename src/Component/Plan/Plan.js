@@ -14,6 +14,7 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
   const [priceId, setPriceId] = useState(null); // State to store the selected priceId
   const [selectedTab, setSelectedTab] = useState('month'); // State to handle tab selection (monthly/yearly)
   const navigate = useNavigate();
+  const [price , setPrice]= useState()
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -106,8 +107,11 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
                   value={plan.id}
                   checked={selected === plan.id}
                   onChange={() => {
+
                     setSelected(plan.id);  // Set selected plan ID
                     setPriceId(plan.prices[0]?.id || null);
+                        setPrice(plan.price)
+
                   }}
                 />
                 <div className={styles.planContent}>
@@ -143,8 +147,9 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
                     className={styles.priceOption}
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate('/checkout', { state: { priceId: price.id } });
+                      navigate('/checkout', { state: { priceId: price.id   } });
                       setPriceId(null);
+                     
                     }}
                   >
                     {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
@@ -162,7 +167,7 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
           className={styles.btnTheme}
           onClick={() => {
             if (priceId) {
-              navigate('/checkout', { state: { priceId, agentId: agentID, subscriptionId: subscriptionID, locationPath1: agentID ? locationPath : "/dsbd" } });
+              navigate('/checkout', { state: { priceId, agentId: agentID, subscriptionId: subscriptionID, locationPath1: agentID ? locationPath : "/dsbd"  , price:price} });
             } else {
               alert('Please select a plan first');
             }

@@ -13,6 +13,7 @@ import { API_BASE_URL } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import CountdownPopup from "../CountDownPopup/CountdownPopup";
 import { useNavigate } from "react-router-dom";
+import { Label } from "recharts";
 
 const stripePromise = loadStripe(
   "pk_test_51RQodQ4T6s9Z2zBzHe6xifROxlIMVsodSNxf2MnmDX3AwkI44JT3AjDuyQZEoZq9Zha69WiA8ecnXZZ2sw9iY5sP007jJUxE52"
@@ -27,6 +28,7 @@ function CheckoutForm({
   disabled,
   agentId,
   locationPath,
+  price
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -45,7 +47,7 @@ function CheckoutForm({
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
-
+const [planPrice  , setPlanPrice] = useState(price)
   // Card details
   const [billingName, setBillingName] = useState("");
 
@@ -443,6 +445,7 @@ function CheckoutForm({
           paymentMethodId: paymentMethod.id,
           userId,
           email,
+          promotionCode : promoCode , 
           companyName,
           gstNumber,
           billingAddress: {
@@ -485,6 +488,29 @@ function CheckoutForm({
 
     setLoading(false);
   };
+  const [promoCode, setPromoCode] = useState('');
+const [promoError, setPromoError] = useState('');
+const [discount, setDiscount] = useState(null);
+
+const handleApplyPromo = async () => {
+  const res = await fetch(`${API_BASE_URL}/checkPromtoCode`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: promoCode })
+  });
+
+  const data = await res.json();
+if (res.ok) {
+  const discountValue = data.discount;
+  const finalPrice = price - (discountValue / 100) * price;
+  
+  setDiscount(discountValue);
+  setPlanPrice(finalPrice.toFixed(2)); // Optional: round to 2 decimal places
+  setPromoError('');
+} else {
+  setPromoError(data.error);
+}
+};
 
   return (
     <div className={styles.checkoutForm}>
@@ -603,6 +629,20 @@ function CheckoutForm({
             <CardCvcElement className={styles.cardInput} />
           </div>
 
+<label> Have a Coupen Code ?
+  <input
+  value={promoCode}
+  onChange={(e) => setPromoCode(e.target.value)}
+  className={styles.input}
+  placeholder="Enter Promo Code"
+/>
+</label>
+          
+<button onClick={handleApplyPromo}>Apply</button>
+
+{promoError && <p style={{ color: 'red' }}>{promoError}</p>}
+{discount && <p>Discount applied: {discount}%</p>}
+
           <button
             type="button"
             onClick={handleSubmit}
@@ -610,7 +650,11 @@ function CheckoutForm({
             className={styles.button}
             style={{ marginTop: "1rem" }}
           >
-            {loading ? "Processing..." : "Subscribe"}
+
+
+
+
+            {loading ? "Processing..." : `Pay $${planPrice}`}
           </button>
         </>
       )}

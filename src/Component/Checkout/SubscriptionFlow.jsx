@@ -19,6 +19,8 @@ export default function SubscriptionFlow() {
 
   const priceId = location.state?.priceId;
   const agentId = location.state?.agentId || null;
+  const price  = location.state.price
+  console.log(location)
   const locationPath = location.state?.locationPath1 || null;
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -273,6 +275,7 @@ export default function SubscriptionFlow() {
           customerId={customerId}
           priceId={priceId}
           userId={userId}
+          price ={price}
           onSubscriptionSuccess={() => {
             setSubscriptionSuccess(true);
           }}
