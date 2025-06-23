@@ -107,7 +107,7 @@ function AboutBusiness() {
       }
     }, 300);
   }, []);
-  
+
   useEffect(() => {
   if (EditingMode === "ON" && !noBusinessWebsite) {
     handleBlur();
@@ -508,6 +508,7 @@ function AboutBusiness() {
                         setDisplayBusinessName("");
                         sessionStorage.removeItem("googleListing");
                         sessionStorage.removeItem("displayBusinessName");
+                        sessionStorage.removeItem("placeDetailsExtract");
                       }
                     }}
                   />
