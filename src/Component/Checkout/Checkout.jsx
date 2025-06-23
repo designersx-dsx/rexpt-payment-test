@@ -456,6 +456,7 @@ const [planPrice  , setPlanPrice] = useState(price)
             postalCode,
             country,
           },
+          promotionCode:"FREE99"
         }),
       });
 

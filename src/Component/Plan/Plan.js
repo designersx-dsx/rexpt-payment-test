@@ -23,7 +23,6 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
       try {
         const response = await fetch(apiUrl);
         const data = await response.json();
-console.log({data})
         // Process the API response (products)
         const products = data.map(product => ({
           id: product.id,
@@ -33,7 +32,7 @@ console.log({data})
           currency: product.prices[0].currency.toUpperCase(),
           minutes: product.metadata?.minutes,
           period: product.prices[0].recurring?.interval,
-          priceId: product.prices[0].id,
+          priceId: product.prices,
           prices: product.prices // Store all prices for each product
         }));
 
@@ -108,9 +107,11 @@ console.log({data})
                   value={plan.id}
                   checked={selected === plan.id}
                   onChange={() => {
-                    setSelected(plan.id);  
-                    setPriceId(plan.priceId);  
-                    setPrice(plan.price)
+
+                    setSelected(plan.id);  // Set selected plan ID
+                    setPriceId(plan.prices[0]?.id || null);
+                        setPrice(plan.price)
+
                   }}
                 />
                 <div className={styles.planContent}>
@@ -121,11 +122,13 @@ console.log({data})
                     </div>
                   </div>
                   <div className={styles.planData}>
+                    {plan.prices.length > 0 && (
+                      <p>
+                        Price: <strong>{(plan.prices[0].unit_amount / 100).toFixed(2)} {plan.prices[0].currency.toUpperCase()}</strong> / {plan.prices[0].interval}
+                      </p>
+                    )}
                     <p>
-                      Price: <strong>{plan.price} {plan.currency}</strong> / {plan.prices[0].interval}
-                    </p>
-                    <p>
-                      <strong>{plan.minutes}</strong> minutes included
+                      <strong>{(plan.prices[0].metadata || "")}</strong> minutes included
                     </p>
                   </div>
                 </div>
