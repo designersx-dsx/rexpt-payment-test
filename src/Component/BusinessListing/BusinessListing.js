@@ -17,6 +17,8 @@ const BusinessListing = () => {
   const [popupType, setPopupType] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+  const EditingMode1 = localStorage.getItem("UpdationMode");
+
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
@@ -26,7 +28,10 @@ const BusinessListing = () => {
       setAddress(details.address || "");
       setEmail(details.email || "");
       setAboutBusiness(details.aboutBussiness || "");
-
+    }
+    if (EditingMode1 != "ON") {
+      const details = JSON.parse(storedDetails);
+      setAboutBusiness(details?.aboutBusiness || "");
     }
   }, []);
 
@@ -222,7 +227,11 @@ const BusinessListing = () => {
       );
       let knowledge_Base_ID = knowledgeBaseId;
 
-      if (knowledge_Base_ID) {
+      if (knowledge_Base_ID !== null &&
+        knowledge_Base_ID !== undefined &&
+        knowledge_Base_ID !== "null" &&
+        knowledge_Base_ID !== "undefined" &&
+        knowledge_Base_ID !== "") {
         const response = await axios.post(
           `https://api.retellai.com/add-knowledge-base-sources/${knowledge_Base_ID}`,
           formData3,
@@ -233,7 +242,7 @@ const BusinessListing = () => {
             },
           }
         );
-        formData2.append("knowledge_base_id", response.data.knowledge_base_id);
+        formData2.append("knowledge_base_id", response?.data?.knowledge_base_id);
       } else {
         const response = await axios.post(
           "https://api.retellai.com/create-knowledge-base",
@@ -244,7 +253,7 @@ const BusinessListing = () => {
             },
           }
         );
-        formData2.append("knowledge_base_id", response.data.knowledge_base_id);
+        formData2.append("knowledge_base_id", response?.data?.knowledge_base_id);
         knowledge_Base_ID = response.data.knowledge_base_id;
         sessionStorage.setItem("knowledgeBaseId", knowledge_Base_ID);
       }
@@ -347,7 +356,13 @@ const BusinessListing = () => {
               <input
                 type="text"
                 value={phoneNumber}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
+                maxLength={15}
+                // onChange={(e) => handleInputChange("phone", e.target.value)}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const cleaned = raw.replace(/[^0-9\s]/g, "");
+                    handleInputChange("phone", cleaned);
+                  }}
                 placeholder="88XX 77X 6XX"
                 required
               />

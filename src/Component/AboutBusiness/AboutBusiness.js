@@ -107,6 +107,12 @@ function AboutBusiness() {
       }
     }, 300);
   }, []);
+  
+  useEffect(() => {
+  if (EditingMode === "ON" && !noBusinessWebsite) {
+    handleBlur();
+  }
+}, [EditingMode, noBusinessWebsite]);
 
   // useEffect(() => {
   //   const storedName = sessionStorage.getItem("displayBusinessName");
@@ -292,7 +298,7 @@ function AboutBusiness() {
 
   useEffect(() => {
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-    if (stepEditingMode == "ON") {
+    if (EditingMode == "ON") {
       const noListing = !aboutBusinessForm.googleListing?.trim() && !googleListing?.trim();
       const noWebsite = !aboutBusinessForm.businessUrl?.trim() && !businessUrl?.trim();
 
