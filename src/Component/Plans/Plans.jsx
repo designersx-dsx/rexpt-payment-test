@@ -89,6 +89,8 @@ const Plan = ({ agentID, locationPath }) => {
   return (
     <div className={styles.hero_sec}>
       <div className={styles.container}>
+
+        <div className={styles.headerCOntro}>
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.icon}>
@@ -114,6 +116,8 @@ const Plan = ({ agentID, locationPath }) => {
           >
             Yearly
           </button>
+        </div>
+
         </div>
 
         {/* Stripe Product Plans */}

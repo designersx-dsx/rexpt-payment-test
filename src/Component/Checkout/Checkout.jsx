@@ -515,7 +515,7 @@ if (res.ok) {
   return (
     <div className={styles.checkoutForm}>
       {step === 1 && (
-        <>
+        <div className={styles.checkoutFormMain}>
           <h3>Billing Address & Company Details</h3>
 
           <label>Address Line 1 *</label>
@@ -595,7 +595,7 @@ if (res.ok) {
           >
             Next
           </button>
-        </>
+        </div>
       )}
 
       {step === 2 && (
@@ -629,16 +629,18 @@ if (res.ok) {
             <CardCvcElement className={styles.cardInput} />
           </div>
 
-<label> Have a Coupen Code ?
+<label> Have a Coupen Code ?</label>
+<div className={styles.Applybox}>
   <input
   value={promoCode}
   onChange={(e) => setPromoCode(e.target.value)}
   className={styles.input}
   placeholder="Enter Promo Code"
 />
-</label>
-          
+
 <button onClick={handleApplyPromo}>Apply</button>
+</div>
+          
 
 {promoError && <p style={{ color: 'red' }}>{promoError}</p>}
 {discount && <p>Discount applied: {discount}%</p>}
