@@ -658,7 +658,7 @@ setknowledge_base_texts(knowledge_base_texts)
           <div className={styles.container}>
             <div className={styles.businessInfo}>
 
-              <div className={styles.card1} onClick={() => setOpenCard("card1")}>
+              <div className={styles.card1} onClick={() =>handleOpenBusinessView(agentData)}>
                 <h2>{agentData?.business?.businessName || (agentData?.knowledge_base_texts?.name) || agentData?.business?.googleBusinessName}</h2>
 
                 <p>{agentData?.business?.businessSize || "NA"}</p>
