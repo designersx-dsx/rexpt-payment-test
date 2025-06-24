@@ -111,6 +111,24 @@ const AgentDashboard = () => {
     setEventSlug("");
     setEventLength("");
   };
+   function formatName(name) {
+    if (!name) return "";
+
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
+  }
+
   // sdsds
   const handleApiKeySubmit = async () => {
     if (!agentData?.agent) return;
@@ -601,7 +619,7 @@ setknowledge_base_texts(knowledge_base_texts)
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
                       <h3 className={styles.agentName}>
-                        {agentData?.agent?.agentName}
+                          {formatName(agentData?.agent?.agentName) || "John Vick"}
                         <span
                           className={
                             agentData?.agent?.isDeactivated==1
