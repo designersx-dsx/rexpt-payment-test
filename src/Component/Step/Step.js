@@ -425,7 +425,7 @@ const Step = () => {
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
+    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom) }_${sanitize(role_title)}_${packageValue}#${agentCount}`
 
     const handleContinue = async () => {
         if (step4Ref.current) {
@@ -438,7 +438,7 @@ const Step = () => {
                     agentName: agentName,
                     agentGender: agentGender,
                     business: {
-                        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name,
+                        businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom ,
                         email: getBusinessNameFromGoogleListing?.email || "",
 
                     },
@@ -508,7 +508,7 @@ const Step = () => {
                         },
                     ],
                     starting_state: "information_collection",
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name}.`,
+                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom }.`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
@@ -661,7 +661,7 @@ const Step = () => {
                 setLoading(true)
                 const agentConfig = {
                     general_prompt: filledPrompt,
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name}.`,
+                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom }.`,
 
                 };
                 const llm_id = localStorage.getItem('llmId')

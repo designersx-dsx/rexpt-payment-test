@@ -86,7 +86,7 @@ export const useAgentCreator = ({
 
     const commaSeparatedServices = allServices?.join(", ");
 
-    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(business?.businessName)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
+    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
 
     const CustomservicesArray = cleanedCustomServices?.map(item => item.service) || [];
     const prompt = `You are an AI Receptionist ${agentName}, working as a ${role_title} for ${business?.businessName}.
@@ -478,7 +478,7 @@ End Call: If the caller is satisfied, invoke end_call function.
       agentName: agentName,
       agentGender: agentGender,
       business: {
-        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name,
+        businessName: getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom,
         email:  getBusinessNameFromGoogleListing?.email || "",
       },
       languageSelect: languageSelect,
@@ -510,7 +510,7 @@ End Call: If the caller is satisfied, invoke end_call function.
           .map(service => ({ service }));
         try {
           const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`, {
-            businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name,
+            businessName: getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom,
             businessSize: businessDetails.businessSize,
             businessType: businessDetails.businessType,
             buisnessEmail: buisenessServices?.email,
@@ -536,7 +536,7 @@ End Call: If the caller is satisfied, invoke end_call function.
       const llm_id = localStorage.getItem('llmId') || sessionStorage.getItem('llmId');
       const agentConfig = {
         general_prompt: filledPrompt,
-        begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${ getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name}.`,
+        begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${ getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom}.`,
       };
       if(isValid=='BusinessListing'){
         agentConfig.knowledge_base_ids = [storedKnowledgeBaseId] ;

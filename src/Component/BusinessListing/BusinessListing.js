@@ -37,11 +37,11 @@ const BusinessListing = () => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
       const details = JSON.parse(storedDetails);
-      setBusinessName( details.name || "");;
-      setPhoneNumber(details.phone || details.internationalPhone || "");
-      setAddress(details.address || "");
-      setEmail(details.email || "");
-      setAboutBusiness(details.aboutBussiness ||details?.aboutBussiness|| "");
+      setBusinessName( details?.businessName || "");;
+      setPhoneNumber(details?.phone || details.internationalPhone || "");
+      setAddress(details?.address || "");
+      setEmail(details?.email || "");
+      setAboutBusiness(details?.aboutBusiness ||details?.aboutBussiness|| "");
     }
     if (EditingMode1 != "ON") {
       const details = JSON.parse(storedDetails);
@@ -109,12 +109,12 @@ const BusinessListing = () => {
       }
       const updatedPlaceDetails = {
         ...placeDetails,
-        businessName: businessName,
+        businessName: businessName || placeDetails?.businessName ,
         phone: phoneNumber,
         address: address,
         email: email,
         aboutBusiness: aboutBusiness,
-        name: businessName || placeDetails?.businessName || "",
+        // name: businessName || placeDetails?.businessName || "",
       };
       sessionStorage.setItem(
         "placeDetailsExtract",
@@ -173,7 +173,7 @@ const BusinessListing = () => {
       )}_${shortBusinessName}_${packageValue}_#${agentCount}`;
 
       const businessData = {
-        name:  businessName || placeDetails?.businessName || "",
+        businessName:  businessName || placeDetails?.businessName || "",
         address: placeDetails?.address || address,
         phone: placeDetails?.phone || phoneNumber,
         website: placeDetails?.website || aboutBusinessForm.businessUrl,
@@ -228,7 +228,7 @@ const BusinessListing = () => {
       formData2.append("additionalInstruction", aboutBusinessForm.note || "");
       formData2.append("knowledge_base_name", knowledgeBaseName);
       formData2.append("agentId", localStorage.getItem("agent_id"));
-      formData2.append("googleBusinessName",placeDetails?.name || "");
+      formData2.append("googleBusinessName",displayBusinessName || "");
       formData2.append("address1", businessData.address);
       formData2.append("businessEmail", email);
       formData2.append("businessName",placeDetails?.businessName|| businessName);
@@ -436,7 +436,7 @@ const BusinessListing = () => {
       {showPopup && <PopUp
         type={popupType}
         message={popupMessage}
-        onClose={() => setPopupMessage("")} // Close the popup
+        onClose={() => setPopupMessage("")} 
       />}
     </div>
   );

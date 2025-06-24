@@ -658,7 +658,7 @@ setknowledge_base_texts(knowledge_base_texts)
           <div className={styles.container}>
             <div className={styles.businessInfo}>
 
-              <div className={styles.card1} onClick={() =>handleOpenBusinessView(agentData)}>
+              <div className={styles.card1} >
                 <h2>{agentData?.business?.businessName || (agentData?.knowledge_base_texts?.name) || agentData?.business?.googleBusinessName}</h2>
 
                 <p>{agentData?.business?.businessSize || "NA"}</p>
@@ -675,10 +675,10 @@ setknowledge_base_texts(knowledge_base_texts)
                   </h3>
                 </div>
 
-                <h4>Business Details</h4>
+                <h4 onClick={() =>handleOpenBusinessView(agentData)}>Business Details</h4>
               </div>
 
-              <div className={styles.card2} onClick={() => handleOpenKnowledgeView(agentData)}>
+              <div className={styles.card2} >
                 <h2>
                   URL:
                   <span style={{ fontSize: "12px" }}>
@@ -748,7 +748,7 @@ setknowledge_base_texts(knowledge_base_texts)
                   }
                 </div>
 
-                <h4>Knowledge Base</h4>
+                <h4 onClick={() => handleOpenKnowledgeView(agentData)} >Knowledge Base</h4>
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
