@@ -956,16 +956,17 @@ setknowledge_base_texts(knowledge_base_texts)
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                    setModalOpen(true);
+                   
                      try {
                     await fetchPrevAgentDEtails(
                     agentData?.agent?.agent_id,
                     agentData?.agent?.businessId);
                      } catch (error) {
-                      await fetchPrevAgentDEtails(
+                    await fetchPrevAgentDEtails(
                     agentData?.agent?.agent_id,
                     agentData?.agent?.businessId);
-                     }
+                    }
+                    setModalOpen(true);
                   
                   
                  
