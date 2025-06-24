@@ -51,9 +51,8 @@ const CallDetails = () => {
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes < 10 ? "0" : ""}${minutes}:${
-      seconds < 10 ? "0" : ""
-    }${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""
+      }${seconds}`;
   };
 
   useEffect(() => {
@@ -129,7 +128,7 @@ const CallDetails = () => {
   };
 
   return (
-    <div>
+    <div className={styles.CallDetailsMain}>
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div className={styles.profileBack}>
@@ -176,13 +175,12 @@ const CallDetails = () => {
               <h2>{name || "Unknown"}</h2>
             </div>
             <div
-              className={`${styles.status} ${
-                callData.call_analysis?.user_sentiment === "Positive"
-                  ? styles.green
-                  : callData.call_analysis?.user_sentiment === "Neutral"
+              className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
+                ? styles.green
+                : callData.call_analysis?.user_sentiment === "Neutral"
                   ? styles.yellow
                   : styles.red
-              }`}
+                }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
             </div>
@@ -198,7 +196,7 @@ const CallDetails = () => {
               <strong>
                 {callData?.agent_id
                   ? agents.find((a) => a.agent_id === callData.agent_id)
-                      ?.agentName || "Unknown Agent"
+                    ?.agentName || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>
@@ -351,33 +349,44 @@ const CallDetails = () => {
             <DetailModal
               isOpen={isChatModalOpen}
               onClose={() => setChatModalOpen(false)}
-              height="500px"
+              height="80dvh"
             >
+              <div className={styles.titlediv}>
+                <h1>Chat View</h1>
+              </div>
               <div className={styles.ChatBox2}>
                 {transcript.map((entry, index) => (
-                  <div
-                    key={index}
-                    className={
-                      entry.role === "agent"
-                        ? styles.messageLeft
-                        : styles.messageRight
-                    }
-                  >
-                    <div
-                      className={
-                        entry.role === "agent"
-                          ? styles.bubbleLeft
-                          : styles.bubbleRight
-                      }
-                    >
-                      {entry.content}
-                    </div>
-                    <span className={styles.time}>
-                      {entry.role === "agent" ? "Agent" : "You"}
-                    </span>
+                  <div key={index} className={styles.messageWrapper}>
+                    {entry.role === "agent" ? (
+                      <>
+                        <div className={styles.messageLeftWrapper}>
+                          <img
+                            src="/svg/Rex1.svg"
+                            alt="Agent"
+                            className={styles.profileImage}
+                          />
+                          <div className={styles.messageLeft}>
+                            <div className={styles.bubbleLeft}>{entry.content}</div>
+                          </div>
+                        </div>
+                        <span className={styles.time}>Agent</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className={styles.messageWrapper2}>
+                          <div className={styles.messageRight}>
+                            <div className={styles.bubbleRight}>{entry.content}</div>
+                          </div>
+                          <span className={styles.time}>You</span>
+                        </div>
+
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
+
+
             </DetailModal>
           </div>
           <div className={styles.summaryDiv}>
