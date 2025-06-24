@@ -13,7 +13,6 @@
   box-shadow: 0 8px 20px rgb(103 114 229 / 0.5);
 }
 
-
 .planName {
   font-size: 1.5rem;
   font-weight: 700;
@@ -104,11 +103,11 @@
   transition: 0.4s;
 }
 
-input:checked+.slider {
+input:checked + .slider {
   background-color: #007bff;
 }
 
-input:checked+.slider:before {
+input:checked + .slider:before {
   transform: translateX(24px);
 }
 
@@ -127,7 +126,7 @@ input:checked+.slider:before {
 .planData {
   margin-top: 10px;
   font-size: 14px;
-  color: #24252C;
+  color: #24252c;
   font-weight: 500;
   transition: all 0.3s ease;
 }
@@ -151,7 +150,7 @@ input:checked+.slider:before {
 }
 
 .container::-webkit-scrollbar-thumb {
-  background-color: #6524EB;
+  background-color: #6524eb;
   border-radius: 8px;
 }
 
@@ -167,13 +166,12 @@ input:checked+.slider:before {
 
 .headercontent h3 {
   font-size: 22px;
-  color: #24252C;
+  color: #24252c;
 }
 
 .headercontent p {
   font-size: 14px;
-  color: #9A9A9A;
-
+  color: #9a9a9a;
 }
 
 .icon {
@@ -216,7 +214,8 @@ input:checked+.slider:before {
   cursor: pointer;
 }
 
-.radioLabel input {}
+.radioLabel input {
+}
 
 .part1 {
   display: flex;
@@ -237,20 +236,20 @@ input:checked+.slider:before {
 
 .planTitle p {
   font-size: 18px;
-  color: #24252C;
+  color: #24252c;
   font-weight: 600;
 }
 
 .planTitle span {
   font-size: 16px;
-  color: #A3AED0;
+  color: #a3aed0;
   font-weight: 300;
 }
 
 .badge {
   font-size: 12px !important;
   background: #e3dbff;
-  color: #6524EB !important;
+  color: #6524eb !important;
   padding: 2px 6px;
   border-radius: 6px;
   white-space: nowrap;
@@ -291,23 +290,21 @@ input:checked+.slider:before {
 .open {
   max-height: 200px;
   opacity: 1;
-      padding: 20px 20px;
-
+  padding: 20px 20px;
 }
 
 .hero_sec {
   padding: 20px;
-      max-width: 700px;
-      width: 80%;
-    margin: auto;
+  max-width: 700px;
+  width: 95%;
+  margin: auto;
   /* height: 60dvh; */
   /* overflow: auto; */
   /* box-shadow: inset 0 0 10px #f5f5f5;
   box-shadow: 0 8px 6px -6px #dddddd; */
 }
 
-
-.headerCOntro{
+.headerCOntro {
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -334,9 +331,7 @@ input:checked+.slider:before {
 
 /* Gaurav  CSS End */
 
-
 /* Ankush CSS Start */
-
 
 .forsticky {
   position: sticky;
@@ -361,7 +356,7 @@ input:checked+.slider:before {
 }
 
 .welcomeTitle h1 {
-  color: #24252C;
+  color: #24252c;
   font-size: 40px;
   font-weight: 800;
   margin-bottom: 10px;
@@ -381,8 +376,8 @@ input:checked+.slider:before {
   padding: 10px 20px;
   border: none;
   background-color: white;
-  border: 1px solid #E0E5F2;
-  color: #24252C;
+  border: 1px solid #e0e5f2;
+  color: #24252c;
   cursor: pointer;
   border-radius: 6px;
   font-weight: 600;
@@ -391,7 +386,7 @@ input:checked+.slider:before {
 }
 
 .activeTab {
-  background-color: #6524EB;
+  background-color: #6524eb;
   color: white;
 }
 
@@ -426,7 +421,7 @@ input:checked+.slider:before {
   pointer-events: none;
 }
 
-.loginBox{
+.loginBox {
   margin: auto;
 }
 
@@ -436,10 +431,7 @@ input:checked+.slider:before {
   margin: 0;
   font-weight: 500;
   font-size: 19px;
-
 }
-
-
 
 .loginLink {
   color: #7b4fdd;
@@ -458,22 +450,19 @@ input:checked+.slider:before {
   font-size: 18px;
 }
 
-
-@media(max-width:767px){
-  .headerCOntro{
+@media (max-width: 767px) {
+  .headerCOntro {
     display: grid;
     justify-content: center;
     gap: 20xp;
   }
 }
 
-
-@media(max-width:360px){
+@media (max-width: 360px) {
   .welcomeTitle h1 {
-  font-size: 35px;
+    font-size: 35px;
+  }
 }
-}
-
 
 .active {
   background-color: #6524eb;

@@ -7,6 +7,7 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = ({ agentID, locationPath }) => {
   const [products, setProducts] = useState([]);
+  console.log("products", products);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
@@ -118,8 +119,8 @@ const Plan = ({ agentID, locationPath }) => {
               }`}
               onClick={() => {
                 setSelectedTab("month");
-                setSelected(null); 
-                setSelectedPrice(null); 
+                setSelected(null);
+                setSelectedPrice(null);
               }}
             >
               Monthly
@@ -130,8 +131,8 @@ const Plan = ({ agentID, locationPath }) => {
               }`}
               onClick={() => {
                 setSelectedTab("year");
-                setSelected(null); 
-                setSelectedPrice(null); 
+                setSelected(null);
+                setSelectedPrice(null);
               }}
             >
               Yearly
@@ -206,7 +207,8 @@ const Plan = ({ agentID, locationPath }) => {
             >
               {product.metadata.minutes && (
                 <p>
-                  Includes <strong>{product.metadata.minutes}</strong> minutes
+                  Includes <strong>{product?.prices[0]?.metadata}</strong>{" "}
+                  minutes
                 </p>
               )}
               <div className={styles.pricesContainer}>
