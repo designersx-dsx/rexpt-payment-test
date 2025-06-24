@@ -91,6 +91,7 @@ function Dashboard() {
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
   const [deactivateLoading, setDeactivateLoading] = useState(false);
   const [calloading, setcalloading]= useState(false)
+  const [calapiloading, setCalapiloading] = useState(false)
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
@@ -307,6 +308,7 @@ const handleApiKeySubmit = async () => {
   }
 
   try {
+    setCalapiloading(true)
     const response = await fetch(
       `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
       {
@@ -339,6 +341,8 @@ const handleApiKeySubmit = async () => {
   } catch (error) {
     setPopupType("failed");
     setPopupMessage(`Failed to save API Key: ${error.message}`);
+  } finally{
+    setCalapiloading(false)
   }
 };
 
@@ -563,24 +567,6 @@ const handleApiKeySubmit = async () => {
   const handleCloseWidgetModal = () => {
     setOpenWidgetModal(false);
   };
-
-  //close camera option click outside
-  const toggleProfileDropdown = () => {
-    setIsUploadModalOpen((prev) => !prev);
-  };
-
-  // Close the dropdown if clicked outside
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (profileRef.current && !profileRef.current.contains(event.target)) {
-  //       setIsUploadModalOpen(false); // Close dropdown if clicked outside
-  //     }
-  //   };
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
 
   // Open upload modal
   const openUploadModal = () => {
@@ -1293,13 +1279,31 @@ const handleApiKeySubmit = async () => {
                   >
                     Cancel
                   </button>
-                  <button
+                  {calapiloading ? (
+                    <button
+                   className={`${styles.modalButton} ${styles.submit}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    Updating <Loader size={18} />
+                  </button>) : 
+                  ( <button
                     className={`${styles.modalButton} ${styles.submit}`}
                     onClick={handleApiKeySubmit}
                     disabled={!isValidCalApiKey(apiKey.trim())}
                   >
                     {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
-                  </button>
+                  </button>) }
+                  {/* <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={handleApiKeySubmit}
+                    disabled={!isValidCalApiKey(apiKey.trim())}
+                  >
+                    {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
+                  </button> */}
                 </div>
               )}
 
