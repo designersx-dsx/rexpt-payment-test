@@ -281,7 +281,7 @@ const BusinessDetails = () => {
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
     if (prevBuisnessType != businessType) {
       setPopupType("confirm");
-      setPopupMessage("Business type changed please select related business services again !");
+      setPopupMessage("Business type changed please change the related business services!");
       setShowPopup(true);
     }
     else {

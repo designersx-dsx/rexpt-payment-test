@@ -90,8 +90,10 @@ function Dashboard() {
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
   const [deactivateLoading, setDeactivateLoading] = useState(false);
+
   const [calloading, setcalloading]= useState(false)
   const [calapiloading, setCalapiloading] = useState(false)
+
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
@@ -298,14 +300,15 @@ function Dashboard() {
   }, [agents]);
 
   // Submit API key for selected agent
-const handleApiKeySubmit = async () => {
-  if (!selectedAgent) return;
+  const handleApiKeySubmit = async () => {
+    if (!selectedAgent) return;
 
-  if (!isValidCalApiKey(apiKey.trim())) {
-    setPopupType("failed");
-    setPopupMessage("Invalid API Key! It must start with 'cal_live_'.");
-    return;
-  }
+    if (!isValidCalApiKey(apiKey.trim())) {
+      setPopupType("failed");
+      setPopupMessage("Invalid API Key! It must start with 'cal_live_'.");
+      return;
+    }
+
 
   try {
     setCalapiloading(true)
@@ -318,22 +321,21 @@ const handleApiKeySubmit = async () => {
       }
     );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update API key");
-    }
 
-    const updatedAgents = localAgents.map((agent) =>
-      agent.agent_id === selectedAgent.agent_id
-        ? { ...agent, calApiKey: apiKey.trim() }
-        : agent
-    );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update API key");
+      }
 
-    setLocalAgents(updatedAgents);
-    setHasFetched(false);
-    setShowCalKeyInfo(true);
+      const updatedAgents = localAgents.map((agent) =>
+        agent.agent_id === selectedAgent.agent_id
+          ? { ...agent, calApiKey: apiKey.trim() }
+          : agent
+      );
 
-    // ✅ Fix timing issue here:
+      setLocalAgents(updatedAgents);
+      setHasFetched(false);
+      setShowCalKeyInfo(true);
     setShowEventInputs(true);
     setTimeout(() => {
       setIsApiKeySubmitted(true);
@@ -345,6 +347,7 @@ const handleApiKeySubmit = async () => {
     setCalapiloading(false)
   }
 };
+
 
 
 
@@ -431,14 +434,14 @@ const handleApiKeySubmit = async () => {
   };
 
   const closeModal = () => {
-  setIsCalModalOpen(false);
-  setApiKey("");
-  setSelectedAgent(null);
-  setShowEventInputs(false);
-  setEventCreateStatus(null);
-  setEventCreateMessage("");
-  setIsApiKeySubmitted(false); 
-};
+    setIsCalModalOpen(false);
+    setApiKey("");
+    setSelectedAgent(null);
+    setShowEventInputs(false);
+    setEventCreateStatus(null);
+    setEventCreateMessage("");
+    setIsApiKeySubmitted(false);
+  };
 
 
   const toggleDropdown = (e, id) => {
@@ -821,7 +824,7 @@ const handleApiKeySubmit = async () => {
   return (
     <div>
       <div className={styles.forSticky}>
-       
+
         <header className={styles.header}>
           <div className={styles.profileSection} ref={profileRef}>
             <div>
@@ -918,7 +921,7 @@ const handleApiKeySubmit = async () => {
         </header>
 
         <section className={styles.agentCard}>
-          
+
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
             <img src="svg/total-call.svg" alt="total-call" />
@@ -932,7 +935,7 @@ const handleApiKeySubmit = async () => {
       </div>
 
       <div className={styles.main}>
- {show ? (
+        {show ? (
           <Modal isOpen={show} onClose={handleCLose}>
             <></>
             <h2 className={styles.apologyHead}>Comming Soon</h2>
@@ -987,7 +990,7 @@ const handleApiKeySubmit = async () => {
                   </div>
                   <div className={styles.LangText}>
                     <h3 className={styles.agentName}>
-                       {formatName(agent.agentName) || "John Vick"}
+                      {formatName(agent.agentName) || "John Vick"}
                       <span
                         className={
                           agent.isDeactivated === 1
@@ -1114,9 +1117,9 @@ const handleApiKeySubmit = async () => {
                 <p className={styles.agentPara}>
                   For:{" "}
                   <strong>
-                    {agent?.business?.businessName ||
+                    {formatName(agent?.business?.businessName ||
                       agent?.business?.knowledge_base_texts?.name ||
-                      agent?.business?.googleBusinessName}
+                      agent?.business?.googleBusinessName)}
                   </strong>
                 </p>
                 <div className={styles.VIA}>
@@ -1364,30 +1367,30 @@ const handleApiKeySubmit = async () => {
                       Cancel
                     </button>
                     {calloading ? (
-                  <button
-                   className={`${styles.modalButton} ${styles.submit}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    Add Event <Loader size={18} />
-                  </button>
-                ) : (
-                   <button
-                      className={`${styles.modalButton} ${styles.submit}`}
-                      onClick={createCalEvent}
-                      disabled={
-                        !isApiKeySubmitted ||
-                        !eventName.trim() ||
-                        !eventSlug.trim() ||
-                        !eventLength.trim()
-                      }
-                    >
-                      Add Event
-                    </button>
-                )}
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Add Event <Loader size={18} />
+                      </button>
+                    ) : (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        onClick={createCalEvent}
+                        disabled={
+                          !isApiKeySubmitted ||
+                          !eventName.trim() ||
+                          !eventSlug.trim() ||
+                          !eventLength.trim()
+                        }
+                      >
+                        Add Event
+                      </button>
+                    )}
                   </div>
 
                   {eventCreateStatus && (
@@ -1644,9 +1647,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(

@@ -628,10 +628,11 @@ const BusinessServices = () => {
             <div
               className={styles.btnTheme}
               onClick={handleContinue}
+              style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
             // disabled={!isEmailVerified}
             >
               <img src="svg/svg-theme.svg" alt="" type="button" />
-              <p>Continue</p>
+              <p>{Loading ? <>Saving &nbsp; &nbsp;<Loader size={20} /></> : "Continue"}</p>
             </div>
           </div>
         </div>
@@ -641,7 +642,7 @@ const BusinessServices = () => {
             <div
               className={styles.btnTheme}
               onClick={handleSaveEdit}
-                style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
+              style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
             // disabled={!isEmailVerified} 
             >
               <img src="svg/svg-theme.svg" alt="" type="button" />
