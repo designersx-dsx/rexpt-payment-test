@@ -25,7 +25,7 @@ const BusinessDetails = () => {
   const EditingMode = localStorage.getItem('UpdationMode')
   const setHasFetched = true
   const { handleCreateAgent } = useAgentCreator({
-    stepValidator: () => "BusinessDetails", 
+    stepValidator: () => "BusinessDetails",
     setLoading,
     setPopupMessage,
     setPopupType,
@@ -46,7 +46,7 @@ const BusinessDetails = () => {
   const [prevBuisnessType, setprevBuisnessType] = useState("");
   const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
 
- 
+
 
   // console.log(customBuisness, "customBuisness")
   const location = useLocation();
@@ -72,7 +72,7 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Saloon-icon.svg",
     },
-      {
+    {
       type: "Landscaping Company",
       subtype: "Your Journey Begins Here",
       icon: "svg/Landscaping-icon.svg",
@@ -166,7 +166,7 @@ const BusinessDetails = () => {
     console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
-    
+
     }
 
 
@@ -188,22 +188,22 @@ const BusinessDetails = () => {
     // Validate all fields
     let hasError = false;
 
-    if(prevBuisnessType != businessType) {
+    if (prevBuisnessType != businessType) {
       sessionStorage.removeItem("selectedServices");
       sessionStorage.removeItem("selectedCustomServices");
-        const raw = sessionStorage.getItem("businesServices");
-        let previous = {};
-        try {
-            previous = raw ? JSON.parse(raw) : {};
-        } catch (err) {
-            console.error("Failed to parse businesServices:", err);
-        }
+      const raw = sessionStorage.getItem("businesServices");
+      let previous = {};
+      try {
+        previous = raw ? JSON.parse(raw) : {};
+      } catch (err) {
+        console.error("Failed to parse businesServices:", err);
+      }
 
-         const updatedBusinessServices = {
-            selectedService:[],
-            email:previous.email,
-        };
-       sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+      const updatedBusinessServices = {
+        selectedService: [],
+        email: previous.email,
+      };
+      sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
     }
 
     if (!businessType) {
@@ -232,8 +232,8 @@ const BusinessDetails = () => {
     if (businessType === "Other" && customBuisness.trim()) {
       businessData = {
         userId,
-        businessType: "Other", 
-        customBuisness: customBuisness.trim(), 
+        businessType: "Other",
+        customBuisness: customBuisness.trim(),
         businessName: businessName.trim(),
         businessSize,
       };
@@ -254,40 +254,39 @@ const BusinessDetails = () => {
     console.log("helo")
     e.preventDefault();
 
-    if(prevBuisnessType != businessType) {
+    if (prevBuisnessType != businessType) {
       sessionStorage.removeItem("selectedServices");
       sessionStorage.removeItem("selectedCustomServices");
-        const raw = sessionStorage.getItem("businesServices");
-        let previous = {};
-        try {
-            previous = raw ? JSON.parse(raw) : {};
-        } catch (err) {
-            console.error("Failed to parse businesServices:", err);
-        }
+      const raw = sessionStorage.getItem("businesServices");
+      let previous = {};
+      try {
+        previous = raw ? JSON.parse(raw) : {};
+      } catch (err) {
+        console.error("Failed to parse businesServices:", err);
+      }
 
-         const updatedBusinessServices = {
-            selectedService:[],
-            email:previous.email,
-        };
-       sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+      const updatedBusinessServices = {
+        selectedService: [],
+        email: previous.email,
+      };
+      sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
     }
     const businessData = {
       userId,
       businessType,
       businessName: businessName.trim(),
-      customBuisness: customBuisness.trim(), 
+      customBuisness: customBuisness.trim(),
       businessSize,
     };
-
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
- 
-    setTimeout(() => {
-    handleCreateAgent();}, 500);
-     if(prevBuisnessType != businessType) {
-          setShowPopup(true);
-          setPopupType('success');
-          setPopupMessage("Business type changed please select related business services again !");
-     }
+    if (prevBuisnessType != businessType) {
+      setPopupType("confirm");
+      setPopupMessage("Business type changed please select related business services again !");
+      setShowPopup(true);
+    }
+    else {
+      handleCreateAgent()
+    }
   };
 
   useEffect(() => {
@@ -299,15 +298,15 @@ const BusinessDetails = () => {
   }, [CheckingUserLimit, isLimitExceeded]);
 
   // if (CheckingUserLimit) return 
-  
-    const handleClosePopup = () => {
-      if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+
+  const handleClosePopup = () => {
+    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       navigate('/dashboard');
       setShowPopup(false);
-      }else{
-        setShowPopup(false);
-      }
+    } else {
+      setShowPopup(false);
     }
+  }
 
   return (
     <div className={styles.container}>
@@ -436,9 +435,9 @@ const BusinessDetails = () => {
         :
         <div onClick={handleSaveEdit}>
           <div type="submit">
-            <div className={styles.btnTheme}>
+            <div className={styles.btnTheme} style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}>
               <img src="svg/svg-theme.svg" alt="" />
-              <p>{Loading ? <Loader size={20} /> : 'Save Edits'}</p>
+              <p>{Loading ? <>Saving &nbsp; <Loader size={20} /></> : 'Save Edits'}</p>
             </div>
           </div>
         </div>
@@ -448,8 +447,9 @@ const BusinessDetails = () => {
       {showPopup && (
         <PopUp
           type={popupType}
-          onClose={() =>handleClosePopup()}
+          onClose={() => handleClosePopup()}
           message={popupMessage}
+          onConfirm={handleCreateAgent}
         />
       )}
     </div>

@@ -668,7 +668,7 @@ function AboutBusiness() {
                         Add <Loader size={20} />
                       </>
                     ) : (
-                      <p>Save Edits</p>
+                      <p>Save Edits  </p>
                     )}
                   </button>
                 )}
