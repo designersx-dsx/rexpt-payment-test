@@ -14,6 +14,7 @@ import PopUp from "../Popup/Popup";
 import CountdownPopup from "../CountDownPopup/CountdownPopup";
 import { useNavigate } from "react-router-dom";
 import { Label } from "recharts";
+import Select from "react-select";
 
 const stripePromise = loadStripe(
   "pk_test_51RQodQ4T6s9Z2zBzHe6xifROxlIMVsodSNxf2MnmDX3AwkI44JT3AjDuyQZEoZq9Zha69WiA8ecnXZZ2sw9iY5sP007jJUxE52"
@@ -28,7 +29,7 @@ function CheckoutForm({
   disabled,
   agentId,
   locationPath,
-  price
+  price,
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -47,7 +48,7 @@ function CheckoutForm({
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
-const [planPrice  , setPlanPrice] = useState(price)
+  const [planPrice, setPlanPrice] = useState(price);
   // Card details
   const [billingName, setBillingName] = useState("");
 
@@ -312,6 +313,10 @@ const [planPrice  , setPlanPrice] = useState(price)
     "ZW",
   ]);
 
+  const COUNTRY_OPTIONS = Array.from(VALID_COUNTRY_CODES)
+    .sort()
+    .map((code) => ({ value: code, label: code }));
+
   // Validate step 1 fields before going next
   const validateStep1 = () => {
     const newErrors = {};
@@ -363,14 +368,13 @@ const [planPrice  , setPlanPrice] = useState(price)
         },
         body: JSON.stringify({
           userId,
-          agentId, 
+          agentId,
         }),
       });
 
       const data = await res.json();
 
       if (data.success) {
-        
         setPopupType("success");
         setPopupMessage("Agent Upgraged successfully!");
         setTimeout(() => {
@@ -445,7 +449,7 @@ const [planPrice  , setPlanPrice] = useState(price)
           paymentMethodId: paymentMethod.id,
           userId,
           email,
-          promotionCode : promoCode , 
+          promotionCode: promoCode,
           companyName,
           gstNumber,
           billingAddress: {
@@ -456,7 +460,7 @@ const [planPrice  , setPlanPrice] = useState(price)
             postalCode,
             country,
           },
-          promotionCode:"FREE99"
+          // promotionCode:"FREE99"
         }),
       });
 
@@ -488,29 +492,36 @@ const [planPrice  , setPlanPrice] = useState(price)
 
     setLoading(false);
   };
-  const [promoCode, setPromoCode] = useState('');
-const [promoError, setPromoError] = useState('');
-const [discount, setDiscount] = useState(null);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoError, setPromoError] = useState("");
+  const [discount, setDiscount] = useState(null);
 
-const handleApplyPromo = async () => {
-  const res = await fetch(`${API_BASE_URL}/checkPromtoCode`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code: promoCode })
-  });
+  const handleApplyPromo = async () => {
+    const res = await fetch(`${API_BASE_URL}/checkPromtoCode`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: promoCode }),
+    });
 
-  const data = await res.json();
-if (res.ok) {
-  const discountValue = data.discount;
-  const finalPrice = price - (discountValue / 100) * price;
-  
-  setDiscount(discountValue);
-  setPlanPrice(finalPrice.toFixed(2)); // Optional: round to 2 decimal places
-  setPromoError('');
-} else {
-  setPromoError(data.error);
-}
-};
+    const data = await res.json();
+    if (res.ok) {
+      const discountValue = data.discount;
+      const finalPrice = price - (discountValue / 100) * price;
+
+      setDiscount(discountValue);
+      setPlanPrice(finalPrice.toFixed(2)); // Optional: round to 2 decimal places
+      setPromoError("");
+    } else {
+      setPromoError(data.error);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setPromoCode("");
+    setPromoError("");
+    setDiscount(null);
+    setPlanPrice(price); // reset to original
+  };
 
   return (
     <div className={styles.checkoutForm}>
@@ -571,21 +582,19 @@ if (res.ok) {
           )}
 
           <label>Country *</label>
-          <input
-            type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className={styles.input}
-            required
-            placeholder="ISO country code, e.g. US"
+          <Select
+            className={styles.reactSelect}
+            classNamePrefix="react-select"
+            options={COUNTRY_OPTIONS}
+            value={COUNTRY_OPTIONS.find((opt) => opt.value === country)}
+            onChange={(selected) => setCountry(selected.value)}
+            placeholder="Select Country"
+            isSearchable
+            menuPlacement="top"
           />
           {errors.country && (
             <p className={styles.errorMsg}>{errors.country}</p>
           )}
-
-      
-
-
 
           <button
             type="button"
@@ -629,33 +638,40 @@ if (res.ok) {
             <CardCvcElement className={styles.cardInput} />
           </div>
 
-<label> Have a Coupen Code ?</label>
-<div className={styles.Applybox}>
-  <input
-  value={promoCode}
-  onChange={(e) => setPromoCode(e.target.value)}
-  className={styles.input}
-  placeholder="Enter Promo Code"
-/>
+          <label> Have a Coupen Code ?</label>
+          <div className={styles.Applybox}>
+            <input
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value)}
+              className={styles.input}
+              placeholder="Enter Promo Code"
+              disabled={!!discount}
+            />
 
-<button onClick={handleApplyPromo}>Apply</button>
-</div>
-          
+            <button onClick={handleApplyPromo}>Apply</button>
+          </div>
 
-{promoError && <p style={{ color: 'red' }}>{promoError}</p>}
-{discount && <p>Discount applied: {discount}%</p>}
+          {promoError && <p style={{ color: "red" }}>{promoError}</p>}
+          {discount && (
+            <div className={styles.promoAppliedBox}>
+              <span>✅ Promo applied: {discount}% off</span>
+              <button
+                type="button"
+                onClick={handleRemovePromo}
+                className={styles.removePromoBtn}
+                title="Remove promo code"
+              >
+                ❌
+              </button>
+            </div>
+          )}
 
           <button
             type="button"
             onClick={handleSubmit}
-          
             className={styles.button}
             style={{ marginTop: "1rem" }}
           >
-
-
-
-
             {loading ? "Processing..." : `Pay $${planPrice}`}
           </button>
         </>
@@ -693,4 +709,3 @@ export default function Checkout(props) {
     </Elements>
   );
 }
-  

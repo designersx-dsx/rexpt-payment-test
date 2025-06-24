@@ -19,8 +19,7 @@ export default function SubscriptionFlow() {
 
   const priceId = location.state?.priceId;
   const agentId = location.state?.agentId || null;
-  const price  = location.state.price
-  console.log(location)
+  const price = location.state.price;
   const locationPath = location.state?.locationPath1 || null;
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -43,7 +42,6 @@ export default function SubscriptionFlow() {
     if (!token) return;
     const result = decodeToken(token);
     setUserDetails(result);
-    console.log({ result });
     setUserId(result.id);
     if (result?.email) setEmail(result.email);
   }, []);
@@ -217,10 +215,18 @@ export default function SubscriptionFlow() {
             className={styles.buttonmai}
             style={{ padding: "6px 10px", fontSize: "0.9rem" }}
           >
-            <svg width="82" height="82" viewBox="0 0 82 82" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M22.3366 44.2117L51.3756 15.1727L66.0866 29.8837L37.0396 58.9147C36.7506 59.2116 36.3521 59.3756 35.938 59.3756H23.438C22.5787 59.3756 21.8755 58.6725 21.8755 57.8131V45.3131C21.8755 44.8991 22.0398 44.5008 22.3366 44.2117ZM78.4616 17.5007C79.3757 16.5866 79.8835 15.3601 79.8835 14.0632C79.8835 12.7663 79.3757 11.5476 78.4616 10.6257L70.6257 2.7898C69.7117 1.87574 68.4851 1.3679 67.1882 1.3679C65.8913 1.3679 64.6726 1.87571 63.7507 2.7898L55.7898 10.7507L70.5008 25.4617L78.4616 17.5007ZM78.1257 32.8127C76.3991 32.8127 75.0007 34.2111 75.0007 35.9377V70.3207C75.0007 72.8988 72.8991 75.0004 70.321 75.0004H10.93C8.3519 75.0004 6.2503 72.8988 6.2503 70.3207V10.9297C6.2503 8.3516 8.3519 6.25 10.93 6.25H45.313C47.0396 6.25 48.438 4.8516 48.438 3.125C48.438 1.3984 47.0396 0 45.313 0H10.93C4.9066 0 0 4.9062 0 10.93V70.321C0 76.3444 4.9062 81.251 10.93 81.251H70.321C76.3444 81.251 81.251 76.3448 81.251 70.321V35.938C81.251 34.2114 79.8523 32.8127 78.1257 32.8127Z" fill="black"/>
-</svg>
-
+            <svg
+              width="82"
+              height="82"
+              viewBox="0 0 82 82"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M22.3366 44.2117L51.3756 15.1727L66.0866 29.8837L37.0396 58.9147C36.7506 59.2116 36.3521 59.3756 35.938 59.3756H23.438C22.5787 59.3756 21.8755 58.6725 21.8755 57.8131V45.3131C21.8755 44.8991 22.0398 44.5008 22.3366 44.2117ZM78.4616 17.5007C79.3757 16.5866 79.8835 15.3601 79.8835 14.0632C79.8835 12.7663 79.3757 11.5476 78.4616 10.6257L70.6257 2.7898C69.7117 1.87574 68.4851 1.3679 67.1882 1.3679C65.8913 1.3679 64.6726 1.87571 63.7507 2.7898L55.7898 10.7507L70.5008 25.4617L78.4616 17.5007ZM78.1257 32.8127C76.3991 32.8127 75.0007 34.2111 75.0007 35.9377V70.3207C75.0007 72.8988 72.8991 75.0004 70.321 75.0004H10.93C8.3519 75.0004 6.2503 72.8988 6.2503 70.3207V10.9297C6.2503 8.3516 8.3519 6.25 10.93 6.25H45.313C47.0396 6.25 48.438 4.8516 48.438 3.125C48.438 1.3984 47.0396 0 45.313 0H10.93C4.9066 0 0 4.9062 0 10.93V70.321C0 76.3444 4.9062 81.251 10.93 81.251H70.321C76.3444 81.251 81.251 76.3448 81.251 70.321V35.938C81.251 34.2114 79.8523 32.8127 78.1257 32.8127Z"
+                fill="black"
+              />
+            </svg>
           </button>
         )}
       </div>
@@ -279,7 +285,7 @@ export default function SubscriptionFlow() {
           customerId={customerId}
           priceId={priceId}
           userId={userId}
-          price ={price}
+          price={price}
           onSubscriptionSuccess={() => {
             setSubscriptionSuccess(true);
           }}

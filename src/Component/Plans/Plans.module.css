@@ -13,6 +13,7 @@
   box-shadow: 0 8px 20px rgb(103 114 229 / 0.5);
 }
 
+
 .planName {
   font-size: 1.5rem;
   font-weight: 700;
@@ -471,4 +472,16 @@ input:checked+.slider:before {
   .welcomeTitle h1 {
   font-size: 35px;
 }
+}
+
+
+.active {
+  background-color: #6524eb;
+  color: white;
+  border-color: #6524eb;
+}
+
+.activeTab {
+  background-color: #6524eb;
+  color: white;
 }

@@ -19,7 +19,7 @@ const roles = [
     //     icon: 'svg/technical-receptionist.svg',
     // },
 ];
-const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoading ,detectRoleTypeChange}, ref) => {
+const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoading, detectRoleTypeChange }, ref) => {
     const [selectedRole, setSelectedRole] = useState('');
     useEffect(() => {
         const updationMode = localStorage.getItem("UpdationMode") === "ON";
@@ -27,8 +27,8 @@ const Step4 = forwardRef(({ onNext, onBack, onValidationError, loading, setLoadi
 
         if (updationMode) {
             setSelectedRole(storedAgentRole)
-        }else {
-             setSelectedRole(storedAgentRole)
+        } else {
+            setSelectedRole(storedAgentRole)
         }
     }, [])
 
