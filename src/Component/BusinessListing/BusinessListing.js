@@ -425,10 +425,10 @@ const BusinessListing = () => {
             <button
               type="submit"
               className={styles.btnTheme}
-              disabled={loading}
+              disabled={loading}       style={{ pointerEvents: loading ? "none" : "auto", opacity: loading ? 0.6 : 1 }}
             >
               <img alt="" src="svg/svg-theme.svg" />
-              <p className="subBtn">{loading ? <>Submitting... &nbsp; <Loader size={18} /></> : "Submit"}</p>
+              <p  className="subBtn">{loading ? <>Saving &nbsp; <Loader size={18} /></> : "Submit"}</p>
             </button>
           </div>
         </div>

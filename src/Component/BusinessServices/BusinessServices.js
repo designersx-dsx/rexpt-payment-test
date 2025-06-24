@@ -7,6 +7,7 @@ import { useAgentCreator } from "../../hooks/useAgentCreator";
 import axios from "axios";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
+import Loader from "../Loader/Loader";
 const BusinessServices = () => {
   const navigate = useNavigate();
   const [businessType, setBusinessType] = useState("Restaurant");
@@ -18,7 +19,7 @@ const BusinessServices = () => {
   const [serviceError, setServiceError] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("");
-  
+
   const [Loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const EditingMode = localStorage.getItem("UpdationMode");
@@ -346,88 +347,88 @@ const BusinessServices = () => {
     return true;
   };
 
-const handleContinue = async () => {
-  const isServiceValid = selectedService.length > 0;
-  if (!isServiceValid) {
-    setServiceError("Please select at least one service.");
-    return;
-  }
+  const handleContinue = async () => {
+    const isServiceValid = selectedService.length > 0;
+    if (!isServiceValid) {
+      setServiceError("Please select at least one service.");
+      return;
+    }
 
-  const containsOther = selectedService.includes("Other");
-  const raw = sessionStorage.getItem("businesServices");
-  let previous = {};
-  try {
-    previous = raw ? JSON.parse(raw) : {};
-  } catch (err) {
-    console.error("Failed to parse businesServices:", err);
-  }
+    const containsOther = selectedService.includes("Other");
+    const raw = sessionStorage.getItem("businesServices");
+    let previous = {};
+    try {
+      previous = raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.error("Failed to parse businesServices:", err);
+    }
 
-  const updatedBusinessServices = {
-    ...previous,
-    selectedService,
-    email,
+    const updatedBusinessServices = {
+      ...previous,
+      selectedService,
+      email,
+    };
+
+    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+
+    const businessDetailsRaw = sessionStorage.getItem("businessDetails");
+    const businessDetails = businessDetailsRaw
+      ? JSON.parse(businessDetailsRaw)
+      : {};
+
+    const finalBusinessDetails = {
+      ...businessDetails,
+      selectedService,
+      email,
+    };
+
+    sessionStorage.setItem("businessDetails", JSON.stringify(finalBusinessDetails));
+    sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
+    if (containsOther) {
+      navigate("/about-business-next");
+      return;
+    }
+    try {
+      setLoading(true);
+
+      const API_URL = localStorage.getItem("UpdationMode") === "ON"
+        ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`
+        : `${API_BASE_URL}/businessDetails/create`;
+
+      const response = await axios({
+        method: localStorage.getItem("UpdationMode") === "ON" ? "PATCH" : "POST",
+        url: API_URL,
+        data: {
+          userId: decodeToken(localStorage.getItem("token")).id,
+          businessName: finalBusinessDetails.businessName,
+          businessSize: finalBusinessDetails.businessSize,
+          businessType: finalBusinessDetails.businessType,
+          customBuisness: finalBusinessDetails.customBuisness || "",
+          buisnessEmail: email,
+          buisnessService: selectedService,
+          customServices: [],
+        },
+      });
+
+      const id = response.data.businessId;
+      sessionStorage.setItem("bId", id);
+      sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
+
+      setPopupType("success");
+      setPopupMessage("Business details saved successfully");
+      setShowPopup(true);
+      setTimeout(() => {
+        navigate("/about-business");
+      }, 1000);
+    } catch (error) {
+      console.error("❌ Error saving business details:", error);
+      setPopupType("failed");
+      setPopupMessage("Failed to save business details.");
+      setShowPopup(true);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-
-  const businessDetailsRaw = sessionStorage.getItem("businessDetails");
-  const businessDetails = businessDetailsRaw
-    ? JSON.parse(businessDetailsRaw)
-    : {};
-
-  const finalBusinessDetails = {
-    ...businessDetails,
-    selectedService,
-    email,
-  };
-
-  sessionStorage.setItem("businessDetails", JSON.stringify(finalBusinessDetails));
-  sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
-  if (containsOther) {
-    navigate("/about-business-next");
-    return;
-  }
-  try {
-    setLoading(true);
-
-    const API_URL = localStorage.getItem("UpdationMode") === "ON"
-      ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`
-      : `${API_BASE_URL}/businessDetails/create`;
-
-    const response = await axios({
-      method: localStorage.getItem("UpdationMode") === "ON" ? "PATCH" : "POST",
-      url: API_URL,
-      data: {
-        userId: decodeToken(localStorage.getItem("token")).id,
-        businessName: finalBusinessDetails.businessName,
-        businessSize: finalBusinessDetails.businessSize,
-        businessType: finalBusinessDetails.businessType,
-        customBuisness: finalBusinessDetails.customBuisness || "",
-        buisnessEmail: email,
-        buisnessService: selectedService,
-        customServices: [],
-      },
-    });
-
-    const id = response.data.businessId;
-    sessionStorage.setItem("bId", id);
-    sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
-
-    setPopupType("success");
-    setPopupMessage("Business details saved successfully");
-    setShowPopup(true);
-    setTimeout(() => {
-      navigate("/about-business");
-    }, 1000);
-  } catch (error) {
-    console.error("❌ Error saving business details:", error);
-    setPopupType("failed");
-    setPopupMessage("Failed to save business details.");
-    setShowPopup(true);
-  } finally {
-    setLoading(false);
-  }
-};
 
   useEffect(() => {
     try {
@@ -437,15 +438,15 @@ const handleContinue = async () => {
       const rawBusinessServices = sessionStorage.getItem("businesServices");
       const businessDetails =
         rawBusinessDetails &&
-        rawBusinessDetails !== "null" &&
-        rawBusinessDetails !== "undefined"
+          rawBusinessDetails !== "null" &&
+          rawBusinessDetails !== "undefined"
           ? JSON.parse(rawBusinessDetails)
           : null;
 
       const businessServices =
         rawBusinessServices &&
-        rawBusinessServices !== "null" &&
-        rawBusinessServices !== "undefined"
+          rawBusinessServices !== "null" &&
+          rawBusinessServices !== "undefined"
           ? JSON.parse(rawBusinessServices)
           : null;
 
@@ -454,38 +455,26 @@ const handleContinue = async () => {
           setBusinessType(businessDetails.businessType || "");
           setBusinessName(businessDetails.businessName || "");
           setBusinessSize(businessDetails.businessSize || "");
+          if (businessServices?.selectedService) {
+            try {
+              let finalSelected = [];
 
-
-          // if (Array.isArray(businessDetails.selectedService)) {
-          //   setSelectedService(businessDetails.selectedService);
-          // } else if (typeof businessDetails.selectedService === "string") {
-          //   try {
-          //     const parsed = JSON.parse(businessDetails.selectedService);
-          //     if (Array.isArray(parsed)) {
-          //       setSelectedService(parsed);
-          //     }
-          //   } catch {}
-          // }
-           if (businessServices?.selectedService) {
-          try {
-            let finalSelected = [];
-
-            if (typeof businessServices.selectedService === "string") {
-              const parsed = JSON.parse(businessServices.selectedService);
-              if (Array.isArray(parsed)) {
-                finalSelected = parsed;
+              if (typeof businessServices.selectedService === "string") {
+                const parsed = JSON.parse(businessServices.selectedService);
+                if (Array.isArray(parsed)) {
+                  finalSelected = parsed;
+                }
+              } else if (Array.isArray(businessServices.selectedService)) {
+                finalSelected = businessServices.selectedService;
               }
-            } else if (Array.isArray(businessServices.selectedService)) {
-              finalSelected = businessServices.selectedService;
+
+              setSelectedService(finalSelected);
+            } catch (err) {
+              console.error("❌ Failed to parse selectedService:", err);
             }
 
-            setSelectedService(finalSelected);
-          } catch (err) {
-            console.error("❌ Failed to parse selectedService:", err);
+            setEmail(businessServices.email || "");
           }
-
-          setEmail(businessServices.email || "");
-        }
           setEmail(businessDetails.email || "");
         }
       } else {
@@ -532,74 +521,49 @@ const handleContinue = async () => {
     setCustomServiceSelected(updated.includes("Other"));
   };
 
-const handleSaveEdit = async (e) => {
-  e.preventDefault();
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
 
-  if (selectedService.length === 0) {
-    setServiceError("Please select at least one service.");
-    return;
-  }
+    if (selectedService.length === 0) {
+      setServiceError("Please select at least one service.");
+      return;
+    }
 
-  const containsOther = selectedService.includes("Other");
+    const containsOther = selectedService.includes("Other");
 
-  const raw = sessionStorage.getItem("businesServices");
-  let previous = {};
-  try {
-    previous = raw ? JSON.parse(raw) : {};
-  } catch (err) {
-    console.error("Failed to parse businesServices:", err);
-  }
+    const raw = sessionStorage.getItem("businesServices");
+    let previous = {};
+    try {
+      previous = raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.error("Failed to parse businesServices:", err);
+    }
 
-  const updatedBusinessServices = {
-    ...previous,
-    selectedService,
-    email,
+    const updatedBusinessServices = {
+      ...previous,
+      selectedService,
+      email,
+    };
+
+    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+
+    const businessDetailsRaw = sessionStorage.getItem("businessDetails");
+    const businessDetails = businessDetailsRaw
+      ? JSON.parse(businessDetailsRaw)
+      : {};
+
+    sessionStorage.setItem("businessDetails", JSON.stringify({
+      ...businessDetails,
+      selectedService,
+      email,
+    }));
+
+    if (containsOther) {
+      navigate("/about-business-next");
+    } else {
+      handleCreateAgent();
+    }
   };
-
-  sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-
-  const businessDetailsRaw = sessionStorage.getItem("businessDetails");
-  const businessDetails = businessDetailsRaw
-    ? JSON.parse(businessDetailsRaw)
-    : {};
-
-  sessionStorage.setItem("businessDetails", JSON.stringify({
-    ...businessDetails,
-    selectedService,
-    email,
-  }));
-
-  if (containsOther) {
-    navigate("/about-business-next");
-  } else {
-    // directly call create agent after update
-    // try {
-    //   setLoading(true);
-
-    //   const API_URL = `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`;
-
-    //   await axios.patch(API_URL, {
-    //     businessName: businessDetails.businessName,
-    //     businessSize: businessDetails.businessSize,
-    //     businessType: businessDetails.businessType,
-    //     customBuisness: businessDetails.customBuisness || "",
-    //     buisnessEmail: email,
-    //     buisnessService: selectedService,
-    //     customServices: [],
-    //   });
-
-    //   handleCreateAgent(); // Final step
-    // } catch (error) {
-    //   console.error("❌ Error updating business details:", error);
-    //   setPopupType("failed");
-    //   setPopupMessage("Failed to update business details.");
-    //   setShowPopup(true);
-    // } finally {
-    //   setLoading(false);
-    // }
-    handleCreateAgent();
-  }
-};
 
 
   return (
@@ -658,60 +622,33 @@ const handleSaveEdit = async (e) => {
       {serviceError && (
         <p style={{ color: "red", marginTop: "5px" }}>{serviceError}</p>
       )}
-
-      {/* <div className={styles.labReq}>
-                <div className={styles.inputGroup}>
-                    <div className={styles.Dblock}>
-                        <label> Business Email Address</label>
-                        <input
-                            type="email"
-                            placeholder="Business Email Address"
-                            value={email}
-                            onChange={(e) => {
-                                setEmail(e.target.value);
-                                setEmailError("");
-                                // setIsEmailVerified(false); 
-                            }}
-                        // onBlur={(e) => validateEmail(e.target.value)}
-                 
-                        />
-                        {emailError && (
-                            <p style={{ color: 'red', marginTop: '5px' }}>{emailError}</p>
-                        )}
-
-
-                        {isEmailVerified && (
-                            <p style={{ color: 'green', marginTop: '5px' }}>Email verified successfully!</p>
-                        )}
-                    </div>
-                </div>
-            </div> */}
-      {stepEditingMode!='ON'? 
-      <div>
-        <div type="submit">
-          <div
-            className={styles.btnTheme}
-            onClick={handleContinue}
+      {stepEditingMode != 'ON' ?
+        <div>
+          <div type="submit">
+            <div
+              className={styles.btnTheme}
+              onClick={handleContinue}
             // disabled={!isEmailVerified}
-          >
-            <img src="svg/svg-theme.svg" alt="" type="button" />
-            <p>Continue</p>
+            >
+              <img src="svg/svg-theme.svg" alt="" type="button" />
+              <p>Continue</p>
+            </div>
           </div>
         </div>
-      </div>
-      :
-          <div>
-                <div type="submit">
-                    <div
-                        className={styles.btnTheme}
-                        onClick={handleSaveEdit}
-                        // disabled={!isEmailVerified} 
-                    >
-                        <img src="svg/svg-theme.svg" alt="" type="button" />
-                         <p>Save Edits</p>
-                    </div>
-                </div>
+        :
+        <div>
+          <div type="submit">
+            <div
+              className={styles.btnTheme}
+              onClick={handleSaveEdit}
+                style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
+            // disabled={!isEmailVerified} 
+            >
+              <img src="svg/svg-theme.svg" alt="" type="button" />
+              {Loading ? <p>Saving &nbsp; &nbsp;<Loader size={20} /></p> : <p>Save Edits</p>}
             </div>
+          </div>
+        </div>
       }
       {/* Show PopUp */}
       <PopUp
