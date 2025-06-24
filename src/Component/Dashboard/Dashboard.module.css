@@ -487,6 +487,10 @@
     transform: translate(50%,0%);
 
 }
+.OptionsDropdown{
+    top: -50%;
+    right: 40px;
+}
 
 .main {
     padding: 0 20px;

@@ -835,23 +835,7 @@ const handleApiKeySubmit = async () => {
   return (
     <div>
       <div className={styles.forSticky}>
-        {show ? (
-          <Modal isOpen={show} onClose={handleCLose}>
-            <></>
-            <h2 className={styles.apologyHead}>Comming Soon</h2>
-
-            <p className={styles.apologyHeadText} apologyHeadText>
-              We apologise, But our paid plans are being tested to pass our
-              "Rigorous QA Process" For now, If your sign-up for a "Free
-              Account", We promise to send you Upgradation Options in your email
-              within next 2 weeks.
-            </p>
-
-            <div className={styles.zz}>
-              {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
-            </div>
-          </Modal>
-        ) : null}
+       
         <header className={styles.header}>
           <div className={styles.profileSection} ref={profileRef}>
             <div>
@@ -948,6 +932,7 @@ const handleApiKeySubmit = async () => {
         </header>
 
         <section className={styles.agentCard}>
+          
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
             <img src="svg/total-call.svg" alt="total-call" />
@@ -961,6 +946,24 @@ const handleApiKeySubmit = async () => {
       </div>
 
       <div className={styles.main}>
+ {show ? (
+          <Modal isOpen={show} onClose={handleCLose}>
+            <></>
+            <h2 className={styles.apologyHead}>Comming Soon</h2>
+
+            <p className={styles.apologyHeadText} apologyHeadText>
+              We apologise, But our paid plans are being tested to pass our
+              "Rigorous QA Process" For now, If your sign-up for a "Free
+              Account", We promise to send you Upgradation Options in your email
+              within next 2 weeks.
+            </p>
+
+            <div className={styles.zz}>
+              {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
+            </div>
+          </Modal>
+        ) : null}
+
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
