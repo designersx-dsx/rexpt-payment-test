@@ -40,6 +40,7 @@ function HeaderFilter({
   );
 
   const handleChange = (e) => {
+
     const selectedId = +e.target.value;
     const selectedOption = options.find((opt) => opt.id === selectedId);
     setSelected(selectedOption);
@@ -86,6 +87,13 @@ function HeaderFilter({
   const closeCalender = () => {
     setOpen(false)
   }
+  const handleOpenSlider = () => {
+    setIsOpen(true)
+    setOpen(false)
+  }
+  const handleCloseFilter = () => {
+    setOpen(false)
+  }
   return (
     <div>
       <div className={styles.Forsticky}>
@@ -111,12 +119,12 @@ function HeaderFilter({
                     alt={selected.label}
                     style={{ width: 20, height: 20, marginRight: 5 }}
                   />
-                  {/* <span>{selected.label}</span> */}
                 </div>
 
                 <select
                   className={styles.agentSelect1}
                   value={selected.id}
+                  onClick={handleCloseFilter}
                   onChange={handleChange}
                 >
                   {options.map((option) => (
@@ -132,7 +140,7 @@ function HeaderFilter({
 
             <div
               className={styles.notificationIcon}
-              onClick={() => setIsOpen(true)}
+              onClick={handleOpenSlider}
               style={{ cursor: "pointer" }}
             >
               <svg

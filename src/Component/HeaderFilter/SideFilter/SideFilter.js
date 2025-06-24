@@ -42,14 +42,12 @@ function SideFilter({ filters, onFilterChange, isLeadTypeSummary, onSelectAll })
     setLocalFilters(clearedFilters);
     onFilterChange(clearedFilters);
   };
-
   // Filter the lead types and channels based on the searchText
   const filteredLeadTypes = [...new Set(
     isLeadTypeSummary
       .map(item => item?.custom_analysis_data?.lead_type||item?.call_analysis?.custom_analysis_data?.lead_type)
       .filter(Boolean)
   )].filter(type => type.toLowerCase().includes(searchText.toLowerCase()));
-
   const filteredChannels = channelOptions.filter(({ label }) => label.toLowerCase().includes(searchText.toLowerCase()));
 
   return (
