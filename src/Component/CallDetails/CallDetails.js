@@ -51,8 +51,9 @@ const CallDetails = () => {
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""
-      }${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${
+      seconds < 10 ? "0" : ""
+    }${seconds}`;
   };
 
   useEffect(() => {
@@ -121,7 +122,6 @@ const CallDetails = () => {
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
 
-
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
     const seconds = Math.floor((durationMs % 60000) / 1000);
@@ -176,12 +176,13 @@ const CallDetails = () => {
               <h2>{name || "Unknown"}</h2>
             </div>
             <div
-              className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
-                ? styles.green
-                : callData.call_analysis?.user_sentiment === "Neutral"
+              className={`${styles.status} ${
+                callData.call_analysis?.user_sentiment === "Positive"
+                  ? styles.green
+                  : callData.call_analysis?.user_sentiment === "Neutral"
                   ? styles.yellow
                   : styles.red
-                }`}
+              }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
             </div>
@@ -197,7 +198,7 @@ const CallDetails = () => {
               <strong>
                 {callData?.agent_id
                   ? agents.find((a) => a.agent_id === callData.agent_id)
-                    ?.agentName || "Unknown Agent"
+                      ?.agentName || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>
@@ -206,7 +207,6 @@ const CallDetails = () => {
               <p>Durations</p>
 
               <strong>{convertMsToMinSec(callData.duration_ms)}</strong>
-
             </div>
           </div>
         </div>
@@ -322,43 +322,63 @@ const CallDetails = () => {
               <h2>Chat Details</h2>
             </div>
             <div className={styles.ChatBox}>
-              <div className={styles.messageLeft}>
-                <div className={styles.bubbleLeft}>
-                  Hello! How can I help you today?
+              {transcript.find((msg) => msg.role === "agent") && (
+                <div className={styles.messageLeft}>
+                  <div className={styles.bubbleLeft}>
+                    {transcript.find((msg) => msg.role === "agent").content}
+                  </div>
+                  <span className={styles.time}>Agent</span>
                 </div>
-                <span className={styles.time}>Agent • 10:00 AM</span>
-              </div>
+              )}
 
-
-              <div className={styles.messageRight}>
-                <div className={styles.bubbleRight}>
-                  I need help with my subscription.
+              {transcript.find((msg) => msg.role === "user") && (
+                <div className={styles.messageRight}>
+                  <div className={styles.bubbleRight}>
+                    {transcript.find((msg) => msg.role === "user").content}
+                  </div>
+                  <span className={styles.time}>User</span>
                 </div>
-                <span className={styles.time}>You • 10:01 AM</span>
-              </div>
-              <div className={styles.chatBtn} onClick={() => setChatModalOpen(true)}>
-                <p>View Full Chat </p>
+              )}
+
+              <div
+                className={styles.chatBtn}
+                onClick={() => setChatModalOpen(true)}
+              >
+                <p>View Full Chat</p>
               </div>
             </div>
 
-            <DetailModal isOpen={isChatModalOpen} onClose={() => setChatModalOpen(false)} height="500px">
+            <DetailModal
+              isOpen={isChatModalOpen}
+              onClose={() => setChatModalOpen(false)}
+              height="500px"
+            >
               <div className={styles.ChatBox2}>
-                <div className={styles.messageLeft}>
-                  <div className={styles.bubbleLeft}>
-                    Hello! How can I help you today?
+                {transcript.map((entry, index) => (
+                  <div
+                    key={index}
+                    className={
+                      entry.role === "agent"
+                        ? styles.messageLeft
+                        : styles.messageRight
+                    }
+                  >
+                    <div
+                      className={
+                        entry.role === "agent"
+                          ? styles.bubbleLeft
+                          : styles.bubbleRight
+                      }
+                    >
+                      {entry.content}
+                    </div>
+                    <span className={styles.time}>
+                      {entry.role === "agent" ? "Agent" : "You"}
+                    </span>
                   </div>
-                  <span className={styles.time}>Agent • 10:00 AM</span>
-                </div>
-
-                <div className={styles.messageRight}>
-                  <div className={styles.bubbleRight}>
-                    I need help with my subscription.
-                  </div>
-                  <span className={styles.time}>You • 10:01 AM</span>
-                </div>
+                ))}
               </div>
             </DetailModal>
-
           </div>
           <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
@@ -369,9 +389,7 @@ const CallDetails = () => {
             </p>
           </div>
 
-
-
-          <div className={styles.summaryDiv}>
+          {/* <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
               <h2>Chat Details</h2>
             </div>
@@ -402,7 +420,7 @@ const CallDetails = () => {
                 Read More
               </button>
             )}
-          </div>
+          </div> */}
           {/* <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
               <h2>Outcome(Analysis)</h2>
