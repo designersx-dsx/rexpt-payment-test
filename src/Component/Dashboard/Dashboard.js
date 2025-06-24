@@ -84,18 +84,17 @@ function Dashboard() {
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
 
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
-
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [agentToDelete, setAgentToDelete] = useState(null);
   const [show, setShow] = useState(false);
   const [close, setClose] = useState(false);
 
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
   const [deactivateLoading, setDeactivateLoading] = useState(false);
+  const [calloading, setcalloading]= useState(false)
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
+  const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
 
   useEffect(() => {
     // Dashboard pe aate hi naya history state add karo
@@ -194,9 +193,9 @@ function Dashboard() {
       localStorage.removeItem("additionalInstruction");
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("knowledge_base_id");
-      sessionStorage.removeItem('selectedfilterOption')
-      sessionStorage.removeItem("placeDetailsExtract")
-      sessionStorage.removeItem("agentNote")
+      sessionStorage.removeItem("selectedfilterOption");
+      sessionStorage.removeItem("placeDetailsExtract");
+      sessionStorage.removeItem("agentNote");
     }
   }, []);
   // Navigate on agent card click
@@ -298,47 +297,52 @@ function Dashboard() {
   }, [agents]);
 
   // Submit API key for selected agent
-  const handleApiKeySubmit = async () => {
-    if (!selectedAgent) return;
+const handleApiKeySubmit = async () => {
+  if (!selectedAgent) return;
 
-    if (!isValidCalApiKey(apiKey.trim())) {
-      setPopupType("failed");
-      setPopupMessage("Invalid API Key! It must start with 'cal_live_'.");
-      return;
-    }
+  if (!isValidCalApiKey(apiKey.trim())) {
+    setPopupType("failed");
+    setPopupMessage("Invalid API Key! It must start with 'cal_live_'.");
+    return;
+  }
 
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: apiKey.trim() }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update API key");
+  try {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ calApiKey: apiKey.trim() }),
       }
+    );
 
-      const updatedAgents = localAgents.map((agent) =>
-        agent.agent_id === selectedAgent.agent_id
-          ? { ...agent, calApiKey: apiKey.trim() }
-          : agent
-      );
-
-      setLocalAgents(updatedAgents);
-      setHasFetched(false);
-      // localStorage.setItem("agents", JSON.stringify(updatedAgents));
-
-      setShowEventInputs(true);
-      setShowCalKeyInfo(true);
-    } catch (error) {
-      setPopupType("failed");
-      setPopupMessage(`Failed to save API Key: ${error.message}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update API key");
     }
-  };
+
+    const updatedAgents = localAgents.map((agent) =>
+      agent.agent_id === selectedAgent.agent_id
+        ? { ...agent, calApiKey: apiKey.trim() }
+        : agent
+    );
+
+    setLocalAgents(updatedAgents);
+    setHasFetched(false);
+    setShowCalKeyInfo(true);
+
+    // ✅ Fix timing issue here:
+    setShowEventInputs(true);
+    setTimeout(() => {
+      setIsApiKeySubmitted(true);
+    }, 0);
+  } catch (error) {
+    setPopupType("failed");
+    setPopupMessage(`Failed to save API Key: ${error.message}`);
+  }
+};
+
+
 
   // Create Cal event
   const createCalEvent = async () => {
@@ -351,6 +355,7 @@ function Dashboard() {
       return;
     }
     try {
+      setcalloading(true)
       // Call Cal API to create an event
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
         apiKey.trim()
@@ -416,52 +421,26 @@ function Dashboard() {
       setEventCreateStatus("error");
       setEventCreateMessage(`Error creating event: ${error.message}`);
       console.error("Error in createCalEvent:", error);
+    } finally {
+      setcalloading(false)
     }
   };
 
   const closeModal = () => {
-    setIsCalModalOpen(false);
-    setApiKey("");
-    setSelectedAgent(null);
-    setShowEventInputs(false);
-    setEventCreateStatus(null);
-    setEventCreateMessage("");
-  };
+  setIsCalModalOpen(false);
+  setApiKey("");
+  setSelectedAgent(null);
+  setShowEventInputs(false);
+  setEventCreateStatus(null);
+  setEventCreateMessage("");
+  setIsApiKeySubmitted(false); 
+};
+
 
   const toggleDropdown = (e, id) => {
     e.preventDefault();
     e.stopPropagation();
     setOpenDropdown(openDropdown === id ? null : id);
-  };
-
-  const handleDelete = async (agentId) => {
-    try {
-      const storedDashboard = JSON.parse(
-        sessionStorage.getItem("dashboard-session-storage")
-      );
-
-      const agents = storedDashboard?.state?.agents || [];
-
-      if (agents.length === 1) {
-        setPopupType("failed");
-        setPopupMessage(
-          "Cannot delete. You must have at least two agents to delete one agent."
-        );
-        setShowDeleteConfirm(false);
-        return;
-      }
-      await deleteAgent(agentId);
-      const updatedAgents = localAgents.filter(
-        (agent) => agent.agent_id !== agentId
-      );
-      setLocalAgents(updatedAgents);
-      setPopupMessage("Agent deleted successfully!");
-      setPopupType("success");
-      setHasFetched(false);
-    } catch (error) {
-      setPopupMessage(`Failed to delete agent: ${error.message}`);
-      setPopupType("failed");
-    }
   };
 
   const handleUpgrade = (id) => {
@@ -498,13 +477,15 @@ function Dashboard() {
       };
 
       // Dispatch custom event for CallTest
-      window.dispatchEvent(new CustomEvent("retellUpdate", { detail: customUpdate }));
+      window.dispatchEvent(
+        new CustomEvent("retellUpdate", { detail: customUpdate })
+      );
     });
 
     setRetellWebClient(client);
   }, []);
   // Start call
-  let micStream = '';
+  let micStream = "";
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -732,7 +713,7 @@ function Dashboard() {
         const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
-        const businessData = businessDetails.knowledge_base_texts
+        const businessData = businessDetails.knowledge_base_texts;
         const knowledgeBaseText = {
           title: businessDetails?.businessType || "Business Info",
           text: `
@@ -1087,12 +1068,11 @@ function Dashboard() {
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
                           e.stopPropagation();
-                            if (agent?.isDeactivated === 1) {
+                          if (agent?.isDeactivated === 1) {
                             handleInactiveAgentAlert();
                           } else {
                             handleEditAgent(agent);
                           }
-                          
                         }}
                       >
                         {/* <div className={styles.OptionItem} onClick={() => ""}> */}
@@ -1143,9 +1123,12 @@ function Dashboard() {
 
               <div className={styles.LangPara}>
                 <p className={styles.agentPara}>
-
-                  For: <strong>{agent?.business?.businessName||agent?.business?.knowledge_base_texts?.name||agent?.business?.googleBusinessName}</strong>
-
+                  For:{" "}
+                  <strong>
+                    {agent?.business?.businessName ||
+                      agent?.business?.knowledge_base_texts?.name ||
+                      agent?.business?.googleBusinessName}
+                  </strong>
                 </p>
                 <div className={styles.VIA}>
                   {agent.calApiKey ? (
@@ -1369,14 +1352,27 @@ function Dashboard() {
                   >
                     <button
                       className={`${styles.modalButton} ${styles.cancel}`}
-                      onClick={() => setShowEventInputs(false)} // Close event input section, not the entire modal
+                      onClick={() => setShowEventInputs(false)}
                     >
                       Cancel
                     </button>
-                    <button
+                    {calloading ? (
+                  <button
+                   className={`${styles.modalButton} ${styles.submit}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    Add Event <Loader size={18} />
+                  </button>
+                ) : (
+                   <button
                       className={`${styles.modalButton} ${styles.submit}`}
                       onClick={createCalEvent}
                       disabled={
+                        !isApiKeySubmitted ||
                         !eventName.trim() ||
                         !eventSlug.trim() ||
                         !eventLength.trim()
@@ -1384,6 +1380,7 @@ function Dashboard() {
                     >
                       Add Event
                     </button>
+                )}
                   </div>
 
                   {eventCreateStatus && (
@@ -1400,50 +1397,6 @@ function Dashboard() {
                   )}
                 </>
               )}
-            </div>
-          </div>
-        )}
-
-        {showDeleteConfirm && agentToDelete && (
-          <div
-            className={styles.modalBackdrop}
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-            <div
-              className={styles.modalContainer}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2>Are you sure?</h2>
-              <p>
-                Do you want to delete agent{" "}
-                <strong>{agentToDelete.agentName}</strong>?
-              </p>
-              <div className={styles.modalButtons}>
-                <button
-                  className={`${styles.modalButton} ${styles.cancel}`}
-                  onClick={() => setShowDeleteConfirm(false)}
-                >
-                  No
-                </button>
-                <button
-                  className={`${styles.modalButton} ${styles.submit}`}
-                  onClick={async () => {
-                    try {
-                      await handleDelete(agentToDelete.agent_id);
-                      setShowDeleteConfirm(false);
-                      setAgentToDelete(null);
-                    } catch (error) {
-                      setPopupMessage(
-                        `Failed to delete agent: ${error.message}`
-                      );
-                      setPopupType("failed");
-                      setShowDeleteConfirm(false);
-                    }
-                  }}
-                >
-                  Yes
-                </button>
-              </div>
             </div>
           </div>
         )}
@@ -1641,7 +1594,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         aboutBusiness: business?.aboutBusiness,
         note: business?.additionalInstruction,
         isGoogleListing: business?.isGoogleListing,
-        isWebsiteUrl: business?.isWebsiteUrl
+        isWebsiteUrl: business?.isWebsiteUrl,
       })
     );
 
@@ -1684,9 +1637,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-        .map((item) => item?.service?.trim())
-        .filter(Boolean)
-        .map((service) => ({ service }))
+          .map((item) => item?.service?.trim())
+          .filter(Boolean)
+          .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(
@@ -1696,28 +1649,30 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
 
-
     let raw_knowledge_base_texts = business?.knowledge_base_texts || [];
 
     if (typeof raw_knowledge_base_texts === "string") {
       try {
         raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
       } catch (err) {
-        console.error("Failed to parse customServices:", raw_knowledge_base_texts);
+        console.error(
+          "Failed to parse customServices:",
+          raw_knowledge_base_texts
+        );
         raw_knowledge_base_texts = [];
       }
     }
-    const cleaned_raw_knowledge_base_texts = Array.isArray(raw_knowledge_base_texts)
+    const cleaned_raw_knowledge_base_texts = Array.isArray(
+      raw_knowledge_base_texts
+    )
       ? raw_knowledge_base_texts
       : [];
-
 
     sessionStorage.setItem(
       "placeDetailsExtract",
       JSON.stringify(raw_knowledge_base_texts)
     );
-    sessionStorage.setItem(
-      "agentNote", agent?.additionalNote);
+    sessionStorage.setItem("agentNote", agent?.additionalNote);
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }
