@@ -21,9 +21,11 @@
    width: 100%;
 
  }
+
  .slick-list {
-     min-height: 400px !important;
-   }
+   min-height: 400px !important;
+ }
+
  /* .ForDesktop h1{
   
     font-size: 3rem;
@@ -56,7 +58,7 @@
      display: none;
    }
 
-  
+
 
 
  }
@@ -131,8 +133,7 @@
  }
 
  .react-tel-input .selected-flag {
-
-   background-color: #fff;
+   background-color: #f7f9fc !important;
  }
 
  .react-tel-input .flag-dropdown {

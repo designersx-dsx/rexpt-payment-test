@@ -355,6 +355,14 @@ function AboutBusiness() {
 
     const isWebsiteValid = businessUrl && isVerified;
     const isGoogleListingValid = googleListing.trim();
+        if (!isGoogleListingValid && !noGoogleListing) {
+      setPopupType("failed");
+      setPopupMessage(
+        "Please provide a Google Listing or check the box if you don't have one."
+      );
+      setShowPopup(true);
+      return;
+    }
     if (!isWebsiteValid && !noBusinessWebsite) {
       setPopupType("failed");
       setPopupMessage(
@@ -364,14 +372,7 @@ function AboutBusiness() {
       return;
     }
 
-    if (!isGoogleListingValid && !noGoogleListing) {
-      setPopupType("failed");
-      setPopupMessage(
-        "Please provide a Google Listing or check the box if you don't have one."
-      );
-      setShowPopup(true);
-      return;
-    }
+
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({

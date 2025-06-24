@@ -149,14 +149,18 @@
 }
 
 .Part1 strong,
-.Part2 strong,
-.Part3 strong {
+.Part2 strong
+ {
     font-size: 16px;
     color: #24252C;
     text-transform: uppercase;
 
 }
-
+.Part3 strong{
+     font-size: 16px;
+    color: #24252C;
+    text-transform: none;;
+}
 .Part3 {
     display: flex;
     align-items: end;
@@ -321,7 +325,7 @@
 .ChatBox2 {
     margin-top: 1rem;
     overflow: auto;
-    max-height: 420px;
+    max-height: 610px;
     padding-right: 5px;
 }
 
