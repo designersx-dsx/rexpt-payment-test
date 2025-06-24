@@ -112,20 +112,14 @@ const CallDetails = () => {
       hour12: true,
     }
   );
-
-  const showMoreMessages = () => {
-    setVisibleCount((prev) =>
-      Math.min(prev + messagesPerReveal, transcript.length)
-    );
-  };
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
-
-  const convertMsToMinSec = (durationMs) => {
-    const minutes = Math.floor(durationMs / 60000);
-    const seconds = Math.floor((durationMs % 60000) / 1000);
-    return `${minutes} min ${seconds} sec`;
-  };
+  
+const convertMsToMinSec = (durationMs) => {
+  const minutes = Math.floor(durationMs / 60000);
+  const seconds = Math.floor((durationMs % 60000) / 1000);
+  return `${minutes} Min ${seconds} Sec`;
+};
 
   return (
     <div className={styles.CallDetailsMain}>

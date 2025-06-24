@@ -374,7 +374,6 @@ const BusinessListing = () => {
                 value={phoneNumber}
                 maxLength={15}
                 minLength={8}
-                // onChange={(e) => handleInputChange("phone", e.target.value)}
                   onChange={(e) => {
                     const raw = e.target.value;
                     const cleaned = raw.replace(/[^0-9\s]/g, "");
