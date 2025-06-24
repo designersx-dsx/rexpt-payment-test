@@ -205,12 +205,20 @@ const Plan = ({ agentID, locationPath }) => {
                 open === product.id ? styles.open : ""
               }`}
             >
-              {product.metadata.minutes && (
+              {product.id === "free-trial" && product.metadata.minutes && (
                 <p>
-                  Includes <strong>{product?.prices[0]?.metadata}</strong>{" "}
-                  minutes
+                  Includes <strong>{product.metadata.minutes}</strong> minutes
                 </p>
               )}
+
+              {product.id !== "free-trial" &&
+                product.prices.length > 0 &&
+                product.prices[0].metadata && (
+                  <p>
+                    Includes <strong>{product.prices[0].metadata}</strong>{" "}
+                    minutes
+                  </p>
+                )}
               <div className={styles.pricesContainer}>
                 {product.prices.map((price) => (
                   <div
