@@ -1156,7 +1156,9 @@ function Dashboard() {
 
               <div className={styles.LangPara}>
                 <p className={styles.agentPara}>
-                  For: <strong>{agent?.business?.googleBusinessName || agent?.business?.knowledge_base_texts?.name}</strong>
+
+                  For: <strong>{agent?.business?.businessName||agent?.business?.knowledge_base_texts?.name||agent?.business?.googleBusinessName}</strong>
+
                 </p>
                 <div className={styles.VIA}>
                   {agent.calApiKey ? (
