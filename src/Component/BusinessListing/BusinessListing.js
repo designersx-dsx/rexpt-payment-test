@@ -436,7 +436,7 @@ const BusinessListing = () => {
       {showPopup && <PopUp
         type={popupType}
         message={popupMessage}
-        onClose={() => setPopupMessage("")} // Close the popup
+        onClose={() => setPopupMessage("")} 
       />}
     </div>
   );

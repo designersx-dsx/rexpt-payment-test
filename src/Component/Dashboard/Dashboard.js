@@ -731,21 +731,8 @@ function Dashboard() {
 
         const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
-      
-        // const businessData = {
-        //   name: businessDetails?.businessName || "",
-        //   address: businessDetails?.address1 || "",
-        //   phone: businessDetails?.phone || "",
-        //   website: businessDetails?.webUrl || "",
-        //   rating: businessDetails?.rating || "",
-        //   totalRatings: businessDetails?.totalRatings || "",
-        //   hours: (businessDetails?.hours || []).join(" | "),
-        //   businessStatus: businessDetails?.businessStatus || "",
-        //   categories: (businessDetails?.categories || []).join(", "),
-        // };
-
-        const businessData = JSON.parse(businessDetails.knowledge_base_texts);
-
+        // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
+        const businessData = businessDetails.knowledge_base_texts
         const knowledgeBaseText = {
           title: businessDetails?.businessType || "Business Info",
           text: `

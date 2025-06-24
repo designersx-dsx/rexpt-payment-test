@@ -34,6 +34,8 @@
 .rightpart strong {
     text-align: end;
     display: flex;
+    font-weight: 600;
+
 }
 
 .About h3{
