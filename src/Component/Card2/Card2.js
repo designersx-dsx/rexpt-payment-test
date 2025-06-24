@@ -16,8 +16,7 @@ const Card2 = ({ agentKnowledge }) => {
     );
   }
 
-  const parsedKnowledge=agentDetails?.knowledge_base_texts
-console.log(parsedKnowledge,"parsedKnowledge")
+  const parsedKnowledge=agentDetails?.business?.knowledge_base_texts
   return (
     <div className={styles.CardMain}>
       <h2 className={styles.title}>Knowledge Base</h2>
@@ -27,7 +26,7 @@ console.log(parsedKnowledge,"parsedKnowledge")
         <div className={styles.details}>
           <p className={styles.Ptext}>Google My Business</p>
           <div className={styles.rightpart}>
-            <strong>{parsedKnowledge?.name || agentDetails.business?.googleBusinessName||agentDetails?.businessName||"NA"}</strong>
+            <strong>{parsedKnowledge?.name || agentDetails.business?.googleBusinessName||agentDetails?.business?.businessName||"NA"}</strong>
           </div>
         </div>
 
