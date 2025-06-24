@@ -543,6 +543,15 @@ setknowledge_base_texts(knowledge_base_texts)
       return name;
     }
   }
+   function formatBusinessName(name) {
+  if (!name) return "";
+
+  if (name.length > 25) {
+    return name.substring(0, 25) + "...";
+  }
+
+  return name;
+}
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -694,7 +703,7 @@ setknowledge_base_texts(knowledge_base_texts)
             <div className={styles.businessInfo}>
 
               <div className={styles.card1} >
-                <h2>{formatName(agentData?.business?.businessName || (agentData?.knowledge_base_texts?.name) || agentData?.business?.googleBusinessName)}</h2>
+                <h2>{formatBusinessName(agentData?.business?.businessName || (agentData?.knowledge_base_texts?.name) || agentData?.business?.googleBusinessName)}</h2>
 
                 <p>{agentData?.business?.businessSize || "NA"}</p>
                 <div className={styles.health}>

@@ -628,9 +628,18 @@ function Dashboard() {
       if (name.length > 7) {
         return name.substring(0, 10) + "...";
       }
-      return name;
+      
     }
   }
+ function formatBusinessName(name) {
+  if (!name) return "";
+
+  if (name.length > 15) {
+    return name.substring(0, 15) + "...";
+  }
+
+  return name;
+}
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -1117,7 +1126,7 @@ function Dashboard() {
                 <p className={styles.agentPara}>
                   For:{" "}
                   <strong>
-                    {formatName(agent?.business?.businessName ||
+                    {formatBusinessName(agent?.business?.businessName ||
                       agent?.business?.knowledge_base_texts?.name ||
                       agent?.business?.googleBusinessName)}
                   </strong>
@@ -1487,7 +1496,7 @@ function Dashboard() {
                   ? "activate"
                   : "deactivate"}
               </strong>{" "}
-              <strong>{agentToDeactivate?.agentName}</strong>?
+              <strong>{formatName(agentToDeactivate?.agentName)}</strong>?
             </p>
 
             <div className={styles.modalButtons}>

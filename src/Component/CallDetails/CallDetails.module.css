@@ -5,7 +5,6 @@
     padding: 2px 1px;
     background: #ffffff;
 }
-
 .header {
     display: flex;
     justify-content: space-between;
@@ -325,7 +324,7 @@
 .ChatBox2 {
     margin-top: 1rem;
     overflow: auto;
-    max-height: 610px;
+    max-height: 550px;
     padding-right: 5px;
 }
 
