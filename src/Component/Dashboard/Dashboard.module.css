@@ -94,6 +94,7 @@
     font-weight: 800;
     color: #000;
     margin: 0;
+    word-break: break-all;
     text-transform: uppercase;
 
 }
@@ -199,7 +200,7 @@
     font-size: 18px;
     color: #000;
     font-weight: 400;
-    word-break: break-all;
+    /* word-break: break-all; */
     padding-right: 10px;
 }
 
@@ -450,7 +451,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+    z-index: 60;
     width: 170px;
 }
 
@@ -485,6 +486,10 @@
     right: 0;
     transform: translate(50%,0%);
 
+}
+.OptionsDropdown{
+    top: -50%;
+    right: 40px;
 }
 
 .main {
@@ -853,7 +858,7 @@
 .modalContainer p {
   font-size: 1rem;
   color: #666;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 /* Button wrapper */

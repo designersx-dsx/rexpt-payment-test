@@ -8,9 +8,12 @@
 
 .container .Step3Container{
   overflow: auto;
-  margin-bottom: 5rem;
+  /* margin-bottom: 5rem; */
 }
-
+.container .Step4Container{
+  overflow: auto;
+  /* margin-bottom: 5rem; */
+}
 .LogoDiv {
   background-color: #ffff;
   position: sticky;
@@ -155,6 +158,7 @@
   justify-content: center;
   gap: 12px;
   align-items: center;
+  cursor: pointer;
 }
 
 .nextBtn {
@@ -216,6 +220,7 @@
   align-items: center;
   justify-content: center;
   border: unset;
+  cursor: pointer;
 }
 
 .arrowIcon {

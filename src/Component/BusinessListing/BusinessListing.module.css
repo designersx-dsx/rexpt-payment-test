@@ -1,0 +1,189 @@
+.container {
+  padding: 16px 20px;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.inlineError {
+  color: #d93025;
+  font-size: 0.875rem;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  position: absolute;
+}
+
+.labReq {
+  position: relative;
+  width: 100%;
+  display: grid;
+  gap: 20px;
+  
+}
+
+.Dblock {
+  display: grid;
+}
+.inputFlex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header h1 {
+  font-size: 40px;
+  font-weight: 700;
+  color: #111;
+  text-align: left;
+}
+
+.formGroup {
+  border: 1px solid #e0e5f2;
+  display: grid;
+  min-height: 70px;
+  border-radius: 12px;
+  padding: 10px;
+  min-width: 285px;
+}
+
+.formGroup input,
+.formGroup textarea {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: 16px;
+  height: 25px;
+  color: #24252c;
+}
+
+.formGroup textarea {
+  font-family: "Lato", sans-serif;
+  height: unset !important;
+}
+
+.formGroup label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #24252c;
+  margin-bottom: 0px;
+}
+
+.form {
+  display: grid;
+  gap: 20px;
+}
+
+.btnTheme {
+  position: relative;
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 55px;
+  /* margin-top: 1rem; */
+  border: none;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+.btnTheme img {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.btnTheme p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-weight: 500;
+  font-size: 19px;
+  display: flex;align-items: center;justify-content: center;
+}
+
+.skipButton {
+  text-align: center;
+}
+
+.skipButton button {
+  border: none;
+  background-color: white;
+  color: #bebebe;
+  font-size: 14px;
+}
+.fixedBtn {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  width: 80%;
+  margin: auto;
+}
+
+.filesAllowed {
+  font-size: 12px;
+}
+.verifyButton {
+  position: absolute;
+  right: 20px;
+  top: 30%;
+  border: unset;
+  background-color: #6524eb;
+  color: #fff;
+  padding: 5px 15px;
+  border: 1px solid #6524eb;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 601px) {
+  .btnTheme {
+    font-size: 12px;
+  }
+  .verifyStatus {
+    position: absolute;
+    right: 20px;
+    top: 30%;
+    border: unset;
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 5px;
+
+    cursor: pointer;
+  }
+  .container {
+    max-width: 500px;
+  }
+  .fixedBtn {
+    position: unset;
+  }
+}
+
+@media (max-width: 375px) {
+  .header h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 375px) {
+  .header h1 {
+    font-size: 36px;
+  }
+}
+.requiredStar {
+  position: absolute;
+  color: red;
+  font-weight: bold;
+  /* right: 205px; */
+  top: 15%;
+}
+.requiredStar1 {
+  position: absolute;
+  color: red;
+  font-weight: bold;
+  /* right: 78px; */
+  /* top: 28%; */
+}

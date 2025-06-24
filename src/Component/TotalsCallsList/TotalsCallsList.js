@@ -6,6 +6,7 @@ import axios from "axios";
 import { API_BASE_URL, getAllAgentCalls } from "../../Store/apiStore";
 import Loader from "../Loader/Loader";
 import Loader2 from "../Loader2/Loader2";
+import { useNavigate } from "react-router-dom";
 
 const options = [
   { id: 1, label: "All", imageUrl: "svg/ThreOpbtn.svg" },
@@ -23,18 +24,31 @@ export default function Home() {
     totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
   const [data, setData] = useState([]);
+
   const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: "",
     endDate: "",
   });
-  const [selectedSentiment, setSelectedSentiment] = useState("All");
+  const [selectedSentiment, setSelectedSentiment] = useState(sessionStorage.getItem('selectedfilterOption')||"All");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem('token') || "";
   const fetchAgents = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
   const [filters, setFilters] = useState({ leadType: [], channel: "" });
   const userId = localStorage.getItem("userId") || "";
+  function extractCallIdFromRecordingUrl(url) {
+    if (!url) return null;
+    try {
+      const parts = url.split('/');
+      return parts[3] || null;
+    } catch {
+      return null;
+    }
+  }
+
   useEffect(() => {
     if (agentId === "all") {
       fetchAllAgentCalls();
@@ -46,11 +60,20 @@ export default function Home() {
     try {
       setLoading(true);
       if (agentId) {
-        const response = await axios.get(
-          `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`
-        );
-        setData(response.data.filteredCalls || []);
+        const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const calls = (response.data.filteredCalls || []).map(call => ({
+          ...call,
+          call_id: call.call_id || extractCallIdFromRecordingUrl(call.recording_url)
+        }));
+
+        setData(calls);
+
       } else {
+        
         setData([]);
       }
     } catch (error) {
@@ -83,8 +106,7 @@ export default function Home() {
   };
   const filteredData = data.filter((call) => {
     // Sentiment Filter (apply only if not "All")
-    const sentimentMatch =
-      selectedSentiment === "All" || call.user_sentiment === selectedSentiment;
+    const sentimentMatch = selectedSentiment === "All" || call?.user_sentiment === selectedSentiment||call?.call_analysis?.user_sentiment === selectedSentiment;
 
     // Date Range Filter (apply only if both dates are selected)
     const inDateRange = (() => {
@@ -106,19 +128,19 @@ export default function Home() {
     // Lead Type Filter (apply only if leadType has selections)
     const leadTypeMatch =
       !filters ||
-      !Array.isArray(filters.leadType) ||
-      filters.leadType.length === 0 ||
-      filters.leadType.includes(call.custom_analysis_data.lead_type);
+      !Array.isArray(filters?.leadType) ||
+      filters?.leadType.length === 0 ||
+      filters?.leadType.includes(call.custom_analysis_data?.lead_type||call?.call_analysis?.custom_analysis_data?.lead_type);
 
     // Channel Filter (apply only if a channel is selected)
     const channelMatch =
-      filters.channel === "" || call.call_type === filters.channel;
+      filters?.channel === "" || call?.call_type === filters?.channel;
 
     //  Return only if all conditions match
     return sentimentMatch && inDateRange && leadTypeMatch && channelMatch;
   });
   // Pagination
-  const totalPages = Math.ceil(filteredData.length / callsPerPage);
+  const totalPages = Math.ceil(filteredData?.length / callsPerPage);
   const indexOfLastCall = currentPage * callsPerPage;
   const indexOfFirstCall = indexOfLastCall - callsPerPage;
   const currentCalls = filteredData.slice(indexOfFirstCall, indexOfLastCall);
@@ -133,6 +155,7 @@ export default function Home() {
     fetchAllAgentCalls();
     // Perform additional logic related to "All Agents" if needed
   };
+  const navigate = useNavigate();
 
   return (
     <div className={styles.container}>
@@ -150,7 +173,7 @@ export default function Home() {
             setCurrentPage(1);
           }}
           selectedAgentId={agentId}
-          onAgentChange={(newAgentId) => setAgentId(newAgentId)}
+          onAgentChange={(newAgentId) => {setAgentId(newAgentId);sessionStorage.setItem("agentId",newAgentId);localStorage.setItem("filterType","agent")}}
           isCallSummary={data}
           filters={filters}
           onFilterChange={(newFilters) => {
@@ -186,7 +209,17 @@ export default function Home() {
                 </tr>
               ) : (
                 currentCalls.map((call, i) => (
-                  <tr key={i}>
+                  <tr key={i}
+                    className={styles.clickableRow}
+                    onClick={() => {
+                      if (!call.call_id) {
+                        console.warn("Missing call_id for this call:", call);
+                        return;
+                      }
+                      navigate(`/call-details/${call.call_id}`);
+                    }}
+
+                  >
                     <td>
                       <div className={styles.callDateTime}>
                         <div>

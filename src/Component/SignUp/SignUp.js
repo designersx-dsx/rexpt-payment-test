@@ -77,7 +77,7 @@ const SignUp = () => {
   };
 
   const handleEmailChange = (e) => {
-    const val = e.target.value;
+    const val = e.target.value.toLowerCase().trim();
     setEmail(val);
     setEmailTouched(true);
 
@@ -116,7 +116,7 @@ const SignUp = () => {
         sessionStorage.clear();
         setPopupType("success");
         setShowPopup(true);
-        setPopupMessage("One time Password Verified successfully!");
+        setPopupMessage("One Time Password Verified successfully!");
         if (verifiedUser) {
           localStorage.setItem("onboardComplete", "true");
           setUser({
@@ -141,7 +141,7 @@ const SignUp = () => {
       } else {
         setPopupType("failed");
         setShowPopup(true);
-        setPopupMessage("Failed to verify One time Password. Please try again.");
+        setPopupMessage("Failed to verify One Time Password. Please try again.");
       }
     } catch (error) {
       setPopupType("failed");
@@ -170,27 +170,27 @@ const SignUp = () => {
         setVerifiedUser(response.data.verifiedStatus);
         setShowPopup(true);
         setPopupType("success");
-        setPopupMessage("One time Password sent successfully!");
+        setPopupMessage("One Time Password sent successfully!");
         setOtpSent(true);
-        const endTime = Date.now() + 120 * 1000; 
+        const endTime = Date.now() + 120 * 1000;
         setResendEndTime(endTime);
         setIsResendDisabled(true);
       } else {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage("Failed to send One time Password. Please try again.");
+        setPopupMessage("Failed to send One Time Password. Please try again.");
       }
     } catch (error) {
       console.log(error);
       if (error.status == 409) {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Internal Server Error");
+        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
         setOtpSent(true);
       } else {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Internal Server Error");
+        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
       }
     } finally {
       setIsVerifyingOtp(false);
@@ -261,16 +261,16 @@ const SignUp = () => {
     };
   }, []);
 
-useEffect(() => {
-  const savedEmail = localStorage.getItem("userEmail");
-  if (savedEmail) {
-    setEmail(savedEmail);
-  }
-}, []);
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("userEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+  }, []);
 
-useEffect(() => {
-  localStorage.setItem("userEmail", email);
-}, [email]);
+  useEffect(() => {
+    localStorage.setItem("userEmail", email);
+  }, [email]);
 
   useEffect(() => {
     if (otpSent && inputRefs.current[0]) {
@@ -348,7 +348,7 @@ useEffect(() => {
                         <Loader size={17} />
                       </>
                     ) : (
-                      "Send One time Password"
+                      "Send One Time Password"
                     )}
                   </p>
                 </div>
@@ -438,10 +438,11 @@ useEffect(() => {
                     }}
                   >
                     {isResendDisabled && resendTimer > 0
-                      ? `Resend One time Password in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
-                      : "Resend One time Password"}
+                      ? `Resend One Time Password in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
+                      : "Resend One Time Password"}
                   </button>
                 </div>
+
 
 
                 <div className={styles.Btn} onClick={handleLoginClick}>

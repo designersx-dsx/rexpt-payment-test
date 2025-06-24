@@ -11,6 +11,13 @@
     justify-content: space-between;
   
 }
+.removeBtn{
+    border: none;
+    background-color: #6524EB;
+    padding: 4px 10px;
+    color: #ffff;
+    border-radius: 4px;
+}
 
 .card {
     background: #F3EEFF;
@@ -142,7 +149,7 @@
     margin: 0;
     font-weight: 500;
     font-size: 19px;
-
+ display:flex ;
 }
 
 .removeButton{
@@ -180,4 +187,12 @@
   background-color: white;
   color: #bebebe;
   font-size: 14px;
+}
+.dialCodeInput {
+  width: 40px;
+  border: none;
+  margin-left: 5px;
+  outline: none;
+  text-align: center;
+  background: transparent;
 }

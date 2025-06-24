@@ -72,3 +72,30 @@
   pointer-events: none;
   opacity: 0.6; /* Optional: adds visual indication */
 }
+.noteCard {
+  border: 2px solid #e0e5f2;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: #fff;
+  text-align: left;
+}
+
+.noteTitle {
+  font-size: 19px;
+  font-weight: 600;
+  color: #24252c;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.noteTextarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-family: 'Lato', sans-serif;
+  color: #24252c;
+  resize: none;
+  background-color: transparent;
+}
+

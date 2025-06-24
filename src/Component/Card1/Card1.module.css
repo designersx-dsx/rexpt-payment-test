@@ -1,0 +1,48 @@
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #24252c;
+    border-bottom: 1px solid #E0E0E0;
+    padding-bottom: 2rem;
+}
+
+.MoreDetails {
+    margin-top: 1rem;
+}
+
+.MoreDetails h3 {
+    margin-block: 10px;
+    color: #24252c;
+
+}
+
+.details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #E0E0E0;
+    margin-block: 1rem;
+}
+
+.Ptext {
+    color: #4E4E50;
+    font-size: 16px;
+}
+
+.rightpart strong {
+    text-align: end;
+    display: flex;
+    font-weight: 600;
+}
+
+.About h3{
+    color: #24252C;
+    font-size: 18px;
+    font-weight: 600;
+}
+.About p{
+    color: #4E4E50;
+    font-size: 16px;
+}

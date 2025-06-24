@@ -17,14 +17,14 @@ function HeaderFilter({
   filters,
   onFilterChange,
 }) {
+  // console.log(isAgents, "isAgents")
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [open, setOpen] = useState(false);
+  const [allSentiment, setAllSentiment] = useState("")
   const totalAgentView = localStorage.getItem("filterType");
-
   const today = new Date();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(today.getDate() - 7);
@@ -40,10 +40,13 @@ function HeaderFilter({
   );
 
   const handleChange = (e) => {
+
     const selectedId = +e.target.value;
     const selectedOption = options.find((opt) => opt.id === selectedId);
     setSelected(selectedOption);
+    sessionStorage.setItem("selectedfilterOption", selectedOption.label);
     onFilter(selectedOption.label);
+
   };
   const handleBack = () => {
     navigate(-1);
@@ -53,19 +56,61 @@ function HeaderFilter({
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
-    if (start && end) {
+  };
+  const handleApplyFilter = () => {
+    if (startDate && endDate) {
       onRangeChange({
-        startDate: formatDateWithoutTimezone(start),
-        endDate: formatDateWithoutTimezone(end),
+        startDate: formatDateWithoutTimezone(startDate),
+        endDate: formatDateWithoutTimezone(endDate),
       });
       setOpen(false);
     }
   };
+
+  const handleClearFilter = () => {
+    setStartDate(null);
+    setEndDate(null);
+    onRangeChange({ startDate: null, endDate: null }); // Clear the filter
+    setOpen(false); // Close the calendar when clearing
+  };
+
   const handleFilterChange = (newFilters) => {
     onFilterChange(newFilters);
     setIsOpen(false);
   };
+  const handleAll = () => {
+    const allOption = options.find((opt) => opt.label === "All" || opt.id === 0);
+    setAllSentiment("all")
+    setSelected(allOption);
+    onFilter("All");
+  }
+  const closeCalender = () => {
+    setOpen(false)
+  }
+  const handleOpenSlider = () => {
+    setIsOpen(true)
+    setOpen(false)
+  }
+  const handleCloseFilter = () => {
+    setOpen(false)
+  }
+    function formatName(name) {
+    if (!name) return "";
 
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
+  }
   return (
     <div>
       <div className={styles.Forsticky}>
@@ -91,12 +136,12 @@ function HeaderFilter({
                     alt={selected.label}
                     style={{ width: 20, height: 20, marginRight: 5 }}
                   />
-                  {/* <span>{selected.label}</span> */}
                 </div>
 
                 <select
                   className={styles.agentSelect1}
                   value={selected.id}
+                  onClick={handleCloseFilter}
                   onChange={handleChange}
                 >
                   {options.map((option) => (
@@ -112,7 +157,7 @@ function HeaderFilter({
 
             <div
               className={styles.notificationIcon}
-              onClick={() => setIsOpen(true)}
+              onClick={handleOpenSlider}
               style={{ cursor: "pointer" }}
             >
               <svg
@@ -146,13 +191,13 @@ function HeaderFilter({
                 {" "}
                 {startDate
                   ? startDate.toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })
+                    month: "long",
+                    year: "numeric",
+                  })
                   : (startDate || new Date()).toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    month: "long",
+                    year: "numeric",
+                  })}
               </p>
               <div className={styles.dateRange}>
                 <h6>
@@ -194,8 +239,14 @@ function HeaderFilter({
                       endDate={endDate}
                       onChange={handleChangeDate}
                       inline
-                      maxDate={new Date()} 
+                      maxDate={new Date()}
+                      // Do not close the calendar when date is selected
+                      onClickOutside={() => { }}
                     />
+                    <div className={styles.dateButtons}>
+                      <button onClick={handleApplyFilter} className={styles.applyButton}>Apply Filter</button>
+                      <button onClick={handleClearFilter} className={styles.clearButton}>Clear Filter</button>
+                    </div>
                   </div>
                 )}
 
@@ -221,18 +272,24 @@ function HeaderFilter({
 
             <hr></hr>
 
-            <div className={styles.DateSecT}>
-              <p>Agent</p>
+            <div className={styles.DateSecT} onClick={closeCalender}>
+              <p>  {formatName(selectedAgentId === "all"
+                ? "Agent"
+                : isAgents?.find((agent) => agent.agent_id === selectedAgentId)?.agentName) || "Agent"}</p>
 
               <div className={styles.selectWrapper}>
                 <select
                   className={styles.agentSelect1}
                   value={selectedAgentId}
+
                   onChange={(e) => {
+
                     const selectedValue = e.target.value;
                     if (totalAgentView) {
+
                       onAgentChange(selectedValue);
                     } else {
+
                       onAgentChange(selectedValue);
                     }
                   }}
@@ -240,9 +297,9 @@ function HeaderFilter({
                   <option value="all">All</option>
                   {isAgents?.map((agent) => (
                     <option key={agent.agent_id} value={agent.agent_id}>
-                      {agent.agentName.length > 9
-                        ? agent.agentName.slice(0, 7) + "..."
-                        : agent.agentName}
+                      {(agent.agentName.length > 7
+                        ? agent.agentName.slice(0, 5) + "..."
+                        : agent.agentName) + `(${agent.agentCode})`}
                     </option>
                   ))}
                 </select>
@@ -250,6 +307,7 @@ function HeaderFilter({
             </div>
           </div>
         </section>
+        {/* (${agent.agentCode}) */}
       </div>
 
       {/* OffCanvas component */}
@@ -262,6 +320,7 @@ function HeaderFilter({
       >
         {/* Put any content you want inside offcanvas here */}
         <SideFilter
+          onSelectAll={handleAll}
           filters={filters}
           onFilterChange={handleFilterChange}
           isLeadTypeSummary={isCallSummary}

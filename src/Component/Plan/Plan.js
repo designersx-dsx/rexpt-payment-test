@@ -5,19 +5,22 @@ import Loader2 from "../Loader2/Loader2";
 import Modal from '../Modal2/Modal2'
 import decodeToken from "../../lib/decodeToken";
 import { fetchUserDetails } from "../../Store/apiStore";
+import PopUp from "../Popup/Popup";
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selected, setSelected] = useState("free-trial");
+  const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
   const [show, setShow] = useState(false)
   const [close, setClose] = useState(false)
   const [data, setData] = useState([])
-  console.log(data)
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState(null);
+  const [popupMessage, setPopupMessage] = useState("");
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
@@ -57,7 +60,12 @@ const Plan = () => {
 
 
   const handleContinue = () => {
-
+    if (!selected) {
+      setShowPopup(true)
+      setPopupType("failed")
+      setPopupMessage("Please select a plan before continuing.")
+      return;
+    }
     if (selected === "free-trial") {
       navigate("/business-details");
       return;
@@ -71,145 +79,161 @@ const Plan = () => {
     })
 
   }, [userId])
+  const handleClosePopup = () => { }
   if (loading) return <div className={styles.status}><Loader2 /></div>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
   return (
-    <div className={styles.container}>
-      {/* Header */}
+    <>
+      <div className={styles.container}>
+        {/* Header */}
 
-      {show ? <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
-        Comming Soon
+        {show ? <Modal isOpen={show} onClose={handleCLose} ><></><h2 className={styles.apologyHead}>
+          Comming Soon
 
-      </h2>
+        </h2>
 
-        <p className={styles.apologyHeadText} apologyHeadText>
+          <p className={styles.apologyHeadText} apologyHeadText>
 
-          We apologise, But our paid plans are being tested to pass our "Rigorous QA Process"
-          For now, If your sign-up for a "Free Account", We promise to send you Upgradation Options in your email within next 2 weeks.
-        </p>
+            We apologise, But our paid plans are being tested to pass our "Rigorous QA Process"
+            For now, If your sign-up for a "Free Account", We promise to send you Upgradation Options in your email within next 2 weeks.
+          </p>
 
-        <div className={styles.zz}>
+          <div className={styles.zz}>
 
-          {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
+            {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
 
-        </div>
-
-
-      </Modal>
-
-        : null}
-      <div className={styles.header}>
-        <div className={styles.icon}>
-          <img src="images/inlogo.png" alt="inlogo" />
-        </div>
-        <div className={styles.headercontent}>
-          <h3>Select Your Plan</h3>
-          <p>Customizable payment structures</p>
-        </div>
-      </div>
-
-      {/* Free Trial Plan */}
-      {data == 1 ? <div
-        className={`${styles.planBox} ${selected === "free-trial" ? styles.selected : ""}`}
-        onClick={() => setSelected("free-trial")}
-      >
-        <div className={styles.part1}>
-          <label className={styles.radioLabel}>
-            <input
-              type="radio"
-              name="plan"
-              value="free-trial"
-              checked={selected === "free-trial"}
-              onChange={() => setSelected("free-trial")}
-            />
-            <div className={styles.planContent}>
-              <div className={styles.planTitle}>
-                <div>
-                  <p>Free Trial</p>
-                  <span className={styles.description}>
-                    Try all features free — includes 20 minutes
-                  </span>
-                </div>
-              </div>
-            </div>
-          </label>
-        </div>
-      </div> : ""}
-
-      {/* Dynamic Plans from API */}
-      <div className="PlanBoxMain">
-        {products.map((product) => (
-
-          <div
-            key={product.id}
-            className={`${styles.planBox} ${selected === product.id ? styles.selected : ""}`}
-            onClick={() => setSelected(product.id)}
-          >
-            <div className={styles.part1}>
-              <label className={styles.radioLabel}>
-                <input
-                  type="radio"
-                  name="plan"
-                  value={product.id}
-                  checked={selected === product.id}
-                  onChange={() => setSelected(product.id)}
-                />
-                <div className={styles.planContent}>
-                  <div className={styles.planTitle}>
-                    <div>
-                      <p>{product.name}</p>
-                      <span className={styles.description}>{product.description}</span>
-                    </div>
-                    {product.metadata.badge && (
-                      <span className={styles.badge}>{product.metadata.badge}</span>
-                    )}
-                  </div>
-                </div>
-              </label>
-              <img
-                src={open === product.id ? "/svg/up.svg" : "/svg/down.svg"}
-                alt="Toggle Arrow"
-                className={`${styles.arrowIcon} ${open === product.id ? styles.rotated : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleAccordion(product.id);
-                }}
-              />
-            </div>
-
-            <div className={`${styles.accordion} ${open === product.id ? styles.open : ""}`}>
-              {product.metadata.minutes && (
-                <p>
-                  Includes <strong>{product.metadata.minutes}</strong> minutes
-                </p>
-              )}
-              <div className={styles.pricesContainer}>
-                {product.prices.map((price) => (
-                  <div
-                    key={price.id}
-                    className={styles.priceOption}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate("/checkout", { state: { priceId: price.id } });
-                    }}
-                  >
-                    {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
 
-        ))}
-      </div>
 
-      {/* Continue button */}
-      <div className={styles.btnTheme} onClick={handleContinue}>
-        <img src="svg/svg-theme.svg" alt="" />
-        <p>Continue</p>
+        </Modal>
+
+          : null}
+        <div className={styles.header}>
+          <div className={styles.icon}>
+            <img src="images/inlogo.png" alt="inlogo" />
+          </div>
+          <div className={styles.headercontent}>
+            <h3>Select Your Plan</h3>
+            <p>Customizable payment structures</p>
+          </div>
+        </div>
+
+        {/* Free Trial Plan */}
+        {data == 1 ? <div
+          className={`${styles.planBox} ${selected === "free-trial" ? styles.selected : ""}`}
+          onClick={() => setSelected("free-trial")}
+        >
+          <div className={styles.part1}>
+            <label className={styles.radioLabel}>
+              <input
+                type="radio"
+                name="plan"
+
+                value="free-trial"
+                checked={selected === "free-trial"}
+                onChange={() => setSelected("free-trial")}
+              />
+              <div className={styles.planContent}>
+                <div className={styles.planTitle}>
+                  <div>
+                    <p>Free Trial</p>
+                    <span className={styles.description}>
+                      Try all features free — includes 20 minutes
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div> : ""}
+
+        {/* Dynamic Plans from API */}
+
+        <div className={styles.customClass}>
+          <div className='PlanBoxMain' >
+            {products.map((product) => (
+
+              <div
+                key={product.id}
+                className={`${styles.planBox} ${selected === product.id ? styles.selected : ""}`}
+                onClick={() => setSelected(product.id)}
+              >
+                <div className={styles.part1}>
+                  <label className={styles.radioLabel}>
+                    <input
+                      type="radio"
+                      name="plan"
+                      value={product.id}
+                      checked={selected === product.id}
+                      onChange={() => setSelected(product.id)}
+                    />
+                    <div className={styles.planContent}>
+                      <div className={styles.planTitle}>
+                        <div>
+                          <p>{product.name}</p>
+                          <span className={styles.description}>{product.description}</span>
+                        </div>
+                        {product.metadata.badge && (
+                          <span className={styles.badge}>{product.metadata.badge}</span>
+                        )}
+                      </div>
+                    </div>
+                  </label>
+                  <img
+                    src={open === product.id ? "/svg/up.svg" : "/svg/down.svg"}
+                    alt="Toggle Arrow"
+                    className={`${styles.arrowIcon} ${open === product.id ? styles.rotated : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleAccordion(product.id);
+                    }}
+                  />
+                </div>
+
+                <div className={`${styles.accordion} ${open === product.id ? styles.open : ""}`}>
+                  {product.metadata.minutes && (
+                    <p>
+                      Includes <strong>{product.metadata.minutes}</strong> minutes
+                    </p>
+                  )}
+                  <div className={styles.pricesContainer}>
+                    {product.prices.map((price) => (
+                      <div
+                        key={price.id}
+                        className={styles.priceOption}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate("/checkout", { state: { priceId: price.id } });
+                        }}
+                      >
+                        {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+            ))}
+          </div>
+
+          {/* Continue button */}
+          <div className={styles.btnTheme} onClick={handleContinue} style={{ opacity: selected ? 1 : 0.6, cursor: selected ? "pointer" : "not-allowed" }}>
+            <img src="svg/svg-theme.svg" alt="" />
+            <p >Continue</p>
+          </div>
+        </div>
+
+
       </div>
-    </div>
+      {showPopup && (
+        <PopUp
+          type={popupType}
+          onClose={() => handleClosePopup()}
+          message={popupMessage}
+        />
+      )}
+    </>
   );
 };
 

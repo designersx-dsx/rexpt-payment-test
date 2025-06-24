@@ -80,6 +80,7 @@
   border: none;
   background: none;
   width: 100%;
+  cursor: pointer;
 }
 
 .btnTheme img {
@@ -97,6 +98,7 @@
   margin: 0;
   font-weight: 500;
   font-size: 19px;
+  display: flex;
 }
 
 .skipButton {
@@ -116,6 +118,7 @@
   right: 0;
   width: 80%;
   margin: auto;
+  
 }
 
 .filesAllowed {
@@ -181,4 +184,56 @@
   font-weight: bold;
   /* right: 78px; */
   /* top: 28%; */
+}
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  margin-top: 8px;
+  padding-left: 2px;
+}
+.fieldDivider {
+  border: 1;
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, #ccc, transparent);
+  margin: 24px auto;
+  width: 90%;
+}
+
+
+.checkboxGroup input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #6524eb; 
+  cursor: pointer;
+  margin: 0;
+}
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #444;
+  margin-top: 14px;
+}
+
+.checkboxRow input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #6524eb; /* Optional: theme color */
+  margin: 0;
+}
+
+.checkboxRow label {
+  cursor: pointer;
+  font-weight: 400;
+}
+
+
+input:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
 }

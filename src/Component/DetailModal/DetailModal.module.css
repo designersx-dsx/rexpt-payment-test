@@ -20,7 +20,7 @@
   border-top-right-radius: 35px;
   transition: transform 0.3s ease-in-out;
   animation: slideUp 0.3s ease-out;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   margin: auto;
 }
 
@@ -28,29 +28,36 @@
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0%);
   }
 }
 
 .closeButton {
-  position: fixed;
-  top: 5%;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  float: inline-end;
+  top: 2%;
+  right: 2%;
   background: rgb(0, 0, 0);
   color: rgb(255, 255, 255);
   border: none;
-  font-size: 24px;
+  font-size: 34px;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   cursor: pointer;
   z-index: 1100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 
 .content {
   padding: 1rem;
+}
+
+@media screen and (min-width: 601px) {
+  .modal {
+    width: 49%;
+  }
 }

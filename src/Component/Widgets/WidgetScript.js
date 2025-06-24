@@ -22,7 +22,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
   ]);
 
   const agentId = isAgentDetails.agent_id;
-  const scriptText = `<script id="rex-widget-script" src="https://dazzling-raindrop-43edfa.netlify.app/index.js?agentId=${agentId}"></script>`;
+  const scriptText = `<script id="rex-widget-script" src="https://aesthetic-wisp-d15448.netlify.app/index.js?agentId=${agentId}"></script>`;
 
   // Load existing domains on mount or update
   useEffect(() => {
@@ -212,6 +212,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
     <div className={styles.container}>
       <h3>Enter your Website URL(s)</h3>
       <p className={styles.noteText}>Note: The widget will only work on the domains you add.</p>
+    
       <div className={styles.forScroll}>
         {domainInputs.map((input, index) => (
           <div key={index} className={styles.domainInputRow}>
@@ -270,6 +271,17 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
           </button>
         )}
       </div>
+      <div className={styles.guideNote}>
+           <p className={styles.noteText}> Need help Integrating the AI Receptionist Widget?{" "}
+                <a
+                  href="/widget-guide"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                   click here</a>
+              </p>
+      </div>
+          
     </div>
   );
 

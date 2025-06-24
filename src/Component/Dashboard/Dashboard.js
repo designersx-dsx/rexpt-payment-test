@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
-import Footer from "../AgentDetails/Footer/Footer";
 import { useNavigate } from "react-router-dom";
 import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
   fetchDashboardDetails,
+  getBusinessDetailsByBusinessId,
   getUserAgentMergedDataForAgentUpdate,
   toggleAgentActivation,
+  updateAgentKnowledgeBaseId,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -17,12 +18,13 @@ import Modal2 from "../Modal2/Modal2";
 import CallTest from "../CallTest/CallTest";
 import WidgetScript from "../Widgets/WidgetScript";
 import Popup from "../Popup/Popup";
-import CaptureProfile from "../Popup/profilePictureUpdater/CaptureProfile";
 import UploadProfile from "../Popup/profilePictureUpdater/UploadProfile";
 import AssignNumberModal from "../AgentDetails/AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 import Modal from "../Modal2/Modal2";
+import Loader from "../Loader/Loader";
+
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -82,19 +84,35 @@ function Dashboard() {
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
 
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
-
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [agentToDelete, setAgentToDelete] = useState(null);
   const [show, setShow] = useState(false);
   const [close, setClose] = useState(false);
 
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
+  const [deactivateLoading, setDeactivateLoading] = useState(false);
+
+  const [calloading, setcalloading]= useState(false)
+  const [calapiloading, setCalapiloading] = useState(false)
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
+  const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
 
+  useEffect(() => {
+    // Dashboard pe aate hi naya history state add karo
+    window.history.pushState(null, document.title, window.location.pathname);
+
+    // Back button dabane pe redirect karo
+    const handlePopState = () => {
+      navigate("/dashboard"); // Wapas dashboard pe hi rakho
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    // Cleanup karo jab component unmount ho
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [navigate]);
   const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     if (agent?.isDeactivated === 1) {
@@ -137,54 +155,56 @@ function Dashboard() {
       localStorage.removeItem("additionalInstruction");
       localStorage.removeItem("knowledge_base_name");
       localStorage.removeItem("knowledge_base_id");
-       localStorage.removeItem("bId");
-    sessionStorage.removeItem("UpdationMode");
-    sessionStorage.removeItem("agentName");
-    sessionStorage.removeItem("agentGender");
-    sessionStorage.removeItem("agentLanguageCode");
-    sessionStorage.removeItem("agentLanguage");
-    sessionStorage.removeItem("llmId");
-    sessionStorage.removeItem("agent_id");
-    sessionStorage.removeItem("knowledgeBaseId");
-    sessionStorage.removeItem("googleListing");
-    sessionStorage.removeItem("displayBusinessName");
-    sessionStorage.removeItem("aboutBusinessForm");
-    sessionStorage.removeItem("agentRole");
-    sessionStorage.removeItem("agentVoice");
-    sessionStorage.removeItem("agentVoiceAccent");
-    sessionStorage.removeItem("avatar");
-    sessionStorage.removeItem("businessDetails");
-    sessionStorage.removeItem("businessId");
-    sessionStorage.removeItem("businesServices");
-    sessionStorage.removeItem("businessLocation");
-    sessionStorage.removeItem("selectedCustomServices");
-    sessionStorage.removeItem("bId");
-    localStorage.removeItem("UpdationMode");
-    localStorage.removeItem("UpdationModeStepWise");
-    localStorage.removeItem("agentName");
-    localStorage.removeItem("agentGender");
-    localStorage.removeItem("agentLanguageCode");
-    localStorage.removeItem("agentLanguage");
-    localStorage.removeItem("llmId");
-    localStorage.removeItem("agent_id");
-    localStorage.removeItem("knowledgeBaseId");
-    localStorage.removeItem("agentRole");
-    localStorage.removeItem("agentVoice");
-    localStorage.removeItem("agentVoiceAccent");
-    localStorage.removeItem("avatar");
-    localStorage.removeItem("googleUrl");
-    localStorage.removeItem("webUrl");
-    localStorage.removeItem("aboutBusiness");
-    localStorage.removeItem("additionalInstruction");
-    localStorage.removeItem("knowledge_base_name");
-    localStorage.removeItem("knowledge_base_id");
+      localStorage.removeItem("bId");
+      sessionStorage.removeItem("UpdationMode");
+      sessionStorage.removeItem("agentName");
+      sessionStorage.removeItem("agentGender");
+      sessionStorage.removeItem("agentLanguageCode");
+      sessionStorage.removeItem("agentLanguage");
+      sessionStorage.removeItem("llmId");
+      sessionStorage.removeItem("agent_id");
+      sessionStorage.removeItem("knowledgeBaseId");
+      sessionStorage.removeItem("googleListing");
+      sessionStorage.removeItem("displayBusinessName");
+      sessionStorage.removeItem("aboutBusinessForm");
+      sessionStorage.removeItem("agentRole");
+      sessionStorage.removeItem("agentVoice");
+      sessionStorage.removeItem("agentVoiceAccent");
+      sessionStorage.removeItem("avatar");
+      sessionStorage.removeItem("businessDetails");
+      sessionStorage.removeItem("businessId");
+      sessionStorage.removeItem("businesServices");
+      sessionStorage.removeItem("businessLocation");
+      sessionStorage.removeItem("selectedCustomServices");
+      sessionStorage.removeItem("bId");
+      localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("UpdationModeStepWise");
+      localStorage.removeItem("agentName");
+      localStorage.removeItem("agentGender");
+      localStorage.removeItem("agentLanguageCode");
+      localStorage.removeItem("agentLanguage");
+      localStorage.removeItem("llmId");
+      localStorage.removeItem("agent_id");
+      localStorage.removeItem("knowledgeBaseId");
+      localStorage.removeItem("agentRole");
+      localStorage.removeItem("agentVoice");
+      localStorage.removeItem("agentVoiceAccent");
+      localStorage.removeItem("avatar");
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("webUrl");
+      localStorage.removeItem("aboutBusiness");
+      localStorage.removeItem("additionalInstruction");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("knowledge_base_id");
+      sessionStorage.removeItem("selectedfilterOption");
+      sessionStorage.removeItem("placeDetailsExtract");
+      sessionStorage.removeItem("agentNote");
     }
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
-
     navigate("/agent-detail", {
       state: { agentId: agent.agent_id, bussinesId: agent.businessId },
     });
@@ -289,15 +309,18 @@ function Dashboard() {
       return;
     }
 
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: apiKey.trim() }),
-        }
-      );
+
+  try {
+    setCalapiloading(true)
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ calApiKey: apiKey.trim() }),
+      }
+    );
+
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -312,15 +335,21 @@ function Dashboard() {
 
       setLocalAgents(updatedAgents);
       setHasFetched(false);
-      // localStorage.setItem("agents", JSON.stringify(updatedAgents));
-
-      setShowEventInputs(true);
       setShowCalKeyInfo(true);
-    } catch (error) {
-      setPopupType("failed");
-      setPopupMessage(`Failed to save API Key: ${error.message}`);
-    }
-  };
+    setShowEventInputs(true);
+    setTimeout(() => {
+      setIsApiKeySubmitted(true);
+    }, 0);
+  } catch (error) {
+    setPopupType("failed");
+    setPopupMessage(`Failed to save API Key: ${error.message}`);
+  } finally{
+    setCalapiloading(false)
+  }
+};
+
+
+
 
   // Create Cal event
   const createCalEvent = async () => {
@@ -333,6 +362,7 @@ function Dashboard() {
       return;
     }
     try {
+      setcalloading(true)
       // Call Cal API to create an event
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
         apiKey.trim()
@@ -398,6 +428,8 @@ function Dashboard() {
       setEventCreateStatus("error");
       setEventCreateMessage(`Error creating event: ${error.message}`);
       console.error("Error in createCalEvent:", error);
+    } finally {
+      setcalloading(false)
     }
   };
 
@@ -408,40 +440,14 @@ function Dashboard() {
     setShowEventInputs(false);
     setEventCreateStatus(null);
     setEventCreateMessage("");
+    setIsApiKeySubmitted(false);
   };
+
 
   const toggleDropdown = (e, id) => {
     e.preventDefault();
     e.stopPropagation();
     setOpenDropdown(openDropdown === id ? null : id);
-  };
-
-  const handleDelete = async (agentId) => {
-    try {
-      const storedDashboard = JSON.parse(
-        sessionStorage.getItem("dashboard-session-storage")
-      );
-
-      const agents = storedDashboard?.state?.agents || [];
-
-      if (agents.length === 1) {
-        setPopupType("failed");
-        setPopupMessage("Cannot delete. You must have at least one agent.");
-        setShowDeleteConfirm(false);
-        return;
-      }
-      await deleteAgent(agentId);
-      const updatedAgents = localAgents.filter(
-        (agent) => agent.agent_id !== agentId
-      );
-      setLocalAgents(updatedAgents);
-      setPopupMessage("Agent deleted successfully!");
-      setPopupType("success");
-      setHasFetched(false);
-    } catch (error) {
-      setPopupMessage(`Failed to delete agent: ${error.message}`);
-      setPopupType("failed");
-    }
   };
 
   const handleUpgrade = (id) => {
@@ -470,10 +476,36 @@ function Dashboard() {
     const client = new RetellWebClient();
     client.on("call_started", () => setIsCallActive(true));
     client.on("call_ended", () => setIsCallActive(false));
+    client.on("update", (update) => {
+      // ✅ Mark the update clearly as AGENT message
+      const customUpdate = {
+        ...update,
+        source: "agent", // Add explicit source
+      };
+
+      // Dispatch custom event for CallTest
+      window.dispatchEvent(
+        new CustomEvent("retellUpdate", { detail: customUpdate })
+      );
+    });
+
     setRetellWebClient(client);
   }, []);
   // Start call
+  let micStream = "";
   const handleStartCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Store the stream globally or in state if needed
+      micStream = stream;
+    } catch (err) {
+      console.error("Microphone access denied or error:", err);
+      // alert("Please allow microphone access to proceed with the call.");
+      setPopupMessage("Microphone access is required to test.");
+      setPopupType("failed");
+      return;
+    }
+
     if (isCallInProgress || !retellWebClient || !agentDetails) {
       console.error("RetellWebClient or agent details not ready.");
       return;
@@ -503,11 +535,10 @@ function Dashboard() {
   };
   // End call
   const handleEndCall = async () => {
-    console.log("isCallInProgress", isCallInProgress);
     if (retellWebClient) {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentDetails.agent_id, callId: callId };
-      if (isCallInProgress) {
+      if (isCallInProgress && callId) {
         const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
         setIsCallInProgress(false);
       }
@@ -539,24 +570,6 @@ function Dashboard() {
   const handleCloseWidgetModal = () => {
     setOpenWidgetModal(false);
   };
-
-  //close camera option click outside
-  const toggleProfileDropdown = () => {
-    setIsUploadModalOpen((prev) => !prev);
-  };
-
-  // Close the dropdown if clicked outside
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (profileRef.current && !profileRef.current.contains(event.target)) {
-  //       setIsUploadModalOpen(false); // Close dropdown if clicked outside
-  //     }
-  //   };
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
 
   // Open upload modal
   const openUploadModal = () => {
@@ -605,14 +618,20 @@ function Dashboard() {
     if (!name) return "";
 
     if (name.includes(" ")) {
-      return name?.split(" ")[0];
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
     } else {
-      if (name?.length > 12) {
-        return name?.substring(0, 10);
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
       }
       return name;
     }
   }
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -639,30 +658,177 @@ function Dashboard() {
     );
   };
 
+  const handleEditProfile = () => {
+    navigate("/edit-profile");
+  };
+  const handleDeactivateAgent = async () => {
+    try {
+      setDeactivateLoading(true);
+      const dashboardState = JSON.parse(
+        sessionStorage.getItem("dashboard-session-storage")
+      );
+
+      const agentData = dashboardState?.state?.agents?.find(
+        (ag) => ag.agent_id === agentToDeactivate.agent_id
+      );
+
+      const knowledgeBaseId = agentData?.knowledgeBaseId;
+      const businessId = agentData?.businessId;
+
+      const isCurrentlyDeactivated = agentToDeactivate.isDeactivated === 1;
+      if (!isCurrentlyDeactivated && knowledgeBaseId) {
+        await fetch(
+          `https://api.retellai.com/delete-knowledge-base/${knowledgeBaseId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+      if (isCurrentlyDeactivated && businessId) {
+        const businessDetails = await getBusinessDetailsByBusinessId(
+          businessId
+        );
+
+        const shortName = (businessDetails?.businessName || "Business")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "_")
+          .slice(0, 20);
+
+        const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
+        const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
+        // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
+        const businessData = businessDetails.knowledge_base_texts;
+        const knowledgeBaseText = {
+          title: businessDetails?.businessType || "Business Info",
+          text: `
+                Business Name: ${businessData?.name}
+                Address: ${businessData?.address}
+                Phone: ${businessData?.phone}
+                Website: ${businessData?.website}
+                Rating: ${businessData?.rating} (${businessData?.totalRatings} reviews)
+                Business Status: ${businessData?.businessStatus}
+                Categories: ${businessData?.categories}
+                Opening Hours: ${businessData?.hours}
+                `.trim(),
+        };
+
+        // Step 1: Create Knowledge Base
+        const formData = new FormData();
+        formData.append("knowledge_base_name", knowledgeBaseName);
+        formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+        formData.append("enable_auto_refresh", "true");
+        formData.append(
+          "knowledge_base_texts",
+          JSON.stringify([knowledgeBaseText])
+        );
+
+        const createRes = await fetch(
+          `https://api.retellai.com/create-knowledge-base`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+            },
+            body: formData,
+          }
+        );
+
+        if (!createRes.ok) {
+          const errData = await createRes.json();
+          console.error("Knowledge base creation failed:", errData);
+          throw new Error("Failed to create knowledge base during activation");
+        }
+
+        const createdKB = await createRes.json();
+        const knowledgeBaseId = createdKB.knowledge_base_id;
+        sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
+
+        // Step 2: Update LLM for the agent
+        const llmId =
+          agentToDeactivate?.llmId ||
+          localStorage.getItem("llmId") ||
+          sessionStorage.getItem("llmId");
+
+        if (llmId && knowledgeBaseId) {
+          const llmPayload = {
+            knowledge_base_ids: [knowledgeBaseId],
+          };
+
+          try {
+            const updateLLMRes = await fetch(
+              `https://api.retellai.com/update-retell-llm/${llmId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                },
+                body: JSON.stringify(llmPayload),
+              }
+            );
+
+            if (!updateLLMRes.ok) {
+              const err = await updateLLMRes.json();
+              console.error("Failed to update LLM:", err);
+              throw new Error("LLM update failed");
+            }
+          } catch (error) {
+            console.error("Error updating LLM:", error);
+          }
+        } else {
+          console.warn(
+            "LLM ID or Knowledge Base ID missing. LLM update skipped."
+          );
+        }
+
+        // ✅ Step 3: Update Agent's knowledgeBaseId in DB
+        if (agentToDeactivate?.agent_id && knowledgeBaseId) {
+          try {
+            await updateAgentKnowledgeBaseId(
+              agentToDeactivate.agent_id,
+              knowledgeBaseId
+            );
+          } catch (err) {
+            console.error(" Failed to update agent's KB ID:", err);
+          }
+        }
+      }
+
+      await toggleAgentActivation(
+        agentToDeactivate.agent_id,
+        !isCurrentlyDeactivated
+      );
+
+      setPopupType("success");
+      setPopupMessage(
+        isCurrentlyDeactivated
+          ? "Agent activated successfully."
+          : "Agent deactivated successfully."
+      );
+      setShowDeactivateConfirm(false);
+      setHasFetched(false);
+    } catch (error) {
+      console.error("Activation/Deactivation Error:", error);
+      setPopupType("failed");
+      setPopupMessage("Failed to update agent status.");
+      setShowDeactivateConfirm(false);
+    } finally {
+      setDeactivateLoading(false);
+    }
+  };
   return (
     <div>
       <div className={styles.forSticky}>
-        {show ? (
-          <Modal isOpen={show} onClose={handleCLose}>
-            <></>
-            <h2 className={styles.apologyHead}>Comming Soon</h2>
 
-            <p className={styles.apologyHeadText} apologyHeadText>
-              We apologise, But our paid plans are being tested to pass our
-              "Rigorous QA Process" For now, If your sign-up for a "Free
-              Account", We promise to send you Upgradation Options in your email
-              within next 2 weeks.
-            </p>
-
-            <div className={styles.zz}>
-              {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
-            </div>
-          </Modal>
-        ) : null}
         <header className={styles.header}>
           <div className={styles.profileSection} ref={profileRef}>
             <div>
-              <button className={styles.avatarBtn} onClick={openUploadModal}>
+              <button className={styles.avatarBtn} onClick={handleEditProfile}>
                 <img
                   src={
                     user?.profile ||
@@ -684,7 +850,7 @@ function Dashboard() {
                 {formatName(user?.name) || "John Vick"}
               </h2>
             </div>
-            {isUploadModalOpen && (
+            {/* {isUploadModalOpen && (
               <UploadProfile
                 onClose={closeUploadModal}
                 onUpload={handleUpload}
@@ -692,7 +858,7 @@ function Dashboard() {
                   uploadedImage || user?.profile || "images/camera-icon.avif"
                 }
               />
-            )}
+            )} */}
           </div>
           <div className={styles.notifiMain}>
             <div
@@ -755,6 +921,7 @@ function Dashboard() {
         </header>
 
         <section className={styles.agentCard}>
+
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
             <img src="svg/total-call.svg" alt="total-call" />
@@ -768,6 +935,24 @@ function Dashboard() {
       </div>
 
       <div className={styles.main}>
+        {show ? (
+          <Modal isOpen={show} onClose={handleCLose}>
+            <></>
+            <h2 className={styles.apologyHead}>Comming Soon</h2>
+
+            <p className={styles.apologyHeadText} apologyHeadText>
+              We apologise, But our paid plans are being tested to pass our
+              "Rigorous QA Process" For now, If your sign-up for a "Free
+              Account", We promise to send you Upgradation Options in your email
+              within next 2 weeks.
+            </p>
+
+            <div className={styles.zz}>
+              {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
+            </div>
+          </Modal>
+        ) : null}
+
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
@@ -805,7 +990,7 @@ function Dashboard() {
                   </div>
                   <div className={styles.LangText}>
                     <h3 className={styles.agentName}>
-                      {agent.agentName}{" "}
+                      {formatName(agent.agentName) || "John Vick"}
                       <span
                         className={
                           agent.isDeactivated === 1
@@ -875,7 +1060,11 @@ function Dashboard() {
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
                           e.stopPropagation();
-                          handleEditAgent(agent);
+                          if (agent?.isDeactivated === 1) {
+                            handleInactiveAgentAlert();
+                          } else {
+                            handleEditAgent(agent);
+                          }
                         }}
                       >
                         {/* <div className={styles.OptionItem} onClick={() => ""}> */}
@@ -894,7 +1083,7 @@ function Dashboard() {
                       >
                         Upgrade
                       </div>
-                      <div key={agent.agent_id}>
+                      {/* <div key={agent.agent_id}>
                         <div
                           className={styles.OptionItem}
                           onMouseDown={(e) => {
@@ -905,7 +1094,7 @@ function Dashboard() {
                         >
                           Delete Agent
                         </div>
-                      </div>
+                      </div> */}
                       <div
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
@@ -926,7 +1115,12 @@ function Dashboard() {
 
               <div className={styles.LangPara}>
                 <p className={styles.agentPara}>
-                  For: <strong>{agent.business.businessName}</strong>
+                  For:{" "}
+                  <strong>
+                    {formatName(agent?.business?.businessName ||
+                      agent?.business?.knowledge_base_texts?.name ||
+                      agent?.business?.googleBusinessName)}
+                  </strong>
                 </p>
                 <div className={styles.VIA}>
                   {agent.calApiKey ? (
@@ -992,7 +1186,14 @@ function Dashboard() {
 
         {/* Cal API Modal */}
         {isCalModalOpen && (
-          <div className={styles.modalBackdrop} onClick={closeModal}>
+          <div
+            className={styles.modalBackdrop}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                e.stopPropagation();
+              }
+            }}
+          >
             <div
               className={styles.modalContainer}
               onClick={(e) => e.stopPropagation()}
@@ -1008,15 +1209,14 @@ function Dashboard() {
                   Click to connect with cal
                 </a>
               </p>
-              {/* <p>
-                  <a
-                  href="/calinfo"
-                  target="_blank"
-                  rel="noopener noreferrer" 
-                  >
-                    Learn how to connect with cal
-                  </a>
-                </p> */}
+
+              <p>
+                {" "}
+                Need a hand connecting with Cal.com?{" "}
+                <a href="/calinfo" target="_blank" rel="noopener noreferrer">
+                  See quick setup guide
+                </a>
+              </p>
 
               <div
                 style={{
@@ -1078,17 +1278,35 @@ function Dashboard() {
                 <div className={styles.modalButtons}>
                   <button
                     className={`${styles.modalButton} ${styles.cancel}`}
-                    onClick={closeModal}
+                    onClick={closeModal} // Close the modal only when "Cancel" is clicked
                   >
                     Cancel
                   </button>
-                  <button
+                  {calapiloading ? (
+                    <button
+                   className={`${styles.modalButton} ${styles.submit}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    Updating <Loader size={18} />
+                  </button>) : 
+                  ( <button
                     className={`${styles.modalButton} ${styles.submit}`}
                     onClick={handleApiKeySubmit}
                     disabled={!isValidCalApiKey(apiKey.trim())}
                   >
                     {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
-                  </button>
+                  </button>) }
+                  {/* <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={handleApiKeySubmit}
+                    disabled={!isValidCalApiKey(apiKey.trim())}
+                  >
+                    {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
+                  </button> */}
                 </div>
               )}
 
@@ -1126,7 +1344,13 @@ function Dashboard() {
                         placeholder="Enter length"
                         className={styles.modalInput}
                         value={eventLength}
-                        onChange={(e) => setEventLength(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value <= 999) {
+                            setEventLength(value);
+                          }
+                        }}
+                        max="999"
                         min="1"
                       />
                     </div>
@@ -1142,17 +1366,31 @@ function Dashboard() {
                     >
                       Cancel
                     </button>
-                    <button
-                      className={`${styles.modalButton} ${styles.submit}`}
-                      onClick={createCalEvent}
-                      disabled={
-                        !eventName.trim() ||
-                        !eventSlug.trim() ||
-                        !eventLength.trim()
-                      }
-                    >
-                      Add Event
-                    </button>
+                    {calloading ? (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Add Event <Loader size={18} />
+                      </button>
+                    ) : (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        onClick={createCalEvent}
+                        disabled={
+                          !isApiKeySubmitted ||
+                          !eventName.trim() ||
+                          !eventSlug.trim() ||
+                          !eventLength.trim()
+                        }
+                      >
+                        Add Event
+                      </button>
+                    )}
                   </div>
 
                   {eventCreateStatus && (
@@ -1169,49 +1407,6 @@ function Dashboard() {
                   )}
                 </>
               )}
-            </div>
-          </div>
-        )}
-        {showDeleteConfirm && agentToDelete && (
-          <div
-            className={styles.modalBackdrop}
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-            <div
-              className={styles.modalContainer}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2>Are you sure?</h2>
-              <p>
-                Do you want to delete agent{" "}
-                <strong>{agentToDelete.agentName}</strong>?
-              </p>
-              <div className={styles.modalButtons}>
-                <button
-                  className={`${styles.modalButton} ${styles.cancel}`}
-                  onClick={() => setShowDeleteConfirm(false)}
-                >
-                  No
-                </button>
-                <button
-                  className={`${styles.modalButton} ${styles.submit}`}
-                  onClick={async () => {
-                    try {
-                      await handleDelete(agentToDelete.agent_id);
-                      setShowDeleteConfirm(false);
-                      setAgentToDelete(null);
-                    } catch (error) {
-                      setPopupMessage(
-                        `Failed to delete agent: ${error.message}`
-                      );
-                      setPopupType("failed");
-                      setShowDeleteConfirm(false);
-                    }
-                  }}
-                >
-                  Yes
-                </button>
-              </div>
             </div>
           </div>
         )}
@@ -1304,29 +1499,21 @@ function Dashboard() {
               </button>
               <button
                 className={`${styles.modalButton} ${styles.submit}`}
-                onClick={async () => {
-                  try {
-                    await toggleAgentActivation(
-                      agentToDeactivate.agent_id,
-                      agentToDeactivate.isDeactivated === 0
-                    );
-                    setShowDeactivateConfirm(false);
-                    setAgentToDeactivate(null);
-                    setPopupType("success");
-                    setPopupMessage(
-                      agentToDeactivate.isDeactivated === 1
-                        ? "Agent activated successfully."
-                        : "Agent deactivated successfully."
-                    );
-                    setHasFetched(false);
-                  } catch (error) {
-                    setPopupType("failed");
-                    setPopupMessage("Failed to update agent status.");
-                    setShowDeactivateConfirm(false);
-                  }
-                }}
+                onClick={handleDeactivateAgent}
               >
-                Yes
+                {deactivateLoading ? (
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    Updating <Loader size={18} />
+                  </span>
+                ) : (
+                  "Yes"
+                )}
               </button>
             </div>
           </div>
@@ -1375,71 +1562,70 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
     const agent = response?.data?.agent;
     const business = response?.data?.business;
-
-    // console.log('agent',agent)
     sessionStorage.setItem("UpdationMode", "ON");
-    sessionStorage.setItem("agentName", agent.agentName);
-    sessionStorage.setItem("agentGender", agent.agentGender);
-    sessionStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
-    sessionStorage.setItem("agentLanguage", agent.agentLanguage);
-    sessionStorage.setItem("llmId", agent.llmId);
-    sessionStorage.setItem("agent_id", agent.agent_id);
-    sessionStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
+    sessionStorage.setItem("agentName", agent?.agentName);
+    sessionStorage.setItem("agentGender", agent?.agentGender);
+    sessionStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
+    sessionStorage.setItem("agentLanguage", agent?.agentLanguage);
+    sessionStorage.setItem("llmId", agent?.llmId);
+    sessionStorage.setItem("agent_id", agent?.agent_id);
+    sessionStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
 
     //need to clear later
     localStorage.setItem("UpdationMode", "ON");
-    localStorage.setItem("agentName", agent.agentName);
-    localStorage.setItem("agentGender", agent.agentGender);
-    localStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
-    localStorage.setItem("agentLanguage", agent.agentLanguage);
-    localStorage.setItem("llmId", agent.llmId);
-    localStorage.setItem("agent_id", agent.agent_id);
-    localStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
-    localStorage.setItem("agentRole", agent.agentRole);
-    localStorage.setItem("agentVoice", agent.agentVoice);
-    localStorage.setItem("agentVoiceAccent", agent.agentAccent);
-    localStorage.setItem("avatar", agent.avatar);
-    sessionStorage.setItem("googleListing", business.googleUrl);
+    localStorage.setItem("agentName", agent?.agentName);
+    localStorage.setItem("agentGender", agent?.agentGender);
+    localStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
+    localStorage.setItem("agentLanguage", agent?.agentLanguage);
+    localStorage.setItem("llmId", agent?.llmId);
+    localStorage.setItem("agent_id", agent?.agent_id);
+    localStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
+    localStorage.setItem("agentRole", agent?.agentRole);
+    localStorage.setItem("agentVoice", agent?.agentVoice);
+    localStorage.setItem("agentVoiceAccent", agent?.agentAccent);
+    localStorage.setItem("avatar", agent?.avatar);
+    sessionStorage.setItem("googleListing", business?.googleUrl);
     sessionStorage.getItem("displayBusinessName");
-    localStorage.setItem("googleUrl", business.googleUrl);
-    localStorage.setItem("webUrl", business.webUrl);
-    localStorage.setItem("aboutBusiness", business.aboutBusiness);
+    localStorage.setItem("googleUrl", business?.googleUrl);
+    localStorage.setItem("webUrl", business?.webUrl);
+    localStorage.setItem("aboutBusiness", business?.aboutBusiness);
     localStorage.setItem(
       "additionalInstruction",
-      business.additionalInstruction
+      business?.additionalInstruction
     );
-    localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
-    localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
+    localStorage.setItem("knowledge_base_name", business?.knowledge_base_name);
+    localStorage.setItem("knowledge_base_id", business?.knowledge_base_id);
     //need to clear above
-
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
-        businessUrl: business.webUrl,
-        googleListing: business.googleUrl,
-        aboutBusiness: business.aboutBusiness,
-        note: business.additionalInstruction,
+        businessUrl: business?.webUrl,
+        googleListing: business?.googleUrl,
+        aboutBusiness: business?.aboutBusiness,
+        note: business?.additionalInstruction,
+        isGoogleListing: business?.isGoogleListing,
+        isWebsiteUrl: business?.isWebsiteUrl,
       })
     );
 
-    sessionStorage.setItem("agentRole", agent.agentRole);
-    sessionStorage.setItem("agentVoice", agent.agentVoice);
-    sessionStorage.setItem("agentVoiceAccent", agent.agentAccent);
-    sessionStorage.setItem("avatar", agent.avatar);
-    sessionStorage.setItem("businessDetails", agent.business);
-    sessionStorage.setItem("businessId", agent.businessId);
-    sessionStorage.setItem("bId", agent.businessId);
-    sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
+    sessionStorage.setItem("agentRole", agent?.agentRole);
+    sessionStorage.setItem("agentVoice", agent?.agentVoice);
+    sessionStorage.setItem("agentVoiceAccent", agent?.agentAccent);
+    sessionStorage.setItem("avatar", agent?.avatar);
+    sessionStorage.setItem("businessDetails", agent?.business);
+    sessionStorage.setItem("businessId", agent?.businessId);
+    sessionStorage.setItem("bId", agent?.businessId);
+    sessionStorage.setItem("displayBusinessName", business?.googleBusinessName);
 
     const businessData = {
       userId: business.userId,
-      businessType: business.businessType,
-      businessName: business.businessName.trim(),
-      businessSize: business.businessSize,
-      customBuisness: business.customBuisness,
+      businessType: business?.businessType,
+      businessName: business?.businessName.trim(),
+      businessSize: business?.businessSize,
+      customBuisness: business?.customBuisness,
     };
 
-    let parsedServices = safeParse(business.buisnessService, []);
+    let parsedServices = safeParse(business?.buisnessService, []);
     sessionStorage.setItem(
       "businesServices",
       JSON.stringify({
@@ -1447,14 +1633,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         email: business.buisnessEmail,
       })
     );
-
-    //custom services
-    // let parsedCustomeServices=safeParse(business.customServices, [])
-    // console.log('business.customServices:', parsedCustomeServices,business.customServices);
-    // console.log('typeof:', typeof parsedCustomeServices);
-    //    sessionStorage.setItem("selectedCustomServices",JSON.stringify({
-    //     parsedCustomeServices
-    // }))
     //custom servcice save and filter
     let rawCustomServices = business?.customServices || [];
 
@@ -1469,9 +1647,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(
@@ -1480,16 +1658,31 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    // sessionStorage.setItem(
-    //   "businessLocation",
-    //   JSON.stringify({
-    //     country: business?.country,
-    //     state: business?.state.trim(),
-    //     city: business?.city.trim(),
-    //     address1: business?.address1.trim(),
-    //     address2: business?.address2.trim(),
-    //   })
-    // );
+
+    let raw_knowledge_base_texts = business?.knowledge_base_texts || [];
+
+    if (typeof raw_knowledge_base_texts === "string") {
+      try {
+        raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
+      } catch (err) {
+        console.error(
+          "Failed to parse customServices:",
+          raw_knowledge_base_texts
+        );
+        raw_knowledge_base_texts = [];
+      }
+    }
+    const cleaned_raw_knowledge_base_texts = Array.isArray(
+      raw_knowledge_base_texts
+    )
+      ? raw_knowledge_base_texts
+      : [];
+
+    sessionStorage.setItem(
+      "placeDetailsExtract",
+      JSON.stringify(raw_knowledge_base_texts)
+    );
+    sessionStorage.setItem("agentNote", agent?.additionalNote);
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }
