@@ -155,7 +155,7 @@ function AboutBusiness() {
         const form1= JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
         // Extract important fields from result
         const businessData = {
-          name: result.name || "",
+          businessName: result.name || "",
           address: result.formatted_address || "",
           phone: result.formatted_phone_number || "",
           internationalPhone: result.international_phone_number || "",

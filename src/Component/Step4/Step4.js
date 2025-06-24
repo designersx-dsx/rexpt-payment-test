@@ -62,7 +62,7 @@ const Step4 = forwardRef(
         if (!selectedRole?.trim()) {
           onValidationError?.({
             type: "failed",
-            message: "Please select a type!",
+            message: "Please select a Receptionist Type!",
           });
           return false;
         }
