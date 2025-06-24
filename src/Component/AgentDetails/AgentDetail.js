@@ -956,11 +956,19 @@ setknowledge_base_texts(knowledge_base_texts)
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                     await fetchPrevAgentDEtails(
+                    setModalOpen(true);
+                     try {
+                    await fetchPrevAgentDEtails(
                     agentData?.agent?.agent_id,
-                    agentData?.agent?.businessId
-                  );
-                  setModalOpen(true);
+                    agentData?.agent?.businessId);
+                     } catch (error) {
+                      await fetchPrevAgentDEtails(
+                    agentData?.agent?.agent_id,
+                    agentData?.agent?.businessId);
+                     }
+                  
+                  
+                 
                   }
                 }}
                 // onClick={async () => {
