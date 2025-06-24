@@ -1001,7 +1001,7 @@ const handleApiKeySubmit = async () => {
                   </div>
                   <div className={styles.LangText}>
                     <h3 className={styles.agentName}>
-                      {agent.agentName}{" "}
+                       {formatName(agent.agentName) || "John Vick"}
                       <span
                         className={
                           agent.isDeactivated === 1
