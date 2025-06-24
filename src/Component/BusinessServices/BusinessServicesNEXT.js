@@ -250,10 +250,10 @@ const AboutBusinessNext = () => {
           <div className={styles.Btn} onClick={isSkipClicked ? undefined : handleSubmit} style={{ pointerEvents: isSkipClicked ? "none" : "auto", opacity: isSkipClicked ? 0.5 : 1 }}
           >
             <div type="submit">
-              <div className={styles.btnTheme} >
+              <div className={styles.btnTheme} style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }} >
                 <img src="svg/svg-theme2.svg" alt="Submit" />
                 <p>
-                  <p>{Loading ? <Loader size={20} /> : " Submit"}</p>
+                  {Loading ? <>Submitting &nbsp; &nbsp; <Loader size={20} /> </> : " Submit"}
                 </p>
               </div>
             </div>
@@ -261,9 +261,9 @@ const AboutBusinessNext = () => {
         ) : (
           <div className={styles.Btn} onClick={handleSaveEdit} >
             <div type="submit">
-              <div className={styles.btnTheme}>
+              <div className={styles.btnTheme} style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}>
                 <img src="svg/svg-theme2.svg" alt="Submit" />
-                <p>{Loading ? <Loader size={20} /> : "Save Edits"}</p>
+                <p>{Loading ? <> Saving &nbsp; &nbsp; <Loader size={20} /></> : "Save Edits"}</p>
               </div>
             </div>
           </div>

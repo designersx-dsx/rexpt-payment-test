@@ -94,6 +94,23 @@ function HeaderFilter({
   const handleCloseFilter = () => {
     setOpen(false)
   }
+    function formatName(name) {
+    if (!name) return "";
+
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
+  }
   return (
     <div>
       <div className={styles.Forsticky}>
@@ -256,9 +273,9 @@ function HeaderFilter({
             <hr></hr>
 
             <div className={styles.DateSecT} onClick={closeCalender}>
-              <p>  {selectedAgentId === "all"
+              <p>  {formatName(selectedAgentId === "all"
                 ? "Agent"
-                : isAgents?.find((agent) => agent.agent_id === selectedAgentId)?.agentName || "Agent"}</p>
+                : isAgents?.find((agent) => agent.agent_id === selectedAgentId)?.agentName) || "Agent"}</p>
 
               <div className={styles.selectWrapper}>
                 <select

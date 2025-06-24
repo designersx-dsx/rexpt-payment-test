@@ -120,7 +120,23 @@ const convertMsToMinSec = (durationMs) => {
   const seconds = Math.floor((durationMs % 60000) / 1000);
   return `${minutes} Min ${seconds} Sec`;
 };
+   function formatName(name) {
+    if (!name) return "";
 
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
+  }
   return (
     <div className={styles.CallDetailsMain}>
       <div className={styles.forSticky}>
@@ -190,9 +206,7 @@ const convertMsToMinSec = (durationMs) => {
             <div className={styles.Part2}>
               <p>Attended by</p>
               <strong>
-                {callData?.agent_id
-                  ? agents.find((a) => a.agent_id === callData.agent_id)
-                    ?.agentName || "Unknown Agent"
+                {callData?.agent_id? formatName(agents.find((a) => a.agent_id === callData.agent_id)?.agentName) || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>

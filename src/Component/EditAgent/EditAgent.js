@@ -140,11 +140,28 @@ const EditOptions = ({agentDetails}) => {
 //         if(agentDetails)
 //      fetchPrevAgentDEtails(agentDetails.agentId,agentDetails.bussinesId)
 //       },[agentDetails])
+  function formatName(name) {
+    if (!name) return "";
 
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
+  }
+const agentName=sessionStorage.getItem('agentName')
     return (
         <div className={styles.container}>
             <div className={styles.TitleBar}>
-             <h3>Edit Agent:</h3><p>{sessionStorage.getItem('agentName')}</p>
+             <h3>Edit Agent:</h3><p>{formatName(agentName)}</p>
             </div>
             {options.map((option) => (
                 <label
