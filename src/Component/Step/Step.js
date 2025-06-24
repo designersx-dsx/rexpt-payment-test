@@ -197,7 +197,7 @@ const Step = () => {
         {
             name: "Spanish (LatAm)",
             locale: "es-419",
-            flag: "/images/es-419.png",
+            flag: "/images/es-ES.png",
             percentage: "—",
             stats: "—",
         },
@@ -891,6 +891,15 @@ const Step = () => {
                                                 ?.toLowerCase()}.png`}
                                             alt={lang.name}
                                             className={styles.flag}
+                                            onError={(e) => {
+                                                if(lang.locale === "multi") {
+                                                    e.target.src = "/images/multi.png"; // Fallback for multi-language
+                                                } 
+                                                if (lang.locale === "es-419") {
+                                                    e.target.src = "https://flagcdn.com/w80/es.png"; // Fallback for other languages
+                                                }
+                                               }
+                                            }
                                         />
                                     </div>
 
