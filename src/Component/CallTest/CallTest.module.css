@@ -88,4 +88,129 @@ position: absolute;
     font-weight: 400;
     margin-top: 3px;
     color: white;
+}.transcriptContainer {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+}
+
+.transcriptContainer h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.transcriptContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transcriptMessage {
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.agentMessage {
+  background-color: #e3f2fd;
+  align-self: flex-start;
+}
+
+.userMessage {
+  background-color: #c8e6c9;
+  align-self: flex-end;
+}
+
+.currentMessage {
+  opacity: 0.7; /* Slightly faded to indicate active typing */
+}
+
+.timestamp {
+  display: block;
+  font-size: 10px;
+  color: #666;
+  margin-top: 5px;
+}
+.subtitleContainer {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+  border-radius: 5px;
+  text-align: center;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden; /* Hide overflow text */
+}
+
+.subtitleText {
+  font-size: 18px;
+  color: #fff;
+  font-weight: 500;
+  line-height: 1.4;
+  min-height: 30px;
+  white-space: nowrap; /* Prevent line breaks */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipsis if text overflows */
+  display: inline-block; /* Allow animation */
+  animation: slideLeft 20s linear infinite; /* Continuous left slide */
+}
+
+@keyframes slideLeft {
+  0% {
+    transform: translateX(100%); /* Start from right */
+  }
+  100% {
+    transform: translateX(-100%); /* Move to left */
+  }
+}
+
+.agentSubtitle {
+  color: #add8e6; /* Light blue for agent */
+}
+
+.userSubtitle {
+  color: #90ee90; /* Light green for user */
+}
+.transcriptContainer {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.transcriptMessage {
+  padding: 10px 12px;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.agentMessage {
+  background-color: #e0f7fa;
+  align-self: flex-start;
+}
+
+.userMessage {
+  background-color: #dcedc8;
+  align-self: flex-end;
+}
+
+.timestamp {
+  font-size: 10px;
+  color: #888;
+  margin-top: 4px;
 }

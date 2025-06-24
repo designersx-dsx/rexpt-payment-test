@@ -44,6 +44,7 @@ export const useAgentCreator = ({
   const handleCreateAgent = useCallback(async () => {
     const isValid = stepValidator();
     if (!isValid) return;
+    console.log("Creating agent...",isValid);
 
     const packageMap = {
       "Free": 1,
@@ -477,7 +478,7 @@ End Call: If the caller is satisfied, invoke end_call function.
       agentName: agentName,
       agentGender: agentGender,
       business: {
-        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name,
+        businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name,
         email:  getBusinessNameFromGoogleListing?.email || "",
       },
       languageSelect: languageSelect,
@@ -509,7 +510,7 @@ End Call: If the caller is satisfied, invoke end_call function.
           .map(service => ({ service }));
         try {
           const response = await axios.patch(`${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`, {
-            businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.name,
+            businessName: getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name,
             businessSize: businessDetails.businessSize,
             businessType: businessDetails.businessType,
             buisnessEmail: buisenessServices?.email,
@@ -532,11 +533,14 @@ End Call: If the caller is satisfied, invoke end_call function.
       }
 
       const storedKnowledgeBaseId = sessionStorage.getItem('knowledgeBaseId');
-      const llm_id = localStorage.getItem('llmId')
+      const llm_id = localStorage.getItem('llmId') || sessionStorage.getItem('llmId');
       const agentConfig = {
         general_prompt: filledPrompt,
-        begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${business?.businessName}.`,
+        begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${ getBusinessNameFormCustom || getBusinessNameFromGoogleListing?.businessName||getBusinessNameFromGoogleListing?.name}.`,
       };
+      if(isValid=='BusinessListing'){
+        agentConfig.knowledge_base_ids = [storedKnowledgeBaseId] ;
+      }
       //Create LLm 
       console.log(llm_id)
       try {
