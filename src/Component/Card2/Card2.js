@@ -15,23 +15,15 @@ const Card2 = ({ agentKnowledge }) => {
       </div>
     );
   }
-  function formatName(name) {
-    if (!name) return "";
+   function formatBusinessName(name) {
+  if (!name) return "";
 
-    if (name.includes(" ")) {
-      const firstName = name.split(" ")[0];
-      if (firstName.length <= 7) {
-        return firstName;
-      } else {
-        return firstName.substring(0, 10) + "...";
-      }
-    } else {
-      if (name.length > 7) {
-        return name.substring(0, 10) + "...";
-      }
-      return name;
-    }
+  if (name.length > 30) {
+    return name.substring(0, 30) + "...";
   }
+
+  return name;
+}
 
   const parsedKnowledge=agentDetails?.business?.knowledge_base_texts
   return (
@@ -43,7 +35,7 @@ const Card2 = ({ agentKnowledge }) => {
         <div className={styles.details}>
           <p className={styles.Ptext}>Google My Business</p>
           <div className={styles.rightpart}>
-            <strong>{formatName(parsedKnowledge?.name || agentDetails.business?.googleBusinessName||agentDetails?.business?.businessName)||"NA"}</strong>
+            <strong>{formatBusinessName(parsedKnowledge?.name || agentDetails.business?.googleBusinessName||agentDetails?.business?.businessName)||"NA"}</strong>
           </div>
         </div>
 
