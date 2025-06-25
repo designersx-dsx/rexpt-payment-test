@@ -136,6 +136,17 @@ const BusinessDetails = () => {
       icon: "svg/Ticket Booking.svg",
     },
     {
+      type: "Accounting Services",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Accounting Services.svg",
+    },
+       {
+      type: "Financial Planners",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Financial Planners.svg",
+    },
+   
+    {
       type: "Other",
       subtype: "Your Journey Begins Here",
       icon: "svg/Web-Design-Agency-icon.svg",

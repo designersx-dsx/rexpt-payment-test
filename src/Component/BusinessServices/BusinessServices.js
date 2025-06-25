@@ -258,7 +258,7 @@ const BusinessServices = () => {
     {
       type: "Accounting Services",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Accounting Services.svg",
       services: [
         "Bookkeeping",
         "Tax Filing",
@@ -368,6 +368,23 @@ const BusinessServices = () => {
       ],
     }
     ,
+    {
+      type: "Financial Planners",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Financial Planners.svg",
+      services: [
+        "Retirement Planning",
+        "Investment Portfolio Management",
+        "Tax Planning",
+        "Budgeting & Expense Management",
+        "Estate Planning",
+        "Insurance Planning",
+        "Education Planning",
+        "Debt Management",
+        "Other"
+      ],
+    }
+
     ,
     {
       type: "Other Local Business",
