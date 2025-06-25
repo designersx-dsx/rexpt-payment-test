@@ -91,7 +91,7 @@ function Dashboard() {
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
   const [deactivateLoading, setDeactivateLoading] = useState(false);
 
-  const [calloading, setcalloading]= useState(false)
+  const [calloading, setcalloading] = useState(false)
   const [calapiloading, setCalapiloading] = useState(false)
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
@@ -310,16 +310,16 @@ function Dashboard() {
     }
 
 
-  try {
-    setCalapiloading(true)
-    const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ calApiKey: apiKey.trim() }),
-      }
-    );
+    try {
+      setCalapiloading(true)
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ calApiKey: apiKey.trim() }),
+        }
+      );
 
 
       if (!response.ok) {
@@ -336,17 +336,17 @@ function Dashboard() {
       setLocalAgents(updatedAgents);
       setHasFetched(false);
       setShowCalKeyInfo(true);
-    setShowEventInputs(true);
-    setTimeout(() => {
-      setIsApiKeySubmitted(true);
-    }, 0);
-  } catch (error) {
-    setPopupType("failed");
-    setPopupMessage(`Failed to save API Key: ${error.message}`);
-  } finally{
-    setCalapiloading(false)
-  }
-};
+      setShowEventInputs(true);
+      setTimeout(() => {
+        setIsApiKeySubmitted(true);
+      }, 0);
+    } catch (error) {
+      setPopupType("failed");
+      setPopupMessage(`Failed to save API Key: ${error.message}`);
+    } finally {
+      setCalapiloading(false)
+    }
+  };
 
 
 
@@ -614,33 +614,43 @@ function Dashboard() {
     navigate("/totalcall-list");
   };
 
-  function formatName(name) {
-    if (!name) return "";
-
-    if (name.includes(" ")) {
-      const firstName = name.split(" ")[0];
-      if (firstName.length <= 7) {
-        return firstName;
-      } else {
-        return firstName.substring(0, 10) + "...";
-      }
-    } else {
-      if (name.length > 7) {
-        return name.substring(0, 10) + "...";
-      }
-      
-    }
-  }
- function formatBusinessName(name) {
+ function formatName(name) {
   if (!name) return "";
 
-  if (name.length > 15) {
-    return name.substring(0, 15) + "...";
+  if (name.includes(" ")) {
+    const firstName = name.split(" ")[0];
+    if (firstName.length <= 7) {
+      return firstName;
+    } else {
+      return firstName.substring(0, 10) + "...";
+    }
+  } else {
+    if (name.length > 7) {
+      return name.substring(0, 10) + "...";
+    } else {
+      return name; // <-- This was missing
+    }
   }
-
-  return name;
 }
 
+  function formatBusinessName(name) {
+    if (!name) return "";
+
+    if (name.length > 15) {
+      return name.substring(0, 15) + "...";
+    }
+
+    return name;
+  }
+  function formatAgentName(name) {
+    if (!name) return "";
+
+    if (name.length > 15) {
+      return name.substring(0, 10) + "...";
+    }
+
+    return name;
+  }
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -999,7 +1009,7 @@ function Dashboard() {
                   </div>
                   <div className={styles.LangText}>
                     <h3 className={styles.agentName}>
-                      {formatName(agent.agentName) || "John Vick"}
+                      {formatAgentName(agent?.agentName)}
                       <span
                         className={
                           agent.isDeactivated === 1
@@ -1293,22 +1303,22 @@ function Dashboard() {
                   </button>
                   {calapiloading ? (
                     <button
-                   className={`${styles.modalButton} ${styles.submit}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    Updating <Loader size={18} />
-                  </button>) : 
-                  ( <button
-                    className={`${styles.modalButton} ${styles.submit}`}
-                    onClick={handleApiKeySubmit}
-                    disabled={!isValidCalApiKey(apiKey.trim())}
-                  >
-                    {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
-                  </button>) }
+                      className={`${styles.modalButton} ${styles.submit}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      Updating <Loader size={18} />
+                    </button>) :
+                    (<button
+                      className={`${styles.modalButton} ${styles.submit}`}
+                      onClick={handleApiKeySubmit}
+                      disabled={!isValidCalApiKey(apiKey.trim())}
+                    >
+                      {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
+                    </button>)}
                   {/* <button
                     className={`${styles.modalButton} ${styles.submit}`}
                     onClick={handleApiKeySubmit}
