@@ -437,6 +437,7 @@ function AboutBusiness() {
     }, 800);
   };
 
+
   useEffect(() => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       setShowPopup(true);
@@ -446,6 +447,7 @@ function AboutBusiness() {
       );
     }
   }, [CheckingUserLimit, isLimitExceeded]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {

@@ -843,6 +843,16 @@ const Step = () => {
         fetchAgentCountFromUser()
     }, [])
 
+    // useEffect(() => {
+    //     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+    //         setShowPopup(true);
+    //         setPopupType('failed');
+    //         setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+    //     }
+    // }, [CheckingUserLimit, isLimitExceeded]);
+
+    // if (CheckingUserLimit) return <p></p>;
+
     useEffect(() => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
             setShowPopup(true);
@@ -850,13 +860,21 @@ const Step = () => {
             setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
         }
     }, [CheckingUserLimit, isLimitExceeded]);
+
     const handleClosePopup = () => {
-        if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-            navigate('/dashboard');
-            setShowPopup(false);
-        } else {
-            setShowPopup(false);
-        }
+        // if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+        //     navigate('/dashboard');
+        //     setShowPopup(false);
+        // } else {
+        //     setShowPopup(false);
+        // }
+        // if (!CheckingUserLimit && !EditingMode) {
+        //     navigate('/dashboard');
+        //     setShowPopup(false);
+        // } else {
+        //     setShowPopup(false);
+        // }
+        setShowPopup(false);
     }
 
     return (

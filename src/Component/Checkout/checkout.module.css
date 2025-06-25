@@ -1,7 +1,9 @@
 /* YourModule.module.css */
 
 .container {
-  max-width: 85%;
+  max-width: 700px;
+
+  width: 80%;
   margin: 2rem auto;
 
 }
@@ -14,7 +16,7 @@
 .input {
   width: 100%;
   padding: 12px 14px;
-  margin: 12px 0 0px 0;
+  margin: 7px 0 20px 0;
   border: 1.8px solid #ccc;
   border-radius: 6px;
   font-size: 10px;
@@ -29,8 +31,21 @@
   box-shadow: 0 0 8px rgba(103, 114, 229, 0.4);
 }
 
+
+.buttonmai{
+  border: none;
+  background-color: unset;
+
+}
+
+.buttonmai svg{
+  width: 30px;
+  height: 30px;
+}
+
 .button {
-  width: 100%;
+  /* width: 100%; */
+  min-width: 200px;
   padding: 14px 0;
   background-color: #5a38b1;
   color: white;
@@ -66,7 +81,11 @@
   flex-direction: column;
   gap: 1rem; */
   max-width: 100%;
-  margin: 0 auto;
+  /* margin: 0 auto; */
+}
+
+.checkoutForm h3{
+  margin: 20px 0 20px 0;
 }
 
 .billinkAddress {
@@ -77,13 +96,25 @@
 }
 .errorMsg{
   color: rgb(255, 0, 0);
+  margin: -20px 0 20px 0;
+    font-size: 14px;
+
+}
+
+.checkoutFormMain label{
+  margin: 20px 0 0 0;
+}
+
+.checkoutFormMain h3{
+  margin: 0 0 20px 0;
 }
 
 /* Labels */
 .checkoutForm label {
   font-size: 0.95rem;
   font-weight: 600;
-  margin-bottom: 0.4rem;
+  margin: 10px 0;
+  /* margin-bottom: 0.4rem; */
   color: #333;
 }
 
@@ -103,12 +134,50 @@
 
 /* Stripe Elements box (CardNumberElement etc) */
 .cardBox {
-  padding: 10px 12px;
+  padding: 15px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #fff;
   transition: border-color 0.2s ease;
+      margin: 7px 0 20px 0;
+      height: 50px;
 }
+
+.Applybox{
+  height: 50px;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.2s ease;
+    margin: 7px 0 20px 0;
+
+}
+
+ .Applybox button{
+      font-size: 16px;
+    padding: 5px 20px;
+    border-radius: 5px;
+    border: 1px solid #5F33E1;;
+    color: #5F33E1;
+    font-weight: 600;
+    background-color: #fff;
+}
+
+.Applybox input{
+ border: none;
+    padding: 0;
+    margin: 0;
+    background-color: unset;
+
+}
+
+
 
 .cardBox:focus-within {
   border-color: #5F33E1;
@@ -150,5 +219,52 @@
   margin-top: 1rem;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #333;
+  /* color: #333; */
+      font-weight: 600;
+    color: #2b7012;
+}
+
+.reactSelect {
+  width: 354; /* or 100% */
+  font-size: 14px;
+}
+
+.react-select__control {
+  height: 40px;
+  border-radius: 4px;
+  border-color: #ccc;
+}
+
+.react-select__menu {
+  z-index: 9999; /* makes dropdown appear above modal or other content */
+  font-size: 14px;
+}
+
+
+.promoAppliedBox {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  background-color: #e6ffec;
+  padding: 8px 12px;
+  border: 1px solid #a0d7a5;
+  border-radius: 4px;
+  color: #1e7d34;
+  font-size: 14px;
+  justify-content: space-between;
+  width: fit-content;
+  gap: 8px;
+}
+
+.removePromoBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #1e7d34;
+  padding: 0;
+}
+
+.removePromoBtn:hover {
+  color: #d10000;
 }

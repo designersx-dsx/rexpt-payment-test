@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
-import { useNavigate } from "react-router-dom";
+
+import Footer from "../AgentDetails/Footer/Footer";
+import Plan from "../Plan/Plan";
+import { useNavigate, useLocation } from "react-router-dom";
+
+
 import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
@@ -86,17 +91,24 @@ function Dashboard() {
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
   const [show, setShow] = useState(false);
   const [close, setClose] = useState(false);
-
+  const [modelOpen, setModelOpen] = useState(false)
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
+
+  const [agentId, setagentId] = useState()
+  const [subscriptionId, setsubscriptionId] = useState()
+  const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
+  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  const dropdownRef = useRef(null);
+  const location = useLocation();
+
+
   const [deactivateLoading, setDeactivateLoading] = useState(false);
 
   const [calloading, setcalloading] = useState(false)
   const [calapiloading, setCalapiloading] = useState(false)
 
-  const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
-  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
-  const dropdownRef = useRef(null);
+
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
 
   useEffect(() => {
@@ -128,6 +140,7 @@ function Dashboard() {
       setIsAssignModalOpen(true);
     }
   };
+
 
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
@@ -614,14 +627,23 @@ function Dashboard() {
     navigate("/totalcall-list");
   };
 
- function formatName(name) {
-  if (!name) return "";
+  function formatName(name) {
+    if (!name) return "";
 
-  if (name.includes(" ")) {
-    const firstName = name.split(" ")[0];
-    if (firstName.length <= 7) {
-      return firstName;
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
     } else {
+// <<<<<<< dev_Shorya
+//       if (name.length > 7) {
+//         return name.substring(0, 10) + "...";
+//       }
+//       return name;
+// =======
       return firstName.substring(0, 10) + "...";
     }
   } else {
@@ -629,9 +651,9 @@ function Dashboard() {
       return name.substring(0, 10) + "...";
     } else {
       return name; // <-- This was missing
+
     }
   }
-}
 
   function formatBusinessName(name) {
     if (!name) return "";
@@ -823,23 +845,37 @@ function Dashboard() {
         !isCurrentlyDeactivated
       );
 
-      setPopupType("success");
-      setPopupMessage(
-        isCurrentlyDeactivated
-          ? "Agent activated successfully."
-          : "Agent deactivated successfully."
-      );
-      setShowDeactivateConfirm(false);
-      setHasFetched(false);
-    } catch (error) {
-      console.error("Activation/Deactivation Error:", error);
-      setPopupType("failed");
-      setPopupMessage("Failed to update agent status.");
-      setShowDeactivateConfirm(false);
-    } finally {
-      setDeactivateLoading(false);
+
+  const handleUpgradeClick = (agent) => {
+    if (agent?.subscriptionId) {
+      alert("Coming Soon");
+    } else {
+      setagentId(agent?.agent_id);
+      setsubscriptionId(agent?.subscriptionId);
+      setModelOpen(true);
     }
+
   };
+
+// =======
+//       setPopupType("success");
+//       setPopupMessage(
+//         isCurrentlyDeactivated
+//           ? "Agent activated successfully."
+//           : "Agent deactivated successfully."
+//       );
+//       setShowDeactivateConfirm(false);
+//       setHasFetched(false);
+//     } catch (error) {
+//       console.error("Activation/Deactivation Error:", error);
+//       setPopupType("failed");
+//       setPopupMessage("Failed to update agent status.");
+//       setShowDeactivateConfirm(false);
+//     } finally {
+//       setDeactivateLoading(false);
+//     }
+//   };
+// >>>>>>> payment_testing
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1093,11 +1129,7 @@ function Dashboard() {
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
                           e.stopPropagation();
-                          if (agent?.isDeactivated === 1) {
-                            handleInactiveAgentAlert();
-                          } else {
-                            handleUpgrade(agent.agent_id);
-                          }
+                          handleUpgradeClick(agent);
                         }}
                       >
                         Upgrade
@@ -1545,6 +1577,10 @@ function Dashboard() {
 
       {/* <Footer /> */}
       <Footer2 />
+      <Modal isOpen={modelOpen} onClose={() => setModelOpen(false)}>
+        <Plan agentID={agentId} subscriptionID={subscriptionId} locationPath={locationPath} />
+      </Modal>
+
       <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
 
       {isAssignModalOpen && selectedAgentForAssign && (
