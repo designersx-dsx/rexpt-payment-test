@@ -1,6 +1,7 @@
 .CallTransferMain {
     padding-inline: 16px;
 }
+
 .CallTransferMain1 {
     padding: 16px;
 }
@@ -9,9 +10,12 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-  
+
 }
-.removeBtn{
+.headrPart img{
+    cursor: pointer;
+}
+.removeBtn {
     border: none;
     background-color: #6524EB;
     padding: 4px 10px;
@@ -132,6 +136,7 @@
     min-height: 55px;
     margin-top: 2rem;
     width: 100%;
+    cursor: pointer;
 }
 
 .btnTheme img {
@@ -149,25 +154,26 @@
     margin: 0;
     font-weight: 500;
     font-size: 19px;
- display:flex ;
+    display: flex;
 }
 
-.removeButton{
-  border: none;
-  background-color: none;
+.removeButton {
+    border: none;
+    background-color: none;
 }
 
 @media screen and (min-width: 601px) {
- .CallTransferMain1{
-    max-width: 500px;
-    align-items: center;
-    margin: auto;
-}
-.CallTransferMain {
-     max-width: 500px;
-    align-items: center;
-    margin: auto;
-}
+    .CallTransferMain1 {
+        max-width: 500px;
+        align-items: center;
+        margin: auto;
+    }
+
+    .CallTransferMain {
+        max-width: 500px;
+        align-items: center;
+        margin: auto;
+    }
 
 }
 
@@ -177,22 +183,26 @@
         font-size: 20px;
     }
 }
+
 .skipButton {
     margin-top: 5px;
-  text-align: center;
+    text-align: center;
+    cursor: pointer;
 }
 
 .skipButton button {
-  border: none;
-  background-color: white;
-  color: #bebebe;
-  font-size: 14px;
+    border: none;
+    background-color: white;
+    color: #bebebe;
+    font-size: 14px;
+    cursor: pointer;
 }
+
 .dialCodeInput {
-  width: 40px;
-  border: none;
-  margin-left: 5px;
-  outline: none;
-  text-align: center;
-  background: transparent;
+    width: 40px;
+    border: none;
+    margin-left: 5px;
+    outline: none;
+    text-align: center;
+    background: transparent;
 }

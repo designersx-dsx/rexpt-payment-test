@@ -331,13 +331,20 @@ const CallDetails = () => {
             </div>
             <div className={styles.ChatBox}>
               {transcript.find((msg) => msg.role === "agent") && (
-                <div className={styles.messageLeft}>
-                  <div className={styles.bubbleLeft}>
-                    {transcript.find((msg) => msg.role === "agent").content}
+                <div className={styles.messageRow}>
+                  <div className={styles.profile}>
+                    <img src="/svg/Rex1.svg" alt="Agent" className={styles.avatar} />
                   </div>
-                  <span className={styles.time}>Agent</span>
+
+                  <div className={styles.messageLeft}>
+                    <div className={styles.bubbleLeft}>
+                      {transcript.find((msg) => msg.role === "agent").content}
+                    </div>
+                    <span className={styles.time}>Agent</span>
+                  </div>
                 </div>
               )}
+
 
               {transcript.find((msg) => msg.role === "user") && (
                 <div className={styles.messageRight}>
