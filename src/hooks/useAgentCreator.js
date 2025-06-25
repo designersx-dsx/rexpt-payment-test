@@ -84,7 +84,7 @@ export const useAgentCreator = ({
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
 
-    const commaSeparatedServices = allServices?.join(", ");
+    const commaSeparatedServices = allServices?.join(", ")?.replace("Other", "")
 
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
 
