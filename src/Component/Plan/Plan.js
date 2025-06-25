@@ -15,27 +15,7 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
   const [priceId, setPriceId] = useState(null); // State to store the selected priceId
   const [selectedTab, setSelectedTab] = useState('month'); // State to handle tab selection (monthly/yearly)
   const navigate = useNavigate();
-
   const [price, setPrice] = useState()
-
-  const [show, setShow] = useState(false)
-  const [close, setClose] = useState(false)
-  const [data, setData] = useState([])
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupType, setPopupType] = useState(null);
-  const [popupMessage, setPopupMessage] = useState("");
-  // UserId decoded from token
-  const token = localStorage.getItem("token") || "";
-  const decodeTokenData = decodeToken(token);
-  const userIdFromToken = decodeTokenData?.id || "";
-  const [userId, setUserId] = useState(userIdFromToken);
-  const handleCLose = () => {
-    setClose(true)
-    setShow(false)
-  }
-  const handleNaviagte = () => {
-    navigate('/signup')
-  }
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -82,7 +62,6 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
     setSelectedAccordion(selectedAccordion === id ? null : id);
   };
 
-
   if (loading) return <p className={styles.status}><Loader /></p>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
@@ -95,9 +74,8 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
         <div className={styles.headercontent}>
           <h3>Select Your Plan</h3>
           <p>Customizable payment structures</p>
-
         </div>
-
+      </div>
 
       {/* Tab buttons for Monthly and Yearly plans */}
       <div className={styles.tabs}>
@@ -174,35 +152,13 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
                       setPriceId(null);
 
                     }}
-                  />
-                </div>
-
-                <div className={`${styles.accordion} ${open === product.id ? styles.open : ""}`}>
-                  {product.metadata.minutes && (
-                    <p>
-                      Includes <strong>{product.metadata.minutes}</strong> minutes
-                    </p>
-                  )}
-                  <div className={styles.pricesContainer}>
-                    {product.prices.map((price) => (
-                      <div
-                        key={price.id}
-                        className={styles.priceOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate("/checkout", { state: { priceId: price.id } });
-                        }}
-                      >
-                        {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
-                      </div>
-                    ))}
+                  >
+                    {(price.unit_amount / 100).toFixed(2)} {price.currency.toUpperCase()} / {price.interval}
                   </div>
-                </div>
+                ))}
               </div>
-
-            ))}
+            </div>
           </div>
-
         ))}
       </div>
 
@@ -223,26 +179,6 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
         </div>
       </div>
     </div>
-
-
-//           {/* Continue button */}
-//           <div className={styles.btnTheme} onClick={handleContinue} style={{ opacity: selected ? 1 : 0.6, cursor: selected ? "pointer" : "not-allowed" }}>
-//             <img src="svg/svg-theme.svg" alt="" />
-//             <p >Continue</p>
-//           </div>
-//         </div>
-
-
-//       </div>
-//       {showPopup && (
-//         <PopUp
-//           type={popupType}
-//           onClose={() => handleClosePopup()}
-//           message={popupMessage}
-//         />
-//       )}
-//     </>
-// >>>>>>> payment_testing
   );
 };
 

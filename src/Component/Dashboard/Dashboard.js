@@ -627,34 +627,51 @@ function Dashboard() {
     navigate("/totalcall-list");
   };
 
-  function formatName(name) {
-    if (!name) return "";
+//   function formatName(name) {
+//     if (!name) return "";
 
-    if (name.includes(" ")) {
-      const firstName = name.split(" ")[0];
-      if (firstName.length <= 7) {
-        return firstName;
-      } else {
-        return firstName.substring(0, 10) + "...";
-      }
-    } else {
-// <<<<<<< dev_Shorya
-//       if (name.length > 7) {
-//         return name.substring(0, 10) + "...";
+//     if (name.includes(" ")) {
+//       const firstName = name.split(" ")[0];
+//       if (firstName.length <= 7) {
+//         return firstName;
+//       } else {
+//         return firstName.substring(0, 10) + "...";
 //       }
-//       return name;
-// =======
+//     } else {
+// // <<<<<<< dev_Shorya
+// //       if (name.length > 7) {
+// //         return name.substring(0, 10) + "...";
+// //       }
+// //       return name;
+// // =======
+//       return firstName.substring(0, 10) + "...";
+//     }
+//   else {
+//     if (name.length > 7) {
+//       return name.substring(0, 10) + "...";
+//     } else {
+//       return name; // <-- This was missing
+
+//     }
+//   }
+function formatName(name) {
+  if (!name) return "";
+
+  if (name.includes(" ")) {
+    const firstName = name.split(" ")[0];
+    if (firstName.length <= 7) {
+      return firstName;
+    } else {
       return firstName.substring(0, 10) + "...";
     }
   } else {
     if (name.length > 7) {
       return name.substring(0, 10) + "...";
     } else {
-      return name; // <-- This was missing
-
+      return name;
     }
   }
-
+}
   function formatBusinessName(name) {
     if (!name) return "";
 
@@ -703,148 +720,7 @@ function Dashboard() {
     navigate("/edit-profile");
   };
   const handleDeactivateAgent = async () => {
-    try {
-      setDeactivateLoading(true);
-      const dashboardState = JSON.parse(
-        sessionStorage.getItem("dashboard-session-storage")
-      );
-
-      const agentData = dashboardState?.state?.agents?.find(
-        (ag) => ag.agent_id === agentToDeactivate.agent_id
-      );
-
-      const knowledgeBaseId = agentData?.knowledgeBaseId;
-      const businessId = agentData?.businessId;
-
-      const isCurrentlyDeactivated = agentToDeactivate.isDeactivated === 1;
-      if (!isCurrentlyDeactivated && knowledgeBaseId) {
-        await fetch(
-          `https://api.retellai.com/delete-knowledge-base/${knowledgeBaseId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      }
-      if (isCurrentlyDeactivated && businessId) {
-        const businessDetails = await getBusinessDetailsByBusinessId(
-          businessId
-        );
-
-        const shortName = (businessDetails?.businessName || "Business")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g, "_")
-          .slice(0, 20);
-
-        const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
-        const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
-        // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
-        const businessData = businessDetails.knowledge_base_texts;
-        const knowledgeBaseText = {
-          title: businessDetails?.businessType || "Business Info",
-          text: `
-                Business Name: ${businessData?.name}
-                Address: ${businessData?.address}
-                Phone: ${businessData?.phone}
-                Website: ${businessData?.website}
-                Rating: ${businessData?.rating} (${businessData?.totalRatings} reviews)
-                Business Status: ${businessData?.businessStatus}
-                Categories: ${businessData?.categories}
-                Opening Hours: ${businessData?.hours}
-                `.trim(),
-        };
-
-        // Step 1: Create Knowledge Base
-        const formData = new FormData();
-        formData.append("knowledge_base_name", knowledgeBaseName);
-        formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-        formData.append("enable_auto_refresh", "true");
-        formData.append(
-          "knowledge_base_texts",
-          JSON.stringify([knowledgeBaseText])
-        );
-
-        const createRes = await fetch(
-          `https://api.retellai.com/create-knowledge-base`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-            },
-            body: formData,
-          }
-        );
-
-        if (!createRes.ok) {
-          const errData = await createRes.json();
-          console.error("Knowledge base creation failed:", errData);
-          throw new Error("Failed to create knowledge base during activation");
-        }
-
-        const createdKB = await createRes.json();
-        const knowledgeBaseId = createdKB.knowledge_base_id;
-        sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
-
-        // Step 2: Update LLM for the agent
-        const llmId =
-          agentToDeactivate?.llmId ||
-          localStorage.getItem("llmId") ||
-          sessionStorage.getItem("llmId");
-
-        if (llmId && knowledgeBaseId) {
-          const llmPayload = {
-            knowledge_base_ids: [knowledgeBaseId],
-          };
-
-          try {
-            const updateLLMRes = await fetch(
-              `https://api.retellai.com/update-retell-llm/${llmId}`,
-              {
-                method: "PATCH",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                },
-                body: JSON.stringify(llmPayload),
-              }
-            );
-
-            if (!updateLLMRes.ok) {
-              const err = await updateLLMRes.json();
-              console.error("Failed to update LLM:", err);
-              throw new Error("LLM update failed");
-            }
-          } catch (error) {
-            console.error("Error updating LLM:", error);
-          }
-        } else {
-          console.warn(
-            "LLM ID or Knowledge Base ID missing. LLM update skipped."
-          );
-        }
-
-        // ✅ Step 3: Update Agent's knowledgeBaseId in DB
-        if (agentToDeactivate?.agent_id && knowledgeBaseId) {
-          try {
-            await updateAgentKnowledgeBaseId(
-              agentToDeactivate.agent_id,
-              knowledgeBaseId
-            );
-          } catch (err) {
-            console.error(" Failed to update agent's KB ID:", err);
-          }
-        }
-      }
-
-      await toggleAgentActivation(
-        agentToDeactivate.agent_id,
-        !isCurrentlyDeactivated
-      );
-
+  };
 
   const handleUpgradeClick = (agent) => {
     if (agent?.subscriptionId) {
@@ -856,6 +732,9 @@ function Dashboard() {
     }
 
   };
+  const fetchPrevAgentDEtails = async (agent_id, businessId) => {
+};
+  const locationPath = location.pathname
 
 // =======
 //       setPopupType("success");
@@ -1606,157 +1485,7 @@ function Dashboard() {
     </div>
   );
 }
+  
 
 export default Dashboard;
 
-const fetchPrevAgentDEtails = async (agent_id, businessId) => {
-  try {
-    const response = await getUserAgentMergedDataForAgentUpdate(
-      agent_id,
-      businessId
-    );
-    const agent = response?.data?.agent;
-    const business = response?.data?.business;
-    sessionStorage.setItem("UpdationMode", "ON");
-    sessionStorage.setItem("agentName", agent?.agentName);
-    sessionStorage.setItem("agentGender", agent?.agentGender);
-    sessionStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
-    sessionStorage.setItem("agentLanguage", agent?.agentLanguage);
-    sessionStorage.setItem("llmId", agent?.llmId);
-    sessionStorage.setItem("agent_id", agent?.agent_id);
-    sessionStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
-
-    //need to clear later
-    localStorage.setItem("UpdationMode", "ON");
-    localStorage.setItem("agentName", agent?.agentName);
-    localStorage.setItem("agentGender", agent?.agentGender);
-    localStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
-    localStorage.setItem("agentLanguage", agent?.agentLanguage);
-    localStorage.setItem("llmId", agent?.llmId);
-    localStorage.setItem("agent_id", agent?.agent_id);
-    localStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
-    localStorage.setItem("agentRole", agent?.agentRole);
-    localStorage.setItem("agentVoice", agent?.agentVoice);
-    localStorage.setItem("agentVoiceAccent", agent?.agentAccent);
-    localStorage.setItem("avatar", agent?.avatar);
-    sessionStorage.setItem("googleListing", business?.googleUrl);
-    sessionStorage.getItem("displayBusinessName");
-    localStorage.setItem("googleUrl", business?.googleUrl);
-    localStorage.setItem("webUrl", business?.webUrl);
-    localStorage.setItem("aboutBusiness", business?.aboutBusiness);
-    localStorage.setItem(
-      "additionalInstruction",
-      business?.additionalInstruction
-    );
-    localStorage.setItem("knowledge_base_name", business?.knowledge_base_name);
-    localStorage.setItem("knowledge_base_id", business?.knowledge_base_id);
-    //need to clear above
-    sessionStorage.setItem(
-      "aboutBusinessForm",
-      JSON.stringify({
-        businessUrl: business?.webUrl,
-        googleListing: business?.googleUrl,
-        aboutBusiness: business?.aboutBusiness,
-        note: business?.additionalInstruction,
-        isGoogleListing: business?.isGoogleListing,
-        isWebsiteUrl: business?.isWebsiteUrl,
-      })
-    );
-
-    sessionStorage.setItem("agentRole", agent?.agentRole);
-    sessionStorage.setItem("agentVoice", agent?.agentVoice);
-    sessionStorage.setItem("agentVoiceAccent", agent?.agentAccent);
-    sessionStorage.setItem("avatar", agent?.avatar);
-    sessionStorage.setItem("businessDetails", agent?.business);
-    sessionStorage.setItem("businessId", agent?.businessId);
-    sessionStorage.setItem("bId", agent?.businessId);
-    sessionStorage.setItem("displayBusinessName", business?.googleBusinessName);
-
-    const businessData = {
-      userId: business.userId,
-      businessType: business?.businessType,
-      businessName: business?.businessName.trim(),
-      businessSize: business?.businessSize,
-      customBuisness: business?.customBuisness,
-    };
-
-    let parsedServices = safeParse(business?.buisnessService, []);
-    sessionStorage.setItem(
-      "businesServices",
-      JSON.stringify({
-        selectedService: parsedServices,
-        email: business.buisnessEmail,
-      })
-    );
-    //custom servcice save and filter
-    let rawCustomServices = business?.customServices || [];
-
-    if (typeof rawCustomServices === "string") {
-      try {
-        rawCustomServices = JSON.parse(rawCustomServices);
-      } catch (err) {
-        console.error("Failed to parse customServices:", rawCustomServices);
-        rawCustomServices = [];
-      }
-    }
-
-    const cleanedCustomServices = Array.isArray(rawCustomServices)
-      ? rawCustomServices
-        .map((item) => item?.service?.trim())
-        .filter(Boolean)
-        .map((service) => ({ service }))
-      : [];
-
-    sessionStorage.setItem(
-      "selectedCustomServices",
-      JSON.stringify(cleanedCustomServices)
-    );
-
-    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-
-    let raw_knowledge_base_texts = business?.knowledge_base_texts || [];
-
-    if (typeof raw_knowledge_base_texts === "string") {
-      try {
-        raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
-      } catch (err) {
-        console.error(
-          "Failed to parse customServices:",
-          raw_knowledge_base_texts
-        );
-        raw_knowledge_base_texts = [];
-      }
-    }
-    const cleaned_raw_knowledge_base_texts = Array.isArray(
-      raw_knowledge_base_texts
-    )
-      ? raw_knowledge_base_texts
-      : [];
-
-    sessionStorage.setItem(
-      "placeDetailsExtract",
-      JSON.stringify(raw_knowledge_base_texts)
-    );
-    sessionStorage.setItem("agentNote", agent?.additionalNote);
-  } catch (error) {
-    console.log("An Error Occured while fetching Agent Data for ", error);
-  }
-};
-
-const safeParse = (value, fallback = null) => {
-  try {
-    if (typeof value === "string") {
-      const cleaned = value.trim();
-      if (
-        (cleaned.startsWith("[") && cleaned.endsWith("]")) ||
-        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-        (cleaned.startsWith('"') && cleaned.endsWith('"'))
-      ) {
-        return JSON.parse(cleaned);
-      }
-    }
-    return value;
-  } catch {
-    return fallback;
-  }
-};

@@ -47,7 +47,7 @@ export default function SubscriptionFlow() {
   }, []);
 
   useEffect(() => {
-    if (subscriptionSuccess) navigate("/business-details");
+    if (subscriptionSuccess) navigate("/details");
   }, [subscriptionSuccess, navigate]);
 
   // Check subscription after OTP verified
