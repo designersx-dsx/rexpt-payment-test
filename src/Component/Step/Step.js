@@ -90,7 +90,7 @@ const Step = () => {
     );
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
-    const commaSeparatedServices = allServices?.join(", ");
+    const commaSeparatedServices = allServices?.join(", ")?.replace("Other", "") || "Your Business Services";
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
