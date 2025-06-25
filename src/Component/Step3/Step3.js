@@ -38,39 +38,38 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const [gender, setGender] = useState(''); // default
   const [availableAvatars, setAvailableAvatars] = useState(avatars['male']);
   const agentGender = sessionStorage.getItem('agentGender')
-  const [selectedAvatar, setSelectedAvatar] = useState(sessionStorage.getItem('avatar')||null);
+  const [selectedAvatar, setSelectedAvatar] = useState(sessionStorage.getItem('avatar') || null);
   const EditingMode = localStorage.getItem("UpdationMode");
-   const updationMode = localStorage.getItem("UpdationMode") == "ON" ||"";
-  const storedAvatarImg = sessionStorage.getItem('avatar') ||"";
+  const updationMode = localStorage.getItem("UpdationMode") == "ON" || "";
+  const storedAvatarImg = sessionStorage.getItem('avatar') || "";
 
-useEffect(() => {
- 
+  useEffect(() => {
 
-  if (updationMode) {
-    const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img === storedAvatarImg);
+    if (updationMode) {
+      const matchedAvatarIndex = (avatars[agentGender] || []).findIndex(av => av?.img === storedAvatarImg);
 
-    if (matchedAvatarIndex !== -1) {
-      const matchedAvatar = avatars[agentGender][matchedAvatarIndex];
-      setSelectedAvatar(matchedAvatar);
-      setAvatar(matchedAvatar?.img);
-      sliderRef.current?.slickGoTo(matchedAvatarIndex); 
+      if (matchedAvatarIndex !== -1) {
+        const matchedAvatar = avatars[agentGender][matchedAvatarIndex];
+        setSelectedAvatar(matchedAvatar);
+        setAvatar(matchedAvatar?.img);
+        sliderRef.current?.slickGoTo(matchedAvatarIndex);
+      }
+      const storedName = localStorage.getItem('agentName');
+      if (storedName) {
+        setAgentName(storedName);
+        sessionStorage.setItem('agentName', storedName);
+      }
+
+      const storedAgentName = localStorage.getItem("agentName")
+      if (storedAgentName) {
+        setAgentName(storedName);
+        sessionStorage.setItem('agentName', storedName);
+        sessionStorage.setItem('VoiceAgentName', storedName);
+      }
     }
-    const storedName = localStorage.getItem('agentName');
-    if (storedName) {
-      setAgentName(storedName);
-      sessionStorage.setItem('agentName', storedName);
-    }
+  }, [agentGender, avatars]);
 
-    const storedAgentName=localStorage.getItem("agentName")
-    if(storedAgentName){
-      setAgentName(storedName);
-      sessionStorage.setItem('agentName', storedName);
-      sessionStorage.setItem('VoiceAgentName',storedName);
-    }
-  }
-}, [agentGender,avatars]);
 
-  
   const handleAvatarChange = (avatar) => {
     // setSelectedAvatar((prev) => (prev === avatar ? null : avatar));
     setAvatar(avatar?.img);
@@ -80,32 +79,32 @@ useEffect(() => {
   //  console.log('avatar',selectedAvatar)
   useEffect(() => {
 
-    if(updationMode){
-         setGender(agentGender);
-          setAvatar(selectedAvatar);
-    }else{
-         if (agentGender && avatars[agentGender]) {
-          const genderAvatars = avatars[agentGender];
-          const firstAvatar = genderAvatars[0]?.img || null;
-        
-          setGender(agentGender);
-          setAvailableAvatars(genderAvatars);
-          setAvatar(firstAvatar);
-          sessionStorage.setItem('avatar', firstAvatar);
-        } else {
-          // Fallback: use 'Male' as default if agentGender is invalid
-          const defaultGender = 'Male';
-          const defaultAvatars = avatars[defaultGender];
-          const firstAvatar = defaultAvatars[0]?.img || null;
-         
-          setGender(defaultGender);
-          setAvailableAvatars(defaultAvatars);
-          setAvatar(firstAvatar);
-          sessionStorage.setItem('avatar', firstAvatar);
-        }
+    if (updationMode) {
+      setGender(agentGender);
+      setAvatar(selectedAvatar);
+    } else {
+      if (agentGender && avatars[agentGender]) {
+        const genderAvatars = avatars[agentGender];
+        const firstAvatar = genderAvatars[0]?.img || null;
+
+        setGender(agentGender);
+        setAvailableAvatars(genderAvatars);
+        setAvatar(firstAvatar);
+        sessionStorage.setItem('avatar', firstAvatar);
+      } else {
+        // Fallback: use 'Male' as default if agentGender is invalid
+        const defaultGender = 'Male';
+        const defaultAvatars = avatars[defaultGender];
+        const firstAvatar = defaultAvatars[0]?.img || null;
+
+        setGender(defaultGender);
+        setAvailableAvatars(defaultAvatars);
+        setAvatar(firstAvatar);
+        // sessionStorage.setItem('avatar', firstAvatar);
+      }
     }
-   
-   
+
+
   }, [agentGender]);
 
   const settings = {
@@ -120,12 +119,11 @@ useEffect(() => {
   useEffect(() => {
     // console.log(agentnm)
 
-    if(localStorage.getItem("UpdationMode") == "ON"){
-     
+    if (localStorage.getItem("UpdationMode") == "ON") {
       setAgentName(localStorage.getItem('agentName'))
       // setAgentName(sessionStorage.getItem('VoiceAgentName'))
 
-    }else {
+    } else {
       setAgentName(agentnm);
       sessionStorage.setItem('agentName', agentnm);
       // console.log(agentnm);
@@ -142,7 +140,7 @@ useEffect(() => {
       } else {
         setAgentNameError("");
       }
-
+      console.log(selectedAvatar, "selectedAvatar")
       if (!selectedAvatar) {
         onValidationError?.({
           type: "failed",
@@ -176,13 +174,49 @@ useEffect(() => {
   }, []);
 
 
-  
+//user not refresh
+useEffect(() => {
+  const blockKeyboardRefresh = (e) => {
+    if (
+      e.key === "F5" || 
+      (e.ctrlKey && e.key === "r") || 
+      (e.metaKey && e.key === "r") // For Mac ⌘+R
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
 
+  const blockMouseRefresh = (e) => {
+    // Block middle-click (mouse button 1) or right-click (mouse button 2)
+    if (e.button === 1 || e.button === 2) {
+      e.preventDefault();
+    }
+  };
+
+  const handleBeforeUnload = (e) => {
+    e.preventDefault();
+    e.returnValue = ""; // Required to trigger confirmation prompt
+  };
+
+  // Block browser refresh & warn
+  window.addEventListener("keydown", blockKeyboardRefresh);
+  window.addEventListener("mousedown", blockMouseRefresh);
+  window.addEventListener("beforeunload", handleBeforeUnload);
+  window.addEventListener("contextmenu", (e) => e.preventDefault()); // Disable right-click
+
+  return () => {
+    window.removeEventListener("keydown", blockKeyboardRefresh);
+    window.removeEventListener("mousedown", blockMouseRefresh);
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.removeEventListener("contextmenu", (e) => e.preventDefault());
+  };
+}, []);
   return (
     <>
-      
+
       <div className={styles.sliderContainer}>
-        <h2 className={styles.heading}>{EditingMode?'Edit: Receptionist Avatar':'Receptionist Avatar'}</h2>
+        <h2 className={styles.heading}>{EditingMode ? 'Edit: Receptionist Avatar' : 'Receptionist Avatar'}</h2>
 
         <Slider ref={sliderRef} {...settings}>
           {avatars[gender]?.map((avatar, index) => (
@@ -193,7 +227,7 @@ useEffect(() => {
                   name="avatar"
                   value={index}
                   // checked={selectedAvatar === avatar}
-                    checked={selectedAvatar?.img === avatar.img}
+                  checked={selectedAvatar?.img === avatar.img}
                   required
                   onChange={() => handleAvatarChange(avatar)}
                   className={styles.radioButton}
@@ -204,28 +238,28 @@ useEffect(() => {
                   className={styles.avatarImage}
                 />
               </label>
-       <div className={styles.labReq} >
-        <div className={styles.agentInputBox} id='sliderstep'>
-          <label className={styles.agentLabel}>Name Your Virtual Agent</label>
-          <div className={styles.Dblock} >
-            <input
-              type="text"
-              name="agentName"
-              onChange={handleAgentNameChange}
-              className={styles.agentInput}
-              placeholder="Ex- Smith, Nova"
-              value={agentName}
-            />
-          </div>
-        </div>
-        {agentNameError && (
-          <p className={styles.agenterror}>
-            {agentNameError}
-          </p>
-        )}
-      </div>
+              <div className={styles.labReq} >
+                <div className={styles.agentInputBox} id='sliderstep'>
+                  <label className={styles.agentLabel}>Name Your Virtual Agent</label>
+                  <div className={styles.Dblock} >
+                    <input
+                      type="text"
+                      name="agentName"
+                      onChange={handleAgentNameChange}
+                      className={styles.agentInput}
+                      placeholder="Ex- Smith, Nova"
+                      value={agentName}
+                    />
+                  </div>
+                </div>
+                {agentNameError && (
+                  <p className={styles.agenterror}>
+                    {agentNameError}
+                  </p>
+                )}
+              </div>
             </div>
-            
+
           ))}
         </Slider>
 

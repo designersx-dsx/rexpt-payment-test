@@ -22,6 +22,10 @@
 
  }
 
+ .slick-list {
+   min-height: 400px !important;
+ }
+
  /* .ForDesktop h1{
   
     font-size: 3rem;
@@ -53,6 +57,10 @@
    .ForDesktop {
      display: none;
    }
+
+
+
+
  }
 
  #slideradio input[type="checkbox"] {
@@ -121,6 +129,17 @@
    background-color: #6524EB;
    opacity: 1;
 
+
+ }
+
+ .react-tel-input .selected-flag {
+   background-color: #f7f9fc !important;
+ }
+
+ .react-tel-input .flag-dropdown {
+
+   border: 1px solid #E0E5F2 !important;
+   /* border-right: unset !important; */
 
  }
 

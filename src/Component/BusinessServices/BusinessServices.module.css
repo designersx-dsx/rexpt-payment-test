@@ -75,6 +75,13 @@
 }
 
 
+.optionList p{
+      padding: 5px;
+    text-align: center;
+    color: #A3AED0;
+}
+
+
 .optionList::-webkit-scrollbar {
   width: 4px;
 }
@@ -220,6 +227,16 @@
   margin: 0;
   font-weight: 500;
   font-size: 19px;
+  display: flex !important;
+
+} 
+.btnTheme p p{
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-weight: 500;
+  font-size: 19px;
+  display: flex !important;
 
 }
 

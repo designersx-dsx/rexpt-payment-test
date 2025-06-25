@@ -1,35 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import styles from '../Details/Details.module.css';
-import { useNavigate } from 'react-router-dom';
-import PopUp from '../Popup/Popup';
-import axios from 'axios';
-import { API_BASE_URL } from '../../Store/apiStore';
-import decodeToken from '../../lib/decodeToken';
-import Loader from '../Loader/Loader';
-import useUser from '../../Store/Context/UserContext';
+import React, { useState, useEffect } from "react";
+import styles from "../Details/Details.module.css";
+import { useNavigate } from "react-router-dom";
+import PopUp from "../Popup/Popup";
+import axios from "axios";
+import { API_BASE_URL } from "../../Store/apiStore";
+import decodeToken from "../../lib/decodeToken";
+import Loader from "../Loader/Loader";
+import useUser from "../../Store/Context/UserContext";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 const Details = () => {
   const navigate = useNavigate();
   const [startExit, setStartExit] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
-  const [popupMessage, setPopupMessage] = useState('');
+  const [popupMessage, setPopupMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [phoneError, setPhoneError] = useState('');
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [nameSubmitted, setNameSubmitted] = useState(false);
   const [phoneSubmitted, setPhoneSubmitted] = useState(false);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
-  const { user, setUser } = useUser()
+  const { user, setUser } = useUser();
+  const [country, setCountry] = useState("in");
   useEffect(() => {
-    if (sessionStorage.getItem('OwnerDetails')) {
-      const ownerDetails = JSON.parse(sessionStorage.getItem('OwnerDetails'));
-      setName(ownerDetails.name || '');
-      setPhone(ownerDetails.phone || '');
+    if (sessionStorage.getItem("OwnerDetails")) {
+      const ownerDetails = JSON.parse(sessionStorage.getItem("OwnerDetails"));
+      setName(ownerDetails.name || "");
+      setPhone(ownerDetails.phone || "");
     }
   }, []);
 
@@ -38,18 +42,21 @@ const Details = () => {
   };
 
   const validateName = (value) => {
-    if (!value.trim()) return 'Name is required.';
-    if (containsEmoji(value)) return 'Emojis are not allowed in the name.';
-    if (/[^a-zA-Z\s.'-]/.test(value)) return 'Name contains invalid characters.';
-    if (value.trim().length < 2) return 'Name must be at least 2 characters.';
-    return '';
+    if (!value.trim()) return "Name is required.";
+    if (containsEmoji(value)) return "Emojis are not allowed in the name.";
+    if (/[^a-zA-Z\s.'-]/.test(value))
+      return "Name contains invalid characters.";
+    if (value.trim().length < 2) return "Name must be at least 2 characters.";
+    return "";
   };
 
-  const validatePhone = (value) => {
-    if (!value.trim()) return 'Phone number is required.';
-    if (!/^\d{10}$/.test(value)) return 'Phone number must be exactly 10 digits.';
-    return '';
-  };
+  // const validatePhone = (value) => {
+  //   const digitsOnly = value.replace(/\D/g, "");
+  //   if (!digitsOnly.trim()) return "Phone number is required.";
+  //   if (digitsOnly.length < 10) return "Phone number seems too short.";
+  //   if (digitsOnly.length > 15) return "Phone number seems too long.";
+  //   return "";
+  // };
 
   const handleNameChange = (e) => {
     const val = e.target.value;
@@ -59,18 +66,18 @@ const Details = () => {
     if (nameSubmitted) {
       setNameError(validateName(val));
     } else {
-      setNameError('');
+      setNameError("");
     }
   };
 
   const handlePhoneChange = (e) => {
-    let val = e.target.value.replace(/\D/g, '');
+    let val = e.target.value.replace(/\D/g, "");
     setPhone(val);
 
     if (phoneSubmitted) {
       setPhoneError(validatePhone(val));
     } else {
-      setPhoneError('');
+      setPhoneError("");
     }
   };
 
@@ -89,27 +96,33 @@ const Details = () => {
     setLoading(true);
 
     try {
-      const response = await axios.put(`${API_BASE_URL}/endusers/users/${userId}`, {
-        name: name.trim(),
-        phone,
-      });
+      const response = await axios.put(
+        `${API_BASE_URL}/endusers/users/${userId}`,
+        {
+          name: name.trim(),
+          phone,
+        }
+      );
 
       if (response.status === 200) {
         setStartExit(true);
-        sessionStorage.setItem('OwnerDetails', JSON.stringify({ name: name.trim(), phone }));
-        setUser({ name: name })
+        sessionStorage.setItem(
+          "OwnerDetails",
+          JSON.stringify({ name: name.trim(), phone })
+        );
+        setUser({ name: name });
         setTimeout(() => {
           localStorage.setItem("onboardComplete", "true");
-          navigate('/business-details');
+          navigate("/business-details");
         }, 400);
       } else {
-        setPopupType('failed');
-        setPopupMessage('Update failed. Please try again.');
+        setPopupType("failed");
+        setPopupMessage("Update failed. Please try again.");
         setShowPopup(true);
       }
     } catch (error) {
-      setPopupType('failed');
-      setPopupMessage('An error occurred during update.');
+      setPopupType("failed");
+      setPopupMessage("An error occurred during update.");
       setShowPopup(true);
     } finally {
       setLoading(false);
@@ -143,7 +156,9 @@ const Details = () => {
       window.history.pushState(null, "", window.location.href);
 
       // Trigger the confirmation dialog when back navigation is attempted
-      const confirmExit = window.confirm("Are you sure you want to leave? You might lose unsaved changes.");
+      const confirmExit = window.confirm(
+        "Are you sure you want to leave? You might lose unsaved changes."
+      );
       if (!confirmExit) {
         // If the user clicks "Cancel", close the tab
         window.close(); // This will close the tab (might not work in all browsers)
@@ -154,13 +169,26 @@ const Details = () => {
     };
 
     // Add event listener to block back navigation
-    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
 
     // Cleanup function to remove event listeners when the component unmounts
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("popstate", handlePopState);
     };
-  }, []); return (
+  }, []);
+
+  const validatePhone = (value) => {
+  try {
+    const phoneNumber = parsePhoneNumberFromString("+" + value);
+    if (!phoneNumber) return "Invalid phone number format.";
+    if (!phoneNumber.isValid()) return "Invalid number for selected country.";
+    return "";
+  } catch (error) {
+    return "Invalid phone number.";
+  }
+};
+// console.log('country', country);
+  return (
     <>
       <div className={styles.signUpContainer}>
         <div className={styles.StartMain}>
@@ -179,17 +207,22 @@ const Details = () => {
           </div>
           <div className={styles.logimg2}>
             <div
-              className={`${styles.logimg} ${styles.animateStep} ${step >= 1 ? styles.animateStep1 : ""
-                }`}
+              className={`${styles.logimg} ${styles.animateStep} ${
+                step >= 1 ? styles.animateStep1 : ""
+              }`}
             >
-              <img className={styles.logo} src="svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
+              <img
+                className={styles.logo}
+                src="svg/Rexpt-Logo.svg"
+                alt="Rexpt-Logo"
+              />
             </div>
           </div>
 
-
           <div
-            className={`${styles.Maincontent} ${styles.animateStep} ${step >= 2 ? styles.animateStep2 : ""
-              }`}
+            className={`${styles.Maincontent} ${styles.animateStep} ${
+              step >= 2 ? styles.animateStep2 : ""
+            }`}
           >
             <div className={styles.welcomeTitle}>
               <h1>Personal Details</h1>
@@ -197,15 +230,18 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.container} ${styles.animateStep} ${step >= 3 ? styles.animateStep3 : ""
-              }`}
+            className={`${styles.container} ${styles.animateStep} ${
+              step >= 3 ? styles.animateStep3 : ""
+            }`}
           >
-            <div className={styles.labReq} >
-              <div className={styles.Dblock} >
+            <div className={styles.labReq}>
+              <div className={styles.Dblock}>
                 <label className={styles.label}>Name</label>
                 <input
                   type="text"
-                  className={`${styles.input} ${nameError ? styles.inputError : ''}`}
+                  className={`${styles.input} ${
+                    nameError ? styles.inputError : ""
+                  }`}
                   placeholder="Your name"
                   value={name}
                   onChange={handleNameChange}
@@ -213,35 +249,45 @@ const Details = () => {
               </div>
               {nameError && <p className={styles.inlineError}>{nameError}</p>}
             </div>
-            <div className={styles.labReq} >
-              <div className={styles.Dblock} >
-
+            <div className={styles.labReq}>
+              <div className={styles.Dblock}>
                 <label className={styles.label}>Phone Number</label>
-                <input
-                  type="tel"
-                  className={`${styles.input} ${phoneError ? styles.inputError : ''}`}
-                  placeholder="Phone number"
+                <PhoneInput
+                  country={country} 
                   value={phone}
-                  maxLength={10}
-                  onChange={handlePhoneChange}
-                  inputMode="numeric"
+                  onChange={(val,countryData) => {
+                    // setCountry(countryData.countryCode); // e.g., 'in', 'us', etc.
+                    setPhone(val);
+                    if (phoneSubmitted) {
+                      setPhoneError(validatePhone(val));
+                    } else {
+                      setPhoneError("");
+                    }
+                  }}
+                  inputClass={`${styles.input} ${
+                    phoneError ? styles.inputError : ""
+                  }`}
+                  inputProps={{
+                    name: "phone",
+                    required: true,
+                    autoFocus: false,
+                  }}
                 />
               </div>
-
               {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
             </div>
           </div>
 
-
           <div
-            className={`${styles.Btn} ${styles.animateStep} ${step >= 4 ? styles.animateStep4 : ""
-              }`}
+            className={`${styles.Btn} ${styles.animateStep} ${
+              step >= 4 ? styles.animateStep4 : ""
+            }`}
             onClick={handleLoginClick}
           >
             <div type="submit">
               <div className={styles.btnTheme}>
                 <img src="svg/svg-theme.svg" alt="" />
-                <p>{loading ? <Loader size={20} /> : 'Continue'}</p>
+                <p>{loading ? <Loader size={20} /> : "Continue"}</p>
               </div>
             </div>
           </div>
@@ -256,7 +302,6 @@ const Details = () => {
         </div>
       </div>
     </>
-
   );
 };
 

@@ -18,9 +18,9 @@ const AboutBusinessNext = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const EditingMode = localStorage.getItem("UpdationMode");
   const [email, setEmail] = useState("");
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [isSkipClicked, setIsSkipClicked] = useState(false);
   // Error states
-  const [emailError, setEmailError] = useState("");
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const setHasFetched = true;
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
@@ -34,7 +34,6 @@ const AboutBusinessNext = () => {
     navigate,
     setHasFetched,
   });
-  const locationData = JSON.parse(sessionStorage.getItem("businessLocation"));
   const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
   // const customServices = sessionStorage.getItem('selectedCustomServices') || [];
   const businesServices = JSON.parse(sessionStorage.getItem("businesServices"));
@@ -72,23 +71,7 @@ const AboutBusinessNext = () => {
   };
 
   const handleSubmit = async () => {
-    if (email) {
-      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      if (!isValid) {
-        setEmailError("Please enter a valid email address.");
-        return;
-      } else {
-        setEmailError("");
-      }
-    }
-    // if (
-    //   businessDetails?.businessType === "Other" &&
-    //   (email.trim() === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    // ) {
-    //   setEmailError("Please enter a valid email address.");
-    //   return;
-    // }
-    // Step 1: Get old businesServices (if any)
+    setIsSubmitClicked(true);
     const raw = sessionStorage.getItem("businesServices");
     let previous = {};
     try {
@@ -175,7 +158,7 @@ const AboutBusinessNext = () => {
           JSON.stringify(filteredServices)
         );
         navigate("/about-business");
-      }, 2000);
+      }, 1000);
     } catch (error) {
       setPopupType("failed");
       setPopupMessage("An error occurred while adding business details.");
@@ -187,8 +170,8 @@ const AboutBusinessNext = () => {
   };
 
   const handleSkip = () => {
+    setIsSkipClicked(true);
     handleSubmit();
-    // navigate("/about-business");fdfdfdf
   };
 
   const handleSaveEdit = (e) => {
@@ -225,31 +208,6 @@ const AboutBusinessNext = () => {
     <>
       {/* <HeaderBar></HeaderBar> */}
       <div className={styles.CallTransferMain1}>
-        {businessDetails?.businessType === "Other" && (
-          <div className={styles.inputGroup}>
-            <h2>Business Email Address</h2>
-            <div className={styles.phoneInput}>
-              <input
-                type="email"
-                placeholder="Business Email Address"
-                value={email}
-                className={styles.phoneNumberInput}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError("");
-                }}
-              />
-            </div>
-            {emailError && (
-              <p style={{ color: "red", marginTop: "5px" }}>{emailError}</p>
-            )}
-            {isEmailVerified && (
-              <p style={{ color: "green", marginTop: "5px" }}>
-                Email verified successfully!
-              </p>
-            )}
-          </div>
-        )}
         <div className={styles.headrPart}>
           <h2>Add More Services</h2>
           <img
@@ -285,16 +243,17 @@ const AboutBusinessNext = () => {
           </>
         ))}
 
-        <div onClick={handleSkip} className={styles.skipButton}>
+        <div onClick={isSubmitClicked ? undefined : handleSkip} style={{ pointerEvents: isSubmitClicked ? "none" : "auto", opacity: isSubmitClicked ? 0.5 : 1 }} className={styles.skipButton}>
           {stepEditingMode ? "" : <button>Skip for now</button>}
         </div>
         {stepEditingMode != "ON" ? (
-          <div className={styles.Btn} onClick={handleSubmit}>
+          <div className={styles.Btn} onClick={isSkipClicked ? undefined : handleSubmit} style={{ pointerEvents: isSkipClicked ? "none" : "auto", opacity: isSkipClicked ? 0.5 : 1 }}
+          >
             <div type="submit">
-              <div className={styles.btnTheme} >
+              <div className={styles.btnTheme} style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }} >
                 <img src="svg/svg-theme2.svg" alt="Submit" />
                 <p>
-                  <p>{Loading ? <Loader size={20} /> : " Submit"}</p>
+                  {Loading ? <>Submitting &nbsp; &nbsp; <Loader size={20} /> </> : " Submit"}
                 </p>
               </div>
             </div>
@@ -302,9 +261,9 @@ const AboutBusinessNext = () => {
         ) : (
           <div className={styles.Btn} onClick={handleSaveEdit} >
             <div type="submit">
-              <div className={styles.btnTheme}>
+              <div className={styles.btnTheme} style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}>
                 <img src="svg/svg-theme2.svg" alt="Submit" />
-                <p>{Loading ? <Loader size={20} /> : "Save Edits"}</p>
+                <p>{Loading ? <> Saving &nbsp; &nbsp; <Loader size={20} /></> : "Save Edits"}</p>
               </div>
             </div>
           </div>

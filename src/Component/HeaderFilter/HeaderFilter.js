@@ -17,6 +17,7 @@ function HeaderFilter({
   filters,
   onFilterChange,
 }) {
+  // console.log(isAgents, "isAgents")
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [startDate, setStartDate] = useState(null);
@@ -39,9 +40,11 @@ function HeaderFilter({
   );
 
   const handleChange = (e) => {
+
     const selectedId = +e.target.value;
     const selectedOption = options.find((opt) => opt.id === selectedId);
     setSelected(selectedOption);
+    sessionStorage.setItem("selectedfilterOption", selectedOption.label);
     onFilter(selectedOption.label);
 
   };
@@ -49,27 +52,27 @@ function HeaderFilter({
     navigate(-1);
   };
 
- const handleChangeDate = (dates) => {
-  const [start, end] = dates;
-  setStartDate(start);
-  setEndDate(end);
-};
-const handleApplyFilter = () => {
-  if (startDate && endDate) {
-    onRangeChange({
-      startDate: formatDateWithoutTimezone(startDate),
-      endDate: formatDateWithoutTimezone(endDate),
-    });
-    setOpen(false); 
-  }
-};
+  const handleChangeDate = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+  };
+  const handleApplyFilter = () => {
+    if (startDate && endDate) {
+      onRangeChange({
+        startDate: formatDateWithoutTimezone(startDate),
+        endDate: formatDateWithoutTimezone(endDate),
+      });
+      setOpen(false);
+    }
+  };
 
-const handleClearFilter = () => {
-  setStartDate(null);
-  setEndDate(null);
-  onRangeChange({ startDate: null, endDate: null }); // Clear the filter
-  setOpen(false); // Close the calendar when clearing
-};
+  const handleClearFilter = () => {
+    setStartDate(null);
+    setEndDate(null);
+    onRangeChange({ startDate: null, endDate: null }); // Clear the filter
+    setOpen(false); // Close the calendar when clearing
+  };
 
   const handleFilterChange = (newFilters) => {
     onFilterChange(newFilters);
@@ -78,8 +81,35 @@ const handleClearFilter = () => {
   const handleAll = () => {
     const allOption = options.find((opt) => opt.label === "All" || opt.id === 0);
     setAllSentiment("all")
-    setSelected(allOption); // this sets dropdown to "All"
-    onFilter("All"); // clear sentiment filter
+    setSelected(allOption);
+    onFilter("All");
+  }
+  const closeCalender = () => {
+    setOpen(false)
+  }
+  const handleOpenSlider = () => {
+    setIsOpen(true)
+    setOpen(false)
+  }
+  const handleCloseFilter = () => {
+    setOpen(false)
+  }
+    function formatName(name) {
+    if (!name) return "";
+
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
   }
   return (
     <div>
@@ -106,12 +136,12 @@ const handleClearFilter = () => {
                     alt={selected.label}
                     style={{ width: 20, height: 20, marginRight: 5 }}
                   />
-                  {/* <span>{selected.label}</span> */}
                 </div>
 
                 <select
                   className={styles.agentSelect1}
                   value={selected.id}
+                  onClick={handleCloseFilter}
                   onChange={handleChange}
                 >
                   {options.map((option) => (
@@ -127,7 +157,7 @@ const handleClearFilter = () => {
 
             <div
               className={styles.notificationIcon}
-              onClick={() => setIsOpen(true)}
+              onClick={handleOpenSlider}
               style={{ cursor: "pointer" }}
             >
               <svg
@@ -194,31 +224,31 @@ const handleClearFilter = () => {
               </div>
 
               <div className={styles.DatePic}>
-               {open && (
-    <div
-      style={{
-        position: "absolute",
-        zIndex: 100,
-        left: "50px",
-        top: "40px",
-      }}
-    >
-      <DatePicker
-        selectsRange
-        startDate={startDate}
-        endDate={endDate}
-        onChange={handleChangeDate}
-        inline
-        maxDate={new Date()}
-        // Do not close the calendar when date is selected
-        onClickOutside={() => {}}
-      />
-      <div className={styles.dateButtons}>
-        <button onClick={handleApplyFilter} className={styles.applyButton}>Apply Filter</button>
-        <button onClick={handleClearFilter} className={styles.clearButton}>Clear Filter</button>
-      </div>
-    </div>
-  )}
+                {open && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      zIndex: 100,
+                      left: "50px",
+                      top: "40px",
+                    }}
+                  >
+                    <DatePicker
+                      selectsRange
+                      startDate={startDate}
+                      endDate={endDate}
+                      onChange={handleChangeDate}
+                      inline
+                      maxDate={new Date()}
+                      // Do not close the calendar when date is selected
+                      onClickOutside={() => { }}
+                    />
+                    <div className={styles.dateButtons}>
+                      <button onClick={handleApplyFilter} className={styles.applyButton}>Apply Filter</button>
+                      <button onClick={handleClearFilter} className={styles.clearButton}>Clear Filter</button>
+                    </div>
+                  </div>
+                )}
 
                 <svg
                   onClick={() => setOpen(!open)}
@@ -242,18 +272,24 @@ const handleClearFilter = () => {
 
             <hr></hr>
 
-            <div className={styles.DateSecT}>
-              <p>Agent</p>
+            <div className={styles.DateSecT} onClick={closeCalender}>
+              <p>  {formatName(selectedAgentId === "all"
+                ? "Agent"
+                : isAgents?.find((agent) => agent.agent_id === selectedAgentId)?.agentName) || "Agent"}</p>
 
               <div className={styles.selectWrapper}>
                 <select
                   className={styles.agentSelect1}
                   value={selectedAgentId}
+
                   onChange={(e) => {
+
                     const selectedValue = e.target.value;
                     if (totalAgentView) {
+
                       onAgentChange(selectedValue);
                     } else {
+
                       onAgentChange(selectedValue);
                     }
                   }}
@@ -261,9 +297,9 @@ const handleClearFilter = () => {
                   <option value="all">All</option>
                   {isAgents?.map((agent) => (
                     <option key={agent.agent_id} value={agent.agent_id}>
-                      {agent.agentName.length > 9
-                        ? agent.agentName.slice(0, 7) + "..."
-                        : agent.agentName}
+                      {(agent.agentName.length > 7
+                        ? agent.agentName.slice(0, 5) + "..."
+                        : agent.agentName) + `(${agent.agentCode})`}
                     </option>
                   ))}
                 </select>
@@ -271,6 +307,7 @@ const handleClearFilter = () => {
             </div>
           </div>
         </section>
+        {/* (${agent.agentCode}) */}
       </div>
 
       {/* OffCanvas component */}

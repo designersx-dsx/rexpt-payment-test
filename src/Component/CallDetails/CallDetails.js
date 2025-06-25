@@ -3,21 +3,25 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
 import Loader2 from "../Loader2/Loader2";
+import DetailModal from "../DetailModal/DetailModal";
 
 const CallDetails = () => {
+  const [isChatModalOpen, setChatModalOpen] = useState(false);
   const [callData, setCallData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [visibleCount, setVisibleCount] = useState(0);
-  const [messagesPerReveal, setMessagesPerReveal] = useState(0); 
+  const [messagesPerReveal, setMessagesPerReveal] = useState(0);
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const agentData = JSON.parse(sessionStorage.getItem("dashboard-session-storage"));
+  const agentData = JSON.parse(
+    sessionStorage.getItem("dashboard-session-storage")
+  );
   const { callId } = useParams();
   const agents = agentData?.state?.agents || [];
   const navigate = useNavigate();
-   const [audioProgress, setAudioProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0); 
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const toggleAudio = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -29,12 +33,12 @@ const CallDetails = () => {
       setIsPlaying(false);
     }
   };
-const handleAudioProgress = () => {
+  const handleAudioProgress = () => {
     const audio = audioRef.current;
     if (audio) {
       const progress = (audio.currentTime / audio.duration) * 100;
       setAudioProgress(progress);
-      setCurrentTime(audio.currentTime); 
+      setCurrentTime(audio.currentTime);
     }
   };
 
@@ -47,7 +51,8 @@ const handleAudioProgress = () => {
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""
+      }${seconds}`;
   };
 
   useEffect(() => {
@@ -82,7 +87,7 @@ const handleAudioProgress = () => {
     }
   }, [callData]);
 
- useEffect(() => {
+  useEffect(() => {
     setVisibleCount(messagesPerReveal);
   }, [messagesPerReveal]);
 
@@ -91,24 +96,49 @@ const handleAudioProgress = () => {
   if (error) return <p>{error}</p>;
 
   const transcript = callData.transcript_object || [];
-  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  const showMoreMessages = () => {
-    setVisibleCount((prev) => Math.min(prev + messagesPerReveal, transcript.length));
-  };
-    let data = callData.call_analysis?.custom_analysis_data;
+  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString(
+    "en-GB",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }
+  );
+  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString(
+    "en-GB",
+    {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }
+  );
+  let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
+  
+const convertMsToMinSec = (durationMs) => {
+  const minutes = Math.floor(durationMs / 60000);
+  const seconds = Math.floor((durationMs % 60000) / 1000);
+  return `${minutes} Min ${seconds} Sec`;
+};
+   function formatName(name) {
+    if (!name) return "";
+
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
+  }
   return (
-    <div>
+    <div className={styles.CallDetailsMain}>
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div className={styles.profileBack}>
@@ -121,6 +151,8 @@ const handleAudioProgress = () => {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
+              {/* fcsadffdsfds */}
+              {/* hfhbgdhgfh */}
               <rect width="50" height="50" rx="25" fill="#F9F9F9" />
               <path
                 fill-rule="evenodd"
@@ -155,13 +187,12 @@ const handleAudioProgress = () => {
               <h2>{name || "Unknown"}</h2>
             </div>
             <div
-              className={`${styles.status} ${
-                callData.call_analysis?.user_sentiment === "Positive"
-                  ? styles.green
-                  : callData.call_analysis?.user_sentiment === "Neutral"
+              className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
+                ? styles.green
+                : callData.call_analysis?.user_sentiment === "Neutral"
                   ? styles.yellow
                   : styles.red
-              }`}
+                }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
             </div>
@@ -175,16 +206,15 @@ const handleAudioProgress = () => {
             <div className={styles.Part2}>
               <p>Attended by</p>
               <strong>
-                {callData?.agent_id
-                  ? agents.find((a) => a.agent_id === callData.agent_id)
-                      ?.agentName || "Unknown Agent"
+                {callData?.agent_id? formatName(agents.find((a) => a.agent_id === callData.agent_id)?.agentName) || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>
 
             <div className={styles.Part3}>
               <p>Durations</p>
-              <strong>{callData.call_cost?.total_duration_seconds} sec</strong>
+
+              <strong>{convertMsToMinSec(callData.duration_ms)}</strong>
             </div>
           </div>
         </div>
@@ -232,7 +262,7 @@ const handleAudioProgress = () => {
             </div>
             <div className={styles.channel}>
               <p className={styles.Ptext}>Call Recording</p>
-             <div className={styles.audioPlayer}>
+              <div className={styles.audioPlayer}>
                 <div onClick={toggleAudio} className={styles.playPauseBtn}>
                   {isPlaying ? (
                     // Pause Icon
@@ -297,13 +327,88 @@ const handleAudioProgress = () => {
           </div>
           <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
+              <h2>Chat Details</h2>
+            </div>
+            <div className={styles.ChatBox}>
+              {transcript.find((msg) => msg.role === "agent") && (
+                <div className={styles.messageLeft}>
+                  <div className={styles.bubbleLeft}>
+                    {transcript.find((msg) => msg.role === "agent").content}
+                  </div>
+                  <span className={styles.time}>Agent</span>
+                </div>
+              )}
+
+              {transcript.find((msg) => msg.role === "user") && (
+                <div className={styles.messageRight}>
+                  <div className={styles.bubbleRight}>
+                    {transcript.find((msg) => msg.role === "user").content}
+                  </div>
+                  <span className={styles.time}>User</span>
+                </div>
+              )}
+
+              <div
+                className={styles.chatBtn}
+                onClick={() => setChatModalOpen(true)}
+              >
+                <p>View Full Chat</p>
+              </div>
+            </div>
+
+            <DetailModal
+              isOpen={isChatModalOpen}
+              onClose={() => setChatModalOpen(false)}
+              height="80dvh"
+            >
+              <div className={styles.titlediv}>
+                <h1>Chat View</h1>
+              </div>
+              <div className={styles.ChatBox2}>
+                {transcript.map((entry, index) => (
+                  <div key={index} className={styles.messageWrapper}>
+                    {entry.role === "agent" ? (
+                      <>
+                        <div className={styles.messageLeftWrapper}>
+                          <img
+                            src="/svg/Rex1.svg"
+                            alt="Agent"
+                            className={styles.profileImage}
+                          />
+                          <div className={styles.messageLeft}>
+                            <div className={styles.bubbleLeft}>{entry.content}</div>
+                          </div>
+                        </div>
+                        <span className={styles.time}>Agent</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className={styles.messageWrapper2}>
+                          <div className={styles.messageRight}>
+                            <div className={styles.bubbleRight}>{entry.content}</div>
+                          </div>
+                          <span className={styles.time}>You</span>
+                        </div>
+
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+
+            </DetailModal>
+          </div>
+          <div className={styles.summaryDiv}>
+            <div className={styles.dataTitle}>
               <h2>Call summary</h2>
             </div>
             <p className={styles.Ptext}>
               {callData.call_analysis?.call_summary || "No data"}
             </p>
           </div>
-          <div className={styles.summaryDiv}>
+
+          {/* <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
               <h2>Chat Details</h2>
             </div>
@@ -334,8 +439,8 @@ const handleAudioProgress = () => {
                 Read More
               </button>
             )}
-          </div>
-          <div className={styles.summaryDiv}>
+          </div> */}
+          {/* <div className={styles.summaryDiv}>
             <div className={styles.dataTitle}>
               <h2>Outcome(Analysis)</h2>
             </div>
@@ -343,7 +448,7 @@ const handleAudioProgress = () => {
             <p className={styles.Ptext}>
               Analysis: Customer satisfied with the information provided.{" "}
             </p>
-          </div>
+          </div> */}
         </div>
       </section>
     </div>

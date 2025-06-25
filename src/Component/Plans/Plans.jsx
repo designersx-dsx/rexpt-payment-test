@@ -79,6 +79,35 @@ const Plan = ({ agentID, locationPath }) => {
               prices: filteredPrices,
             };
           }
+// =======
+//                     {/* Free Trial Plan */}
+//                     <div
+//                         className={`${styles.planBox} ${selected === 'free-trial' ? styles.selected : ''}`}
+//                         onClick={() => setSelected('free-trial')}
+//                     >
+//                         <div className={styles.part1}>
+//                             <label className={styles.radioLabel}>
+//                                 <input
+//                                     type="radio"
+//                                     name="plan"
+//                                     value="free-trial"
+//                                     checked={selected === 'free-trial'}
+//                                     onChange={() => setSelected('free-trial')}
+//                                 />
+//                                 <div className={styles.planContent}>
+//                                     <div className={styles.planTitle}>
+//                                         <div>
+//                                             <p>Free Trial</p>
+//                                             <span className={styles.description}>
+//                                                 Try all features free — includes 20 minutes
+//                                             </span>
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </label>
+//                         </div>
+//                     </div>
+// >>>>>>> payment_testing
 
           // Return null if no matching prices exist
           return null;

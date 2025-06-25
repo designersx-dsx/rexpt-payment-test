@@ -103,10 +103,13 @@
   color: #24252C;
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #e7e4e4 !important;
   outline: none;
   background-color: #f7f9fc;
   transition: border 0.3s ease;
+  width: 100% !important;
+  min-height: 40px !important;
+  background-color: #f7f9fc !important;
 }
 
 .infoItem input:focus,
@@ -150,10 +153,78 @@
   margin: 0;
   font-weight: 500;
   font-size: 19px;
+  display: flex;
+  align-items: center;
 }
+
 .error {
   color: red;
   font-size: 0.75rem;
   margin-top: 0.25rem;
 }
-.imageIcon{border: 1px solid rgb(128, 126, 126);border-radius: 50%;cursor: pointer;}
+
+.imageIcon {
+  border: 1px solid rgb(128, 126, 126);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.emailInput {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #E0E5F2;
+  border-radius: 8px;
+  font-size: 16px;
+  min-height: 55px;
+}
+
+.codeText {
+  font-size: 14px;
+  color: #6524EB;
+  margin-bottom: 0px;
+}
+
+.otpContainer {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.otpInput {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+
+
+
+
+
+
+.Otp {
+  background-color: #6524EB;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 55px;
+  font-size: 19px;
+  margin-top: 2rem;
+}
+
+@media screen and (min-width: 601px) {
+  .card {
+    width: 50%;
+    margin: auto;
+  }
+}

@@ -15,6 +15,8 @@ import Modal2 from "../Modal2/Modal2";
 import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import Footer2 from "./Footer/Footer2";
+import Card1 from "../Card1/Card1";
+import Card2  from "../Card2/Card2";
 import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
@@ -43,12 +45,13 @@ const AgentDashboard = () => {
     setCurrentAgentId,
     getAgentById,
   } = useAgentStore();
-
   const agentStatus = agentData?.agent?.isDeactivated;
-
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
   );
+
+  const [openCard, setOpenCard] = useState(null);
+
   const { setHasFetched } = useDashboardStore();
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -78,7 +81,8 @@ const AgentDashboard = () => {
   const [isAssignNumberModal, setIsAssignNumberModal] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [fullAddress, setFullAddress] = useState("");
-
+  const [knowledge_base_texts,setknowledge_base_texts]=useState("")
+  const [businessDetails,setBusinessDetails]=useState([])
   const openAddressModal = (address) => {
     setFullAddress(address);
     setIsAddressModalOpen(true);
@@ -107,7 +111,25 @@ const AgentDashboard = () => {
     setEventSlug("");
     setEventLength("");
   };
+   function formatName(name) {
+    if (!name) return "";
 
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
+  }
+
+  // sdsds
   const handleApiKeySubmit = async () => {
     if (!agentData?.agent) return;
 
@@ -227,51 +249,6 @@ const AgentDashboard = () => {
       console.error("Error in createCalEvent:", error);
     }
   };
-
-  // useEffect(() => {
-  //   const getAgentDetailsAndBookings = async () => {
-  //     try {
-  //       const response = await fetchAgentDetailById(agentDetails);
-  //       setAgentData(response?.data);
-  //       const voipNumbersStr = response?.data?.agent?.voip_numbers;
-  //       if (voipNumbersStr) {
-  //         try {
-  //           const numbersArray = JSON.parse(voipNumbersStr);
-  //           setAssignedNumbers(numbersArray);
-  //         } catch (e) {
-  //           console.warn("Failed to parse voip_numbers:", e);
-  //           setAssignedNumbers([]);
-  //         }
-  //       } else {
-  //         setAssignedNumbers([]);
-  //       }
-
-  //       const calApiKey = response?.data?.agent?.calApiKey;
-  //       if (calApiKey) {
-  //         const calResponse = await fetch(
-  //           `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
-  //         );
-  //         if (!calResponse.ok) {
-  //           throw new Error("Failed to fetch total bookings from Cal.com");
-  //         }
-
-  //         const bookingsData = await calResponse.json();
-  //         setTotalBookings(bookingsData.bookings?.length || 0);
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to fetch data", err.response || err.message || err);
-  //       setTotalBookings(0);
-  //       setAssignedNumbers([]);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (agentDetails ) {
-  //     getAgentDetailsAndBookings();
-  //   }
-  // }, [agentDetails]);
-  // console.log('agentData',agentData)
   useEffect(() => {
     const getAgentDetailsAndBookings = async () => {
       if (!agentDetails?.agentId) return;
@@ -355,10 +332,25 @@ const AgentDashboard = () => {
     client.on("call_started", () => setIsCallActive(true));
     client.on("call_ended", () => setIsCallActive(false));
     setRetellWebClient(client);
+    sessionStorage.removeItem('selectedfilterOption')
   }, []);
 
   // Start call handler
+  let micStream = '';
   const handleStartCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Store the stream globally or in state if needed
+      micStream = stream;
+    } catch (err) {
+      console.error("Microphone access denied or error:", err);
+      // alert("Please allow microphone access to proceed with the call.");
+      setPopupMessage("Microphone access is required to test agent.");
+      setPopupType("failed");
+      return;
+    }
+
     if (isCallInProgress || !retellWebClient || !agentData?.agent) {
       console.error("RetellWebClient or agent data not ready.");
       return;
@@ -462,14 +454,12 @@ const AgentDashboard = () => {
     localStorage.removeItem("additionalInstruction");
     localStorage.removeItem("knowledge_base_name");
     localStorage.removeItem("knowledge_base_id");
-
+    sessionStorage.removeItem("placeDetailsExtract")
+    sessionStorage.removeItem("agentNote")
     setModalOpen(false);
   };
-  // console.log(agentData,agentDetails?.agentId)
-
   // Open Widget modal
   const handleOpenWidgetModal = (agent) => {
-    console.log("agent", agent);
     const agentData = {
       business: agent.business,
       ...agent.agent,
@@ -527,6 +517,41 @@ const AgentDashboard = () => {
       : url;
   };
 
+ const handleOpenKnowledgeView=(knowledge_base_texts)=>{
+setknowledge_base_texts(knowledge_base_texts)
+  setOpenCard("card2")
+ }
+ const handleOpenBusinessView=(agentData)=>{
+   setOpenCard("card1")
+   setBusinessDetails(agentData?.business)
+
+ }
+ function formatName(name) {
+    if (!name) return "";
+
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
+    } else {
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      }
+      return name;
+    }
+  }
+   function formatBusinessName(name) {
+  if (!name) return "";
+
+  if (name.length > 25) {
+    return name.substring(0, 25) + "...";
+  }
+
+  return name;
+}
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -620,17 +645,17 @@ const AgentDashboard = () => {
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
                       <h3 className={styles.agentName}>
-                        {agentData?.agent?.agentName}
+                          {formatName(agentData?.agent?.agentName) || "John Vick"}
                         <span
                           className={
-                            agentData?.agent?.agentStatus
-                              ? styles.activeText
-                              : styles.InactiveText
+                            agentData?.agent?.isDeactivated==1
+                              ? styles.InactiveText 
+                              :  styles.activeText
                           }
                         >
-                          {agentData?.agent?.agentStatus
-                            ? "Active"
-                            : "Inactive"}
+                          {agentData?.agent?.isDeactivated== 1
+                            ? "Inactive"
+                            : "Active"}
                         </span>
                       </h3>
                       <p className={styles.agentAccent}>
@@ -676,11 +701,12 @@ const AgentDashboard = () => {
 
           <div className={styles.container}>
             <div className={styles.businessInfo}>
-              <div className={styles.card1}>
-                <h2>{agentData?.business?.businessName || "NA"}</h2>
+
+              <div className={styles.card1} >
+                <h2>{formatBusinessName(agentData?.business?.businessName || (agentData?.knowledge_base_texts?.name) || agentData?.business?.googleBusinessName)}</h2>
+
                 <p>{agentData?.business?.businessSize || "NA"}</p>
                 <div className={styles.health}>
-                  {/* <h3>Health <span> /Categories</span></h3> */}
                   <h3>
                     {agentData?.business?.businessType || "NA"}
 
@@ -693,10 +719,10 @@ const AgentDashboard = () => {
                   </h3>
                 </div>
 
-                <h4>Business Details</h4>
+                <h4 onClick={() =>handleOpenBusinessView(agentData)}>Business Details</h4>
               </div>
 
-              <div className={styles.card2}>
+              <div className={styles.card2} >
                 <h2>
                   URL:
                   <span style={{ fontSize: "12px" }}>
@@ -756,14 +782,17 @@ const AgentDashboard = () => {
                 </div>
 
                 <div className={styles.address}>
-                  <img src="svg/location.svg" alt="location" />
-                  <p
-                    onClick={() => openAddressModal(agentData?.business?.address1)}
-                    style={{ cursor: "pointer", textDecoration: "underline" }}
-                  >{truncateAddress(agentData?.business?.address1, 5)}</p>
+                  {agentData?.business?.address1 &&
+                    <><img src="svg/location.svg" alt="location" />
+                      <p
+                        onClick={() => openAddressModal(agentData?.business?.address1)}
+                        style={{ cursor: "pointer", textDecoration: "underline" }}
+                      >{truncateAddress(agentData?.business?.address1, 5)}</p>
+                    </>
+                  }
                 </div>
 
-                <h4>Knowledge Base</h4>
+                <h4 onClick={() => handleOpenKnowledgeView(agentData)} >Knowledge Base</h4>
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
@@ -937,7 +966,14 @@ const AgentDashboard = () => {
               </div>
               <div
                 className={styles.managementItem}
-                onClick={handleCallTransfer}
+                  onClick={() => {
+                  if (agentStatus === true) {
+                    handleInactiveAgentAlert();
+                  } else {
+                    handleCallTransfer();
+                  }
+                }}
+                // onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -960,13 +996,33 @@ const AgentDashboard = () => {
 
               <div
                 className={styles.managementItem}
-                onClick={async () => {
-                  await fetchPrevAgentDEtails(
+                   onClick={async() => {
+                  if (agentStatus === true) {
+                    handleInactiveAgentAlert();
+                  } else {
+                   
+                     try {
+                    await fetchPrevAgentDEtails(
                     agentData?.agent?.agent_id,
-                    agentData?.agent?.businessId
-                  );
-                  setModalOpen(true);
+                    agentData?.agent?.businessId);
+                     } catch (error) {
+                    await fetchPrevAgentDEtails(
+                    agentData?.agent?.agent_id,
+                    agentData?.agent?.businessId);
+                    }
+                    setModalOpen(true);
+                  
+                  
+                 
+                  }
                 }}
+                // onClick={async () => {
+                //   await fetchPrevAgentDEtails(
+                //     agentData?.agent?.agent_id,
+                //     agentData?.agent?.businessId
+                //   );
+                //   setModalOpen(true);
+                // }}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1060,7 +1116,7 @@ const AgentDashboard = () => {
                 <p className={styles.managementText}>Upgrade</p>
               </div>
 
-              <div
+              {/* <div
                 className={styles.managementItem}
                 onClick={() => setShowModal(true)}
               >
@@ -1083,7 +1139,7 @@ const AgentDashboard = () => {
                   </svg>
                 </div>
                 <p className={styles.managementText}>Delete Agent</p>
-              </div>
+              </div> */}
             </div>
 
             <h1 className={styles.Agenttitle}>Agent Analysis</h1>
@@ -1162,7 +1218,7 @@ const AgentDashboard = () => {
                 setCallLoading={setCallLoading}
                 agentName={agentData?.agent?.agentName}
                 agentAvatar={agentData?.agent?.avatar}
-                businessName={agentData?.business?.businessName}
+                businessName={agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}
               />
             </Modal2>
           )}
@@ -1379,6 +1435,20 @@ const AgentDashboard = () => {
             </Modal2>
           )}
 
+          {/* Card1 Section Modal Start */}
+          <DetailModal
+            isOpen={!!openCard}
+            onClose={() => setOpenCard(null)}
+            height="80vh">
+            {openCard === "card1" && (
+              <Card1  data={businessDetails}/>
+            )}
+
+            {openCard === "card2" && (
+       <Card2 agentKnowledge={knowledge_base_texts} />
+            )}
+          </DetailModal>
+
           <DetailModal
             isOpen={isModalOpen}
             onClose={() => handleCloseEditagentModalOpen()}
@@ -1423,11 +1493,10 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       agent_id,
       businessId
     );
-    // console.log('response',response)
+
     const agent = response?.data?.agent;
     const business = response?.data?.business;
 
-    // console.log('agent',agent)
     sessionStorage.setItem("UpdationMode", "ON");
     sessionStorage.setItem("agentName", agent.agentName);
     sessionStorage.setItem("agentGender", agent.agentGender);
@@ -1471,6 +1540,8 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         googleListing: business.googleUrl,
         aboutBusiness: business.aboutBusiness,
         note: business.additionalInstruction,
+        isGoogleListing: business.isGoogleListing,
+        isWebsiteUrl: business.isWebsiteUrl
       })
     );
 
@@ -1526,7 +1597,6 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         .map((service) => ({ service }))
       : [];
 
-    console.log("Final cleaned services to store:", cleanedCustomServices);
 
     sessionStorage.setItem(
       "selectedCustomServices",
@@ -1534,13 +1604,22 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     );
 
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    // sessionStorage.setItem('businessLocation', JSON.stringify({
-    //   country: business?.country,
-    //   state: business?.state.trim(),
-    //   city: business?.city.trim(),
-    //   address1: business?.address1.trim(),
-    //   address2: business?.address2.trim(),
-    // }))
+    let raw_knowledge_base_texts = business?.knowledge_base_texts || [];
+
+    if (typeof raw_knowledge_base_texts === "string") {
+      try {
+        raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
+      } catch (err) {
+        console.error("Failed to parse customServices:", raw_knowledge_base_texts);
+        raw_knowledge_base_texts = [];
+      }
+    }
+
+    sessionStorage.setItem(
+      "placeDetailsExtract",
+      JSON.stringify(raw_knowledge_base_texts)
+    );
+    sessionStorage.setItem("agentNote", agent?.additionalNote);
   } catch (error) {
     console.log("An Error Occured while fetching Agent Data for ", error);
   }

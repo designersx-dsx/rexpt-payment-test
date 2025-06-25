@@ -176,11 +176,7 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
   try {
     const res = await api.patch(`/agent/toggle-activation/${agentId}`, {
       deactivate,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    },);
     return res.data;
   } catch (error) {
     console.error("Error toggling agent activation:", error.response?.data || error.message);
@@ -191,7 +187,7 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
 export const getUserDetails = async (userId) => {
   try {
     const response = await api.get(`/endusers/users/${userId}`);
-    console.log(response,"response")
+    console.log(response, "response")
     return response.data;
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -199,7 +195,7 @@ export const getUserDetails = async (userId) => {
   }
 };
 
-export const updateUserDetails = async (userId,updateData) => {
+export const updateUserDetails = async (userId, updateData) => {
   try {
     const response = await api.put(`/endusers/users/${userId}`, updateData);
     return response.data;
@@ -212,7 +208,7 @@ export const updateUserDetails = async (userId,updateData) => {
 
 export const getUserAgentLimitStatus = async (userId) => {
   try {
-    const res = await api.get(`/endusers/user-agent-limit-status?userId=${userId}`,{
+    const res = await api.get(`/endusers/user-agent-limit-status?userId=${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -242,10 +238,10 @@ export const updateLlm = async (llmId, payload) => {
   }
 };
 export const fetchLlmDetails = async (llm_id) => {
-  const data={llmId:llm_id}
+  const data = { llmId: llm_id }
   try {
-    const response = await axios.post(`${API_BASE_URL}/agent/getLlmDetails`,data,
-       {
+    const response = await axios.post(`${API_BASE_URL}/agent/getLlmDetails`, data,
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
@@ -258,23 +254,48 @@ export const fetchLlmDetails = async (llm_id) => {
     console.log(error)
   }
 }
-export const addGeneralTools=async(llmId,transfers)=>{
+export const addGeneralTools = async (llmId, transfers) => {
   console.log(transfers)
-try {
-  const response=await  axios.post(`${API_BASE_URL}/agent/addGeneralTools`,{
+  try {
+    const response = await axios.post(`${API_BASE_URL}/agent/addGeneralTools`, {
       llmId,
       transfers
-  },  {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      })
-} catch (error) {
-  
-}
-}
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    })
+  } catch (error) {
 
+  }
+}
+export const getBusinessDetailsByBusinessId = async (businessId) => {
+  try {
+    const res = await api.get(`/businessDetails/by-business-id/${businessId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching business details by business ID:", error.response?.data || error.message);
+    throw new Error("Failed to fetch business details");
+  }
+};
+
+export const updateAgentKnowledgeBaseId = async (agentId, knowledgeBaseId) => {
+  try {
+    const res = await api.patch(`/agent/${agentId}/knowledge-base`, {
+      knowledgeBaseId,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error updating agent knowledge base ID:", error);
+    throw new Error("Failed to update knowledge base ID for agent");
+  }
+};
+
+export const updateEmailSendOtp = async (email, userId) => {
+  const res = await api.post('/endusers/updateEmailSendOtp', { email, userId });
+  return res;
+};
 
 
 export default api;

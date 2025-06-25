@@ -191,6 +191,30 @@ input:checked + .slider:before {
   object-fit: contain;
 }
 
+.customClass {
+  max-height: 400px;
+  overflow: scroll;
+  padding-right: 10px;
+}
+
+.customClass::-webkit-scrollbar {
+  width: 4px;
+}
+
+.customClass::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.customClass::-webkit-scrollbar-thumb {
+  background-color: #6524EB;
+  border-radius: 4px;
+}
+
+
+
+
+
+
 .planBox {
   border: 1px solid #ddd;
   border-radius: 12px;
