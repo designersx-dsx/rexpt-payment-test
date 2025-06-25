@@ -124,6 +124,8 @@ Let’s begin assisting the customer!
       business: {
         businessName: getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom,
         email:  getBusinessNameFromGoogleListing?.email || "",
+        aboutBusiness:getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness
+
       },
       languageSelect: languageSelect,
       businessType,

@@ -366,6 +366,17 @@ const AgentDashboard = () => {
           body: JSON.stringify({ agent_id: agentData?.agent?.agent_id }),
         }
       );
+         if(res.status==403){
+   
+        setPopupMessage("Agent Plan minutes exhausted");
+        setPopupType("failed");
+        setIsCallInProgress(false);
+             setTimeout(() => {
+              setPopupMessage("")
+              
+        }, 5000);
+        return;
+      }
       const data = await res.json();
       await retellWebClient.startCall({ accessToken: data.access_token });
       setCallId(data?.call_id);
