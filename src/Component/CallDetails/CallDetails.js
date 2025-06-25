@@ -114,13 +114,13 @@ const CallDetails = () => {
   );
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
-  
-const convertMsToMinSec = (durationMs) => {
-  const minutes = Math.floor(durationMs / 60000);
-  const seconds = Math.floor((durationMs % 60000) / 1000);
-  return `${minutes} Min ${seconds} Sec`;
-};
-   function formatName(name) {
+
+  const convertMsToMinSec = (durationMs) => {
+    const minutes = Math.floor(durationMs / 60000);
+    const seconds = Math.floor((durationMs % 60000) / 1000);
+    return `${minutes} Min ${seconds} Sec`;
+  };
+  function formatName(name) {
     if (!name) return "";
 
     if (name.includes(" ")) {
@@ -206,7 +206,7 @@ const convertMsToMinSec = (durationMs) => {
             <div className={styles.Part2}>
               <p>Attended by</p>
               <strong>
-                {callData?.agent_id? formatName(agents.find((a) => a.agent_id === callData.agent_id)?.agentName) || "Unknown Agent"
+                {callData?.agent_id ? formatName(agents.find((a) => a.agent_id === callData.agent_id)?.agentName) || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>
@@ -331,13 +331,20 @@ const convertMsToMinSec = (durationMs) => {
             </div>
             <div className={styles.ChatBox}>
               {transcript.find((msg) => msg.role === "agent") && (
-                <div className={styles.messageLeft}>
-                  <div className={styles.bubbleLeft}>
-                    {transcript.find((msg) => msg.role === "agent").content}
+                <div className={styles.messageRow}>
+                  <div className={styles.profile}>
+                    <img src="/svg/Rex1.svg" alt="Agent" className={styles.avatar} />
                   </div>
-                  <span className={styles.time}>Agent</span>
+
+                  <div className={styles.messageLeft}>
+                    <div className={styles.bubbleLeft}>
+                      {transcript.find((msg) => msg.role === "agent").content}
+                    </div>
+                    <span className={styles.time}>Agent</span>
+                  </div>
                 </div>
               )}
+
 
               {transcript.find((msg) => msg.role === "user") && (
                 <div className={styles.messageRight}>

@@ -171,6 +171,7 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 1rem;
+  cursor: pointer;
 }
 
 .container {
@@ -225,6 +226,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .profileSection img {
@@ -451,6 +453,7 @@
   font-size: 18px;
   font-weight: 600;
   color: #24252c;
+  cursor: pointer;
 }
 
 .card1 span {
@@ -527,6 +530,7 @@
   font-size: 18px;
   font-weight: 600;
   color: #24252c;
+  cursor: pointer;
 }
 
 .Agenttitle {

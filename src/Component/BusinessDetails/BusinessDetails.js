@@ -46,9 +46,6 @@ const BusinessDetails = () => {
   const [prevBuisnessType, setprevBuisnessType] = useState("");
   const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
 
-
-
-  // console.log(customBuisness, "customBuisness")
   const location = useLocation();
 
   const businessTypes = [
@@ -103,6 +100,27 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Web-Design-Agency-icon.svg",
     },
+    {
+      type: "Architect",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Architect-icon.svg",
+    },
+     {
+      type: "Property Rental & Leasing Service",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Property Rental & Leasing Service.svg",
+    },
+   {
+        type: "Construction Services",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Construction Services.svg",
+   },
+    {
+        type: "Insurance Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Insurance Agency.svg",
+   },
+   
     {
       type: "Other",
       subtype: "Your Journey Begins Here",

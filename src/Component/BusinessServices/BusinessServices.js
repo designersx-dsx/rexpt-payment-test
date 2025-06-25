@@ -155,11 +155,13 @@ const BusinessServices = () => {
     {
       type: "Architect",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Architect-icon.svg",
       services: [
         "Residential Building Design",
         "Commercial Building Plans",
         "Renovation Planning",
+        "Permit Drawings",
+        "Site Planning",
         "Project Management",
         "Other"
       ],
@@ -180,7 +182,7 @@ const BusinessServices = () => {
     {
       type: "Construction Services",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Construction Services.svg",
       services: [
         "New Building Construction",
         "Home Renovations",
@@ -230,7 +232,7 @@ const BusinessServices = () => {
     {
       type: "Insurance Agency",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Insurance Agency.svg",
       services: [
         "Life Insurance",
         "Health Insurance",
@@ -310,7 +312,7 @@ const BusinessServices = () => {
     {
       type: "Property Rental & Leasing Service",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Property Rental & Leasing Service.svg",
       services: [
         "Tenant Screening",
         "Lease Agreement Preparation",
