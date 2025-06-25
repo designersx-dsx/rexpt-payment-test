@@ -308,7 +308,6 @@ const BusinessServices = () => {
         "Other"
       ],
     },
-
     {
       type: "Property Rental & Leasing Service",
       subtype: "Your Journey Begins Here",
@@ -321,6 +320,55 @@ const BusinessServices = () => {
         "Other"
       ],
     },
+    {
+      type: "Old Age Home",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Old Age Home.svg",
+      services: [
+        "Assisted Living",
+        "Meal Services",
+        "Housekeeping & Laundry",
+        "Recreational Activities",
+        "Physiotherapy",
+        "Emergency Support",
+        "Other"
+      ],
+    },
+    {
+      type: "Travel Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Travel Agency.svg",
+      services: [
+        "Flight Booking",
+        "Hotel Reservations",
+        "Holiday Packages",
+        "Visa Assistance",
+        "Travel Insurance",
+        "Customized Itineraries",
+        "Cruise Bookings",
+        "Local Tours & Sightseeing",
+        "Car Rentals",
+        "Other"
+      ],
+    },
+    {
+      type: "Ticket Booking",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Ticket Booking.svg",
+      services: [
+        "Flight Tickets",
+        "Train Tickets",
+        "Bus Tickets",
+        "Movie Tickets",
+        "Event Tickets",
+        "Amusement Park Tickets",
+        "Concert & Show Tickets",
+        "Sports Tickets",
+        "Other"
+      ],
+    }
+    ,
+    ,
     {
       type: "Other Local Business",
       subtype: "Your Journey Begins Here",
