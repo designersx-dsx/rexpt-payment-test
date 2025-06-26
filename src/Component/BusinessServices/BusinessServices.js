@@ -383,7 +383,95 @@ const BusinessServices = () => {
         "Debt Management",
         "Other"
       ],
+    },
+    {
+      type: "Beauty Parlour",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Beauty Parlour.svg",
+      services: [
+        "Hair Cutting & Styling",
+        "Facials & Cleanups",
+        "Manicure & Pedicure",
+        "Bridal Makeup",
+        "Hair Coloring & Highlights",
+        "Waxing & Threading",
+        "Skin Treatments",
+        "Makeup for Events",
+        "Spa & Massage Services",
+        "Other"
+      ],
+    },
+    {
+      type: "Nail Salon",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Nail Saloon.svg",
+      services: [
+        "Manicure",
+        "Pedicure",
+        "Nail Art",
+        "Gel Nails",
+        "Acrylic Nails",
+        "Nail Extensions",
+        "Cuticle Care",
+        "Nail Repair & Removal",
+        "Hand & Foot Spa",
+        "Other"
+      ],
     }
+    ,
+    {
+      type: "Barber Studio/Shop",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Barber.svg",
+      services: [
+        "Haircut",
+        "Beard Trimming & Styling",
+        "Shaving & Grooming",
+        "Hair Coloring",
+        "Head Massage",
+        "Facial for Men",
+        "Scalp Treatment",
+        "Hair Wash & Styling",
+        "Kids Haircut",
+        "Other"
+      ],
+    }
+    ,
+    {
+      type: "Hair Stylist",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Hair Stylist.svg",
+      services: [
+        "Hair Cutting & Trimming",
+        "Hair Styling",
+        "Blow Dry & Ironing",
+        "Hair Coloring & Highlights",
+        "Hair Spa",
+        "Keratin & Smoothening Treatments",
+        "Hair Extensions",
+        "Scalp Treatments",
+        "Bridal & Occasion Hairstyles",
+        "Other"
+      ],
+    }
+    ,
+    {
+  type: "Bakery",
+  subtype: "Your Journey Begins Here",
+  icon: "svg/Bakery.svg",
+  services: [
+    "Custom Cakes",
+    "Birthday & Wedding Cakes",
+    "Pastries & Cupcakes",
+    "Cookies & Biscuits",
+    "Bread & Buns",
+    "Chocolates & Desserts",
+    "Eggless & Sugar-Free Items",
+    "Bulk & Party Orders",
+    "Online Ordering & Delivery",
+    "Other"
+  ],
+}
 
     ,
     {

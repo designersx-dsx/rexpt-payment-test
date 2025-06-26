@@ -140,12 +140,38 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Accounting Services.svg",
     },
-       {
+    {
       type: "Financial Planners",
       subtype: "Your Journey Begins Here",
       icon: "svg/Financial Planners.svg",
     },
+    {
+      type: "Beauty Parlour",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Beauty Parlour.svg",
+    },
+     {
+      type: "Nail Salon",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Nail Saloon.svg",
+    },
+     {
+      type: "Barber Studio/Shop",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Barber.svg",
+    },
+    {
+      type: "Hair Stylist",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Hair Stylist.svg",
+    },
+     {
+      type: "Bakery",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Bakery.svg",
+    },
    
+
     {
       type: "Other",
       subtype: "Your Journey Begins Here",
