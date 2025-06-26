@@ -170,7 +170,22 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Bakery.svg",
     },
-   
+      {
+      type: "Dry Cleaner",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Dry Cleaner.svg",
+    },
+     {
+      type: "Cleaning Janitorial Service",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Cleaning Janitorial Service.svg",
+    },
+    // {
+    //   type: "Marketing Agency",
+    //   subtype: "Your Journey Begins Here",
+    //   icon: "svg/Marketing Agency.svg",
+    // },
+
 
     {
       type: "Other",

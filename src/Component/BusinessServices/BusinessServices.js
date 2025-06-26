@@ -130,7 +130,7 @@ const BusinessServices = () => {
     {
       type: "Marketing Agency",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Marketing Agency.svg",
       services: [
         "Social Media Advertising",
         "Content Creation",
@@ -456,23 +456,40 @@ const BusinessServices = () => {
     }
     ,
     {
-  type: "Bakery",
+      type: "Bakery",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Bakery.svg",
+      services: [
+        "Custom Cakes",
+        "Birthday & Wedding Cakes",
+        "Pastries & Cupcakes",
+        "Cookies & Biscuits",
+        "Bread & Buns",
+        "Chocolates & Desserts",
+        "Eggless & Sugar-Free Items",
+        "Bulk & Party Orders",
+        "Online Ordering & Delivery",
+        "Other"
+      ],
+    },
+    {
+  type: "Cleaning Janitorial Service",
   subtype: "Your Journey Begins Here",
-  icon: "svg/Bakery.svg",
+  icon: "svg/Cleaning Janitorial Service.svg",
   services: [
-    "Custom Cakes",
-    "Birthday & Wedding Cakes",
-    "Pastries & Cupcakes",
-    "Cookies & Biscuits",
-    "Bread & Buns",
-    "Chocolates & Desserts",
-    "Eggless & Sugar-Free Items",
-    "Bulk & Party Orders",
-    "Online Ordering & Delivery",
+    "Residential Cleaning",
+    "Commercial Office Cleaning",
+    "Deep Cleaning Services",
+    "Move-In/Move-Out Cleaning",
+    "Carpet & Upholstery Cleaning",
+    "Window Cleaning",
+    "Disinfection & Sanitization",
+    "Post-Construction Cleaning",
+    "Restroom Cleaning & Maintenance",
     "Other"
   ],
 }
-
+,
     ,
     {
       type: "Other Local Business",
