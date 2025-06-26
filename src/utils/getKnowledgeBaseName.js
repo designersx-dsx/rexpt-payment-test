@@ -34,7 +34,7 @@ import { countAgentsbyUserId } from "../Store/apiStore";
     { name: "Beauty Parlour", code: "bea_par" },
     { name: "Nail Saloon", code: "nai_sal" },
     { name: "Saloon", code: "sal" },
-    { name: "Barber", code: "barb" },
+    { name: "Barber Studio/Shop", code: "barb" },
     { name: "Hair Stylist", code: "hai_sty" },
     { name: "Dry Cleaner", code: "dry_cle" },
     { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
