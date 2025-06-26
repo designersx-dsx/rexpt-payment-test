@@ -9,17 +9,22 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
+import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
+import decodeToken from "../../lib/decodeToken";
 
 const BusinessListing = () => {
   const [businessName, setBusinessName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
-  const [aboutBusiness, setAboutBusiness] = useState("");
+  const [aboutBussiness, setAboutBusiness] = useState("");
   const [loading, setLoading] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const token = localStorage.getItem("token");
+  const decodeTokenData = decodeToken(token);
+  const userId = decodeTokenData?.id;
   const navigate = useNavigate();
   const EditingMode1 = localStorage.getItem("UpdationMode");
   const setHasFetched=true;
@@ -70,7 +75,7 @@ const BusinessListing = () => {
       case "email":
         setEmail(value);
         break;
-      case "aboutBusiness":
+      case "aboutBussiness":
         setAboutBusiness(value);
         break;
       default:
@@ -113,7 +118,7 @@ const BusinessListing = () => {
         phone: phoneNumber,
         address: address,
         email: email,
-        aboutBusiness: aboutBusiness,
+        aboutBussiness: aboutBussiness,
         // name: businessName || placeDetails?.businessName || "",
       };
       sessionStorage.setItem(
@@ -130,47 +135,46 @@ const BusinessListing = () => {
         Enterprise: 6,
       };
       const packageValue = packageMap[packageName] || 1;
+      const knowledgeBaseName=await getKnowledgeBaseName(business,userId,packageValue);
+      // const sanitize = (str) =>
+      //   String(str || "")
+      //     .trim()
+      //     .replace(/\s+/g, "_");
 
-      const sanitize = (str) =>
-        String(str || "")
-          .trim()
-          .replace(/\s+/g, "_");
-
-      const businessTypes = [
-        { name: "Restaurant", code: "rest" },
-        { name: "Real Estate Broker", code: "rea_est_bro" },
-        { name: "Saloon", code: "sal" },
-        { name: "Doctor's Clinic", code: "doct_cli" },
-        { name: "Dentist Office", code: "dent_off" },
-        { name: "Dry Cleaner", code: "dry_cle" },
-        { name: "Web Design Agency", code: "web_des_age" },
-        { name: "Marketing Agency", code: "mkt_age" },
-        { name: "Gym & Fitness Center", code: "gym_fit" },
-        { name: "Personal Trainer", code: "per_tra" },
-        { name: "Architect", code: "arch" },
-        { name: "Interior Designer", code: "int_des" },
-        { name: "Construction Services", code: "con_ser" },
-        { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
-        { name: "Transport Company", code: "tra_com" },
-        { name: "Landscaping Company", code: "land_com" },
-        { name: "Insurance Agency", code: "ins_age" },
-        { name: "Financial Services", code: "fin_ser" },
-        { name: "Accounting Services", code: "acc_ser" },
-        { name: "Car Repair & Garage", code: "car_rep" },
-        { name: "Boat Repair & Maintenance", code: "boa_rep" },
-        { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
-        { name: "Other Local Business", code: "oth_loc_bus" },
-        { name: "Other", code: business?.customBuisness?.slice(0, 3) },
-      ];
-
-      const matchedBusiness = businessTypes.find(
-        (item) => item.name === business?.businessType
-      );
-      const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
-      const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
-      const knowledgeBaseName = `${sanitize(
-        businessCode
-      )}_${shortBusinessName}_${packageValue}_#${agentCount}`;
+      // const businessTypes = [
+      //   { name: "Restaurant", code: "rest" },
+      //   { name: "Real Estate Broker", code: "rea_est_bro" },
+      //   { name: "Saloon", code: "sal" },
+      //   { name: "Doctor's Clinic", code: "doct_cli" },
+      //   { name: "Dentist Office", code: "dent_off" },
+      //   { name: "Dry Cleaner", code: "dry_cle" },
+      //   { name: "Web Design Agency", code: "web_des_age" },
+      //   { name: "Marketing Agency", code: "mkt_age" },
+      //   { name: "Gym & Fitness Center", code: "gym_fit" },
+      //   { name: "Personal Trainer", code: "per_tra" },
+      //   { name: "Architect", code: "arch" },
+      //   { name: "Interior Designer", code: "int_des" },
+      //   { name: "Construction Services", code: "con_ser" },
+      //   { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
+      //   { name: "Transport Company", code: "tra_com" },
+      //   { name: "Landscaping Company", code: "land_com" },
+      //   { name: "Insurance Agency", code: "ins_age" },
+      //   { name: "Financial Services", code: "fin_ser" },
+      //   { name: "Accounting Services", code: "acc_ser" },
+      //   { name: "Car Repair & Garage", code: "car_rep" },
+      //   { name: "Boat Repair & Maintenance", code: "boa_rep" },
+      //   { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
+      //   { name: "Other Local Business", code: "oth_loc_bus" },
+      //   { name: "Other", code: business?.customBuisness?.slice(0, 3) },
+      // ];
+      // const matchedBusiness = businessTypes.find(
+      //   (item) => item.name === business?.businessType
+      // );
+      // const businessCode = matchedBusiness ? matchedBusiness.code : "unknown";
+      // const shortBusinessName = sanitize(business?.businessName)?.slice(0, 10);
+      // const knowledgeBaseName = `${sanitize(
+      //   businessCode
+      // )}_${shortBusinessName}_${packageValue}_#${agentCount}`;
 
       const businessData = {
         businessName:  businessName || placeDetails?.businessName || "",
@@ -183,7 +187,7 @@ const BusinessListing = () => {
         businessStatus: placeDetails?.businessStatus || "",
         categories: Array.isArray(placeDetails?.categories) ? placeDetails.categories.join(", ") : "",
         email: email,
-        aboutBussiness: aboutBusiness
+        aboutBussiness: aboutBussiness
       };
       const placeDetailsForKBT = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
       const readableDetails = Object?.entries(placeDetailsForKBT)
@@ -224,9 +228,8 @@ const BusinessListing = () => {
     //Crate Knowledge Base
       formData2.append("googleUrl", aboutBusinessForm.googleListing);
       formData2.append("webUrl", aboutBusinessForm.businessUrl.trim());
-      formData2.append("aboutBusiness", aboutBusiness);
+      formData2.append("aboutBusiness", aboutBussiness);
       formData2.append("additionalInstruction", aboutBusinessForm.note || "");
-      formData2.append("knowledge_base_name", knowledgeBaseName);
       formData2.append("agentId", localStorage.getItem("agent_id"));
       formData2.append("googleBusinessName",displayBusinessName || "");
       formData2.append("address1", businessData.address);
@@ -269,6 +272,8 @@ const BusinessListing = () => {
           }
         );
         formData2.append("knowledge_base_id", response?.data?.knowledge_base_id);
+        formData2.append("knowledge_base_name", knowledgeBaseName);
+
         knowledge_Base_ID = response.data.knowledge_base_id;
         sessionStorage.setItem("knowledgeBaseId", knowledge_Base_ID);
       }
@@ -411,9 +416,9 @@ const BusinessListing = () => {
               <label>About My Business</label>
               <textarea
                 rows="5"
-                value={aboutBusiness}
+                value={aboutBussiness}
                 onChange={(e) =>
-                  handleInputChange("aboutBusiness", e.target.value)
+                  handleInputChange("aboutBussiness", e.target.value)
                 }
                 placeholder="Describe"
               />

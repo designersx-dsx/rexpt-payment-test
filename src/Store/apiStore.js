@@ -85,6 +85,17 @@ export const listAgents = async () => {
   return res.data;
 }
 
+export const countAgentsbyUserId = async (userId) => {
+  try {
+    const res = await api.get(`${API_BASE_URL}/agent/listAgents?userId=${userId}`);
+    console.log('res',res)
+    return res.data.length  || 0;
+  } catch (error) {
+    console.error("Error fetching agent count:", error);
+    return 0;
+  }
+};
+
 export const updateProfilePicture = async (userId, data) => {
   const res = await api.patch(`${API_BASE_URL}/endusers/user/update_profile_picture/${userId}`, data, {
     headers: { 'Content-Type': 'multipart/form-data' },

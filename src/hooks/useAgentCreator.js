@@ -136,8 +136,8 @@ Let’s begin assisting the customer!
 
 
 
-    // console.log('prompt1',filledPrompt)
-    // return
+    console.log('prompt1',filledPrompt)
+    return
 
 
     //updation here
