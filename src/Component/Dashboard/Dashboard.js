@@ -102,18 +102,15 @@ function Dashboard() {
   const dropdownRef = useRef(null);
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
 
+   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [agentToDelete, setAgentToDelete] = useState(null);
+
   useEffect(() => {
-    // Dashboard pe aate hi naya history state add karo
     window.history.pushState(null, document.title, window.location.pathname);
-
-    // Back button dabane pe redirect karo
     const handlePopState = () => {
-      navigate("/dashboard"); // Wapas dashboard pe hi rakho
+      navigate("/dashboard"); 
     };
-
     window.addEventListener("popstate", handlePopState);
-
-    // Cleanup karo jab component unmount ho
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
   const handleAssignNumberClick = (agent, e) => {
@@ -494,6 +491,35 @@ function Dashboard() {
 
     setRetellWebClient(client);
   }, []);
+  const handleDelete = async (agentId) => {
+    try {
+      const storedDashboard = JSON.parse(
+        sessionStorage.getItem("dashboard-session-storage")
+      );
+
+      const agents = storedDashboard?.state?.agents || [];
+
+      if (agents.length === 1) {
+        setPopupType("failed");
+        setPopupMessage(
+          "Cannot delete. You must have at least two agents to delete one agent."
+        );
+        setShowDeleteConfirm(false);
+        return;
+      }
+      await deleteAgent(agentId);
+      const updatedAgents = localAgents.filter(
+        (agent) => agent.agent_id !== agentId
+      );
+      setLocalAgents(updatedAgents);
+      setPopupMessage("Agent deleted successfully!");
+      setPopupType("success");
+      setHasFetched(false);
+    } catch (error) {
+      setPopupMessage(`Failed to delete agent: ${error.message}`);
+      setPopupType("failed");
+    }
+  };
   // Start call
   let micStream = "";
   const handleStartCall = async () => {
@@ -1125,7 +1151,7 @@ function Dashboard() {
                       >
                         Upgrade
                       </div>
-                      {/* <div key={agent.agent_id}>
+                      <div key={agent.agent_id}>
                         <div
                           className={styles.OptionItem}
                           onMouseDown={(e) => {
@@ -1136,7 +1162,7 @@ function Dashboard() {
                         >
                           Delete Agent
                         </div>
-                      </div> */}
+                      </div>
                       <div
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
@@ -1449,6 +1475,49 @@ function Dashboard() {
                   )}
                 </>
               )}
+            </div>
+          </div>
+        )}
+         {showDeleteConfirm && agentToDelete && (
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <div
+              className={styles.modalContainer}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2>Are you sure?</h2>
+              <p>
+                Do you want to delete agent{" "}
+                <strong>{agentToDelete.agentName}</strong>?
+              </p>
+              <div className={styles.modalButtons}>
+                <button
+                  className={`${styles.modalButton} ${styles.cancel}`}
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  No
+                </button>
+                <button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  onClick={async () => {
+                    try {
+                      await handleDelete(agentToDelete.agent_id);
+                      setShowDeleteConfirm(false);
+                      setAgentToDelete(null);
+                    } catch (error) {
+                      setPopupMessage(
+                        `Failed to delete agent: ${error.message}`
+                      );
+                      setPopupType("failed");
+                      setShowDeleteConfirm(false);
+                    }
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
             </div>
           </div>
         )}
