@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState, useEffect, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../Component/CallTransfer/CallTransfer.module.css";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
@@ -7,14 +11,14 @@ import PopUp from "../Popup/Popup";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import axios from "axios";
-const AboutBusinessNext = () => {
+const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed,  setLoading,onStepChange }, ref) => {
   const navigate = useNavigate();
   const [services, setServices] = useState([{ service: "" }]);
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const sessionBusinessiD = sessionStorage.getItem("bId");
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
-  const [Loading, setLoading] = useState(null);
+  // const [Loading, setLoading] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const EditingMode = localStorage.getItem("UpdationMode");
   const [email, setEmail] = useState("");
@@ -148,32 +152,41 @@ const AboutBusinessNext = () => {
         })
       );
       sessionStorage.setItem("bId", id);
-      setPopupType("success");
-      setPopupMessage("Business details added successfully");
-      setShowPopup(true);
+      // setPopupType("success");
+      // setPopupMessage("Business details added successfully");
+      // setShowPopup(true);
+      if (onSuccess) {
+        onSuccess({
+          message: "Business details added successfully",
+        });
+          onStepChange?.(3);
 
+      }
       setTimeout(() => {
         sessionStorage.setItem(
           "selectedCustomServices",
           JSON.stringify(filteredServices)
         );
-        navigate("/about-business");
+        // navigate("/about-business");
       }, 1000);
     } catch (error) {
-      setPopupType("failed");
-      setPopupMessage("An error occurred while adding business details.");
-      setShowPopup(true);
+      if (onFailed) {
+        onFailed({
+          message: "Business details added failed",
+        })
+      }
+      // setPopupType("failed");
+      // setPopupMessage("An error occurred while adding business details.");
+      // setShowPopup(true);
       console.error(error);
     } finally {
       setTimeout(() => setLoading(false), 1000);
     }
   };
-
   const handleSkip = () => {
     setIsSkipClicked(true);
     handleSubmit();
   };
-
   const handleSaveEdit = (e) => {
 
     e.preventDefault();
@@ -203,13 +216,22 @@ const AboutBusinessNext = () => {
       JSON.stringify(filteredServices)
     );
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: async () => {
+      await handleSubmit();
+      return
+    },
 
+
+
+  }));
   return (
     <>
       {/* <HeaderBar></HeaderBar> */}
       <div className={styles.CallTransferMain1}>
         <div className={styles.headrPart}>
-          <h2>Add More Services</h2>
+          {/* <h2>Add More Services</h2> */}
           <img
             src="svg/Add-icon.svg"
             alt="Add-icon"
@@ -246,7 +268,7 @@ const AboutBusinessNext = () => {
         <div onClick={isSubmitClicked ? undefined : handleSkip} style={{ pointerEvents: isSubmitClicked ? "none" : "auto", opacity: isSubmitClicked ? 0.5 : 1 }} className={styles.skipButton}>
           {stepEditingMode ? "" : <button>Skip for now</button>}
         </div>
-        {stepEditingMode != "ON" ? (
+        {/* {stepEditingMode != "ON" ? (
           <div className={styles.Btn} onClick={isSkipClicked ? undefined : handleSubmit} style={{ pointerEvents: isSkipClicked ? "none" : "auto", opacity: isSkipClicked ? 0.5 : 1 }}
           >
             <div type="submit">
@@ -267,7 +289,7 @@ const AboutBusinessNext = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
         <PopUp
           type={popupType}
           message={popupMessage}
@@ -276,7 +298,7 @@ const AboutBusinessNext = () => {
       </div>
     </>
   );
-};
+});
 
 export default AboutBusinessNext;
 

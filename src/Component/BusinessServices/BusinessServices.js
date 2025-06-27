@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState, useEffect, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import styles from "../BusinessServices/BusinessServices.module.css";
 import { useNavigate } from "react-router-dom";
 import { validateEmail as validateEmailAPI } from "../../Store/apiStore";
@@ -8,7 +12,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import Loader from "../Loader/Loader";
-const BusinessServices = () => {
+const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading,onStepChange }, ref) => {
   const navigate = useNavigate();
   const [businessType, setBusinessType] = useState("Restaurant");
   const [selectedService, setSelectedService] = useState([]);
@@ -20,7 +24,7 @@ const BusinessServices = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("");
 
-  const [Loading, setLoading] = useState(false);
+  // const [Loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const EditingMode = localStorage.getItem("UpdationMode");
   const [customServiceSelected, setCustomServiceSelected] = useState(false);
@@ -473,23 +477,23 @@ const BusinessServices = () => {
       ],
     },
     {
-  type: "Cleaning Janitorial Service",
-  subtype: "Your Journey Begins Here",
-  icon: "svg/Cleaning Janitorial Service.svg",
-  services: [
-    "Residential Cleaning",
-    "Commercial Office Cleaning",
-    "Deep Cleaning Services",
-    "Move-In/Move-Out Cleaning",
-    "Carpet & Upholstery Cleaning",
-    "Window Cleaning",
-    "Disinfection & Sanitization",
-    "Post-Construction Cleaning",
-    "Restroom Cleaning & Maintenance",
-    "Other"
-  ],
-}
-,
+      type: "Cleaning Janitorial Service",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Cleaning Janitorial Service.svg",
+      services: [
+        "Residential Cleaning",
+        "Commercial Office Cleaning",
+        "Deep Cleaning Services",
+        "Move-In/Move-Out Cleaning",
+        "Carpet & Upholstery Cleaning",
+        "Window Cleaning",
+        "Disinfection & Sanitization",
+        "Post-Construction Cleaning",
+        "Restroom Cleaning & Maintenance",
+        "Other"
+      ],
+    }
+    ,
     ,
     {
       type: "Other Local Business",
@@ -502,7 +506,7 @@ const BusinessServices = () => {
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
-  const selectedBusiness = businessServices.find(
+  const selectedBusiness = businessServices?.find(
     (biz) => biz.type === businessType
   );
   const selectedServices = selectedBusiness?.services || [];
@@ -585,18 +589,29 @@ const BusinessServices = () => {
       const id = response.data.businessId;
       sessionStorage.setItem("bId", id);
       sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
-
-      setPopupType("success");
-      setPopupMessage("Business details saved successfully");
-      setShowPopup(true);
-      setTimeout(() => {
-        navigate("/about-business");
-      }, 1000);
+      if (onSuccess) {
+        onSuccess({
+          message: "Business details saved successfully"
+        })
+           onStepChange?.(3);
+      }
+      // setPopupType("success");
+      // setPopupMessage("Business details saved successfully");
+      // setShowPopup(true);
+      // setTimeout(() => {
+      //   navigate("/about-business");
+      // }, 1000);
+   
     } catch (error) {
       console.error("❌ Error saving business details:", error);
-      setPopupType("failed");
-      setPopupMessage("Failed to save business details.");
-      setShowPopup(true);
+      // setPopupType("failed");
+      // setPopupMessage("Failed to save business details.");
+      // setShowPopup(true);
+      if (onFailed) {
+        onFailed({
+          message: "Failed to save business details.",
+        })
+      }
     } finally {
       setLoading(false);
     }
@@ -736,13 +751,34 @@ const BusinessServices = () => {
       handleCreateAgent();
     }
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: async () => {
 
+      let hasError = false;
+      if (!selectedService || selectedService.length === 0) {
+        onValidationError?.({
+          type: "failed",
+          message: "Please select at least one service.",
+        });
+
+
+        hasError = true;
+
+      } else {
+
+        // setServiceError("");
+      }
+      await handleContinue()
+      return !hasError;
+    },
+  }));
 
   return (
     <div className={styles.container} id="servies">
-      <h1 className={styles.title}>
+      {/* <h1 className={styles.title}>
         {EditingMode ? "Edit: Business Services" : "Business Services"}
-      </h1>
+      </h1> */}
 
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
@@ -794,14 +830,14 @@ const BusinessServices = () => {
       {serviceError && (
         <p style={{ color: "red", marginTop: "5px" }}>{serviceError}</p>
       )}
-      {stepEditingMode != 'ON' ?
+      {/* {stepEditingMode != 'ON' ?
         <div>
           <div type="submit">
             <div
               className={styles.btnTheme}
               onClick={handleContinue}
               style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
-            // disabled={!isEmailVerified}
+          
             >
               <img src="svg/svg-theme.svg" alt="" type="button" />
               <p>{Loading ? <>Saving &nbsp; &nbsp;<Loader size={20} /></> : "Continue"}</p>
@@ -815,14 +851,14 @@ const BusinessServices = () => {
               className={styles.btnTheme}
               onClick={handleSaveEdit}
               style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
-            // disabled={!isEmailVerified} 
+    
             >
               <img src="svg/svg-theme.svg" alt="" type="button" />
               {Loading ? <p>Saving &nbsp; &nbsp;<Loader size={20} /></p> : <p>Save Edits</p>}
             </div>
           </div>
         </div>
-      }
+      } */}
       {/* Show PopUp */}
       <PopUp
         type={popupType}
@@ -831,6 +867,6 @@ const BusinessServices = () => {
       />
     </div>
   );
-};
+});
 
 export default BusinessServices;

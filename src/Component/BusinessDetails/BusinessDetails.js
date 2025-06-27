@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect, useState, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import styles from "../BusinessDetails/BusinessDetails.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
@@ -7,8 +11,7 @@ import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import Loader from "../Loader/Loader";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
-
-const BusinessDetails = () => {
+const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [businessType, setBusinessType] = useState("");
@@ -150,12 +153,12 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Beauty Parlour.svg",
     },
-     {
+    {
       type: "Nail Salon",
       subtype: "Your Journey Begins Here",
       icon: "svg/Nail Saloon.svg",
     },
-     {
+    {
       type: "Barber Studio/Shop",
       subtype: "Your Journey Begins Here",
       icon: "svg/Barber.svg",
@@ -165,17 +168,17 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Hair Stylist.svg",
     },
-     {
+    {
       type: "Bakery",
       subtype: "Your Journey Begins Here",
       icon: "svg/Bakery.svg",
     },
-      {
+    {
       type: "Dry Cleaner",
       subtype: "Your Journey Begins Here",
       icon: "svg/Dry Cleaner.svg",
     },
-     {
+    {
       type: "Cleaning Janitorial Service",
       subtype: "Your Journey Begins Here",
       icon: "svg/Cleaning Janitorial Service.svg",
@@ -321,7 +324,7 @@ const BusinessDetails = () => {
         businessName: businessName.trim(),
         businessSize,
       };
-      navigate("/about-business-next");
+      // navigate("/about-business-next");
     } else {
       businessData = {
         userId,
@@ -329,7 +332,7 @@ const BusinessDetails = () => {
         businessName: businessName.trim(),
         businessSize,
       };
-      navigate("/business-services");
+      // navigate("/business-services");
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
 
@@ -372,17 +375,50 @@ const BusinessDetails = () => {
       handleCreateAgent()
     }
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      // Validate business type
+      console.log("Hello")
+      if (!businessType) {
 
-  useEffect(() => {
-    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-      setShowPopup(true);
-      setPopupType('failed');
-      setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
-    }
-  }, [CheckingUserLimit, isLimitExceeded]);
+        setBusinessTypeError("Please select a business type.");
+        onValidationError?.({
+          type: "failed",
+          message: "Please select a business type.",
+        });
+        return false;
+      } else {
+        setBusinessTypeError("");
+      }
 
-  // if (CheckingUserLimit) return 
-
+      // Validate business size
+      if (!businessSize) {
+        setBusinessSizeError("Please select a business size.");
+        onValidationError?.({
+          type: "failed",
+          message: "Please select a business size.",
+        });
+        return false;
+      } else {
+        setBusinessSizeError("");
+      }
+      // Validate custom business if "Other" is selected
+      const serviceError = validateServices(customBuisness);
+      if (serviceError) {
+        setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
+        onValidationError?.({
+          type: "failed",
+          message: serviceError,
+        });
+        return false;
+      } else {
+        setErrors((prev) => ({ ...prev, customBuisness: "" }));
+      }
+      handleLoginClick()
+      return true; // No errors
+    },
+  }));
   const handleClosePopup = () => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       navigate('/dashboard');
@@ -391,10 +427,17 @@ const BusinessDetails = () => {
       setShowPopup(false);
     }
   }
+  useEffect(() => {
+    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      setShowPopup(true);
+      setPopupType('failed');
+      setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+    }
+  }, [CheckingUserLimit, isLimitExceeded]);
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1>
+      {/* <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1> */}
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
@@ -507,7 +550,7 @@ const BusinessDetails = () => {
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
-      {stepEditingMode != 'ON' ?
+      {/* {stepEditingMode != 'ON' ?
         <div onClick={handleLoginClick}>
           <div type="submit">
             <div className={styles.btnTheme}>
@@ -525,7 +568,7 @@ const BusinessDetails = () => {
             </div>
           </div>
         </div>
-      }
+      } */}
 
 
       {showPopup && (
@@ -538,24 +581,7 @@ const BusinessDetails = () => {
       )}
     </div>
   );
-};
+});
 
 export default BusinessDetails;
 
-
-// Safe parser for JSON-like strings
-const safeParse = (value, fallback = null) => {
-  try {
-    if (typeof value === "string") {
-      const cleaned = value.trim();
-      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) ||
-        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-        (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
-        return JSON.parse(cleaned);
-      }
-    }
-    return value;
-  } catch {
-    return fallback;
-  }
-};

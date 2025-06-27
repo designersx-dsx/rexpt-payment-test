@@ -8,16 +8,15 @@ import React, {
 import styles from "./Step2.module.css";
 import { getRetellVoices } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
-const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
+const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const [selectedGender, setSelectedGender] = useState("Male");
   const [selectedVoice, setSelectedVoice] = useState("");
   const [listVoices, setListVoices] = useState([]);
   const [filteredVoices, setFilteredVoices] = useState([]);
   const audioRefs = useRef([]);
-  const [playingIdx, setPlayingIdx] = useState(null); 
+  const [playingIdx, setPlayingIdx] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
-
   const [popupMessage, setPopupMessage] = useState("");
   const [scale, setScale] = useState(1);
   const voices = [
@@ -29,24 +28,24 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
     { name: "Echo3", desc: "Robotic voice" },
   ];
 
-useEffect(() => {
-  if (localStorage.getItem("UpdationMode") === "ON" && listVoices.length > 0) {
-    const storedGender = localStorage.getItem("agentGender");
-    if (storedGender) {
-      const formattedGender =
-        storedGender.charAt(0).toUpperCase() + storedGender.slice(1).toLowerCase();
-      setSelectedGender(formattedGender);
-    }
+  useEffect(() => {
+    if (localStorage.getItem("UpdationMode") === "ON" && listVoices.length > 0) {
+      const storedGender = localStorage.getItem("agentGender");
+      if (storedGender) {
+        const formattedGender =
+          storedGender.charAt(0).toUpperCase() + storedGender.slice(1).toLowerCase();
+        setSelectedGender(formattedGender);
+      }
 
-    const storedVoiceId = localStorage.getItem("agentVoice");
-    if (storedVoiceId) {
-      const matchingVoice = listVoices.find((v) => v.voice_id === storedVoiceId);
-      if (matchingVoice) {
-        setSelectedVoice(matchingVoice);
+      const storedVoiceId = localStorage.getItem("agentVoice");
+      if (storedVoiceId) {
+        const matchingVoice = listVoices.find((v) => v.voice_id === storedVoiceId);
+        if (matchingVoice) {
+          setSelectedVoice(matchingVoice);
+        }
       }
     }
-  }
-}, [listVoices]);
+  }, [listVoices]);
 
   useEffect(() => {
     const fetchRetellVoiceList = async () => {
@@ -141,6 +140,7 @@ useEffect(() => {
         });
         return false;
       }
+      onStepChange?.(7);
       return true;
     },
   }));
@@ -156,43 +156,43 @@ useEffect(() => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   //user not refresh
-useEffect(() => {
-  const blockKeyboardRefresh = (e) => {
-    if (
-      e.key === "F5" || 
-      (e.ctrlKey && e.key === "r") || 
-      (e.metaKey && e.key === "r") // For Mac ⌘+R
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
+  // useEffect(() => {
+  //   const blockKeyboardRefresh = (e) => {
+  //     if (
+  //       e.key === "F5" ||
+  //       (e.ctrlKey && e.key === "r") ||
+  //       (e.metaKey && e.key === "r") // For Mac ⌘+R
+  //     ) {
+  //       e.preventDefault();
+  //       e.stopPropagation();
+  //     }
+  //   };
 
-  const blockMouseRefresh = (e) => {
-    // Block middle-click (mouse button 1) or right-click (mouse button 2)
-    if (e.button === 1 || e.button === 2) {
-      e.preventDefault();
-    }
-  };
+  //   const blockMouseRefresh = (e) => {
+  //     // Block middle-click (mouse button 1) or right-click (mouse button 2)
+  //     if (e.button === 1 || e.button === 2) {
+  //       e.preventDefault();
+  //     }
+  //   };
 
-  const handleBeforeUnload = (e) => {
-    e.preventDefault();
-    e.returnValue = ""; // Required to trigger confirmation prompt
-  };
+  //   const handleBeforeUnload = (e) => {
+  //     e.preventDefault();
+  //     e.returnValue = ""; // Required to trigger confirmation prompt
+  //   };
 
-  // Block browser refresh & warn
-  window.addEventListener("keydown", blockKeyboardRefresh);
-  window.addEventListener("mousedown", blockMouseRefresh);
-  window.addEventListener("beforeunload", handleBeforeUnload);
-  window.addEventListener("contextmenu", (e) => e.preventDefault()); // Disable right-click
+  //   // Block browser refresh & warn
+  //   window.addEventListener("keydown", blockKeyboardRefresh);
+  //   window.addEventListener("mousedown", blockMouseRefresh);
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   window.addEventListener("contextmenu", (e) => e.preventDefault()); // Disable right-click
 
-  return () => {
-    window.removeEventListener("keydown", blockKeyboardRefresh);
-    window.removeEventListener("mousedown", blockMouseRefresh);
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-    window.removeEventListener("contextmenu", (e) => e.preventDefault());
-  };
-}, []);
+  //   return () => {
+  //     window.removeEventListener("keydown", blockKeyboardRefresh);
+  //     window.removeEventListener("mousedown", blockMouseRefresh);
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //     window.removeEventListener("contextmenu", (e) => e.preventDefault());
+  //   };
+  // }, []);
   return (
     <>
       <div className={styles.container}>
@@ -205,9 +205,8 @@ useEffect(() => {
           {["Male", "Female"].map((gender) => (
             <label
               key={gender}
-              className={`${styles.genderCard} ${
-                selectedGender === gender ? styles.active : ""
-              }`}
+              className={`${styles.genderCard} ${selectedGender === gender ? styles.active : ""
+                }`}
             >
               <span className={styles.icon}>
                 {gender === "Male" ? (
@@ -231,46 +230,17 @@ useEffect(() => {
 
         <h2
           className={styles.sectionTitle}
-          // style={{
-          //   transform: `scale(${scale})`,
-          //   transition: "transform 0.3s ease-out",
-          //   transformOrigin: "center center",
-          //   marginTop: "1rem",
-          //   fontSize: `${scale * 2.5}rem`,
-          // }}
         >
           Agent Voice
         </h2>
         <div className={styles.voiceGrid}>
-          {/* {voices.map((voice, index) => (
-          <label
-            key={index}
-            className={`${styles.voiceCard} ${selectedVoice === voice.name ? styles.active : ''}`}
-          >
-            <input
-              type="radio"
-              name="voice"
-              value={voice.name}
-              checked={selectedVoice === voice.name}
-              onChange={() => setSelectedVoice(voice.name)}
-              className={styles.radioInput}
-            />
-            <div className={styles.playIcon}><img src='images/play-ico.png' alt='play-icon' /></div>
-            <div>
-              <p className={styles.voiceName}>{voice.name}</p>
-              <p className={styles.voiceDesc}>{voice.desc}</p>
-            </div>
-          </label>
-        ))} */}
-
           {filteredVoices.map((voice, idx) => (
             <label
               key={voice.voice_id ?? idx}
-              className={`${styles.voiceCard} ${
-                selectedVoice.voice_name === voice.voice_name
+              className={`${styles.voiceCard} ${selectedVoice.voice_name === voice.voice_name
                   ? styles.active
                   : ""
-              }`}
+                }`}
             >
               <input
                 type="radio"

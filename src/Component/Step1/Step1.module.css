@@ -252,36 +252,3 @@
 }
 
 }
-
-
-
-
-
-.stepsIndicator {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.stepButton {
-  width: 30px;
-  height: 30px;
-  background-color: #eee;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  font-weight: bold;
-  color: #333;
-  transition: background-color 0.3s ease;
-}
-
-.stepButton:hover {
-  background-color: #ccc;
-}
-
-.activeStep {
-  background-color: #007bff;
-  color: white;
-}

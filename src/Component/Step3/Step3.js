@@ -29,7 +29,7 @@ const avatars = {
 
   ],
 }
-const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
+const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState("");
   const [avatar, setAvatar] = useState(null);
@@ -78,29 +78,26 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   };
   //  console.log('avatar',selectedAvatar)
   useEffect(() => {
-
     if (updationMode) {
       setGender(agentGender);
       setAvatar(selectedAvatar);
-    } else {
+    }
+    else {
       if (agentGender && avatars[agentGender]) {
         const genderAvatars = avatars[agentGender];
-        const firstAvatar = genderAvatars[0]?.img || null;
-
         setGender(agentGender);
         setAvailableAvatars(genderAvatars);
-        setAvatar(firstAvatar);
-        sessionStorage.setItem('avatar', firstAvatar);
+        setAvatar(null); // Don't preselect
+        setSelectedAvatar(null);
+        sessionStorage.removeItem('avatar');
       } else {
-        // Fallback: use 'Male' as default if agentGender is invalid
         const defaultGender = 'Male';
         const defaultAvatars = avatars[defaultGender];
-        const firstAvatar = defaultAvatars[0]?.img || null;
-
         setGender(defaultGender);
         setAvailableAvatars(defaultAvatars);
-        setAvatar(firstAvatar);
-        // sessionStorage.setItem('avatar', firstAvatar);
+        setAvatar(null); // Don't preselect
+        setSelectedAvatar(null);
+        sessionStorage.removeItem('avatar');
       }
     }
 
@@ -148,7 +145,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
         });
         return false;
       }
-
+      onStepChange?.(8);
       return true;
     },
   }));
@@ -174,50 +171,49 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
   }, []);
 
 
-//user not refresh
-useEffect(() => {
-  const blockKeyboardRefresh = (e) => {
-    if (
-      e.key === "F5" || 
-      (e.ctrlKey && e.key === "r") || 
-      (e.metaKey && e.key === "r") // For Mac ⌘+R
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
+  //user not refresh
+  // useEffect(() => {
+  //   const blockKeyboardRefresh = (e) => {
+  //     if (
+  //       e.key === "F5" ||
+  //       (e.ctrlKey && e.key === "r") ||
+  //       (e.metaKey && e.key === "r") // For Mac ⌘+R
+  //     ) {
+  //       e.preventDefault();
+  //       e.stopPropagation();
+  //     }
+  //   };
 
-  const blockMouseRefresh = (e) => {
-    // Block middle-click (mouse button 1) or right-click (mouse button 2)
-    if (e.button === 1 || e.button === 2) {
-      e.preventDefault();
-    }
-  };
+  //   const blockMouseRefresh = (e) => {
+  //     // Block middle-click (mouse button 1) or right-click (mouse button 2)
+  //     if (e.button === 1 || e.button === 2) {
+  //       e.preventDefault();
+  //     }
+  //   };
 
-  const handleBeforeUnload = (e) => {
-    e.preventDefault();
-    e.returnValue = ""; // Required to trigger confirmation prompt
-  };
+  //   const handleBeforeUnload = (e) => {
+  //     e.preventDefault();
+  //     e.returnValue = ""; // Required to trigger confirmation prompt
+  //   };
 
-  // Block browser refresh & warn
-  window.addEventListener("keydown", blockKeyboardRefresh);
-  window.addEventListener("mousedown", blockMouseRefresh);
-  window.addEventListener("beforeunload", handleBeforeUnload);
-  window.addEventListener("contextmenu", (e) => e.preventDefault()); // Disable right-click
+  //   // Block browser refresh & warn
+  //   window.addEventListener("keydown", blockKeyboardRefresh);
+  //   window.addEventListener("mousedown", blockMouseRefresh);
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   window.addEventListener("contextmenu", (e) => e.preventDefault()); // Disable right-click
 
-  return () => {
-    window.removeEventListener("keydown", blockKeyboardRefresh);
-    window.removeEventListener("mousedown", blockMouseRefresh);
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-    window.removeEventListener("contextmenu", (e) => e.preventDefault());
-  };
-}, []);
+  //   return () => {
+  //     window.removeEventListener("keydown", blockKeyboardRefresh);
+  //     window.removeEventListener("mousedown", blockMouseRefresh);
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //     window.removeEventListener("contextmenu", (e) => e.preventDefault());
+  //   };
+  // }, []);
   return (
     <>
 
       <div className={styles.sliderContainer}>
         <h2 className={styles.heading}>{EditingMode ? 'Edit: Receptionist Avatar' : 'Receptionist Avatar'}</h2>
-
         <Slider ref={sliderRef} {...settings}>
           {avatars[gender]?.map((avatar, index) => (
             <div key={index} className={styles.slide} id="slideradio">

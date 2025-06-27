@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState, useEffect, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import styles from "../AboutBusiness/AboutBusiness.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
@@ -22,7 +26,7 @@ const dataURLtoFile = (dataUrl, fileName = "file") => {
   return new File([buf], fileName, { type: mime });
 };
 
-function AboutBusiness() {
+const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const aboutBusinessForm1 = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
 
   const [noGoogleListing, setNoGoogleListing] = useState(aboutBusinessForm1?.noGoogleListing || false);
@@ -39,7 +43,7 @@ function AboutBusiness() {
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [agentCount, setAgentCount] = useState(0);
   const HTTPS_PREFIX = "https://";
   const PREFIX_LEN = HTTPS_PREFIX.length;
@@ -351,27 +355,26 @@ function AboutBusiness() {
     }
   };
   const handleContinue = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
-    const isWebsiteValid = businessUrl && isVerified;
-    const isGoogleListingValid = googleListing.trim();
-    if (!isGoogleListingValid && !noGoogleListing) {
-      setPopupType("failed");
-      setPopupMessage(
-        "Please provide a Google Listing or check the box if you don't have one."
-      );
-      setShowPopup(true);
-      return;
-    }
-    if (!isWebsiteValid && !noBusinessWebsite) {
-      setPopupType("failed");
-      setPopupMessage(
-        "Please provide a valid website or check the box if you don't have one."
-      );
-      setShowPopup(true);
-      return;
-    }
-
+    // const isWebsiteValid = businessUrl && isVerified;
+    // const isGoogleListingValid = googleListing.trim();
+    // if (!isGoogleListingValid && !noGoogleListing) {
+    //   setPopupType("failed");
+    //   setPopupMessage(
+    //     "Please provide a Google Listing or check the box if you don't have one."
+    //   );
+    //   setShowPopup(true);
+    //   return;
+    // }
+    // if (!isWebsiteValid && !noBusinessWebsite) {
+    //   setPopupType("failed");
+    //   setPopupMessage(
+    //     "Please provide a valid website or check the box if you don't have one."
+    //   );
+    //   setShowPopup(true);
+    //   return;
+    // }
 
     sessionStorage.setItem(
       "aboutBusinessForm",
@@ -385,7 +388,8 @@ function AboutBusiness() {
 
       })
     );
-    navigate("/your-business-Listing");
+    onStepChange?.(4);
+    // navigate("/your-business-Listing");
   };
 
   const handleSkip = (e) => {
@@ -466,17 +470,47 @@ function AboutBusiness() {
       setShowPopup(false);
     }
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      let hasError = false;
+      const isWebsiteValid = businessUrl && isVerified;
+      const isGoogleListingValid = googleListing.trim();
+
+      // Google Listing validation
+      if (!isGoogleListingValid && !noGoogleListing) {
+        onValidationError?.({
+          type: "failed",
+          message: "Please provide a Google Listing or check the box if you don't have one.",
+        });
+        hasError = true;
+      }
+
+      // Website validation
+      if (!isWebsiteValid && !noBusinessWebsite) {
+        onValidationError?.({
+          type: "failed",
+          message: "Please provide a valid website or check the box if you don't have one.",
+        });
+        hasError = true;
+      }
+      if (!hasError) {
+        handleContinue();
+      }
+      return !hasError;
+    }
+  }));
 
   return (
     <>
       <div>
         <div className={styles.container}>
           <div className={styles.header}>
-            <h1>
+            {/* <h1>
               {EditingMode
                 ? "Edit: Your business Listing"
                 : "Your business Listing"}
-            </h1>
+            </h1> */}
           </div>
           <form className={styles.formContainer}>
             <div className={styles.form}>
@@ -498,56 +532,56 @@ function AboutBusiness() {
                     disabled={noGoogleListing}
                   />
                 </div>
-              <div className={styles.checkboxRow}>
-  <input
-    id="no-google-listing"
-    type="checkbox"
-    className={styles.customCheckbox}
-    checked={noGoogleListing}
-    onChange={(e) => {
-      const checked = e.target.checked;
-      setNoGoogleListing(checked);
+                <div className={styles.checkboxRow}>
+                  <input
+                    id="no-google-listing"
+                    type="checkbox"
+                    className={styles.customCheckbox}
+                    checked={noGoogleListing}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setNoGoogleListing(checked);
 
-      const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-      form.noGoogleListing = checked;
-      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
+                      const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+                      form.noGoogleListing = checked;
+                      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
 
-      const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+                      const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
 
-      if (checked) {
-        setGoogleListing("");
-        setDisplayBusinessName("");
-        sessionStorage.removeItem("googleListing");
-        sessionStorage.removeItem("displayBusinessName");
+                      if (checked) {
+                        setGoogleListing("");
+                        setDisplayBusinessName("");
+                        sessionStorage.removeItem("googleListing");
+                        sessionStorage.removeItem("displayBusinessName");
 
-        const clearedGoogleData = {
-          name: "",
-          address: "",
-          phone: "",
-          internationalPhone: "",
-          website: "",
-          rating: "",
-          totalRatings: "",
-          hours: [],
-          businessStatus: "",
-          categories: [],
-          aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness || "",
-          businessName: "",
-        };
+                        const clearedGoogleData = {
+                          name: "",
+                          address: "",
+                          phone: "",
+                          internationalPhone: "",
+                          website: "",
+                          rating: "",
+                          totalRatings: "",
+                          hours: [],
+                          businessStatus: "",
+                          categories: [],
+                          aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness || "",
+                          businessName: "",
+                        };
 
-        const updatedForm = {
-          ...form1,
-          ...clearedGoogleData,
-        };
+                        const updatedForm = {
+                          ...form1,
+                          ...clearedGoogleData,
+                        };
 
-        sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedForm));
-      }
-    }}
-  />
-  <label htmlFor="no-google-listing">
-    I do not have Google My Business Listing
-  </label>
-</div>
+                        sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedForm));
+                      }
+                    }}
+                  />
+                  <label htmlFor="no-google-listing">
+                    I do not have Google My Business Listing
+                  </label>
+                </div>
               </div>
               <hr className={styles.fieldDivider} />
               <div className={styles.labReq}>
@@ -638,9 +672,9 @@ function AboutBusiness() {
                   </label>
                 </div>
               </div>
-              <div className={styles.fixedBtn}>
-                {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
-                {stepEditingMode != "ON" ? (
+              {/* <div className={styles.fixedBtn}> */}
+              {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
+              {/* {stepEditingMode != "ON" ? (
                   <button
                     type="submit"
                     className={styles.btnTheme}
@@ -672,8 +706,8 @@ function AboutBusiness() {
                       <p>Save Edits  </p>
                     )}
                   </button>
-                )}
-              </div>
+                )} */}
+              {/* </div> */}
             </div>
           </form>
         </div>
@@ -688,6 +722,6 @@ function AboutBusiness() {
       </div>
     </>
   );
-}
+})
 
 export default AboutBusiness;
