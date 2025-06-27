@@ -4,11 +4,11 @@
   z-index: 1;
   /* padding: 5px 2px 2px 2px; */
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  /* background: #7b4fdd; */
   background-image: linear-gradient(90deg, #6524eb 100%, #eae7ff 50%);
   color: white;
   padding: 20px 20px 30px 20px;
@@ -74,6 +74,7 @@
 .dropdownContainer {
   font-size: 16px;
 }
+
 .dropdownContainer .agentSelect1 {
   font-size: 16px;
   /* padding: 12px 16px; */
@@ -86,10 +87,14 @@
 
 .agentSelect1,
 .dropdownContainer {
-  appearance: none; /* Chrome, Edge */
-  -webkit-appearance: none; /* Safari */
-  -moz-appearance: none; /* Firefox */
-  background-image: none; /* Remove iOS arrow */
+  appearance: none;
+  /* Chrome, Edge */
+  -webkit-appearance: none;
+  /* Safari */
+  -moz-appearance: none;
+  /* Firefox */
+  background-image: none;
+  /* Remove iOS arrow */
   background-color: none;
   border: none;
 
@@ -149,6 +154,7 @@
   color: #1e1b4b;
   position: relative;
 }
+
 .dateAgentSection hr {
   height: 46px;
   background-color: #fff;
@@ -162,7 +168,7 @@
 .PartFew {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
   width: 50%;
   flex-wrap: wrap;
   position: relative;
@@ -172,7 +178,7 @@
   font-size: 2rem;
   color: #24252c;
   font-weight: bolder;
-  font-size: clamp(27px, 3vw, 2rem);
+  font-size: clamp(22px, 3vw, 2rem);
 }
 
 .dateRange {
@@ -198,7 +204,7 @@
 .dateRange {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   font-weight: 700;
   font-size: 1.5rem;
 }
@@ -253,15 +259,17 @@
 }
 
 
-.profileBack img{
+.profileBack img {
   cursor: pointer;
 }
-.datePickerCalender{
-position: "absolute";
-left: 0px;
-top: 10px;
-z-index: 9999999999;
+
+.datePickerCalender {
+  position: "absolute";
+  left: 0px;
+  top: 10px;
+  z-index: 9999999999;
 }
+
 /* Styling the buttons below the calendar */
 .dateButtons {
   display: flex;
@@ -292,4 +300,10 @@ z-index: 9999999999;
 
 .clearButton:hover {
   background-color: #d32f3a;
+}
+
+@media (max-width:350px) {
+  .header {
+    flex-wrap: unset;
+  }
 }

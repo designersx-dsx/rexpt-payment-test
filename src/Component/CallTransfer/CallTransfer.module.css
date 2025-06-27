@@ -8,13 +8,15 @@
 
 .headrPart {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
 
 }
-.headrPart img{
+
+.headrPart img {
     cursor: pointer;
 }
+
 .removeBtn {
     border: none;
     background-color: #6524EB;
@@ -139,14 +141,59 @@
     cursor: pointer;
 }
 
-.btnTheme img {
+.imageWrapper {
     position: absolute;
-    width: 100%;
     top: 50%;
     left: 50%;
+    width: 100%;
     transform: translate(-50%, -50%);
     pointer-events: none;
+    overflow: hidden;
 }
+
+.imageWrapper img {
+    width: 90%;
+    margin: auto;
+    display: block;
+    transition: transform 0.4s ease;
+    transform-origin: center; 
+}
+
+/* Zoom image only on hover */
+.btnTheme:hover .imageWrapper img {
+    transform: scale(1.1);
+}
+
+/* .imageWrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  z-index: 2;
+}
+
+
+.btnTheme:hover .imageWrapper::after {
+  animation: shineImage 0.6s ease-out forwards;
+}
+
+@keyframes shineImage {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+} */
 
 .btnTheme p {
     position: relative;
