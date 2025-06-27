@@ -140,12 +140,53 @@ const BusinessDetails = () => {
       subtype: "Your Journey Begins Here",
       icon: "svg/Accounting Services.svg",
     },
-       {
+    {
       type: "Financial Planners",
       subtype: "Your Journey Begins Here",
       icon: "svg/Financial Planners.svg",
     },
-   
+    {
+      type: "Beauty Parlour",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Beauty Parlour.svg",
+    },
+     {
+      type: "Nail Salon",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Nail Saloon.svg",
+    },
+     {
+      type: "Barber Studio/Shop",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Barber.svg",
+    },
+    {
+      type: "Hair Stylist",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Hair Stylist.svg",
+    },
+     {
+      type: "Bakery",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Bakery.svg",
+    },
+      {
+      type: "Dry Cleaner",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Dry Cleaner.svg",
+    },
+     {
+      type: "Cleaning Janitorial Service",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Cleaning Janitorial Service.svg",
+    },
+    // {
+    //   type: "Marketing Agency",
+    //   subtype: "Your Journey Begins Here",
+    //   icon: "svg/Marketing Agency.svg",
+    // },
+
+
     {
       type: "Other",
       subtype: "Your Journey Begins Here",
@@ -353,7 +394,7 @@ const BusinessDetails = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{EditingMode ? ' Edit Business Details' : 'Business Details'}</h1>
+      <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1>
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />

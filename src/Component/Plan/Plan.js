@@ -113,12 +113,13 @@ const Plan = () => {
           <div className={styles.icon}>
             <img src="images/inlogo.png" alt="inlogo" />
           </div>
+        
           <div className={styles.headercontent}>
             <h3>Select Your Plan</h3>
             <p>Customizable payment structures</p>
           </div>
         </div>
-
+    <div className={styles.customClass}>
         {/* Free Trial Plan */}
         {data == 1 ? <div
           className={`${styles.planBox} ${selected === "free-trial" ? styles.selected : ""}`}
@@ -150,7 +151,7 @@ const Plan = () => {
 
         {/* Dynamic Plans from API */}
 
-        <div className={styles.customClass}>
+      
           <div className='PlanBoxMain' >
             {products.map((product) => (
 

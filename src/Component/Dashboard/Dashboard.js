@@ -24,6 +24,7 @@ import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 import Modal from "../Modal2/Modal2";
 import Loader from "../Loader/Loader";
+import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -38,6 +39,8 @@ function Dashboard() {
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
+  const packageName = sessionStorage.getItem("package") || "Free";
+
 
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
@@ -722,13 +725,23 @@ function Dashboard() {
           businessId
         );
 
-        const shortName = (businessDetails?.businessName || "Business")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g, "_")
-          .slice(0, 20);
+        // const shortName = (businessDetails?.businessName || "Business")
+        //   .trim()
+        //   .toLowerCase()
+        //   .replace(/\s+/g, "_")
+        //   .slice(0, 20);
+        const packageMap = {
+        Free: 1,
+        Starter: 2,
+        Scaler: 3,
+        Growth: 4,
+        Corporate: 5,
+        Enterprise: 6,
+      };
+      const packageValue = packageMap[packageName] || 1;
 
-        const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
+        // const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
+        const knowledgeBaseName = await getKnowledgeBaseName(businessDetails,userId,packageValue);
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
         const businessData = businessDetails.knowledge_base_texts;
