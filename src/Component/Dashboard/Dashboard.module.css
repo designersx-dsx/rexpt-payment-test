@@ -522,7 +522,14 @@
 
 
 }
-
+@media (min-width: 380px) and (max-width: 406px) {
+  .agentInfo h2 {
+    font-size: 30px;
+  }
+   .agentInfo2 h2 {
+    font-size: 30px;
+  }
+}
 @media (max-width:380px) {
     .agentInfo2 {
         display: block;
