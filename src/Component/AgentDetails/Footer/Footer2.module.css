@@ -35,11 +35,10 @@
 .createWrapper {
   margin-top: -55px;
 }
-
 .createBtn {
   background-color: #5F33E1;
   color: white;
- padding: 12px 20px 12px 12px;
+  padding: 12px 20px 12px 12px;
   border-radius: 40px;
   border: none;
   font-size: 16px;
@@ -49,11 +48,43 @@
   gap: 15px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+  position: relative; /* Required for shine effect */
+  overflow: hidden;   /* Hide shine overflow */
 }
 
-.createBtn:hover {
-  background-color: #5f33e1;
+/* Shine layer */
+.createBtn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
 }
+
+/* Hover shine animation */
+.createBtn:hover::after {
+  animation: shineEffect 0.6s ease forwards;
+}
+
+@keyframes shineEffect {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+
+
 
 .createIcon {
   background-color: #5F33E1;
@@ -62,11 +93,10 @@
   font-size: 1.5rem;
   box-shadow: rgb(255 255 255 / 20%) 0px 0px 8px 0px;
   height: 40px;
-    width: 40px;
-    align-items: center;
-    display: flex
-;
-    justify-content: center;
+  width: 40px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 .createText {
@@ -77,6 +107,7 @@
 .icon {
   display: block;
 }
+
 .tab {
   position: relative;
   background: transparent;
@@ -98,142 +129,157 @@
 }
 
 @media screen and (min-width: 601px) {
-.navbar{
-  width: 50%;
-  left: 0;
-  right: 0;
-  transform: translate(50%, 0%);
-}
-.navbar {
- background-color: #ede9fcab;
- background-image: unset;
-}
+  .navbar {
+    width: 50%;
+    left: 0;
+    right: 0;
+    transform: translate(50%, 0%);
+  }
+
+  .navbar {
+    background-color: #ede9fcab;
+    background-image: unset;
+  }
 }
 
 
 @media (max-width:600px) {
   .navbar {
- 
-  padding: 0px 5px 30px 5px;
-}
-.createBtn {  
-  gap: 15px;
-  
-}
-.createText {
-  font-size: 1.4rem;
-  
-}
-.createIcon {  
-  height: 40px;
+
+    padding: 0px 5px 30px 5px;
+  }
+
+  .createBtn {
+    gap: 15px;
+
+  }
+
+  .createText {
+    font-size: 1.4rem;
+
+  }
+
+  .createIcon {
+    height: 40px;
     width: 40px;
-    
-}
+
+  }
 
 }
 
 
 @media (max-width:450px) {
   .navbar {
- 
-  padding: 0px 5px 20px 5px;
-}
-.createBtn {  
-  gap: 15px;
-  
-}
-.createText {
-  font-size: 1.4rem;
-  
-}
-.createIcon {  
-  height: 40px;
+
+    padding: 0px 5px 20px 5px;
+  }
+
+  .createBtn {
+    gap: 15px;
+
+  }
+
+  .createText {
+    font-size: 1.4rem;
+
+  }
+
+  .createIcon {
+    height: 40px;
     width: 40px;
-    
-}
-  
+
+  }
+
 }
 
 @media (max-width:420px) {
   .navbar {
- 
-  padding: 0px 5px 15px 5px;
-}
-.createBtn {  
-  gap: 8px;
-  
-}
-.createText {
-  font-size: 1.4rem;
-  
-}
-.createIcon {  
-  height: 35px;
+
+    padding: 0px 5px 15px 5px;
+  }
+
+  .createBtn {
+    gap: 8px;
+
+  }
+
+  .createText {
+    font-size: 1.4rem;
+
+  }
+
+  .createIcon {
+    height: 35px;
     width: 35px;
-    
+
+  }
+
 }
-  
-}
+
 @media (max-width:400px) {
   .navbar {
- 
-  padding: 0px 5px 12px 5px;
-}
-.createBtn {  
-  gap: 8px;
-  
-}
-.createIcon {  
-  height: 32px;
+
+    padding: 0px 5px 12px 5px;
+  }
+
+  .createBtn {
+    gap: 8px;
+
+  }
+
+  .createIcon {
+    height: 32px;
     width: 32px;
-    
-}
-  
+
+  }
+
 }
 
 @media (max-width:380px) {
   .navbar {
- 
-  padding: 0px 5px 3px 5px;
-}
-.createBtn {  
-  gap: 5px;
-  
-}
-.createText {
-  font-size: 1.2rem;
-  
-}
-.createIcon {  
-  height: 32px;
-    width: 32px;
-    
-}
 
-  
+    padding: 0px 5px 3px 5px;
+  }
+
+  .createBtn {
+    gap: 5px;
+
+  }
+
+  .createText {
+    font-size: 1.2rem;
+
+  }
+
+  .createIcon {
+    height: 32px;
+    width: 32px;
+
+  }
+
+
 }
 
 @media (max-width:350px) {
   .navbar {
- 
-  padding: 0px 5px 0px 5px;
-}
-.createBtn {  
-  gap: 8px;
-  
-}
-.createText {
-  font-size: 1rem;
-  
-}
-.createIcon {  
-  height: 30px;
+
+    padding: 0px 5px 0px 5px;
+  }
+
+  .createBtn {
+    gap: 8px;
+
+  }
+
+  .createText {
+    font-size: 1rem;
+
+  }
+
+  .createIcon {
+    height: 30px;
     width: 30px;
-    
+
+  }
+
 }
-  
-}
-
-
-
-

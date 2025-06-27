@@ -111,8 +111,7 @@ const SignUp = () => {
           setUser({
             name: response?.data?.user?.name || "",
             profile:
-              `${API_BASE_URL?.split("/api")[0]}${
-                response?.data?.user?.profile?.split("public")[1]
+              `${API_BASE_URL?.split("/api")[0]}${response?.data?.user?.profile?.split("public")[1]
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
@@ -121,8 +120,7 @@ const SignUp = () => {
           setUser({
             name: response?.data?.user?.email || "",
             profile:
-              `${API_BASE_URL}${
-                response?.data?.user?.profile?.split("public")[1]
+              `${API_BASE_URL}${response?.data?.user?.profile?.split("public")[1]
               }` || "images/camera-icon.avif",
             subscriptionDetails: {},
           });
@@ -144,59 +142,59 @@ const SignUp = () => {
       setIsVerifyingOtp(false);
     }
   };
- const handleSendOTP = async () => {
-  setEmailTouched(true);
-  setEmailSubmitted(true);
-  const emailValidationMsg = validateEmail(email);
-  setEmailError(emailValidationMsg);
+  const handleSendOTP = async () => {
+    setEmailTouched(true);
+    setEmailSubmitted(true);
+    const emailValidationMsg = validateEmail(email);
+    setEmailError(emailValidationMsg);
 
-  if (emailValidationMsg) {
-    return;
-  }
-
-  setEmailError("");
-  setIsVerifyingOtp(true);
-
-  try {
-    const response = await LoginWithEmailOTP(email);
-    if (response?.status === 200) {
-      setVerifiedUser(response.data.verifiedStatus);
-      setShowPopup(true);
-      setPopupType("success");
-      setPopupMessage("One Time Password sent successfully!");
-
-      setOtpSent(true);
-      setOtp(["", "", "", "", "", ""]); 
-      inputRefs.current[0]?.blur(); 
-      const endTime = Date.now() + 120 * 1000;
-      setResendEndTime(endTime);
-      setIsResendDisabled(true);
-    } else {
-      setShowPopup(true);
-      setPopupType("failed");
-      setPopupMessage("Failed to send One Time Password. Please try again.");
+    if (emailValidationMsg) {
+      return;
     }
-  } catch (error) {
-    console.log(error);
-    if (error.status === 409) {
-      setOtp(["", "", "", "", "", ""]); 
-      setShowPopup(true);
-      setPopupType("failed");
-      setPopupMessage(
-        error?.response?.data.error || "Failed to send OTP. Please try again."
-      );
-      setOtpSent(true);
-    } else {
-      setShowPopup(true);
-      setPopupType("failed");
-      setPopupMessage(
-        error?.response?.data.error || "Failed to send OTP. Please try again."
-      );
+
+    setEmailError("");
+    setIsVerifyingOtp(true);
+
+    try {
+      const response = await LoginWithEmailOTP(email);
+      if (response?.status === 200) {
+        setVerifiedUser(response.data.verifiedStatus);
+        setShowPopup(true);
+        setPopupType("success");
+        setPopupMessage("One Time Password sent successfully!");
+
+        setOtpSent(true);
+        setOtp(["", "", "", "", "", ""]);
+        inputRefs.current[0]?.blur();
+        const endTime = Date.now() + 120 * 1000;
+        setResendEndTime(endTime);
+        setIsResendDisabled(true);
+      } else {
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage("Failed to send One Time Password. Please try again.");
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.status === 409) {
+        setOtp(["", "", "", "", "", ""]);
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage(
+          error?.response?.data.error || "Failed to send OTP. Please try again."
+        );
+        setOtpSent(true);
+      } else {
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage(
+          error?.response?.data.error || "Failed to send OTP. Please try again."
+        );
+      }
+    } finally {
+      setIsVerifyingOtp(false);
     }
-  } finally {
-    setIsVerifyingOtp(false);
-  }
-};
+  };
 
 
   const handleOtpChange = (value, index) => {
@@ -311,9 +309,8 @@ const SignUp = () => {
             />
           </div>
           <div
-            className={`${styles.Maincontent} ${
-              step >= 2 ? styles.animate2 : ""
-            }`}
+            className={`${styles.Maincontent} ${step >= 2 ? styles.animate2 : ""
+              }`}
           >
             <div className={styles.welcomeTitle}>
               <h1>Log In to your Account</h1>
@@ -328,16 +325,14 @@ const SignUp = () => {
             {!otpSent && (
               <>
                 <div
-                  className={`${styles.labReq} ${
-                    step >= 3 ? styles.animate3 : ""
-                  }`}
+                  className={`${styles.labReq} ${step >= 3 ? styles.animate3 : ""
+                    }`}
                 >
                   <div className={styles.Dblock}>
                     <input
                       type="email"
-                      className={`${styles.emailInput} ${
-                        emailError ? styles.inputError : ""
-                      }`}
+                      className={`${styles.emailInput} ${emailError ? styles.inputError : ""
+                        }`}
                       placeholder="Johnvick@gmail.com"
                       value={email}
                       onChange={handleEmailChange}
@@ -349,9 +344,8 @@ const SignUp = () => {
                   )}
                 </div>
                 <div
-                  className={`${styles.btnTheme} ${
-                    step >= 4 ? styles.animate4 : ""
-                  }`}
+                  className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""
+                    }`}
                   onClick={handleSendOTP}
                 >
                   <img src="svg/svg-theme2.svg" alt="" />
@@ -447,11 +441,11 @@ const SignUp = () => {
                   >
                     {isResendDisabled && resendTimer > 0
                       ? `Resend One Time Password in ${String(
-                          Math.floor(resendTimer / 60)
-                        ).padStart(2, "0")}:${String(resendTimer % 60).padStart(
-                          2,
-                          "0"
-                        )}`
+                        Math.floor(resendTimer / 60)
+                      ).padStart(2, "0")}:${String(resendTimer % 60).padStart(
+                        2,
+                        "0"
+                      )}`
                       : "Resend One Time Password"}
                   </button>
                 </div>
@@ -459,7 +453,9 @@ const SignUp = () => {
                 <div className={styles.Btn} onClick={handleLoginClick}>
                   <div type="submit">
                     <div className={styles.btnTheme}>
-                      <img src="svg/svg-theme.svg" alt="" />
+                      <div className={styles.imageWrapper}>
+                        <img src="svg/svg-theme2.svg" alt="" />
+                      </div>
                       <p>
                         {isVerifyingOtp ? (
                           <>
@@ -475,9 +471,8 @@ const SignUp = () => {
               </>
             )}
             <div
-              className={`${styles.Maincontent2} ${
-                step >= 5 ? styles.animate5 : ""
-              }`}
+              className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
+                }`}
             >
               <div className={styles.divider}>
                 <hr className={styles.line} />

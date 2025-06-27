@@ -118,9 +118,11 @@
    font-size: 20px !important;
    font-weight: 600 !important;
  }
-abbr[title] {
-    text-decoration: none !important;
-}
+
+ abbr[title] {
+   text-decoration: none !important;
+ }
+
  .Dotcontrol .slick-dots {
    position: fixed;
    bottom: 20px;
@@ -177,3 +179,28 @@ abbr[title] {
  }
 
  /* End calendar css */
+
+ * {
+
+   -webkit-tap-highlight-color: transparent;
+ }
+
+ /* react-tel-input css */
+
+ .react-tel-input .country-list {
+   width: 320px !important;
+   max-height: 180px !important;
+   border-radius: 10px !important;
+   padding-inline: 10px;
+   padding-block: 10px 0px;
+
+ }
+
+ .react-tel-input .country-list input {
+   width: 90% !important;
+
+ }
+
+ .react-tel-input .country-list .search-emoji {
+   display: none !important;
+ }
