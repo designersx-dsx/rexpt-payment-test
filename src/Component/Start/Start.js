@@ -12,7 +12,7 @@ function Start() {
     setTimeout(() => setStep(4), 450);
     setTimeout(() => setStep(5), 650);
     setTimeout(() => {
-      navigate("/plans");
+      navigate("/signup");
     }, 700);
   };
   useEffect(() => {
