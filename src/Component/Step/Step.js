@@ -27,7 +27,11 @@ const Step = () => {
     const [isRoleTitleChanged, setIsRoleTitleChanged] = useState(false);
     const navigate = useNavigate();
     const sliderRef = useRef(null);
-    const [currentStep, setCurrentStep] = useState(0);
+const [currentStep, setCurrentStep] = useState(() => {
+  const savedStep = sessionStorage.getItem("currentStep");
+  return savedStep !== null ? parseInt(savedStep, 10) : 0;
+});
+
     const [selectedLang, setSelectedLang] = useState();
     const [selectedLangCode, setSelectedLangCode] = useState("");
     const [showPopup, setShowPopup] = useState(false);
@@ -44,12 +48,15 @@ const Step = () => {
     const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
     const [isContinueClicked, setIsContinueClicked] = useState(false);
     const [visibleStep, setVisibleStep] = useState(0);
-    const [completedSteps, setCompletedSteps] = useState([0]);
+    const [completedSteps, setCompletedSteps] = useState(() => {
+        const saved = localStorage.getItem('completedSteps');
+        return saved ? JSON.parse(saved) : [];
+    });
     //Step REF 
     //Business Details
     const step1Ref = useRef(null)
     //Business Services
-    const step2Ref = useRef(null);
+    // const step2Ref = useRef(null);
     const step3Ref = useRef(null);
     const step4Ref = useRef(null);
     const step5Ref = useRef(null);
@@ -99,6 +106,8 @@ const Step = () => {
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
+    const selectedServices = sessionStorage.getItem("businessDetails");
+    const services = selectedServices ? JSON.parse(selectedServices).businessType : [];
     const packageMap = {
         "Free": 1,
         "Starter": 2,
@@ -111,97 +120,111 @@ const Step = () => {
         setIsRoleTitleChanged((prev) => !prev);
     }
     const packageValue = packageMap[packageName] || 1;
+    const addCompletedStep = (step) => {
+        setCompletedSteps((prev) => {
+            const updated = [...new Set([...prev, step])]; // ensure uniqueness
+            localStorage.setItem('completedSteps', JSON.stringify(updated));
+            return updated;
+        });
+    };
     const handleNext = () => {
-        console.log("Current step:", currentStep);
-        console.log("step1Ref.current:", step1Ref.current);
+        const validations = {
+            0: step1Ref,
+            1: step3Ref,
+            3: step4Ref,
+            4: step5Ref,
+            5: step6Ref,
+            6: step7Ref,
+            7: step8Ref,
+            8: step9Ref
+        };
+        const currentRef = validations[currentStep];
+        // Check if current step has a ref and validate
+        if (currentRef?.current) {
+            const isValid = currentRef.current.validate();
+            if (!isValid) {
+                console.warn(`Validation failed at step ${currentStep}`);
+                return;
+            }
+            // Add this step to completed steps
+            addCompletedStep(currentStep);
+        }
+        scrollToTop();
+       
+
+
         // Validate BusinessDetails only on step 1 and Current Step 0
-        if (currentStep === 0 && step1Ref.current) {
-            const isValid = step1Ref.current.validate();
-            if (!isValid) return;
-            // Check if 'Other' is already selected
-            const selectedServices = sessionStorage.getItem("businessDetails");
-            const services = selectedServices ? JSON.parse(selectedServices).businessType : [];
-            console.log(services, "services")
-            if (services.includes("Other")) {
-                //   setCompletedSteps((prev) => [...new Set([...prev, 2])]);
-                setCurrentStep(2); //  skip directly to AboutBusinessNext
-                sliderRef.current?.slickGoTo(2);
-                scrollToTop();
-            }
-            else {
-                //   setCompletedSteps((prev) => [...new Set([...prev, 1])]);
-                setCurrentStep(1); // or final step
-                sliderRef.current?.slickGoTo(1);
-            }
-            return;
-        }
-        // Validate BusinessServices only on step 2 Current Step 1
-        if (currentStep === 1 && step2Ref.current) {
-            const isValid = step2Ref.current.validate();
-            if (!isValid) return;
-            return;
-        }
+        // if (currentStep === 0 && step1Ref.current) {
+        //     const isValid = step1Ref.current.validate();
+        //     if (!isValid) return;
+        //     return;
+        // }
+        // // Validate BusinessServices only on step 2 Current Step 1
+        // if (currentStep === 1 && step3Ref.current) {
+        //     const isValid = step3Ref.current.validate();
+        //     if (!isValid) return;
+        //     return;
+        // }
 
-        // Validate AboutBusinessNext only on step 3 Current Step 2
-        if (currentStep === 2 && step3Ref.current) {
-            const isValid = step3Ref.current.validate();
-            if (!isValid) return;
-            return;
-        }
-        // Validate AboutBusiness  only on step 4 Current Step 3
-        if (currentStep === 3 && step4Ref.current) {
-            const isValid = step4Ref.current.validate();
-            if (!isValid) return;
-            return;
-        }
-        //About Your Business only on step 5 Current Step 4
-        if (currentStep === 4 && step5Ref.current) {
-            const isValid = step5Ref.current.validate();
-            if (!isValid) return;
-            return;
-        }
-        //Language only on step 6 Current Step 5
-        if (currentStep === 5 && step6Ref.current) {
-            const isValid = step6Ref.current.validate();
-            if (!isValid) return;
-            return;
-        }
-        //Voice only on step 7 Current Step 6
-        if (currentStep === 6 && step7Ref.current) {
-            const isValid = step7Ref.current.validate();
-            if (!isValid) return;
-            return;
-        }
-        //Avtar only on step 8 Current Step 7
-        if (currentStep === 7 && step8Ref.current) {
-            const isValid = step8Ref.current.validate();
-            if (!isValid) return;
-            return;
-        }
-        //Avtar only on step 8 Current Step 7
-        if (currentStep === 8 && step9Ref.current) {
-            const isValid = step9Ref.current.validate();
-            if (!isValid) return;
+        // // Validate AboutBusiness  only on step 4 Current Step 3
+        // if (currentStep === 3 && step4Ref.current) {
+        //     const isValid = step4Ref.current.validate();
+        //     if (!isValid) return;
+        //     return;
+        // }
+        // //About Your Business only on step 5 Current Step 4
+        // if (currentStep === 4 && step5Ref.current) {
+        //     const isValid = step5Ref.current.validate();
+        //     if (!isValid) return;
+        //     return;
+        // }
+        // //Language only on step 6 Current Step 5
+        // if (currentStep === 5 && step6Ref.current) {
+        //     const isValid = step6Ref.current.validate();
+        //     if (!isValid) return;
+        //     return;
+        // }
+        // //Voice only on step 7 Current Step 6
+        // if (currentStep === 6 && step7Ref.current) {
+        //     const isValid = step7Ref.current.validate();
+        //     if (!isValid) return;
+        //     return;
+        // }
+        // //Avtar only on step 8 Current Step 7
+        // if (currentStep === 7 && step8Ref.current) {
+        //     const isValid = step8Ref.current.validate();
+        //     if (!isValid) return;
+        //     return;
+        // }
+        // //Avtar only on step 8 Current Step 7
+        // if (currentStep === 8 && step9Ref.current) {
+        //     const isValid = step9Ref.current.validate();
+        //     if (!isValid) return;
 
-            return;
-        }
+        //     return;
+        // }
 
-        if (currentStep < totalSlides - 1) {
-            const nextStep = currentStep + 1;
-            setCurrentStep(nextStep);
-            setCompletedSteps((prev) => [...new Set([...prev, nextStep])]);
-            sliderRef.current?.slickGoTo(nextStep);
-            scrollToTop();
-        }
+        //         if (currentStep < totalSlides - 1) {
+        //            if (currentStep === 1) {
+        //     setCurrentStep(3); // skip step 2
+        //     sliderRef.current?.slickGoTo(3);scrollToTop();
+        //   } else {
+        //     setCurrentStep((prev) => prev + 1);
+        //     sliderRef.current?.slickGoTo(currentStep + 1);scrollToTop();
+        //   }
+
+        //         }
     };
 
     const handleBack = () => {
         if (currentStep > 0) {
-            sliderRef.current.slickPrev();
+            const prevStep = currentStep - 1 === 2 ? 1 : currentStep - 1; // Skip 2 if needed
+            setCurrentStep(prevStep);
+            setVisibleStep(prevStep);
+            sliderRef.current?.slickGoTo(prevStep);
         }
     };
-    const isAdaptiveHeight = currentStep !== 3 && currentStep !== 2;
-
+    const isAdaptiveHeight = currentStep !== 3
     const settings = {
         dots: false,
         infinite: false,
@@ -213,15 +236,7 @@ const Step = () => {
         swipe: false,
         afterChange: (index) => {
             setVisibleStep(index);
-            // setCurrentStep(index);
-        }
 
-    };
-    const handleStepChange = (step) => {
-        setCurrentStep(step);
-        setVisibleStep(step);
-        if (sliderRef.current) {
-            sliderRef.current.slickGoTo(step); // forcefully navigate
         }
     };
     const fetchAgentCountFromUser = async () => {
@@ -642,8 +657,6 @@ const Step = () => {
             return EditingMode ? "Edit: Business Details" : "Business Details";
         } else if (currentStep === 1) {
             return EditingMode ? "Edit: Business Services" : "Business Services";
-        } else if (currentStep === 2) {
-            return EditingMode ? "Edit: Add More Services" : "Add More Services";
         }
         else if (currentStep === 3) {
             return EditingMode ? "Edit: About Your Business" : "About Your Business";
@@ -661,12 +674,6 @@ const Step = () => {
             return EditingMode ? "Edit: Receptionist Type" : "Receptionist Type";
         }
     };
-
-    // function lock
-    useEffect(() => {
-        fetchAgentCountFromUser()
-    }, [])
-
     useEffect(() => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
             setShowPopup(true);
@@ -682,7 +689,53 @@ const Step = () => {
             setShowPopup(false);
         }
     }
+    const validation = async () => {
+        const validations = {
+            0: step1Ref,
+            1: step3Ref,
+            3: step4Ref,
+            4: step5Ref,
+            5: step6Ref,
+            6: step7Ref,
+            7: step8Ref,
+            8: step9Ref
+        };
+        // Skip validation if already completed
+        if (completedSteps.includes(currentStep)) {
+            return true;
+        }
+        const currentRef = validations[currentStep];
+        if (currentRef?.current?.validate) {
+            const isValid = await currentRef.current.validate();
+            if (!isValid) {
+                console.warn(`Validation failed at step ${currentStep}`);
+                return false;
+            }
+            // Mark this step as completed
+            addCompletedStep(currentStep);
+        }
 
+        return true;
+    };
+
+
+    console.log(currentStep, "currentStep")
+   
+    // function lock
+    useEffect(() => {
+        fetchAgentCountFromUser()
+    }, [])
+    useEffect(() => {
+        const savedStep = sessionStorage.getItem("currentStep");
+        if (savedStep !== null) {
+            const parsedStep = parseInt(savedStep, 10);
+            setCurrentStep(parsedStep);
+            sliderRef.current?.slickGoTo(parsedStep);
+        }
+    }, []);
+     useEffect(()=>{
+        sessionStorage.setItem("currentStep", currentStep.toString());
+    },[currentStep])
     return (
         <div className={styles.container}>
             <StepHeader title={getStepTitle()} />
@@ -695,75 +748,85 @@ const Step = () => {
                         onBack={handleBack}
                         onValidationError={handleValidationError}
                         isActive={currentStep === 0}
-
-                    />
-                </div>}
-                {currentStep === 1 && <div>
-                    <BusinessServices
-                        ref={step2Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 1}
-                        onSuccess={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-
-                        onFailed={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
-                        onStepChange={handleStepChange}
-
-                    />
-                </div>}
-                {currentStep === 2 && <div>
-                    <AboutBusinessNext
-                        ref={step3Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 2}
-                        onSuccess={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-
-                        onFailed={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
                         onStepChange={(step) => {
                             setCurrentStep(step);
                             setVisibleStep(step);
                             sliderRef.current?.slickGoTo(step);
                         }}
+
                     />
+                </div>}
+                {currentStep === 1 && <div>
+                    {(services.includes("Other")) ?
+                        <AboutBusinessNext
+                            ref={step3Ref}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            // isActive={currentStep === 1}
+                            onSuccess={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+
+                            onFailed={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+                        />
+                        :
+                        <BusinessServices
+                            ref={step3Ref}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            // isActive={currentStep === 1}
+                            onSuccess={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+
+                            onFailed={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+
+                        />
+                    }
                 </div>}
                 {currentStep === 3 && <div>
                     <AboutBusiness
@@ -781,7 +844,6 @@ const Step = () => {
                                 setShowPopup(false);
                             }, 2000);
                         }}
-
                         onFailed={(data) => {
 
                             setShowPopup(true);
@@ -793,7 +855,11 @@ const Step = () => {
                         }}
                         loading={loading}
                         setLoading={setLoading}
-                        onStepChange={(step) => setCurrentStep(step)}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
                     />
                 </div>}
                 {currentStep === 4 && <div>
@@ -824,7 +890,11 @@ const Step = () => {
                         }}
                         loading={loading}
                         setLoading={setLoading}
-                        onStepChange={(step) => setCurrentStep(step)}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
                     />
                 </div>}
                 {currentStep === 5 && <div>
@@ -855,7 +925,11 @@ const Step = () => {
                         }}
                         loading={loading}
                         setLoading={setLoading}
-                        onStepChange={(step) => setCurrentStep(step)}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
                     />
                 </div>}
                 {currentStep === 6 && <div>
@@ -886,7 +960,11 @@ const Step = () => {
                         }}
                         loading={loading}
                         setLoading={setLoading}
-                        onStepChange={(step) => setCurrentStep(step)}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
                     />
                 </div>}
                 {currentStep === 7 && <div>
@@ -917,7 +995,11 @@ const Step = () => {
                         }}
                         loading={loading}
                         setLoading={setLoading}
-                        onStepChange={(step) => setCurrentStep(step)}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
                     />
                 </div>}
                 {currentStep === 8 && <div>
@@ -957,96 +1039,78 @@ const Step = () => {
             {/* === Footer Fixed Pagination === */}
             <div className={styles.footerFixed}>
                 <div className={styles.stepsIndicator}>
-                    {[...Array(totalSlides)].map((_, idx) => (
-                        <>
+                    {/* {[...Array(totalSlides)].map((_, idx) => {
+                        return (
                             <span
                                 key={idx}
-                                className={`${styles.stepDot} ${visibleStep === idx ? styles.activeDot : ''}`}
+                                className={`${styles.stepDot} ${currentStep === idx ? styles.activeDot : ''}`}
                                 onClick={async () => {
-                                    // Validate BusinessDetails only on step 1 and Current Step 0
-                                    if (currentStep === 0 && step1Ref.current) {
-                                        const isValid = step1Ref.current.validate();
-                                        if (!isValid) return;
-                                        // Check if 'Other' is already selected
-                                        const selectedServices = sessionStorage.getItem("businessDetails");
-                                        const services = selectedServices ? JSON.parse(selectedServices).businessType : [];
-                                        console.log(services, "services")
-                                        if (services.includes("Other")) {
-                                            //   setCompletedSteps((prev) => [...new Set([...prev, 2])]);
-                                            setCurrentStep(2); //  skip directly to AboutBusinessNext
-                                            sliderRef.current?.slickGoTo(2);
-                                            scrollToTop();
-                                        }
-                                        else {
+                                    if (isContinueClicked) return;
+                                    if (idx <= currentStep) {
+                                        setCurrentStep(idx);
+                                        sliderRef.current?.slickGoTo(idx);
+                                    }
+                                    // Step 0 validation 
+                                    // if (currentStep === 0 && step1Ref.current && !step1Ref.current.validate()) {
+                                    //     return;
+                                    // }
 
-                                            setCurrentStep(1);
-                                            sliderRef.current?.slickGoTo(1);
-                                        }
-                                        return;
-                                    }
-                                    // Validate BusinessServices only on step 2 Current Step 1
-                                    if (currentStep === 1 && step2Ref.current) {
-                                        const isValid = step2Ref.current.validate();
-                                        if (!isValid) return;
-                                        return;
-                                    }
+                                    // // Step 2 validation
+                                    // if (currentStep === 1 && step3Ref.current && !step3Ref.current.validate()) {
+                                    //     return;
+                                    // }
 
-                                    // Validate AboutBusinessNext only on step 3 Current Step 2
-                                    if (currentStep === 2 && step3Ref.current) {
-                                        const isValid = step3Ref.current.validate();
-                                        if (!isValid) return;
-                                        return;
-                                    }
-                                    // Validate AboutBusiness  only on step 4 Current Step 3
-                                    if (currentStep === 3 && step4Ref.current) {
-                                        const isValid = step4Ref.current.validate();
-                                        if (!isValid) return;
-                                        return;
-                                    }
-                                    //About Your Business only on step 5 Current Step 4
-                                    if (currentStep === 4 && step5Ref.current) {
-                                        const isValid = step5Ref.current.validate();
-                                        if (!isValid) return;
-                                        return;
-                                    }
-                                    //Language only on step 6 Current Step 5
-                                    if (currentStep === 5 && step6Ref.current) {
-                                        const isValid = step6Ref.current.validate();
-                                        if (!isValid) return;
-                                        return;
-                                    }
-                                    //Voice only on step 7 Current Step 6
-                                    if (currentStep === 6 && step7Ref.current) {
-                                        const isValid = step7Ref.current.validate();
-                                        if (!isValid) return;
-                                        return;
-                                    }
-                                    //Avtar only on step 8 Current Step 7
-                                    if (currentStep === 7 && step8Ref.current) {
-                                        const isValid = step8Ref.current.validate();
-                                        if (!isValid) return;
-                                        return;
-                                    }
-                                    //Avtar only on step 8 Current Step 7
-                                    if (currentStep === 8 && step9Ref.current) {
-                                        const isValid = step9Ref.current.validate();
-                                        if (!isValid) return;
-
-                                        return;
-                                    }
-
-
-                                    const nextStep = currentStep + 1;
-                                    setCurrentStep(nextStep);
-                                    sliderRef.current?.slickGoTo(nextStep);
-
-
+                                    // // Step 3 validation
+                                    // if (currentStep === 3 && step4Ref.current && !step4Ref.current.validate()) {
+                                    //     return;
+                                    // }
+                                    // // Step 3 validation
+                                    // if (currentStep === 4 && step5Ref.current && !step5Ref.current.validate()) {
+                                    //     return;
+                                    // }
+                                    // if (currentStep === 5 && step6Ref.current && !step6Ref.current.validate()) {
+                                    //     return;
+                                    // }
+                                    // if (currentStep === 6 && step7Ref.current && !step7Ref.current.validate()) {
+                                    //     return;
+                                    // }
+                                    // if (currentStep === 7 && step8Ref.current && !step8Ref.current.validate()) {
+                                    //     return;
+                                    // }
+                                    // if (currentStep === 8 && step9Ref.current && !step9Ref.current.validate()) {
+                                    //     return;
+                                    // }
+                                    // Allow dot click to change slide
+                                    setCurrentStep(idx);
+                                    sliderRef.current?.slickGoTo(idx);
                                 }}
                             />
+                        )
+                    })} */}
+                    {[...Array(totalSlides)].map((_, idx) => {
+                        // 👇 Ignore index 2 (skip rendering the dot completely)
+                        if (idx === 2) return null;
+
+                        return (
+                            <span
+                                key={idx}
+                                className={`${styles.stepDot} ${currentStep === idx ? styles.activeDot : ''}`}
+                                onClick={async () => {
+                                    if (isContinueClicked) return;
 
 
-                        </>
-                    ))}
+                                    if (idx === 2) return;
+                                    // ✅ Validate before changing step
+                                    const isValid = await validation();
+                                    if (!isValid) return;
+                                    setCurrentStep(idx);
+                                    setVisibleStep(idx);
+                                    sliderRef.current?.slickGoTo(idx);
+                                }}
+                            />
+                        );
+                    })}
+
                 </div>
 
                 {currentStep === 8 ? <button className={styles.navBtn} onClick={handleContinue}>

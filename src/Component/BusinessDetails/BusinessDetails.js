@@ -11,7 +11,7 @@ import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import Loader from "../Loader/Loader";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
-const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError }, ref) => {
+const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [businessType, setBusinessType] = useState("");
@@ -324,6 +324,8 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError }, ref) 
         businessName: businessName.trim(),
         businessSize,
       };
+
+
       // navigate("/about-business-next");
     } else {
       businessData = {
@@ -332,10 +334,11 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError }, ref) 
         businessName: businessName.trim(),
         businessSize,
       };
+
       // navigate("/business-services");
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-
+    onStepChange?.(1);
   };
   const handleSaveEdit = (e) => {
     console.log("helo")

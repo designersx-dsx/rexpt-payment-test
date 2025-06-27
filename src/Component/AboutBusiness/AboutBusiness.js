@@ -388,7 +388,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
       })
     );
-    onStepChange?.(4);
+   
     // navigate("/your-business-Listing");
   };
 
@@ -495,6 +495,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         hasError = true;
       }
       if (!hasError) {
+         onStepChange?.(4);
         handleContinue();
       }
       return !hasError;

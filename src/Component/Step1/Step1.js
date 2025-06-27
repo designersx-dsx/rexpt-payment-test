@@ -264,16 +264,22 @@ const Step1 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
             stats: "—",
         },
     ];
-    useEffect(() => {
+useEffect(() => {
+    if (selectedLang && selectedLangCode) {
         sessionStorage.setItem("agentLanguage", selectedLang);
         sessionStorage.setItem("agentLanguageCode", selectedLangCode);
-    }, [selectedLang]);
-    useEffect(() => {
-        if (localStorage.getItem('UpdationMode') == "ON") {
-            setSelectedLang(localStorage.getItem("agentLanguage"))
-            setSelectedLangCode(localStorage.getItem("agentLanguageCode"))
-        }
-    }, [])
+    }
+}, [selectedLang, selectedLangCode]);
+   useEffect(() => {
+    // Restore previously selected language from sessionStorage (if exists)
+    const lang = sessionStorage.getItem("agentLanguage");
+    const code = sessionStorage.getItem("agentLanguageCode");
+
+    if (lang && code) {
+        setSelectedLang(lang);
+        setSelectedLangCode(code);
+    }
+}, []);
     //Validation exposed to parent
     useImperativeHandle(ref, () => ({
         validate: () => {

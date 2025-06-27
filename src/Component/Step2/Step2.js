@@ -61,11 +61,17 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   }, []);
 
   useEffect(() => {
-    // console.log(selectedVoice);
-    sessionStorage.setItem("agentVoice", selectedVoice?.voice_id);
-    sessionStorage.setItem("agentVoiceAccent", selectedVoice?.accent);
-    sessionStorage.setItem("VoiceAgentName", selectedVoice?.voice_name);
-  }, [selectedVoice]);
+  if (
+    selectedVoice &&
+    selectedVoice.voice_id &&
+    selectedVoice.voice_name &&
+    selectedVoice.accent
+  ) {
+    sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
+    sessionStorage.setItem("agentVoiceAccent", selectedVoice.accent);
+    sessionStorage.setItem("VoiceAgentName", selectedVoice.voice_name);
+  }
+}, [selectedVoice]);
 
   useEffect(() => {
     if (listVoices && selectedGender) {
@@ -124,6 +130,26 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
 
     selectedAudio.onended = () => setPlayingIdx(null);
   };
+  useEffect(() => {
+  if (listVoices.length > 0) {
+    const storedGender = sessionStorage.getItem("agentGender");
+    const storedVoiceId = sessionStorage.getItem("agentVoice");
+
+    if (storedGender) {
+      setSelectedGender(
+        storedGender.charAt(0).toUpperCase() + storedGender.slice(1).toLowerCase()
+      );
+    }
+
+    if (storedVoiceId) {
+      const voice = listVoices.find((v) => v.voice_id === storedVoiceId);
+      if (voice) {
+        setSelectedVoice(voice);
+      }
+    }
+  }
+}, [listVoices]);
+
   useImperativeHandle(ref, () => ({
     validate: () => {
       if (!selectedGender) {
