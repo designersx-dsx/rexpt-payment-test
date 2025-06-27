@@ -29,6 +29,7 @@ const Details = () => {
   const userId = decodeTokenData?.id;
   const { user, setUser } = useUser();
   const [country, setCountry] = useState("in");
+  const referralCode=sessionStorage.getItem("referredBy")||"";
   useEffect(() => {
     if (sessionStorage.getItem("OwnerDetails")) {
       const ownerDetails = JSON.parse(sessionStorage.getItem("OwnerDetails"));
@@ -74,11 +75,14 @@ const Details = () => {
     setLoading(true);
 
     try {
+       const localDateTime = new Date().toLocaleString(); // e.g., "6/27/2025, 2:45:12 PM"
       const response = await axios.put(
         `${API_BASE_URL}/endusers/users/${userId}`,
         {
           name: name.trim(),
           phone,
+          referredBy:referralCode||"",
+          referredOn:localDateTime ,
         }
       );
 
