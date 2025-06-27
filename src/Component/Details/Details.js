@@ -83,6 +83,7 @@ const Details = () => {
           phone,
           referredBy:referralCode||"",
           referredOn:localDateTime ,
+          userType:0,
         }
       );
 
