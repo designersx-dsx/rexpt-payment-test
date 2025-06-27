@@ -29,6 +29,9 @@ const SignUp = () => {
   const [resendTimer, setResendTimer] = useState(0);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [resendEndTime, setResendEndTime] = useState(null);
+  const tempReferral=sessionStorage.getItem("referredBy")||"";
+  const tempLandingSelectedPlan=sessionStorage.getItem("plan")||"";
+
   useEffect(() => {
     if (!resendEndTime) return;
 
@@ -98,6 +101,8 @@ const SignUp = () => {
       if (response?.status === 200) {
         localStorage.setItem("token", response?.data.token);
         sessionStorage.clear();
+        sessionStorage.setItem("referredBy",tempReferral);
+        sessionStorage.setItem("plan",tempLandingSelectedPlan);
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");

@@ -302,8 +302,29 @@
   background-color: #d32f3a;
 }
 
+
 @media (max-width:350px) {
   .header {
     flex-wrap: unset;
   }
 }
+
+.agentSelect1 {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+.selectedValue {
+  font-weight: 700;
+  font-size: clamp(20px, 3vw, 1rem); /* same as .agentSelect1 */
+  color: #1e1b4b; /* same as .agentSelect1 */
+  text-transform: capitalize;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+

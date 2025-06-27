@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Start/Start.module.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 
 function Start() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const referral = searchParams.get("referral") ||"";
+  const selectedPlan = searchParams.get("plan") ||"";
   const [step, setStep] = useState(0);
   const handleClick = () => {
     setTimeout(() => setStep(1), 150);
@@ -15,6 +19,26 @@ function Start() {
       navigate("/signup");
     }, 700);
   };
+  console.log(referral,selectedPlan)
+  useEffect(() => {
+    let updated = false;
+    if (referral) {
+      sessionStorage.setItem("referredBy", referral);
+      searchParams.delete("referral");
+      updated = true;
+    }
+    if (selectedPlan) {
+      sessionStorage.setItem("selectedPlan", selectedPlan);
+      searchParams.delete("plan");
+      updated = true;
+    }
+
+    if (updated) {
+      // Update URL without query params
+      navigate(location.pathname, { replace: true });
+    }
+  }, [referral, selectedPlan, location.pathname, navigate]);
+
   useEffect(() => {
     const setVH = () => {
       const vh = window.innerHeight * 0.01;
