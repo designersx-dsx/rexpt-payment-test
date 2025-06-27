@@ -64,7 +64,7 @@ function AboutBusiness() {
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
   const [placeInfoText, setPlaceInfoText] = useState("");
   const setHasFetched = true;
-  
+
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
     setLoading,
@@ -110,10 +110,10 @@ function AboutBusiness() {
   }, []);
 
   useEffect(() => {
-  if (EditingMode === "ON" && !noBusinessWebsite) {
-    handleBlur();
-  }
-}, [EditingMode, noBusinessWebsite]);
+    if (EditingMode === "ON" && !noBusinessWebsite) {
+      handleBlur();
+    }
+  }, [EditingMode, noBusinessWebsite]);
 
   // useEffect(() => {
   //   const storedName = sessionStorage.getItem("displayBusinessName");
@@ -152,7 +152,7 @@ function AboutBusiness() {
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
 
-        const form1= JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+        const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
         // Extract important fields from result
         const businessData = {
           businessName: result.name || "",
@@ -167,9 +167,9 @@ function AboutBusiness() {
           categories: result.types || [],
         };
         const updatedForm = {
-        ...form1,
-        ...businessData,
-      };
+          ...form1,
+          ...businessData,
+        };
         sessionStorage.setItem(
           "placeDetailsExtract",
           JSON.stringify(updatedForm)
@@ -355,7 +355,7 @@ function AboutBusiness() {
 
     const isWebsiteValid = businessUrl && isVerified;
     const isGoogleListingValid = googleListing.trim();
-        if (!isGoogleListingValid && !noGoogleListing) {
+    if (!isGoogleListingValid && !noGoogleListing) {
       setPopupType("failed");
       setPopupMessage(
         "Please provide a Google Listing or check the box if you don't have one."
@@ -474,8 +474,8 @@ function AboutBusiness() {
           <div className={styles.header}>
             <h1>
               {EditingMode
-                ? "Edit: About Your Business"
-                : "About Your Business"}
+                ? "Edit: Your business Listing"
+                : "Your business Listing"}
             </h1>
           </div>
           <form className={styles.formContainer}>
@@ -493,61 +493,61 @@ function AboutBusiness() {
                     placeholder="Type the name of your Business to Search"
                     value={displayBusinessName}
                     // onChange={(e) => setGoogleListing(e.target.value)}
-                     onChange={(e) => {setDisplayBusinessName(e.target.value)}}
+                    onChange={(e) => { setDisplayBusinessName(e.target.value) }}
                     required
                     disabled={noGoogleListing}
                   />
                 </div>
-                <div className={styles.checkboxRow}>
-                  <input
-                    id="no-google-listing"
-                    type="checkbox"
-                    checked={noGoogleListing}
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      setNoGoogleListing(checked);
+              <div className={styles.checkboxRow}>
+  <input
+    id="no-google-listing"
+    type="checkbox"
+    className={styles.customCheckbox}
+    checked={noGoogleListing}
+    onChange={(e) => {
+      const checked = e.target.checked;
+      setNoGoogleListing(checked);
 
-                      const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-                      form.noGoogleListing = checked;
-                      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
-                      const form1= JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
-                      if (checked) {
-                        setGoogleListing("");
-                        setDisplayBusinessName("");
-                        sessionStorage.removeItem("googleListing");
-                        sessionStorage.removeItem("displayBusinessName");
-                        // sessionStorage.removeItem("placeDetailsExtract");
-                            const clearedGoogleData = {
-                            name: "", // Optional: keep or clear as needed
-                            address: "",
-                            phone: "",
-                            internationalPhone: "",
-                            website: "",
-                            rating: "",
-                            totalRatings: "",
-                            hours: [],
-                            businessStatus: "",
-                            categories: [],
-                            aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness|| "",
-                            businessName:"",
-                          };
+      const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+      form.noGoogleListing = checked;
+      sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
 
-                          // Merge cleared Google fields into existing form
-                          const updatedForm = {
-                            ...form1,
-                            ...clearedGoogleData,
-                          };
+      const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
 
-                          // Update sessionStorage
-                          sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedForm));
-                      }
-                    }}
-                  />
+      if (checked) {
+        setGoogleListing("");
+        setDisplayBusinessName("");
+        sessionStorage.removeItem("googleListing");
+        sessionStorage.removeItem("displayBusinessName");
 
-                  <label htmlFor="no-google-listing">
-                    I do not have Google My Business Listing
-                  </label>
-                </div>
+        const clearedGoogleData = {
+          name: "",
+          address: "",
+          phone: "",
+          internationalPhone: "",
+          website: "",
+          rating: "",
+          totalRatings: "",
+          hours: [],
+          businessStatus: "",
+          categories: [],
+          aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness || "",
+          businessName: "",
+        };
+
+        const updatedForm = {
+          ...form1,
+          ...clearedGoogleData,
+        };
+
+        sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedForm));
+      }
+    }}
+  />
+  <label htmlFor="no-google-listing">
+    I do not have Google My Business Listing
+  </label>
+</div>
               </div>
               <hr className={styles.fieldDivider} />
               <div className={styles.labReq}>
@@ -615,6 +615,7 @@ function AboutBusiness() {
                   <input
                     id="no-business-website"
                     type="checkbox"
+                    className={styles.customCheckbox}
                     checked={noBusinessWebsite}
                     onChange={(e) => {
                       const checked = e.target.checked;
@@ -632,7 +633,6 @@ function AboutBusiness() {
                       }
                     }}
                   />
-
                   <label htmlFor="no-business-website">
                     I do not have a business website
                   </label>

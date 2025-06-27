@@ -353,7 +353,7 @@ const BusinessDetails = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{EditingMode ? ' Edit Business Details' : 'Business Details'}</h1>
+      <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1>
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
