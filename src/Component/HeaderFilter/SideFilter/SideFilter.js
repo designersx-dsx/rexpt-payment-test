@@ -56,13 +56,13 @@ function SideFilter({ filters, onFilterChange, isLeadTypeSummary, onSelectAll })
         <h3>Filter by</h3>
         <hr></hr>
 
-        <input
+        {/* <input
           type="search"
           placeholder="Search Lead Type or Channel..."
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           style={{ width: '100%', padding: '10px', marginBottom: '20px' }}
-        />
+        /> */}
 
         <div className={styles.section}>
           <div className={styles.label}>Lead Type</div>
