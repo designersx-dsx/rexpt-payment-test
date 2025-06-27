@@ -12,6 +12,8 @@ const Plan = () => {
     const [selected, setSelected] = useState(null);
     const [open, setOpen] = useState(null);
     const [show, setShow] = useState(false);
+    const [landingPageSelection,setLandingPageSelection]=useState(sessionStorage.getItem('selectedPlan')||"")
+
     const navigate = useNavigate();
 
     const handleClose = () => {
@@ -49,6 +51,21 @@ const Plan = () => {
             setShow(true); 
         }
     };
+
+       useEffect(()=>{
+            if (landingPageSelection && products) {
+
+            const selectedPlan = products.find(
+            (plan) => plan?.name?.toLowerCase()?.trim() === landingPageSelection?.toLowerCase()?.trim()
+            );
+
+            if (selectedPlan) {
+            setSelected(selectedPlan.id)
+            // You can store or use selectedPlan.id here
+            }
+        }
+    },[landingPageSelection,products])
+
 
     if (loading) return <p className={styles.status}><Loader /></p>;
     if (error) return <p className={styles.statusError}>{error}</p>;
