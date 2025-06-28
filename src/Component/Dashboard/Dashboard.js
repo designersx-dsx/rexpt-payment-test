@@ -96,6 +96,7 @@ function Dashboard() {
 
   const [calloading, setcalloading] = useState(false)
   const [calapiloading, setCalapiloading] = useState(false)
+  const [deleteloading , setdeleteloading] = useState(false)
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
@@ -493,6 +494,7 @@ function Dashboard() {
   }, []);
   const handleDelete = async (agentId) => {
     try {
+      setdeleteloading(true)
       const storedDashboard = JSON.parse(
         sessionStorage.getItem("dashboard-session-storage")
       );
@@ -518,6 +520,8 @@ function Dashboard() {
     } catch (error) {
       setPopupMessage(`Failed to delete agent: ${error.message}`);
       setPopupType("failed");
+    }finally{
+      setdeleteloading(false)
     }
   };
   // Start call
@@ -1346,7 +1350,7 @@ function Dashboard() {
                 <div className={styles.modalButtons}>
                   <button
                     className={`${styles.modalButton} ${styles.cancel}`}
-                    onClick={closeModal} // Close the modal only when "Cancel" is clicked
+                    onClick={closeModal} 
                   >
                     Cancel
                   </button>
@@ -1499,7 +1503,17 @@ function Dashboard() {
                 >
                   No
                 </button>
-                <button
+                {deleteloading ? (<button
+                      className={`${styles.modalButton} ${styles.submit}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      Deleting <Loader size={18} />
+                    </button>) : (
+                   <button
                   className={`${styles.modalButton} ${styles.submit}`}
                   onClick={async () => {
                     try {
@@ -1516,7 +1530,25 @@ function Dashboard() {
                   }}
                 >
                   Yes
-                </button>
+                </button>)}
+                {/* <button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  onClick={async () => {
+                    try {
+                      await handleDelete(agentToDelete.agent_id);
+                      setShowDeleteConfirm(false);
+                      setAgentToDelete(null);
+                    } catch (error) {
+                      setPopupMessage(
+                        `Failed to delete agent: ${error.message}`
+                      );
+                      setPopupType("failed");
+                      setShowDeleteConfirm(false);
+                    }
+                  }}
+                >
+                  Yes
+                </button> */}
               </div>
             </div>
           </div>
