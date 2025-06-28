@@ -48,8 +48,8 @@
   gap: 15px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  position: relative; /* Required for shine effect */
-  overflow: hidden;   /* Hide shine overflow */
+  position: relative; 
+  overflow: hidden;   
 }
 
 /* Shine layer */

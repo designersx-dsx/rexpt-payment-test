@@ -104,6 +104,15 @@
 
  }
 
+
+ input:focus,
+ textarea:focus {
+   border-color: #6524EB !important;
+   outline: none;
+ }
+
+
+
  .react-calendar__tile--now {
    background: #f9f1ff !important;
  }
@@ -188,11 +197,14 @@
  /* react-tel-input css */
 
  .react-tel-input .country-list {
+
    width: 400px !important;
    max-height: 80% !important;
+
    border-radius: 10px !important;
    padding-inline: 10px;
    padding-block: 10px 0px;
+   margin-left: -25px !important;
 
  }
 
