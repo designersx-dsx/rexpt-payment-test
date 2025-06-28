@@ -257,7 +257,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
         <h2
           className={styles.sectionTitle}
         >
-          Agent Voice
+          Select Voice
         </h2>
         <div className={styles.voiceGrid}>
           {filteredVoices.map((voice, idx) => (

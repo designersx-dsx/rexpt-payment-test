@@ -506,7 +506,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
                       className={styles.iconImg}
                     />
                   </div>
-                  <div>
+                  <div className={styles.strongDiv}>
                     <strong>{item.type}</strong>
                     <p className={styles.subType}>{item.subtype}</p>
                   </div>

@@ -106,7 +106,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
 
   return (
     <div className={styles.sliderContainer}>
-      <h2 className={styles.heading}>{EditingMode ? 'Edit: Receptionist Avatar' : 'Receptionist Avatar'}</h2>
+      <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2>
       <Slider ref={sliderRef} {...settings}>
         {availableAvatars.map((avatar, index) => (
           <div key={index} className={styles.slide} id="slideradio">
