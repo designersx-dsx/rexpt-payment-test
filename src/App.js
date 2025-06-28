@@ -97,7 +97,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                <Route path="/steps" element={<Step />} />
+                <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
                 <Route
                   path="/about-business"
                   element={
@@ -212,6 +212,7 @@ function App() {
                   }
                 />
 
+
                 <Route path="/edit-profile" element={ <SecureRoute><EditProfile /></SecureRoute>} />
                 <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
                 <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
@@ -219,6 +220,7 @@ function App() {
 
                   <Route path="/test-other" element={<Test/>} />
                
+
 
               </Routes>
             </div>

@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState, useEffect, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../Component/CallTransfer/CallTransfer.module.css";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
@@ -7,14 +11,14 @@ import PopUp from "../Popup/Popup";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import axios from "axios";
-const AboutBusinessNext = () => {
+const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [services, setServices] = useState([{ service: "" }]);
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const sessionBusinessiD = sessionStorage.getItem("bId");
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
-  const [Loading, setLoading] = useState(null);
+  // const [Loading, setLoading] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const EditingMode = localStorage.getItem("UpdationMode");
   const [email, setEmail] = useState("");
@@ -35,8 +39,13 @@ const AboutBusinessNext = () => {
     setHasFetched,
   });
   const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
-  // const customServices = sessionStorage.getItem('selectedCustomServices') || [];
   const businesServices = JSON.parse(sessionStorage.getItem("businesServices"));
+  console.log(businesServices)
+  const servicesType= Object.values(businesServices).filter(
+  (val) => typeof val === "string" && val !== "" && val !== "email"
+);
+  
+  console.log(servicesType, "servicesType")
   const rawCustomServices =
     JSON.parse(sessionStorage.getItem("selectedCustomServices")) || [];
   useEffect(() => {
@@ -68,8 +77,12 @@ const AboutBusinessNext = () => {
     const updatedServices = [...services];
     updatedServices[index].service = value;
     setServices(updatedServices);
+    sessionStorage.setItem(
+      "selectedCustomServices",
+      JSON.stringify(updatedServices)
+    );
   };
-
+  const checkIfBusinessIdExist = Boolean(sessionStorage.getItem("bId"))
   const handleSubmit = async () => {
     setIsSubmitClicked(true);
     const raw = sessionStorage.getItem("businesServices");
@@ -98,7 +111,7 @@ const AboutBusinessNext = () => {
         .filter(Boolean)
         .map((service) => ({ service }));
       let response;
-      if (localStorage.getItem("UpdationMode") != "ON") {
+      if (!checkIfBusinessIdExist) {
         response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
           userId,
           businessName: businessDetails?.businessName,
@@ -106,17 +119,26 @@ const AboutBusinessNext = () => {
           businessType: businessDetails.businessType,
           customBuisness: businessDetails?.customBuisness || "",
           buisnessEmail: email || businessDetails?.email,
-          // buisnessService: [...businessDetails?.selectedService, ...customServices],
           buisnessService: cleanServiceArray(),
           customServices: filteredServices,
-          // customServices: cleanedCustomServices,
-          // address1: locationData.address1,
-          // address2: locationData.address2,
-          // city: locationData.city,
-          // state: locationData.state,
-          // country: locationData.country,
-          // zip: locationData.zip,
         });
+        if (onSuccess) {
+
+          if ((servicesType.includes("Other"))) {
+
+            setTimeout(() => {
+              onStepChange?.(1);
+            }, 2000);
+          }
+          else {
+            onSuccess({
+              message: "Business details added successfully",
+            });
+            setTimeout(() => {
+              onStepChange?.(3);
+            }, 2000);
+          }
+        }
       } else {
         response = await axios.patch(
           `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`,
@@ -125,19 +147,19 @@ const AboutBusinessNext = () => {
             businessSize: businessDetails.businessSize,
             businessType: businessDetails.businessType,
             buisnessEmail: email || businessDetails?.email,
-            customBuisness: businessDetails?.customBuisness || "", //custome business name
-            // buisnessService: [...businessDetails?.selectedService, ...customServices],
+            customBuisness: businessDetails?.customBuisness || "",
             buisnessService: cleanServiceArray(),
             customServices: filteredServices,
-            // customServices: cleanedCustomServices,
-            // address1: locationData.address1,
-            // address2: locationData.address2,
-            // city: locationData.city,
-            // state: locationData.state,
-            // country: locationData.country,
-            // zip: locationData.zip,
           }
         );
+        if (onSuccess) {
+          onSuccess({
+            message: "Business details added successfully",
+          });
+          setTimeout(() => {
+            onStepChange?.(3);
+          }, 2000);
+        }
       }
 
       const id = response.data.businessId;
@@ -148,32 +170,47 @@ const AboutBusinessNext = () => {
         })
       );
       sessionStorage.setItem("bId", id);
-      setPopupType("success");
-      setPopupMessage("Business details added successfully");
-      setShowPopup(true);
+      // setPopupType("success");
+      // setPopupMessage("Business details added successfully");
+      // setShowPopup(true);
 
       setTimeout(() => {
         sessionStorage.setItem(
           "selectedCustomServices",
           JSON.stringify(filteredServices)
         );
-        navigate("/about-business");
+        // navigate("/about-business");
       }, 1000);
     } catch (error) {
-      setPopupType("failed");
-      setPopupMessage("An error occurred while adding business details.");
-      setShowPopup(true);
+      if (onFailed) {
+        if ((servicesType?.includes("Other"))) {
+
+          setTimeout(() => {
+            onStepChange?.(1);
+          }, 2000);
+        }
+        else {
+          onFailed({
+            message: "Business details added failed",
+          });
+        }
+
+
+
+
+      }
+      // setPopupType("failed");
+      // setPopupMessage("An error occurred while adding business details.");
+      // setShowPopup(true);
       console.error(error);
     } finally {
       setTimeout(() => setLoading(false), 1000);
     }
   };
-
   const handleSkip = () => {
     setIsSkipClicked(true);
     handleSubmit();
   };
-
   const handleSaveEdit = (e) => {
 
     e.preventDefault();
@@ -203,13 +240,20 @@ const AboutBusinessNext = () => {
       JSON.stringify(filteredServices)
     );
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: async () => {
+      return true
+    },
+    save: async () => { await handleSubmit(); }
+  }));
 
   return (
     <>
       {/* <HeaderBar></HeaderBar> */}
       <div className={styles.CallTransferMain1}>
         <div className={styles.headrPart}>
-          <h2>Add More Services</h2>
+          {/* <h2>Add More Services</h2> */}
           <img
             src="svg/Add-icon.svg"
             alt="Add-icon"
@@ -246,7 +290,7 @@ const AboutBusinessNext = () => {
         <div onClick={isSubmitClicked ? undefined : handleSkip} style={{ pointerEvents: isSubmitClicked ? "none" : "auto", opacity: isSubmitClicked ? 0.5 : 1 }} className={styles.skipButton}>
           {stepEditingMode ? "" : <button>Skip for now</button>}
         </div>
-        {stepEditingMode != "ON" ? (
+        {/* {stepEditingMode != "ON" ? (
           <div className={styles.Btn} onClick={isSkipClicked ? undefined : handleSubmit} style={{ pointerEvents: isSkipClicked ? "none" : "auto", opacity: isSkipClicked ? 0.5 : 1 }}
           >
             <div type="submit">
@@ -267,7 +311,7 @@ const AboutBusinessNext = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
         <PopUp
           type={popupType}
           message={popupMessage}
@@ -276,7 +320,7 @@ const AboutBusinessNext = () => {
       </div>
     </>
   );
-};
+});
 
 export default AboutBusinessNext;
 

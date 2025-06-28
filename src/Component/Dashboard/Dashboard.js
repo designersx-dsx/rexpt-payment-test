@@ -110,6 +110,7 @@ function Dashboard() {
 
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
+
     const handlePopState = () => {
       navigate("/dashboard");
     };
