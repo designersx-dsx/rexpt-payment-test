@@ -10,7 +10,7 @@ import useUser from "../../Store/Context/UserContext";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-
+import { useRef } from "react";
 const Details = () => {
   const navigate = useNavigate();
   const [startExit, setStartExit] = useState(false);
@@ -29,7 +29,26 @@ const Details = () => {
   const userId = decodeTokenData?.id;
   const { user, setUser } = useUser();
   const [country, setCountry] = useState("in");
-  const referralCode=sessionStorage.getItem("referredBy")||"";
+  const referralCode = sessionStorage.getItem("referredBy") || "";
+
+  const phoneInputRef = useRef(null);
+
+  const handleFlagClick = () => {
+    const container = phoneInputRef.current;
+    if (container) {
+      container.classList.add("fullscreenCountryDropdown");
+    }
+
+    // Optionally close it on outside click
+    const handleOutsideClick = (event) => {
+      if (container && !container.contains(event.target)) {
+        container.classList.remove("fullscreenCountryDropdown");
+        document.removeEventListener("click", handleOutsideClick);
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick);
+  };
   useEffect(() => {
     if (sessionStorage.getItem("OwnerDetails")) {
       const ownerDetails = JSON.parse(sessionStorage.getItem("OwnerDetails"));
@@ -75,15 +94,15 @@ const Details = () => {
     setLoading(true);
 
     try {
-       const localDateTime = new Date().toLocaleString(); // e.g., "6/27/2025, 2:45:12 PM"
+      const localDateTime = new Date().toLocaleString();
       const response = await axios.put(
         `${API_BASE_URL}/endusers/users/${userId}`,
         {
           name: name.trim(),
           phone,
-          referredBy:referralCode||"",
-          referredOn:localDateTime ,
-          userType:0,
+          referredBy: referralCode || "",
+          referredOn: localDateTime,
+          userType: 0,
         }
       );
 
@@ -145,21 +164,21 @@ const Details = () => {
       window.removeEventListener("popstate", handlePopState);
     };
   }, []);
-useEffect(() => {
-  const fetchCountryByIP = async () => {
-    try {
-      const response = await axios.get("https://ipapi.co/json/");
-      const userCountry = response.data.country_code?.toLowerCase();
-      if (userCountry) {
-        setCountry(userCountry); 
+  useEffect(() => {
+    const fetchCountryByIP = async () => {
+      try {
+        const response = await axios.get("https://ipapi.co/json/");
+        const userCountry = response.data.country_code?.toLowerCase();
+        if (userCountry) {
+          setCountry(userCountry);
+        }
+      } catch (error) {
+        console.error("Could not fetch country by IP:", error);
       }
-    } catch (error) {
-      console.error("Could not fetch country by IP:", error);
-    }
-  };
+    };
 
-  fetchCountryByIP();
-}, []);
+    fetchCountryByIP();
+  }, []);
 
   const validatePhone = (value) => {
     try {
@@ -236,6 +255,7 @@ useEffect(() => {
               <div className={styles.Dblock}>
                 <label className={styles.label}>Phone Number</label>
                 <PhoneInput
+                  ref={phoneInputRef}
                   country={country}
                   enableSearch={true}
                   value={phone}
@@ -247,14 +267,10 @@ useEffect(() => {
                       setPhoneError("");
                     }
                   }}
+                  onClickFlag={handleFlagClick}
                   inputClass={`${styles.input} ${
                     phoneError ? styles.inputError : ""
                   }`}
-                  inputProps={{
-                    name: "phone",
-                    required: true,
-                    autoFocus: false,
-                  }}
                 />
               </div>
               {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
