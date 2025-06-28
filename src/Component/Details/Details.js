@@ -10,7 +10,7 @@ import useUser from "../../Store/Context/UserContext";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-
+import { useRef } from "react";
 const Details = () => {
   const navigate = useNavigate();
   const [startExit, setStartExit] = useState(false);
@@ -29,6 +29,26 @@ const Details = () => {
   const userId = decodeTokenData?.id;
   const { user, setUser } = useUser();
   const [country, setCountry] = useState("in");
+  const referralCode = sessionStorage.getItem("referredBy") || "";
+
+  const phoneInputRef = useRef(null);
+
+  const handleFlagClick = () => {
+    const container = phoneInputRef.current;
+    if (container) {
+      container.classList.add("fullscreenCountryDropdown");
+    }
+
+    // Optionally close it on outside click
+    const handleOutsideClick = (event) => {
+      if (container && !container.contains(event.target)) {
+        container.classList.remove("fullscreenCountryDropdown");
+        document.removeEventListener("click", handleOutsideClick);
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick);
+  };
   useEffect(() => {
     if (sessionStorage.getItem("OwnerDetails")) {
       const ownerDetails = JSON.parse(sessionStorage.getItem("OwnerDetails"));
@@ -50,37 +70,15 @@ const Details = () => {
     return "";
   };
 
-  // const validatePhone = (value) => {
-  //   const digitsOnly = value.replace(/\D/g, "");
-  //   if (!digitsOnly.trim()) return "Phone number is required.";
-  //   if (digitsOnly.length < 10) return "Phone number seems too short.";
-  //   if (digitsOnly.length > 15) return "Phone number seems too long.";
-  //   return "";
-  // };
-
   const handleNameChange = (e) => {
     const val = e.target.value;
     setName(val);
-
-    // Show error only if submitted once
     if (nameSubmitted) {
       setNameError(validateName(val));
     } else {
       setNameError("");
     }
   };
-
-  const handlePhoneChange = (e) => {
-    let val = e.target.value.replace(/\D/g, "");
-    setPhone(val);
-
-    if (phoneSubmitted) {
-      setPhoneError(validatePhone(val));
-    } else {
-      setPhoneError("");
-    }
-  };
-
   const handleLoginClick = async () => {
     setNameSubmitted(true);
     setPhoneSubmitted(true);
@@ -96,11 +94,15 @@ const Details = () => {
     setLoading(true);
 
     try {
+      const localDateTime = new Date().toLocaleString();
       const response = await axios.put(
         `${API_BASE_URL}/endusers/users/${userId}`,
         {
           name: name.trim(),
           phone,
+          referredBy: referralCode || "",
+          referredOn: localDateTime,
+          userType: 0,
         }
       );
       if (response.status === 200) {
@@ -146,47 +148,47 @@ const Details = () => {
     }
   }, []);
   useEffect(() => {
-    // Push an initial state to prevent the back button
     window.history.pushState(null, "", window.location.href);
-
-    // Handle popstate (back button press)
     const handlePopState = (e) => {
-      // Prevent back navigation by pushing the current state again
       window.history.pushState(null, "", window.location.href);
-
-      // Trigger the confirmation dialog when back navigation is attempted
       const confirmExit = window.confirm(
         "Are you sure you want to leave? You might lose unsaved changes."
       );
       if (!confirmExit) {
-        // If the user clicks "Cancel", close the tab
-        window.close(); // This will close the tab (might not work in all browsers)
-
-        // Optional: You can push another state to ensure the URL stays the same.
-        // window.history.pushState(null, "", window.location.href); // Reinforce blocking back again
+        window.close();
       }
     };
-
-    // Add event listener to block back navigation
     window.addEventListener("popstate", handlePopState);
-
-    // Cleanup function to remove event listeners when the component unmounts
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
   }, []);
+  useEffect(() => {
+    const fetchCountryByIP = async () => {
+      try {
+        const response = await axios.get("https://ipapi.co/json/");
+        const userCountry = response.data.country_code?.toLowerCase();
+        if (userCountry) {
+          setCountry(userCountry);
+        }
+      } catch (error) {
+        console.error("Could not fetch country by IP:", error);
+      }
+    };
+
+    fetchCountryByIP();
+  }, []);
 
   const validatePhone = (value) => {
-  try {
-    const phoneNumber = parsePhoneNumberFromString("+" + value);
-    if (!phoneNumber) return "Invalid phone number format.";
-    if (!phoneNumber.isValid()) return "Invalid number for selected country.";
-    return "";
-  } catch (error) {
-    return "Invalid phone number.";
-  }
-};
-// console.log('country', country);
+    try {
+      const phoneNumber = parsePhoneNumberFromString("+" + value);
+      if (!phoneNumber) return "Invalid phone number format.";
+      if (!phoneNumber.isValid()) return "Invalid number for selected country.";
+      return "";
+    } catch (error) {
+      return "Invalid phone number.";
+    }
+  };
   return (
     <>
       <div className={styles.signUpContainer}>
@@ -252,10 +254,11 @@ const Details = () => {
               <div className={styles.Dblock}>
                 <label className={styles.label}>Phone Number</label>
                 <PhoneInput
-                  country={country} 
+                  ref={phoneInputRef}
+                  country={country}
+                  enableSearch={true}
                   value={phone}
-                  onChange={(val,countryData) => {
-                    // setCountry(countryData.countryCode); // e.g., 'in', 'us', etc.
+                  onChange={(val, countryData) => {
                     setPhone(val);
                     if (phoneSubmitted) {
                       setPhoneError(validatePhone(val));
@@ -263,14 +266,10 @@ const Details = () => {
                       setPhoneError("");
                     }
                   }}
+                  onClickFlag={handleFlagClick}
                   inputClass={`${styles.input} ${
                     phoneError ? styles.inputError : ""
                   }`}
-                  inputProps={{
-                    name: "phone",
-                    required: true,
-                    autoFocus: false,
-                  }}
                 />
               </div>
               {phoneError && <p className={styles.inlineError}>{phoneError}</p>}

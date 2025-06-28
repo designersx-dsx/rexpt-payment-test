@@ -1,0 +1,229 @@
+.Refferalinfo {
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+}
+
+.headerPart h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card {
+    margin-top: 1rem;
+}
+
+.customCheckbox {
+    accent-color: #5F33E1;
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    gap: 10px;
+    color: #24252C;
+}
+
+.linkSection {
+    margin-bottom: 12px;
+}
+
+.label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #24252C;
+    font-size: 16px;
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #F2F2F2;
+    color: #555;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    border: 1px solid #cccccc00;
+    max-height: 27px;
+}
+
+.input:focus {
+    border-color: #6524EB;
+}
+
+.copyButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.divider {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid #D9D9D9;
+}
+
+.infoSection {
+    font-size: 13px;
+    color: #24252C;
+    margin-bottom: 1rem;
+
+}
+
+.linkDiv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.Linkdec {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.icon {
+    margin-right: 8px;
+}
+
+
+.btnTheme {
+    position: relative;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 55px;
+    margin-top: 2rem;
+    width: 90%;
+    margin: auto;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+
+.btnTheme::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Trigger shine on hover */
+.btnTheme:hover::after {
+    animation: shine 0.6s ease-out forwards;
+}
+
+/* Shine animation keyframes */
+@keyframes shine {
+    0% {
+        left: -75%;
+    }
+
+    100% {
+        left: 125%;
+    }
+}
+
+/* Ensure p and img stay above background */
+.btnTheme p {
+    position: relative;
+    z-index: 3;
+    margin: 0;
+    font-weight: 500;
+    font-size: 19px;
+}
+
+.btnTheme img {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Media QUERY CSS START */
+@media (max-width:370px) {
+    .header h3 {
+        font-size: 18px;
+    }
+}
+
+/* ajay css start */
+.copyWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  top: -28px;
+  right: 0;
+  background: #333;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0.9;
+  animation: fadeInOut 2s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(5px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-5px); }
+}
+
+.btnTheme {
+  transition: transform 0.1s ease, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.btnTheme:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ajay css end*/
+
+
+/* Media QUERY CSS END */

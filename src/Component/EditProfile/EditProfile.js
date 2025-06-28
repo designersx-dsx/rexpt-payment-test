@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "../EditProfile/EditProfile.module.css";
+import Refferal from "../Refferal/Refferal";
 import {
   API_BASE_URL,
   getUserDetails,
@@ -37,6 +38,8 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(false);
   const [addLoading, addSetLoading] = useState(false)
   const [sendOtpLoading, setSendOtpLoading] = useState(false)
+  const [referralCode,setReferralCode]=useState("")
+  const [showDashboardReferral,setShowDashboardReferral]=useState(true)
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -100,6 +103,8 @@ const EditProfile = () => {
       try {
         setLoading(true);
         const user = await getUserDetails(userId);
+        setReferralCode(user?.referralCode)
+        setShowDashboardReferral(user?.showreferralfloating)
         setFormData({
           name: user.name || "",
           email: user.email || "",
@@ -290,6 +295,7 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
+// console.log('showDashboardReferral',showDashboardReferral)
 
   return (
     <>
@@ -315,15 +321,15 @@ const EditProfile = () => {
                   <img
                     src={uploadedImage || formData.profilePicture}
                     onError={(e) => {
-                      e.target.src = "images/camera-icon.avif";
+                      e.target.src = "/svg/profile-icon.svg";
                     }}
                     alt="Profile"
                   />
                 ) : (
                   <img
-                    src={"/images/camera-icon.avif"}
+                    src={"/svg/profile-icon.svg"}
                     onError={(e) => {
-                      e.target.src = "images/camera-icon.avif";
+                      e.target.src = "/svg/profile-icon.svg";
                     }}
                     alt="Profile"
                   />
@@ -338,7 +344,7 @@ const EditProfile = () => {
             <div className={styles.infoSection}>
               <div className={styles.header}>
                 <h3>Personal Info</h3>
-                {/* <span className={styles.editText}><img src='Svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span> */}
+                <span className={styles.editText}><img src='Svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span>
               </div>
 
               <div className={styles.Part}>
@@ -571,6 +577,9 @@ const EditProfile = () => {
                   <p  >{addLoading ? <>Saving... &nbsp; <Loader size={18} /></> : "Save"}</p>
                 </div>
               </div>
+            </div>
+            <div className={styles.RefferalMain}>
+              <Refferal referralCode={referralCode} setShowDashboardReferral={setShowDashboardReferral} showDashboardReferral={showDashboardReferral} userId={userId}/>
             </div>
 
           </div>

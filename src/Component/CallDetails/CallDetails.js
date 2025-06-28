@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
 import Loader2 from "../Loader2/Loader2";
 import DetailModal from "../DetailModal/DetailModal";
-import { API_BASE_URL } from "../../Store/apiStore";
+
 
 const CallDetails = () => {
   const [isChatModalOpen, setChatModalOpen] = useState(false);
@@ -140,9 +140,7 @@ const CallDetails = () => {
       return name;
     }
   }
-  const currentAgent = agents.find((a) => a.agent_id === callData?.agent_id);
-console.log (currentAgent.avatar, "agent")
-  // console.log(callData, "data");
+  const currentAgent = agents.find((a) => a.agent_id === callData?.agent_id);;
   return (
     <div className={styles.CallDetailsMain}>
       <div className={styles.forSticky}>
@@ -340,9 +338,11 @@ console.log (currentAgent.avatar, "agent")
                 <div className={styles.messageRow}>
                   <div className={styles.profile}>
                     <img
-                      src={`/currentAgent?.avatar` || "/svg/default-agent.svg"}
+                      src={
+                        `/${currentAgent?.avatar}` || "/svg/default-agent.svg"
+                      }
                       alt="Agent"
-                      className={styles.avatar}
+                      className={styles.profileImage}
                     />
                   </div>
 
@@ -395,7 +395,8 @@ console.log (currentAgent.avatar, "agent")
                         <div className={styles.messageLeftWrapper}>
                           <img
                             src={
-                              currentAgent?.avatar || "/svg/default-agent.svg"
+                              `/${currentAgent?.avatar}` ||
+                              "/svg/default-agent.svg"
                             }
                             alt="Agent"
                             className={styles.profileImage}
