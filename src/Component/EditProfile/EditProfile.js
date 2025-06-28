@@ -321,15 +321,15 @@ const EditProfile = () => {
                   <img
                     src={uploadedImage || formData.profilePicture}
                     onError={(e) => {
-                      e.target.src = "images/camera-icon.avif";
+                      e.target.src = "/svg/profile-icon.svg";
                     }}
                     alt="Profile"
                   />
                 ) : (
                   <img
-                    src={"/images/camera-icon.avif"}
+                    src={"/svg/profile-icon.svg"}
                     onError={(e) => {
-                      e.target.src = "images/camera-icon.avif";
+                      e.target.src = "/svg/profile-icon.svg";
                     }}
                     alt="Profile"
                   />
