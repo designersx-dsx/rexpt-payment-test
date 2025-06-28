@@ -11,7 +11,7 @@ import PopUp from "../Popup/Popup";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import axios from "axios";
-const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed,  setLoading,onStepChange }, ref) => {
+const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [services, setServices] = useState([{ service: "" }]);
   const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
@@ -39,8 +39,13 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
     setHasFetched,
   });
   const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
-  // const customServices = sessionStorage.getItem('selectedCustomServices') || [];
   const businesServices = JSON.parse(sessionStorage.getItem("businesServices"));
+  console.log(businesServices)
+  const servicesType= Object.values(businesServices).filter(
+  (val) => typeof val === "string" && val !== "" && val !== "email"
+);
+  
+  console.log(servicesType, "servicesType")
   const rawCustomServices =
     JSON.parse(sessionStorage.getItem("selectedCustomServices")) || [];
   useEffect(() => {
@@ -72,8 +77,12 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
     const updatedServices = [...services];
     updatedServices[index].service = value;
     setServices(updatedServices);
+    sessionStorage.setItem(
+      "selectedCustomServices",
+      JSON.stringify(updatedServices)
+    );
   };
-
+  const checkIfBusinessIdExist = Boolean(sessionStorage.getItem("bId"))
   const handleSubmit = async () => {
     setIsSubmitClicked(true);
     const raw = sessionStorage.getItem("businesServices");
@@ -102,7 +111,7 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
         .filter(Boolean)
         .map((service) => ({ service }));
       let response;
-      if (localStorage.getItem("UpdationMode") != "ON") {
+      if (!checkIfBusinessIdExist) {
         response = await axios.post(`${API_BASE_URL}/businessDetails/create`, {
           userId,
           businessName: businessDetails?.businessName,
@@ -110,17 +119,26 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
           businessType: businessDetails.businessType,
           customBuisness: businessDetails?.customBuisness || "",
           buisnessEmail: email || businessDetails?.email,
-          // buisnessService: [...businessDetails?.selectedService, ...customServices],
           buisnessService: cleanServiceArray(),
           customServices: filteredServices,
-          // customServices: cleanedCustomServices,
-          // address1: locationData.address1,
-          // address2: locationData.address2,
-          // city: locationData.city,
-          // state: locationData.state,
-          // country: locationData.country,
-          // zip: locationData.zip,
         });
+        if (onSuccess) {
+
+          if ((servicesType.includes("Other"))) {
+
+            setTimeout(() => {
+              onStepChange?.(1);
+            }, 2000);
+          }
+          else {
+            onSuccess({
+              message: "Business details added successfully",
+            });
+            setTimeout(() => {
+              onStepChange?.(3);
+            }, 2000);
+          }
+        }
       } else {
         response = await axios.patch(
           `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`,
@@ -129,19 +147,19 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
             businessSize: businessDetails.businessSize,
             businessType: businessDetails.businessType,
             buisnessEmail: email || businessDetails?.email,
-            customBuisness: businessDetails?.customBuisness || "", //custome business name
-            // buisnessService: [...businessDetails?.selectedService, ...customServices],
+            customBuisness: businessDetails?.customBuisness || "",
             buisnessService: cleanServiceArray(),
             customServices: filteredServices,
-            // customServices: cleanedCustomServices,
-            // address1: locationData.address1,
-            // address2: locationData.address2,
-            // city: locationData.city,
-            // state: locationData.state,
-            // country: locationData.country,
-            // zip: locationData.zip,
           }
         );
+        if (onSuccess) {
+          onSuccess({
+            message: "Business details added successfully",
+          });
+          setTimeout(() => {
+            onStepChange?.(3);
+          }, 2000);
+        }
       }
 
       const id = response.data.businessId;
@@ -155,13 +173,7 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
       // setPopupType("success");
       // setPopupMessage("Business details added successfully");
       // setShowPopup(true);
-      if (onSuccess) {
-        onSuccess({
-          message: "Business details added successfully",
-        });
-          onStepChange?.(3);
 
-      }
       setTimeout(() => {
         sessionStorage.setItem(
           "selectedCustomServices",
@@ -171,9 +183,21 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
       }, 1000);
     } catch (error) {
       if (onFailed) {
-        onFailed({
-          message: "Business details added failed",
-        })
+        if ((servicesType?.includes("Other"))) {
+
+          setTimeout(() => {
+            onStepChange?.(1);
+          }, 2000);
+        }
+        else {
+          onFailed({
+            message: "Business details added failed",
+          });
+        }
+
+
+
+
       }
       // setPopupType("failed");
       // setPopupMessage("An error occurred while adding business details.");
@@ -219,13 +243,11 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
   //Using Error Handling
   useImperativeHandle(ref, () => ({
     validate: async () => {
-      await handleSubmit();
-      return
+      return true
     },
-
-
-
+    save: async () => { await handleSubmit(); }
   }));
+
   return (
     <>
       {/* <HeaderBar></HeaderBar> */}

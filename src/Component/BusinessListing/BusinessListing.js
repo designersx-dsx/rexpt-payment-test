@@ -253,7 +253,7 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
         }
       );
 
-      if (stepEditingMode === "ON" && knowledge_Base_ID) { 
+      if (stepEditingMode === "ON" && knowledge_Base_ID) {
         handleCreateAgent()
       }
 
@@ -262,7 +262,10 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
           onSuccess({
             message: "Knowledge base created successfully!"
           })
-          onStepChange?.(5);
+          setTimeout(() => {
+             onStepChange?.(5);
+          }, 2000);
+         
         }
       } else {
         setShowPopup(true)
@@ -324,11 +327,10 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
           message: "Please enter a valid phone number.",
         });
       }
-      if (!hasError) {
-        handleSubmit();
-      }
+
       return !hasError;
     },
+    save: async () => { handleSubmit(); }
   }));
 
   return (

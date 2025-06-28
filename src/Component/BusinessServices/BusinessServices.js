@@ -12,7 +12,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import Loader from "../Loader/Loader";
-const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading,onStepChange }, ref) => {
+const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [businessType, setBusinessType] = useState("Restaurant");
   const [selectedService, setSelectedService] = useState([]);
@@ -40,7 +40,9 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     navigate,
     setHasFetched,
   });
+  useEffect(() => {
 
+  }, [])
   const businessServices = [
     {
       type: "Restaurant",
@@ -509,6 +511,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   const selectedBusiness = businessServices?.find(
     (biz) => biz.type === businessType
   );
+  console.log(selectedBusiness,"selectedBusiness")
   const selectedServices = selectedBusiness?.services || [];
   const filteredServices = selectedServices.filter((service) =>
     service.toLowerCase().includes(searchTerm.toLowerCase())
@@ -522,15 +525,10 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     setServiceError("");
     return true;
   };
-
+  const checkIfBusinessIdExist = Boolean(sessionStorage.getItem("bId"))
   const handleContinue = async () => {
-    const isServiceValid = selectedService.length > 0;
-    if (!isServiceValid) {
-      setServiceError("Please select at least one service.");
-      return;
-    }
-
     const containsOther = selectedService.includes("Other");
+    console.log(containsOther,"containsOthercontainsOthercontainsOthercontainsOther")
     const raw = sessionStorage.getItem("businesServices");
     let previous = {};
     try {
@@ -546,7 +544,6 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     };
 
     sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-
     const businessDetailsRaw = sessionStorage.getItem("businessDetails");
     const businessDetails = businessDetailsRaw
       ? JSON.parse(businessDetailsRaw)
@@ -561,59 +558,70 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     sessionStorage.setItem("businessDetails", JSON.stringify(finalBusinessDetails));
     sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
     if (containsOther) {
-      navigate("/about-business-next");
-      return;
+      console.log("CUSTOM")
+      onStepChange?.(1);
+      
     }
-    try {
-      setLoading(true);
+    else {
+         console.log("NOT CUSTOM")
+      try {
+        setLoading(true);
+        const API_URL = checkIfBusinessIdExist
+          ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`
+          : `${API_BASE_URL}/businessDetails/create`;
+        const response = await axios({
+          method: checkIfBusinessIdExist ? "PATCH" : "POST",
+          url: API_URL,
+          data: {
+            userId: decodeToken(localStorage.getItem("token")).id,
+            businessName: finalBusinessDetails.businessName,
+            businessSize: finalBusinessDetails.businessSize,
+            businessType: finalBusinessDetails.businessType,
+            customBuisness: finalBusinessDetails.customBuisness || "",
+            buisnessEmail: email,
+            buisnessService: selectedService,
+            customServices: [],
+          },
+        });
 
-      const API_URL = localStorage.getItem("UpdationMode") === "ON"
-        ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`
-        : `${API_BASE_URL}/businessDetails/create`;
+        const id = response.data.businessId;
+        sessionStorage.setItem("bId", id);
+        sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
+        if (onSuccess) {
+          if (checkIfBusinessIdExist) {
 
-      const response = await axios({
-        method: localStorage.getItem("UpdationMode") === "ON" ? "PATCH" : "POST",
-        url: API_URL,
-        data: {
-          userId: decodeToken(localStorage.getItem("token")).id,
-          businessName: finalBusinessDetails.businessName,
-          businessSize: finalBusinessDetails.businessSize,
-          businessType: finalBusinessDetails.businessType,
-          customBuisness: finalBusinessDetails.customBuisness || "",
-          buisnessEmail: email,
-          buisnessService: selectedService,
-          customServices: [],
-        },
-      });
+          }
+          else {
+            onSuccess({
+              message: "Business details saved successfully"
+            })
+          }
 
-      const id = response.data.businessId;
-      sessionStorage.setItem("bId", id);
-      sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
-      if (onSuccess) {
-        onSuccess({
-          message: "Business details saved successfully"
-        })
-           onStepChange?.(3);
+          setTimeout(() => {
+            onStepChange?.(3);
+          }, 2000);
+
+        }
+        // setPopupType("success");
+        // setPopupMessage("Business details saved successfully");
+        // setShowPopup(true);
+        // setTimeout(() => {
+        //   navigate("/about-business");
+        // }, 1000);
+
+      } catch (error) {
+        console.error("❌ Error saving business details:", error);
+        // setPopupType("failed");
+        // setPopupMessage("Failed to save business details.");
+        // setShowPopup(true);
+        if (onFailed) {
+          onFailed({
+            message: "Failed to save business details.",
+          })
+        }
+      } finally {
+        setLoading(false);
       }
-      // setPopupType("success");
-      // setPopupMessage("Business details saved successfully");
-      // setShowPopup(true);
-      // setTimeout(() => {
-      //   navigate("/about-business");
-      // }, 1000);
-   
-    } catch (error) {
-      console.error("❌ Error saving business details:", error);
-      // setPopupType("failed");
-      // setPopupMessage("Failed to save business details.");
-      // setShowPopup(true);
-      if (onFailed) {
-        onFailed({
-          message: "Failed to save business details.",
-        })
-      }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -704,6 +712,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
 
     setSelectedService(updated);
     setServiceError("");
+    sessionStorage.setItem("businesServices", JSON.stringify(updated));
 
     setCustomServiceSelected(updated.includes("Other"));
   };
@@ -754,25 +763,33 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   //Using Error Handling
   useImperativeHandle(ref, () => ({
     validate: async () => {
-
       let hasError = false;
       if (!selectedService || selectedService.length === 0) {
         onValidationError?.({
           type: "failed",
           message: "Please select at least one service.",
         });
-
-
-        hasError = true;
-
-      } else {
-
-        // setServiceError("");
+        hasError = true
       }
-      await handleContinue()
       return !hasError;
     },
+    save: async () => { await handleContinue() }
   }));
+  useEffect(() => {
+    const saved = sessionStorage.getItem("businesServices");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setSelectedService(parsed);
+          setCustomServiceSelected(parsed.includes("Other"));
+        }
+      } catch (error) {
+        console.error("Error parsing businesServices from sessionStorage:", error);
+      }
+    }
+  }, []);
+
 
   return (
     <div className={styles.container} id="servies">

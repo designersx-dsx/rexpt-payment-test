@@ -285,3 +285,33 @@
   background-color: #007bff;
   color: white;
 }
+.stepsIndicator {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.stepNumber {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #333;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activeStepNumber {
+  background-color: #007bff;
+  color: white;
+}
+
+.stepNumber:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

@@ -28,16 +28,21 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const [gender, setGender] = useState('Male');
   const [availableAvatars, setAvailableAvatars] = useState(avatars['Male']);
   const EditingMode = localStorage.getItem("UpdationMode") === "ON";
- const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(1);
   useEffect(() => {
     const storedGender = sessionStorage.getItem("agentGender") || "Male";
     const storedAvatarImg = sessionStorage.getItem("avatar");
-    const storedAgentName = sessionStorage.getItem("agentName") || localStorage.getItem("agentName") || "";
-
+    const storedAgentName = sessionStorage.getItem("agentName") || localStorage.getItem("VoiceAgentName") || "";
+    const localVoiceName = sessionStorage.getItem("VoiceAgentName") || "";
     const genderAvatars = avatars[storedGender] || avatars["Male"];
     setGender(storedGender);
     setAvailableAvatars(genderAvatars);
-    setAgentName(storedAgentName);
+    if (storedAgentName) {
+      setAgentName(storedAgentName);
+    } else {
+      setAgentName(localVoiceName);
+       sessionStorage.setItem("agentName", localVoiceName)
+    }
 
     if (storedAvatarImg) {
       const avatarIndex = genderAvatars.findIndex(av => av.img === storedAvatarImg);

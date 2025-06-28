@@ -196,15 +196,12 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       icon: "svg/Web-Design-Agency-icon.svg",
     }
   ];
-
   const stored = sessionStorage.getItem("businessDetails");
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem("businessDetails");
-
       if (stored && stored !== "undefined" && stored !== "null") {
         const businessDetails = JSON.parse(stored);
-
         if (businessDetails) {
           setBusinessType(businessDetails.businessType || "");
           setprevBuisnessType(businessDetails.businessType || "");
@@ -247,9 +244,28 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
 
   const handleBusinessTypeChange = (e) => {
     setBusinessType(e.target.value);
+    // if (prevBuisnessType != businessType) {
+    //   sessionStorage.removeItem("selectedServices");
+    //   sessionStorage.removeItem("selectedCustomServices");
+    //   const raw = sessionStorage.getItem("businesServices");
+    //   let previous = {};
+    //   try {
+    //     previous = raw ? JSON.parse(raw) : {};
+    //   } catch (err) {
+    //     console.error("Failed to parse businesServices:", err);
+    //   }
+
+    //   const updatedBusinessServices = {
+    //     selectedService: [],
+    //     email: previous.email,
+    //   };
+    //   sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+    // }
     if (e.target.value !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
+      updateSessionBusinessDetails("businessType", e.target.value);
     }
+    updateSessionBusinessDetails("businessType", e.target.value);
     console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
@@ -258,6 +274,28 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
 
 
   };
+  const updateSessionBusinessDetails = (key, value) => {
+    let existing = {};
+    try {
+      const stored = sessionStorage.getItem("businessDetails");
+
+      if (stored && stored !== "undefined" && stored !== "null") {
+        existing = JSON.parse(stored);
+        // selectedServices
+         sessionStorage.removeItem("selectedServices");
+          sessionStorage.removeItem("businesServices");
+      }
+    } catch (e) {
+      console.error("Error parsing sessionStorage businessDetails:", e);
+    }
+
+    const updated = {
+      ...existing,
+      [key]: value,
+    };
+    sessionStorage.setItem("businessDetails", JSON.stringify(updated));
+  };
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -324,8 +362,6 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         businessName: businessName.trim(),
         businessSize,
       };
-
-
       // navigate("/about-business-next");
     } else {
       businessData = {
@@ -418,9 +454,13 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       } else {
         setErrors((prev) => ({ ...prev, customBuisness: "" }));
       }
-      handleLoginClick()
+      console.log("I AM CALL ")
+
       return true; // No errors
     },
+    save: async () => {
+      handleLoginClick()
+    }
   }));
   const handleClosePopup = () => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {

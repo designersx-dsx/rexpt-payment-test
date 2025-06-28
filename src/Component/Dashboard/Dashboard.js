@@ -105,7 +105,6 @@ function Dashboard() {
   useEffect(() => {
     // Dashboard pe aate hi naya history state add karo
     window.history.pushState(null, document.title, window.location.pathname);
-
     // Back button dabane pe redirect karo
     const handlePopState = () => {
       navigate("/dashboard"); // Wapas dashboard pe hi rakho
