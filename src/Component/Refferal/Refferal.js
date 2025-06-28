@@ -54,7 +54,7 @@ const Refferal = () => {
                         <img src="svg/svg-theme2.svg" alt="" />
                     </div>
                     <p>
-                        Continue
+                       Share Referral Link
                     </p>
                 </div>
             </div>
