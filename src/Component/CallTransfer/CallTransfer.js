@@ -369,7 +369,7 @@ function CallTransfer() {
                     }
                 }
             }
-        
+
 
             //  Add this validation block here
             for (const [index, transfer] of transfers.entries()) {
@@ -392,7 +392,7 @@ function CallTransfer() {
             }
 
             setLoading(true)
-               sessionStorage.removeItem("agentGeneralTools")
+            sessionStorage.removeItem("agentGeneralTools")
             const timestamp = Date.now();
             // Create a reusable prompt for dynamic transfer routing
             const fullPrompt = `The user might ask to be transferred to departments.If they say Sales, transfer to {{sales_number}}.If they say Billing, transfer to {{billing_number}}.If they say Support, transfer to {{support_number}}.Use the appropriate number based on the conversation.`.trim();
@@ -553,9 +553,12 @@ function CallTransfer() {
                 <div className={styles.Btn} onClick={handleSubmit}>
                     <div type="submit">
                         <div className={styles.btnTheme}>
-                            <img src="svg/svg-theme2.svg" alt="" />
+                            <div className={styles.imageWrapper}>
+                                <img src="svg/svg-theme2.svg" alt="" />
+                            </div>
                             <p>{loading ? <Loader size={20} /> : "Submit"}</p>
                         </div>
+
                     </div>
                 </div>
             </div>

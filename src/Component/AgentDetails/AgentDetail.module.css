@@ -416,6 +416,7 @@
   padding: 15px;
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
   gap: 12px;
   width: 50%;
   min-height: 200px;
@@ -470,6 +471,7 @@
   padding: 15px;
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
   gap: 12px;
   width: 50%;
   min-height: 200px;

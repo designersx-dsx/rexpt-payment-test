@@ -33,7 +33,9 @@ import { useEffect } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
 import BusinessListing from "./Component/BusinessListing/BusinessListing";
+
 import Test from "./utils/Test";
+
 function App() {
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
@@ -52,6 +54,8 @@ function App() {
           </p>
         </div>
         <div className="ForMobile">
+
+
           <BrowserRouter>
             <div className="App">
               {/* <RoutePersistence /> */}
@@ -170,7 +174,7 @@ function App() {
                 />
                 <Route path="/totalcall-list" element={<SecureRoute><TotalsCallsList /></SecureRoute>} />
                 <Route path="/call-transfer" element={<SecureRoute><CallTransfer /></SecureRoute>} />
-               <Route path="/call-details/:callId" element={<SecureRoute><CallDetails /></SecureRoute>} />
+                <Route path="/call-details/:callId" element={<SecureRoute><CallDetails /></SecureRoute>} />
                 <Route
                   path="/business-services"
                   element={
@@ -206,6 +210,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
+
                 <Route path="/edit-profile" element={ <SecureRoute><EditProfile /></SecureRoute>} />
                 <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
                 <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
@@ -213,6 +218,7 @@ function App() {
 
                   <Route path="/test-other" element={<Test/>} />
                
+
               </Routes>
             </div>
           </BrowserRouter>

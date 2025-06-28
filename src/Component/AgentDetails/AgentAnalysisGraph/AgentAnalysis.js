@@ -29,7 +29,7 @@ const AgentAnalysis = ({ data, calApiKey }) => {
   const [bookingDates, setBookingDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [bookingsForSelectedDate, setBookingsForSelectedDate] = useState([]);
-  const bookingsRef = useRef(null); // Ref for booking details section
+  const bookingsRef = useRef(null); 
 
   useEffect(() => {
     async function fetchBookingDates() {
@@ -98,9 +98,9 @@ const AgentAnalysis = ({ data, calApiKey }) => {
         <div className={styles.callVolume}>
           {callVolume} <span>Call Volume</span>
         </div>
-        <div className={styles.trend}>
+        {/* <div className={styles.trend}>
           Last 7 Days <span className={styles.positive}>+15%</span>
-        </div>
+        </div> */}
       </div>
 
       <ResponsiveContainer width="100%" height={100}>
@@ -137,7 +137,7 @@ const AgentAnalysis = ({ data, calApiKey }) => {
         <Calendar
           onChange={handleDateClick}
           value={selectedDate}
-          tileContent={tileContent} // Insert the dots
+          tileContent={tileContent} 
           calendarType="gregory"
           className={styles.reactCalendar}
         />

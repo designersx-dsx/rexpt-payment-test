@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "../EditProfile/EditProfile.module.css";
+import Refferal from "../Refferal/Refferal";
 import {
   API_BASE_URL,
   getUserDetails,
@@ -338,7 +339,7 @@ const EditProfile = () => {
             <div className={styles.infoSection}>
               <div className={styles.header}>
                 <h3>Personal Info</h3>
-                {/* <span className={styles.editText}><img src='Svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span> */}
+                <span className={styles.editText}><img src='Svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span>
               </div>
 
               <div className={styles.Part}>
@@ -571,6 +572,9 @@ const EditProfile = () => {
                   <p  >{addLoading ? <>Saving... &nbsp; <Loader size={18} /></> : "Save"}</p>
                 </div>
               </div>
+            </div>
+            <div className={styles.RefferalMain}>
+              <Refferal />
             </div>
 
           </div>

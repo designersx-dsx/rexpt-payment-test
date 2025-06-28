@@ -143,10 +143,11 @@
     }
 }
 
-.maskZoomFadeIn {
+/* .maskZoomFadeIn {
     animation: smoothZoomFadeIn 1.6s ease-out forwards;
     opacity: 0;
-}
+} */
+
 
 .mask img {
     width: 100%;
@@ -274,9 +275,10 @@
     font-size: 19px;
 
 }
-.Dblock input{
+
+.Dblock input {
     width: 100% !important;
-    
+
     font-size: 1rem !important;
     border: 1px solid #E0E5F2 !important;
     border-radius: 10px !important;
@@ -286,9 +288,10 @@
     min-height: 55px !important;
 }
 
-.Dblock .selected-flag {    
-    background-color:#fff !important;
+.Dblock .selected-flag {
+    background-color: #fff !important;
 }
+
 /* ===== Step-by-step Fade Out (Bottom to Top) ===== */
 @keyframes fadeOut {
     0% {
@@ -322,7 +325,7 @@
     position: absolute;
 }
 
-@keyframes slideLeftFadeIn {
+/* @keyframes slideLeftFadeIn {
     0% {
         opacity: 0;
         transform: translateX(-100px);
@@ -332,42 +335,42 @@
         opacity: 1;
         transform: translateX(0);
     }
-}
+} */
 
 .animateStep {
     opacity: 1;
     animation-fill-mode: forwards;
 }
 
-.animateStep1 {
+/* .animateStep1 {
     animation: slideLeftFadeIn 0.4s ease-out 0.15s forwards;
-}
+} */
 
-.animateStep2 {
+/* .animateStep2 {
     animation: slideLeftFadeIn 0.4s ease-out 0.3s forwards;
-}
+} */
 
-.animateStep3 {
+/* .animateStep3 {
     animation: slideLeftFadeIn 0.4s ease-out 0.45s forwards;
-}
+} */
 
-.animateStep4 {
+/* .animateStep4 {
     animation: slideLeftFadeIn 0.4s ease-out 0.45s forwards;
-}
+} */
 
 
 
 @media screen and (min-width: 601px) {
-    .signUpContainer{
-    align-items: center;
-        display: flex
-;
+    .signUpContainer {
+        align-items: center;
+        display: flex;
         margin: auto;
         justify-content: center;
- }
-    .btnTheme{
-    cursor: pointer;
-   }
+    }
+
+    .btnTheme {
+        cursor: pointer;
+    }
 }
 
 
