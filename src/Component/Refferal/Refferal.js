@@ -67,7 +67,7 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
 
     return (
         <div className={styles.Refferalinfo}>
-            <div className={styles.header}>
+            <div className={styles.headerPart}>
                 <h3>Earn 10% Referral Commission</h3>
             </div>
             <div className={styles.card}>
@@ -123,7 +123,7 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
                         <img src="svg/svg-theme2.svg" alt="" />
                     </div>
                     <p>
-                       Share Referral Link
+                        Share Referral Link
                     </p>
                 </div>
             </div>
