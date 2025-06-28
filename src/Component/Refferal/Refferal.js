@@ -4,7 +4,7 @@ import styles from '../Refferal/Refferal.module.css'
 const Refferal = () => {
     return (
         <div className={styles.Refferalinfo}>
-            <div className={styles.header}>
+            <div className={styles.headerPart}>
                 <h3>Earn 10% Referral Commission</h3>
             </div>
             <div className={styles.card}>
@@ -54,7 +54,7 @@ const Refferal = () => {
                         <img src="svg/svg-theme2.svg" alt="" />
                     </div>
                     <p>
-                       Share Referral Link
+                        Share Referral Link
                     </p>
                 </div>
             </div>
