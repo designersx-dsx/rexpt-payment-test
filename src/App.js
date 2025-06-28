@@ -33,6 +33,9 @@ import { useEffect } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
 import BusinessListing from "./Component/BusinessListing/BusinessListing";
+import Test from "./utils/test";
+
+// import Test from "./utils/Test";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -208,9 +211,14 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
-                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
-                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
+
+                <Route path="/edit-profile" element={ <SecureRoute><EditProfile /></SecureRoute>} />
+                <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
+                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
+
+
+                  <Route path="/test-other" element={<Test/>} />
+               
 
               </Routes>
             </div>

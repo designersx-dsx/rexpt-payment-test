@@ -8,6 +8,8 @@ function Start() {
   const searchParams = new URLSearchParams(location.search);
   const referral = searchParams.get("referral") ||"";
   const selectedPlan = searchParams.get("plan") ||"";
+
+  console.log(referral,selectedPlan)
   const [step, setStep] = useState(0);
   const handleClick = () => {
     setTimeout(() => setStep(1), 150);
@@ -121,7 +123,7 @@ function Start() {
           </div>
         </div>
       </div>
-    </div>
+    </div>    
   );
 }
 
