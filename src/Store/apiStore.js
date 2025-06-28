@@ -207,7 +207,7 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
 export const getUserDetails = async (userId) => {
   try {
     const response = await api.get(`/endusers/users/${userId}`);
-    console.log(response, "response")
+    // console.log(response, "response")
     return response.data;
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -317,5 +317,14 @@ export const updateEmailSendOtp = async (email, userId) => {
   return res;
 };
 
+export const updateShowReferralFloatingStatus = async (userId, status) => {
+  try {
+    const response = await api.patch(`/endusers/updateShowReferralFloatingStatus?userId=${userId}`,{status});
+    return response.data
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
 
 export default api;
