@@ -34,6 +34,9 @@ import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
 import BusinessListing from "./Component/BusinessListing/BusinessListing";
 import Test from "./utils/Test";
+
+// import Test from "./utils/Test";
+
 function App() {
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
