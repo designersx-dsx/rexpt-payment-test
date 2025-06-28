@@ -577,8 +577,9 @@ const AgentDashboard = () => {
                   alt="Back button"
                   onClick={handleBackClick}
                 ></img>
+                <div className={styles.profileSection}><p className={styles.name}>Agent detail</p></div>
               </div>
-              <div className={styles.profileSection}></div>
+              
               <div className={styles.notifiMain}>
                 <div
                   className={styles.notificationIcon}
@@ -695,7 +696,7 @@ const AgentDashboard = () => {
                           }}
                         // onClick={() => setIsAssignModalOpen(true)}
                         >
-                          Assign Number
+                          <img src="/svg/assign-number.svg"/>
                         </div>
                       )}
 

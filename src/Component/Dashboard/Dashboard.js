@@ -25,6 +25,7 @@ import Footer2 from "../AgentDetails/Footer/Footer2";
 import Modal from "../Modal2/Modal2";
 import Loader from "../Loader/Loader";
 import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
+import Refferal from "../Refferal/Refferal";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -38,6 +39,7 @@ function Dashboard() {
   const [agentDetails, setAgentDetails] = useState(null);
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
   const packageName = sessionStorage.getItem("package") || "Free";
 
@@ -96,19 +98,20 @@ function Dashboard() {
 
   const [calloading, setcalloading] = useState(false)
   const [calapiloading, setCalapiloading] = useState(false)
+  const [deleteloading , setdeleteloading] = useState(false)
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
 
-   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
 
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
     const handlePopState = () => {
-      navigate("/dashboard"); 
+      navigate("/dashboard");
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
@@ -493,6 +496,7 @@ function Dashboard() {
   }, []);
   const handleDelete = async (agentId) => {
     try {
+      setdeleteloading(true)
       const storedDashboard = JSON.parse(
         sessionStorage.getItem("dashboard-session-storage")
       );
@@ -518,6 +522,8 @@ function Dashboard() {
     } catch (error) {
       setPopupMessage(`Failed to delete agent: ${error.message}`);
       setPopupType("failed");
+    }finally{
+      setdeleteloading(false)
     }
   };
   // Start call
@@ -552,14 +558,14 @@ function Dashboard() {
           body: JSON.stringify({ agent_id: agentDetails.agent_id }),
         }
       );
-      if(res.status==403){
-   
+      if (res.status == 403) {
+
         setPopupMessage("Agent Plan minutes exhausted");
         setPopupType("failed");
         setIsCallInProgress(false);
-             setTimeout(() => {
-              setPopupMessage("")
-              
+        setTimeout(() => {
+          setPopupMessage("")
+
         }, 5000);
         return;
       }
@@ -653,24 +659,24 @@ function Dashboard() {
     navigate("/totalcall-list");
   };
 
- function formatName(name) {
-  if (!name) return "";
+  function formatName(name) {
+    if (!name) return "";
 
-  if (name.includes(" ")) {
-    const firstName = name.split(" ")[0];
-    if (firstName.length <= 7) {
-      return firstName;
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
     } else {
-      return firstName.substring(0, 10) + "...";
-    }
-  } else {
-    if (name.length > 7) {
-      return name.substring(0, 10) + "...";
-    } else {
-      return name; // <-- This was missing
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      } else {
+        return name; // <-- This was missing
+      }
     }
   }
-}
 
   function formatBusinessName(name) {
     if (!name) return "";
@@ -757,17 +763,17 @@ function Dashboard() {
         //   .replace(/\s+/g, "_")
         //   .slice(0, 20);
         const packageMap = {
-        Free: 1,
-        Starter: 2,
-        Scaler: 3,
-        Growth: 4,
-        Corporate: 5,
-        Enterprise: 6,
-      };
-      const packageValue = packageMap[packageName] || 1;
+          Free: 1,
+          Starter: 2,
+          Scaler: 3,
+          Growth: 4,
+          Corporate: 5,
+          Enterprise: 6,
+        };
+        const packageValue = packageMap[packageName] || 1;
 
         // const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
-        const knowledgeBaseName = await getKnowledgeBaseName(businessDetails,userId,packageValue);
+        const knowledgeBaseName = await getKnowledgeBaseName(businessDetails, userId, packageValue);
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
         const businessData = businessDetails.knowledge_base_texts;
@@ -902,12 +908,12 @@ function Dashboard() {
                     user?.profile ||
                     capturedImage ||
                     uploadedImage ||
-                    "images/camera-icon.avif"
+                    "/svg/profile-icon.svg"
                   }
                   alt="Profile"
                   className={styles.profilePic}
                   onError={(e) => {
-                    e.target.src = "images/camera-icon.avif";
+                    e.target.src =  "/svg/profile-icon.svg";
                   }}
                 />
               </button>
@@ -1000,6 +1006,7 @@ function Dashboard() {
             <img src="svg/calender-booking.svg" alt="calender-booking" />
           </div>
         </section>
+
       </div>
 
       <div className={styles.main}>
@@ -1239,7 +1246,7 @@ function Dashboard() {
                     onClick={(e) => handleAssignNumberClick(agent, e)}
                     style={{ cursor: "pointer" }}
                   >
-                    Assign Number
+                 <img src="/svg/assign-number.svg"/>
                   </div>
                 )}
 
@@ -1346,7 +1353,7 @@ function Dashboard() {
                 <div className={styles.modalButtons}>
                   <button
                     className={`${styles.modalButton} ${styles.cancel}`}
-                    onClick={closeModal} // Close the modal only when "Cancel" is clicked
+                    onClick={closeModal} 
                   >
                     Cancel
                   </button>
@@ -1478,7 +1485,7 @@ function Dashboard() {
             </div>
           </div>
         )}
-         {showDeleteConfirm && agentToDelete && (
+        {showDeleteConfirm && agentToDelete && (
           <div
             className={styles.modalBackdrop}
             onClick={() => setShowDeleteConfirm(false)}
@@ -1499,7 +1506,17 @@ function Dashboard() {
                 >
                   No
                 </button>
-                <button
+                {deleteloading ? (<button
+                      className={`${styles.modalButton} ${styles.submit}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      Deleting <Loader size={18} />
+                    </button>) : (
+                   <button
                   className={`${styles.modalButton} ${styles.submit}`}
                   onClick={async () => {
                     try {
@@ -1516,7 +1533,25 @@ function Dashboard() {
                   }}
                 >
                   Yes
-                </button>
+                </button>)}
+                {/* <button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  onClick={async () => {
+                    try {
+                      await handleDelete(agentToDelete.agent_id);
+                      setShowDeleteConfirm(false);
+                      setAgentToDelete(null);
+                    } catch (error) {
+                      setPopupMessage(
+                        `Failed to delete agent: ${error.message}`
+                      );
+                      setPopupType("failed");
+                      setShowDeleteConfirm(false);
+                    }
+                  }}
+                >
+                  Yes
+                </button> */}
               </div>
             </div>
           </div>
@@ -1634,6 +1669,74 @@ function Dashboard() {
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
+      {/* Floating Button */}
+      <div
+        className={styles.floating}
+        onClick={() => setIsModalOpen(true)}
+      >
+        <img src="/svg/floating-svg.svg" alt="floating-svg" />
+      </div>
+
+      {/* Modal */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className={styles.Refferalinfo}>
+          <div className={styles.headerPart}>
+            <h3>Earn 10% Referral Commission</h3>
+          </div>
+          <div className={styles.card}>
+            {/* <label className={styles.checkboxLabel}>
+              Show Referral link on Dashboard
+              <input type="checkbox" className={styles.customCheckbox} />
+            </label> */}
+
+            <div className={styles.linkSection}>
+              <p className={styles.label}>Referral Link</p>
+              <div className={styles.linkDiv}>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    value="https://rexpt.in/Anubhav-8BY472"
+                    readOnly
+                    className={styles.input}
+                  />
+
+                </div>
+                <button className={styles.copyButton}>
+                  <img src="/svg/copy-icon.svg" alt="Copy" />
+                </button>
+              </div>
+
+            </div>
+
+            <hr className={styles.divider} />
+
+            <div className={styles.infoSection}>
+              <div className={styles.Linkdec}>
+                <img src='/svg/earn-icon.svg' alt='earn-icon' />
+                <p>Share your referral link and <b>earn 10% commission</b> of your friends’ spending.</p>
+              </div>
+              <div className={styles.Linkdec}>
+                <img src='/svg/commission-icon.svg' alt='commission-icon' />
+                <p>You will earn “Commission” every month for upto <b>12 months</b> or Customer Lifespan(Whichever is lower) </p>
+              </div>
+              <div className={styles.Linkdec}>
+                <img src='/svg/commission-icon.svg' alt='commission-icon' />
+                <p>We pay “Referral Commission” to our affiliate partners on <b>1st Day of every following month.</b></p>
+              </div>
+            </div>
+
+            <div className={styles.btnTheme}>
+              <div className={styles.imageWrapper}>
+                <img src="svg/svg-theme2.svg" alt="" />
+              </div>
+              <p>
+                Share Referral Link
+              </p>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
 
       {/* <Footer /> */}
       <Footer2 />
