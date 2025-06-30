@@ -97,8 +97,11 @@
     font-weight: 800;
     color: #000;
     margin: 0;
-    word-break: break-all;
+    /* word-break: initial; */
     text-transform: uppercase;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
 
 }
 
@@ -111,9 +114,14 @@
 
 }
 
-.agentInfo h2 {
+.agentHeading {
     font-size: 40px;
     color: #24252C;
+    transition: font-size 0.3s ease;
+}
+
+.smallFont {
+    font-size: 28px;
 }
 
 .agentInfo2 {
@@ -121,13 +129,9 @@
     gap: 10px;
     align-items: center;
     width: 50%;
-    /* flex-wrap: wrap; */
+
 }
 
-.agentInfo2 h2 {
-    font-size: 40px;
-    color: #24252C;
-}
 
 
 .agentCard {
@@ -396,9 +400,11 @@
     /* color: #000; */
     /* font-weight: 400; */
 }
-.AssignNum img{
+
+.AssignNum img {
     width: 95%;
 }
+
 .minLeft {
     display: grid;
     font-size: 22px;
@@ -534,13 +540,16 @@
 
 }
 
-.agentInfo img {
+/* .agentInfo img {
     width: 100px;
-}
+} */
 
-.agentInfo2 img {
+/* .agentInfo2 img {
     width: 100px;
-}
+} */
+
+
+
 
 .floating {
     position: fixed;
@@ -556,6 +565,24 @@
 .floating:hover {
     transform: scale(1.05);
 }
+
+.Cross {
+    background-color: rgb(255, 255, 255);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    float: right;
+    position: relative;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    font-size: 24px;
+    padding-bottom: 4px;
+    font-weight: 600;
+}
+
 
 @keyframes floatUpDown {
     0% {
@@ -573,13 +600,13 @@
 
 
 @media (min-width: 380px) and (max-width: 406px) {
-    .agentInfo h2 {
+    /* .agentInfo h2 {
         font-size: 30px;
-    }
+    } */
 
-    .agentInfo2 h2 {
+    /* .agentInfo2 h2 {
         font-size: 30px;
-    }
+    } */
 }
 
 @media (max-width:380px) {
@@ -601,25 +628,10 @@
         justify-content: center;
     }
 
-    .agentInfo img {
-        width: 70px;
-    }
 
-    .agentInfo2 img {
-        width: 70px;
-    }
 
-    .agentCard hr {
-        height: 50px;
-    }
 
-    .agentInfo h2 {
-        font-size: 35px;
-    }
 
-    .agentInfo2 h2 {
-        font-size: 35px;
-    }
 }
 
 @media (max-width:350px) {
@@ -1182,29 +1194,45 @@
 /* ajay css start */
 
 .copyWrapper {
-  position: relative;
-  display: inline-block;
+    position: relative;
+    display: inline-block;
 }
 
 .tooltip {
-  position: absolute;
-  top: -28px;
-  right: 0;
-  background: #333;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 10;
-  opacity: 0.9;
-  animation: fadeInOut 2s ease forwards;
+    position: absolute;
+    top: -28px;
+    right: 0;
+    background: #333;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    opacity: 0.9;
+    animation: fadeInOut 2s ease forwards;
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(5px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-5px); }
+    0% {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
 }
+
 /* ajay css end */
