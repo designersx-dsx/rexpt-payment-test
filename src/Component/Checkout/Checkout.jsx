@@ -504,20 +504,42 @@ function CheckoutForm({
         setPopupMessage(data.error);
         setLoading(false);
         return;
-      } 
-      
-      // ✅ Handle client secret (SCA / 3DS confirmation)
-    if (data.clientSecret) {
-      const { error: confirmError } = await stripe.confirmCardPayment(data.clientSecret);
-
-      if (confirmError) {
-        setMessage(`❌ ${confirmError.message}`);
-        setPopupType("failed");
-        setPopupMessage(confirmError.message);
-        setLoading(false);
-        return;
       }
-      if (
+
+      // ✅ Handle client secret (SCA / 3DS confirmation)
+      if (data.clientSecret) {
+        const { error: confirmError, paymentIntent } =
+          await stripe.confirmCardPayment(data.clientSecret);
+
+        if (confirmError) {
+          setMessage(`❌ ${confirmError.message}`);
+          setPopupType("failed");
+          setPopupMessage(confirmError.message);
+          setLoading(false);
+          return;
+        }
+        if (paymentIntent?.status === "succeeded" && subscriptionId) {
+          try {
+            const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ subscriptionId }),
+            });
+            const result = await res.json();
+
+            if (!res.ok) {
+              console.error(
+                "❌ Failed to cancel subscription:",
+                result.error || result.message
+              );
+            }
+          } catch (error) {
+            console.error("❌ Network error canceling subscription:", error);
+            // Optional: show UI feedback
+          }
+        }
+
+        if (
           locationPath === "/dashboard" &&
           agentId !== undefined &&
           agentId !== null
@@ -528,8 +550,7 @@ function CheckoutForm({
           setPopupType("success");
           setPopupMessage("Subscription successful!");
         }
-    }
-    else {
+      } else {
         // Show the countdown popup if locationPath is "/dashboard" and agentId is neither undefined nor null
         if (
           locationPath === "/dashboard" &&
