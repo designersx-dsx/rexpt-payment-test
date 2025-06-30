@@ -3,7 +3,8 @@
     margin-top: 50px;
     background-color: #ffffff;
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
     bottom: 2rem;
     position: relative;
 
