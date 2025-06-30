@@ -1,19 +1,20 @@
 .container {
   padding-block: 0px;
   padding-inline: 20px;
-
-  text-align: center;
+  /* text-align: center; */
 
 }
 
-.container .Step3Container{
+.container .Step3Container {
   overflow: auto;
   /* margin-bottom: 5rem; */
 }
-.container .Step4Container{
+
+.container .Step4Container {
   overflow: auto;
   /* margin-bottom: 5rem; */
 }
+
 .LogoDiv {
   background-color: #ffff;
   position: sticky;
@@ -147,7 +148,7 @@
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: 12px 24px;
+  padding: 0px 12px 10px 12px;
   z-index: 1000;
   background-color: #fff;
 
@@ -234,22 +235,25 @@
   .btnTheme {
     cursor: pointer;
   }
+
   .container {
     max-width: 500px;
     margin: auto;
   }
+
   .fixedBtn {
     position: unset;
   }
-  .footerFixed {
-  position: fixed;
-  width: 500px;
-  margin: auto;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  background-color: #fff;
-  border-radius: 15px 15px 0px 0px;
 
-}
+  .footerFixed {
+    position: fixed;
+    width: 500px;
+    margin: auto;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    background-color: #fff;
+    border-radius: 15px 15px 0px 0px;
+
+  }
 
 }
 
@@ -285,33 +289,46 @@
   background-color: #007bff;
   color: white;
 }
+
 .stepsIndicator {
   display: flex;
-  gap: 8px;
+  gap: 0px;
   justify-content: center;
   margin-top: 20px;
 }
 
 .stepNumber {
-  width: 32px;
-  height: 32px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background-color: #e0e0e0;
-  color: #333;
-  font-weight: bold;
+  margin: 0 4px;
   border: none;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
+/* Current Step */
 .activeStepNumber {
-  background-color: #007bff;
+  background-color: #6524EB;
+  width: 20px;
+  height: 20px;
   color: white;
 }
 
-.stepNumber:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+/* Completed Step */
+.completedStep {
+  background-color: #6524EB;
+  color: transparent;
+  pointer-events: auto;
+}
+
+/* Upcoming Step */
+.upcomingStep {
+  background-color: #e0e0e0;
+  color: transparent;
+  pointer-events: none;
 }

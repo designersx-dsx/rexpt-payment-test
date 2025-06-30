@@ -1178,3 +1178,33 @@
 
 
 /* Media QUERY CSS END */
+
+/* ajay css start */
+
+.copyWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  top: -28px;
+  right: 0;
+  background: #333;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0.9;
+  animation: fadeInOut 2s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(5px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-5px); }
+}
+/* ajay css end */

@@ -9,6 +9,7 @@ import {
   getUserAgentMergedDataForAgentUpdate,
   toggleAgentActivation,
   updateAgentKnowledgeBaseId,
+  getUserReferralCodeForDashboard,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -107,6 +108,11 @@ function Dashboard() {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
+
+  const [showDashboardReferral,setShowDashboardReferral]=useState("")
+  const [showreferralfloating,setShowreferralfloating]=useState(localStorage.getItem('showreferralfloating')||true)
+  const [copied,setCopied]=useState(false)
+  
 
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
@@ -592,7 +598,6 @@ function Dashboard() {
       setIsCallInProgress(false);
     }
   };
-
   // Open call modal
   const handleOpenCallModal = (agent) => {
     setAgentDetails(agent);
@@ -896,6 +901,58 @@ function Dashboard() {
       setDeactivateLoading(false);
     }
   };
+
+  const getUserReferralCode=async()=>{
+    try {
+      const res=await getUserReferralCodeForDashboard(userId);
+      console.log(res.referralCode)
+      setShowDashboardReferral(`${window.location.origin}?referral=${encodeURIComponent(res?.referralCode)}`||"")
+    } catch (error) {
+      console.log('error occured while fetching user referal code',error)
+    }
+  }
+
+    const handleCopy = async(referralLink) => {
+    navigator.clipboard.writeText(referralLink)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1000); // hide after 2 seconds
+      })
+      .catch((err) => {
+        console.error("Copy failed:", err);
+      });
+  };
+
+  const shareReferralLink = async (referralLink) => {
+
+  if (!referralLink) {
+    console.error('No referral code provided');
+    return;
+  }
+
+
+  // Use localhost for dev, replace with production URL (e.g., https://rexpt.in) later
+//   const shareUrl = `http://localhost:3000?referral=${encodeURIComponent(code)}`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        url: referralLink
+      });
+      console.log('Share URL:', referralLink); // Debug
+    } catch (error) {
+      console.error('Error sharing:', error);
+      await navigator.clipboard.writeText(referralLink);
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(referralLink);
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+  }
+};
+// console.log('ddsds',typeof showreferralfloating)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1671,12 +1728,14 @@ function Dashboard() {
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
       {/* Floating Button */}
+      {showreferralfloating =='true' &&
       <div
         className={styles.floating}
-        onClick={() => setIsModalOpen(true)}
+        onClick={async() => {await getUserReferralCode();setIsModalOpen(true)}}
       >
         <img src="/svg/floating-svg.svg" alt="floating-svg" />
       </div>
+      }
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -1696,15 +1755,19 @@ function Dashboard() {
                 <div className={styles.inputWrapper}>
                   <input
                     type="text"
-                    value="https://rexpt.in/Anubhav-8BY472"
+                    value={showDashboardReferral}
                     readOnly
                     className={styles.input}
                   />
 
                 </div>
-                <button className={styles.copyButton}>
+                <div className={styles.copyWrapper}>
+                <button className={styles.copyButton} onClick={async()=>handleCopy(showDashboardReferral)}>
                   <img src="/svg/copy-icon.svg" alt="Copy" />
                 </button>
+                {copied && <span className={styles.tooltip}>Copied!</span>}
+                </div>
+
               </div>
 
             </div>
@@ -1726,7 +1789,7 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className={styles.btnTheme}>
+            <div className={styles.btnTheme} onClick={async()=>shareReferralLink(showDashboardReferral)}>
               <div className={styles.imageWrapper}>
                 <img src="svg/svg-theme2.svg" alt="" />
               </div>

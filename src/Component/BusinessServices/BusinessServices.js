@@ -822,7 +822,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
                       className={styles.iconImg}
                     />
                   </div>
-                  <div>
+                  <div className={styles.strongDiv}>
                     <strong>{service}</strong>
                     <p className={styles.subType}>{selectedBusiness.subtype}</p>
                   </div>

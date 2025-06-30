@@ -327,4 +327,14 @@ export const updateShowReferralFloatingStatus = async (userId, status) => {
   }
 };
 
+export const getUserReferralCodeForDashboard = async (userId) => {
+  try {
+    const response = await api.get(`/endusers/getUserReferralCodeForDashboard?userId=${userId}`);
+    return response.data
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
+
 export default api;
