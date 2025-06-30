@@ -166,7 +166,7 @@ const Step = () => {
 
     const handleBack = () => {
         if (currentStep > 0) {
-            const prevStep = currentStep - 1 === 2 ? 1 : currentStep - 1; // Skip 2 if needed
+            const prevStep = currentStep - 1 === 2 ? 1 : currentStep - 1;
             setCurrentStep(prevStep);
             setVisibleStep(prevStep);
             sliderRef.current?.slickGoTo(prevStep);
@@ -603,7 +603,7 @@ const Step = () => {
     };
     const getStepTitle = () => {
         if (currentStep === 0) {
-            return EditingMode ? "Edit: Business Details" : "Business Details";
+            return EditingMode ? "Edit: Business Type" : "Business Type";
         } else if (currentStep === 1) {
             if ((services.includes("Other")) || checkCustomServicesSelected) {
                 return EditingMode ? "Edit: Add More Services" : "Add More Services";
@@ -615,16 +615,16 @@ const Step = () => {
         }
 
         else if (currentStep === 3) {
-            return EditingMode ? "Edit: About Your Business" : "About Your Business";
+            return EditingMode ? "Edit: Public Listing" : "Public Listing";
         }
         else if (currentStep === 4) {
-            return EditingMode ? "Edit: Your Business Listing" : "Your Business Listing";
+            return EditingMode ? "Edit: Business Details" : "Business Details";
         }
         else if (currentStep === 5) {
-            return EditingMode ? "Edit: Agent Language Supported" : "Agent Language Supported";
+            return EditingMode ? "Edit: Select Language" : "Select Language";
         }
         else if (currentStep === 6) {
-            return EditingMode ? "Edit: Agent Gender" : "Agent Gender";
+            return EditingMode ? "Edit: Select Gender" : "Select Gender";
         }
         else if (currentStep === 8) {
             return EditingMode ? "Edit: Receptionist Type" : "Receptionist Type";
@@ -1026,11 +1026,11 @@ const Step = () => {
                 </div>}
             </Slider>
             {/* === Footer Fixed Pagination === */}
-            <div className={styles.footerFixed}>
+            {/* <div className={styles.footerFixed}>
                 <div className={styles.stepsIndicator}>
                     {
                         [...Array(totalSlides)].reduce((acc, _, idx) => {
-                            if (idx === 2) return acc; // Skip step 2
+                            if (idx === 2) return acc; 
                             const isClickable = idx <= currentStep || completedSteps.includes(idx);
 
                             acc.push(
@@ -1053,11 +1053,9 @@ const Step = () => {
                                             8: step9Ref
                                         };
 
-                                        //  If moving forward, validate + save intermediate steps
                                         if (idx > currentStep) {
                                             for (let i = currentStep; i < idx; i++) {
-                                                if (completedSteps.includes(i)) continue; //  Skip already completed steps
-
+                                                if (completedSteps.includes(i)) continue; 
                                                 const ref = validations[i];
                                                 if (ref?.current?.validate) {
                                                     const isValid = await ref.current.validate();
@@ -1073,14 +1071,14 @@ const Step = () => {
                                         }
 
 
-                                        // ✅ Now move to the clicked step
+                              
                                         setCurrentStep(idx);
                                         setVisibleStep(idx);
                                         sliderRef.current?.slickGoTo(idx);
                                     }}
 
                                 >
-                                    {acc.length + 1} {/* Step number shown to the user */}
+                                    {acc.length + 1} 
                                 </button>
                             );
 
@@ -1103,7 +1101,93 @@ const Step = () => {
 
 
 
+            </div> */}
+
+
+
+
+            {/* Ankush Footer  Code Start*/}
+            {/* === Footer Fixed Pagination === */}
+            <div className={styles.footerFixed}>
+                <div className={styles.stepsIndicator}>
+                    {
+                        [...Array(totalSlides)].reduce((acc, _, idx) => {
+                            if (idx === 2) return acc; // Skip step 2
+                            const isClickable = idx <= currentStep || completedSteps.includes(idx);
+                            const isCompleted = completedSteps.includes(idx);
+                            const isCurrent = currentStep === idx;
+                            const isUpcoming = idx > currentStep && !completedSteps.includes(idx);
+
+                            let stepClass = styles.stepNumber;
+                            if (isCompleted) stepClass += ` ${styles.completedStep}`;
+                            if (isCurrent) stepClass += ` ${styles.activeStepNumber}`;
+                            if (isUpcoming) stepClass += ` ${styles.upcomingStep}`;
+
+                            acc.push(
+                                <button
+                                    key={idx}
+                                    disabled={!isClickable}
+                                    className={stepClass}
+                                    onClick={async () => {
+                                        if (!isClickable || isContinueClicked) return;
+
+                                        const validations = {
+                                            0: step1Ref,
+                                            1: step3Ref,
+                                            3: step4Ref,
+                                            4: step5Ref,
+                                            5: step6Ref,
+                                            6: step7Ref,
+                                            7: step8Ref,
+                                            8: step9Ref
+                                        };
+
+                                        //  If moving forward, validate + save intermediate steps
+                                        if (idx > currentStep) {
+                                            for (let i = currentStep; i < idx; i++) {
+                                                if (completedSteps.includes(i)) continue;
+
+                                                const ref = validations[i];
+                                                if (ref?.current?.validate) {
+                                                    const isValid = await ref.current.validate();
+                                                    if (!isValid) return;
+
+                                                    if (ref?.current?.save) {
+                                                        await ref.current.save();
+                                                    }
+
+                                                    addCompletedStep(i);
+                                                }
+                                            }
+                                        }
+
+
+                                        setCurrentStep(idx);
+                                        setVisibleStep(idx);
+                                        sliderRef.current?.slickGoTo(idx);
+                                    }}
+                                >
+                                    {isCurrent ? acc.length + 1 : null}
+                                </button>
+                            );
+
+                            return acc;
+                        }, [])
+                    }
+                </div>
+
+                {currentStep === 8 ? (
+                    <button className={styles.navBtn} onClick={handleContinue}>
+                        {loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />}
+                    </button>
+                ) : (
+                    <button className={styles.navBtn} onClick={handleNext}>
+                        {loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />}
+                    </button>
+                )}
             </div>
+
+
             {showPopup && (
                 <PopUp
                     type={popupType}

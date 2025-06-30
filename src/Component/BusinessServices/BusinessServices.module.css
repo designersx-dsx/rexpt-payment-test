@@ -1,21 +1,21 @@
 .container {
-  padding: 16px 20px;
+  padding: 16px 0px;
   max-width: 400px;
   margin: auto;
 }
 
 
-.verifyButton{
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    border: unset;
-    background-color: #6524eb;
-    color: #fff;
-    padding: 5px 10px;
-    border: 1px solid #6524eb;
-    border-radius: 5px;
-    cursor: pointer;
+.verifyButton {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  border: unset;
+  background-color: #6524eb;
+  color: #fff;
+  padding: 5px 10px;
+  border: 1px solid #6524eb;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 
@@ -58,27 +58,29 @@
   color: #5a6572;
   width: 100%;
 }
+
 .ListDiv {
   margin-top: 1rem;
   border: 1px solid #E0E5F2;
   padding: 10px;
   border-radius: 10px;
 }
+
 .optionList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   /* max-height: 200px; */
-  max-height: 35dvh;
+  max-height: 25dvh;
   overflow: auto;
   padding-right: 10px;
 }
 
 
-.optionList p{
-      padding: 5px;
-    text-align: center;
-    color: #A3AED0;
+.optionList p {
+  /* padding: 5px; */
+  /* text-align: center; */
+  color: #A3AED0;
 }
 
 
@@ -119,6 +121,7 @@
   transition: all 0.3s;
   min-height: 70px;
   padding-inline: 10px;
+  padding-block: 5px;
   cursor: pointer;
 }
 
@@ -127,9 +130,12 @@
 }
 
 .icon {
-  margin-right: 1rem;
+  margin-right: 10px;
 }
 
+.strongDiv {
+  text-align: left;
+}
 
 
 .option strong {
@@ -142,6 +148,7 @@
 .subType {
   color: #A3AED0;
   font-size: 16px;
+  margin-top: 5px;
 }
 
 .inputGroup {
@@ -150,6 +157,7 @@
   flex-direction: column;
   position: relative;
 }
+
 .selectGroup {
   margin-top: 1rem;
   /* display: flex; */
@@ -229,8 +237,9 @@
   font-size: 19px;
   display: flex !important;
 
-} 
-.btnTheme p p{
+}
+
+.btnTheme p p {
   position: relative;
   z-index: 1;
   margin: 0;
@@ -268,28 +277,29 @@
   background-color: #f0f0f0;
 }
 
-@media (max-width:375px){
-.title{
+@media (max-width:375px) {
+  .title {
     font-size: 36px;
-}
-.option strong {
-  font-size: 15px;
-}
+  }
 
-.subType {
-  font-size: 13px;
-}
+  .option strong {
+    font-size: 15px;
+  }
+
+  .subType {
+    font-size: 13px;
+  }
 }
 
 /* Make the <select> look like your text input */
 .selectInput {
   width: 100%;
-  padding: 10px ;
+  padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  appearance: none;         
-  background-size: 12px;   
+  appearance: none;
+  background-size: 12px;
   margin-top: 10px;
   padding: 10px;
   border-radius: 10px;
@@ -303,7 +313,7 @@
 /* Re-use the existing error style on focus/invalid */
 
 .selectDropdown {
-  width: 200px; 
+  width: 200px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -311,6 +321,7 @@
   background-color: white;
   outline: none;
 }
+
 .selectInput {
   background-repeat: no-repeat;
   background-position: right 10px center;
@@ -318,27 +329,29 @@
   appearance: none;
 }
 
-.requiredField{
-color:red;
+.requiredField {
+  color: red;
 }
+
 .headrPart {
   margin-top: 10%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    /* border: 1px solid black !important; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* border: 1px solid black !important; */
 }
 
 
 
 
 @media screen and (min-width: 601px) {
-    .btnTheme{
+  .btnTheme {
     cursor: pointer;
-   }
-   .container {
-    
+  }
+
+  .container {
+
     max-width: 500px;
-   
-}
+
+  }
 }

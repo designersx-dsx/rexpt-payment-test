@@ -1,5 +1,5 @@
 .container {
-  padding: 16px 20px;
+  padding: 16px 0px;
   max-width: 400px;
   margin: auto;
 }
@@ -56,9 +56,9 @@
 .optionList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   /* max-height: 200px; */
-  max-height: 35dvh;
+  max-height: 15dvh;
   overflow: auto;
   padding-right: 10px;
 }
@@ -101,6 +101,7 @@
   transition: all 0.3s;
   min-height: 70px;
   padding-inline: 10px;
+  padding-block: 5px;
 }
 
 .option:hover {
@@ -108,10 +109,15 @@
 }
 
 .icon {
-  margin-right: 1rem;
+  margin-right: 10px;
 }
 
-
+.strongDiv{
+  text-align: left;
+}
+.strongDiv strong{
+  margin-bottom: 5px;
+}
 
 .option strong {
   flex-grow: 1;
@@ -123,6 +129,7 @@
 .subType {
   color: #A3AED0;
   font-size: 16px;
+  margin-top: 5px;
 }
 
 .inputGroup {
