@@ -12,7 +12,7 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
     navigator.clipboard.writeText(referralLink)
       .then(() => {
         setCopied(true);
-        setTimeout(() => setCopied(false), 10000); // hide after 2 seconds
+        setTimeout(() => setCopied(false), 1000); // hide after 2 seconds
       })
       .catch((err) => {
         console.error("Copy failed:", err);
@@ -50,14 +50,16 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
 };
 
   const handleChangeStatus=async(showDashboardReferral)=>{
-    console.log('showDashboardReferral',showDashboardReferral)
+    // console.log('showDashboardReferral',showDashboardReferral)
     setReferralStatus((prev)=>!prev)
     // return
         try {
             const res = await updateShowReferralFloatingStatus(userId,showDashboardReferral);
             console.log(res)
             // setReferralCode(user?.referralCode)
-            setShowDashboardReferral(res?.showreferralfloating)
+            setShowDashboardReferral(res?.data)
+            localStorage.setItem('showreferralfloating',res?.data)
+
             
           } catch (error) {
             console.error(error);

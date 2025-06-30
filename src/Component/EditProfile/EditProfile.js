@@ -105,6 +105,7 @@ const EditProfile = () => {
         const user = await getUserDetails(userId);
         setReferralCode(user?.referralCode)
         setShowDashboardReferral(user?.showreferralfloating)
+        localStorage.setItem('showreferralfloating',user?.showreferralfloating)
         setFormData({
           name: user.name || "",
           email: user.email || "",
