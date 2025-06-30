@@ -182,18 +182,18 @@ function HeaderFilter({
 
         <section className={styles.agentCard}>
           <div className={styles.dateAgentSection}>
-            <div className={styles.PartFew}>
+            <div className={styles.PartFew} onClick={() => setOpen(!open)}>
               <p>
                 {" "}
                 {startDate
                   ? startDate.toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })
+                    month: "long",
+                    year: "numeric",
+                  })
                   : (startDate || new Date()).toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    month: "long",
+                    year: "numeric",
+                  })}
               </p>
               <div className={styles.dateRange}>
                 <h6>
@@ -237,7 +237,7 @@ function HeaderFilter({
                       inline
                       maxDate={new Date()}
                       // Do not close the calendar when date is selected
-                      onClickOutside={() => {}}
+                      onClickOutside={() => { }}
                     />
                     <div className={styles.dateButtons}>
                       <button
@@ -257,7 +257,7 @@ function HeaderFilter({
                 )}
 
                 <svg
-                  onClick={() => setOpen(!open)}
+
                   width="26"
                   height="31"
                   viewBox="0 0 26 31"
@@ -286,14 +286,14 @@ function HeaderFilter({
                   {selectedAgentId === "all"
                     ? "All"
                     : (() => {
-                        const agentName =
-                          isAgents.find(
-                            (agent) => agent.agent_id === selectedAgentId
-                          )?.agentName || "";
-                        return agentName.length > 28
-                          ? agentName.slice(0, 28) + "..."
-                          : agentName;
-                      })()}
+                      const agentName =
+                        isAgents.find(
+                          (agent) => agent.agent_id === selectedAgentId
+                        )?.agentName || "";
+                      return agentName.length > 28
+                        ? agentName.slice(0, 28) + "..."
+                        : agentName;
+                    })()}
                 </div>
 
                 <select

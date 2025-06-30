@@ -68,6 +68,7 @@
   /* position: absolute; */
   right: 0;
   top: 38%;
+  color: #ffffff00;
   background-color: transparent;
 }
 
@@ -295,12 +296,11 @@
 }
 
 .clearButton {
-  background-color: #e23d4f;
+  background-color: #EDE9FC;
+  color: #24252c;
 }
 
-.clearButton:hover {
-  background-color: #d32f3a;
-}
+
 
 
 @media (max-width:350px) {

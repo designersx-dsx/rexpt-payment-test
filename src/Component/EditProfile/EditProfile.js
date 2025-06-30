@@ -38,8 +38,8 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(false);
   const [addLoading, addSetLoading] = useState(false)
   const [sendOtpLoading, setSendOtpLoading] = useState(false)
-  const [referralCode,setReferralCode]=useState("")
-  const [showDashboardReferral,setShowDashboardReferral]=useState(true)
+  const [referralCode, setReferralCode] = useState("")
+  const [showDashboardReferral, setShowDashboardReferral] = useState(true)
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -105,7 +105,7 @@ const EditProfile = () => {
         const user = await getUserDetails(userId);
         setReferralCode(user?.referralCode)
         setShowDashboardReferral(user?.showreferralfloating)
-        localStorage.setItem('showreferralfloating',user?.showreferralfloating)
+        localStorage.setItem('showreferralfloating', user?.showreferralfloating)
         setFormData({
           name: user.name || "",
           email: user.email || "",
@@ -296,7 +296,7 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
-// console.log('showDashboardReferral',showDashboardReferral)
+  // console.log('showDashboardReferral',showDashboardReferral)
 
   return (
     <>
@@ -312,6 +312,7 @@ const EditProfile = () => {
                 className={styles.imageIcon}
                 onClick={handleBack}
               />
+              <p>My Account</p>
             </div>
             <div className={styles.profilePic}>
               <button
@@ -360,7 +361,10 @@ const EditProfile = () => {
                     onChange={handleChange}
                   />
                   {errors.name && <p className={styles.error}>{errors.name}</p>}
+                  <hr className={styles.hrLine} />
                 </div>
+
+
               </div>
               <div className={styles.Part}>
                 <img src="svg/line-email.svg" />
@@ -373,6 +377,7 @@ const EditProfile = () => {
                     onChange={handleChange}
                   />
                   {errors.email && <p className={styles.error}>{errors.email}</p>}
+                  <hr className={styles.hrLine} />
                 </div>
               </div>
 
@@ -485,6 +490,7 @@ const EditProfile = () => {
                     }}
                   />
                   {errors.phone && <p className={styles.error}>{errors.phone}</p>}
+                  <hr className={styles.hrLine} />
                 </div>
               </div>
               <div className={styles.Part}>
@@ -510,7 +516,7 @@ const EditProfile = () => {
                       }
                     />
                   )}
-
+          
                 </div>
 
               </div>
@@ -580,7 +586,7 @@ const EditProfile = () => {
               </div>
             </div>
             <div className={styles.RefferalMain}>
-              <Refferal referralCode={referralCode} setShowDashboardReferral={setShowDashboardReferral} showDashboardReferral={showDashboardReferral} userId={userId}/>
+              <Refferal referralCode={referralCode} setShowDashboardReferral={setShowDashboardReferral} showDashboardReferral={showDashboardReferral} userId={userId} />
             </div>
 
           </div>

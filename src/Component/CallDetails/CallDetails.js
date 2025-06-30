@@ -165,7 +165,7 @@ const CallDetails = () => {
               />
             </svg>
 
-            <h4 className={styles.headerTitle}>Total Calls</h4>
+            <h4 className={styles.headerTitle}>Call Details</h4>
           </div>
         </header>
         <div className={styles.agentCard}>

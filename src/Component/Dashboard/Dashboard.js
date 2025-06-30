@@ -81,6 +81,7 @@ function Dashboard() {
 
   //cam-icon
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const isSmallFont = (totalCalls?.toString().length > 1 || bookingCount?.toString().length > 1);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -99,7 +100,7 @@ function Dashboard() {
 
   const [calloading, setcalloading] = useState(false)
   const [calapiloading, setCalapiloading] = useState(false)
-  const [deleteloading , setdeleteloading] = useState(false)
+  const [deleteloading, setdeleteloading] = useState(false)
 
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
@@ -109,10 +110,10 @@ function Dashboard() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
 
-  const [showDashboardReferral,setShowDashboardReferral]=useState("")
-  const [showreferralfloating,setShowreferralfloating]=useState(localStorage.getItem('showreferralfloating')||true)
-  const [copied,setCopied]=useState(false)
-  
+  const [showDashboardReferral, setShowDashboardReferral] = useState("")
+  const [showreferralfloating, setShowreferralfloating] = useState(localStorage.getItem('showreferralfloating') || true)
+  const [copied, setCopied] = useState(false)
+
 
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
@@ -529,7 +530,7 @@ function Dashboard() {
     } catch (error) {
       setPopupMessage(`Failed to delete agent: ${error.message}`);
       setPopupType("failed");
-    }finally{
+    } finally {
       setdeleteloading(false)
     }
   };
@@ -656,7 +657,10 @@ function Dashboard() {
     setPopupMessage(message);
     setPopupType(type);
   };
+  const handleCalender = () => {
+    navigate("/calendar");
 
+  }
   const handleTotalCallClick = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("totalCallView", true);
@@ -902,17 +906,17 @@ function Dashboard() {
     }
   };
 
-  const getUserReferralCode=async()=>{
+  const getUserReferralCode = async () => {
     try {
-      const res=await getUserReferralCodeForDashboard(userId);
+      const res = await getUserReferralCodeForDashboard(userId);
       console.log(res.referralCode)
-      setShowDashboardReferral(`${window.location.origin}?referral=${encodeURIComponent(res?.referralCode)}`||"")
+      setShowDashboardReferral(`${window.location.origin}?referral=${encodeURIComponent(res?.referralCode)}` || "")
     } catch (error) {
-      console.log('error occured while fetching user referal code',error)
+      console.log('error occured while fetching user referal code', error)
     }
   }
 
-    const handleCopy = async(referralLink) => {
+  const handleCopy = async (referralLink) => {
     navigator.clipboard.writeText(referralLink)
       .then(() => {
         setCopied(true);
@@ -925,34 +929,34 @@ function Dashboard() {
 
   const shareReferralLink = async (referralLink) => {
 
-  if (!referralLink) {
-    console.error('No referral code provided');
-    return;
-  }
-
-
-  // Use localhost for dev, replace with production URL (e.g., https://rexpt.in) later
-//   const shareUrl = `http://localhost:3000?referral=${encodeURIComponent(code)}`;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        url: referralLink
-      });
-      console.log('Share URL:', referralLink); // Debug
-    } catch (error) {
-      console.error('Error sharing:', error);
-      await navigator.clipboard.writeText(referralLink);
+    if (!referralLink) {
+      console.error('No referral code provided');
+      return;
     }
-  } else {
-    try {
-      await navigator.clipboard.writeText(referralLink);
-    } catch (err) {
-      console.error('Copy failed:', err);
+
+
+    // Use localhost for dev, replace with production URL (e.g., https://rexpt.in) later
+    //   const shareUrl = `http://localhost:3000?referral=${encodeURIComponent(code)}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          url: referralLink
+        });
+        console.log('Share URL:', referralLink); // Debug
+      } catch (error) {
+        console.error('Error sharing:', error);
+        await navigator.clipboard.writeText(referralLink);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(referralLink);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
     }
-  }
-};
-// console.log('ddsds',typeof showreferralfloating)
+  };
+  // console.log('ddsds',typeof showreferralfloating)
   return (
     <div>
       <div className={styles.forSticky}>
@@ -971,7 +975,7 @@ function Dashboard() {
                   alt="Profile"
                   className={styles.profilePic}
                   onError={(e) => {
-                    e.target.src =  "/svg/profile-icon.svg";
+                    e.target.src = "/svg/profile-icon.svg";
                   }}
                 />
               </button>
@@ -1052,7 +1056,7 @@ function Dashboard() {
           </div>
         </header>
 
-        <section className={styles.agentCard}>
+        {/* <section className={styles.agentCard}>
 
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
@@ -1063,7 +1067,34 @@ function Dashboard() {
             <h2>{bookingCount}</h2>
             <img src="svg/calender-booking.svg" alt="calender-booking" />
           </div>
+        </section> */}
+
+
+
+        {/* Ankush Code Start */}
+
+        <section className={styles.agentCard}>
+
+          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
+            <h2 className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ''}`}>
+              {totalCalls || 0}
+            </h2>
+            <img src="svg/total-call.svg" alt="total-call" />
+          </div>
+
+          <hr />
+
+          <div className={styles.agentInfo2} onClick={handleCalender}>
+            <h2 className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ''}`}>
+              {bookingCount}
+            </h2>
+            <img src="svg/calender-booking.svg" alt="calender-booking" />
+          </div>
+
         </section>
+
+
+        {/* Ankush code end */}
 
       </div>
 
@@ -1146,17 +1177,13 @@ function Dashboard() {
                   onClick={(e) => toggleDropdown(e, agent.agent_id)}
                   ref={dropdownRef}
                 >
-                  <svg
-                    width="18"
-                    height="4"
-                    viewBox="0 0 18 4"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="2" cy="2" r="2" fill="black" />
-                    <circle cx="9" cy="2" r="2" fill="black" />
-                    <circle cx="16" cy="2" r="2" fill="black" />
+                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="30" height="30" rx="5" fill="white" />
+                    <circle cx="8" cy="15" r="2" fill="#24252C" />
+                    <circle cx="15" cy="15" r="2" fill="#24252C" />
+                    <circle cx="22" cy="15" r="2" fill="#24252C" />
                   </svg>
+
                   {openDropdown === agent?.agent_id && (
                     <div className={styles.OptionsDropdown}>
                       <div
@@ -1304,7 +1331,7 @@ function Dashboard() {
                     onClick={(e) => handleAssignNumberClick(agent, e)}
                     style={{ cursor: "pointer" }}
                   >
-                 <img src="/svg/assign-number.svg"/>
+                    <img src="/svg/assign-number.svg" />
                   </div>
                 )}
 
@@ -1411,7 +1438,7 @@ function Dashboard() {
                 <div className={styles.modalButtons}>
                   <button
                     className={`${styles.modalButton} ${styles.cancel}`}
-                    onClick={closeModal} 
+                    onClick={closeModal}
                   >
                     Cancel
                   </button>
@@ -1565,33 +1592,33 @@ function Dashboard() {
                   No
                 </button>
                 {deleteloading ? (<button
-                      className={`${styles.modalButton} ${styles.submit}`}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      Deleting <Loader size={18} />
-                    </button>) : (
-                   <button
                   className={`${styles.modalButton} ${styles.submit}`}
-                  onClick={async () => {
-                    try {
-                      await handleDelete(agentToDelete.agent_id);
-                      setShowDeleteConfirm(false);
-                      setAgentToDelete(null);
-                    } catch (error) {
-                      setPopupMessage(
-                        `Failed to delete agent: ${error.message}`
-                      );
-                      setPopupType("failed");
-                      setShowDeleteConfirm(false);
-                    }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
                   }}
                 >
-                  Yes
-                </button>)}
+                  Deleting <Loader size={18} />
+                </button>) : (
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={async () => {
+                      try {
+                        await handleDelete(agentToDelete.agent_id);
+                        setShowDeleteConfirm(false);
+                        setAgentToDelete(null);
+                      } catch (error) {
+                        setPopupMessage(
+                          `Failed to delete agent: ${error.message}`
+                        );
+                        setPopupType("failed");
+                        setShowDeleteConfirm(false);
+                      }
+                    }}
+                  >
+                    Yes
+                  </button>)}
                 {/* <button
                   className={`${styles.modalButton} ${styles.submit}`}
                   onClick={async () => {
@@ -1728,13 +1755,18 @@ function Dashboard() {
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
       {/* Floating Button */}
-      {showreferralfloating =='true' &&
-      <div
-        className={styles.floating}
-        onClick={async() => {await getUserReferralCode();setIsModalOpen(true)}}
-      >
-        <img src="/svg/floating-svg.svg" alt="floating-svg" />
-      </div>
+      {showreferralfloating == 'true' &&
+        <div
+          className={styles.floating}
+          onClick={async () => { await getUserReferralCode(); setIsModalOpen(true) }}
+        >
+          <div className={styles.Cross}>x</div>
+          <div>
+            <img src="/svg/floating-svg.svg" alt="floating-svg" />
+
+          </div>
+
+        </div>
       }
 
       {/* Modal */}
@@ -1762,10 +1794,10 @@ function Dashboard() {
 
                 </div>
                 <div className={styles.copyWrapper}>
-                <button className={styles.copyButton} onClick={async()=>handleCopy(showDashboardReferral)}>
-                  <img src="/svg/copy-icon.svg" alt="Copy" />
-                </button>
-                {copied && <span className={styles.tooltip}>Copied!</span>}
+                  <button className={styles.copyButton} onClick={async () => handleCopy(showDashboardReferral)}>
+                    <img src="/svg/copy-icon.svg" alt="Copy" />
+                  </button>
+                  {copied && <span className={styles.tooltip}>Copied!</span>}
                 </div>
 
               </div>
@@ -1784,12 +1816,12 @@ function Dashboard() {
                 <p>You will earn “Commission” every month for upto <b>12 months</b> or Customer Lifespan(Whichever is lower) </p>
               </div>
               <div className={styles.Linkdec}>
-                <img src='/svg/commission-icon.svg' alt='commission-icon' />
+                <img src='/svg/commission2.svg' alt='commission-icon' />
                 <p>We pay “Referral Commission” to our affiliate partners on <b>1st Day of every following month.</b></p>
               </div>
             </div>
 
-            <div className={styles.btnTheme} onClick={async()=>shareReferralLink(showDashboardReferral)}>
+            <div className={styles.btnTheme} onClick={async () => shareReferralLink(showDashboardReferral)}>
               <div className={styles.imageWrapper}>
                 <img src="svg/svg-theme2.svg" alt="" />
               </div>
