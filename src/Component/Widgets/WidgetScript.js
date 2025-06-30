@@ -16,6 +16,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
   const [existingDomain, setExistingDomain] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generateMode, setGenerateMode] = useState(false);
+  
   // Each domain input keeps value, isVerified, loading, error, debounceTimer
   const [domainInputs, setDomainInputs] = useState([
     { value:url, isVerified: false, loading: false, error: "", debounceTimer: null },
@@ -206,6 +207,7 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
       }
     }
   }, [existingDomain]);
+  console.log('domainInputs',domainInputs)
 
   // Render domain inputs
   const renderDomainInputs = () => (
@@ -218,10 +220,27 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
           <div key={index} className={styles.domainInputRow}>
             <div className={styles.InputMain}>
               <input
-                type="text"
+                type="URL"
                 placeholder="e.g., https://example.com"
                 value={input.value}
-                onChange={(e) => handleDomainChange(index, e.target.value)}
+                // onChange={(e) => handleDomainChange(index, e.target.value)}
+                         onKeyDown={(e) => {
+                  const prefix = "https://";
+                  if (
+                    input.value.length <= prefix.length &&
+                    (e.key === "Backspace" || e.key === "Delete" || e.key === "ArrowLeft")
+                  ) {
+                    e.preventDefault(); // block backspace inside https://
+                  }
+                }}
+                  onChange={(e) => {
+                  let val = e.target.value.toLowerCase().replace(/\s/g, ""); // lowercase & no spaces
+                  if (!val.startsWith("https://")) {
+                    val = "https://" + val.replace(/^https?:\/\//, ""); // ensure https://
+                  }
+                  handleDomainChange(index, val);
+                }}
+         
                 className={styles.inputField}
                 disabled={loading}
               />
@@ -253,13 +272,16 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 
 
       <div className={styles.BottomBtnAddGen}>
+        
+        {domainInputs[0].value !=='' &&
         <button
           className={styles.addNewInputBtn}
           onClick={handleAddDomainInput}
           disabled={loading}
         >
-          Add Domain
+          Add more +
         </button>
+        }
 
         {(existingDomain.length > 0 || domainInputs.some(input => input.isVerified)) && (
           <button
