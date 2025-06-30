@@ -21,6 +21,8 @@ import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
 import DetailModal from "../DetailModal/DetailModal";
+import CallSetting from "../CallSetting/CallSetting"
+
 import { useAgentStore } from "../../Store/agentDetailStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import WidgetScript from "../Widgets/WidgetScript";
@@ -1068,9 +1070,11 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Edit Agent</p>
               </div>
+              
               <div
                 className={styles.managementItem}
-                onClick={() => setShowModal(true)}
+                // onClick={() => setShowModal(true)}
+                onClick={() => navigate("/call-setting")}
               >
                 <div className={styles.SvgDesign}>
                   <svg

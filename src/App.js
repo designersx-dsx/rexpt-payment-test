@@ -34,6 +34,7 @@ import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
 import BusinessListing from "./Component/BusinessListing/BusinessListing";
 import Test from "./utils/Test";
+import CallSetting from "./Component/CallSetting/CallSetting";
 
 // import Test from "./utils/Test";
 
@@ -115,6 +116,7 @@ function App() {
                   }
                 />
                 <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
+                <Route path="/call-setting" element={<SecureRoute><CallSetting /></SecureRoute>} />
                 <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
                 <Route
                   path="/business-locations"
