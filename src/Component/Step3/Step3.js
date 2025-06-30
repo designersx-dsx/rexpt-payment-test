@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import styles from '../Step3/Step3.module.css';
 import Slider from 'react-slick';
+import Step4 from '../Step4/Step4';
 
 const avatars = {
   Male: [
@@ -20,7 +21,7 @@ const avatars = {
   ],
 };
 
-const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
+const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange ,setAvtarChecked}, ref) => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -29,6 +30,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const [availableAvatars, setAvailableAvatars] = useState(avatars['Male']);
   const EditingMode = localStorage.getItem("UpdationMode") === "ON";
   const [scale, setScale] = useState(1);
+  
   useEffect(() => {
     const storedGender = sessionStorage.getItem("agentGender") || "Male";
     const storedAvatarImg = sessionStorage.getItem("avatar");
@@ -68,6 +70,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const handleAvatarChange = (avatar) => {
     setSelectedAvatar(avatar);
     sessionStorage.setItem('avatar', avatar.img);
+    setAvtarChecked(true)
   };
 
   const handleAgentNameChange = (e) => {
@@ -76,11 +79,14 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     sessionStorage.setItem('agentName', val);
     if (val.trim()) setAgentNameError('');
   };
-
   useImperativeHandle(ref, () => ({
     validate: () => {
       if (!agentName.trim()) {
-        setAgentNameError("Please enter agent name!");
+         onValidationError?.({
+          type: "failed",
+          message: "Please enter agent name!"
+        });
+        // setAgentNameError("Please enter agent name!");
         return false;
       }
       if (!selectedAvatar) {
@@ -90,7 +96,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
         });
         return false;
       }
-      onStepChange?.(8);
+      onStepChange?.(7);
       return true;
     },
   }));
@@ -106,7 +112,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
 
   return (
     <div className={styles.sliderContainer}>
-      <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2>
+      {/* <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2> */}
       <Slider ref={sliderRef} {...settings}>
         {availableAvatars.map((avatar, index) => (
           <div key={index} className={styles.slide} id="slideradio">
@@ -145,6 +151,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
             </div>
           </div>
         ))}
+      
       </Slider>
 
       <div className={styles.customBtn}>

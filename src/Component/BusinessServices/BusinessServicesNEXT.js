@@ -170,16 +170,11 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
         })
       );
       sessionStorage.setItem("bId", id);
-      // setPopupType("success");
-      // setPopupMessage("Business details added successfully");
-      // setShowPopup(true);
-
       setTimeout(() => {
         sessionStorage.setItem(
           "selectedCustomServices",
           JSON.stringify(filteredServices)
         );
-        // navigate("/about-business");
       }, 1000);
     } catch (error) {
       if (onFailed) {
@@ -194,14 +189,8 @@ const AboutBusinessNext = forwardRef(({ onNext, onBack, onValidationError, onSuc
             message: "Business details added failed",
           });
         }
-
-
-
-
       }
-      // setPopupType("failed");
-      // setPopupMessage("An error occurred while adding business details.");
-      // setShowPopup(true);
+
       console.error(error);
     } finally {
       setTimeout(() => setLoading(false), 1000);
