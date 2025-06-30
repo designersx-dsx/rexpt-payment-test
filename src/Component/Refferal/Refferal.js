@@ -115,7 +115,7 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
                         <p>You will earn “Commission” every month for upto <b>12 months</b> or Customer Lifespan(Whichever is lower) </p>
                     </div>
                     <div className={styles.Linkdec}>
-                        <img src='/svg/commission-icon.svg' alt='commission-icon' />
+                        <img src='/svg/commission2.svg' alt='commission-icon' />
                         <p>We pay “Referral Commission” to our affiliate partners on <b>1st Day of every following month.</b></p>
                     </div>
                 </div>

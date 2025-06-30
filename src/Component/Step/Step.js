@@ -47,6 +47,7 @@ const Step = () => {
     const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
     const [isContinueClicked, setIsContinueClicked] = useState(false);
     const [visibleStep, setVisibleStep] = useState(0);
+    const [avtarChecked, setAvtarChecked] = useState(false)
     const [completedSteps, setCompletedSteps] = useState(() => {
         const saved = localStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
@@ -61,8 +62,9 @@ const Step = () => {
     const step5Ref = useRef(null);
     const step6Ref = useRef(null)
     const step7Ref = useRef(null)
-    const step8Ref = useRef(null)
-    const step9Ref = useRef(null)
+    const step8ARef = useRef(null)
+    const step8BRef = useRef(null);
+    // const step9Ref = useRef(null)
 
     useEffect(() => {
         if (token) {
@@ -77,7 +79,7 @@ const Step = () => {
     };
     const Buisness = JSON.parse(sessionStorage.getItem("businessDetails"))
     const businessType = Buisness?.businessType === "Other" ? Buisness?.customBuisness : Buisness?.businessType;
-    const totalSlides = 9;
+    const totalSlides = 8;
 
     const role_title =
         sessionStorage.getItem("agentRole") || "General Receptionist";
@@ -138,8 +140,8 @@ const Step = () => {
             4: step5Ref,
             5: step6Ref,
             6: step7Ref,
-            7: step8Ref,
-            8: step9Ref
+            7: [step8ARef, step8BRef],
+            // 8: step9Ref
         };
         const isValid = await validation(currentStep);
         if (!isValid) return;
@@ -200,9 +202,14 @@ const Step = () => {
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
-
     const handleContinue = async () => {
-        if (step9Ref.current) {
+        if (step8ARef.current) {
+            if (currentStep === 7) {
+                const isStep3Valid = await step8ARef.current?.validate?.();
+                const isStep4Valid = await step8BRef.current?.validate?.();
+                if (!isStep3Valid || !isStep4Valid) return;
+            }
+
             setIsContinueClicked(true);
             const agentNote = sessionStorage.getItem("agentNote");
             const filledPrompt =
@@ -223,7 +230,7 @@ const Step = () => {
                     commaSeparatedServices,
                     agentNote
                 });
-            const isValid = step9Ref.current.validate()
+            const isValid = step8BRef.current.validate()
             localStorage.removeItem("completedSteps")
             //creation here
             if (isValid && localStorage.getItem("UpdationMode") != "ON") {
@@ -603,15 +610,9 @@ const Step = () => {
     };
     const getStepTitle = () => {
         if (currentStep === 0) {
-            return EditingMode ? "Edit: Business Type" : "Business Type";
+            return EditingMode ? "Edit: Select Category" : "Select Category";
         } else if (currentStep === 1) {
-            if ((services.includes("Other")) || checkCustomServicesSelected) {
-                return EditingMode ? "Edit: Add More Services" : "Add More Services";
-            }
-            else {
-                return EditingMode ? "Edit: Business Services" : "Business Services";
-            }
-
+            return EditingMode ? "Edit: Business Services" : "Business Services"
         }
 
         else if (currentStep === 3) {
@@ -624,10 +625,9 @@ const Step = () => {
             return EditingMode ? "Edit: Select Language" : "Select Language";
         }
         else if (currentStep === 6) {
+            return EditingMode ? "Edit: Select Voice" : "Select Voice";
+        } else if (currentStep === 7) {
             return EditingMode ? "Edit: Select Gender" : "Select Gender";
-        }
-        else if (currentStep === 8) {
-            return EditingMode ? "Edit: Receptionist Type" : "Receptionist Type";
         }
     };
     useEffect(() => {
@@ -645,6 +645,36 @@ const Step = () => {
             setShowPopup(false);
         }
     }
+    // const validation = async (currentStep) => {
+    //     const validations = {
+    //         0: step1Ref,
+    //         1: step3Ref,
+    //         3: step4Ref,
+    //         4: step5Ref,
+    //         5: step6Ref,
+    //         6: step7Ref,
+    //         7: [step8ARef, step8BRef],
+    //         // 8: step9Ref
+    //     };
+    //     // Skip validation if already completed
+
+    //     if (completedSteps.includes(currentStep)) {
+    //         return true;
+    //     }
+    //     console.log(completedSteps, "completedSteps")
+    //     const currentRef = validations[currentStep];
+    //     if (currentRef?.current?.validate) {
+    //         const isValid = await currentRef.current.validate();
+    //         if (!isValid) {
+    //             console.warn(`Validation failed at step ${currentStep}`);
+    //             return false;
+    //         }
+    //         // Mark this step as completed
+    //         addCompletedStep(currentStep);
+    //     }
+
+    //     return true;
+    // };
     const validation = async (currentStep) => {
         const validations = {
             0: step1Ref,
@@ -653,26 +683,34 @@ const Step = () => {
             4: step5Ref,
             5: step6Ref,
             6: step7Ref,
-            7: step8Ref,
-            8: step9Ref
+            7: [step8ARef, step8BRef], // both Step3 and Step4
         };
-        // Skip validation if already completed
 
-        if (completedSteps.includes(currentStep)) {
-            return true;
-        }
-        console.log(completedSteps, "completedSteps")
-        const currentRef = validations[currentStep];
-        if (currentRef?.current?.validate) {
-            const isValid = await currentRef.current.validate();
-            if (!isValid) {
-                console.warn(`Validation failed at step ${currentStep}`);
-                return false;
+        const refs = validations[currentStep];
+
+        if (Array.isArray(refs)) {
+            for (let ref of refs) {
+                if (ref?.current?.validate) {
+                    const isValid = await ref.current.validate();
+                    if (!isValid) return false;
+
+                    if (ref?.current?.save) {
+                        await ref.current.save();
+                    }
+                }
             }
-            // Mark this step as completed
-            addCompletedStep(currentStep);
+        } else {
+            if (refs?.current?.validate) {
+                const isValid = await refs.current.validate();
+                if (!isValid) return false;
+
+                if (refs?.current?.save) {
+                    await refs.current.save();
+                }
+            }
         }
 
+        addCompletedStep(currentStep);
         return true;
     };
 
@@ -700,6 +738,7 @@ const Step = () => {
         const savedSteps = JSON.parse(sessionStorage.getItem("completedSteps")) || [];
         setCompletedSteps(savedSteps);
     }, []);
+
     return (
         <div className={styles.container}>
             <StepHeader title={getStepTitle()} />
@@ -738,84 +777,43 @@ const Step = () => {
                             setVisibleStep(step);
                             sliderRef.current?.slickGoTo(step);
                         }}
-
-
                     />
                 </div>}
                 {currentStep === 1 &&
-
                     <div>
-                        {(services.includes("Other")) || checkCustomServicesSelected ?
-                            <AboutBusinessNext
-                                ref={step3Ref}
-                                onNext={handleNext}
-                                onBack={handleBack}
-                                onValidationError={handleValidationError}
-                                // isActive={currentStep === 1}
-                                onSuccess={(data) => {
+                        <BusinessServices
+                            ref={step3Ref}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            // isActive={currentStep === 1}
+                            onSuccess={(data) => {
 
-                                    setShowPopup(true);
-                                    setPopupType("success");
-                                    setPopupMessage(data.message);
-                                    setTimeout(() => {
-                                        setShowPopup(false);
-                                    }, 2000);
-                                }}
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
 
-                                onFailed={(data) => {
+                            onFailed={(data) => {
 
-                                    setShowPopup(true);
-                                    setPopupType("failed");
-                                    setPopupMessage(data.message);
-                                    setTimeout(() => {
-                                        setShowPopup(false);
-                                    }, 2000);
-                                }}
-                                loading={loading}
-                                setLoading={setLoading}
-                                onStepChange={(step) => {
-                                    setCurrentStep(step);
-                                    setVisibleStep(step);
-                                    sliderRef.current?.slickGoTo(step);
-                                }}
-                            />
-                            :
-                            <BusinessServices
-                                ref={step3Ref}
-                                onNext={handleNext}
-                                onBack={handleBack}
-                                onValidationError={handleValidationError}
-                                // isActive={currentStep === 1}
-                                onSuccess={(data) => {
-
-                                    setShowPopup(true);
-                                    setPopupType("success");
-                                    setPopupMessage(data.message);
-                                    setTimeout(() => {
-                                        setShowPopup(false);
-                                    }, 2000);
-                                }}
-
-                                onFailed={(data) => {
-
-                                    setShowPopup(true);
-                                    setPopupType("failed");
-                                    setPopupMessage(data.message);
-                                    setTimeout(() => {
-                                        setShowPopup(false);
-                                    }, 2000);
-                                }}
-                                loading={loading}
-                                setLoading={setLoading}
-                                onStepChange={(step) => {
-                                    setCurrentStep(step);
-                                    setVisibleStep(step);
-                                    sliderRef.current?.slickGoTo(step);
-                                }}
-
-
-                            />
-                        }
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+                        />
                     </div>}
                 {currentStep === 3 && <div>
                     <AboutBusiness
@@ -956,81 +954,83 @@ const Step = () => {
                         }}
                     />
                 </div>}
-                {currentStep === 7 && <div>
-                    <Step3
-                        ref={step8Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 7}
-                        onSuccess={(data) => {
+                {currentStep === 7 &&
 
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
+                    <>
+                     
+                            <Step3
+                                ref={step8ARef}
+                                onNext={handleNext}
+                                onBack={handleBack}
+                                onValidationError={handleValidationError}
+                                isActive={currentStep === 7}
+                                onSuccess={(data) => {
 
-                        onFailed={(data) => {
+                                    setShowPopup(true);
+                                    setPopupType("success");
+                                    setPopupMessage(data.message);
+                                    setTimeout(() => {
+                                        setShowPopup(false);
+                                    }, 2000);
+                                }}
 
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
-                        onStepChange={(step) => {
-                            setCurrentStep(step);
-                            setVisibleStep(step);
-                            sliderRef.current?.slickGoTo(step);
-                        }}
-                    />
-                </div>}
-                {currentStep === 8 && <div>
-                    <Step4
-                        ref={step9Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 8}
-                        onSuccess={(data) => {
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
+                                onFailed={(data) => {
 
-                        onFailed={(data) => {
+                                    setShowPopup(true);
+                                    setPopupType("failed");
+                                    setPopupMessage(data.message);
+                                    setTimeout(() => {
+                                        setShowPopup(false);
+                                    }, 2000);
+                                }}
+                                loading={loading}
+                                setLoading={setLoading}
+                                onStepChange={(step) => {
+                                    setCurrentStep(step);
+                                    setVisibleStep(step);
+                                    sliderRef.current?.slickGoTo(step);
+                                }}
+                                setAvtarChecked={setAvtarChecked}
+                            />
+                            {avtarChecked &&
+                                <Step4
+                                    ref={step8BRef}
+                                    onNext={handleNext}
+                                    onBack={handleBack}
+                                    onValidationError={handleValidationError}
+                                    isActive={currentStep === 7}
+                                    onSuccess={(data) => {
+                                        setShowPopup(true);
+                                        setPopupType("success");
+                                        setPopupMessage(data.message);
+                                        setTimeout(() => {
+                                            setShowPopup(false);
+                                        }, 2000);
+                                    }}
 
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
-                        onStepChange={(step) => setCurrentStep(step)}
-                        detectRoleTypeChange={detectRoleTypeChange}
+                                    onFailed={(data) => {
 
+                                        setShowPopup(true);
+                                        setPopupType("failed");
+                                        setPopupMessage(data.message);
+                                        setTimeout(() => {
+                                            setShowPopup(false);
+                                        }, 2000);
+                                    }}
+                                    loading={loading}
+                                    setLoading={setLoading}
+                                    onStepChange={(step) => setCurrentStep(step)}
+                                    detectRoleTypeChange={detectRoleTypeChange}
+                                />}
 
-                    />
-                </div>}
+                        </>}
             </Slider>
             {/* === Footer Fixed Pagination === */}
             {/* <div className={styles.footerFixed}>
                 <div className={styles.stepsIndicator}>
                     {
                         [...Array(totalSlides)].reduce((acc, _, idx) => {
-                            if (idx === 2) return acc; 
+                            if (idx === 2) return acc;
                             const isClickable = idx <= currentStep || completedSteps.includes(idx);
 
                             acc.push(
@@ -1049,13 +1049,13 @@ const Step = () => {
                                             4: step5Ref,
                                             5: step6Ref,
                                             6: step7Ref,
-                                            7: step8Ref,
-                                            8: step9Ref
+                                            7: [step8ARef, step8BRef],
+
                                         };
 
                                         if (idx > currentStep) {
                                             for (let i = currentStep; i < idx; i++) {
-                                                if (completedSteps.includes(i)) continue; 
+                                                if (completedSteps.includes(i)) continue;
                                                 const ref = validations[i];
                                                 if (ref?.current?.validate) {
                                                     const isValid = await ref.current.validate();
@@ -1071,14 +1071,14 @@ const Step = () => {
                                         }
 
 
-                              
+
                                         setCurrentStep(idx);
                                         setVisibleStep(idx);
                                         sliderRef.current?.slickGoTo(idx);
                                     }}
 
                                 >
-                                    {acc.length + 1} 
+                                    {acc.length + 1}
                                 </button>
                             );
 
@@ -1102,24 +1102,20 @@ const Step = () => {
 
 
             </div> */}
-
-
-
-
-            {/* Ankush Footer  Code Start*/}
-            {/* === Footer Fixed Pagination === */}
+            {/* Nitish code */}
             <div className={styles.footerFixed}>
                 <div className={styles.stepsIndicator}>
                     {
                         [...Array(totalSlides)].reduce((acc, _, idx) => {
-                            if (idx === 2) return acc; // Skip step 2
+                            if (idx === 2) return acc;
+
                             const isClickable = idx <= currentStep || completedSteps.includes(idx);
                             const isCompleted = completedSteps.includes(idx);
                             const isCurrent = currentStep === idx;
-                            const isUpcoming = idx > currentStep && !completedSteps.includes(idx);
+                            const isUpcoming = !isCompleted && !isCurrent;
 
                             let stepClass = styles.stepNumber;
-                            if (isCompleted) stepClass += ` ${styles.completedStep}`;
+                            if (isCompleted && !isCurrent) stepClass += ` ${styles.completedStep}`;
                             if (isCurrent) stepClass += ` ${styles.activeStepNumber}`;
                             if (isUpcoming) stepClass += ` ${styles.upcomingStep}`;
 
@@ -1138,11 +1134,9 @@ const Step = () => {
                                             4: step5Ref,
                                             5: step6Ref,
                                             6: step7Ref,
-                                            7: step8Ref,
-                                            8: step9Ref
+                                            7: [step8ARef, step8BRef],
                                         };
 
-                                        //  If moving forward, validate + save intermediate steps
                                         if (idx > currentStep) {
                                             for (let i = currentStep; i < idx; i++) {
                                                 if (completedSteps.includes(i)) continue;
@@ -1161,33 +1155,37 @@ const Step = () => {
                                             }
                                         }
 
-
                                         setCurrentStep(idx);
                                         setVisibleStep(idx);
                                         sliderRef.current?.slickGoTo(idx);
                                     }}
                                 >
-                                    {isCurrent ? acc.length + 1 : null}
+                                    {isCompleted && !isCurrent ? (
+                                        <span  />
+                                    ) : (
+                                        acc.length + 1
+                                    )}
                                 </button>
                             );
 
                             return acc;
                         }, [])
+
                     }
+
                 </div>
-
-                {currentStep === 8 ? (
-                    <button className={styles.navBtn} onClick={handleContinue}>
-                        {loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />}
-                    </button>
-                ) : (
-                    <button className={styles.navBtn} onClick={handleNext}>
-                        {loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />}
-                    </button>
-                )}
+                {/* //Button */}
+                {currentStep === 7 ? <button className={styles.navBtn} onClick={handleContinue}>
+                    {
+                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                    }
+                </button> : <button className={styles.navBtn} onClick={handleNext}>
+                    {
+                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                    }
+                </button>
+                }
             </div>
-
-
             {showPopup && (
                 <PopUp
                     type={popupType}

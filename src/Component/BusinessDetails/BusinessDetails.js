@@ -264,12 +264,12 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
     if (e.target.value !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
       updateSessionBusinessDetails("businessType", e.target.value);
+         sessionStorage.removeItem("showInput");
     }
     updateSessionBusinessDetails("businessType", e.target.value);
     console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
-
     }
 
 

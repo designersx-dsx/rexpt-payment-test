@@ -581,7 +581,7 @@ const AgentDashboard = () => {
                 ></img>
                 <div className={styles.profileSection}><p className={styles.name}>Agent detail</p></div>
               </div>
-              
+
               <div className={styles.notifiMain}>
                 <div
                   className={styles.notificationIcon}
@@ -698,7 +698,7 @@ const AgentDashboard = () => {
                           }}
                         // onClick={() => setIsAssignModalOpen(true)}
                         >
-                          <img src="/svg/assign-number.svg"/>
+                          <img src="/svg/assign-number.svg" />
                         </div>
                       )}
 
@@ -732,8 +732,11 @@ const AgentDashboard = () => {
                     </span>
                   </h3>
                 </div>
+                <div className={styles.businessEdit} onClick={() => handleOpenBusinessView(agentData)}>
+                  <h4 >Business Details</h4>
+                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                </div>
 
-                <h4 onClick={() => handleOpenBusinessView(agentData)}>Business Details</h4>
               </div>
 
               <div className={styles.card2} >
@@ -760,7 +763,7 @@ const AgentDashboard = () => {
                   </span>
                 </h2>
                 <div className={styles.google}>
-                  <img src="images/google-icon.png" alt="google-icon" />
+                  <img src="/svg/Goole-icon.svg" alt="google-icon" />
                   <p>
                     <span style={{ fontSize: "12px" }}>
                       {(() => {
@@ -805,8 +808,11 @@ const AgentDashboard = () => {
                     </>
                   }
                 </div>
+                <div className={styles.businessEdit} onClick={() => handleOpenKnowledgeView(agentData)}>
+                  <h4  >Knowledge Base</h4>
+                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                </div>
 
-                <h4 onClick={() => handleOpenKnowledgeView(agentData)} >Knowledge Base</h4>
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
@@ -1070,7 +1076,7 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Edit Agent</p>
               </div>
-              
+
               <div
                 className={styles.managementItem}
                 // onClick={() => setShowModal(true)}
@@ -1163,7 +1169,7 @@ const AgentDashboard = () => {
                 <p className={styles.managementText}>Delete Agent</p>
               </div> */}
             </div>
-<hr className={styles.line} />
+            <hr className={styles.line} />
             <h1 className={styles.Agenttitle}>Agent Analysis</h1>
             <div className={styles.agentStats}>
               <div

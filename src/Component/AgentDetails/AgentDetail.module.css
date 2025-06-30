@@ -391,7 +391,7 @@
 
 .agentDetailsFlex {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
@@ -419,7 +419,7 @@
 .card1 {
   border: 2px solid #c8ecff;
   border-radius: 15px;
-  padding: 15px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -434,6 +434,7 @@
   font-weight: 600;
   color: #24252c;
   text-transform: capitalize;
+  word-break: break-word;
 }
 
 .card1 p {
@@ -442,6 +443,8 @@
   border-radius: 4px;
   color: #24252c;
   font-size: 14px;
+  word-break: break-word;
+
 }
 
 .health {
@@ -458,13 +461,22 @@
   color: #24252c;
 }
 
+.businessEdit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  word-break: break-word;
+  border-top: 1px solid #e0e5f2;
+  padding-top: 10px;
+}
+
 .card1 h4 {
   font-size: 16px;
   font-weight: 600;
   color: #24252c;
   cursor: pointer;
-  border-top: 1px solid #e0e5f2;
-  padding-top: 10px;
+
 }
 
 .card1 span {
@@ -476,7 +488,7 @@
 .card2 {
   border: 2px solid #fbb26c;
   border-radius: 15px;
-  padding: 15px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -500,7 +512,8 @@
   font-weight: 600;
   color: #24252c;
   font-family: "Inter", sans-serif;
-  word-break: break-all;
+  word-break: break-word;
+
 }
 
 .google {
@@ -514,14 +527,19 @@
 }
 
 .google p {
-  background-color: #b0f3e4;
-  padding: 6px 12px;
+  background-color: #FBB26C;
+  padding: 3px 13px;
   border-radius: 4px;
-  color: #24252c;
+
   font-size: 14px;
-  margin-left: 20px;
+  margin-left: 18px;
   display: block;
   overflow: auto;
+}
+
+.google a {
+  color: #24252c;
+  text-decoration: unset;
 }
 
 .address {
@@ -542,8 +560,7 @@
   font-weight: 600;
   color: #24252c;
   cursor: pointer;
-  border-top: 1px solid #e0e5f2;
-  padding-top: 10px;
+
 }
 
 .Agenttitle {
@@ -680,16 +697,17 @@
 }
 
 .managementItem {
-  border: 1px solid #e0e0e0;
+  border: 0.7px solid #efefef;
+  
   border-radius: 2rem;
   display: flex;
-  height: 39px;
+  /* height: 39px; */
   min-width: 170px;
   align-items: center;
   gap: 10px;
   position: relative;
   background-color: #fff;
-  padding: 1px;
+  padding: 3px;
   cursor: pointer;
 }
 

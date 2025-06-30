@@ -28,8 +28,8 @@ const Step4 = forwardRef(
       loading,
       setLoading,
       detectRoleTypeChange,
-    
-   
+
+
     },
     ref
   ) => {
@@ -67,12 +67,12 @@ const Step4 = forwardRef(
           });
           return false;
         }
-    
+
         return {
           isValid: true,
           agentNote: agentNote.trim(),
         };
-        
+
       },
     }));
     // Block refresh and context menu
