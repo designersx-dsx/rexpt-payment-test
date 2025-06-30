@@ -30,6 +30,7 @@ function CheckoutForm({
   agentId,
   locationPath,
   price,
+  subscriptionId,
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -440,37 +441,95 @@ function CheckoutForm({
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/subscribe`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId,
-          priceId,
-          paymentMethodId: paymentMethod.id,
-          userId,
-          email,
-          promotionCode: promoCode,
-          companyName,
-          gstNumber,
-          billingAddress: {
-            line1: addressLine1,
-            line2: addressLine2,
-            city,
-            state,
-            postalCode,
-            country,
-          },
-          // promotionCode:"FREE99"
-        }),
-      });
-
-      const data = await res.json();
+      let data;
+      // console.log("subscriptionId", subscriptionId);
+      if (subscriptionId) {
+        console.log("upgrade runn");
+        const res = await fetch(`${API_BASE_URL}/upgrade-customer-stripe`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerId,
+            priceId,
+            paymentMethodId: paymentMethod.id,
+            userId,
+            email,
+            promotionCode: promoCode,
+            companyName,
+            gstNumber,
+            billingAddress: {
+              line1: addressLine1,
+              line2: addressLine2,
+              city,
+              state,
+              postalCode,
+              country,
+            },
+            subscriptionId: subscriptionId,
+            // promotionCode:"FREE99"
+          }),
+        });
+        data = await res.json();
+      } else {
+        console.log("create  runn");
+        const res = await fetch(`${API_BASE_URL}/subscribe`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerId,
+            priceId,
+            paymentMethodId: paymentMethod.id,
+            userId,
+            email,
+            promotionCode: promoCode,
+            companyName,
+            gstNumber,
+            billingAddress: {
+              line1: addressLine1,
+              line2: addressLine2,
+              city,
+              state,
+              postalCode,
+              country,
+            },
+            // promotionCode:"FREE99"
+          }),
+        });
+        data = await res.json();
+      }
 
       if (data.error) {
         setMessage(`❌ ${data.error}`);
         setPopupType("failed");
         setPopupMessage(data.error);
-      } else {
+        setLoading(false);
+        return;
+      } 
+      
+      // ✅ Handle client secret (SCA / 3DS confirmation)
+    if (data.clientSecret) {
+      const { error: confirmError } = await stripe.confirmCardPayment(data.clientSecret);
+
+      if (confirmError) {
+        setMessage(`❌ ${confirmError.message}`);
+        setPopupType("failed");
+        setPopupMessage(confirmError.message);
+        setLoading(false);
+        return;
+      }
+      if (
+          locationPath === "/dashboard" &&
+          agentId !== undefined &&
+          agentId !== null
+        ) {
+          setShowCountdownPopup(true);
+        } else {
+          setMessage("Subscription successful!");
+          setPopupType("success");
+          setPopupMessage("Subscription successful!");
+        }
+    }
+    else {
         // Show the countdown popup if locationPath is "/dashboard" and agentId is neither undefined nor null
         if (
           locationPath === "/dashboard" &&

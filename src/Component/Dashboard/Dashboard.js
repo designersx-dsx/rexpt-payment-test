@@ -627,51 +627,51 @@ function Dashboard() {
     navigate("/totalcall-list");
   };
 
-//   function formatName(name) {
-//     if (!name) return "";
+  //   function formatName(name) {
+  //     if (!name) return "";
 
-//     if (name.includes(" ")) {
-//       const firstName = name.split(" ")[0];
-//       if (firstName.length <= 7) {
-//         return firstName;
-//       } else {
-//         return firstName.substring(0, 10) + "...";
-//       }
-//     } else {
-// // <<<<<<< dev_Shorya
-// //       if (name.length > 7) {
-// //         return name.substring(0, 10) + "...";
-// //       }
-// //       return name;
-// // =======
-//       return firstName.substring(0, 10) + "...";
-//     }
-//   else {
-//     if (name.length > 7) {
-//       return name.substring(0, 10) + "...";
-//     } else {
-//       return name; // <-- This was missing
+  //     if (name.includes(" ")) {
+  //       const firstName = name.split(" ")[0];
+  //       if (firstName.length <= 7) {
+  //         return firstName;
+  //       } else {
+  //         return firstName.substring(0, 10) + "...";
+  //       }
+  //     } else {
+  // // <<<<<<< dev_Shorya
+  // //       if (name.length > 7) {
+  // //         return name.substring(0, 10) + "...";
+  // //       }
+  // //       return name;
+  // // =======
+  //       return firstName.substring(0, 10) + "...";
+  //     }
+  //   else {
+  //     if (name.length > 7) {
+  //       return name.substring(0, 10) + "...";
+  //     } else {
+  //       return name; // <-- This was missing
 
-//     }
-//   }
-function formatName(name) {
-  if (!name) return "";
+  //     }
+  //   }
+  function formatName(name) {
+    if (!name) return "";
 
-  if (name.includes(" ")) {
-    const firstName = name.split(" ")[0];
-    if (firstName.length <= 7) {
-      return firstName;
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
     } else {
-      return firstName.substring(0, 10) + "...";
-    }
-  } else {
-    if (name.length > 7) {
-      return name.substring(0, 10) + "...";
-    } else {
-      return name;
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      } else {
+        return name;
+      }
     }
   }
-}
   function formatBusinessName(name) {
     if (!name) return "";
 
@@ -722,39 +722,39 @@ function formatName(name) {
   const handleDeactivateAgent = async () => {
   };
 
-  const handleUpgradeClick = (agent) => {
-    if (agent?.subscriptionId) {
-      alert("Coming Soon");
-    } else {
+    const handleUpgradeClick = (agent) => {
+    // if (agent?.subscriptionId) {
+    //   alert("Coming Soon");
+    // } else {
       setagentId(agent?.agent_id);
       setsubscriptionId(agent?.subscriptionId);
       setModelOpen(true);
-    }
+    // }
 
   };
   const fetchPrevAgentDEtails = async (agent_id, businessId) => {
-};
+  };
   const locationPath = location.pathname
 
-// =======
-//       setPopupType("success");
-//       setPopupMessage(
-//         isCurrentlyDeactivated
-//           ? "Agent activated successfully."
-//           : "Agent deactivated successfully."
-//       );
-//       setShowDeactivateConfirm(false);
-//       setHasFetched(false);
-//     } catch (error) {
-//       console.error("Activation/Deactivation Error:", error);
-//       setPopupType("failed");
-//       setPopupMessage("Failed to update agent status.");
-//       setShowDeactivateConfirm(false);
-//     } finally {
-//       setDeactivateLoading(false);
-//     }
-//   };
-// >>>>>>> payment_testing
+  // =======
+  //       setPopupType("success");
+  //       setPopupMessage(
+  //         isCurrentlyDeactivated
+  //           ? "Agent activated successfully."
+  //           : "Agent deactivated successfully."
+  //       );
+  //       setShowDeactivateConfirm(false);
+  //       setHasFetched(false);
+  //     } catch (error) {
+  //       console.error("Activation/Deactivation Error:", error);
+  //       setPopupType("failed");
+  //       setPopupMessage("Failed to update agent status.");
+  //       setShowDeactivateConfirm(false);
+  //     } finally {
+  //       setDeactivateLoading(false);
+  //     }
+  //   };
+  // >>>>>>> payment_testing
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1485,7 +1485,7 @@ function formatName(name) {
     </div>
   );
 }
-  
+
 
 export default Dashboard;
 

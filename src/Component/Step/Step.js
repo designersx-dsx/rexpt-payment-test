@@ -468,46 +468,8 @@ const Step = () => {
 
 
                     ],
-                    states: [
-                        {
-                            name: "information_collection",
-                            state_prompt:
-                                "You will follow the steps below to collect information...",
-                            edges: [
-                                {
-                                    destination_state_name: "appointment_booking",
-                                    description: "Transition to book an appointment.",
-                                },
-                            ],
-                            tools: [
-                                {
-                                    type: "transfer_call",
-                                    name: "transfer_to_support",
-                                    description: "Transfer to the support team.",
-                                    transfer_destination: {
-                                        type: "predefined",
-                                        number: "+918054226461", // Replace with actual number
-                                    },
-                                },
-                            ],
-                        },
-                        {
-                            name: "appointment_booking",
-                            state_prompt:
-                                "You will follow the steps below to book an appointment...",
-                            tools: [
-                                {
-                                    type: "book_appointment_cal",
-                                    name: "book_appointment",
-                                    description: "Book an annual check up.",
-                                    cal_api_key: "cal_live_447bd92f96b6fc71e427e51cdc40e2cf",
-                                    event_type_id: 2508223,
-                                    timezone: "America/Los_Angeles",
-                                },
-                            ],
-                        },
-                    ],
-                    starting_state: "information_collection",
+                
+                
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom }.`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
