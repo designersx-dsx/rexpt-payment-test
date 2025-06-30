@@ -1,8 +1,11 @@
 .card {
-  background-color: #6524EB;
-  padding: 20px;
-  border-radius: 12px;
-height: 32vh;
+    background-color: #6524EB;
+    padding: 20px;
+    margin-top: 2px;
+    border-top-left-radius: 35px;
+    border-top-right-radius: 35px;
+    height: 35vh;
+    margin-inline: 1px;
 }
 
 .profilePic {
@@ -232,8 +235,8 @@ height: 32vh;
   }
 }
 
-@media (max-width:370px){
-.header h3 {
-  font-size: 18px;
-}
+@media (max-width:370px) {
+  .header h3 {
+    font-size: 18px;
+  }
 }

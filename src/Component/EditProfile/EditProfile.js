@@ -38,6 +38,8 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(false);
   const [addLoading, addSetLoading] = useState(false)
   const [sendOtpLoading, setSendOtpLoading] = useState(false)
+  const [referralCode,setReferralCode]=useState("")
+  const [showDashboardReferral,setShowDashboardReferral]=useState(true)
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -101,6 +103,9 @@ const EditProfile = () => {
       try {
         setLoading(true);
         const user = await getUserDetails(userId);
+        setReferralCode(user?.referralCode)
+        setShowDashboardReferral(user?.showreferralfloating)
+        localStorage.setItem('showreferralfloating',user?.showreferralfloating)
         setFormData({
           name: user.name || "",
           email: user.email || "",
@@ -291,6 +296,7 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
+// console.log('showDashboardReferral',showDashboardReferral)
 
   return (
     <>
@@ -316,15 +322,15 @@ const EditProfile = () => {
                   <img
                     src={uploadedImage || formData.profilePicture}
                     onError={(e) => {
-                      e.target.src = "images/camera-icon.avif";
+                      e.target.src = "/svg/profile-icon.svg";
                     }}
                     alt="Profile"
                   />
                 ) : (
                   <img
-                    src={"/images/camera-icon.avif"}
+                    src={"/svg/profile-icon.svg"}
                     onError={(e) => {
-                      e.target.src = "images/camera-icon.avif";
+                      e.target.src = "/svg/profile-icon.svg";
                     }}
                     alt="Profile"
                   />
@@ -574,7 +580,7 @@ const EditProfile = () => {
               </div>
             </div>
             <div className={styles.RefferalMain}>
-              <Refferal />
+              <Refferal referralCode={referralCode} setShowDashboardReferral={setShowDashboardReferral} showDashboardReferral={showDashboardReferral} userId={userId}/>
             </div>
 
           </div>

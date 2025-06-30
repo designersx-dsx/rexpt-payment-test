@@ -105,7 +105,6 @@ const Details = () => {
           userType: 0,
         }
       );
-
       if (response.status === 200) {
         setStartExit(true);
         sessionStorage.setItem(
@@ -115,7 +114,7 @@ const Details = () => {
         setUser({ name: name });
         setTimeout(() => {
           localStorage.setItem("onboardComplete", "true");
-          navigate("/business-details");
+          navigate("/steps");
         }, 400);
       } else {
         setPopupType("failed");

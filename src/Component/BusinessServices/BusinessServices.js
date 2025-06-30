@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState, useEffect, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import styles from "../BusinessServices/BusinessServices.module.css";
 import { useNavigate } from "react-router-dom";
 import { validateEmail as validateEmailAPI } from "../../Store/apiStore";
@@ -8,7 +12,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import Loader from "../Loader/Loader";
-const BusinessServices = () => {
+const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [businessType, setBusinessType] = useState("Restaurant");
   const [selectedService, setSelectedService] = useState([]);
@@ -20,7 +24,7 @@ const BusinessServices = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("");
 
-  const [Loading, setLoading] = useState(false);
+  // const [Loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const EditingMode = localStorage.getItem("UpdationMode");
   const [customServiceSelected, setCustomServiceSelected] = useState(false);
@@ -36,7 +40,9 @@ const BusinessServices = () => {
     navigate,
     setHasFetched,
   });
+  useEffect(() => {
 
+  }, [])
   const businessServices = [
     {
       type: "Restaurant",
@@ -473,23 +479,23 @@ const BusinessServices = () => {
       ],
     },
     {
-  type: "Cleaning Janitorial Service",
-  subtype: "Your Journey Begins Here",
-  icon: "svg/Cleaning Janitorial Service.svg",
-  services: [
-    "Residential Cleaning",
-    "Commercial Office Cleaning",
-    "Deep Cleaning Services",
-    "Move-In/Move-Out Cleaning",
-    "Carpet & Upholstery Cleaning",
-    "Window Cleaning",
-    "Disinfection & Sanitization",
-    "Post-Construction Cleaning",
-    "Restroom Cleaning & Maintenance",
-    "Other"
-  ],
-}
-,
+      type: "Cleaning Janitorial Service",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Cleaning Janitorial Service.svg",
+      services: [
+        "Residential Cleaning",
+        "Commercial Office Cleaning",
+        "Deep Cleaning Services",
+        "Move-In/Move-Out Cleaning",
+        "Carpet & Upholstery Cleaning",
+        "Window Cleaning",
+        "Disinfection & Sanitization",
+        "Post-Construction Cleaning",
+        "Restroom Cleaning & Maintenance",
+        "Other"
+      ],
+    }
+    ,
     ,
     {
       type: "Other Local Business",
@@ -502,9 +508,10 @@ const BusinessServices = () => {
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
-  const selectedBusiness = businessServices.find(
+  const selectedBusiness = businessServices?.find(
     (biz) => biz.type === businessType
   );
+  console.log(selectedBusiness,"selectedBusiness")
   const selectedServices = selectedBusiness?.services || [];
   const filteredServices = selectedServices.filter((service) =>
     service.toLowerCase().includes(searchTerm.toLowerCase())
@@ -518,15 +525,10 @@ const BusinessServices = () => {
     setServiceError("");
     return true;
   };
-
+  const checkIfBusinessIdExist = Boolean(sessionStorage.getItem("bId"))
   const handleContinue = async () => {
-    const isServiceValid = selectedService.length > 0;
-    if (!isServiceValid) {
-      setServiceError("Please select at least one service.");
-      return;
-    }
-
     const containsOther = selectedService.includes("Other");
+    console.log(containsOther,"containsOthercontainsOthercontainsOthercontainsOther")
     const raw = sessionStorage.getItem("businesServices");
     let previous = {};
     try {
@@ -542,7 +544,6 @@ const BusinessServices = () => {
     };
 
     sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-
     const businessDetailsRaw = sessionStorage.getItem("businessDetails");
     const businessDetails = businessDetailsRaw
       ? JSON.parse(businessDetailsRaw)
@@ -557,48 +558,70 @@ const BusinessServices = () => {
     sessionStorage.setItem("businessDetails", JSON.stringify(finalBusinessDetails));
     sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
     if (containsOther) {
-      navigate("/about-business-next");
-      return;
+      console.log("CUSTOM")
+      onStepChange?.(1);
+      
     }
-    try {
-      setLoading(true);
+    else {
+         console.log("NOT CUSTOM")
+      try {
+        setLoading(true);
+        const API_URL = checkIfBusinessIdExist
+          ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`
+          : `${API_BASE_URL}/businessDetails/create`;
+        const response = await axios({
+          method: checkIfBusinessIdExist ? "PATCH" : "POST",
+          url: API_URL,
+          data: {
+            userId: decodeToken(localStorage.getItem("token")).id,
+            businessName: finalBusinessDetails.businessName,
+            businessSize: finalBusinessDetails.businessSize,
+            businessType: finalBusinessDetails.businessType,
+            customBuisness: finalBusinessDetails.customBuisness || "",
+            buisnessEmail: email,
+            buisnessService: selectedService,
+            customServices: [],
+          },
+        });
 
-      const API_URL = localStorage.getItem("UpdationMode") === "ON"
-        ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`
-        : `${API_BASE_URL}/businessDetails/create`;
+        const id = response.data.businessId;
+        sessionStorage.setItem("bId", id);
+        sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
+        if (onSuccess) {
+          if (checkIfBusinessIdExist) {
 
-      const response = await axios({
-        method: localStorage.getItem("UpdationMode") === "ON" ? "PATCH" : "POST",
-        url: API_URL,
-        data: {
-          userId: decodeToken(localStorage.getItem("token")).id,
-          businessName: finalBusinessDetails.businessName,
-          businessSize: finalBusinessDetails.businessSize,
-          businessType: finalBusinessDetails.businessType,
-          customBuisness: finalBusinessDetails.customBuisness || "",
-          buisnessEmail: email,
-          buisnessService: selectedService,
-          customServices: [],
-        },
-      });
+          }
+          else {
+            onSuccess({
+              message: "Business details saved successfully"
+            })
+          }
 
-      const id = response.data.businessId;
-      sessionStorage.setItem("bId", id);
-      sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
+          setTimeout(() => {
+            onStepChange?.(3);
+          }, 2000);
 
-      setPopupType("success");
-      setPopupMessage("Business details saved successfully");
-      setShowPopup(true);
-      setTimeout(() => {
-        navigate("/about-business");
-      }, 1000);
-    } catch (error) {
-      console.error("❌ Error saving business details:", error);
-      setPopupType("failed");
-      setPopupMessage("Failed to save business details.");
-      setShowPopup(true);
-    } finally {
-      setLoading(false);
+        }
+        // setPopupType("success");
+        // setPopupMessage("Business details saved successfully");
+        // setShowPopup(true);
+        // setTimeout(() => {
+        //   navigate("/about-business");
+        // }, 1000);
+
+      } catch (error) {
+        console.error("❌ Error saving business details:", error);
+        // setPopupType("failed");
+        // setPopupMessage("Failed to save business details.");
+        // setShowPopup(true);
+        if (onFailed) {
+          onFailed({
+            message: "Failed to save business details.",
+          })
+        }
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -689,6 +712,7 @@ const BusinessServices = () => {
 
     setSelectedService(updated);
     setServiceError("");
+    sessionStorage.setItem("businesServices", JSON.stringify(updated));
 
     setCustomServiceSelected(updated.includes("Other"));
   };
@@ -736,13 +760,42 @@ const BusinessServices = () => {
       handleCreateAgent();
     }
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: async () => {
+      let hasError = false;
+      if (!selectedService || selectedService.length === 0) {
+        onValidationError?.({
+          type: "failed",
+          message: "Please select at least one service.",
+        });
+        hasError = true
+      }
+      return !hasError;
+    },
+    save: async () => { await handleContinue() }
+  }));
+  useEffect(() => {
+    const saved = sessionStorage.getItem("businesServices");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setSelectedService(parsed);
+          setCustomServiceSelected(parsed.includes("Other"));
+        }
+      } catch (error) {
+        console.error("Error parsing businesServices from sessionStorage:", error);
+      }
+    }
+  }, []);
 
 
   return (
     <div className={styles.container} id="servies">
-      <h1 className={styles.title}>
+      {/* <h1 className={styles.title}>
         {EditingMode ? "Edit: Business Services" : "Business Services"}
-      </h1>
+      </h1> */}
 
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
@@ -769,7 +822,7 @@ const BusinessServices = () => {
                       className={styles.iconImg}
                     />
                   </div>
-                  <div>
+                  <div className={styles.strongDiv}>
                     <strong>{service}</strong>
                     <p className={styles.subType}>{selectedBusiness.subtype}</p>
                   </div>
@@ -794,14 +847,14 @@ const BusinessServices = () => {
       {serviceError && (
         <p style={{ color: "red", marginTop: "5px" }}>{serviceError}</p>
       )}
-      {stepEditingMode != 'ON' ?
+      {/* {stepEditingMode != 'ON' ?
         <div>
           <div type="submit">
             <div
               className={styles.btnTheme}
               onClick={handleContinue}
               style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
-            // disabled={!isEmailVerified}
+          
             >
               <img src="svg/svg-theme.svg" alt="" type="button" />
               <p>{Loading ? <>Saving &nbsp; &nbsp;<Loader size={20} /></> : "Continue"}</p>
@@ -815,14 +868,14 @@ const BusinessServices = () => {
               className={styles.btnTheme}
               onClick={handleSaveEdit}
               style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
-            // disabled={!isEmailVerified} 
+    
             >
               <img src="svg/svg-theme.svg" alt="" type="button" />
               {Loading ? <p>Saving &nbsp; &nbsp;<Loader size={20} /></p> : <p>Save Edits</p>}
             </div>
           </div>
         </div>
-      }
+      } */}
       {/* Show PopUp */}
       <PopUp
         type={popupType}
@@ -831,6 +884,6 @@ const BusinessServices = () => {
       />
     </div>
   );
-};
+});
 
 export default BusinessServices;

@@ -67,7 +67,8 @@ const Plan = () => {
       return;
     }
     if (selected === "free-trial") {
-      navigate("/business-details");
+      // navigate("/business-details");
+      navigate("/steps");
       return;
     }
     setShow(true)
