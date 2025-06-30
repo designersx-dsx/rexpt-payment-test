@@ -235,3 +235,23 @@
 .fullscreenCountryDropdown .flag-dropdown {
   z-index: 10000; 
 }
+
+.CallAccordion{
+  box-shadow: none !important;
+  margin: 5px 0 !important;
+  border-bottom: 1px solid #E0E5F2;
+}
+
+.CallAccordion button{
+  padding: 4px 0 !important;
+}
+
+.CallAccordion::before{
+  position:unset !important;
+}
+
+.CallAccordion svg{
+  fill: #24252C !important;
+  font-size: 28px !important;
+}
+
