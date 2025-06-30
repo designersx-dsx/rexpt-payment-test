@@ -129,7 +129,7 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
                       </p>
                     )}
                     <p>
-                      <strong>{(plan.prices[0].metadata || "")}</strong> minutes included
+                      <strong>{(plan.prices[0].metadata || "")}</strong> minutes included / month
                     </p>
                   </div>
                 </div>

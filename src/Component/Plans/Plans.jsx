@@ -236,7 +236,7 @@ const Plan = ({ agentID, locationPath }) => {
             >
               {product.id === "free-trial" && product.metadata.minutes && (
                 <p>
-                  Includes <strong>{product.metadata.minutes}</strong> minutes
+                  Includes <strong>{product.metadata.minutes}</strong> minutes / month
                 </p>
               )}
 
@@ -245,7 +245,7 @@ const Plan = ({ agentID, locationPath }) => {
                 product.prices[0].metadata && (
                   <p>
                     Includes <strong>{product.prices[0].metadata}</strong>{" "}
-                    minutes
+                    minutes / month
                   </p>
                 )}
               <div className={styles.pricesContainer}>
