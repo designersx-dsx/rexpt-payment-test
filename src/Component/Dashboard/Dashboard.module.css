@@ -118,6 +118,7 @@
     font-size: 40px;
     color: #24252C;
     transition: font-size 0.3s ease;
+    font-weight: 800;
 }
 
 .smallFont {
@@ -330,19 +331,14 @@
 
 
 .FilterIcon {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    background-color: #Fff;
+    position: relative;
+    cursor: pointer;
 }
 
 .Lang {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-top: 10px;
 }
 
@@ -357,7 +353,7 @@
 .VIA {
     min-width: 100px;
     min-height: 40px;
-    width: 100px;
+    /* width: 100px; */
     height: 40px;
 }
 
@@ -453,10 +449,7 @@
     overflow: auto;
 }
 
-.FilterIcon {
-    position: relative;
-    cursor: pointer;
-}
+
 
 .OptionsDropdown {
     position: absolute;
@@ -578,7 +571,7 @@
     float: right;
     position: relative;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    font-size: 24px;
+    font-size: 22px;
     padding-bottom: 4px;
     font-weight: 600;
 }

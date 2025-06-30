@@ -312,6 +312,7 @@ const EditProfile = () => {
                 className={styles.imageIcon}
                 onClick={handleBack}
               />
+              <p>My Account</p>
             </div>
             <div className={styles.profilePic}>
               <button

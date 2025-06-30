@@ -657,7 +657,10 @@ function Dashboard() {
     setPopupMessage(message);
     setPopupType(type);
   };
+  const handleCalender = () => {
+    navigate("/calendar");
 
+  }
   const handleTotalCallClick = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("totalCallView", true);
@@ -1081,7 +1084,7 @@ function Dashboard() {
 
           <hr />
 
-          <div className={styles.agentInfo2}>
+          <div className={styles.agentInfo2} onClick={handleCalender}>
             <h2 className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ''}`}>
               {bookingCount}
             </h2>
@@ -1174,17 +1177,13 @@ function Dashboard() {
                   onClick={(e) => toggleDropdown(e, agent.agent_id)}
                   ref={dropdownRef}
                 >
-                  <svg
-                    width="18"
-                    height="4"
-                    viewBox="0 0 18 4"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="2" cy="2" r="2" fill="black" />
-                    <circle cx="9" cy="2" r="2" fill="black" />
-                    <circle cx="16" cy="2" r="2" fill="black" />
+                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="30" height="30" rx="5" fill="white" />
+                    <circle cx="8" cy="15" r="2" fill="#24252C" />
+                    <circle cx="15" cy="15" r="2" fill="#24252C" />
+                    <circle cx="22" cy="15" r="2" fill="#24252C" />
                   </svg>
+
                   {openDropdown === agent?.agent_id && (
                     <div className={styles.OptionsDropdown}>
                       <div
@@ -1761,10 +1760,10 @@ function Dashboard() {
           className={styles.floating}
           onClick={async () => { await getUserReferralCode(); setIsModalOpen(true) }}
         >
-        <div className={styles.Cross}>x</div>
+          <div className={styles.Cross}>x</div>
           <div>
             <img src="/svg/floating-svg.svg" alt="floating-svg" />
-            
+
           </div>
 
         </div>
@@ -1817,7 +1816,7 @@ function Dashboard() {
                 <p>You will earn “Commission” every month for upto <b>12 months</b> or Customer Lifespan(Whichever is lower) </p>
               </div>
               <div className={styles.Linkdec}>
-                <img src='/svg/commission-icon.svg' alt='commission-icon' />
+                <img src='/svg/commission2.svg' alt='commission-icon' />
                 <p>We pay “Referral Commission” to our affiliate partners on <b>1st Day of every following month.</b></p>
               </div>
             </div>
