@@ -31,14 +31,16 @@ const Step4 = forwardRef(
 
 
     },
+
     ref
   ) => {
     const [agentNote, setAgentNote] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
-    // Load stored values
+
     useEffect(() => {
       const storedAgentRole = sessionStorage.getItem("agentRole");
       const storedNote = sessionStorage.getItem("agentNote");
+
 
       if (storedAgentRole) {
         setSelectedRole(storedAgentRole);
@@ -52,6 +54,7 @@ const Step4 = forwardRef(
     useEffect(() => {
       sessionStorage.setItem("agentRole", selectedRole);
     }, [selectedRole]);
+
 
     useEffect(() => {
       sessionStorage.setItem("agentNote", agentNote);

@@ -11,7 +11,14 @@ import {
 import styles from "./checkout.module.css";
 import { API_BASE_URL } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
+import CountdownPopup from "../CountDownPopup/CountdownPopup";
+import { useNavigate } from "react-router-dom";
+import { Label } from "recharts";
+import Select from "react-select";
 
+// const stripePromise = loadStripe(
+//   "pk_live_51RYjjKSCQQfKS3WDzVLb6c2Xk6Gdt2NaJ7pF5eWRDk345NQY1TNBOgxy5CUYCWAsWsqU1pJx8Bi56Ue7U5vg2Noe00HMCU3IXV"
+// );
 const stripePromise = loadStripe(
   "pk_test_51RQodQ4T6s9Z2zBzHe6xifROxlIMVsodSNxf2MnmDX3AwkI44JT3AjDuyQZEoZq9Zha69WiA8ecnXZZ2sw9iY5sP007jJUxE52"
 );
@@ -23,12 +30,18 @@ function CheckoutForm({
   onSubscriptionSuccess,
   userId,
   disabled,
+  agentId,
+  locationPath,
+  price,
+  subscriptionId,
 }) {
   const stripe = useStripe();
   const elements = useElements();
 
   // Step state (1 or 2)
   const [step, setStep] = useState(1);
+
+  const navigate = useNavigate();
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -39,7 +52,7 @@ function CheckoutForm({
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
-
+  const [planPrice, setPlanPrice] = useState(price);
   // Card details
   const [billingName, setBillingName] = useState("");
 
@@ -53,28 +66,266 @@ function CheckoutForm({
   const [popupMessage, setPopupMessage] = useState("");
 
   const VALID_COUNTRY_CODES = new Set([
-    "AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ",
-    "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BQ", "BA", "BW", "BV", "BR",
-    "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC",
-    "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CW", "CY", "CZ", "DK", "DJ", "DM", "DO",
-    "EC", "EG", "SV", "GQ", "ER", "EE", "SZ", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF",
-    "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY",
-    "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM",
-    "JP", "JE", "JO", "KZ", "KE", "KI", "KP", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY",
-    "LI", "LT", "LU", "MO", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX",
-    "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "NC", "NZ", "NI",
-    "NE", "NG", "NU", "NF", "MK", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH",
-    "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC",
-    "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SX", "SK", "SI", "SB", "SO", "ZA", "GS",
-    "SS", "ES", "LK", "SD", "SR", "SJ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK",
-    "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU",
-    "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"
+    "AF",
+    "AX",
+    "AL",
+    "DZ",
+    "AS",
+    "AD",
+    "AO",
+    "AI",
+    "AQ",
+    "AG",
+    "AR",
+    "AM",
+    "AW",
+    "AU",
+    "AT",
+    "AZ",
+    "BS",
+    "BH",
+    "BD",
+    "BB",
+    "BY",
+    "BE",
+    "BZ",
+    "BJ",
+    "BM",
+    "BT",
+    "BO",
+    "BQ",
+    "BA",
+    "BW",
+    "BV",
+    "BR",
+    "IO",
+    "BN",
+    "BG",
+    "BF",
+    "BI",
+    "KH",
+    "CM",
+    "CA",
+    "CV",
+    "KY",
+    "CF",
+    "TD",
+    "CL",
+    "CN",
+    "CX",
+    "CC",
+    "CO",
+    "KM",
+    "CG",
+    "CD",
+    "CK",
+    "CR",
+    "CI",
+    "HR",
+    "CU",
+    "CW",
+    "CY",
+    "CZ",
+    "DK",
+    "DJ",
+    "DM",
+    "DO",
+    "EC",
+    "EG",
+    "SV",
+    "GQ",
+    "ER",
+    "EE",
+    "SZ",
+    "ET",
+    "FK",
+    "FO",
+    "FJ",
+    "FI",
+    "FR",
+    "GF",
+    "PF",
+    "TF",
+    "GA",
+    "GM",
+    "GE",
+    "DE",
+    "GH",
+    "GI",
+    "GR",
+    "GL",
+    "GD",
+    "GP",
+    "GU",
+    "GT",
+    "GG",
+    "GN",
+    "GW",
+    "GY",
+    "HT",
+    "HM",
+    "VA",
+    "HN",
+    "HK",
+    "HU",
+    "IS",
+    "IN",
+    "ID",
+    "IR",
+    "IQ",
+    "IE",
+    "IM",
+    "IL",
+    "IT",
+    "JM",
+    "JP",
+    "JE",
+    "JO",
+    "KZ",
+    "KE",
+    "KI",
+    "KP",
+    "KR",
+    "KW",
+    "KG",
+    "LA",
+    "LV",
+    "LB",
+    "LS",
+    "LR",
+    "LY",
+    "LI",
+    "LT",
+    "LU",
+    "MO",
+    "MG",
+    "MW",
+    "MY",
+    "MV",
+    "ML",
+    "MT",
+    "MH",
+    "MQ",
+    "MR",
+    "MU",
+    "YT",
+    "MX",
+    "FM",
+    "MD",
+    "MC",
+    "MN",
+    "ME",
+    "MS",
+    "MA",
+    "MZ",
+    "MM",
+    "NA",
+    "NR",
+    "NP",
+    "NL",
+    "NC",
+    "NZ",
+    "NI",
+    "NE",
+    "NG",
+    "NU",
+    "NF",
+    "MK",
+    "MP",
+    "NO",
+    "OM",
+    "PK",
+    "PW",
+    "PS",
+    "PA",
+    "PG",
+    "PY",
+    "PE",
+    "PH",
+    "PN",
+    "PL",
+    "PT",
+    "PR",
+    "QA",
+    "RE",
+    "RO",
+    "RU",
+    "RW",
+    "BL",
+    "SH",
+    "KN",
+    "LC",
+    "MF",
+    "PM",
+    "VC",
+    "WS",
+    "SM",
+    "ST",
+    "SA",
+    "SN",
+    "RS",
+    "SC",
+    "SL",
+    "SG",
+    "SX",
+    "SK",
+    "SI",
+    "SB",
+    "SO",
+    "ZA",
+    "GS",
+    "SS",
+    "ES",
+    "LK",
+    "SD",
+    "SR",
+    "SJ",
+    "SE",
+    "CH",
+    "SY",
+    "TW",
+    "TJ",
+    "TZ",
+    "TH",
+    "TL",
+    "TG",
+    "TK",
+    "TO",
+    "TT",
+    "TN",
+    "TR",
+    "TM",
+    "TC",
+    "TV",
+    "UG",
+    "UA",
+    "AE",
+    "GB",
+    "US",
+    "UM",
+    "UY",
+    "UZ",
+    "VU",
+    "VE",
+    "VN",
+    "VG",
+    "VI",
+    "WF",
+    "EH",
+    "YE",
+    "ZM",
+    "ZW",
   ]);
+
+  const COUNTRY_OPTIONS = Array.from(VALID_COUNTRY_CODES)
+    .sort()
+    .map((code) => ({ value: code, label: code }));
 
   // Validate step 1 fields before going next
   const validateStep1 = () => {
     const newErrors = {};
-    if (!addressLine1.trim()) newErrors.addressLine1 = "Address Line 1 is required.";
+    if (!addressLine1.trim())
+      newErrors.addressLine1 = "Address Line 1 is required.";
     if (!city.trim()) newErrors.city = "City is required.";
     if (!state.trim()) newErrors.state = "State / Province is required.";
     if (!postalCode.trim()) newErrors.postalCode = "Postal Code is required.";
@@ -87,7 +338,6 @@ function CheckoutForm({
     return Object.keys(newErrors).length === 0;
   };
 
-
   // Handle next button on step 1
   const handleNext = () => {
     if (validateStep1()) {
@@ -96,10 +346,62 @@ function CheckoutForm({
     }
   };
 
+  const [showCountdownPopup, setShowCountdownPopup] = useState(false);
+
+  const handlePopupClose = () => {
+    setShowCountdownPopup(false);
+  };
+
+  const handlePopupFinish = async () => {
+    setShowCountdownPopup(false);
+    setMessage("Subscription successful!");
+    setPopupType("success");
+    setPopupMessage("Subscription successful!");
+    // Call next API here and navigate to the dashboard
+    await callNextApiAndRedirect();
+  };
+
+  const callNextApiAndRedirect = async () => {
+    console.log("agentID", agentId);
+    console.log("userId", userId);
+    try {
+      const res = await fetch(`${API_BASE_URL}/agent/updateFreeAgent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          agentId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setPopupType("success");
+        setPopupMessage("Agent Upgraged successfully!");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
+      } else {
+        setMessage("Error completing subscription.");
+        setPopupType("failed");
+        setPopupMessage("Error completing subscription.");
+      }
+    } catch (error) {
+      console.error("Error calling next API:", error);
+      setMessage("Error completing subscription.");
+      setPopupType("failed");
+      setPopupMessage("Error completing subscription.");
+    }
+  };
+
   // Handle subscription payment
   const handleSubmit = async () => {
     const newErrors = {};
-    if (!billingName.trim()) newErrors.billingName = "Name on card is required.";
+    if (!billingName.trim())
+      newErrors.billingName = "Name on card is required.";
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
       return;
@@ -142,38 +444,128 @@ function CheckoutForm({
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/subscribe`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId,
-          priceId,
-          paymentMethodId: paymentMethod.id,
-          userId,
-          email,
-          companyName,
-          gstNumber,
-          billingAddress: {
-            line1: addressLine1,
-            line2: addressLine2,
-            city,
-            state,
-            postalCode,
-            country,
-          },
-        }),
-      });
-
-      const data = await res.json();
+      let data;
+      // console.log("subscriptionId", subscriptionId);
+      if (subscriptionId) {
+        console.log("upgrade runn");
+        const res = await fetch(`${API_BASE_URL}/upgrade-customer-stripe`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerId,
+            priceId,
+            paymentMethodId: paymentMethod.id,
+            userId,
+            email,
+            promotionCode: promoCode,
+            companyName,
+            gstNumber,
+            billingAddress: {
+              line1: addressLine1,
+              line2: addressLine2,
+              city,
+              state,
+              postalCode,
+              country,
+            },
+            subscriptionId: subscriptionId,
+            // promotionCode:"FREE99"
+          }),
+        });
+        data = await res.json();
+      } else {
+        console.log("create  runn");
+        const res = await fetch(`${API_BASE_URL}/subscribe`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerId,
+            priceId,
+            paymentMethodId: paymentMethod.id,
+            userId,
+            email,
+            promotionCode: promoCode,
+            companyName,
+            gstNumber,
+            billingAddress: {
+              line1: addressLine1,
+              line2: addressLine2,
+              city,
+              state,
+              postalCode,
+              country,
+            },
+            // promotionCode:"FREE99"
+          }),
+        });
+        data = await res.json();
+      }
 
       if (data.error) {
         setMessage(`❌ ${data.error}`);
         setPopupType("failed");
         setPopupMessage(data.error);
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Handle client secret (SCA / 3DS confirmation)
+      if (data.clientSecret) {
+        const { error: confirmError, paymentIntent } =
+          await stripe.confirmCardPayment(data.clientSecret);
+
+        if (confirmError) {
+          setMessage(`❌ ${confirmError.message}`);
+          setPopupType("failed");
+          setPopupMessage(confirmError.message);
+          setLoading(false);
+          return;
+        }
+        if (paymentIntent?.status === "succeeded" && subscriptionId) {
+          try {
+            const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ subscriptionId }),
+            });
+            const result = await res.json();
+
+            if (!res.ok) {
+              console.error(
+                "❌ Failed to cancel subscription:",
+                result.error || result.message
+              );
+            }
+          } catch (error) {
+            console.error("❌ Network error canceling subscription:", error);
+            // Optional: show UI feedback
+          }
+        }
+
+        if (
+          locationPath === "/dashboard" &&
+          agentId !== undefined &&
+          agentId !== null
+        ) {
+          setShowCountdownPopup(true);
+        } else {
+          setMessage("Subscription successful!");
+          setPopupType("success");
+          setPopupMessage("Subscription successful!");
+        }
       } else {
-        setMessage("✅ Subscription successful!");
-        setPopupType("success");
-        setPopupMessage("Subscription successful!");
+        // Show the countdown popup if locationPath is "/dashboard" and agentId is neither undefined nor null
+        if (
+          locationPath === "/dashboard" &&
+          agentId !== undefined &&
+          agentId !== null
+        ) {
+          setShowCountdownPopup(true);
+        } else {
+          setMessage("Subscription successful!");
+          setPopupType("success");
+          setPopupMessage("Subscription successful!");
+        }
       }
     } catch (err) {
       setMessage("❌ Failed to subscribe.");
@@ -183,104 +575,109 @@ function CheckoutForm({
 
     setLoading(false);
   };
+  const [promoCode, setPromoCode] = useState("");
+  const [promoError, setPromoError] = useState("");
+  const [discount, setDiscount] = useState(null);
+
+  const handleApplyPromo = async () => {
+    const res = await fetch(`${API_BASE_URL}/checkPromtoCode`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: promoCode }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      const discountValue = data.discount;
+      const finalPrice = price - (discountValue / 100) * price;
+
+      setDiscount(discountValue);
+      setPlanPrice(finalPrice.toFixed(2)); // Optional: round to 2 decimal places
+      setPromoError("");
+    } else {
+      setPromoError(data.error);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setPromoCode("");
+    setPromoError("");
+    setDiscount(null);
+    setPlanPrice(price); // reset to original
+  };
 
   return (
     <div className={styles.checkoutForm}>
       {step === 1 && (
-        <>
-          <h3 className={styles.TitleH2}>Billing Address & Company Details</h3>
-          <div className={styles.billinkAddress}>
-            <div>
-              <label>Address Line 1 *</label>
-              <input
-                type="text"
-                value={addressLine1}
-                onChange={(e) => setAddressLine1(e.target.value)}
-                className={styles.input}
-                required
-              />
-              {errors.addressLine1 && <p className={styles.errorMsg}>{errors.addressLine1}</p>}
+        <div className={styles.checkoutFormMain}>
+          <h3>Billing Address & Company Details</h3>
 
-            </div>
-            <div>
-              <label>Address Line 2</label>
-              <input
-                type="text"
-                value={addressLine2}
-                onChange={(e) => setAddressLine2(e.target.value)}
-                className={styles.input}
-              />
-            </div>
+          <label>Address Line 1 *</label>
+          <input
+            type="text"
+            value={addressLine1}
+            onChange={(e) => setAddressLine1(e.target.value)}
+            className={styles.input}
+            required
+          />
+          {errors.addressLine1 && (
+            <p className={styles.errorMsg}>{errors.addressLine1}</p>
+          )}
 
+          <label>Address Line 2</label>
+          <input
+            type="text"
+            value={addressLine2}
+            onChange={(e) => setAddressLine2(e.target.value)}
+            className={styles.input}
+          />
 
-            <div>
-              <label>City *</label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className={styles.input}
-                required
-              />
-              {errors.city && <p className={styles.errorMsg}>{errors.city}</p>}
-            </div>
+          <label>City *</label>
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className={styles.input}
+            required
+          />
+          {errors.city && <p className={styles.errorMsg}>{errors.city}</p>}
 
-            <div>
-              <label>State / Province *</label>
-              <input
-                type="text"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className={styles.input}
-                required
-              />
-              {errors.state && <p className={styles.errorMsg}>{errors.state}</p>}
-            </div>
+          <label>State / Province *</label>
+          <input
+            type="text"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            className={styles.input}
+            required
+          />
+          {errors.state && <p className={styles.errorMsg}>{errors.state}</p>}
 
-            <div>
-              <label>Postal Code *</label>
-              <input
-                type="text"
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-                className={styles.input}
-                required
-              />
-              {errors.postalCode && <p className={styles.errorMsg}>{errors.postalCode}</p>}
-            </div>
+          <label>Postal Code *</label>
+          <input
+            type="text"
+            value={postalCode}
+            onChange={(e) => setPostalCode(e.target.value)}
+            className={styles.input}
+            required
+          />
+          {errors.postalCode && (
+            <p className={styles.errorMsg}>{errors.postalCode}</p>
+          )}
 
-            <div>
-              <label>Country *</label>
-              <input
-                type="text"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className={styles.input}
-                required
-                placeholder="ISO country code, e.g. US"
-              />
-              {errors.country && <p className={styles.errorMsg}>{errors.country}</p>}
-            </div>
-
-            <div>
-              <label>Company Name</label>
-              <input
-                type="text"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div>  <label>GST Number</label>
-              <input
-                type="text"
-                value={gstNumber}
-                onChange={(e) => setGstNumber(e.target.value)}
-                className={styles.input}
-              /></div>
-
-          </div>
+          <label>Country *</label>
+          <Select
+            className={styles.reactSelect}
+            classNamePrefix="react-select"
+            options={COUNTRY_OPTIONS}
+            value={COUNTRY_OPTIONS.find((opt) => opt.value === country)}
+            onChange={(selected) => setCountry(selected.value)}
+            placeholder="Select Country"
+            isSearchable
+            menuPlacement="top"
+          />
+          {errors.country && (
+            <p className={styles.errorMsg}>{errors.country}</p>
+          )}
 
           <button
             type="button"
@@ -290,7 +687,7 @@ function CheckoutForm({
           >
             Next
           </button>
-        </>
+        </div>
       )}
 
       {step === 2 && (
@@ -305,7 +702,9 @@ function CheckoutForm({
             className={styles.input}
             required
           />
-          {errors.billingName && <p className={styles.errorMsg}>{errors.billingName}</p>}
+          {errors.billingName && (
+            <p className={styles.errorMsg}>{errors.billingName}</p>
+          )}
 
           <label>Card Number</label>
           <div className={styles.cardBox}>
@@ -322,14 +721,41 @@ function CheckoutForm({
             <CardCvcElement className={styles.cardInput} />
           </div>
 
+          <label> Have a Coupen Code ?</label>
+          <div className={styles.Applybox}>
+            <input
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value)}
+              className={styles.input}
+              placeholder="Enter Promo Code"
+              disabled={!!discount}
+            />
+
+            <button onClick={handleApplyPromo}>Apply</button>
+          </div>
+
+          {promoError && <p style={{ color: "red" }}>{promoError}</p>}
+          {discount && (
+            <div className={styles.promoAppliedBox}>
+              <span>✅ Promo applied: {discount}% off</span>
+              <button
+                type="button"
+                onClick={handleRemovePromo}
+                className={styles.removePromoBtn}
+                title="Remove promo code"
+              >
+                ❌
+              </button>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={loading || !stripe || disabled}
             className={styles.button}
             style={{ marginTop: "1rem" }}
           >
-            {loading ? "Processing..." : "Subscribe"}
+            {loading ? "Processing..." : `Pay $${planPrice}`}
           </button>
         </>
       )}
@@ -340,9 +766,19 @@ function CheckoutForm({
         onClose={() => {
           setPopupType("");
           setPopupMessage("");
-          if (popupType === "success") onSubscriptionSuccess?.();
+          if (popupType === "success" && locationPath !== "/dashboard") {
+            onSubscriptionSuccess?.();
+          }
         }}
       />
+
+      {/* Show the countdown popup if needed */}
+      {showCountdownPopup && (
+        <CountdownPopup
+          onClose={handlePopupClose}
+          onFinish={handlePopupFinish}
+        />
+      )}
 
       {message && !popupMessage && <p className={styles.message}>{message}</p>}
     </div>
