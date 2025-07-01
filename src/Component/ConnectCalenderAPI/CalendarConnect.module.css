@@ -1,0 +1,333 @@
+.container {
+  max-width: 500px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+  padding: 0px 20px 20px;
+}
+
+.supportSection {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.icons img {
+ width: 100%;
+ max-height: 150px;
+}
+
+.TopPara{
+    font-size: 14px;
+    color: #24252C;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: start;
+}
+
+.TopPara a{
+    color: #24252C;
+}
+
+.TopPara strong{
+    font-weight: bolder;
+}
+
+.apiNote {
+  font-size: 12px;
+  color: #888;
+}
+
+.toggleSection {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  margin: 30px 0 20px 0;
+  gap: 10px;
+
+}
+
+.toggleSection label{
+    color: #24252C;
+    font-size: 16px;
+    font-weight: 500 ;
+    text-align: start;
+    line-height: 20px;
+
+}
+
+.toggleSection label a{
+        font-weight: 700 ;
+    color: #24252C;
+
+
+}
+
+
+
+.toggle {
+  width: 40px;
+  height: 20px;
+  accent-color: purple;
+}
+
+.recommendation {
+   /* margin-bottom: 20px; */
+  text-align: center;
+  margin: 30px 0 10px 0;
+}
+
+.recommendation img{
+    width: 100%;
+    max-height: 75px;
+}
+
+.calBanner {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.patnerCal{
+    font-size: 14px;
+    color:#626262;
+    text-align: center;
+    font-weight: 500;
+        /* margin: 0 0 20px 0; */
+        padding: 0 0 35px 0;
+        border-bottom: 1px solid #E0E5F2;
+
+}
+
+.guideSection {
+  text-align: center;
+      margin: 30px 0;
+}
+
+.guideSection p{
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: 500;
+    color: #24252C;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    line-height: 24px;
+}
+.guideSection a{
+    /* font-size: 16px; */
+    font-weight: 700;
+    text-underline-offset: 3px;
+
+    color: #24252C;
+}
+
+
+.guideButton {
+  position: relative;
+  background-color: #fff;
+      padding: clamp(10px, 2vw, 16px);
+
+  border: 1px solid #9CAACF;
+  border-radius: 12px;
+  /* padding: 16px; */
+  width: 80%;
+  font-size: 16px;
+  /* margin-top: 20px; */
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin:20px auto 0;
+}
+
+.guideButton h6{
+    color: #5F33E1;
+    /* font-size: 24px; */
+    font-size: clamp(21px, 2vw, 24px);
+    font-weight: 800;
+    margin: 0 0 0px 0;
+}
+
+.paraTest{
+    color: #5F33E1 !important; 
+    font-size: 16px;
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: 600;
+    text-decoration: none !important;
+}
+
+.playIcon {
+  /* position: absolute;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #6d4aff;
+  color: white;
+  border-radius: 50%;
+  padding: 10px;
+  font-size: 14px; */
+max-width: 55px;
+max-height: 55px;
+}
+
+.playIcon svg{
+    width: 100%;
+}
+
+.kBadge {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #00bcd4;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+}
+
+
+
+/* Toggle Switch Container */
+.switch {
+  position: relative;
+  display: inline-block;
+  min-width: 44px;
+  height: 24px;
+}
+
+/* Hide default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider Track */
+.switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 24px;
+  transition: 0.4s;
+}
+
+/* Slider Circle */
+.switch .slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+/* Checked Style */
+.switch input:checked + .slider {
+  background-color: #693bff;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+
+.container {
+  max-width: 450px;
+  margin: auto;
+
+padding: 0px 20px 20px 20px;
+  text-align: center;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.labelRow label{
+      font-size: 16px;
+      text-align: start;
+
+  }
+
+.link {
+    text-align: start;
+  color: #7a3cff;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.description {
+  font-size:14px;
+  color: #555;
+  margin-bottom: 20px;
+  text-align: left;
+  line-height: 20px;
+}
+.submitButton{
+    background-color: unset;
+    border: none;
+}
+
+.submitButton img {
+  width: 100%;
+}
+
+.submitButton:hover {
+  background-color: #692fdb;
+}
+
+.helpLink {
+  margin-top: 12px;
+}
+
+.helpLink a {
+  color: #7a3cff;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.helpLink a:hover {
+  text-decoration: underline;
+}
+
+
+
+@media(max-width:400px){
+    .guideButton {
+        width: 95%;
+    }
+}
+

@@ -393,3 +393,426 @@ const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
 };
 
 export default WidgetScript;
+
+// import React, { useState, useEffect } from "react";
+// import styles from "./Widgets.module.css";
+// import { API_BASE_URL, updateAgentWidgetDomain, validateWebsite } from "../../Store/apiStore";
+// import PopUp from "../Popup/Popup";
+// import Loader from "../Loader/Loader";
+
+// const WidgetScript = ({ isAgentDetails, refreshFuntion, alertPopUp }) => {
+//   const defaultUrl = isAgentDetails?.business?.webUrl || "";
+//   const [copied, setCopied] = useState(false);
+//   const [showModal, setShowModal] = useState(false);
+//   const [emailInput, setEmailInput] = useState("");
+//   const [emails, setEmails] = useState([]);
+//   const [error, setError] = useState("");
+//   const [showPopup, setShowPopup] = useState(false);
+//   const [popupType, setPopupType] = useState(null);
+//   const [popupMessage, setPopupMessage] = useState("");
+//   const [existingDomain, setExistingDomain] = useState([]);
+//   const [loading, setLoading] = useState(false);
+//   const [generateMode, setGenerateMode] = useState(false);
+//   const [activeInputIndex, setActiveInputIndex] = useState(null);
+
+//   // Initialize domainInputs with existing domains or default
+//   const [domainInputs, setDomainInputs] = useState([
+//     { value: defaultUrl, isVerified: false, loading: false, error: "", debounceTimer: null },
+//   ]);
+
+//   const agentId = isAgentDetails.agent_id;
+//   const scriptText = `<script id="rex-widget-script" src="https://aesthetic-wisp-d15448.netlify.app/index.js?agentId=${agentId}"></script>`;
+
+//   // Load existing domains and initialize domainInputs
+//   useEffect(() => {
+//     let domains = [];
+//     if (typeof isAgentDetails.agentWidgetDomain === "string") {
+//       try {
+//         domains = JSON.parse(isAgentDetails.agentWidgetDomain) || [];
+//       } catch {
+//         domains = [];
+//       }
+//     } else if (Array.isArray(isAgentDetails.agentWidgetDomain)) {
+//       domains = isAgentDetails.agentWidgetDomain;
+//     }
+//     setExistingDomain(domains);
+
+//     // Initialize domainInputs with existing domains
+//     if (domains.length > 0) {
+//       setDomainInputs(
+//         domains.map((d) => ({
+//           value: d.domain,
+//           isVerified: true, // Assume existing domains are verified
+//           loading: false,
+//           error: "",
+//           debounceTimer: null,
+//         }))
+//       );
+//     } else if (!defaultUrl) {
+//       setDomainInputs([{ value: "", isVerified: false, loading: false, error: "", debounceTimer: null }]);
+//     }
+//   }, [isAgentDetails, defaultUrl]);
+
+//   // Update single domain input
+//   const updateDomainInput = (index, newProps) => {
+//     setDomainInputs((prev) => {
+//       const newInputs = [...prev];
+//       newInputs[index] = { ...newInputs[index], ...newProps };
+//       return newInputs;
+//     });
+//   };
+
+//   // Handle domain input change
+//   const handleDomainChange = (index, value) => {
+//     setActiveInputIndex(index);
+//     let val = value.toLowerCase().replace(/\s/g, "");
+//     if (!val.startsWith("https://")) {
+//       val = "https://" + val.replace(/^https?:\/\//, "");
+//     }
+//     updateDomainInput(index, { value: val, isVerified: false, error: "", loading: true });
+//   };
+
+//   // Add new domain input
+//   const handleAddDomainInput = () => {
+//     setDomainInputs((prev) => [
+//       ...prev,
+//       { value: "", isVerified: false, loading: false, error: "", debounceTimer: null },
+//     ]);
+//   };
+
+//   // Remove domain input
+//   const handleRemoveDomainInput = (index) => {
+//     setDomainInputs((prev) => {
+//       const newInputs = [...prev];
+//       if (newInputs[index].debounceTimer) clearTimeout(newInputs[index].debounceTimer);
+//       newInputs.splice(index, 1);
+
+//       setActiveInputIndex((prevIndex) => {
+//         if (newInputs.length === 0) return null;
+//         if (prevIndex >= newInputs.length) return newInputs.length - 1;
+//         if (prevIndex === index) return null;
+//         return prevIndex;
+//       });
+
+//       return newInputs;
+//     });
+//   };
+
+//   // Validate active input
+//   useEffect(() => {
+//     if (activeInputIndex === null || !domainInputs[activeInputIndex]) return;
+
+//     const input = domainInputs[activeInputIndex];
+//     if (input.debounceTimer) clearTimeout(input.debounceTimer);
+
+//     if (!input.value.trim()) {
+//       updateDomainInput(activeInputIndex, {
+//         isVerified: false,
+//         error: "",
+//         loading: false,
+//         debounceTimer: null,
+//       });
+//       return;
+//     }
+
+//     updateDomainInput(activeInputIndex, { loading: true });
+
+//     const timer = setTimeout(async () => {
+//       try {
+//         const res = await validateWebsite(input.value.trim());
+//         updateDomainInput(activeInputIndex, {
+//           isVerified: res.valid,
+//           error: res.valid ? "" : "Invalid URL",
+//           loading: false,
+//           debounceTimer: null,
+//         });
+//       } catch {
+//         updateDomainInput(activeInputIndex, {
+//           isVerified: false,
+//           error: "Validation failed",
+//           loading: false,
+//           debounceTimer: null,
+//         });
+//       }
+//     }, 600);
+
+//     updateDomainInput(activeInputIndex, { debounceTimer: timer });
+
+//     return () => {
+//       if (input.debounceTimer) clearTimeout(input.debounceTimer);
+//     };
+//   }, [domainInputs[activeInputIndex]?.value, activeInputIndex]);
+
+//   // Generate code and update domains
+//   const handleGenerateCode = async () => {
+//     setLoading(true);
+//     try {
+//       const verifiedDomains = domainInputs
+//         .filter((input) => input.isVerified && input.value.trim())
+//         .map((input) => input.value.trim());
+//       const domainsToAdd = verifiedDomains.filter(
+//         (d) => !existingDomain.some((ex) => ex.domain === d)
+//       );
+
+//       for (const domain of domainsToAdd) {
+//         await updateAgentWidgetDomain(agentId, domain);
+//       }
+
+//       setExistingDomain((prev) => {
+//         const combined = [...prev];
+//         domainsToAdd.forEach((d) => {
+//           if (!combined.some((ex) => ex.domain === d)) combined.push({ domain: d });
+//         });
+//         return combined;
+//       });
+
+//       setDomainInputs([{ value: "", isVerified: false, loading: false, error: "", debounceTimer: null }]);
+//       setGenerateMode(true);
+//       refreshFuntion();
+//     } catch {
+//       alertPopUp("true", "Failed to add domains!", "fail");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Email handling
+//   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+//   const handleAddEmails = () => {
+//     const rawEmails = emailInput.split(",").map((e) => e.trim()).filter(Boolean);
+//     const validEmails = rawEmails.filter(validateEmail);
+//     const invalidEmails = rawEmails.filter((e) => !validateEmail(e));
+
+//     if (invalidEmails.length) {
+//       setError(`Invalid email(s): ${invalidEmails.join(", ")}`);
+//       return;
+//     }
+
+//     setEmails((prev) => [...new Set([...prev, ...validEmails])]); // Prevent duplicates
+//     setEmailInput("");
+//     setError("");
+//   };
+
+//   const handleDelete = (index) => {
+//     setEmails((prev) => prev.filter((_, i) => i !== index));
+//   };
+
+//   const handleSend = async () => {
+//     if (!emails.length) {
+//       setError("Please add at least one valid email.");
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+//       await fetch(`${API_BASE_URL}/agent/sendScriptToEmail`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ email: emails, script: scriptText }),
+//       });
+//       alertPopUp("true", "Script sent successfully!", "success");
+//       setEmails([]);
+//       setShowModal(false);
+//     } catch {
+//       alertPopUp("true", "Failed to send emails!", "fail");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Render domain inputs
+//   const renderDomainInputs = () => (
+//     <div className={styles.container}>
+//       <h3>Enter your Website URL(s)</h3>
+//       <p className={styles.noteText}>Note: The widget will only work on the domains you add.</p>
+//       <div className={styles.forScroll}>
+//         {domainInputs.map((input, index) => (
+//           <div key={index} className={styles.domainInputRow}>
+//             <div className={styles.InputMain}>
+//               <input
+//                 type="url"
+//                 placeholder="e.g., https://example.com"
+//                 value={input.value}
+//                 onKeyDown={(e) => {
+//                   const prefix = "https://";
+//                   if (
+//                     input.value.length <= prefix.length &&
+//                     ["Backspace", "Delete", "ArrowLeft"].includes(e.key)
+//                   ) {
+//                     e.preventDefault();
+//                   }
+//                 }}
+//                 onChange={(e) => handleDomainChange(index, e.target.value)}
+//                 className={styles.inputField}
+//                 disabled={loading}
+//               />
+//               {input.loading ? (
+//                 <p className={styles.loader}>
+//                   <Loader size={16} />
+//                 </p>
+//               ) : input.isVerified ? (
+//                 <p className={styles.verified} title="Verified">
+//                   <input type="checkbox" checked readOnly />
+//                 </p>
+//               ) : input.value ? (
+//                 <p className={styles.notVerified} title="Not Verified">
+//                   X
+//                 </p>
+//               ) : null}
+//             </div>
+//             {domainInputs.length > 1 && (
+//               <button
+//                 onClick={() => handleRemoveDomainInput(index)}
+//                 className={styles.removeBtn}
+//                 title="Remove this domain input"
+//                 disabled={loading}
+//               >
+//                 X
+//               </button>
+//             )}
+//             {input.error && <p style={{ color: "red", marginTop: 4 }}>{input.error}</p>}
+//           </div>
+//         ))}
+//       </div>
+//       <div className={styles.BottomBtnAddGen}>
+//         {domainInputs[0].value && (
+//           <button
+//             className={styles.addNewInputBtn}
+//             onClick={handleAddDomainInput}
+//             disabled={loading}
+//           >
+//             Add more +
+//           </button>
+//         )}
+//         {(existingDomain.length || domainInputs.some((input) => input.isVerified)) && (
+//           <button
+//             className={styles.generateCodeBtn}
+//             onClick={handleGenerateCode}
+//             disabled={loading}
+//           >
+//             {loading ? "Processing..." : "Generate Code"}
+//           </button>
+//         )}
+//       </div>
+//       <div className={styles.guideNote}>
+//         <p className={styles.noteText}>
+//           Need help integrating the AI Receptionist Widget?{" "}
+//           <a href="/widget-guide" target="_blank" rel="noopener noreferrer">
+//             click here
+//           </a>
+//         </p>
+//       </div>
+//     </div>
+//   );
+
+//   return (
+//     <div className={styles.container}>
+//       {!generateMode && renderDomainInputs()}
+//       {generateMode && !showModal && (
+//         <>
+//           <button className={styles.backBtn} onClick={() => setGenerateMode(false)}>
+//             <img src="svg/back-Btn.svg" alt="back-Btn" />
+//           </button>
+//           <h3 className={styles.title}>Widget Script</h3>
+//           <div className={styles.forScroll}>
+//             <div className={styles.domainList}>
+//               <strong>Allowed Domains:</strong>
+//               <ul>
+//                 {existingDomain.map((d, i) => (
+//                   <li key={`d-${i}`}>{d.domain}</li>
+//                 ))}
+//               </ul>
+//             </div>
+//             <div className={styles.scriptBox}>
+//               <button
+//                 className={styles.copyButton}
+//                 onClick={() => {
+//                   navigator.clipboard.writeText(scriptText);
+//                   setCopied(true);
+//                   setTimeout(() => setCopied(false), 2000);
+//                 }}
+//               >
+//                 {copied ? "Copied!" : "Copy"}
+//               </button>
+//               <br />
+//               <pre className={styles.scriptText}>{scriptText}</pre>
+//             </div>
+//           </div>
+//           <div className={styles.actionButtons}>
+//             <button className={styles.emailBtn} onClick={() => setShowModal(true)}>
+//               Send to Developer
+//             </button>
+//           </div>
+//         </>
+//       )}
+//       {showModal && (
+//         <div className={styles.modalContainer}>
+//           <button className={styles.backBtn} onClick={() => setShowModal(false)}>
+//             <img src="svg/back-Btn.svg" alt="back-Btn" />
+//           </button>
+//           <h3>Send Script to Developer</h3>
+//           <div className={styles.modalInfo}>
+//             <input
+//               type="text"
+//               placeholder="Enter your email address"
+//               value={emailInput}
+//               onChange={(e) => setEmailInput(e.target.value)}
+//               onBlur={handleAddEmails}
+//               className={styles.inputField}
+//               disabled={loading}
+//             />
+//           </div>
+//           {error && <p style={{ color: "red" }}>{error}</p>}
+//           <div className={styles.forScroll}>
+//             <ul className={styles.listType}>
+//               {emails.map((e, idx) => (
+//                 <li key={idx}>
+//                   {e}
+//                   <button
+//                     onClick={() => handleDelete(idx)}
+//                     disabled={loading}
+//                     className={styles.Cross}
+//                   >
+//                     <span>X</span>
+//                   </button>
+//                 </li>
+//               ))}
+//             </ul>
+//           </div>
+//           <div className={styles.modalActions}>
+//             <button
+//               onClick={handleSend}
+//               disabled={loading}
+//               className={styles.sendEmail}
+//             >
+//               {loading ? (
+//                 <div className={styles.loaderDiv}>
+//                   <Loader size={18} /> Sending
+//                 </div>
+//               ) : (
+//                 "Send Emails"
+//               )}
+//             </button>
+//             <button
+//               onClick={handleAddEmails}
+//               disabled={loading}
+//               className={styles.adddBtn}
+//             >
+//               Add
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//       {showPopup && (
+//         <PopUp
+//           type={popupType}
+//           message={popupMessage}
+//           onClose={() => setShowPopup(false)}
+//         />
+//       )}
+//     </div>
+//   );
+// };
+
+// export default WidgetScript;

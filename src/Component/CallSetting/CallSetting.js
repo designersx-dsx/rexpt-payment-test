@@ -3,11 +3,13 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import Typography from "@mui/material/Typography";
-// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "./CallSetting.module.css";
 import ListeningAffirmations from "./ListeningAffirmation";
+
 import Footer2 from "../AgentDetails/Footer/Footer2";
+
 
 export default function CallSetting() {
   const [expanded, setExpanded] = useState("panel1");
@@ -32,7 +34,7 @@ export default function CallSetting() {
 
       <Accordion className="CallAccordion" expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
         <AccordionSummary
-         
+          expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
@@ -47,7 +49,7 @@ export default function CallSetting() {
       </Accordion>
 
       <Accordion className="CallAccordion" expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
-        <AccordionSummary  id="panel2bh-header">
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel2bh-header">
           <Typography component="span" sx={{ width: "80%", flexShrink: 0 }}>
             
              <p className={styles.DropDownHeader}> Ring Duration</p>
@@ -62,7 +64,7 @@ export default function CallSetting() {
       </Accordion>
 
       <Accordion className="CallAccordion" expanded={expanded === "panel3"} onChange={handleChange("panel3")}>
-        <AccordionSummary  id="panel3bh-header">
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel3bh-header">
           <Typography component="span" sx={{ width: "80%", flexShrink: 0 }}>
             
              <p className={styles.DropDownHeader}>Max Call Duration </p>
@@ -77,7 +79,7 @@ export default function CallSetting() {
       </Accordion>
 
       <Accordion className="CallAccordion" expanded={expanded === "panel4"} onChange={handleChange("panel4")}>
-        <AccordionSummary  id="panel4bh-header">
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel4bh-header">
           <Typography component="span" sx={{ width: "80%", flexShrink: 0 }}>
             
              <p className={styles.DropDownHeader}> End Call on Silence</p>
