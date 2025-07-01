@@ -111,7 +111,7 @@ function Dashboard() {
   const [agentToDelete, setAgentToDelete] = useState(null);
 
   const [showDashboardReferral, setShowDashboardReferral] = useState("")
-  const [showreferralfloating, setShowreferralfloating] = useState(localStorage.getItem('showreferralfloating') || true)
+  const [showreferralfloating, setShowreferralfloating] = useState(localStorage.getItem('showreferralfloating') || 'true')
   const [copied, setCopied] = useState(false)
 
 

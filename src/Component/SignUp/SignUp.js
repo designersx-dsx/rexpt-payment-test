@@ -103,6 +103,7 @@ const SignUp = () => {
         sessionStorage.clear();
         sessionStorage.setItem("referredBy",tempReferral);
         sessionStorage.setItem("plan",tempLandingSelectedPlan);
+        localStorage.setItem("showreferralfloating",response?.data?.user?.showreferralfloating)
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");
