@@ -55,7 +55,7 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
     // return
         try {
             const res = await updateShowReferralFloatingStatus(userId,showDashboardReferral);
-            console.log(res)
+            // console.log(res)
             // setReferralCode(user?.referralCode)
             setShowDashboardReferral(res?.data)
             localStorage.setItem('showreferralfloating',res?.data)
