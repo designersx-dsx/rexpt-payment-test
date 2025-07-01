@@ -216,7 +216,7 @@ const Step = () => {
                 getAgentPrompt({
                     industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
                     roleTitle: sessionStorage.getItem("agentRole"),
-                    agentName: agentName,
+                    agentName: agentName?.split(" ")[0],
                     agentGender: agentGender,
                     business: {
                         businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom,
@@ -281,7 +281,7 @@ const Step = () => {
                         },
                     ],
                     starting_state: "information_collection",
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
+                    begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },

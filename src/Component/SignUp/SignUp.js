@@ -97,7 +97,7 @@ const SignUp = () => {
     setIsVerifyingOtp(true);
     try {
       const response = await verifyEmailOTP(email, fullOtp);
-      // console.log('response',response)
+      console.log('response',response?.data?.user?.showreferralfloating)
       if (response?.status === 200) {
         localStorage.setItem("token", response?.data.token);
         sessionStorage.clear();

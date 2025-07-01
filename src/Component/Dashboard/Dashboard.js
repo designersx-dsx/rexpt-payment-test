@@ -10,6 +10,7 @@ import {
   toggleAgentActivation,
   updateAgentKnowledgeBaseId,
   getUserReferralCodeForDashboard,
+  updateShowReferralFloatingStatus,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -76,6 +77,8 @@ function Dashboard() {
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
+  const [popupMessage2, setPopupMessage2] = useState("");
+  const [popupType2, setPopupType2] = useState("success");
   const [callLoading, setCallLoading] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState();
 
@@ -909,7 +912,7 @@ function Dashboard() {
   const getUserReferralCode = async () => {
     try {
       const res = await getUserReferralCodeForDashboard(userId);
-      console.log(res.referralCode)
+      // console.log(res.referralCode)
       setShowDashboardReferral(`${window.location.origin}?referral=${encodeURIComponent(res?.referralCode)}` || "")
     } catch (error) {
       console.log('error occured while fetching user referal code', error)
@@ -957,6 +960,27 @@ function Dashboard() {
     }
   };
   // console.log('ddsds',typeof showreferralfloating)
+
+    const showConfirmFloatingClose=()=>{
+    setPopupType2("confirm");
+    setPopupMessage2("Are you sure you want to remove the floating icon? You can enable it again later from the profile section.");
+    }
+    const handleChangeStatus=async()=>{
+          try {
+             
+              const res = await updateShowReferralFloatingStatus(userId,!showreferralfloating);
+              // console.log(res)
+              // setReferralCode(user?.referralCode)
+              setShowreferralfloating(res?.data)
+              localStorage.setItem('showreferralfloating',res?.data)
+  
+              
+            } catch (error) {
+              console.error(error);
+            } 
+  
+    }
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1758,10 +1782,10 @@ function Dashboard() {
       {showreferralfloating == 'true' &&
         <div
           className={styles.floating}
-          onClick={async () => { await getUserReferralCode(); setIsModalOpen(true) }}
+          onClick={async () => { await getUserReferralCode();}}
         >
-          <div className={styles.Cross}>x</div>
-          <div>
+          <div className={styles.Cross} onClick={showConfirmFloatingClose}>x</div>
+          <div onClick={()=>setIsModalOpen(true) }>
             <img src="/svg/floating-svg.svg" alt="floating-svg" />
 
           </div>
@@ -1856,6 +1880,15 @@ function Dashboard() {
           message={popupMessage}
           onClose={() => setPopupMessage("")}
           onConfirm={handleLogoutConfirm}
+        />
+      )}
+
+      {popupMessage2 && (
+        <Popup
+          type={popupType2}
+          message={popupMessage2}
+          onClose={() => setPopupMessage2("")}
+          onConfirm={handleChangeStatus}
         />
       )}
     </div>
