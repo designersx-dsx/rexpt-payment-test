@@ -31,14 +31,16 @@ const Step4 = forwardRef(
 
 
     },
+
     ref
   ) => {
     const [agentNote, setAgentNote] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
-    // Load stored values
+
     useEffect(() => {
       const storedAgentRole = sessionStorage.getItem("agentRole");
       const storedNote = sessionStorage.getItem("agentNote");
+
 
       if (storedAgentRole) {
         setSelectedRole(storedAgentRole);
@@ -52,6 +54,7 @@ const Step4 = forwardRef(
     useEffect(() => {
       sessionStorage.setItem("agentRole", selectedRole);
     }, [selectedRole]);
+
 
     useEffect(() => {
       sessionStorage.setItem("agentNote", agentNote);
@@ -141,8 +144,8 @@ const Step4 = forwardRef(
           </label>
         ))}
 
-        <div className={styles.noteCard}>
-          <label htmlFor="agent-note" className={styles.noteTitle}>
+        {/* <div className={styles.noteCard}> */}
+          {/* <label htmlFor="agent-note" className={styles.noteTitle}>
             Additional Note for Your Agent
           </label>
           <textarea
@@ -152,8 +155,8 @@ const Step4 = forwardRef(
             onChange={(e) => setAgentNote(e.target.value)}
             className={styles.noteTextarea}
             rows={2}
-          />
-        </div>
+          /> */}
+        {/* </div> */}
       </div>
     );
   }
