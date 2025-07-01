@@ -14,7 +14,7 @@
 
 .title h2 {
     color: #24252C;
-    font-size: 22px;
+    font-size: clamp(19px, 2vw, 22px);
     font-family: "Lato", sans-serif;
 }
 
@@ -32,7 +32,7 @@
 .headerMain {
     max-width: 500px;
     align-items: center;
-    margin: auto;
+    /* margin: auto; */
 }
 
 }

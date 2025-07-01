@@ -412,7 +412,7 @@
     background-color: #fff;
     padding: 15px;
     border-radius: 10px;
-    margin-bottom: 50px;
+    margin-bottom: 100px;
 }
 
 
@@ -420,6 +420,10 @@
     font-size: 16px;
     font-weight: 600;
     color: #5F33E1;
+        background-color: #EEE6FF;
+    border-radius: 7px;
+    display: inline-block;
+    padding: 7px 10px;
 }
 
 .bookingsList ul {
@@ -498,11 +502,24 @@
     gap: 4px;
 }
 
+.bookingDotContainer .dot{
+    max-width: 24px;
+    max-height: 20px;
+    width: auto;
+font-size: 10px;
+color: #fff;
+    padding: 0 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
 /* Style for each individual dot */
 .bookingDot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    /* width: 8px;
+    height: 8px; */
+    border-radius: 50px;
     background-color: #6A0DAD;
     display: inline-block;
 }
@@ -525,8 +542,8 @@
 }
 
 .dot {
-    width: 6px;
-    height: 6px;
+    width: 20px;
+    height: 20px;
 
     border-radius: 50%;
 }
@@ -626,8 +643,8 @@
 
 .verticalBar {
     width: 3px;
-    height: 16px;
-    border-radius: 3px;
+    height: 33px;
+    border-radius: 20px;
     margin: 3px 0 0 0;
 
 }
@@ -643,7 +660,7 @@
 }
 
 .grayBar {
-    background-color: #bdc3c7;
+    background-color: #bdc3c7;   
 }
 
 .titleText {
@@ -657,11 +674,82 @@
     color: #999999;
 }
 
+.timeRange b{
+    color: #24252C;
+
+}
+
+.timeRange span{
+    color: #6524EB;
+    font-weight: 600;
+    
+}
+
 .statusText {
     font-size: 12px;
     color: #888;
     margin-top: 2px;
 }
+
+.DateSecT {
+    position: relative;
+    background-color: #F9F9F9;
+    border-radius: 150px;
+    display: inline-block;
+    padding: 10px 20px;
+}
+
+.DateSecT select {
+    border: none;
+    outline: none;
+    font-size: clamp(18px, 2vw, 24px);
+    color: #24252C;
+    font-weight: bold;
+    background-color: transparent;
+    position: relative;
+    /* appearance: none; */
+    /* -webkit-appearance: none; */
+    /* Remove default arrow for cross-browser: */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 20px; 
+}
+
+.DateSecT::after {
+    content: "";
+    position: absolute;
+    top: 64%;
+    right: 16px;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    background: url("/public//svg/SofiaArrow.svg") no-repeat center;
+    background-size: contain;
+    z-index: 2;
+}
+
+
+.DateSecT p{
+    font-size: 12px;
+    color: #24252c;
+    font-weight: 500;
+    /* position: absolute; */
+    top: -16px;
+}
+
+.HeaderFlex{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+        width: 100%;
+        
+    padding: 0 10px 0 0;
+}
+
+
 
 
 @media screen and (min-width: 601px) {
@@ -674,4 +762,39 @@
         width: 50%;
         margin: auto;
     }
+
+    .HeaderFlex{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+        width: 50%;
+        margin: auto;
+        
+    padding: 0 10px 0 0;
 }
+}
+
+
+
+@media(max-width:400px){
+    .DotINfo {
+    
+    gap: 5px;
+        padding: 8px 5px;
+    
+}
+
+.HeaderFlex {
+ 
+    gap: 10px;
+ }
+ .calendarSection {
+    margin-top: 1rem;
+    padding-inline: 5px;
+    }
+}
+
+
+
+

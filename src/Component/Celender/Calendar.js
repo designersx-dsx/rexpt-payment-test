@@ -25,7 +25,7 @@ const AgentAnalysis = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [bookingsForSelectedDate, setBookingsForSelectedDate] = useState([]);
   const bookingsRef = useRef(null);
-
+  
   // Load calApiKey from sessionStorage
   useEffect(() => {
     const sessionData = sessionStorage.getItem("dashboard-session-storage");
@@ -90,6 +90,9 @@ const AgentAnalysis = () => {
     fetchBookingDates();
   }, [calApiKey, selectedDate]);
 
+
+
+
   // Handle date selection
   const handleDateClick = (date) => {
     setSelectedDate(date);
@@ -109,7 +112,8 @@ const AgentAnalysis = () => {
   if (bookings.length > 0) {
     return (
       <div className={styles.bookingDotContainer}>
-        <div className={`${styles.dot} ${styles.greenDot}`} />
+        <div className={`${styles.dot} ${styles.greenDot}`} >09+</div>
+        <div className={`${styles.dot} ${styles.orangeDot}`} >13</div>
       </div>
     );
   }
@@ -120,18 +124,34 @@ const AgentAnalysis = () => {
 
   return (
     <div className={styles.container}>
+      <div className={styles.HeaderFlex}>
       <HeaderBar title="Calendar" />
+
+      <div className={styles.DateSecT}>
+        <p>Agent</p>
+        <div className={styles.selectedValue} >
+       <select class={styles.agentSelect1}>
+      <option value="all">All</option>
+      <option value="">Anthony</option>
+      <option value="">Bhhh</option>
+      <option value="">Shivam</option>
+      <option value="">Samad</option>
+      <option value="">Billy</option>
+      <option value="">Lily</option>
+      </select></div></div>
+
+</div>
 
       <div className={styles.calendarSection}>
         <div className={styles.DotINfo}>
           <div className={styles.DotOrange}>
             <div className={styles.dot1}></div>
-            <span>Call Received</span>
+            <span>Calls Received</span>
           </div>
           <hr />
           <div className={styles.DotGreen}>
             <div className={styles.dot}></div>
-            <span>Meeting Booked</span>
+            <span>Meetings Booked</span>
           </div>
         </div>
 
@@ -146,7 +166,7 @@ const AgentAnalysis = () => {
 
       {bookingsForSelectedDate.length > 0 && (
         <div className={styles.bookingsList} ref={bookingsRef}>
-          <h3>Bookings for {selectedDate.toDateString()}:</h3>
+          <h3>{selectedDate.toDateString()}</h3>
           <ul>
             {bookingsForSelectedDate.map((booking, index) => {
               const isMeeting =
@@ -160,7 +180,7 @@ const AgentAnalysis = () => {
                 ? styles.greenBar
                 : isCall
                 ? styles.orangeBar
-                : styles.grayBar;
+                : styles.greenBar;
 
               return (
                 <li key={index} className={styles.bookingItem}>
@@ -172,13 +192,15 @@ const AgentAnalysis = () => {
                   <span className={`${styles.verticalBar} ${dotColorClass}`}></span>
                   <div className={styles.detailColumn}>
                     <div className={styles.line}>
-                      <span className={styles.titleText}>{booking.title}</span>
+                      <span className={styles.titleText}><b>Caller:</b> {booking.title}</span>
                     </div>
                     <div className={styles.timeRange}>
-                      {formatTime(booking.startTime)} - {formatTime(booking.endTime)}
+                      <b>Meeting on:</b> <span>{formatTime(booking.startTime)}</span> - {formatTime(booking.endTime)}
                     </div>
                   </div>
                 </li>
+
+                
               );
             })}
           </ul>
