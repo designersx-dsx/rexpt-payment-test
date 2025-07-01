@@ -17,11 +17,12 @@ export default function SubscriptionFlow() {
   // const priceId = location.state?.priceId;
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
-  const priceId = location.state?.priceId;
-  const agentId = location.state?.agentId || null;
-  const price = location.state.price;
-  const subscriptionId = location.state.subscriptionId || null
+  const priceId = location.state?.priceId || sessionStorage.getItem("priceId") ;
+  const agentId = location.state?.agentId || sessionStorage.getItem("agentId");
+  const price = location.state?.price ||  sessionStorage.getItem("price");
+  const subscriptionId = location.state?.subscriptionId || sessionStorage.getItem("subscriptionId")
   const locationPath = location.state?.locationPath1 || null;
+  const [paymentConfirmed,setPaymentConfirmed]=useState(false)
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -49,11 +50,18 @@ export default function SubscriptionFlow() {
 
   useEffect(() => {
     if (subscriptionSuccess) {
-      if (locationPath !== "/dashboard" && locationPath !== "/dsbd") {
-        navigate("/details");
-      } else {
-        navigate("/business-details");
-      }
+       if(locationPath !== "/update"){
+        navigate("/steps" , {state:{
+          locationPath : "/checkout"
+          
+        }}); 
+       }
+       else{
+         navigate("/dashboard"); 
+
+       }
+       
+       
     }
   }, [subscriptionSuccess, navigate]);
 
@@ -193,6 +201,10 @@ export default function SubscriptionFlow() {
     }
   };
 
+  const handlePaymentConfirm = () => {
+    setPaymentConfirmed(true);
+    console.log("Payment was confirmed");
+  };
   // Render
   return (
     <div className={styles.container}>
@@ -240,7 +252,7 @@ export default function SubscriptionFlow() {
       {otpSent ? "" : <div></div>}
 
       {/* OTP Input */}
-      {otpSent && !otpVerified && (
+      {!otpVerified && (
         <div style={{ marginBottom: "1rem", maxWidth: 400 }}>
           <input
             type="text"
@@ -300,6 +312,7 @@ export default function SubscriptionFlow() {
           agentId={agentId}
           locationPath={locationPath}
           subscriptionId={subscriptionId}
+          onPaymentConfrim={handlePaymentConfirm}
         />
       </div>
     </div>

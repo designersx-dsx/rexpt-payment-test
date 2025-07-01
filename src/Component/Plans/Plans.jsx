@@ -286,7 +286,9 @@ const Plan = ({ agentID, locationPath }) => {
             onClick={() => {
               if (selected) {
                 if (selected === "free-trial") {
-                  navigate("/signup");
+                  navigate("/steps" , {state : {
+                    freeTrial : true
+                  }});
                 } else if (selectedPrice) {
                   navigate("/checkout", {
                     state: {

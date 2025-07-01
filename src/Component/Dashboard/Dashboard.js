@@ -913,15 +913,23 @@ function Dashboard() {
             "LLM ID or Knowledge Base ID missing. LLM update skipped."
           );
         }
+      }
+    }
+    catch (error) {
+      console.error("Error during agent deactivation/reactivation:", error);
+    } finally {
+      setDeactivateLoading(false);
+    }
+  };
 
 
-    const handleUpgradeClick = (agent) => {
+  const handleUpgradeClick = (agent) => {
     // if (agent?.subscriptionId) {
     //   alert("Coming Soon");
     // } else {
-      setagentId(agent?.agent_id);
-      setsubscriptionId(agent?.subscriptionId);
-      setModelOpen(true);
+    setagentId(agent?.agent_id);
+    setsubscriptionId(agent?.subscriptionId);
+    setModelOpen(true);
     // }
 
   };

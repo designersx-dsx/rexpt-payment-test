@@ -34,6 +34,7 @@ function CheckoutForm({
   locationPath,
   price,
   subscriptionId,
+  // onPaymentConfirm
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -357,6 +358,7 @@ function CheckoutForm({
     setMessage("Subscription successful!");
     setPopupType("success");
     setPopupMessage("Subscription successful!");
+    sessionStorage.removeItem("priceId")
     // Call next API here and navigate to the dashboard
     await callNextApiAndRedirect();
   };
@@ -522,7 +524,9 @@ function CheckoutForm({
           return;
         }
         if (paymentIntent?.status === "succeeded" && subscriptionId) {
+          // onPaymentConfirm();
           try {
+
             const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -543,12 +547,14 @@ function CheckoutForm({
         }
 
         if (
-          locationPath === "/dashboard" &&
+          locationPath === "/update" &&
           agentId !== undefined &&
           agentId !== null
         ) {
           setShowCountdownPopup(true);
+          
         } else {
+          // onPaymentConfirm();
           setMessage("Subscription successful!");
           setPopupType("success");
           setPopupMessage("Subscription successful!");

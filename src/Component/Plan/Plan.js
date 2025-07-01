@@ -6,7 +6,7 @@ import Loader from '../Loader/Loader';
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Plan = ({ agentID, locationPath, subscriptionID }) => {
-
+  console.log(agentID, subscriptionID)
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -152,8 +152,9 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
 
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate('/checkout', { state: { priceId: price.id } });
+                      navigate('/steps', { state: { priceId: price.id } });
                       setPriceId(null);
+                      sessionStorage.setItem("priceId", priceId)
 
                     }}
                   >
@@ -172,7 +173,13 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
           className={styles.btnTheme}
           onClick={() => {
             if (priceId) {
-              navigate('/checkout', { state: { priceId, agentId: agentID, subscriptionId: subscriptionID, locationPath1: agentID ? locationPath : "/dsbd", price: price } });
+              if (agentID) {
+                navigate(`/checkout`, { state: { priceId, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: price } }, sessionStorage.setItem("priceId", priceId), sessionStorage.setItem("price", price), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
+              }
+              else {
+                navigate(`/steps`, { state: { priceId, agentId: agentID, subscriptionId: subscriptionID, price: price } }, sessionStorage.setItem("priceId", priceId), sessionStorage.setItem("price", price), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
+              }
+              ;
             } else {
               alert('Please select a plan first');
             }
