@@ -1010,6 +1010,12 @@ function Dashboard() {
     }
   };
 
+  const checkRecentPageLocation = location.state?.currentLocation;
+  useEffect(() => {
+    if (checkRecentPageLocation === "/checkout")
+      fetchAndMergeCalApiKeys()
+  }, [])
+
   return (
     <div>
       <div className={styles.forSticky}>

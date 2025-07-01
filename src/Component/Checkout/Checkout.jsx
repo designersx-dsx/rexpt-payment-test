@@ -12,7 +12,7 @@ import styles from "./checkout.module.css";
 import { API_BASE_URL } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import CountdownPopup from "../CountDownPopup/CountdownPopup";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "recharts";
 import Select from "react-select";
 
@@ -43,6 +43,10 @@ function CheckoutForm({
   const [step, setStep] = useState(1);
 
   const navigate = useNavigate();
+
+  const location = useLocation();
+
+  const currentLocation = location.pathname;
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -358,7 +362,7 @@ function CheckoutForm({
     setMessage("Subscription successful!");
     setPopupType("success");
     setPopupMessage("Subscription successful!");
-    sessionStorage.removeItem("priceId")
+    sessionStorage.removeItem("priceId");
     // Call next API here and navigate to the dashboard
     await callNextApiAndRedirect();
   };
@@ -384,7 +388,9 @@ function CheckoutForm({
         setPopupType("success");
         setPopupMessage("Agent Upgraged successfully!");
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/dashboard", {
+            state: { currentLocation: currentLocation },
+          });
         }, 2000);
       } else {
         setMessage("Error completing subscription.");
@@ -459,7 +465,7 @@ function CheckoutForm({
             paymentMethodId: paymentMethod.id,
             userId,
             email,
-            promotionCode: promoCode,
+            promotionCode: promoCodeSend,
             companyName,
             gstNumber,
             billingAddress: {
@@ -486,7 +492,7 @@ function CheckoutForm({
             paymentMethodId: paymentMethod.id,
             userId,
             email,
-            promotionCode: promoCode,
+            promotionCode: promoCodeSend,
             companyName,
             gstNumber,
             billingAddress: {
@@ -526,7 +532,6 @@ function CheckoutForm({
         if (paymentIntent?.status === "succeeded" && subscriptionId) {
           // onPaymentConfirm();
           try {
-
             const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -552,7 +557,6 @@ function CheckoutForm({
           agentId !== null
         ) {
           setShowCountdownPopup(true);
-          
         } else {
           // onPaymentConfirm();
           setMessage("Subscription successful!");
@@ -582,14 +586,17 @@ function CheckoutForm({
     setLoading(false);
   };
   const [promoCode, setPromoCode] = useState("");
+  const [promoCodeSend, setpromoCodeSend] = useState("");
+
   const [promoError, setPromoError] = useState("");
   const [discount, setDiscount] = useState(null);
 
-  const handleApplyPromo = async () => {
+  const handleApplyPromo = async (code) => {
+    setpromoCodeSend(code);
     const res = await fetch(`${API_BASE_URL}/checkPromtoCode`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: promoCode }),
+      body: JSON.stringify({ code }),
     });
 
     const data = await res.json();
@@ -607,6 +614,7 @@ function CheckoutForm({
 
   const handleRemovePromo = () => {
     setPromoCode("");
+    setpromoCodeSend("");
     setPromoError("");
     setDiscount(null);
     setPlanPrice(price); // reset to original
@@ -737,7 +745,12 @@ function CheckoutForm({
               disabled={!!discount}
             />
 
-            <button onClick={handleApplyPromo}>Apply</button>
+            <button
+              className={styles.applyButton2}
+              onClick={() => handleApplyPromo(promoCode)}
+            >
+              Apply
+            </button>
           </div>
 
           {promoError && <p style={{ color: "red" }}>{promoError}</p>}
@@ -760,6 +773,7 @@ function CheckoutForm({
             onClick={handleSubmit}
             className={styles.button}
             style={{ marginTop: "1rem" }}
+            disabled={loading}
           >
             {loading ? "Processing..." : `Pay $${planPrice}`}
           </button>
