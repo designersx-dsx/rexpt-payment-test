@@ -22,8 +22,16 @@ export const LoginWithEmailOTP = async (email) => {
   return res;
 };
 
-export const verifyEmailOTP = async (email, otp) => {
-  const res = await api.post('/auth/verifyEmailOTP', { email, otp });
+export const verifyEmailOTP = async (email, otp ) => {
+  const customerRes = await fetch(`${API_BASE_URL}/customer`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+
+          const customerData = await customerRes.json();
+        let customerId =  customerData.customerId;
+  const res = await api.post('/auth/verifyEmailOTP', { email, otp , customerId});
   return res;
 };
 

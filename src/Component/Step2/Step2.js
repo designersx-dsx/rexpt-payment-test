@@ -61,17 +61,17 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   }, []);
 
   useEffect(() => {
-  if (
-    selectedVoice &&
-    selectedVoice.voice_id &&
-    selectedVoice.voice_name &&
-    selectedVoice.accent
-  ) {
-    sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
-    sessionStorage.setItem("agentVoiceAccent", selectedVoice.accent);
-    sessionStorage.setItem("VoiceAgentName", selectedVoice.voice_name);
-  }
-}, [selectedVoice]);
+    if (
+      selectedVoice &&
+      selectedVoice.voice_id &&
+      selectedVoice.voice_name &&
+      selectedVoice.accent
+    ) {
+      sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
+      sessionStorage.setItem("agentVoiceAccent", selectedVoice.accent);
+      sessionStorage.setItem("VoiceAgentName", selectedVoice.voice_name);
+    }
+  }, [selectedVoice]);
 
   useEffect(() => {
     if (listVoices && selectedGender) {
@@ -131,24 +131,24 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     selectedAudio.onended = () => setPlayingIdx(null);
   };
   useEffect(() => {
-  if (listVoices.length > 0) {
-    const storedGender = sessionStorage.getItem("agentGender");
-    const storedVoiceId = sessionStorage.getItem("agentVoice");
+    if (listVoices.length > 0) {
+      const storedGender = sessionStorage.getItem("agentGender");
+      const storedVoiceId = sessionStorage.getItem("agentVoice");
 
-    if (storedGender) {
-      setSelectedGender(
-        storedGender.charAt(0).toUpperCase() + storedGender.slice(1).toLowerCase()
-      );
-    }
+      if (storedGender) {
+        setSelectedGender(
+          storedGender.charAt(0).toUpperCase() + storedGender.slice(1).toLowerCase()
+        );
+      }
 
-    if (storedVoiceId) {
-      const voice = listVoices.find((v) => v.voice_id === storedVoiceId);
-      if (voice) {
-        setSelectedVoice(voice);
+      if (storedVoiceId) {
+        const voice = listVoices.find((v) => v.voice_id === storedVoiceId);
+        if (voice) {
+          setSelectedVoice(voice);
+        }
       }
     }
-  }
-}, [listVoices]);
+  }, [listVoices]);
 
   useImperativeHandle(ref, () => ({
     validate: () => {
@@ -254,18 +254,18 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
           ))}
         </div>
 
-        <h2
+        {selectedGender && <h2
           className={styles.sectionTitle}
         >
           Select Voice
-        </h2>
+        </h2>}
         <div className={styles.voiceGrid}>
           {filteredVoices.map((voice, idx) => (
             <label
               key={voice.voice_id ?? idx}
               className={`${styles.voiceCard} ${selectedVoice.voice_name === voice.voice_name
-                  ? styles.active
-                  : ""
+                ? styles.active
+                : ""
                 }`}
             >
               <input

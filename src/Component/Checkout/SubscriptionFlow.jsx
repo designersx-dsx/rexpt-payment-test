@@ -45,7 +45,9 @@ export default function SubscriptionFlow() {
     const result = decodeToken(token);
     setUserDetails(result);
     setUserId(result.id);
+    setCustomerId(result.customerId)
     if (result?.email) setEmail(result.email);
+    console.log(result)
   }, []);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function SubscriptionFlow() {
 
   // Check subscription after OTP verified
   useEffect(() => {
-    if (!otpVerified || !customerId) return;
+    if (!customerId) return;
 
     const checkSubscription = async () => {
       try {
@@ -86,84 +88,84 @@ export default function SubscriptionFlow() {
     };
 
     checkSubscription();
-  }, [otpVerified, customerId, priceId]);
+  }, [ customerId, priceId]);
 
   // Handlers
-  const sendOtp = async () => {
-    if (!email) return setMessage("⚠️ Enter email first");
-    setMessage("Sending OTP...");
-    setLoading(true);
-    try {
-      const res = await LoginWithEmailOTP(email);
-      if (res.error) {
-        setMessage(`❌ ${res.error}`);
-      } else {
-        setOtpSent(true);
-        setMessage("✅ OTP sent!");
-      }
-    } catch {
-      setMessage("❌ Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const sendOtp = async () => {
+  //   if (!email) return setMessage("⚠️ Enter email first");
+  //   setMessage("Sending OTP...");
+  //   setLoading(true);
+  //   try {
+  //     const res = await LoginWithEmailOTP(email);
+  //     if (res.error) {
+  //       setMessage(`❌ ${res.error}`);
+  //     } else {
+  //       setOtpSent(true);
+  //       setMessage("✅ OTP sent!");
+  //     }
+  //   } catch {
+  //     setMessage("❌ Failed to send OTP");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const verifyOtp = async () => {
-    try {
-      setLoading(true);
-      if (locationPath !== "/dashboard" && locationPath !== "/dsbd") {
-        if (!otp) return setMessage("⚠️ Enter OTP");
-        setMessage("Verifying...");
-        setLoading(true);
-        const verifyRes = await verifyEmailOTP(email, otp);
+  // const verifyOtp = async () => {
+  //   try {
+  //     setLoading(true);
+  //     if (locationPath !== "/dashboard" && locationPath !== "/dsbd") {
+  //       if (!otp) return setMessage("⚠️ Enter OTP");
+  //       setMessage("Verifying...");
+  //       setLoading(true);
+  //       const verifyRes = await verifyEmailOTP(email, otp);
 
-        const verifiedUserId = verifyRes?.data?.user?.id;
-        console.log(verifiedUserId, "berfied use ");
-        if (verifiedUserId) {
-          setUserId(verifiedUserId);
-          localStorage.setItem("token", verifyRes.data.token);
-          handleUpdateUserProfile(verifiedUserId);
+  //       const verifiedUserId = verifyRes?.data?.user?.id;
+  //       console.log(verifiedUserId, "berfied use ");
+  //       if (verifiedUserId) {
+  //         setUserId(verifiedUserId);
+  //         localStorage.setItem("token", verifyRes.data.token);
+  //         handleUpdateUserProfile(verifiedUserId);
 
-          const customerRes = await fetch(`${API_BASE}/customer`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-          });
+  //         const customerRes = await fetch(`${API_BASE}/customer`, {
+  //           method: "POST",
+  //           headers: { "Content-Type": "application/json" },
+  //           body: JSON.stringify({ email }),
+  //         });
 
-          const customerData = await customerRes.json();
+  //         const customerData = await customerRes.json();
 
-          if (!customerData.customerId) {
-            return setMessage("❌ Could not get customer ID");
-          }
+  //         if (!customerData.customerId) {
+  //           return setMessage("❌ Could not get customer ID");
+  //         }
 
-          setCustomerId(customerData.customerId);
-          setOtpVerified(true);
-          setMessage("OTP verified! ");
-        } else {
-          setMessage("Invalid OTP");
-        }
-      } else {
-        const customerRes = await fetch(`${API_BASE}/customer`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
+  //         setCustomerId(customerData.customerId);
+  //         setOtpVerified(true);
+  //         setMessage("OTP verified! ");
+  //       } else {
+  //         setMessage("Invalid OTP");
+  //       }
+  //     } else {
+  //       const customerRes = await fetch(`${API_BASE}/customer`, {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ email }),
+  //       });
 
-        const customerData = await customerRes.json();
+  //       const customerData = await customerRes.json();
 
-        if (!customerData.customerId) {
-          return setMessage("❌ Could not get customer ID");
-        }
-        setUserVerified(true);
-        setMessage("Customer verified");
-        setCustomerId(customerData.customerId);
-      }
-    } catch (err) {
-      setMessage("❌ Verification failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //       if (!customerData.customerId) {
+  //         return setMessage("❌ Could not get customer ID");
+  //       }
+  //       setUserVerified(true);
+  //       setMessage("Customer verified");
+  //       setCustomerId(customerData.customerId);
+  //     }
+  //   } catch (err) {
+  //     setMessage("❌ Verification failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleEditEmail = () => {
     // Reset flow
@@ -220,7 +222,7 @@ export default function SubscriptionFlow() {
           margin: "20px 0 0 0",
         }}
       >
-        <input
+        {/* <input
           type="email"
           placeholder="Enter email"
           value={email}
@@ -247,12 +249,12 @@ export default function SubscriptionFlow() {
               />
             </svg>
           </button>
-        )}
+        )} */}
       </div>
       {otpSent ? "" : <div></div>}
 
       {/* OTP Input */}
-      {!otpVerified && (
+      {/* {!otpVerified && (
         <div style={{ marginBottom: "1rem", maxWidth: 400 }}>
           <input
             type="text"
@@ -270,10 +272,10 @@ export default function SubscriptionFlow() {
             {loading ? "Verifying..." : otpVerified ? "Verified" : "Verify OTP"}
           </button>
         </div>
-      )}
+      )} */}
 
       {/* Send OTP button */}
-      {!otpSent && (
+      {/* {!otpSent && (
         <button
           onClick={
             locationPath === "/dashboard" || locationPath === "/dsbd"
@@ -289,7 +291,7 @@ export default function SubscriptionFlow() {
             ? "Verify Customer"
             : "Send Otp"}
         </button>
-      )}
+      )} */}
 
       {/* Message */}
       {message && <p className={styles.message}>{message}</p>}

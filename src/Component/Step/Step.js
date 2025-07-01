@@ -49,7 +49,7 @@ const Step = () => {
     const [visibleStep, setVisibleStep] = useState(0);
     const [avtarChecked, setAvtarChecked] = useState(false)
     const [completedSteps, setCompletedSteps] = useState(() => {
-        const saved = localStorage.getItem('completedSteps');
+        const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
     const location = useLocation()
@@ -605,17 +605,13 @@ const Step = () => {
     //     }
     // };
     const handleContinue = async () => {
-        console.log("HY I AM ACALLED")
-
         if (step8ARef.current) {
             // if (currentStep === 7) {
             //     const isStep3Valid = await step8ARef.current?.validate?.();
             //     const isStep4Valid = await step8BRef.current?.validate?.();
             //     if (!isStep3Valid || !isStep4Valid) return;
             // }
-
             setIsContinueClicked(true);
-
             const agentNote = sessionStorage.getItem("agentNote");
             const filledPrompt =
                 getAgentPrompt({
@@ -636,9 +632,10 @@ const Step = () => {
                     agentNote
                 });
             // const isValid = step8BRef.current.validate()
-            localStorage.removeItem("completedSteps")
+
             //creation here
             if (localStorage.getItem("UpdationMode") != "ON") {
+
                 setLoading(true)
                 const agentConfig = {
                     version: 0,
@@ -1160,7 +1157,7 @@ const Step = () => {
         sessionStorage.setItem("currentStep", currentStep.toString());
     }, [currentStep])
     useEffect(() => {
-        localStorage.setItem("completedSteps", JSON.stringify(completedSteps));
+        sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
     }, [completedSteps]);
 
 
@@ -1171,16 +1168,35 @@ const Step = () => {
             handleContinue()
         }
         else if (locationPath !== "/checkout" && priceId) {
-            navigate("/checkout")
+            if (currentStep === 7) {
+                const isStep3Valid = step8ARef.current?.validate?.();
+                const isStep4Valid = step8BRef.current?.validate?.();
+                if (!isStep3Valid || !isStep4Valid) return;
+                navigate("/checkout")
+            }
+            
         }
         else if (locationPath !== "/checkout" && !priceId) {
-            navigate('/plans')
+            console.log("hy")
+            if (currentStep === 7) {
+                const isStep3Valid = step8ARef.current?.validate?.();
+                const isStep4Valid = step8BRef.current?.validate?.();
+                if (!isStep3Valid || !isStep4Valid) return;
+                   navigate('/plans')
             addCompletedStep(currentStep);
+            }
+         
 
         }
         else if (locationPath !== "/checkout" && !priceId) {
-            navigate('/plans')
+            if (currentStep === 7) {
+                const isStep3Valid = step8ARef.current?.validate?.();
+                const isStep4Valid = step8BRef.current?.validate?.();
+                if (!isStep3Valid || !isStep4Valid) return;
+                navigate('/plans')
             addCompletedStep(currentStep);
+            }
+            
 
         }
 
@@ -1193,11 +1209,11 @@ const Step = () => {
             handleContinue();
             isContinueCalled.current = true;
         }
-        else if(locationPath==="/checkout" && currentStep === 7 && !isContinueCalled.current){
+        else if (locationPath === "/checkout" && currentStep === 7 && !isContinueCalled.current) {
             handleContinue();
             isContinueCalled.current = true;
         }
-    }, [freeTrail, currentStep , locationPath]);
+    }, [freeTrail, currentStep, locationPath]);
 
 
     return (
