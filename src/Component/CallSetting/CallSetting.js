@@ -9,6 +9,7 @@ import styles from "./CallSetting.module.css";
 import ListeningAffirmations from "./ListeningAffirmation";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 
+
 export default function CallSetting() {
   const [expanded, setExpanded] = useState("panel1");
 
