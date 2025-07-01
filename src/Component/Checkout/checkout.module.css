@@ -268,3 +268,16 @@
 .removePromoBtn:hover {
   color: #d10000;
 }
+
+
+.applyButton2 {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.applyButton2:hover {
+  background-color: #5a38b1;
+  color: white;
+}
+
+
