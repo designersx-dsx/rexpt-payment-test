@@ -31,7 +31,7 @@ const SignUp = () => {
   const [resendEndTime, setResendEndTime] = useState(null);
   const tempReferral=sessionStorage.getItem("referredBy")||"";
   const tempLandingSelectedPlan=sessionStorage.getItem("plan")||"";
-
+const [customerId , setCustomerId] = useState()
   useEffect(() => {
     if (!resendEndTime) return;
 
@@ -96,9 +96,10 @@ const SignUp = () => {
 
     setIsVerifyingOtp(true);
     try {
-      const response = await verifyEmailOTP(email, fullOtp);
+      const response = await verifyEmailOTP(email, fullOtp , customerId);
       // console.log('response',response)
       if (response?.status === 200) {
+        
         localStorage.setItem("token", response?.data.token);
         sessionStorage.clear();
         sessionStorage.setItem("referredBy",tempReferral);

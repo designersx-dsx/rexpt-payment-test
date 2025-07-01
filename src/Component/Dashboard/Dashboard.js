@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
-import { useNavigate } from "react-router-dom";
+
+import Footer from "../AgentDetails/Footer/Footer";
+import Plan from "../Plan/Plan";
+import { useNavigate, useLocation } from "react-router-dom";
+
+
 import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
@@ -93,18 +98,25 @@ function Dashboard() {
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
   const [show, setShow] = useState(false);
   const [close, setClose] = useState(false);
-
+  const [modelOpen, setModelOpen] = useState(false)
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
+
+  const [agentId, setagentId] = useState()
+  const [subscriptionId, setsubscriptionId] = useState()
+  const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
+  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  const dropdownRef = useRef(null);
+  const location = useLocation();
+
+
   const [deactivateLoading, setDeactivateLoading] = useState(false);
 
   const [calloading, setcalloading] = useState(false)
   const [calapiloading, setCalapiloading] = useState(false)
   const [deleteloading, setdeleteloading] = useState(false)
 
-  const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
-  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
-  const dropdownRef = useRef(null);
+
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -139,6 +151,7 @@ function Dashboard() {
       setIsAssignModalOpen(true);
     }
   };
+
 
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
@@ -669,6 +682,35 @@ function Dashboard() {
     navigate("/totalcall-list");
   };
 
+
+  //   function formatName(name) {
+  //     if (!name) return "";
+
+  //     if (name.includes(" ")) {
+  //       const firstName = name.split(" ")[0];
+  //       if (firstName.length <= 7) {
+  //         return firstName;
+  //       } else {
+  //         return firstName.substring(0, 10) + "...";
+  //       }
+  //     } else {
+  // // <<<<<<< dev_Shorya
+  // //       if (name.length > 7) {
+  // //         return name.substring(0, 10) + "...";
+  // //       }
+  // //       return name;
+  // // =======
+  //       return firstName.substring(0, 10) + "...";
+  //     }
+  //   else {
+  //     if (name.length > 7) {
+  //       return name.substring(0, 10) + "...";
+  //     } else {
+  //       return name; // <-- This was missing
+
+  //     }
+  //   }
+
   function formatName(name) {
     if (!name) return "";
 
@@ -683,7 +725,8 @@ function Dashboard() {
       if (name.length > 7) {
         return name.substring(0, 10) + "...";
       } else {
-        return name; // <-- This was missing
+
+        return name;
       }
     }
   }
@@ -736,6 +779,7 @@ function Dashboard() {
     navigate("/edit-profile");
   };
   const handleDeactivateAgent = async () => {
+
     try {
       setDeactivateLoading(true);
       const dashboardState = JSON.parse(
@@ -869,42 +913,51 @@ function Dashboard() {
             "LLM ID or Knowledge Base ID missing. LLM update skipped."
           );
         }
-
-        // ✅ Step 3: Update Agent's knowledgeBaseId in DB
-        if (agentToDeactivate?.agent_id && knowledgeBaseId) {
-          try {
-            await updateAgentKnowledgeBaseId(
-              agentToDeactivate.agent_id,
-              knowledgeBaseId
-            );
-          } catch (err) {
-            console.error(" Failed to update agent's KB ID:", err);
-          }
-        }
       }
-
-      await toggleAgentActivation(
-        agentToDeactivate.agent_id,
-        !isCurrentlyDeactivated
-      );
-
-      setPopupType("success");
-      setPopupMessage(
-        isCurrentlyDeactivated
-          ? "Agent activated successfully."
-          : "Agent deactivated successfully."
-      );
-      setShowDeactivateConfirm(false);
-      setHasFetched(false);
-    } catch (error) {
-      console.error("Activation/Deactivation Error:", error);
-      setPopupType("failed");
-      setPopupMessage("Failed to update agent status.");
-      setShowDeactivateConfirm(false);
+    }
+    catch (error) {
+      console.error("Error during agent deactivation/reactivation:", error);
     } finally {
       setDeactivateLoading(false);
     }
   };
+
+
+  const handleUpgradeClick = (agent) => {
+    // if (agent?.subscriptionId) {
+    //   alert("Coming Soon");
+    // } else {
+    setagentId(agent?.agent_id);
+    setsubscriptionId(agent?.subscriptionId);
+    setModelOpen(true);
+    // }
+
+  };
+
+  const fetchPrevAgentDEtails = async (agent_id, businessId) => {
+  };
+  const locationPath = location.pathname
+
+  // =======
+  //       setPopupType("success");
+  //       setPopupMessage(
+  //         isCurrentlyDeactivated
+  //           ? "Agent activated successfully."
+  //           : "Agent deactivated successfully."
+  //       );
+  //       setShowDeactivateConfirm(false);
+  //       setHasFetched(false);
+  //     } catch (error) {
+  //       console.error("Activation/Deactivation Error:", error);
+  //       setPopupType("failed");
+  //       setPopupMessage("Failed to update agent status.");
+  //       setShowDeactivateConfirm(false);
+  //     } finally {
+  //       setDeactivateLoading(false);
+  //     }
+  //   };
+  // >>>>>>> payment_testing
+
 
   const getUserReferralCode = async () => {
     try {
@@ -956,7 +1009,13 @@ function Dashboard() {
       }
     }
   };
-  // console.log('ddsds',typeof showreferralfloating)
+
+  const checkRecentPageLocation = location.state?.currentLocation;
+  useEffect(() => {
+    if (checkRecentPageLocation === "/checkout")
+      fetchAndMergeCalApiKeys()
+  }, [])
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1234,11 +1293,7 @@ function Dashboard() {
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
                           e.stopPropagation();
-                          if (agent?.isDeactivated === 1) {
-                            handleInactiveAgentAlert();
-                          } else {
-                            handleUpgrade(agent.agent_id);
-                          }
+                          handleUpgradeClick(agent);
                         }}
                       >
                         Upgrade
@@ -1836,6 +1891,10 @@ function Dashboard() {
 
       {/* <Footer /> */}
       <Footer2 />
+      <Modal isOpen={modelOpen} onClose={() => setModelOpen(false)}>
+        <Plan agentID={agentId} subscriptionID={subscriptionId} locationPath={locationPath} />
+      </Modal>
+
       <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
 
       {isAssignModalOpen && selectedAgentForAssign && (
@@ -1862,156 +1921,6 @@ function Dashboard() {
   );
 }
 
+
 export default Dashboard;
 
-const fetchPrevAgentDEtails = async (agent_id, businessId) => {
-  try {
-    const response = await getUserAgentMergedDataForAgentUpdate(
-      agent_id,
-      businessId
-    );
-    const agent = response?.data?.agent;
-    const business = response?.data?.business;
-    sessionStorage.setItem("UpdationMode", "ON");
-    sessionStorage.setItem("agentName", agent?.agentName);
-    sessionStorage.setItem("agentGender", agent?.agentGender);
-    sessionStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
-    sessionStorage.setItem("agentLanguage", agent?.agentLanguage);
-    sessionStorage.setItem("llmId", agent?.llmId);
-    sessionStorage.setItem("agent_id", agent?.agent_id);
-    sessionStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
-
-    //need to clear later
-    localStorage.setItem("UpdationMode", "ON");
-    localStorage.setItem("agentName", agent?.agentName);
-    localStorage.setItem("agentGender", agent?.agentGender);
-    localStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
-    localStorage.setItem("agentLanguage", agent?.agentLanguage);
-    localStorage.setItem("llmId", agent?.llmId);
-    localStorage.setItem("agent_id", agent?.agent_id);
-    localStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
-    localStorage.setItem("agentRole", agent?.agentRole);
-    localStorage.setItem("agentVoice", agent?.agentVoice);
-    localStorage.setItem("agentVoiceAccent", agent?.agentAccent);
-    localStorage.setItem("avatar", agent?.avatar);
-    sessionStorage.setItem("googleListing", business?.googleUrl);
-    sessionStorage.getItem("displayBusinessName");
-    localStorage.setItem("googleUrl", business?.googleUrl);
-    localStorage.setItem("webUrl", business?.webUrl);
-    localStorage.setItem("aboutBusiness", business?.aboutBusiness);
-    localStorage.setItem(
-      "additionalInstruction",
-      business?.additionalInstruction
-    );
-    localStorage.setItem("knowledge_base_name", business?.knowledge_base_name);
-    localStorage.setItem("knowledge_base_id", business?.knowledge_base_id);
-    //need to clear above
-    sessionStorage.setItem(
-      "aboutBusinessForm",
-      JSON.stringify({
-        businessUrl: business?.webUrl,
-        googleListing: business?.googleUrl,
-        aboutBusiness: business?.aboutBusiness,
-        note: business?.additionalInstruction,
-        isGoogleListing: business?.isGoogleListing,
-        isWebsiteUrl: business?.isWebsiteUrl,
-      })
-    );
-
-    sessionStorage.setItem("agentRole", agent?.agentRole);
-    sessionStorage.setItem("agentVoice", agent?.agentVoice);
-    sessionStorage.setItem("agentVoiceAccent", agent?.agentAccent);
-    sessionStorage.setItem("avatar", agent?.avatar);
-    sessionStorage.setItem("businessDetails", agent?.business);
-    sessionStorage.setItem("businessId", agent?.businessId);
-    sessionStorage.setItem("bId", agent?.businessId);
-    sessionStorage.setItem("displayBusinessName", business?.googleBusinessName);
-
-    const businessData = {
-      userId: business.userId,
-      businessType: business?.businessType,
-      businessName: business?.businessName.trim(),
-      businessSize: business?.businessSize,
-      customBuisness: business?.customBuisness,
-    };
-
-    let parsedServices = safeParse(business?.buisnessService, []);
-    sessionStorage.setItem(
-      "businesServices",
-      JSON.stringify({
-        selectedService: parsedServices,
-        email: business.buisnessEmail,
-      })
-    );
-    //custom servcice save and filter
-    let rawCustomServices = business?.customServices || [];
-
-    if (typeof rawCustomServices === "string") {
-      try {
-        rawCustomServices = JSON.parse(rawCustomServices);
-      } catch (err) {
-        console.error("Failed to parse customServices:", rawCustomServices);
-        rawCustomServices = [];
-      }
-    }
-
-    const cleanedCustomServices = Array.isArray(rawCustomServices)
-      ? rawCustomServices
-        .map((item) => item?.service?.trim())
-        .filter(Boolean)
-        .map((service) => ({ service }))
-      : [];
-
-    sessionStorage.setItem(
-      "selectedCustomServices",
-      JSON.stringify(cleanedCustomServices)
-    );
-
-    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-
-    let raw_knowledge_base_texts = business?.knowledge_base_texts || [];
-
-    if (typeof raw_knowledge_base_texts === "string") {
-      try {
-        raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
-      } catch (err) {
-        console.error(
-          "Failed to parse customServices:",
-          raw_knowledge_base_texts
-        );
-        raw_knowledge_base_texts = [];
-      }
-    }
-    const cleaned_raw_knowledge_base_texts = Array.isArray(
-      raw_knowledge_base_texts
-    )
-      ? raw_knowledge_base_texts
-      : [];
-
-    sessionStorage.setItem(
-      "placeDetailsExtract",
-      JSON.stringify(raw_knowledge_base_texts)
-    );
-    sessionStorage.setItem("agentNote", agent?.additionalNote);
-  } catch (error) {
-    console.log("An Error Occured while fetching Agent Data for ", error);
-  }
-};
-
-const safeParse = (value, fallback = null) => {
-  try {
-    if (typeof value === "string") {
-      const cleaned = value.trim();
-      if (
-        (cleaned.startsWith("[") && cleaned.endsWith("]")) ||
-        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-        (cleaned.startsWith('"') && cleaned.endsWith('"'))
-      ) {
-        return JSON.parse(cleaned);
-      }
-    }
-    return value;
-  } catch {
-    return fallback;
-  }
-};

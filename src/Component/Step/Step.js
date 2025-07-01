@@ -4,7 +4,7 @@ import styles from "./Step.module.css";
 import Step2 from "../Step2/Step2";
 import Step3 from "../Step3/Step3";
 import Step4 from "../Step4/Step4";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import PopUp from "../Popup/Popup";
@@ -49,14 +49,13 @@ const Step = () => {
     const [visibleStep, setVisibleStep] = useState(0);
     const [avtarChecked, setAvtarChecked] = useState(false)
     const [completedSteps, setCompletedSteps] = useState(() => {
-        const saved = localStorage.getItem('completedSteps');
+        const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
-    //Step REF 
-    //Business Details
+    const location = useLocation()
+    const locationPath = location?.state?.locationPath;
     const step1Ref = useRef(null)
-    //Business Services
-    // const step2Ref = useRef(null);
+
     const step3Ref = useRef(null);
     const step4Ref = useRef(null);
     const step5Ref = useRef(null);
@@ -202,14 +201,416 @@ const Step = () => {
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
+    // const handleContinue = async () => {
+    //     console.log("HY I AM ACALLED")
+
+    //     if (step8ARef.current) {
+    //         if (currentStep === 7) {
+    //             const isStep3Valid = await step8ARef.current?.validate?.();
+    //             const isStep4Valid = await step8BRef.current?.validate?.();
+    //             if (!isStep3Valid || !isStep4Valid) return;
+    //         }
+
+    //         setIsContinueClicked(true);
+
+    //         const agentNote = sessionStorage.getItem("agentNote");
+    //         const filledPrompt =
+    //             getAgentPrompt({
+    //                 industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+    //                 roleTitle: sessionStorage.getItem("agentRole"),
+    //                 agentName: agentName,
+    //                 agentGender: agentGender,
+    //                 business: {
+    //                     businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom,
+    //                     email: getBusinessNameFromGoogleListing?.email || "",
+    //                     aboutBusiness: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness,
+    //                     address: getBusinessNameFromGoogleListing?.address || ""
+    //                 },
+    //                 languageSelect: languageSelect,
+    //                 businessType,
+    //                 aboutBusinessForm,
+    //                 commaSeparatedServices,
+    //                 agentNote
+    //             });
+    //         const isValid = step8BRef.current.validate()
+    //         localStorage.removeItem("completedSteps")
+    //         //creation here
+    //         if (isValid && localStorage.getItem("UpdationMode") != "ON") {
+    //             setLoading(true)
+    //             const agentConfig = {
+    //                 version: 0,
+    //                 model: "gemini-2.0-flash-lite",
+    //                 model_temperature: 0,
+    //                 model_high_priority: true,
+    //                 tool_call_strict_mode: true,
+    //                 general_prompt: filledPrompt,
+    //                 general_tools: [
+    //                     {
+    //                         type: "end_call",
+    //                         name: "end_call",
+    //                         description: "End the call with user.",
+    //                     },
+
+
+    //                 ],
+
+    //                 states: [
+    //                     {
+    //                         name: "information_collection",
+    //                         state_prompt:
+    //                             "You will follow the steps below to collect information...",
+    //                         edges: [
+    //                             {
+    //                                 destination_state_name: "appointment_booking",
+    //                                 description: "Transition to book an appointment.",
+    //                             },
+    //                         ],
+    //                         tools: [
+    //                             {
+    //                                 type: "transfer_call",
+    //                                 name: "transfer_to_support",
+    //                                 description: "Transfer to the support team.",
+    //                                 transfer_destination: {
+    //                                     type: "predefined",
+    //                                     number: "+918054226461", // Replace with actual number
+    //                                 },
+    //                             },
+    //                         ],
+    //                     },
+    //                     {
+    //                         name: "appointment_booking",
+    //                         state_prompt:
+    //                             "You will follow the steps below to book an appointment...",
+    //                     },
+    //                 ],
+    //                 starting_state: "information_collection",
+    //                 begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
+
+    //                 default_dynamic_variables: {
+    //                     customer_name: "John Doe",
+    //                 },
+    //             };
+    //             const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+    //             if (knowledgeBaseId) {
+    //                 agentConfig.knowledge_base_ids = [knowledgeBaseId];
+    //             }
+    //             //Create LLm 
+    //             try {
+    //                 const llmResponse = await axios.post(
+    //                     "https://api.retellai.com/create-retell-llm",
+    //                     agentConfig,
+    //                     {
+    //                         headers: {
+    //                             Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+    //                             "Content-Type": "application/json",
+    //                         },
+    //                     }
+    //                 );
+    //                 sessionStorage.setItem("llmId", llmResponse.data.llm_id);
+    //                 const llmId = llmResponse.data.llm_id;
+
+    //                 const response_engine = {
+    //                     type: "retell-llm",
+    //                     llm_id: llmId,
+    //                 };
+    //                 const finalAgentData = {
+    //                     response_engine,
+    //                     voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+    //                     language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+    //                     agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
+    //                     language: "multi",
+    //                     post_call_analysis_model: "gpt-4o-mini",
+    //                     responsiveness: 1,
+    //                     enable_backchannel: true,
+    //                     interruption_sensitivity: 0.7,
+    //                     backchannel_frequency: 0.7,
+    //                     backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
+    //                     post_call_analysis_data: [
+    //                         {
+    //                             type: "string",
+    //                             name: "Detailed Call Summery",
+    //                             description: "The name of the customer.",
+    //                             examples: [
+    //                                 "John Doe",
+    //                                 "Jane Smith"
+    //                             ]
+    //                         },
+    //                         {
+    //                             type: "enum",
+    //                             name: "lead_type",
+    //                             description: "Feedback given by the customer about the call.",
+    //                             choices: ["positive", "neutral", "negative"]
+    //                         }
+    //                     ],
+    //                 };
+    //                 // Create Agent Creation
+    //                 try {
+    //                     const response = await axios.post(
+    //                         "https://api.retellai.com/create-agent",
+    //                         finalAgentData,
+    //                         {
+    //                             headers: {
+    //                                 Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+    //                             },
+    //                         }
+    //                     );
+    //                     const agentId = response.data.agent_id;
+    //                     // Get businessId from sessionStorage
+    //                     const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
+    //                     // Convert string to object
+    //                     const businessIdObj = JSON.parse(businessIdString);
+    //                     // Now access the actual ID
+    //                     const agentData = {
+    //                         userId: userId,
+    //                         agent_id: agentId || sessionStorage.getItem("agentId"),
+    //                         knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+    //                         llmId: sessionStorage.getItem("llmId"),
+    //                         avatar: sessionStorage.getItem("avatar") || "",
+    //                         agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+    //                         agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
+    //                         agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
+    //                         agentName: sessionStorage.getItem('agentName') || "",
+    //                         agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
+    //                         agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
+    //                         agentGender: sessionStorage.getItem('agentGender') || "female",
+    //                         agentPlan: "free" || "Plus",
+    //                         agentStatus: true,
+    //                         businessId: businessIdObj.businessId,
+    //                         responsiveness: 1,
+    //                         enable_backchannel: true,
+    //                         interruption_sensitivity: 0.7,
+    //                         backchannel_frequency: 0.7,
+    //                         backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
+    //                         additionalNote: agentNote || "",
+
+    //                     }
+    //                     try {
+    //                         const response = await createAgent(agentData);
+    //                         if (response.status === 200 || response.status === 201) {
+    //                             sessionStorage.setItem("agentId", response.data.agent_id);
+    //                             sessionStorage.setItem("agentStatus", true);
+    //                             sessionStorage.removeItem("avatar")
+    //                             setPopupType("success");
+    //                             setPopupMessage("Agent created successfully!");
+    //                             setShowPopup(true);
+    //                             setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+    //                             setHasFetched(false)
+    //                             setLoading(false)
+    //                             sessionStorage.clear()
+
+    //                         }
+    //                     } catch (error) {
+    //                         // console.log(error,error.status)
+    //                         if (error?.status == 400) {
+    //                             // console.log('errorinside',error)
+    //                             setPopupType("failed");
+    //                             setPopupMessage(error?.response?.data?.message);
+    //                             setShowPopup(true);
+    //                             setLoading(false)
+    //                         } else {
+    //                             console.error("Agent creation failed:", error);
+    //                             setPopupType("failed");
+    //                             setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
+    //                             setShowPopup(true);
+    //                             setLoading(false)
+    //                         }
+
+
+    //                     }
+    //                 } catch (err) {
+    //                     console.error("Upload failed:", err);
+    //                     setPopupType("failed");
+    //                     setPopupMessage("Agent creation failed.");
+    //                     setShowPopup(true);
+    //                     setLoading(false)
+    //                 }
+    //             } catch (error) {
+    //                 console.error("LLM creation failed:", error);
+    //                 setPopupType("failed");
+    //                 setPopupMessage("LLM creation failed. Please try again.");
+    //                 setShowPopup(true);
+    //                 setLoading(false)
+    //             }
+    //             setLoading(false)
+    //         }
+    //         //updation Agent here
+    //         if (isValid && localStorage.getItem("UpdationMode") == "ON") {
+    //             setLoading(true)
+    //             const agentConfig = {
+    //                 general_prompt: filledPrompt,
+    //                 begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
+
+    //             };
+    //             const llm_id = localStorage.getItem('llmId')
+
+    //             //Create LLm 
+    //             try {
+    //                 const llmResponse = await axios.patch(
+    //                     `https://api.retellai.com/update-retell-llm/${llm_id} `,
+    //                     agentConfig,
+    //                     {
+    //                         headers: {
+    //                             Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+    //                             "Content-Type": "application/json",
+    //                         },
+    //                     }
+    //                 );
+
+    //                 sessionStorage.setItem("llmId", llmResponse.data.llm_id);
+    //                 const llmId = llmResponse.data.llm_id;
+
+    //                 const finalAgentData = {
+    //                     voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+    //                     language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+    //                     agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
+    //                     language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+    //                     normalize_for_speech: true,
+    //                     post_call_analysis_model: "gpt-4o-mini",
+    //                     post_call_analysis_data: [
+    //                         {
+    //                             type: "string",
+    //                             name: "Detailed Call Summery",
+    //                             description: "The name of the customer.",
+    //                             examples: [
+    //                                 "John Doe",
+    //                                 "Jane Smith"
+    //                             ]
+    //                         },
+    //                         {
+    //                             type: "enum",
+    //                             name: "lead_type",
+    //                             description: "Feedback given by the customer about the call.",
+    //                             choices: ["positive", "neutral", "negative"]
+    //                         }
+    //                     ],
+    //                 };
+    //                 // update Agent Creation
+    //                 const agent_id = localStorage.getItem('agent_id')
+    //                 try {
+    //                     const response = await axios.patch(
+    //                         `https://api.retellai.com/update-agent/${agent_id}`,
+    //                         finalAgentData,
+    //                         {
+    //                             headers: {
+    //                                 Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+    //                             },
+    //                         }
+    //                     );
+
+    //                     const agentId = response.data.agent_id;
+    //                     // Get businessId from sessionStorage
+    //                     const businessIdString = sessionStorage.getItem("businessId");
+
+    //                     // Convert string to object
+    //                     const businessIdObj = JSON.parse(businessIdString);
+
+    //                     // Now access the actual ID
+    //                     const agentData = {
+    //                         userId: userId,
+    //                         agent_id: agentId || sessionStorage.getItem("agentId"),
+    //                         knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+    //                         llmId: sessionStorage.getItem("llmId"),
+    //                         avatar: sessionStorage.getItem("avatar") || "",
+    //                         agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+    //                         agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
+    //                         agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
+    //                         agentName: sessionStorage.getItem('agentName') || "",
+    //                         agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
+    //                         agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
+    //                         agentGender: sessionStorage.getItem('agentGender') || "female",
+    //                         agentStatus: true,
+    //                         businessId: businessIdObj.businessId,
+    //                         additionalNote: agentNote || "",
+    //                     }
+    //                     try {
+    //                         const response = await updateAgent(agentId, agentData);
+    //                         if (response.status === 200 || response.status === 201) {
+    //                             setPopupType("success");
+    //                             setPopupMessage("Agent Updated successfully!");
+    //                             setShowPopup(true);
+    //                             setTimeout(() => {
+    //                                 if (stepEditingMode) {
+    //                                     navigate("/agent-detail", {
+    //                                         state: {
+    //                                             agentId: agentId || sessionStorage.getItem("agentId"),
+    //                                             bussinesId: businessIdObj.businessId || sessionStorage.getItem('businessId'),
+    //                                         },
+    //                                     })
+    //                                 } else {
+
+    //                                     setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+    //                                     setLoading(false)
+    //                                     sessionStorage.clear()
+    //                                     localStorage.removeItem('UpdationMode')
+    //                                     localStorage.removeItem('agentName')
+    //                                     localStorage.removeItem('agentGender')
+    //                                     localStorage.removeItem('agentLanguageCode')
+    //                                     localStorage.removeItem('agentLanguage')
+    //                                     localStorage.removeItem('llmId')
+    //                                     localStorage.removeItem('agent_id')
+    //                                     localStorage.removeItem('knowledgeBaseId')
+    //                                     localStorage.removeItem('agentRole')
+    //                                     localStorage.removeItem('agentVoice')
+    //                                     localStorage.removeItem('agentVoiceAccent')
+    //                                     localStorage.removeItem('avatar')
+
+    //                                     setHasFetched(false)
+    //                                 }
+
+    //                             }, 1000)
+
+
+
+    //                         }
+
+    //                     } catch (error) {
+    //                         // console.log(error,error.status)
+    //                         if (error?.status == 400) {
+    //                             // console.log('errorinside',error)
+    //                             setPopupType("failed");
+    //                             setPopupMessage(error?.response?.data?.message);
+    //                             setShowPopup(true);
+    //                             setLoading(false)
+    //                         } else {
+    //                             console.error("Agent Updation failed:", error);
+    //                             setPopupType("failed");
+    //                             setPopupMessage("Agent Updation failed while saving data in Database. Please try again.");
+    //                             setShowPopup(true);
+    //                             setLoading(false)
+    //                         }
+
+
+    //                     }
+
+
+    //                 } catch (err) {
+    //                     console.error("Upload failed:", err);
+    //                     setPopupType("failed");
+    //                     setPopupMessage("Agent creation failed.");
+    //                     setShowPopup(true);
+    //                     setLoading(false)
+    //                 }
+    //             } catch (error) {
+    //                 console.error("LLM updation failed:", error);
+    //                 setPopupType("failed");
+    //                 setPopupMessage("LLM updation failed. Please try again.");
+    //                 setShowPopup(true);
+    //                 setLoading(false)
+    //             }
+
+
+
+    //             setLoading(false)
+    //         }
+    //     }
+    // };
     const handleContinue = async () => {
         if (step8ARef.current) {
-            if (currentStep === 7) {
-                const isStep3Valid = await step8ARef.current?.validate?.();
-                const isStep4Valid = await step8BRef.current?.validate?.();
-                if (!isStep3Valid || !isStep4Valid) return;
-            }
-
+            // if (currentStep === 7) {
+            //     const isStep3Valid = await step8ARef.current?.validate?.();
+            //     const isStep4Valid = await step8BRef.current?.validate?.();
+            //     if (!isStep3Valid || !isStep4Valid) return;
+            // }
             setIsContinueClicked(true);
             const agentNote = sessionStorage.getItem("agentNote");
             const filledPrompt =
@@ -230,10 +631,11 @@ const Step = () => {
                     commaSeparatedServices,
                     agentNote
                 });
-            const isValid = step8BRef.current.validate()
-            localStorage.removeItem("completedSteps")
+            // const isValid = step8BRef.current.validate()
+
             //creation here
-            if (isValid && localStorage.getItem("UpdationMode") != "ON") {
+            if (localStorage.getItem("UpdationMode") != "ON") {
+
                 setLoading(true)
                 const agentConfig = {
                     version: 0,
@@ -251,6 +653,7 @@ const Step = () => {
 
 
                     ],
+
                     states: [
                         {
                             name: "information_collection",
@@ -282,6 +685,7 @@ const Step = () => {
                     ],
                     starting_state: "information_collection",
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
+
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
@@ -430,7 +834,7 @@ const Step = () => {
                 setLoading(false)
             }
             //updation Agent here
-            if (isValid && localStorage.getItem("UpdationMode") == "ON") {
+            if (localStorage.getItem("UpdationMode") == "ON") {
                 setLoading(true)
                 const agentConfig = {
                     general_prompt: filledPrompt,
@@ -615,6 +1019,18 @@ const Step = () => {
             return EditingMode ? "Edit: Business Services" : "Business Services"
         }
 
+
+        // useEffect(() => {
+        //     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+        //         setShowPopup(true);
+        //         setPopupType('failed');
+        //         setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+        //     }
+        // }, [CheckingUserLimit, isLimitExceeded]);
+
+        // if (CheckingUserLimit) return <p></p>;
+
+
         else if (currentStep === 3) {
             return EditingMode ? "Edit: Public Listing" : "Public Listing";
         }
@@ -630,6 +1046,7 @@ const Step = () => {
             return EditingMode ? "Edit: Select Gender" : "Select Gender";
         }
     };
+
     useEffect(() => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
             setShowPopup(true);
@@ -637,13 +1054,21 @@ const Step = () => {
             setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
         }
     }, [CheckingUserLimit, isLimitExceeded]);
+
     const handleClosePopup = () => {
-        if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-            navigate('/dashboard');
-            setShowPopup(false);
-        } else {
-            setShowPopup(false);
-        }
+        // if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+        //     navigate('/dashboard');
+        //     setShowPopup(false);
+        // } else {
+        //     setShowPopup(false);
+        // }
+        // if (!CheckingUserLimit && !EditingMode) {
+        //     navigate('/dashboard');
+        //     setShowPopup(false);
+        // } else {
+        //     setShowPopup(false);
+        // }
+        setShowPopup(false);
     }
     // const validation = async (currentStep) => {
     //     const validations = {
@@ -734,10 +1159,62 @@ const Step = () => {
     useEffect(() => {
         sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
     }, [completedSteps]);
+
+
+    const handleSubmit = () => {
+        let priceId = sessionStorage.getItem("priceId")
+        let freeTrail = location?.state?.freeTrial
+        if (locationPath === "/checkout") {
+            handleContinue()
+        }
+        else if (locationPath !== "/checkout" && priceId) {
+            if (currentStep === 7) {
+                const isStep3Valid = step8ARef.current?.validate?.();
+                const isStep4Valid = step8BRef.current?.validate?.();
+                if (!isStep3Valid || !isStep4Valid) return;
+                navigate("/checkout")
+            }
+            
+        }
+        else if (locationPath !== "/checkout" && !priceId) {
+            console.log("hy")
+            if (currentStep === 7) {
+                const isStep3Valid = step8ARef.current?.validate?.();
+                const isStep4Valid = step8BRef.current?.validate?.();
+                if (!isStep3Valid || !isStep4Valid) return;
+                   navigate('/plans')
+            addCompletedStep(currentStep);
+            }
+         
+
+        }
+        else if (locationPath !== "/checkout" && !priceId) {
+            if (currentStep === 7) {
+                const isStep3Valid = step8ARef.current?.validate?.();
+                const isStep4Valid = step8BRef.current?.validate?.();
+                if (!isStep3Valid || !isStep4Valid) return;
+                navigate('/plans')
+            addCompletedStep(currentStep);
+            }
+            
+
+        }
+
+    }
+    let freeTrail = location?.state?.freeTrial
+    const isContinueCalled = useRef(false);
+
     useEffect(() => {
-        const savedSteps = JSON.parse(sessionStorage.getItem("completedSteps")) || [];
-        setCompletedSteps(savedSteps);
-    }, []);
+        if (freeTrail && currentStep === 7 && !isContinueCalled.current) {
+            handleContinue();
+            isContinueCalled.current = true;
+        }
+        else if (locationPath === "/checkout" && currentStep === 7 && !isContinueCalled.current) {
+            handleContinue();
+            isContinueCalled.current = true;
+        }
+    }, [freeTrail, currentStep, locationPath]);
+
 
     return (
         <div className={styles.container}>
@@ -957,15 +1434,49 @@ const Step = () => {
                 {currentStep === 7 &&
 
                     <>
-                     
-                            <Step3
-                                ref={step8ARef}
+
+                        <Step3
+                            ref={step8ARef}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            isActive={currentStep === 7}
+                            onSuccess={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+
+                            onFailed={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+                            setAvtarChecked={setAvtarChecked}
+                        />
+                        {avtarChecked &&
+                            <Step4
+                                ref={step8BRef}
                                 onNext={handleNext}
                                 onBack={handleBack}
                                 onValidationError={handleValidationError}
                                 isActive={currentStep === 7}
                                 onSuccess={(data) => {
-
                                     setShowPopup(true);
                                     setPopupType("success");
                                     setPopupMessage(data.message);
@@ -985,45 +1496,11 @@ const Step = () => {
                                 }}
                                 loading={loading}
                                 setLoading={setLoading}
-                                onStepChange={(step) => {
-                                    setCurrentStep(step);
-                                    setVisibleStep(step);
-                                    sliderRef.current?.slickGoTo(step);
-                                }}
-                                setAvtarChecked={setAvtarChecked}
-                            />
-                            {avtarChecked &&
-                                <Step4
-                                    ref={step8BRef}
-                                    onNext={handleNext}
-                                    onBack={handleBack}
-                                    onValidationError={handleValidationError}
-                                    isActive={currentStep === 7}
-                                    onSuccess={(data) => {
-                                        setShowPopup(true);
-                                        setPopupType("success");
-                                        setPopupMessage(data.message);
-                                        setTimeout(() => {
-                                            setShowPopup(false);
-                                        }, 2000);
-                                    }}
+                                onStepChange={(step) => setCurrentStep(step)}
+                                detectRoleTypeChange={detectRoleTypeChange}
+                            />}
 
-                                    onFailed={(data) => {
-
-                                        setShowPopup(true);
-                                        setPopupType("failed");
-                                        setPopupMessage(data.message);
-                                        setTimeout(() => {
-                                            setShowPopup(false);
-                                        }, 2000);
-                                    }}
-                                    loading={loading}
-                                    setLoading={setLoading}
-                                    onStepChange={(step) => setCurrentStep(step)}
-                                    detectRoleTypeChange={detectRoleTypeChange}
-                                />}
-
-                        </>}
+                    </>}
             </Slider>
             {/* === Footer Fixed Pagination === */}
             {/* <div className={styles.footerFixed}>
@@ -1161,7 +1638,7 @@ const Step = () => {
                                     }}
                                 >
                                     {isCompleted && !isCurrent ? (
-                                        <span  />
+                                        <span />
                                     ) : (
                                         acc.length + 1
                                     )}
@@ -1175,7 +1652,7 @@ const Step = () => {
 
                 </div>
                 {/* //Button */}
-                {currentStep === 7 ? <button className={styles.navBtn} onClick={handleContinue}>
+                {currentStep === 7 ? <button className={styles.navBtn} onClick={handleSubmit}>
                     {
                         loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
                     }

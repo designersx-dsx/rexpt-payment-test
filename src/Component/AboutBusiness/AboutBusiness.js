@@ -441,6 +441,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     }, 800);
   };
 
+
   useEffect(() => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       setShowPopup(true);
@@ -450,6 +451,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       );
     }
   }, [CheckingUserLimit, isLimitExceeded]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {

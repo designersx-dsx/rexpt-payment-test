@@ -51,6 +51,7 @@ const AgentDashboard = () => {
   const [isModalOpen, setModalOpen] = useState(
     localStorage.getItem("UpdationModeStepWise") == "ON"
   );
+  console.log(agentData,"agentDataagentDataagentData")
 
   const [openCard, setOpenCard] = useState(null);
 
@@ -644,7 +645,7 @@ const AgentDashboard = () => {
 
             <section>
               <div className={styles.agentCard}>
-                <h3 className={styles.PlanTitle}>Free Plan</h3>
+                <h3 className={`${styles.PlanTitle}  `}>{agentData?.agent?.agentPlan}</h3>
                 <div className={styles.agentInfo}>
                   <div className={styles.agentAvatarContainer}>
                     <img
