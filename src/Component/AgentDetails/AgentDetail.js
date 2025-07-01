@@ -16,11 +16,13 @@ import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import Footer2 from "./Footer/Footer2";
 import Card1 from "../Card1/Card1";
-import Card2  from "../Card2/Card2";
+import Card2 from "../Card2/Card2";
 import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
 import DetailModal from "../DetailModal/DetailModal";
+import CallSetting from "../CallSetting/CallSetting"
+
 import { useAgentStore } from "../../Store/agentDetailStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import WidgetScript from "../Widgets/WidgetScript";
@@ -81,8 +83,8 @@ const AgentDashboard = () => {
   const [isAssignNumberModal, setIsAssignNumberModal] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [fullAddress, setFullAddress] = useState("");
-  const [knowledge_base_texts,setknowledge_base_texts]=useState("")
-  const [businessDetails,setBusinessDetails]=useState([])
+  const [knowledge_base_texts, setknowledge_base_texts] = useState("")
+  const [businessDetails, setBusinessDetails] = useState([])
   const openAddressModal = (address) => {
     setFullAddress(address);
     setIsAddressModalOpen(true);
@@ -111,7 +113,7 @@ const AgentDashboard = () => {
     setEventSlug("");
     setEventLength("");
   };
-   function formatName(name) {
+  function formatName(name) {
     if (!name) return "";
 
     if (name.includes(" ")) {
@@ -366,6 +368,17 @@ const AgentDashboard = () => {
           body: JSON.stringify({ agent_id: agentData?.agent?.agent_id }),
         }
       );
+      if (res.status == 403) {
+
+        setPopupMessage("Agent Plan minutes exhausted");
+        setPopupType("failed");
+        setIsCallInProgress(false);
+        setTimeout(() => {
+          setPopupMessage("")
+
+        }, 5000);
+        return;
+      }
       const data = await res.json();
       await retellWebClient.startCall({ accessToken: data.access_token });
       setCallId(data?.call_id);
@@ -517,16 +530,16 @@ const AgentDashboard = () => {
       : url;
   };
 
- const handleOpenKnowledgeView=(knowledge_base_texts)=>{
-setknowledge_base_texts(knowledge_base_texts)
-  setOpenCard("card2")
- }
- const handleOpenBusinessView=(agentData)=>{
-   setOpenCard("card1")
-   setBusinessDetails(agentData?.business)
+  const handleOpenKnowledgeView = (knowledge_base_texts) => {
+    setknowledge_base_texts(knowledge_base_texts)
+    setOpenCard("card2")
+  }
+  const handleOpenBusinessView = (agentData) => {
+    setOpenCard("card1")
+    setBusinessDetails(agentData?.business)
 
- }
- function formatName(name) {
+  }
+  function formatName(name) {
     if (!name) return "";
 
     if (name.includes(" ")) {
@@ -543,15 +556,15 @@ setknowledge_base_texts(knowledge_base_texts)
       return name;
     }
   }
-   function formatBusinessName(name) {
-  if (!name) return "";
+  function formatBusinessName(name) {
+    if (!name) return "";
 
-  if (name.length > 25) {
-    return name.substring(0, 25) + "...";
+    if (name.length > 25) {
+      return name.substring(0, 25) + "...";
+    }
+
+    return name;
   }
-
-  return name;
-}
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -566,8 +579,9 @@ setknowledge_base_texts(knowledge_base_texts)
                   alt="Back button"
                   onClick={handleBackClick}
                 ></img>
+                <div className={styles.profileSection}><p className={styles.name}>Agent detail</p></div>
               </div>
-              <div className={styles.profileSection}></div>
+
               <div className={styles.notifiMain}>
                 <div
                   className={styles.notificationIcon}
@@ -645,15 +659,15 @@ setknowledge_base_texts(knowledge_base_texts)
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
                       <h3 className={styles.agentName}>
-                          {formatName(agentData?.agent?.agentName) || "John Vick"}
+                        {formatName(agentData?.agent?.agentName) || "John Vick"}
                         <span
                           className={
-                            agentData?.agent?.isDeactivated==1
-                              ? styles.InactiveText 
-                              :  styles.activeText
+                            agentData?.agent?.isDeactivated == 1
+                              ? styles.InactiveText
+                              : styles.activeText
                           }
                         >
-                          {agentData?.agent?.isDeactivated== 1
+                          {agentData?.agent?.isDeactivated == 1
                             ? "Inactive"
                             : "Active"}
                         </span>
@@ -684,7 +698,7 @@ setknowledge_base_texts(knowledge_base_texts)
                           }}
                         // onClick={() => setIsAssignModalOpen(true)}
                         >
-                          Assign Number
+                          <img src="/svg/assign-number.svg" />
                         </div>
                       )}
 
@@ -718,8 +732,11 @@ setknowledge_base_texts(knowledge_base_texts)
                     </span>
                   </h3>
                 </div>
+                <div className={styles.businessEdit} onClick={() => handleOpenBusinessView(agentData)}>
+                  <h4 >Business Details</h4>
+                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                </div>
 
-                <h4 onClick={() =>handleOpenBusinessView(agentData)}>Business Details</h4>
               </div>
 
               <div className={styles.card2} >
@@ -746,7 +763,7 @@ setknowledge_base_texts(knowledge_base_texts)
                   </span>
                 </h2>
                 <div className={styles.google}>
-                  <img src="images/google-icon.png" alt="google-icon" />
+                  <img src="/svg/Goole-icon.svg" alt="google-icon" />
                   <p>
                     <span style={{ fontSize: "12px" }}>
                       {(() => {
@@ -791,11 +808,20 @@ setknowledge_base_texts(knowledge_base_texts)
                     </>
                   }
                 </div>
+                <div className={styles.businessEdit} onClick={() => handleOpenKnowledgeView(agentData)}>
+                  <h4  >Knowledge Base</h4>
+                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                </div>
 
-                <h4 onClick={() => handleOpenKnowledgeView(agentData)} >Knowledge Base</h4>
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
+            <div className={styles.divider}>
+              <hr className={styles.line} />
+              <span className={styles.text}>Agent Options</span>
+              <hr className={styles.line} />
+            </div>
+
             <div className={styles.managementActions}>
               <div
                 onClick={() => {
@@ -966,14 +992,14 @@ setknowledge_base_texts(knowledge_base_texts)
               </div>
               <div
                 className={styles.managementItem}
-                  onClick={() => {
+                onClick={() => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
                     handleCallTransfer();
                   }
                 }}
-                // onClick={handleCallTransfer}
+              // onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -996,33 +1022,33 @@ setknowledge_base_texts(knowledge_base_texts)
 
               <div
                 className={styles.managementItem}
-                   onClick={async() => {
+                onClick={async () => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                   
-                     try {
-                    await fetchPrevAgentDEtails(
-                    agentData?.agent?.agent_id,
-                    agentData?.agent?.businessId);
-                     } catch (error) {
-                    await fetchPrevAgentDEtails(
-                    agentData?.agent?.agent_id,
-                    agentData?.agent?.businessId);
+
+                    try {
+                      await fetchPrevAgentDEtails(
+                        agentData?.agent?.agent_id,
+                        agentData?.agent?.businessId);
+                    } catch (error) {
+                      await fetchPrevAgentDEtails(
+                        agentData?.agent?.agent_id,
+                        agentData?.agent?.businessId);
                     }
                     setModalOpen(true);
-                  
-                  
-                 
+
+
+
                   }
                 }}
-                // onClick={async () => {
-                //   await fetchPrevAgentDEtails(
-                //     agentData?.agent?.agent_id,
-                //     agentData?.agent?.businessId
-                //   );
-                //   setModalOpen(true);
-                // }}
+              // onClick={async () => {
+              //   await fetchPrevAgentDEtails(
+              //     agentData?.agent?.agent_id,
+              //     agentData?.agent?.businessId
+              //   );
+              //   setModalOpen(true);
+              // }}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1050,9 +1076,11 @@ setknowledge_base_texts(knowledge_base_texts)
                 </div>
                 <p className={styles.managementText}>Edit Agent</p>
               </div>
+
               <div
                 className={styles.managementItem}
-                onClick={() => setShowModal(true)}
+                // onClick={() => setShowModal(true)}
+                onClick={() => navigate("/call-setting")}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1141,7 +1169,7 @@ setknowledge_base_texts(knowledge_base_texts)
                 <p className={styles.managementText}>Delete Agent</p>
               </div> */}
             </div>
-
+            <hr className={styles.line} />
             <h1 className={styles.Agenttitle}>Agent Analysis</h1>
             <div className={styles.agentStats}>
               <div
@@ -1441,11 +1469,11 @@ setknowledge_base_texts(knowledge_base_texts)
             onClose={() => setOpenCard(null)}
             height="80vh">
             {openCard === "card1" && (
-              <Card1  data={businessDetails}/>
+              <Card1 data={businessDetails} />
             )}
 
             {openCard === "card2" && (
-       <Card2 agentKnowledge={knowledge_base_texts} />
+              <Card2 agentKnowledge={knowledge_base_texts} />
             )}
           </DetailModal>
 

@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState, useEffect, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import styles from "../BusinessServices/BusinessServices.module.css";
 import { useNavigate } from "react-router-dom";
 import { validateEmail as validateEmailAPI } from "../../Store/apiStore";
@@ -8,35 +12,34 @@ import axios from "axios";
 import { API_BASE_URL } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import Loader from "../Loader/Loader";
-const BusinessServices = () => {
+const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [businessType, setBusinessType] = useState("Restaurant");
   const [selectedService, setSelectedService] = useState([]);
-  const [businessName, setBusinessName] = useState("");
-  const [businessSize, setBusinessSize] = useState("");
   const [email, setEmail] = useState("");
   // Error states
   const [serviceError, setServiceError] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("");
-
-  const [Loading, setLoading] = useState(false);
+  //Add More Custom Services
+  const [showInput, setShowInput] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [customServices, setCustomServices] = useState(() => {
+    const saved = sessionStorage.getItem("customServices");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [showPopup, setShowPopup] = useState(false);
   const EditingMode = localStorage.getItem("UpdationMode");
   const [customServiceSelected, setCustomServiceSelected] = useState(false);
-  const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
+  const checkIfBusinessIdExist = Boolean(sessionStorage.getItem("bId"))
+  const token = localStorage.getItem("token");
+  const decodeTokenData = decodeToken(token);
+  const userId = decodeTokenData?.id;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const setHasFetched = true;
-  const { handleCreateAgent } = useAgentCreator({
-    stepValidator: () => "businesServices",
-    setLoading,
-    setPopupMessage,
-    setPopupType,
-    setShowPopup,
-    navigate,
-    setHasFetched,
-  });
+  useEffect(() => {
 
+  }, [])
   const businessServices = [
     {
       type: "Restaurant",
@@ -130,7 +133,7 @@ const BusinessServices = () => {
     {
       type: "Marketing Agency",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Marketing Agency.svg",
       services: [
         "Social Media Advertising",
         "Content Creation",
@@ -155,11 +158,13 @@ const BusinessServices = () => {
     {
       type: "Architect",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Architect-icon.svg",
       services: [
         "Residential Building Design",
         "Commercial Building Plans",
         "Renovation Planning",
+        "Permit Drawings",
+        "Site Planning",
         "Project Management",
         "Other"
       ],
@@ -180,7 +185,7 @@ const BusinessServices = () => {
     {
       type: "Construction Services",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Construction Services.svg",
       services: [
         "New Building Construction",
         "Home Renovations",
@@ -230,7 +235,7 @@ const BusinessServices = () => {
     {
       type: "Insurance Agency",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Insurance Agency.svg",
       services: [
         "Life Insurance",
         "Health Insurance",
@@ -256,7 +261,7 @@ const BusinessServices = () => {
     {
       type: "Accounting Services",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Accounting Services.svg",
       services: [
         "Bookkeeping",
         "Tax Filing",
@@ -306,11 +311,10 @@ const BusinessServices = () => {
         "Other"
       ],
     },
-
     {
       type: "Property Rental & Leasing Service",
       subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
+      icon: "svg/Property Rental & Leasing Service.svg",
       services: [
         "Tenant Screening",
         "Lease Agreement Preparation",
@@ -320,6 +324,177 @@ const BusinessServices = () => {
       ],
     },
     {
+      type: "Old Age Home",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Old Age Home.svg",
+      services: [
+        "Assisted Living",
+        "Meal Services",
+        "Housekeeping & Laundry",
+        "Recreational Activities",
+        "Physiotherapy",
+        "Emergency Support",
+        "Other"
+      ],
+    },
+    {
+      type: "Travel Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Travel Agency.svg",
+      services: [
+        "Flight Booking",
+        "Hotel Reservations",
+        "Holiday Packages",
+        "Visa Assistance",
+        "Travel Insurance",
+        "Customized Itineraries",
+        "Cruise Bookings",
+        "Local Tours & Sightseeing",
+        "Car Rentals",
+        "Other"
+      ],
+    },
+    {
+      type: "Ticket Booking",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Ticket Booking.svg",
+      services: [
+        "Flight Tickets",
+        "Train Tickets",
+        "Bus Tickets",
+        "Movie Tickets",
+        "Event Tickets",
+        "Amusement Park Tickets",
+        "Concert & Show Tickets",
+        "Sports Tickets",
+        "Other"
+      ],
+    }
+    ,
+    {
+      type: "Financial Planners",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Financial Planners.svg",
+      services: [
+        "Retirement Planning",
+        "Investment Portfolio Management",
+        "Tax Planning",
+        "Budgeting & Expense Management",
+        "Estate Planning",
+        "Insurance Planning",
+        "Education Planning",
+        "Debt Management",
+        "Other"
+      ],
+    },
+    {
+      type: "Beauty Parlour",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Beauty Parlour.svg",
+      services: [
+        "Hair Cutting & Styling",
+        "Facials & Cleanups",
+        "Manicure & Pedicure",
+        "Bridal Makeup",
+        "Hair Coloring & Highlights",
+        "Waxing & Threading",
+        "Skin Treatments",
+        "Makeup for Events",
+        "Spa & Massage Services",
+        "Other"
+      ],
+    },
+    {
+      type: "Nail Salon",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Nail Saloon.svg",
+      services: [
+        "Manicure",
+        "Pedicure",
+        "Nail Art",
+        "Gel Nails",
+        "Acrylic Nails",
+        "Nail Extensions",
+        "Cuticle Care",
+        "Nail Repair & Removal",
+        "Hand & Foot Spa",
+        "Other"
+      ],
+    }
+    ,
+    {
+      type: "Barber Studio/Shop",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Barber.svg",
+      services: [
+        "Haircut",
+        "Beard Trimming & Styling",
+        "Shaving & Grooming",
+        "Hair Coloring",
+        "Head Massage",
+        "Facial for Men",
+        "Scalp Treatment",
+        "Hair Wash & Styling",
+        "Kids Haircut",
+        "Other"
+      ],
+    }
+    ,
+    {
+      type: "Hair Stylist",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Hair Stylist.svg",
+      services: [
+        "Hair Cutting & Trimming",
+        "Hair Styling",
+        "Blow Dry & Ironing",
+        "Hair Coloring & Highlights",
+        "Hair Spa",
+        "Keratin & Smoothening Treatments",
+        "Hair Extensions",
+        "Scalp Treatments",
+        "Bridal & Occasion Hairstyles",
+        "Other"
+      ],
+    }
+    ,
+    {
+      type: "Bakery",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Bakery.svg",
+      services: [
+        "Custom Cakes",
+        "Birthday & Wedding Cakes",
+        "Pastries & Cupcakes",
+        "Cookies & Biscuits",
+        "Bread & Buns",
+        "Chocolates & Desserts",
+        "Eggless & Sugar-Free Items",
+        "Bulk & Party Orders",
+        "Online Ordering & Delivery",
+        "Other"
+      ],
+    },
+    {
+      type: "Cleaning Janitorial Service",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Cleaning Janitorial Service.svg",
+      services: [
+        "Residential Cleaning",
+        "Commercial Office Cleaning",
+        "Deep Cleaning Services",
+        "Move-In/Move-Out Cleaning",
+        "Carpet & Upholstery Cleaning",
+        "Window Cleaning",
+        "Disinfection & Sanitization",
+        "Post-Construction Cleaning",
+        "Restroom Cleaning & Maintenance",
+        "Other"
+      ],
+    }
+    ,
+    ,
+    {
       type: "Other Local Business",
       subtype: "Your Journey Begins Here",
       icon: "images/other.png",
@@ -328,33 +503,29 @@ const BusinessServices = () => {
       ],
     },
   ];
-
   const [searchTerm, setSearchTerm] = useState("");
-  const selectedBusiness = businessServices.find(
-    (biz) => biz.type === businessType
+  const selectedBusiness = businessServices?.find(
+    (biz) => biz?.type === businessType
   );
-  const selectedServices = selectedBusiness?.services || [];
-  const filteredServices = selectedServices.filter((service) =>
+
+  const defaultServices = selectedBusiness?.services || [];
+  const allServices = [...defaultServices, ...customServices];
+  const flatServices = allServices.flatMap((item) => {
+    if (typeof item === "string") return [item];
+    if (typeof item === "object" && Array.isArray(item.services)) {
+      return item.services;
+    }
+    return []; // skip invalid entries
+  });
+
+  const filteredServices = flatServices.filter((service) =>
+    typeof service === "string" &&
     service.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const validateService = (value) => {
-    if (!value) {
-      setServiceError("Please select a service.");
-      return false;
-    }
-    setServiceError("");
-    return true;
-  };
-
   const handleContinue = async () => {
-    const isServiceValid = selectedService.length > 0;
-    if (!isServiceValid) {
-      setServiceError("Please select at least one service.");
-      return;
-    }
-
-    const containsOther = selectedService.includes("Other");
+    if (isSubmitting) return; // Prevent double call
+    setIsSubmitting(true);
     const raw = sessionStorage.getItem("businesServices");
     let previous = {};
     try {
@@ -362,15 +533,12 @@ const BusinessServices = () => {
     } catch (err) {
       console.error("Failed to parse businesServices:", err);
     }
-
     const updatedBusinessServices = {
       ...previous,
       selectedService,
       email,
     };
-
     sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-
     const businessDetailsRaw = sessionStorage.getItem("businessDetails");
     const businessDetails = businessDetailsRaw
       ? JSON.parse(businessDetailsRaw)
@@ -384,19 +552,13 @@ const BusinessServices = () => {
 
     sessionStorage.setItem("businessDetails", JSON.stringify(finalBusinessDetails));
     sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
-    if (containsOther) {
-      navigate("/about-business-next");
-      return;
-    }
     try {
       setLoading(true);
-
-      const API_URL = localStorage.getItem("UpdationMode") === "ON"
+      const API_URL = checkIfBusinessIdExist
         ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id}?businessId=${sessionStorage.getItem("bId")}`
         : `${API_BASE_URL}/businessDetails/create`;
-
       const response = await axios({
-        method: localStorage.getItem("UpdationMode") === "ON" ? "PATCH" : "POST",
+        method: checkIfBusinessIdExist ? "PATCH" : "POST",
         url: API_URL,
         data: {
           userId: decodeToken(localStorage.getItem("token")).id,
@@ -409,107 +571,29 @@ const BusinessServices = () => {
           customServices: [],
         },
       });
-
       const id = response.data.businessId;
       sessionStorage.setItem("bId", id);
       sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
-
-      setPopupType("success");
-      setPopupMessage("Business details saved successfully");
-      setShowPopup(true);
+      if (onSuccess && !checkIfBusinessIdExist) {
+        onSuccess({
+          message: "Business details saved successfully"
+        });
+      }
       setTimeout(() => {
-        navigate("/about-business");
+        onStepChange?.(3);
       }, 1000);
     } catch (error) {
       console.error("❌ Error saving business details:", error);
-      setPopupType("failed");
-      setPopupMessage("Failed to save business details.");
-      setShowPopup(true);
+      if (onFailed) {
+        onFailed({
+          message: "Failed to save business details.",
+        })
+      }
     } finally {
       setLoading(false);
+      setIsSubmitting(false); // Allow retry
     }
-  };
-
-  useEffect(() => {
-    try {
-      const isUpdateMode = localStorage.getItem("UpdationMode") === "ON";
-
-      const rawBusinessDetails = sessionStorage.getItem("businessDetails");
-      const rawBusinessServices = sessionStorage.getItem("businesServices");
-      const businessDetails =
-        rawBusinessDetails &&
-          rawBusinessDetails !== "null" &&
-          rawBusinessDetails !== "undefined"
-          ? JSON.parse(rawBusinessDetails)
-          : null;
-
-      const businessServices =
-        rawBusinessServices &&
-          rawBusinessServices !== "null" &&
-          rawBusinessServices !== "undefined"
-          ? JSON.parse(rawBusinessServices)
-          : null;
-
-      if (!isUpdateMode) {
-        if (businessDetails) {
-          setBusinessType(businessDetails.businessType || "");
-          setBusinessName(businessDetails.businessName || "");
-          setBusinessSize(businessDetails.businessSize || "");
-          if (businessServices?.selectedService) {
-            try {
-              let finalSelected = [];
-
-              if (typeof businessServices.selectedService === "string") {
-                const parsed = JSON.parse(businessServices.selectedService);
-                if (Array.isArray(parsed)) {
-                  finalSelected = parsed;
-                }
-              } else if (Array.isArray(businessServices.selectedService)) {
-                finalSelected = businessServices.selectedService;
-              }
-
-              setSelectedService(finalSelected);
-            } catch (err) {
-              console.error("❌ Failed to parse selectedService:", err);
-            }
-
-            setEmail(businessServices.email || "");
-          }
-          setEmail(businessDetails.email || "");
-        }
-      } else {
-        if (businessDetails) {
-          setBusinessType(businessDetails.businessType || "");
-          setBusinessName(businessDetails.businessName || "");
-          setBusinessSize(businessDetails.businessSize || "");
-        }
-
-        if (businessServices?.selectedService) {
-          try {
-            let finalSelected = [];
-
-            if (typeof businessServices.selectedService === "string") {
-              const parsed = JSON.parse(businessServices.selectedService);
-              if (Array.isArray(parsed)) {
-                finalSelected = parsed;
-              }
-            } else if (Array.isArray(businessServices.selectedService)) {
-              finalSelected = businessServices.selectedService;
-            }
-
-            setSelectedService(finalSelected);
-          } catch (err) {
-            console.error("❌ Failed to parse selectedService:", err);
-          }
-
-          setEmail(businessServices.email || "");
-        }
-      }
-    } catch (error) {
-      console.error("Error loading session data:", error);
-    }
-  }, []);
-
+  }
   const handleServiceToggle = (service) => {
     const updated = selectedService.includes(service)
       ? selectedService.filter((s) => s !== service)
@@ -517,61 +601,112 @@ const BusinessServices = () => {
 
     setSelectedService(updated);
     setServiceError("");
-
     setCustomServiceSelected(updated.includes("Other"));
-  };
 
-  const handleSaveEdit = async (e) => {
-    e.preventDefault();
-
-    if (selectedService.length === 0) {
-      setServiceError("Please select at least one service.");
-      return;
-    }
-
-    const containsOther = selectedService.includes("Other");
-
-    const raw = sessionStorage.getItem("businesServices");
-    let previous = {};
-    try {
-      previous = raw ? JSON.parse(raw) : {};
-    } catch (err) {
-      console.error("Failed to parse businesServices:", err);
-    }
-
-    const updatedBusinessServices = {
+    //  Always store it under `selectedService` key
+    const previous = JSON.parse(sessionStorage.getItem("businesServices") || "{}");
+    sessionStorage.setItem("businesServices", JSON.stringify({
       ...previous,
-      selectedService,
-      email,
-    };
-
-    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-
-    const businessDetailsRaw = sessionStorage.getItem("businessDetails");
-    const businessDetails = businessDetailsRaw
-      ? JSON.parse(businessDetailsRaw)
-      : {};
-
-    sessionStorage.setItem("businessDetails", JSON.stringify({
-      ...businessDetails,
-      selectedService,
+      selectedService: updated,
       email,
     }));
+  };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: async () => {
+      let hasError = false;
+      if (!selectedService || selectedService.length === 0) {
+        onValidationError?.({
+          type: "failed",
+          message: "Please select at least one service.",
+        });
+        hasError = true
+      }
+      return !hasError;
+    },
+    save: async () => { await handleContinue() }
+  }));
+  //Add More Services Functionlaity ;
+  const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
+  const businesServices = JSON.parse(sessionStorage.getItem("businesServices"));
 
-    if (containsOther) {
-      navigate("/about-business-next");
-    } else {
-      handleCreateAgent();
+  const servicesType = Object.values(businesServices).filter(
+    (val) => typeof val === "string" && val !== "" && val !== "email"
+  );
+  const handleAddService = () => {
+    if (inputValue.trim()) {
+      const newServiceName = inputValue.trim();
+
+      const newService = {
+        type: "Other Local Business",
+        subtype: "Your Journey Begins Here",
+        icon: "images/other.png",
+        services: [newServiceName],
+      };
+
+      const updatedCustomServices = [...customServices, newService];
+      const updatedSelectedServices = [...selectedService, newServiceName];
+
+      setCustomServices(updatedCustomServices);
+      setSelectedService(updatedSelectedServices);
+
+      sessionStorage.setItem("customServices", JSON.stringify(updatedCustomServices));
+      sessionStorage.setItem("businesServices", JSON.stringify({
+        selectedService: updatedSelectedServices,
+        email,
+      }));
+
+      setInputValue("");
     }
   };
+  useEffect(() => {
+    sessionStorage.setItem("customServices", JSON.stringify(customServices));
+  }, [customServices]);
+  useEffect(() => {
+    const savedCustom = sessionStorage.getItem("customServices");
+    const savedSelected = sessionStorage.getItem("businesServices");
 
+    if (savedCustom) {
+      const parsed = JSON.parse(savedCustom);
+      setCustomServices(parsed);
 
+      const newCustomServiceStrings = parsed.flatMap((item) => item.services);
+
+      setSelectedService((prev) => {
+        const combined = [...new Set([...prev, ...newCustomServiceStrings])];
+        return combined;
+      });
+    }
+
+    if (savedSelected) {
+      try {
+        const parsed = JSON.parse(savedSelected);
+        if (Array.isArray(parsed)) {
+          // Fix malformed format
+          sessionStorage.setItem("businesServices", JSON.stringify({ selectedService: parsed }));
+          setSelectedService(parsed);
+        } else if (parsed?.selectedService) {
+          setSelectedService(parsed.selectedService);
+        }
+      } catch (e) {
+        console.error("Error restoring selected services:", e);
+      }
+    }
+  }, []);
+  useEffect(() => {
+    const savedShowInput = sessionStorage.getItem("showInput");
+    if (savedShowInput !== null) {
+      setShowInput(JSON.parse(savedShowInput));
+    }
+  }, []);
+  useEffect(() => {
+    if ((businessDetails?.businessType === "Other")) {
+
+      sessionStorage.setItem("showInput", JSON.stringify(true));
+    }
+  }, [businessDetails])
   return (
     <div className={styles.container} id="servies">
-      <h1 className={styles.title}>
-        {EditingMode ? "Edit: Business Services" : "Business Services"}
-      </h1>
-
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
@@ -587,7 +722,7 @@ const BusinessServices = () => {
       <div className={styles.ListDiv}>
         <div className={styles.optionList}>
           {filteredServices.length > 0 ? (
-            filteredServices.map((service, index) => (
+            filteredServices?.filter((service) => service !== "Other")?.map((service, index) => (
               <label className={styles.option} key={index}>
                 <div className={styles.forflex}>
                   <div className={styles.icon}>
@@ -597,7 +732,7 @@ const BusinessServices = () => {
                       className={styles.iconImg}
                     />
                   </div>
-                  <div>
+                  <div className={styles.strongDiv}>
                     <strong>{service}</strong>
                     <p className={styles.subType}>{selectedBusiness.subtype}</p>
                   </div>
@@ -622,43 +757,95 @@ const BusinessServices = () => {
       {serviceError && (
         <p style={{ color: "red", marginTop: "5px" }}>{serviceError}</p>
       )}
-      {stepEditingMode != 'ON' ?
-        <div>
-          <div type="submit">
-            <div
-              className={styles.btnTheme}
-              onClick={handleContinue}
-              style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
-            // disabled={!isEmailVerified}
-            >
-              <img src="svg/svg-theme.svg" alt="" type="button" />
-              <p>{Loading ? <>Saving &nbsp; &nbsp;<Loader size={20} /></> : "Continue"}</p>
+      {/* Add More Custom Services */}
+      <div className={styles.CallTransferMain1}>
+        {/* Checkbox to toggle service input */}
+        <div className={styles.headrPart}>
+          <label>
+            <input
+              type="checkbox"
+              checked={showInput}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setShowInput(checked);
+                sessionStorage.setItem("showInput", JSON.stringify(checked));
+              }}
+            />
+
+            Add More Services
+          </label>
+        </div>
+
+        {/* Input + Add button (only when checkbox is checked) */}
+        {showInput && (
+          <div className={styles.card}>
+            <label className={styles.label}>Service Name</label>
+            <div className={styles.phoneInput}>
+              <input
+                type="text"
+                className={styles.phoneNumberInput}
+                placeholder="Enter Your Service Name"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
+              <button
+                type="button"
+                className={styles.addIcon}
+                onClick={handleAddService}
+              >
+                Add
+              </button>
             </div>
           </div>
-        </div>
-        :
-        <div>
-          <div type="submit">
-            <div
-              className={styles.btnTheme}
-              onClick={handleSaveEdit}
-              style={{ pointerEvents: Loading ? "none" : "auto", opacity: Loading ? 0.6 : 1 }}
-            // disabled={!isEmailVerified} 
-            >
-              <img src="svg/svg-theme.svg" alt="" type="button" />
-              {Loading ? <p>Saving &nbsp; &nbsp;<Loader size={20} /></p> : <p>Save Edits</p>}
-            </div>
+        )}
+
+        {/* Optional display of added services */}
+        {/* {customServices.length > 0 && (
+          <div className={styles.card}>
+            <h4>Added Custom Services:</h4>
+            <ul>
+              {customServices.map((item, index) => (
+                <li key={index}>
+                  {item.services[0]} <small>({item.type})</small>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      }
+        )} */}
+      </div>
+
       {/* Show PopUp */}
       <PopUp
         type={popupType}
         message={popupMessage}
-        onClose={() => setPopupMessage("")} // Close the popup
+        onClose={() => setPopupMessage("")}
       />
     </div>
   );
-};
+});
 
 export default BusinessServices;
+const cleanServiceArray = () => {
+  try {
+    let raw;
+    if (localStorage.getItem("UpdationMode") != "ON") {
+      raw = sessionStorage.getItem("businessDetails");
+    } else {
+      raw = raw = sessionStorage.getItem("businessDetails");
+    }
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed?.selectedService)) {
+      return parsed.selectedService;
+    } else if (
+      typeof parsed?.selectedService === "object" &&
+      Array.isArray(parsed.selectedService.selectedService)
+    ) {
+      return parsed.selectedService.selectedService;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+};

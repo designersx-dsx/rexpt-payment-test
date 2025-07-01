@@ -1,9 +1,677 @@
-.CalendarMain {
+.container {
+    margin: auto;
+    background: #fff;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 400;
+    color: #24252C;
+    margin: 10px 0 5px 0;
+}
+
+.callVolume {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.callVolume span {
+    font-size: 14px;
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+.trend {
+    font-size: 14px;
+    color: #333;
+    margin: 5px 0 15px;
+}
+
+.positive {
+    color: green;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.CallFlex {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.daySection {
+    margin: 20px 0;
+    background-color: #F4F4F4;
+    padding: 20px 20px 0 20px;
+    position: relative;
+    border-radius: 15px;
+}
+
+
+.daySection ::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    clip-path: polygon(0 1%, 100% 0, 81% 58%, 20% 60%);
+}
+
+.dayLabel {
+    font-size: 25px;
+    font-weight: 400;
+    color: #000;
+}
+
+.date {
+    font-size: 16px;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+.calendar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+    bottom: -10px;
+
+}
+
+.dateBox {
+    padding: 5px 10px;
+    border-radius: 10px;
+    /* background-color: #f0f0f0; */
+    font-size: 14px;
+
+}
+
+.selectedDate {
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 14px;
+
+}
+
+.dateName {
+    margin: 10px 0 0 0 !important;
+    padding: 5px;
+    ;
+
+}
+
+
+.selectedDate .dateName {
+    color: #6524EB;
+    text-decoration: underline;
+    text-underline-offset: 16px;
+    background-color: #f3eeff;
+
+}
+
+.callFlex {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 10px 0;
+}
+
+.callVolume {
+    font-size: 25px;
+    font-weight: 600;
+    color: #0F1417;
+}
+
+.callVolume span {
+    font-size: 16px;
+    font-weight: 400;
+    color: #0F1417;
+}
+
+.hasBooking {
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #333333;
+    color: white;
+    cursor: pointer;
+}
+
+.hasBooking .dateName {
+    color: white;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+/* ===== CALENDAR CUSTOM STYLING ===== */
+
+.calendarSection {
+    margin-top: 2rem;
+    background: #ffffff;
+    border-radius: 0px;
+    padding-inline: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 1rem;
+}
+
+/* Base calendar style */
+.react-calendar {
+    width: 100%;
+    max-width: 100%;
+    background: #fdfbff;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.125em;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.react-calendar__navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.react-calendar__navigation button {
+    background: none;
+    border: none;
+    color: #6a0dad;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.react-calendar__navigation button:hover {
+    background-color: #f3e8ff;
+}
+
+/* Weekdays styling */
+.react-calendar__month-view__weekdays {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #999;
+    font-size: 0.75rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.react-calendar__month-view__days {
+    gap: 0.25rem;
+}
+
+/* Date cells */
+.react-calendar__tile {
+    background: none;
+    border: none;
+    padding: 0.75rem 0.25rem;
+    text-align: center;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+    background: #f3e8ff;
+    color: #6a0dad;
+}
+
+.react-calendar__tile--now {
+    background: #ffe0f5;
+    border-radius: 12px;
+    font-weight: bold;
+    color: #6a0dad;
+}
+
+.react-calendar__tile--active {
+    background: #6a0dad;
+    color: white;
+    border-radius: 12px;
+}
+
+
+/* Booking highlight */
+.bookingHighlight {
+    background: #9e7de9 !important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 12px;
+}
+
+.reactCalendar {
+    /* Parent calendar container */
+    width: 100%;
+    border: none;
+}
+
+/* Customize the tile (individual day) */
+.reactCalendar .react-calendar__tile {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 10px;
+    color: #333;
+}
+
+/* Highlight selected day */
+.reactCalendar .react-calendar__tile--active {
+    background: #5f33e1 !important;
+    color: white;
+}
+
+
+/* Hover effect */
+.reactCalendar .react-calendar__tile:hover {
+    background-color: #e6f0ff;
+}
+
+.react-calendar__month-view__days__day--weekend {
+    color: #000000 !important;
+}
+
+
+
+.reactCalendar .react-calendar__tile--active {
+    background: #6524eb !important;
+    color: white;
+}
+
+/* Responsive behavior */
+@media screen and (max-width: 600px) {
+    .react-calendar__tile {
+        padding: 0.5rem 0.15rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Calendar section styling */
+.calendarSection {
+    margin-top: 0px;
+    text-align: center;
+}
+
+/* Heading of selected date */
+.calendarSection h1 {
+    font-weight: 800;
+    color: #6a0dad;
+    margin-bottom: 15px;
+    letter-spacing: 0.05em;
+}
+
+/* Calendar base */
+.react-calendar {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(106, 13, 173, 0.1);
+    font-size: 1rem;
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    background: #fafafa;
+    padding: 15px 10px;
+}
+
+/* Weekday header styling */
+.react-calendar__month-view__weekdays {
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6a0dad;
+    border-bottom: 2px solid #6a0dad;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* Weekday names */
+.react-calendar__month-view__weekdays__weekday {
+    padding: 10px 0;
+    letter-spacing: 0.07em;
+}
+
+/* Day cells base */
+.react-calendar__tile {
+    border-radius: 12px !important;
+    transition: all 0.3s ease;
+    box-shadow: none !important;
+    color: #4a4a4a;
+    font-weight: 500;
+    padding: 12px 6px;
+}
+
+/* Hover effect on day cells */
+.react-calendar__tile:hover {
+    background: #6a0dad;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4);
+    cursor: pointer;
+}
+
+/* Selected day style */
+.react-calendar__tile--active {
+    background: linear-gradient(135deg, #9c27b0, #6a0dad);
+    color: white !important;
+    box-shadow: 0 0 15px rgba(106, 13, 173, 0.7);
+    font-weight: 700;
+    transform: scale(1.15);
+    border: none !important;
+}
+
+/* Booking highlight dates */
+.bookingHighlight {
+    background: #e1bee7;
+    color: #6a0dad !important;
+    font-weight: 600;
+    border: 2px solid #6a0dad;
+    box-shadow: 0 0 12px rgba(106, 13, 173, 0.3);
+    transition: background-color 0.3s ease;
+    border-radius: 12px !important;
+}
+
+/* Booking highlight hover */
+.bookingHighlight:hover {
+    background: #6a0dad;
+    color: white !important;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(106, 13, 173, 0.7);
+}
+
+/* Navigation buttons */
+.react-calendar__navigation button {
+    color: #6a0dad;
+    min-width: 44px;
+    background: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    transition: background-color 0.3s ease;
+}
+
+.react-calendar__navigation button:hover,
+.react-calendar__navigation button:focus {
+    background-color: #6a0dad;
+    color: white;
+    outline: none;
+    box-shadow: 0 4px 15px rgba(106, 13, 173, 0.5);
+}
+
+/* Disable outline on buttons */
+.react-calendar__navigation button:focus {
+    outline: none;
+}
+
+.bookingsList {
+    margin-top: 10px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 50px;
+}
+
+
+.bookingsList h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #5F33E1;
+}
+
+.bookingsList ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.bookingsList li {
+    /* background-color: #f9f9f9; */
+    padding: 15px;
+    margin-bottom: 10px;
+
+    font-size: 16px;
+    color: #333;
+    gap: 10px;
+}
+
+.bookingsList li strong {
+    font-size: 18px;
+    color: #444;
+}
+
+.bookingsList li .bookingTime {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.bookingsList li .bookingTitle {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.bookingCard {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.bookingCard .time {
+    font-size: 14px;
+    color: #999999;
+    margin-bottom: 5px;
+}
+
+.bookingCard .title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.bookingCard .status {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: white;
+}
+
+.bookingCard .status.accepted {
+    background-color: #6a0dad;
+}
+
+.bookingCard .status.pending {
+    background-color: #ffa000;
+}
+
+.bookingCard .status.cancelled {
+    background-color: #d32f2f;
+}
+
+.bookingDotContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Style for each individual dot */
+.bookingDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #6A0DAD;
+    display: inline-block;
+}
+
+
+.bookingDot.two {
+    background-color: #4B0082;
+}
+
+
+.bookingDot.three {
+    background-color: #8A2BE2;
+}
+
+.bookingDotContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
+    gap: 3px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+}
+
+.greenDot {
+    background-color: #27B75E;
+    /* Development */
+}
+
+.orangeDot {
+    background-color: #F0990D;
+    /* Issue */
+}
+
+
+.DotINfo {
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    gap: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ECECEC;
+    padding: 8px 14px;
+    border-radius: 9px;
+    justify-content: space-around;
+
+}
+
+.DotINfo .dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #27B75E;
+}
+
+.DotINfo .dot1 {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #F0990D;
+}
+
+.DotINfo .dot span {
+    font-size: 18px;
+    font-weight: 500;
+    color: #000;
+
+}
+
+.DotOrange,
+.DotGreen {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+
+.DotINfo hr {
+    height: 40px;
+    width: 1px;
+    background-color: #E0E0E0;
+    border: 1px solid #E0E0E0;
+
+}
+
+.bookingList {
+    margin-top: 20px;
+}
+
+.bookingItem {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.timeColumn {
+    /* width: 60px; */
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+    padding-top: 3px;
+}
+
+.detailColumn {
+    flex: 1;
+}
+
+.line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.verticalBar {
+    width: 3px;
+    height: 16px;
+    border-radius: 3px;
+    margin: 3px 0 0 0;
+
+}
+
+.greenBar {
+    background-color: #27B75E;
+    /* meeting */
+}
+
+.orangeBar {
+    background-color: #F0990D;
+    /* call */
+}
+
+.grayBar {
+    background-color: #bdc3c7;
+}
+
+.titleText {
+    font-weight: 500;
+    color: #24252C;
+    font-size: 16px;
+}
+
+.timeRange {
+    font-size: 14px;
+    color: #999999;
+}
+
+.statusText {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
+
+@media screen and (min-width: 601px) {
+    .calendarSection {
+        width: 50%;
+        margin: auto;
+    }
+
+    .bookingsList {
+        width: 50%;
+        margin: auto;
+    }
 }

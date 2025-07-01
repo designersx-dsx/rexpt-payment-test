@@ -29,21 +29,9 @@ const SignUp = () => {
   const [resendTimer, setResendTimer] = useState(0);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [resendEndTime, setResendEndTime] = useState(null);
+  const tempReferral=sessionStorage.getItem("referredBy")||"";
+  const tempLandingSelectedPlan=sessionStorage.getItem("plan")||"";
 
-  // useEffect(() => {
-  //   let timerInterval = null;
-
-  //   if (resendTimer > 0) {
-  //     timerInterval = setInterval(() => {
-  //       setResendTimer((prev) => prev - 1);
-  //     }, 1000);
-  //   } else if (resendTimer === 0) {
-  //     setIsResendDisabled(false);
-  //     clearInterval(timerInterval);
-  //   }
-
-  //   return () => clearInterval(timerInterval);
-  // }, [resendTimer]);
   useEffect(() => {
     if (!resendEndTime) return;
 
@@ -95,7 +83,6 @@ const SignUp = () => {
     setEmailError(emailValidationMsg);
 
     if (emailValidationMsg) {
-      // Return early, no popup for email validation error
       return;
     }
 
@@ -114,6 +101,8 @@ const SignUp = () => {
       if (response?.status === 200) {
         localStorage.setItem("token", response?.data.token);
         sessionStorage.clear();
+        sessionStorage.setItem("referredBy",tempReferral);
+        sessionStorage.setItem("plan",tempLandingSelectedPlan);
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");
@@ -141,7 +130,9 @@ const SignUp = () => {
       } else {
         setPopupType("failed");
         setShowPopup(true);
-        setPopupMessage("Failed to verify One Time Password. Please try again.");
+        setPopupMessage(
+          "Failed to verify One Time Password. Please try again."
+        );
       }
     } catch (error) {
       setPopupType("failed");
@@ -158,12 +149,12 @@ const SignUp = () => {
     setEmailError(emailValidationMsg);
 
     if (emailValidationMsg) {
-      // Return early, no popup
       return;
     }
 
     setEmailError("");
     setIsVerifyingOtp(true);
+
     try {
       const response = await LoginWithEmailOTP(email);
       if (response?.status === 200) {
@@ -171,7 +162,10 @@ const SignUp = () => {
         setShowPopup(true);
         setPopupType("success");
         setPopupMessage("One Time Password sent successfully!");
+
         setOtpSent(true);
+        setOtp(["", "", "", "", "", ""]);
+        inputRefs.current[0]?.blur();
         const endTime = Date.now() + 120 * 1000;
         setResendEndTime(endTime);
         setIsResendDisabled(true);
@@ -182,20 +176,26 @@ const SignUp = () => {
       }
     } catch (error) {
       console.log(error);
-      if (error.status == 409) {
+      if (error.status === 409) {
+        setOtp(["", "", "", "", "", ""]);
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
+        setPopupMessage(
+          error?.response?.data.error || "Failed to send OTP. Please try again."
+        );
         setOtpSent(true);
       } else {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
+        setPopupMessage(
+          error?.response?.data.error || "Failed to send OTP. Please try again."
+        );
       }
     } finally {
       setIsVerifyingOtp(false);
     }
   };
+
 
   const handleOtpChange = (value, index) => {
     const newOtp = [...otp];
@@ -247,17 +247,16 @@ const SignUp = () => {
     }
   }, []);
   useEffect(() => {
-    window.history.pushState(null, '', window.location.href);
+    window.history.pushState(null, "", window.location.href);
 
     const handlePopState = () => {
-
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     };
 
-    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, []);
 
@@ -273,10 +272,16 @@ const SignUp = () => {
   }, [email]);
 
   useEffect(() => {
-    if (otpSent && inputRefs.current[0]) {
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
+    if (!isMobile && otpSent && inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
   }, [otpSent]);
+
   return (
     <>
       <div className={styles.signUpContainer}>
@@ -309,7 +314,10 @@ const SignUp = () => {
           >
             <div className={styles.welcomeTitle}>
               <h1>Log In to your Account</h1>
-              <p >If it does not exist, We will create a<b> New FREE Account</b> for you. Make sure the email ID provided is correct.</p>
+              <p>
+                If it does not exist, We will create a<b> New FREE Account</b>{" "}
+                for you. Make sure the email ID provided is correct.
+              </p>
             </div>
           </div>
 
@@ -415,13 +423,7 @@ const SignUp = () => {
                   </button>
                 </div> */}
 
-
-
-
-                <div
-                  className={styles.resendContainer}
-
-                >
+                <div className={styles.resendContainer}>
                   <button
                     type="button"
                     className={styles.resendButton}
@@ -438,17 +440,22 @@ const SignUp = () => {
                     }}
                   >
                     {isResendDisabled && resendTimer > 0
-                      ? `Resend One Time Password in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
+                      ? `Resend One Time Password in ${String(
+                        Math.floor(resendTimer / 60)
+                      ).padStart(2, "0")}:${String(resendTimer % 60).padStart(
+                        2,
+                        "0"
+                      )}`
                       : "Resend One Time Password"}
                   </button>
                 </div>
 
-
-
                 <div className={styles.Btn} onClick={handleLoginClick}>
                   <div type="submit">
                     <div className={styles.btnTheme}>
-                      <img src="svg/svg-theme.svg" alt="" />
+                      <div className={styles.imageWrapper}>
+                        <img src="svg/svg-theme2.svg" alt="" />
+                      </div>
                       <p>
                         {isVerifyingOtp ? (
                           <>

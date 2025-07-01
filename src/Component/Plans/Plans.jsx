@@ -5,6 +5,7 @@ import Loader from "../Loader/Loader";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
+
 const Plan = ({ agentID, locationPath }) => {
   const [products, setProducts] = useState([]);
   console.log("products", products);
@@ -58,6 +59,8 @@ const Plan = ({ agentID, locationPath }) => {
   const toggleAccordion = (id) => {
     setOpen(open === id ? null : id);
   };
+
+
 
   // Filter the products based on selectedTab (monthly or yearly)
   const filterPlansByInterval = (interval) => {

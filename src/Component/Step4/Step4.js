@@ -28,13 +28,14 @@ const Step4 = forwardRef(
       loading,
       setLoading,
       detectRoleTypeChange,
+
+
     },
 
     ref
   ) => {
     const [agentNote, setAgentNote] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
-
 
     useEffect(() => {
       const storedAgentRole = sessionStorage.getItem("agentRole");
@@ -74,54 +75,52 @@ const Step4 = forwardRef(
           isValid: true,
           agentNote: agentNote.trim(),
         };
+
       },
     }));
-
     // Block refresh and context menu
-    useEffect(() => {
-      const blockKeyboardRefresh = (e) => {
-        if (
-          e.key === "F5" ||
-          (e.ctrlKey && e.key === "r") ||
-          (e.metaKey && e.key === "r")
-        ) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      };
+    // useEffect(() => {
+    //   const blockKeyboardRefresh = (e) => {
+    //     if (
+    //       e.key === "F5" ||
+    //       (e.ctrlKey && e.key === "r") ||
+    //       (e.metaKey && e.key === "r")
+    //     ) {
+    //       e.preventDefault();
+    //       e.stopPropagation();
+    //     }
+    //   };
 
-      const blockMouseRefresh = (e) => {
-        if (e.button === 1 || e.button === 2) {
-          e.preventDefault();
-        }
-      };
+    //   const blockMouseRefresh = (e) => {
+    //     if (e.button === 1 || e.button === 2) {
+    //       e.preventDefault();
+    //     }
+    //   };
 
-      const handleBeforeUnload = (e) => {
-        e.preventDefault();
-        e.returnValue = "";
-      };
+    //   const handleBeforeUnload = (e) => {
+    //     e.preventDefault();
+    //     e.returnValue = "";
+    //   };
 
-      window.addEventListener("keydown", blockKeyboardRefresh);
-      window.addEventListener("mousedown", blockMouseRefresh);
-      window.addEventListener("beforeunload", handleBeforeUnload);
-      window.addEventListener("contextmenu", (e) => e.preventDefault());
+    //   window.addEventListener("keydown", blockKeyboardRefresh);
+    //   window.addEventListener("mousedown", blockMouseRefresh);
+    //   window.addEventListener("beforeunload", handleBeforeUnload);
+    //   window.addEventListener("contextmenu", (e) => e.preventDefault());
 
-      return () => {
-        window.removeEventListener("keydown", blockKeyboardRefresh);
-        window.removeEventListener("mousedown", blockMouseRefresh);
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-        window.removeEventListener("contextmenu", (e) => e.preventDefault());
-      };
-    }, []);
-
+    //   return () => {
+    //     window.removeEventListener("keydown", blockKeyboardRefresh);
+    //     window.removeEventListener("mousedown", blockMouseRefresh);
+    //     window.removeEventListener("beforeunload", handleBeforeUnload);
+    //     window.removeEventListener("contextmenu", (e) => e.preventDefault());
+    //   };
+    // }, []);
     return (
       <div className={`${styles.container} ${loading ? styles.blocked : ""}`}>
         {roles.map((role, index) => (
           <label
             key={index}
-            className={`${styles.card} ${
-              selectedRole === role.title ? styles.selected : ""
-            }`}
+            className={`${styles.card} ${selectedRole === role.title ? styles.selected : ""
+              }`}
           >
             <div className={styles.iconBox}>
               <img src={role.icon} alt={role.title} className={styles.icon} />
@@ -137,7 +136,7 @@ const Step4 = forwardRef(
               checked={selectedRole === role.title}
               onChange={() => {
                 setSelectedRole(role.title);
-                detectRoleTypeChange(role.title);
+                detectRoleTypeChange(role?.title);
               }}
               className={styles.radio}
             />

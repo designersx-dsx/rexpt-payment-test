@@ -85,6 +85,17 @@ export const listAgents = async () => {
   return res.data;
 }
 
+export const countAgentsbyUserId = async (userId) => {
+  try {
+    const res = await api.get(`${API_BASE_URL}/agent/listAgents?userId=${userId}`);
+    console.log('res',res)
+    return res.data.length  || 0;
+  } catch (error) {
+    console.error("Error fetching agent count:", error);
+    return 0;
+  }
+};
+
 export const updateProfilePicture = async (userId, data) => {
   const res = await api.patch(`${API_BASE_URL}/endusers/user/update_profile_picture/${userId}`, data, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -121,10 +132,19 @@ export const deleteAgent = async (agentId) => {
         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
       },
     });
+    await axios.delete(`https://api.retellai.com/delete-agent/${agentId}`, {
+      headers: {
+        Authorization:`Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+      },
+    });
+
     return res.data;
   } catch (error) {
-    console.error("Error deleting agent:", error.response?.data || error.message);
-    throw new Error("Failed to delete agent");
+    console.error(
+      "Error deleting agent:",
+      error.response?.data || error.message
+    );
+    throw new Error("Failed to delete agent from one or both systems.");
   }
 };
 
@@ -187,7 +207,7 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
 export const getUserDetails = async (userId) => {
   try {
     const response = await api.get(`/endusers/users/${userId}`);
-    console.log(response, "response")
+    // console.log(response, "response")
     return response.data;
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -297,6 +317,25 @@ export const updateEmailSendOtp = async (email, userId) => {
   return res;
 };
 
+export const updateShowReferralFloatingStatus = async (userId, status) => {
+  try {
+    const response = await api.patch(`/endusers/updateShowReferralFloatingStatus?userId=${userId}`,{status});
+    return response.data
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
+
+export const getUserReferralCodeForDashboard = async (userId) => {
+  try {
+    const response = await api.get(`/endusers/getUserReferralCodeForDashboard?userId=${userId}`);
+    return response.data
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
 
 
 

@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect, useState, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import styles from "../BusinessDetails/BusinessDetails.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
@@ -7,8 +11,7 @@ import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import Loader from "../Loader/Loader";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
-
-const BusinessDetails = () => {
+const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [businessType, setBusinessType] = useState("");
@@ -46,9 +49,6 @@ const BusinessDetails = () => {
   const [prevBuisnessType, setprevBuisnessType] = useState("");
   const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
 
-
-
-  // console.log(customBuisness, "customBuisness")
   const location = useLocation();
 
   const businessTypes = [
@@ -104,20 +104,104 @@ const BusinessDetails = () => {
       icon: "svg/Web-Design-Agency-icon.svg",
     },
     {
+      type: "Architect",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Architect-icon.svg",
+    },
+    {
+      type: "Property Rental & Leasing Service",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Property Rental & Leasing Service.svg",
+    },
+    {
+      type: "Construction Services",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Construction Services.svg",
+    },
+    {
+      type: "Insurance Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Insurance Agency.svg",
+    },
+    {
+      type: "Old Age Home",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Old Age Home.svg",
+    },
+    {
+      type: "Travel Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Travel Agency.svg",
+    },
+    {
+      type: "Ticket Booking",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Ticket Booking.svg",
+    },
+    {
+      type: "Accounting Services",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Accounting Services.svg",
+    },
+    {
+      type: "Financial Planners",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Financial Planners.svg",
+    },
+    {
+      type: "Beauty Parlour",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Beauty Parlour.svg",
+    },
+    {
+      type: "Nail Salon",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Nail Saloon.svg",
+    },
+    {
+      type: "Barber Studio/Shop",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Barber.svg",
+    },
+    {
+      type: "Hair Stylist",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Hair Stylist.svg",
+    },
+    {
+      type: "Bakery",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Bakery.svg",
+    },
+    {
+      type: "Dry Cleaner",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Dry Cleaner.svg",
+    },
+    {
+      type: "Cleaning Janitorial Service",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Cleaning Janitorial Service.svg",
+    },
+    // {
+    //   type: "Marketing Agency",
+    //   subtype: "Your Journey Begins Here",
+    //   icon: "svg/Marketing Agency.svg",
+    // },
+
+
+    {
       type: "Other",
       subtype: "Your Journey Begins Here",
       icon: "svg/Web-Design-Agency-icon.svg",
     }
   ];
-
   const stored = sessionStorage.getItem("businessDetails");
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem("businessDetails");
-
       if (stored && stored !== "undefined" && stored !== "null") {
         const businessDetails = JSON.parse(stored);
-
         if (businessDetails) {
           setBusinessType(businessDetails.businessType || "");
           setprevBuisnessType(businessDetails.businessType || "");
@@ -160,17 +244,58 @@ const BusinessDetails = () => {
 
   const handleBusinessTypeChange = (e) => {
     setBusinessType(e.target.value);
+    // if (prevBuisnessType != businessType) {
+    //   sessionStorage.removeItem("selectedServices");
+    //   sessionStorage.removeItem("selectedCustomServices");
+    //   const raw = sessionStorage.getItem("businesServices");
+    //   let previous = {};
+    //   try {
+    //     previous = raw ? JSON.parse(raw) : {};
+    //   } catch (err) {
+    //     console.error("Failed to parse businesServices:", err);
+    //   }
+
+    //   const updatedBusinessServices = {
+    //     selectedService: [],
+    //     email: previous.email,
+    //   };
+    //   sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+    // }
     if (e.target.value !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
+      updateSessionBusinessDetails("businessType", e.target.value);
+         sessionStorage.removeItem("showInput");
     }
+    updateSessionBusinessDetails("businessType", e.target.value);
     console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
-
     }
 
 
   };
+  const updateSessionBusinessDetails = (key, value) => {
+    let existing = {};
+    try {
+      const stored = sessionStorage.getItem("businessDetails");
+
+      if (stored && stored !== "undefined" && stored !== "null") {
+        existing = JSON.parse(stored);
+        // selectedServices
+         sessionStorage.removeItem("selectedServices");
+          sessionStorage.removeItem("businesServices");
+      }
+    } catch (e) {
+      console.error("Error parsing sessionStorage businessDetails:", e);
+    }
+
+    const updated = {
+      ...existing,
+      [key]: value,
+    };
+    sessionStorage.setItem("businessDetails", JSON.stringify(updated));
+  };
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -237,7 +362,7 @@ const BusinessDetails = () => {
         businessName: businessName.trim(),
         businessSize,
       };
-      navigate("/about-business-next");
+      // navigate("/about-business-next");
     } else {
       businessData = {
         userId,
@@ -245,10 +370,11 @@ const BusinessDetails = () => {
         businessName: businessName.trim(),
         businessSize,
       };
-      navigate("/business-services");
+
+      // navigate("/business-services");
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-
+    onStepChange?.(1);
   };
   const handleSaveEdit = (e) => {
     console.log("helo")
@@ -288,6 +414,23 @@ const BusinessDetails = () => {
       handleCreateAgent()
     }
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      // Validate business type
+      console.log("Hello")
+      if (!businessType) {
+
+        setBusinessTypeError("Please select a business type.");
+        onValidationError?.({
+          type: "failed",
+          message: "Please select a business type.",
+        });
+        return false;
+      } else {
+        setBusinessTypeError("");
+      }
+
 
   // useEffect(() => {
   //   if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
@@ -299,6 +442,38 @@ const BusinessDetails = () => {
 
   // if (CheckingUserLimit) return 
 
+      // Validate business size
+      if (!businessSize) {
+        setBusinessSizeError("Please select a business size.");
+        onValidationError?.({
+          type: "failed",
+          message: "Please select a business size.",
+        });
+        return false;
+      } else {
+        setBusinessSizeError("");
+      }
+      // Validate custom business if "Other" is selected
+      const serviceError = validateServices(customBuisness);
+      if (serviceError) {
+        setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
+        onValidationError?.({
+          type: "failed",
+          message: serviceError,
+        });
+        return false;
+      } else {
+        setErrors((prev) => ({ ...prev, customBuisness: "" }));
+      }
+      console.log("I AM CALL ")
+
+
+      return true; // No errors
+    },
+    save: async () => {
+      handleLoginClick()
+    }
+  }));
   const handleClosePopup = () => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       navigate('/dashboard');
@@ -307,10 +482,17 @@ const BusinessDetails = () => {
       setShowPopup(false);
     }
   }
+  useEffect(() => {
+    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      setShowPopup(true);
+      setPopupType('failed');
+      setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+    }
+  }, [CheckingUserLimit, isLimitExceeded]);
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{EditingMode ? ' Edit Business Details' : 'Business Details'}</h1>
+      {/* <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1> */}
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
@@ -336,7 +518,7 @@ const BusinessDetails = () => {
                       className={styles.iconImg}
                     />
                   </div>
-                  <div>
+                  <div className={styles.strongDiv}>
                     <strong>{item.type}</strong>
                     <p className={styles.subType}>{item.subtype}</p>
                   </div>
@@ -423,7 +605,7 @@ const BusinessDetails = () => {
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
-      {stepEditingMode != 'ON' ?
+      {/* {stepEditingMode != 'ON' ?
         <div onClick={handleLoginClick}>
           <div type="submit">
             <div className={styles.btnTheme}>
@@ -441,7 +623,7 @@ const BusinessDetails = () => {
             </div>
           </div>
         </div>
-      }
+      } */}
 
 
       {showPopup && (
@@ -454,24 +636,7 @@ const BusinessDetails = () => {
       )}
     </div>
   );
-};
+});
 
 export default BusinessDetails;
 
-
-// Safe parser for JSON-like strings
-const safeParse = (value, fallback = null) => {
-  try {
-    if (typeof value === "string") {
-      const cleaned = value.trim();
-      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) ||
-        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-        (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
-        return JSON.parse(cleaned);
-      }
-    }
-    return value;
-  } catch {
-    return fallback;
-  }
-};

@@ -1,21 +1,21 @@
 .container {
-  padding: 16px 20px;
+  padding: 16px 0px;
   max-width: 400px;
   margin: auto;
 }
 
 
-.verifyButton{
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    border: unset;
-    background-color: #6524eb;
-    color: #fff;
-    padding: 5px 10px;
-    border: 1px solid #6524eb;
-    border-radius: 5px;
-    cursor: pointer;
+.verifyButton {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  border: unset;
+  background-color: #6524eb;
+  color: #fff;
+  padding: 5px 10px;
+  border: 1px solid #6524eb;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 
@@ -58,27 +58,29 @@
   color: #5a6572;
   width: 100%;
 }
+
 .ListDiv {
   margin-top: 1rem;
   border: 1px solid #E0E5F2;
   padding: 10px;
   border-radius: 10px;
 }
+
 .optionList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   /* max-height: 200px; */
-  max-height: 35dvh;
+  max-height: 25dvh;
   overflow: auto;
   padding-right: 10px;
 }
 
 
-.optionList p{
-      padding: 5px;
-    text-align: center;
-    color: #A3AED0;
+.optionList p {
+  /* padding: 5px; */
+  /* text-align: center; */
+  color: #A3AED0;
 }
 
 
@@ -119,6 +121,7 @@
   transition: all 0.3s;
   min-height: 70px;
   padding-inline: 10px;
+  padding-block: 5px;
   cursor: pointer;
 }
 
@@ -127,9 +130,12 @@
 }
 
 .icon {
-  margin-right: 1rem;
+  margin-right: 10px;
 }
 
+.strongDiv {
+  text-align: left;
+}
 
 
 .option strong {
@@ -142,6 +148,7 @@
 .subType {
   color: #A3AED0;
   font-size: 16px;
+  margin-top: 5px;
 }
 
 .inputGroup {
@@ -150,6 +157,7 @@
   flex-direction: column;
   position: relative;
 }
+
 .selectGroup {
   margin-top: 1rem;
   /* display: flex; */
@@ -229,8 +237,9 @@
   font-size: 19px;
   display: flex !important;
 
-} 
-.btnTheme p p{
+}
+
+.btnTheme p p {
   position: relative;
   z-index: 1;
   margin: 0;
@@ -268,28 +277,29 @@
   background-color: #f0f0f0;
 }
 
-@media (max-width:375px){
-.title{
+@media (max-width:375px) {
+  .title {
     font-size: 36px;
-}
-.option strong {
-  font-size: 15px;
-}
+  }
 
-.subType {
-  font-size: 13px;
-}
+  .option strong {
+    font-size: 15px;
+  }
+
+  .subType {
+    font-size: 13px;
+  }
 }
 
 /* Make the <select> look like your text input */
 .selectInput {
   width: 100%;
-  padding: 10px ;
+  padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  appearance: none;         
-  background-size: 12px;   
+  appearance: none;
+  background-size: 12px;
   margin-top: 10px;
   padding: 10px;
   border-radius: 10px;
@@ -303,7 +313,7 @@
 /* Re-use the existing error style on focus/invalid */
 
 .selectDropdown {
-  width: 200px; 
+  width: 200px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -311,6 +321,7 @@
   background-color: white;
   outline: none;
 }
+
 .selectInput {
   background-repeat: no-repeat;
   background-position: right 10px center;
@@ -318,27 +329,280 @@
   appearance: none;
 }
 
-.requiredField{
-color:red;
+.requiredField {
+  color: red;
 }
+
 .headrPart {
   margin-top: 10%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    /* border: 1px solid black !important; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* border: 1px solid black !important; */
 }
 
 
 
 
 @media screen and (min-width: 601px) {
-    .btnTheme{
+  .btnTheme {
     cursor: pointer;
-   }
-   .container {
-    
+  }
+
+  .container {
+
     max-width: 500px;
-   
+
+  }
 }
+.CallTransferMain1 {
+    padding: 16px;
+}
+
+.headrPart {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.headrPart img {
+    cursor: pointer;
+}
+
+.removeBtn {
+    border: none;
+    background-color: #6524EB;
+    padding: 4px 10px;
+    color: #ffff;
+    border-radius: 4px;
+}
+
+.card {
+    background: #F3EEFF;
+    border-radius: 12px;
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 16px;
+}
+
+.selectWrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+.label {
+    font-size: 18px;
+    color: #24252C;
+    font-weight: 500;
+}
+
+.select {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #24252C;
+    background-color: #fff;
+    border: 1px solid #E0E6F2;
+    border-radius: 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    min-height: 55px;
+    margin-block: 14px;
+}
+
+.arrowIcon {
+    position: absolute;
+    right: 16px;
+    top: 60%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    transition: transform 0.3s ease;
+}
+
+.select:focus {
+    border: 1px solid #6524EB;
+    outline: none;
+}
+
+.phoneInput {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    padding-inline: 10px;
+    gap: 10px;
+    border: 1px solid #E0E5F2;
+    margin-block: 14px;
+}
+
+.phoneNumberInput {
+    min-height: 55px;
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+.input:focus {
+    border: 1px solid #6524EB;
+    outline: none;
+}
+
+.countryCode {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-right: 10px;
+    border-right: 1px solid #E0E5F2;
+}
+
+.countryCode img {
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+}
+
+.phoneNumber {
+    font-size: 14px;
+    color: #24252C;
+
+}
+
+.Btn {
+    width: 90%;
+    margin: auto;
+}
+
+.btnTheme {
+    position: relative;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 55px;
+    margin-top: 2rem;
+    width: 100%;
+    cursor: pointer;
+}
+
+.imageWrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.imageWrapper img {
+    width: 90%;
+    margin: auto;
+    display: block;
+    transition: transform 0.4s ease;
+    transform-origin: center; 
+}
+
+/* Zoom image only on hover */
+.btnTheme:hover .imageWrapper img {
+    transform: scale(1.1);
+}
+
+/* .imageWrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  z-index: 2;
+}
+
+
+.btnTheme:hover .imageWrapper::after {
+  animation: shineImage 0.6s ease-out forwards;
+}
+
+@keyframes shineImage {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+} */
+
+.btnTheme p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-weight: 500;
+    font-size: 19px;
+    display: flex;
+}
+
+.removeButton {
+    border: none;
+    background-color: none;
+}
+
+@media screen and (min-width: 601px) {
+    .CallTransferMain1 {
+        max-width: 500px;
+        align-items: center;
+        margin: auto;
+    }
+
+    .CallTransferMain {
+        max-width: 500px;
+        align-items: center;
+        margin: auto;
+    }
+
+}
+
+
+@media (max-width:375px) {
+    .headrPart h2 {
+        font-size: 20px;
+    }
+}
+
+.skipButton {
+    margin-top: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.skipButton button {
+    border: none;
+    background-color: white;
+    color: #bebebe;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.dialCodeInput {
+    width: 40px;
+    border: none;
+    margin-left: 5px;
+    outline: none;
+    text-align: center;
+    background: transparent;
 }

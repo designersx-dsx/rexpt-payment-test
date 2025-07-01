@@ -14,6 +14,7 @@ import {
   getUserAgentMergedDataForAgentUpdate,
   toggleAgentActivation,
   updateAgentKnowledgeBaseId,
+  getUserReferralCodeForDashboard,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -29,6 +30,8 @@ import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 import Modal from "../Modal2/Modal2";
 import Loader from "../Loader/Loader";
+import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
+import Refferal from "../Refferal/Refferal";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -42,7 +45,10 @@ function Dashboard() {
   const [agentDetails, setAgentDetails] = useState(null);
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
+  const packageName = sessionStorage.getItem("package") || "Free";
+
 
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
@@ -80,6 +86,7 @@ function Dashboard() {
 
   //cam-icon
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const isSmallFont = (totalCalls?.toString().length > 1 || bookingCount?.toString().length > 1);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -107,22 +114,26 @@ function Dashboard() {
 
   const [calloading, setcalloading] = useState(false)
   const [calapiloading, setCalapiloading] = useState(false)
+  const [deleteloading, setdeleteloading] = useState(false)
 
 
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [agentToDelete, setAgentToDelete] = useState(null);
+
+  const [showDashboardReferral, setShowDashboardReferral] = useState("")
+  const [showreferralfloating, setShowreferralfloating] = useState(localStorage.getItem('showreferralfloating') || true)
+  const [copied, setCopied] = useState(false)
+
+
   useEffect(() => {
-    // Dashboard pe aate hi naya history state add karo
     window.history.pushState(null, document.title, window.location.pathname);
 
-    // Back button dabane pe redirect karo
     const handlePopState = () => {
-      navigate("/dashboard"); // Wapas dashboard pe hi rakho
+      navigate("/dashboard");
     };
-
     window.addEventListener("popstate", handlePopState);
-
-    // Cleanup karo jab component unmount ho
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
   const handleAssignNumberClick = (agent, e) => {
@@ -504,6 +515,38 @@ function Dashboard() {
 
     setRetellWebClient(client);
   }, []);
+  const handleDelete = async (agentId) => {
+    try {
+      setdeleteloading(true)
+      const storedDashboard = JSON.parse(
+        sessionStorage.getItem("dashboard-session-storage")
+      );
+
+      const agents = storedDashboard?.state?.agents || [];
+
+      if (agents.length === 1) {
+        setPopupType("failed");
+        setPopupMessage(
+          "Cannot delete. You must have at least two agents to delete one agent."
+        );
+        setShowDeleteConfirm(false);
+        return;
+      }
+      await deleteAgent(agentId);
+      const updatedAgents = localAgents.filter(
+        (agent) => agent.agent_id !== agentId
+      );
+      setLocalAgents(updatedAgents);
+      setPopupMessage("Agent deleted successfully!");
+      setPopupType("success");
+      setHasFetched(false);
+    } catch (error) {
+      setPopupMessage(`Failed to delete agent: ${error.message}`);
+      setPopupType("failed");
+    } finally {
+      setdeleteloading(false)
+    }
+  };
   // Start call
   let micStream = "";
   const handleStartCall = async () => {
@@ -536,8 +579,18 @@ function Dashboard() {
           body: JSON.stringify({ agent_id: agentDetails.agent_id }),
         }
       );
-      const data = await res.json();
+      if (res.status == 403) {
 
+        setPopupMessage("Agent Plan minutes exhausted");
+        setPopupType("failed");
+        setIsCallInProgress(false);
+        setTimeout(() => {
+          setPopupMessage("")
+
+        }, 5000);
+        return;
+      }
+      const data = await res.json();
       await retellWebClient.startCall({ accessToken: data.access_token });
       setCallId(data?.call_id);
     } catch (err) {
@@ -559,7 +612,6 @@ function Dashboard() {
       setIsCallInProgress(false);
     }
   };
-
   // Open call modal
   const handleOpenCallModal = (agent) => {
     setAgentDetails(agent);
@@ -618,7 +670,10 @@ function Dashboard() {
     setPopupMessage(message);
     setPopupType(type);
   };
+  const handleCalender = () => {
+    navigate("/calendar");
 
+  }
   const handleTotalCallClick = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("totalCallView", true);
@@ -626,6 +681,7 @@ function Dashboard() {
     sessionStorage.removeItem("agentId");
     navigate("/totalcall-list");
   };
+
 
   //   function formatName(name) {
   //     if (!name) return "";
@@ -654,6 +710,7 @@ function Dashboard() {
 
   //     }
   //   }
+
   function formatName(name) {
     if (!name) return "";
 
@@ -668,10 +725,12 @@ function Dashboard() {
       if (name.length > 7) {
         return name.substring(0, 10) + "...";
       } else {
+
         return name;
       }
     }
   }
+
   function formatBusinessName(name) {
     if (!name) return "";
 
@@ -720,7 +779,141 @@ function Dashboard() {
     navigate("/edit-profile");
   };
   const handleDeactivateAgent = async () => {
-  };
+
+    try {
+      setDeactivateLoading(true);
+      const dashboardState = JSON.parse(
+        sessionStorage.getItem("dashboard-session-storage")
+      );
+
+      const agentData = dashboardState?.state?.agents?.find(
+        (ag) => ag.agent_id === agentToDeactivate.agent_id
+      );
+
+      const knowledgeBaseId = agentData?.knowledgeBaseId;
+      const businessId = agentData?.businessId;
+
+      const isCurrentlyDeactivated = agentToDeactivate.isDeactivated === 1;
+      if (!isCurrentlyDeactivated && knowledgeBaseId) {
+        await fetch(
+          `https://api.retellai.com/delete-knowledge-base/${knowledgeBaseId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+      if (isCurrentlyDeactivated && businessId) {
+        const businessDetails = await getBusinessDetailsByBusinessId(
+          businessId
+        );
+
+        // const shortName = (businessDetails?.businessName || "Business")
+        //   .trim()
+        //   .toLowerCase()
+        //   .replace(/\s+/g, "_")
+        //   .slice(0, 20);
+        const packageMap = {
+          Free: 1,
+          Starter: 2,
+          Scaler: 3,
+          Growth: 4,
+          Corporate: 5,
+          Enterprise: 6,
+        };
+        const packageValue = packageMap[packageName] || 1;
+
+        // const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
+        const knowledgeBaseName = await getKnowledgeBaseName(businessDetails, userId, packageValue);
+        const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
+        // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
+        const businessData = businessDetails.knowledge_base_texts;
+        const knowledgeBaseText = {
+          title: businessDetails?.businessType || "Business Info",
+          text: `
+                Business Name: ${businessData?.name}
+                Address: ${businessData?.address}
+                Phone: ${businessData?.phone}
+                Website: ${businessData?.website}
+                Rating: ${businessData?.rating} (${businessData?.totalRatings} reviews)
+                Business Status: ${businessData?.businessStatus}
+                Categories: ${businessData?.categories}
+                Opening Hours: ${businessData?.hours}
+                `.trim(),
+        };
+
+        // Step 1: Create Knowledge Base
+        const formData = new FormData();
+        formData.append("knowledge_base_name", knowledgeBaseName);
+        formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+        formData.append("enable_auto_refresh", "true");
+        formData.append(
+          "knowledge_base_texts",
+          JSON.stringify([knowledgeBaseText])
+        );
+
+        const createRes = await fetch(
+          `https://api.retellai.com/create-knowledge-base`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+            },
+            body: formData,
+          }
+        );
+
+        if (!createRes.ok) {
+          const errData = await createRes.json();
+          console.error("Knowledge base creation failed:", errData);
+          throw new Error("Failed to create knowledge base during activation");
+        }
+
+        const createdKB = await createRes.json();
+        const knowledgeBaseId = createdKB.knowledge_base_id;
+        sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
+
+        // Step 2: Update LLM for the agent
+        const llmId =
+          agentToDeactivate?.llmId ||
+          localStorage.getItem("llmId") ||
+          sessionStorage.getItem("llmId");
+
+        if (llmId && knowledgeBaseId) {
+          const llmPayload = {
+            knowledge_base_ids: [knowledgeBaseId],
+          };
+
+          try {
+            const updateLLMRes = await fetch(
+              `https://api.retellai.com/update-retell-llm/${llmId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                },
+                body: JSON.stringify(llmPayload),
+              }
+            );
+
+            if (!updateLLMRes.ok) {
+              const err = await updateLLMRes.json();
+              console.error("Failed to update LLM:", err);
+              throw new Error("LLM update failed");
+            }
+          } catch (error) {
+            console.error("Error updating LLM:", error);
+          }
+        } else {
+          console.warn(
+            "LLM ID or Knowledge Base ID missing. LLM update skipped."
+          );
+        }
+
 
     const handleUpgradeClick = (agent) => {
     // if (agent?.subscriptionId) {
@@ -732,6 +925,7 @@ function Dashboard() {
     // }
 
   };
+
   const fetchPrevAgentDEtails = async (agent_id, businessId) => {
   };
   const locationPath = location.pathname
@@ -755,6 +949,59 @@ function Dashboard() {
   //     }
   //   };
   // >>>>>>> payment_testing
+
+
+  const getUserReferralCode = async () => {
+    try {
+      const res = await getUserReferralCodeForDashboard(userId);
+      console.log(res.referralCode)
+      setShowDashboardReferral(`${window.location.origin}?referral=${encodeURIComponent(res?.referralCode)}` || "")
+    } catch (error) {
+      console.log('error occured while fetching user referal code', error)
+    }
+  }
+
+  const handleCopy = async (referralLink) => {
+    navigator.clipboard.writeText(referralLink)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1000); // hide after 2 seconds
+      })
+      .catch((err) => {
+        console.error("Copy failed:", err);
+      });
+  };
+
+  const shareReferralLink = async (referralLink) => {
+
+    if (!referralLink) {
+      console.error('No referral code provided');
+      return;
+    }
+
+
+    // Use localhost for dev, replace with production URL (e.g., https://rexpt.in) later
+    //   const shareUrl = `http://localhost:3000?referral=${encodeURIComponent(code)}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          url: referralLink
+        });
+        console.log('Share URL:', referralLink); // Debug
+      } catch (error) {
+        console.error('Error sharing:', error);
+        await navigator.clipboard.writeText(referralLink);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(referralLink);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+    }
+  };
+
   return (
     <div>
       <div className={styles.forSticky}>
@@ -768,12 +1015,12 @@ function Dashboard() {
                     user?.profile ||
                     capturedImage ||
                     uploadedImage ||
-                    "images/camera-icon.avif"
+                    "/svg/profile-icon.svg"
                   }
                   alt="Profile"
                   className={styles.profilePic}
                   onError={(e) => {
-                    e.target.src = "images/camera-icon.avif";
+                    e.target.src = "/svg/profile-icon.svg";
                   }}
                 />
               </button>
@@ -854,7 +1101,7 @@ function Dashboard() {
           </div>
         </header>
 
-        <section className={styles.agentCard}>
+        {/* <section className={styles.agentCard}>
 
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2>{totalCalls || 0}</h2>
@@ -865,7 +1112,35 @@ function Dashboard() {
             <h2>{bookingCount}</h2>
             <img src="svg/calender-booking.svg" alt="calender-booking" />
           </div>
+        </section> */}
+
+
+
+        {/* Ankush Code Start */}
+
+        <section className={styles.agentCard}>
+
+          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
+            <h2 className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ''}`}>
+              {totalCalls || 0}
+            </h2>
+            <img src="svg/total-call.svg" alt="total-call" />
+          </div>
+
+          <hr />
+
+          <div className={styles.agentInfo2} onClick={handleCalender}>
+            <h2 className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ''}`}>
+              {bookingCount}
+            </h2>
+            <img src="svg/calender-booking.svg" alt="calender-booking" />
+          </div>
+
         </section>
+
+
+        {/* Ankush code end */}
+
       </div>
 
       <div className={styles.main}>
@@ -947,17 +1222,13 @@ function Dashboard() {
                   onClick={(e) => toggleDropdown(e, agent.agent_id)}
                   ref={dropdownRef}
                 >
-                  <svg
-                    width="18"
-                    height="4"
-                    viewBox="0 0 18 4"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="2" cy="2" r="2" fill="black" />
-                    <circle cx="9" cy="2" r="2" fill="black" />
-                    <circle cx="16" cy="2" r="2" fill="black" />
+                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="30" height="30" rx="5" fill="white" />
+                    <circle cx="8" cy="15" r="2" fill="#24252C" />
+                    <circle cx="15" cy="15" r="2" fill="#24252C" />
+                    <circle cx="22" cy="15" r="2" fill="#24252C" />
                   </svg>
+
                   {openDropdown === agent?.agent_id && (
                     <div className={styles.OptionsDropdown}>
                       <div
@@ -1013,7 +1284,7 @@ function Dashboard() {
                       >
                         Upgrade
                       </div>
-                      {/* <div key={agent.agent_id}>
+                      <div key={agent.agent_id}>
                         <div
                           className={styles.OptionItem}
                           onMouseDown={(e) => {
@@ -1024,7 +1295,7 @@ function Dashboard() {
                         >
                           Delete Agent
                         </div>
-                      </div> */}
+                      </div>
                       <div
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
@@ -1101,7 +1372,7 @@ function Dashboard() {
                     onClick={(e) => handleAssignNumberClick(agent, e)}
                     style={{ cursor: "pointer" }}
                   >
-                    Assign Number
+                    <img src="/svg/assign-number.svg" />
                   </div>
                 )}
 
@@ -1208,7 +1479,7 @@ function Dashboard() {
                 <div className={styles.modalButtons}>
                   <button
                     className={`${styles.modalButton} ${styles.cancel}`}
-                    onClick={closeModal} // Close the modal only when "Cancel" is clicked
+                    onClick={closeModal}
                   >
                     Cancel
                   </button>
@@ -1340,6 +1611,77 @@ function Dashboard() {
             </div>
           </div>
         )}
+        {showDeleteConfirm && agentToDelete && (
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <div
+              className={styles.modalContainer}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2>Are you sure?</h2>
+              <p>
+                Do you want to delete agent{" "}
+                <strong>{agentToDelete.agentName}</strong>?
+              </p>
+              <div className={styles.modalButtons}>
+                <button
+                  className={`${styles.modalButton} ${styles.cancel}`}
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  No
+                </button>
+                {deleteloading ? (<button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  Deleting <Loader size={18} />
+                </button>) : (
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={async () => {
+                      try {
+                        await handleDelete(agentToDelete.agent_id);
+                        setShowDeleteConfirm(false);
+                        setAgentToDelete(null);
+                      } catch (error) {
+                        setPopupMessage(
+                          `Failed to delete agent: ${error.message}`
+                        );
+                        setPopupType("failed");
+                        setShowDeleteConfirm(false);
+                      }
+                    }}
+                  >
+                    Yes
+                  </button>)}
+                {/* <button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  onClick={async () => {
+                    try {
+                      await handleDelete(agentToDelete.agent_id);
+                      setShowDeleteConfirm(false);
+                      setAgentToDelete(null);
+                    } catch (error) {
+                      setPopupMessage(
+                        `Failed to delete agent: ${error.message}`
+                      );
+                      setPopupType("failed");
+                      setShowDeleteConfirm(false);
+                    }
+                  }}
+                >
+                  Yes
+                </button> */}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Call Test Modal */}
         {openCallModal && (
@@ -1453,6 +1795,85 @@ function Dashboard() {
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
+      {/* Floating Button */}
+      {showreferralfloating == 'true' &&
+        <div
+          className={styles.floating}
+          onClick={async () => { await getUserReferralCode(); setIsModalOpen(true) }}
+        >
+          <div className={styles.Cross}>x</div>
+          <div>
+            <img src="/svg/floating-svg.svg" alt="floating-svg" />
+
+          </div>
+
+        </div>
+      }
+
+      {/* Modal */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className={styles.Refferalinfo}>
+          <div className={styles.headerPart}>
+            <h3>Earn 10% Referral Commission</h3>
+          </div>
+          <div className={styles.card}>
+            {/* <label className={styles.checkboxLabel}>
+              Show Referral link on Dashboard
+              <input type="checkbox" className={styles.customCheckbox} />
+            </label> */}
+
+            <div className={styles.linkSection}>
+              <p className={styles.label}>Referral Link</p>
+              <div className={styles.linkDiv}>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    value={showDashboardReferral}
+                    readOnly
+                    className={styles.input}
+                  />
+
+                </div>
+                <div className={styles.copyWrapper}>
+                  <button className={styles.copyButton} onClick={async () => handleCopy(showDashboardReferral)}>
+                    <img src="/svg/copy-icon.svg" alt="Copy" />
+                  </button>
+                  {copied && <span className={styles.tooltip}>Copied!</span>}
+                </div>
+
+              </div>
+
+            </div>
+
+            <hr className={styles.divider} />
+
+            <div className={styles.infoSection}>
+              <div className={styles.Linkdec}>
+                <img src='/svg/earn-icon.svg' alt='earn-icon' />
+                <p>Share your referral link and <b>earn 10% commission</b> of your friends’ spending.</p>
+              </div>
+              <div className={styles.Linkdec}>
+                <img src='/svg/commission-icon.svg' alt='commission-icon' />
+                <p>You will earn “Commission” every month for upto <b>12 months</b> or Customer Lifespan(Whichever is lower) </p>
+              </div>
+              <div className={styles.Linkdec}>
+                <img src='/svg/commission2.svg' alt='commission-icon' />
+                <p>We pay “Referral Commission” to our affiliate partners on <b>1st Day of every following month.</b></p>
+              </div>
+            </div>
+
+            <div className={styles.btnTheme} onClick={async () => shareReferralLink(showDashboardReferral)}>
+              <div className={styles.imageWrapper}>
+                <img src="svg/svg-theme2.svg" alt="" />
+              </div>
+              <p>
+                Share Referral Link
+              </p>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
 
       {/* <Footer /> */}
       <Footer2 />

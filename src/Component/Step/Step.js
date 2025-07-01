@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo, createContext } from "react";
 import Slider from "react-slick";
 import styles from "./Step.module.css";
 import Step2 from "../Step2/Step2";
@@ -16,12 +16,21 @@ import { createAgent, listAgents, updateAgent } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 import { getAgentPrompt } from "../../hooks/useAgentPrompt";
+import BusinessDetails from "../BusinessDetails/BusinessDetails";
+import BusinessServices from "../BusinessServices/BusinessServices";
+import AboutBusinessNext from "../BusinessServices/BusinessServicesNEXT";
+import AboutBusiness from "../AboutBusiness/AboutBusiness";
+import BusinessListing from "../BusinessListing/BusinessListing";
+import Step1 from "../Step1/Step1";
 const Step = () => {
     const timestamp = Date.now();
     const [isRoleTitleChanged, setIsRoleTitleChanged] = useState(false);
     const navigate = useNavigate();
     const sliderRef = useRef(null);
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(() => {
+        const savedStep = sessionStorage.getItem("currentStep");
+        return savedStep !== null ? parseInt(savedStep, 10) : 0;
+    });
     const [selectedLang, setSelectedLang] = useState();
     const [selectedLangCode, setSelectedLangCode] = useState("");
     const [showPopup, setShowPopup] = useState(false);
@@ -29,9 +38,6 @@ const Step = () => {
     const [popupMessage, setPopupMessage] = useState("");
     const [loading, setLoading] = useState(false)
     const [agentCount, setAgentCount] = useState(0);
-    const step2Ref = useRef();
-    const step3Ref = useRef();
-    const step4Ref = useRef();
     const token = localStorage.getItem("token") || "";
     const decodeTokenData = decodeToken(token)
     const [userId, setUserId] = useState(decodeTokenData?.id || "");
@@ -40,12 +46,25 @@ const Step = () => {
     const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
     const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
     const [isContinueClicked, setIsContinueClicked] = useState(false);
-    useEffect(() => {
-        if (localStorage.getItem('UpdationMode') == "ON") {
-            setSelectedLang(localStorage.getItem("agentLanguage"))
-            setSelectedLangCode(localStorage.getItem("agentLanguageCode"))
-        }
-    }, [])
+    const [visibleStep, setVisibleStep] = useState(0);
+    const [avtarChecked, setAvtarChecked] = useState(false)
+    const [completedSteps, setCompletedSteps] = useState(() => {
+        const saved = localStorage.getItem('completedSteps');
+        return saved ? JSON.parse(saved) : [];
+    });
+    //Step REF 
+    //Business Details
+    const step1Ref = useRef(null)
+    //Business Services
+    // const step2Ref = useRef(null);
+    const step3Ref = useRef(null);
+    const step4Ref = useRef(null);
+    const step5Ref = useRef(null);
+    const step6Ref = useRef(null)
+    const step7Ref = useRef(null)
+    const step8ARef = useRef(null)
+    const step8BRef = useRef(null);
+    // const step9Ref = useRef(null)
 
     useEffect(() => {
         if (token) {
@@ -60,14 +79,7 @@ const Step = () => {
     };
     const Buisness = JSON.parse(sessionStorage.getItem("businessDetails"))
     const businessType = Buisness?.businessType === "Other" ? Buisness?.customBuisness : Buisness?.businessType;
-
-
-    useEffect(() => {
-        sessionStorage.setItem("agentLanguage", selectedLang);
-        sessionStorage.setItem("agentLanguageCode", selectedLangCode);
-    }, [selectedLang]);
-
-    const totalSlides = 4;
+    const totalSlides = 8;
 
     const role_title =
         sessionStorage.getItem("agentRole") || "General Receptionist";
@@ -90,11 +102,17 @@ const Step = () => {
     );
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
-    const commaSeparatedServices = allServices?.join(", ");
+    const commaSeparatedServices = allServices?.join(", ")?.replace("Other", "") || "Your Business Services";
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
+    const selectedServices = sessionStorage.getItem("businessDetails");
+    const services = selectedServices ? JSON.parse(selectedServices).businessType : [];
+    const customServicesSelected = sessionStorage.getItem("businesServices");
+    const checkCustomServicesSelected = customServicesSelected?.includes("Other")
+    const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
+    const [isContiue, seIsContinue] = useState(false)
     const packageMap = {
         "Free": 1,
         "Starter": 2,
@@ -103,299 +121,60 @@ const Step = () => {
         "Corporate": 5,
         "Enterprise": 6
     };
+    const detectRoleTypeChange = (roleTitle) => {
+        setIsRoleTitleChanged((prev) => !prev);
+    }
     const packageValue = packageMap[packageName] || 1;
-    const languages = [
-        /* English family */
-        {
-            name: "English (US)",
-            locale: "en-US",
-            flag: "/images/en-US.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "English (India)",
-            locale: "en-IN",
-            flag: "/images/en-IN.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "English (UK)",
-            locale: "en-GB",
-            flag: "/images/en-GB.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "English (Australia)",
-            locale: "en-AU",
-            flag: "/images/en-AU.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "English (New Zealand)",
-            locale: "en-NZ",
-            flag: "/images/en-NZ.png",
-            percentage: "—",
-            stats: "—",
-        },
+    const addCompletedStep = (step) => {
+        setCompletedSteps((prev) => {
+            const updated = [...new Set([...prev, step])]; // ensure uniqueness
 
-        /* Germanic & Nordic */
-        {
-            name: "German",
-            locale: "de-DE",
-            flag: "/images/de-DE.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Dutch",
-            locale: "nl-NL",
-            flag: "/images/nl-NL.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Danish",
-            locale: "da-DK",
-            flag: "/images/da-DK.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Finnish",
-            locale: "fi-FI",
-            flag: "/images/fi-FI.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Norwegian",
-            locale: "no-NO",
-            flag: "/images/no-NO.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Swedish",
-            locale: "sv-SE",
-            flag: "/images/sv-SE.png",
-            percentage: "—",
-            stats: "—",
-        },
-
-        /* Romance */
-        {
-            name: "Spanish (Spain)",
-            locale: "es-ES",
-            flag: "/images/es-ES.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Spanish (LatAm)",
-            locale: "es-419",
-            flag: "/images/es-ES.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "French (France)",
-            locale: "fr-FR",
-            flag: "/images/fr-FR.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "French (Canada)",
-            locale: "fr-CA",
-            flag: "/images/fr-CA.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Italian",
-            locale: "it-IT",
-            flag: "/images/it-IT.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Portuguese (Portugal)",
-            locale: "pt-PT",
-            flag: "/images/pt-PT.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Portuguese (Brazil)",
-            locale: "pt-BR",
-            flag: "/images/pt-BR.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Catalan",
-            locale: "ca-ES",
-            flag: "/images/ca-ES.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Romanian",
-            locale: "ro-RO",
-            flag: "/images/ro-RO.png",
-            percentage: "—",
-            stats: "—",
-        },
-
-        /* Slavic & Baltic */
-        {
-            name: "Polish",
-            locale: "pl-PL",
-            flag: "/images/pl-PL.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Russian",
-            locale: "ru-RU",
-            flag: "/images/ru-RU.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Bulgarian",
-            locale: "bg-BG",
-            flag: "/images/bg-BG.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Slovak",
-            locale: "sk-SK",
-            flag: "/images/sk-SK.png",
-            percentage: "—",
-            stats: "—",
-        },
-
-        /* Hellenic & Uralic */
-        {
-            name: "Greek",
-            locale: "el-GR",
-            flag: "/images/el-GR.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Hungarian",
-            locale: "hu-HU",
-            flag: "/images/hu-HU.png",
-            percentage: "—",
-            stats: "—",
-        },
-
-        /* Asian */
-        {
-            name: "Hindi",
-            locale: "hi-IN",
-            flag: "/images/hi-IN.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Japanese",
-            locale: "ja-JP",
-            flag: "/images/ja-JP.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Korean",
-            locale: "ko-KR",
-            flag: "/images/ko-KR.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Chinese (Mandarin)",
-            locale: "zh-CN",
-            flag: "/images/zh-CN.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Vietnamese",
-            locale: "vi-VN",
-            flag: "/images/vi-VN.png",
-            percentage: "—",
-            stats: "—",
-        },
-        {
-            name: "Indonesian",
-            locale: "id-ID",
-            flag: "/images/id-ID.png",
-            percentage: "—",
-            stats: "—",
-        },
-
-        /* Turkic */
-        {
-            name: "Turkish",
-            locale: "tr-TR",
-            flag: "/images/tr-TR.png",
-            percentage: "—",
-            stats: "—",
-        },
-
-        /* Universal / Mixed set */
-        {
-            name: "Multilingual",
-            locale: "multi",
-            flag: "/images/multi.png",
-            percentage: "—",
-            stats: "—",
-        },
-    ];
-    const handleNext = () => {
-        if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
-            return;
+            return updated;
+        });
+    };
+    const handleNext = async () => {
+        const validations = {
+            0: step1Ref,
+            1: step3Ref,
+            3: step4Ref,
+            4: step5Ref,
+            5: step6Ref,
+            6: step7Ref,
+            7: [step8ARef, step8BRef],
+            // 8: step9Ref
+        };
+        const isValid = await validation(currentStep);
+        if (!isValid) return;
+        const currentRef = validations[currentStep];
+        // Check if current step has a ref and validate
+        if (currentRef?.current) {
+            const isValid = currentRef?.current?.validate();
+            if (!isValid) {
+                console.warn(`Validation failed at step ${currentStep}`);
+                return;
+            }
+            if (currentRef.current.save) {
+                await currentRef.current.save(); // 👈 Calls handleContinue only on Next
+            }
+            // Add this step to completed steps
+            addCompletedStep(currentStep);
         }
-        if (currentStep === 2 && step3Ref.current && !step3Ref.current.validate()) {
-            return;
-        }
-        if (currentStep === 3 && step4Ref.current && !step4Ref.current.validate()) {
-            return;
-        }
+        scrollToTop();
 
-        if (currentStep === 0 && !selectedLang) {
-            setShowPopup(true);
-            setPopupType("failed");
-            setPopupMessage("Please select a language first.");
-            return;
-        }
-        if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
 
-            return;
-        }
-        if (currentStep === 2 && step3Ref.current && !step3Ref.current.validate()) {
-            return;
-        }
 
-        if (currentStep < totalSlides - 1) {
-            sliderRef.current.slickNext();
-            scrollToTop();
-        }
+
     };
 
     const handleBack = () => {
         if (currentStep > 0) {
-            sliderRef.current.slickPrev();
+            const prevStep = currentStep - 1 === 2 ? 1 : currentStep - 1;
+            setCurrentStep(prevStep);
+            setVisibleStep(prevStep);
+            sliderRef.current?.slickGoTo(prevStep);
         }
     };
-    const isAdaptiveHeight = currentStep !== 3 || currentStep !== 2
+    const isAdaptiveHeight = currentStep !== 3
     const settings = {
         dots: false,
         infinite: false,
@@ -405,11 +184,11 @@ const Step = () => {
         slidesToScroll: 1,
         arrows: false,
         swipe: false,
-        beforeChange: (_, next) => {
-            setCurrentStep(next);
-        },
-    };
+        afterChange: (index) => {
+            setVisibleStep(index);
 
+        }
+    };
     const fetchAgentCountFromUser = async () => {
         try {
             const response = await listAgents()
@@ -419,16 +198,18 @@ const Step = () => {
             console.log(error)
         }
     }
-    const detectRoleTypeChange = (roleTitle) => {
-        setIsRoleTitleChanged((prev) => !prev);
-    }
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom) }_${sanitize(role_title)}_${packageValue}#${agentCount}`
-
+    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     const handleContinue = async () => {
-        if (step4Ref.current) {
+        if (step8ARef.current) {
+            if (currentStep === 7) {
+                const isStep3Valid = await step8ARef.current?.validate?.();
+                const isStep4Valid = await step8BRef.current?.validate?.();
+                if (!isStep3Valid || !isStep4Valid) return;
+            }
+
             setIsContinueClicked(true);
             const agentNote = sessionStorage.getItem("agentNote");
             const filledPrompt =
@@ -438,9 +219,10 @@ const Step = () => {
                     agentName: agentName,
                     agentGender: agentGender,
                     business: {
-                        businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom ,
+                        businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom,
                         email: getBusinessNameFromGoogleListing?.email || "",
-
+                        aboutBusiness: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness,
+                        address: getBusinessNameFromGoogleListing?.address || ""
                     },
                     languageSelect: languageSelect,
                     businessType,
@@ -448,7 +230,8 @@ const Step = () => {
                     commaSeparatedServices,
                     agentNote
                 });
-            const isValid = step4Ref.current.validate();
+            const isValid = step8BRef.current.validate()
+            localStorage.removeItem("completedSteps")
             //creation here
             if (isValid && localStorage.getItem("UpdationMode") != "ON") {
                 setLoading(true)
@@ -468,9 +251,39 @@ const Step = () => {
 
 
                     ],
-                
-                
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom }.`,
+
+                    states: [
+                        {
+                            name: "information_collection",
+                            state_prompt:
+                                "You will follow the steps below to collect information...",
+                            edges: [
+                                {
+                                    destination_state_name: "appointment_booking",
+                                    description: "Transition to book an appointment.",
+                                },
+                            ],
+                            tools: [
+                                {
+                                    type: "transfer_call",
+                                    name: "transfer_to_support",
+                                    description: "Transfer to the support team.",
+                                    transfer_destination: {
+                                        type: "predefined",
+                                        number: "+918054226461", // Replace with actual number
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            name: "appointment_booking",
+                            state_prompt:
+                                "You will follow the steps below to book an appointment...",
+                        },
+                    ],
+                    starting_state: "information_collection",
+                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
+
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
@@ -566,7 +379,7 @@ const Step = () => {
                             interruption_sensitivity: 0.7,
                             backchannel_frequency: 0.7,
                             backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
-                            additionalNote:agentNote||"",
+                            additionalNote: agentNote || "",
 
                         }
                         try {
@@ -623,7 +436,7 @@ const Step = () => {
                 setLoading(true)
                 const agentConfig = {
                     general_prompt: filledPrompt,
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom }.`,
+                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
 
                 };
                 const llm_id = localStorage.getItem('llmId')
@@ -705,7 +518,7 @@ const Step = () => {
                             agentGender: sessionStorage.getItem('agentGender') || "female",
                             agentStatus: true,
                             businessId: businessIdObj.businessId,
-                            additionalNote:agentNote||"",
+                            additionalNote: agentNote || "",
                         }
                         try {
                             const response = await updateAgent(agentId, agentData);
@@ -793,17 +606,17 @@ const Step = () => {
         setPopupType(type);
         setPopupMessage(message);
         setShowPopup(true);
+        setTimeout(() => {
+            setShowPopup(false);
+        }, 3000);
     };
-    const stepTitles = [
-        EditingMode ? "Edit: Agent Language " : "Agent Language Supported",
-        EditingMode ? "Edit: Agent Gender" : "Agent Gender",
-        "",
-        EditingMode ? "Edit: Receptionist Type" : "Receptionist Type",
-    ];
-    // function lock
-    useEffect(() => {
-        fetchAgentCountFromUser()
-    }, [])
+    const getStepTitle = () => {
+        if (currentStep === 0) {
+            return EditingMode ? "Edit: Select Category" : "Select Category";
+        } else if (currentStep === 1) {
+            return EditingMode ? "Edit: Business Services" : "Business Services"
+        }
+
 
     // useEffect(() => {
     //     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
@@ -814,6 +627,23 @@ const Step = () => {
     // }, [CheckingUserLimit, isLimitExceeded]);
 
     // if (CheckingUserLimit) return <p></p>;
+
+
+        else if (currentStep === 3) {
+            return EditingMode ? "Edit: Public Listing" : "Public Listing";
+        }
+        else if (currentStep === 4) {
+            return EditingMode ? "Edit: Business Details" : "Business Details";
+        }
+        else if (currentStep === 5) {
+            return EditingMode ? "Edit: Select Language" : "Select Language";
+        }
+        else if (currentStep === 6) {
+            return EditingMode ? "Edit: Select Voice" : "Select Voice";
+        } else if (currentStep === 7) {
+            return EditingMode ? "Edit: Select Gender" : "Select Gender";
+        }
+    };
 
     useEffect(() => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
@@ -838,148 +668,546 @@ const Step = () => {
         // }
         setShowPopup(false);
     }
+    // const validation = async (currentStep) => {
+    //     const validations = {
+    //         0: step1Ref,
+    //         1: step3Ref,
+    //         3: step4Ref,
+    //         4: step5Ref,
+    //         5: step6Ref,
+    //         6: step7Ref,
+    //         7: [step8ARef, step8BRef],
+    //         // 8: step9Ref
+    //     };
+    //     // Skip validation if already completed
+
+    //     if (completedSteps.includes(currentStep)) {
+    //         return true;
+    //     }
+    //     console.log(completedSteps, "completedSteps")
+    //     const currentRef = validations[currentStep];
+    //     if (currentRef?.current?.validate) {
+    //         const isValid = await currentRef.current.validate();
+    //         if (!isValid) {
+    //             console.warn(`Validation failed at step ${currentStep}`);
+    //             return false;
+    //         }
+    //         // Mark this step as completed
+    //         addCompletedStep(currentStep);
+    //     }
+
+    //     return true;
+    // };
+    const validation = async (currentStep) => {
+        const validations = {
+            0: step1Ref,
+            1: step3Ref,
+            3: step4Ref,
+            4: step5Ref,
+            5: step6Ref,
+            6: step7Ref,
+            7: [step8ARef, step8BRef], // both Step3 and Step4
+        };
+
+        const refs = validations[currentStep];
+
+        if (Array.isArray(refs)) {
+            for (let ref of refs) {
+                if (ref?.current?.validate) {
+                    const isValid = await ref.current.validate();
+                    if (!isValid) return false;
+
+                    if (ref?.current?.save) {
+                        await ref.current.save();
+                    }
+                }
+            }
+        } else {
+            if (refs?.current?.validate) {
+                const isValid = await refs.current.validate();
+                if (!isValid) return false;
+
+                if (refs?.current?.save) {
+                    await refs.current.save();
+                }
+            }
+        }
+
+        addCompletedStep(currentStep);
+        return true;
+    };
+
+    console.log(currentStep, "currentStep")
+
+    // function lock
+    useEffect(() => {
+        fetchAgentCountFromUser()
+    }, [])
+    useEffect(() => {
+        const savedStep = sessionStorage.getItem("currentStep");
+        if (savedStep !== null) {
+            const parsedStep = parseInt(savedStep, 10);
+            setCurrentStep(parsedStep);
+            sliderRef.current?.slickGoTo(parsedStep);
+        }
+    }, []);
+    useEffect(() => {
+        sessionStorage.setItem("currentStep", currentStep.toString());
+    }, [currentStep])
+    useEffect(() => {
+        sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
+    }, [completedSteps]);
+    useEffect(() => {
+        const savedSteps = JSON.parse(sessionStorage.getItem("completedSteps")) || [];
+        setCompletedSteps(savedSteps);
+    }, []);
 
     return (
         <div className={styles.container}>
-            <StepHeader title={stepTitles[currentStep]} />
+            <StepHeader title={getStepTitle()} />
             <Slider ref={sliderRef} {...settings}>
-                {/* Step 1 */}
-                <div>
-                    <div className={styles.slideContent}>
-                        <div className={styles.grid}>
-                            {languages.map((lang, index) => (
-                                <label
-                                    key={index}
-                                    className={`${styles.card} ${selectedLang === lang.name ? styles.active : ""
-                                        }`}
-                                >
-                                    <input
-                                        type="radio"
-                                        name="language"
-                                        value={lang.name}
-                                        checked={selectedLang === lang.name}
-                                        onChange={() => {
-                                            setSelectedLangCode(lang.locale);
-                                            setSelectedLang(lang.name);
-                                        }}
-                                        className={styles.radioInput}
-                                    />
-                                    <div className={styles.flagWrapper}>
-                                        <img
-                                            src={`https://flagcdn.com/w80/${lang.locale
-                                                ?.split("-")[1]
-                                                ?.toLowerCase()}.png`}
-                                            alt={lang.name}
-                                            className={styles.flag}
-                                            onError={(e) => {
-                                                if(lang.locale === "multi") {
-                                                    e.target.src = "/images/multi.png"; // Fallback for multi-language
-                                                } 
-                                                if (lang.locale === "es-419") {
-                                                    e.target.src = "https://flagcdn.com/w80/es.png"; // Fallback for other languages
-                                                }
-                                               }
-                                            }
-                                        />
-                                    </div>
-
-                                    <p className={styles.langName}>{lang.name}</p>
-                                    {selectedLang === lang.name && (
-                                        <span className={styles.langDot}></span>
-                                    )}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Step 2 */}
-                <div>
-                    <Step2
-                        ref={step2Ref}
+                {/* business-details */}  {/* Step 1 */}
+                {currentStep === 0 && <div>
+                    <BusinessDetails
+                        ref={step1Ref}
                         onNext={handleNext}
                         onBack={handleBack}
                         onValidationError={handleValidationError}
-                    />
-                </div>
-                {/* Step 3 */}
-                <div className={styles.Step3Container}>
-                    <Step3
-                        ref={step3Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                    />
-                </div>
-                {/* Step 4 */}
+                        isActive={currentStep === 0}
+                        onSuccess={(data) => {
 
-                <div  className={styles.Step4Container}>
-                    <Step4
+                            setShowPopup(true);
+                            setPopupType("success");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
+
+                        onFailed={(data) => {
+
+                            setShowPopup(true);
+                            setPopupType("failed");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
+                        loading={loading}
+                        setLoading={setLoading}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
+                    />
+                </div>}
+                {currentStep === 1 &&
+                    <div>
+                        <BusinessServices
+                            ref={step3Ref}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            // isActive={currentStep === 1}
+                            onSuccess={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+
+                            onFailed={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+                        />
+                    </div>}
+                {currentStep === 3 && <div>
+                    <AboutBusiness
                         ref={step4Ref}
                         onNext={handleNext}
                         onBack={handleBack}
                         onValidationError={handleValidationError}
+                        isActive={currentStep === 3}
+                        onSuccess={(data) => {
+
+                            setShowPopup(true);
+                            setPopupType("success");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
+                        onFailed={(data) => {
+
+                            setShowPopup(true);
+                            setPopupType("failed");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
                         loading={loading}
                         setLoading={setLoading}
-                        detectRoleTypeChange={detectRoleTypeChange}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
                     />
-                </div>
+                </div>}
+                {currentStep === 4 && <div>
+                    <BusinessListing
+                        ref={step5Ref}
+                        onNext={handleNext}
+                        onBack={handleBack}
+                        onValidationError={handleValidationError}
+                        isActive={currentStep === 4}
+                        onSuccess={(data) => {
 
+                            setShowPopup(true);
+                            setPopupType("success");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
 
-            </Slider>
+                        onFailed={(data) => {
 
-            {/* === Footer Fixed Pagination === */}
-            <div className={styles.footerFixed}>
-                {/* Step dots */}
-                <div className={styles.stepsIndicator}>
-                    {[...Array(totalSlides)].map((_, idx) => (
-                        <span
-                            key={idx}
-                            className={`${styles.stepDot} ${currentStep === idx ? styles.activeDot : ''}`}
-                            onClick={async () => {
-                                if (isContinueClicked) return;
-                                // Step 0 validation (language)
-                                if (currentStep === 0 && !selectedLang) {
+                            setShowPopup(true);
+                            setPopupType("failed");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
+                        loading={loading}
+                        setLoading={setLoading}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
+                    />
+                </div>}
+                {currentStep === 5 && <div>
+                    <Step1
+                        ref={step6Ref}
+                        onNext={handleNext}
+                        onBack={handleBack}
+                        onValidationError={handleValidationError}
+                        isActive={currentStep === 5}
+                        onSuccess={(data) => {
+
+                            setShowPopup(true);
+                            setPopupType("success");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
+
+                        onFailed={(data) => {
+
+                            setShowPopup(true);
+                            setPopupType("failed");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
+                        loading={loading}
+                        setLoading={setLoading}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
+                    />
+                </div>}
+                {currentStep === 6 && <div>
+                    <Step2
+                        ref={step7Ref}
+                        onNext={handleNext}
+                        onBack={handleBack}
+                        onValidationError={handleValidationError}
+                        isActive={currentStep === 6}
+                        onSuccess={(data) => {
+
+                            setShowPopup(true);
+                            setPopupType("success");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
+
+                        onFailed={(data) => {
+
+                            setShowPopup(true);
+                            setPopupType("failed");
+                            setPopupMessage(data.message);
+                            setTimeout(() => {
+                                setShowPopup(false);
+                            }, 2000);
+                        }}
+                        loading={loading}
+                        setLoading={setLoading}
+                        onStepChange={(step) => {
+                            setCurrentStep(step);
+                            setVisibleStep(step);
+                            sliderRef.current?.slickGoTo(step);
+                        }}
+                    />
+                </div>}
+                {currentStep === 7 &&
+
+                    <>
+                     
+                            <Step3
+                                ref={step8ARef}
+                                onNext={handleNext}
+                                onBack={handleBack}
+                                onValidationError={handleValidationError}
+                                isActive={currentStep === 7}
+                                onSuccess={(data) => {
+
+                                    setShowPopup(true);
+                                    setPopupType("success");
+                                    setPopupMessage(data.message);
+                                    setTimeout(() => {
+                                        setShowPopup(false);
+                                    }, 2000);
+                                }}
+
+                                onFailed={(data) => {
+
                                     setShowPopup(true);
                                     setPopupType("failed");
-                                    setPopupMessage("Please select a language first.");
-                                    return;
-                                }
+                                    setPopupMessage(data.message);
+                                    setTimeout(() => {
+                                        setShowPopup(false);
+                                    }, 2000);
+                                }}
+                                loading={loading}
+                                setLoading={setLoading}
+                                onStepChange={(step) => {
+                                    setCurrentStep(step);
+                                    setVisibleStep(step);
+                                    sliderRef.current?.slickGoTo(step);
+                                }}
+                                setAvtarChecked={setAvtarChecked}
+                            />
+                            {avtarChecked &&
+                                <Step4
+                                    ref={step8BRef}
+                                    onNext={handleNext}
+                                    onBack={handleBack}
+                                    onValidationError={handleValidationError}
+                                    isActive={currentStep === 7}
+                                    onSuccess={(data) => {
+                                        setShowPopup(true);
+                                        setPopupType("success");
+                                        setPopupMessage(data.message);
+                                        setTimeout(() => {
+                                            setShowPopup(false);
+                                        }, 2000);
+                                    }}
 
-                                // Step 1 validation (gender + voice)
-                                if (currentStep === 1 && step2Ref.current && !step2Ref.current.validate()) {
-                                    return;
-                                }
+                                    onFailed={(data) => {
 
-                                // Step 2 validation
-                                if (currentStep === 2 && step3Ref.current && !step3Ref.current.validate()) {
-                                    return;
-                                }
+                                        setShowPopup(true);
+                                        setPopupType("failed");
+                                        setPopupMessage(data.message);
+                                        setTimeout(() => {
+                                            setShowPopup(false);
+                                        }, 2000);
+                                    }}
+                                    loading={loading}
+                                    setLoading={setLoading}
+                                    onStepChange={(step) => setCurrentStep(step)}
+                                    detectRoleTypeChange={detectRoleTypeChange}
+                                />}
 
-                                // Step 3 validation
-                                if (currentStep === 3 && step4Ref.current && !step4Ref.current.validate()) {
-                                    return;
-                                }
+                        </>}
+            </Slider>
+            {/* === Footer Fixed Pagination === */}
+            {/* <div className={styles.footerFixed}>
+                <div className={styles.stepsIndicator}>
+                    {
+                        [...Array(totalSlides)].reduce((acc, _, idx) => {
+                            if (idx === 2) return acc;
+                            const isClickable = idx <= currentStep || completedSteps.includes(idx);
 
-                                // Allow dot click to change slide
-                                sliderRef.current?.slickGoTo(idx);
-                            }}
-                        />
-                    ))}
+                            acc.push(
+                                <button
+                                    key={idx}
+                                    disabled={!isClickable}
+                                    className={`${styles.stepNumber} ${currentStep === idx ? styles.activeStepNumber : ''}`}
+                                    onClick={async () => {
+                                        if (!isClickable || isContinueClicked) return;
+
+
+                                        const validations = {
+                                            0: step1Ref,
+                                            1: step3Ref,
+                                            3: step4Ref,
+                                            4: step5Ref,
+                                            5: step6Ref,
+                                            6: step7Ref,
+                                            7: [step8ARef, step8BRef],
+
+                                        };
+
+                                        if (idx > currentStep) {
+                                            for (let i = currentStep; i < idx; i++) {
+                                                if (completedSteps.includes(i)) continue;
+                                                const ref = validations[i];
+                                                if (ref?.current?.validate) {
+                                                    const isValid = await ref.current.validate();
+                                                    if (!isValid) return;
+
+                                                    if (ref?.current?.save) {
+                                                        await ref.current.save();
+                                                    }
+
+                                                    addCompletedStep(i);
+                                                }
+                                            }
+                                        }
+
+
+
+                                        setCurrentStep(idx);
+                                        setVisibleStep(idx);
+                                        sliderRef.current?.slickGoTo(idx);
+                                    }}
+
+                                >
+                                    {acc.length + 1}
+                                </button>
+                            );
+
+                            return acc;
+                        }, [])
+                    }
+
                 </div>
-                {currentStep < totalSlides - 1 && (
-                    <button className={styles.navBtn} onClick={handleNext}>
-                        <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
-                    </button>
-                )}
-                {currentStep === totalSlides - 1 && (
-                    <button className={styles.navBtn} onClick={handleContinue}>
-                        {
-                            loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
-                        }
-                    </button>
-                )}
 
+                {currentStep === 8 ? <button className={styles.navBtn} onClick={handleContinue}>
+                    {
+                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                    }
+                </button> : <button className={styles.navBtn} onClick={handleNext}>
+                    {
+                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                    }
+                </button>
+                }
+
+
+
+            </div> */}
+            {/* Nitish code */}
+            <div className={styles.footerFixed}>
+                <div className={styles.stepsIndicator}>
+                    {
+                        [...Array(totalSlides)].reduce((acc, _, idx) => {
+                            if (idx === 2) return acc;
+
+                            const isClickable = idx <= currentStep || completedSteps.includes(idx);
+                            const isCompleted = completedSteps.includes(idx);
+                            const isCurrent = currentStep === idx;
+                            const isUpcoming = !isCompleted && !isCurrent;
+
+                            let stepClass = styles.stepNumber;
+                            if (isCompleted && !isCurrent) stepClass += ` ${styles.completedStep}`;
+                            if (isCurrent) stepClass += ` ${styles.activeStepNumber}`;
+                            if (isUpcoming) stepClass += ` ${styles.upcomingStep}`;
+
+                            acc.push(
+                                <button
+                                    key={idx}
+                                    disabled={!isClickable}
+                                    className={stepClass}
+                                    onClick={async () => {
+                                        if (!isClickable || isContinueClicked) return;
+
+                                        const validations = {
+                                            0: step1Ref,
+                                            1: step3Ref,
+                                            3: step4Ref,
+                                            4: step5Ref,
+                                            5: step6Ref,
+                                            6: step7Ref,
+                                            7: [step8ARef, step8BRef],
+                                        };
+
+                                        if (idx > currentStep) {
+                                            for (let i = currentStep; i < idx; i++) {
+                                                if (completedSteps.includes(i)) continue;
+
+                                                const ref = validations[i];
+                                                if (ref?.current?.validate) {
+                                                    const isValid = await ref.current.validate();
+                                                    if (!isValid) return;
+
+                                                    if (ref?.current?.save) {
+                                                        await ref.current.save();
+                                                    }
+
+                                                    addCompletedStep(i);
+                                                }
+                                            }
+                                        }
+
+                                        setCurrentStep(idx);
+                                        setVisibleStep(idx);
+                                        sliderRef.current?.slickGoTo(idx);
+                                    }}
+                                >
+                                    {isCompleted && !isCurrent ? (
+                                        <span  />
+                                    ) : (
+                                        acc.length + 1
+                                    )}
+                                </button>
+                            );
+
+                            return acc;
+                        }, [])
+
+                    }
+
+                </div>
+                {/* //Button */}
+                {currentStep === 7 ? <button className={styles.navBtn} onClick={handleContinue}>
+                    {
+                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                    }
+                </button> : <button className={styles.navBtn} onClick={handleNext}>
+                    {
+                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                    }
+                </button>
+                }
             </div>
             {showPopup && (
                 <PopUp

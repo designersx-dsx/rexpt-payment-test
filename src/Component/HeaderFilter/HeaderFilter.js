@@ -23,7 +23,7 @@ function HeaderFilter({
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [open, setOpen] = useState(false);
-  const [allSentiment, setAllSentiment] = useState("")
+  const [allSentiment, setAllSentiment] = useState("");
   const totalAgentView = localStorage.getItem("filterType");
   const today = new Date();
   const sevenDaysAgo = new Date();
@@ -40,13 +40,11 @@ function HeaderFilter({
   );
 
   const handleChange = (e) => {
-
     const selectedId = +e.target.value;
     const selectedOption = options.find((opt) => opt.id === selectedId);
     setSelected(selectedOption);
     sessionStorage.setItem("selectedfilterOption", selectedOption.label);
     onFilter(selectedOption.label);
-
   };
   const handleBack = () => {
     navigate(-1);
@@ -79,22 +77,24 @@ function HeaderFilter({
     setIsOpen(false);
   };
   const handleAll = () => {
-    const allOption = options.find((opt) => opt.label === "All" || opt.id === 0);
-    setAllSentiment("all")
+    const allOption = options.find(
+      (opt) => opt.label === "All" || opt.id === 0
+    );
+    setAllSentiment("all");
     setSelected(allOption);
     onFilter("All");
-  }
+  };
   const closeCalender = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
   const handleOpenSlider = () => {
-    setIsOpen(true)
-    setOpen(false)
-  }
+    setIsOpen(true);
+    setOpen(false);
+  };
   const handleCloseFilter = () => {
-    setOpen(false)
-  }
-    function formatName(name) {
+    setOpen(false);
+  };
+  function formatName(name) {
     if (!name) return "";
 
     if (name.includes(" ")) {
@@ -119,10 +119,8 @@ function HeaderFilter({
             <img src="svg/Notification.svg" alt="Back button"></img>
             <h4 className={styles.headerTitle}>Total Calls</h4>
           </div>
-          {/* <div className={styles.profileSection}></div> */}
           <div className={styles.notifiMain}>
             <div className={styles.notificationIcon1}>
-              {/* <img src="svg/ThreOpbtn.svg"/> */}
               <div className={styles.dropdownContainer}>
                 <div
                   style={{
@@ -139,7 +137,7 @@ function HeaderFilter({
                 </div>
 
                 <select
-                  className={styles.agentSelect1}
+                  className={styles.agentSelect}
                   value={selected.id}
                   onClick={handleCloseFilter}
                   onChange={handleChange}
@@ -150,8 +148,6 @@ function HeaderFilter({
                     </option>
                   ))}
                 </select>
-
-                {/* Display selected item with image */}
               </div>
             </div>
 
@@ -186,7 +182,7 @@ function HeaderFilter({
 
         <section className={styles.agentCard}>
           <div className={styles.dateAgentSection}>
-            <div className={styles.PartFew}>
+            <div className={styles.PartFew} onClick={() => setOpen(!open)}>
               <p>
                 {" "}
                 {startDate
@@ -244,14 +240,24 @@ function HeaderFilter({
                       onClickOutside={() => { }}
                     />
                     <div className={styles.dateButtons}>
-                      <button onClick={handleApplyFilter} className={styles.applyButton}>Apply Filter</button>
-                      <button onClick={handleClearFilter} className={styles.clearButton}>Clear Filter</button>
+                      <button
+                        onClick={handleApplyFilter}
+                        className={styles.applyButton}
+                      >
+                        Apply Filter
+                      </button>
+                      <button
+                        onClick={handleClearFilter}
+                        className={styles.clearButton}
+                      >
+                        Clear Filter
+                      </button>
                     </div>
                   </div>
                 )}
 
                 <svg
-                  onClick={() => setOpen(!open)}
+
                   width="26"
                   height="31"
                   viewBox="0 0 26 31"
@@ -273,26 +279,27 @@ function HeaderFilter({
             <hr></hr>
 
             <div className={styles.DateSecT} onClick={closeCalender}>
-              <p>  {formatName(selectedAgentId === "all"
-                ? "Agent"
-                : isAgents?.find((agent) => agent.agent_id === selectedAgentId)?.agentName) || "Agent"}</p>
+              <p>Agent</p>
 
               <div className={styles.selectWrapper}>
+                <div className={styles.selectedValue}>
+                  {selectedAgentId === "all"
+                    ? "All"
+                    : (() => {
+                      const agentName =
+                        isAgents.find(
+                          (agent) => agent.agent_id === selectedAgentId
+                        )?.agentName || "";
+                      return agentName.length > 28
+                        ? agentName.slice(0, 28) + "..."
+                        : agentName;
+                    })()}
+                </div>
+
                 <select
                   className={styles.agentSelect1}
                   value={selectedAgentId}
-
-                  onChange={(e) => {
-
-                    const selectedValue = e.target.value;
-                    if (totalAgentView) {
-
-                      onAgentChange(selectedValue);
-                    } else {
-
-                      onAgentChange(selectedValue);
-                    }
-                  }}
+                  onChange={(e) => onAgentChange(e.target.value)}
                 >
                   <option value="all">All</option>
                   {isAgents?.map((agent) => (

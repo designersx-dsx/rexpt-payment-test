@@ -5,6 +5,7 @@
     padding: 2px 1px;
     background: #ffffff;
 }
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -148,18 +149,20 @@
 }
 
 .Part1 strong,
-.Part2 strong
- {
+.Part2 strong {
     font-size: 16px;
     color: #24252C;
     text-transform: uppercase;
 
 }
-.Part3 strong{
-     font-size: 16px;
+
+.Part3 strong {
+    font-size: 16px;
     color: #24252C;
-    text-transform: none;;
+    text-transform: none;
+    ;
 }
+
 .Part3 {
     display: flex;
     align-items: end;
@@ -207,6 +210,7 @@
     margin-top: 1rem;
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 10px;
+    width: 100%;
 }
 
 .Ptext {
@@ -262,8 +266,8 @@
 
 .audioTime {
     display: flex;
-    justify-content: space-between;
-    width: 40%;
+    /* justify-content: space-between; */
+    /* width: 40%; */
     font-size: 13px;
     color: #4E4E50;
 }
@@ -272,6 +276,7 @@
     display: flex;
     align-items: center;
     gap: 5px;
+    width: 60%;
 }
 
 .audioSeek {
@@ -311,6 +316,21 @@
     margin-bottom: 10px;
 }
 
+.messageRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.profile {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgb(199, 199, 199);
+}
+
 .ChatBox {
     border: 1px solid #EBE2FF;
     background-color: #F8F8F8;
@@ -323,9 +343,12 @@
 
 .ChatBox2 {
     margin-top: 1rem;
-    overflow: auto;
-    max-height: 550px;
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-right: 5px;
+    padding-bottom: 1rem;
+
 }
 
 .ChatBox2::-webkit-scrollbar {
@@ -379,15 +402,11 @@
     word-wrap: break-word;
 }
 
-/* User (Right) */
 .messageRight {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     align-self: flex-end;
-    /* max-width: 45%;
-    width: 100%;
-    float: inline-end; */
 }
 
 .bubbleRight {
@@ -415,6 +434,7 @@
     width: 90%;
     border-radius: 4px;
     text-align: center;
+    cursor: pointer;
 }
 
 @media screen and (min-width: 601px) {

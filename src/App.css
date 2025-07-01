@@ -1,6 +1,7 @@
  body {
    margin: 0;
    font-family: "Inter", sans-serif;
+   user-select: none;
    /* display: none;    */
  }
 
@@ -104,11 +105,37 @@
  }
 
 
+ input:focus,
+ textarea:focus {
+   border-color: #6524EB !important;
+   outline: none;
+ }
+
+
+
+ .react-calendar__tile--now {
+   background: #f9f1ff !important;
+ }
+
+ .react-calendar__tile {
+   color: #24252C !important;
+   font-size: 16px !important;
+ }
+
+ .react-calendar__navigation button {
+   color: #24252C !important;
+   font-size: 20px !important;
+   font-weight: 600 !important;
+ }
+
+ abbr[title] {
+   text-decoration: none !important;
+ }
+
  .Dotcontrol .slick-dots {
    position: fixed;
    bottom: 20px;
    z-index: 1001;
-   ;
    width: 130px;
  }
 
@@ -150,8 +177,8 @@
  }
 
  .react-calendar__tile--active {
-   background: #6624eb !important;
-   color: #ffffff !important;
+   background: #ffffff !important;
+   color: #24252c !important;
    border: 1px solid #E0E5F2 !important;
    border-radius: 4px !important;
  }
@@ -161,3 +188,96 @@
  }
 
  /* End calendar css */
+
+
+ /* react-tel-input css */
+
+ .react-tel-input .country-list {
+   width: 95% !important;
+   max-height: 100% !important;
+   border-radius: 10px !important;
+   padding-inline: 10px;
+   padding-block: 10px 0px;
+   margin-left: 0px !important;
+   top: 50% !important;
+   left: 50% !important;
+   transform: translate(-50%, -50%) !important;
+   background-color: #f3f3f3 !important;
+ }
+
+ .react-tel-input .country-list input {
+   width: 90% !important;
+
+ }
+
+ .react-tel-input .country-list .search-emoji {
+   display: none !important;
+ }
+
+ .country-list {
+   position: fixed !important;
+   top: 0 !important;
+   left: 0 !important;
+   width: 100vw !important;
+   height: 100vh !important;
+   background-color: white !important;
+   z-index: 9999 !important;
+   overflow-y: auto !important;
+   padding: 20px;
+   box-shadow: none !important;
+   border-radius: 0 !important;
+ }
+
+
+ .fullscreenCountryDropdown .flag-dropdown {
+   z-index: 10000;
+ }
+
+ @media screen and (min-width: 601px) {
+   .react-tel-input .country-list {
+     width: 48% !important;
+   }
+ }
+
+
+
+
+
+
+.fullscreenCountryDropdown .flag-dropdown {
+  z-index: 10000; 
+}
+
+.CallAccordion{
+  box-shadow: none !important;
+  margin: 5px 0 !important;
+  border-bottom: 1px solid #E0E5F2;
+}
+
+.CallAccordion button{
+  padding: 4px 0 !important;
+}
+
+.CallAccordion::before{
+  position:unset !important;
+}
+
+.CallAccordion svg{
+  fill: #24252C !important;
+  font-size: 28px !important;
+}
+
+
+
+ 
+ * {
+
+   -webkit-tap-highlight-color: rgba(194, 194, 194, 0.247);
+ 
+ }
+
+ /* OR Change it to a custom color */
+button, a, input, [role="button"] {
+  -webkit-tap-highlight-color: rgb(0, 0, 0); /* Light gray */
+}
+

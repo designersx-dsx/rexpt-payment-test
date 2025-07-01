@@ -62,6 +62,7 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
     setSelectedAccordion(selectedAccordion === id ? null : id);
   };
 
+
   if (loading) return <p className={styles.status}><Loader /></p>;
   if (error) return <p className={styles.statusError}>{error}</p>;
 
@@ -88,6 +89,7 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
         <button
           className={`${styles.tabButton} ${selectedTab === 'year' ? styles.active : ''}`}
           onClick={() => setSelectedTab('year')}
+
         >
           Yearly
         </button>
@@ -133,6 +135,7 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
                     </p>
                   </div>
                 </div>
+
               </label>
             </div>
 
@@ -146,6 +149,7 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
                   <div
                     key={price.id}
                     className={styles.priceOption}
+
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate('/checkout', { state: { priceId: price.id } });
