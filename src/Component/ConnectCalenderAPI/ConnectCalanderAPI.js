@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import styles from './CalendarConnect.module.css';
 import HeaderBar from '../HeaderBar/HeaderBar';
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Typography from "@mui/material/Typography";
+
+
 
 const CalendarConnect = () => {
   const [hasCalAccount, setHasCalAccount] = useState(true);
@@ -12,6 +18,12 @@ const CalendarConnect = () => {
     // You can handle the API key submission logic here
     alert(`API Key submitted: ${apiKey}`);
   };
+
+   const [expanded, setExpanded] = useState("panel1");
+  
+    const handleChange = (panel) => (event, isExpanded) => {
+      setExpanded(isExpanded ? panel : false);
+    };
   return (
     <div>
   <HeaderBar title="Connect Calendar" />
@@ -29,8 +41,7 @@ const CalendarConnect = () => {
         <div className={styles.icons}>
           <img src="/images/CalcSupport.png" alt="Outlook" />
         </div>
-        <p className={styles.apiNote}>via Cal.com API Key Integration</p>
-      </div>
+              </div>
 
       <div className={styles.toggleSection}>
         <label>
@@ -98,9 +109,25 @@ const CalendarConnect = () => {
       {/* <hr /> */}
 
       <div className={styles.guideSection}>
-        <p>
+        
+ <Accordion className="CallAccordion connectCalender" expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
+        <AccordionSummary  id="panel2bh-header">
+          <Typography component="span" sx={{ width: "80%", flexShrink: 0 }}>
+            
+        <p className={styles.ShowClick}>
           <strong><a href="#">Why Cal.com Account</a></strong> for Calendar Connection?
         </p>
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails className='AccorParaPadig'>
+          <Typography >
+            <p className={styles.AccorPara}>
+           We have spent significant time & effort to build <strong>the best Agentic AI Receptionist </strong> service. Our goal is to democratize the AI Receptionist creation for everyone rather the building calendar and meeting management system.<br></br><br></br>
+So we partnered with the best scheduling platform for seamless integration of your calendars.</p>
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+        
 
         <button className={styles.guideButton}>
             <div>

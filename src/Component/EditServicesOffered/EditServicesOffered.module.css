@@ -1,0 +1,262 @@
+.Maindiv {
+    padding-inline: 20px;
+}
+
+.headerWrapper {
+    position: relative;
+}
+
+.heading {
+    color: #24252C;
+    text-align: center;
+    font-size: 35px;
+    margin: 0;
+}
+
+.subheading {
+    color: #86868C;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.higlight {
+    background-color: #6524EB;
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+.tooltipIcon {
+    margin-left: 8px;
+    cursor: pointer;
+    position: absolute;
+    right: -15px;
+    top: 10px;
+}
+
+
+
+.section {
+    padding-block: 20px 0px;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    background-color: #F4F7FE;
+    border-radius: 999px;
+    padding: 0.75rem 1rem;
+    box-shadow: inset 0 0 0 1px #f0f2f5;
+    min-height: 50px;
+}
+
+.searchIcon {
+    font-size: 1rem;
+    color: #909db5;
+    margin-right: 0.5rem;
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1rem;
+    color: #5a6572;
+    width: 100%;
+}
+
+
+.ListDiv {
+    margin-top: 1rem;
+    border: 1px solid #E0E5F2;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background-color: #fff;
+    transition: all 0.3s;
+    min-height: 70px;
+    padding-inline: 10px;
+    padding-block: 5px;
+}
+
+.option strong {
+    font-size: 18px;
+    color: #24252C;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.subType {
+    color: #A3AED0;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+.optionList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 35dvh;
+    overflow: auto;
+    padding-right: 10px;
+}
+
+
+.optionList::-webkit-scrollbar {
+    width: 4px;
+}
+
+
+.optionList::-webkit-scrollbar-thumb {
+    background-color: #6524EB;
+    border-radius: 4px;
+}
+
+.optionList::-webkit-scrollbar-thumb:hover {
+    background-color: #D9D9D9;
+    border-radius: 20px;
+}
+
+.optionList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.forflex {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.icon {
+    margin-right: 10px;
+}
+
+.inputGroup {
+    margin-top: 1rem;
+
+    flex-direction: column;
+    position: relative;
+}
+
+.selectGroup {
+    margin-top: 1rem;
+
+    flex-direction: column;
+    position: relative;
+}
+
+.labReq {
+    margin-top: 20px;
+}
+
+.Dblock {
+    /* display: grid; */
+}
+
+.inputError {
+    border-color: #d93025 !important;
+    outline: none;
+}
+
+.inlineError {
+    color: #d93025;
+    font-size: 12px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    position: absolute;
+}
+
+.purpleCheckbox {
+    accent-color: #6524EB;
+    height: 20px;
+    width: 20px;
+}
+
+.addMore {
+    margin-block: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.addMore p {
+    color: #24252C;
+    font-size: 12px;
+
+}
+
+.wrapper {
+    background-color: #f5efff;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.inputContainer {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #e0e0f0;
+    border-radius: 12px;
+    padding: 10px 14px;
+}
+
+.input {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #8c8ca1;
+    flex-grow: 1;
+}
+
+.addButton {
+    color: white;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.stickyWrapper {
+    position: sticky;
+    bottom: 0px;
+    background: rgb(255, 255, 255);
+    padding: 10px 0;
+    z-index: 10;
+}
+
+/* Media Query Start */
+@media (max-width:375px) {
+    .option strong {
+        font-size: 15px;
+    }
+
+    .subType {
+        font-size: 13px;
+    }
+}
+
+@media screen and (min-width: 601px) {
+    .Maindiv {
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+    }
+}

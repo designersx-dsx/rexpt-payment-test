@@ -29,6 +29,15 @@ import CallDetails from "./Component/CallDetails/CallDetails";
 import BusinessServicesNEXT from "./Component/BusinessServices/BusinessServicesNEXT"
 import CalInfo from "./Component/Dashboard/CalInfo";
 import EditProfile from "./Component/EditProfile/EditProfile";
+//... Edit Screen Start ....//
+import EditAgentNew from "./Component/EditAgentNew/EditAgentNew";
+import EditBusinessType from "./Component/EditBusinessType/EditBusinessType";
+import EditServicesOffered from "./Component/EditServicesOffered/EditServicesOffered";
+import EditPublic from "./Component/EditPublic/EditPublic";
+
+//... Edit Screen End ....//
+
+
 import { useEffect } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
@@ -36,6 +45,8 @@ import BusinessListing from "./Component/BusinessListing/BusinessListing";
 import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
 import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI"
+import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
+
 
 // import Test from "./utils/Test";
 
@@ -90,6 +101,13 @@ function App() {
                 </Route>
                 <Route path="/" element={<Start />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/edit-agent-new" element={<EditAgentNew />} />
+                <Route path="/edit-business-type" element={<EditBusinessType />} />
+                <Route path="/edit-services-offered" element={<EditServicesOffered />} />
+                <Route path="/edit-public" element={<EditPublic/>} />
+
+
+
 
                 <Route
                   path="/details"
@@ -220,6 +238,9 @@ function App() {
                 <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
                 <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
                 <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI/></SecureRoute>} />
+                  
+
+                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent/></SecureRoute>} />
 
 
                   <Route path="/test-other" element={<Test/>} />

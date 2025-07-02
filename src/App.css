@@ -266,6 +266,13 @@
   fill: #24252C !important;
   font-size: 28px !important;
 }
+.CallAccordion.connectCalender{
+  border-bottom: 0px solid #000 !important;
+}
+
+.AccorParaPadig{
+  padding: 0;
+}
 
 
 
