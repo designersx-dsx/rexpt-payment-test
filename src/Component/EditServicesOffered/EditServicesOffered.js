@@ -482,7 +482,7 @@ const EditServicesOffered = () => {
     // Find business object by type
     const filteredBusinessType = businessServices?.find(
         (item) =>
-            item.type.toLowerCase().includes(businessType.toLowerCase())
+            item?.type?.toLowerCase()?.includes(businessType?.toLowerCase())
     );
     const uniqueServices = Array.from(
         new Set([
