@@ -521,9 +521,7 @@ const EditServicesOffered = () => {
                 <div className={styles.headerWrapper}>
                     <h2 className={styles.heading}>Services Offered</h2>
                     <p className={styles.subheading}>Select the “Services You Offer” based on the Business Category</p>
-                    <div className={styles.tooltipIcon}>
-                        <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
-                    </div>
+                   
                 </div>
                 <div className={styles.section}>
                     <div className={styles.searchBox}>
