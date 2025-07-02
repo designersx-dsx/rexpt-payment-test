@@ -793,7 +793,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
                 className={styles.addIcon}
                 onClick={handleAddService}
               >
-                Add
+              <img src='/svg/addMore-icon.svg' alt='addMore-icon' />
               </button>
             </div>
           </div>

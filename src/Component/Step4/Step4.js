@@ -9,13 +9,13 @@ import styles from "../Step4/Step4.module.css";
 const roles = [
   {
     title: "General Receptionist",
-    description: "Ready to handle all Inbound calls",
-    icon: "svg/general-receptionist.svg",
+    // description: "Ready to handle all Inbound calls",
+    // icon: "svg/general-receptionist.svg",
   },
   {
-    title: "Inbound LEAD Qualifier",
-    description: "Handle inbound sales queries",
-    icon: "svg/sales receptionist.svg",
+    title: "LEAD Qualifier",
+    // description: "Handle inbound sales queries",
+    // icon: "svg/sales receptionist.svg",
   },
 ];
 
@@ -122,12 +122,12 @@ const Step4 = forwardRef(
             className={`${styles.card} ${selectedRole === role.title ? styles.selected : ""
               }`}
           >
-            <div className={styles.iconBox}>
+            {/* <div className={styles.iconBox}>
               <img src={role.icon} alt={role.title} className={styles.icon} />
-            </div>
+            </div> */}
             <div className={styles.info}>
               <p className={styles.title}>{role.title}</p>
-              <p className={styles.description}>{role.description}</p>
+              {/* <p className={styles.description}>{role.description}</p> */}
             </div>
             <input
               type="radio"

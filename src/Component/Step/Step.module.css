@@ -1,7 +1,8 @@
 .container {
   padding-block: 0px;
   padding-inline: 20px;
-  /* text-align: center; */
+  overflow: scroll;
+  max-height: 90dvh;
 
 }
 

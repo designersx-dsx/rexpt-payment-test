@@ -173,13 +173,13 @@ const Step = () => {
             sliderRef.current?.slickGoTo(prevStep);
         }
     };
-    const isAdaptiveHeight = currentStep !== 3
+    // const isAdaptiveHeight = currentStep !== 3
     const settings = {
         dots: false,
         infinite: false,
         speed: 500,
         slidesToShow: 1,
-        adaptiveHeight: isAdaptiveHeight,
+        // adaptiveHeight: isAdaptiveHeight,
         slidesToScroll: 1,
         arrows: false,
         swipe: false,
@@ -1013,39 +1013,73 @@ const Step = () => {
             setShowPopup(false);
         }, 3000);
     };
+    // const getStepTitle = () => {
+    //     if (currentStep === 0) {
+    //         return EditingMode ? "Edit: Business Type" : "Business Type";
+    //     } else if (currentStep === 1) {
+    //         return EditingMode ? "Edit: Services Offered" : "Services Offered"
+    //     }
+    //     else if (currentStep === 3) {
+    //         return EditingMode ? "Edit: Public Listing" : "Public Listing";
+    //     }
+    //     else if (currentStep === 4) {
+    //         return EditingMode ? "Edit: Business Details" : "Business Details";
+    //     }
+    //     else if (currentStep === 5) {
+    //         return EditingMode ? "Edit: Select Language" : "Select Language";
+    //     }
+    //     else if (currentStep === 6) {
+    //         return EditingMode ? "Edit: Select Voice" : "Select Voice";
+    //     } else if (currentStep === 7) {
+    //         return EditingMode ? "Edit: Select Gender" : "Select Gender";
+    //     }
+    // };
+
+
     const getStepTitle = () => {
-        if (currentStep === 0) {
-            return EditingMode ? "Edit: Select Category" : "Select Category";
-        } else if (currentStep === 1) {
-            return EditingMode ? "Edit: Business Services" : "Business Services"
-        }
+        const steps = {
+            0: {
+                title: EditingMode ? "Edit: Business Type" : "Business Type",
+                subTitle: "Select category which best describes your business type",
+                icon: "business-type-icon.svg",
+            },
+            1: {
+                title: EditingMode ? "Edit: Services Offered" : "Services Offered",
+                subTitle: "Select the “Services You Offer” for your Restaurant Business",
+                icon: "services-icon.svg",
+            },
+            3: {
+                title: EditingMode ? "Edit: Public Listing" : "Public Listing",
+                subTitle: "Enter your Google My Business Listing & Website",
+                icon: "listing-icon.svg",
+            },
+            4: {
+                title: EditingMode ? "Edit: Business Details" : "Business Details",
+                subTitle: "Verify or Update your Business Details we got from your public listings",
+                icon: "details-icon.svg",
+            },
+            5: {
+                title: EditingMode ? "Edit: Select Language" : "Select Language",
+                subTitle: "Select the Primary Language, You want your agent to speak",
+                icon: "language-icon.svg",
+            },
+            6: {
+                title: EditingMode ? "Edit: Select Voice" : "Select Voice",
+                subTitle: "Select a voice for your agent as per your liking",
+                icon: "voice-icon.svg",
+            },
+            7: {
+                title: EditingMode ? "Edit: Name & Avatar" : "Name & Avatar",
+                subTitle: "Select the gender of your AI receptionist for your Business",
+                icon: "gender-icon.svg",
+            },
+        };
 
-
-        // useEffect(() => {
-        //     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-        //         setShowPopup(true);
-        //         setPopupType('failed');
-        //         setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
-        //     }
-        // }, [CheckingUserLimit, isLimitExceeded]);
-
-        // if (CheckingUserLimit) return <p></p>;
-
-
-        else if (currentStep === 3) {
-            return EditingMode ? "Edit: Public Listing" : "Public Listing";
-        }
-        else if (currentStep === 4) {
-            return EditingMode ? "Edit: Business Details" : "Business Details";
-        }
-        else if (currentStep === 5) {
-            return EditingMode ? "Edit: Select Language" : "Select Language";
-        }
-        else if (currentStep === 6) {
-            return EditingMode ? "Edit: Select Voice" : "Select Voice";
-        } else if (currentStep === 7) {
-            return EditingMode ? "Edit: Select Gender" : "Select Gender";
-        }
+        return steps[currentStep] || {
+            title: "Step Not Found",
+            subTitle: "",
+            icon: "default-icon.svg",
+        };
     };
 
     useEffect(() => {
@@ -1175,7 +1209,7 @@ const Step = () => {
                 if (!isStep3Valid || !isStep4Valid) return;
                 navigate("/checkout")
             }
-            
+
         }
         else if (locationPath !== "/checkout" && !priceId) {
             console.log("hy")
@@ -1183,10 +1217,10 @@ const Step = () => {
                 const isStep3Valid = step8ARef.current?.validate?.();
                 const isStep4Valid = step8BRef.current?.validate?.();
                 if (!isStep3Valid || !isStep4Valid) return;
-                   navigate('/plans')
-            addCompletedStep(currentStep);
+                navigate('/plans')
+                addCompletedStep(currentStep);
             }
-         
+
 
         }
         else if (locationPath !== "/checkout" && !priceId) {
@@ -1195,9 +1229,9 @@ const Step = () => {
                 const isStep4Valid = step8BRef.current?.validate?.();
                 if (!isStep3Valid || !isStep4Valid) return;
                 navigate('/plans')
-            addCompletedStep(currentStep);
+                addCompletedStep(currentStep);
             }
-            
+
 
         }
 
@@ -1215,11 +1249,12 @@ const Step = () => {
             isContinueCalled.current = true;
         }
     }, [freeTrail, currentStep, locationPath]);
-
-
+    const step = getStepTitle();
     return (
         <div className={styles.container}>
-            <StepHeader title={getStepTitle()} />
+            <StepHeader title={step.title}
+                subTitle={step.subTitle}
+                icon={step.icon} />
             <Slider ref={sliderRef} {...settings}>
                 {/* business-details */}  {/* Step 1 */}
                 {currentStep === 0 && <div>

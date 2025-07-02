@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import styles from '../StepHeader/StepHeader.module.css'
+import Divider from '../Divider/Divider';
 import Loader2 from '../Loader2/Loader2';
-const StepHeader = ({ title }) => {
+const StepHeader = ({ title, subTitle, icon }) => {
     const [scale, setScale] = useState(1);
 
     useEffect(() => {
@@ -19,16 +20,7 @@ const StepHeader = ({ title }) => {
 
             <div
                 className={styles.LogoWrapper}
-            // style={{
-            //     position: 'sticky',
-            //     top: '10px',
-            //     transform: `scale(${scale})`,
-            //     transition: 'transform 0.3s ease-out',
-            //     transformOrigin: 'center center',
-            //     margin: '0 auto',
-            //     display: 'inline-block',
-            //     zIndex: 10,
-            // }}
+
             >
                 <div className={styles.RipplThree}>
                     <span className={styles.ripple}></span>
@@ -74,16 +66,19 @@ const StepHeader = ({ title }) => {
                     {/* heloo */}
                 </div>
             </div>
-            <h2 className={styles.heading}
-            // style={{
-            //     transform: `scale(${scale})`,
-            //     transition: 'transform 0.3s ease-out',
-            //     transformOrigin: 'center center',
-            //     marginTop: '1rem',
-            //     fontSize: `${scale * 2.5}rem`,
-            // }}
+            <Divider label='Agent Setup' />
+            <div className={styles.headerWrapper}>
+                <div>
+                    <h2 className={styles.heading}
+                    >{title}</h2>
+                    <p className={styles.subHeading}>{subTitle}</p>
+                </div>
+                <div className={styles.tooltipIcon}>
+                    <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
+                </div>
+            </div>
 
-            >{title}</h2>
+
         </div>
     )
 }

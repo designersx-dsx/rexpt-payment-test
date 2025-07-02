@@ -104,7 +104,7 @@ function App() {
                 <Route path="/edit-agent-new" element={<EditAgentNew />} />
                 <Route path="/edit-business-type" element={<EditBusinessType />} />
                 <Route path="/edit-services-offered" element={<EditServicesOffered />} />
-                <Route path="/edit-public" element={<EditPublic/>} />
+                <Route path="/edit-public-listing" element={<EditPublic />} />
 
 
 
@@ -232,19 +232,13 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
+                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
+                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
+                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
+                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
+                <Route path="/test-other" element={<Test />} />
 
-
-                <Route path="/edit-profile" element={ <SecureRoute><EditProfile /></SecureRoute>} />
-                <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
-                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
-                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI/></SecureRoute>} />
-                  
-
-                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent/></SecureRoute>} />
-
-
-                  <Route path="/test-other" element={<Test/>} />
-               
 
 
               </Routes>

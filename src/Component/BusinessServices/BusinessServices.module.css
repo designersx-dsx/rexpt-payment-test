@@ -475,6 +475,11 @@
     color: #24252C;
 
 }
+.addIcon{
+border: none;
+background-color: transparent;
+}
+
 
 .Btn {
     width: 90%;
