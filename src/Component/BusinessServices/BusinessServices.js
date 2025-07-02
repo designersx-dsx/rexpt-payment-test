@@ -761,8 +761,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       <div className={styles.CallTransferMain1}>
         {/* Checkbox to toggle service input */}
         <div className={styles.headrPart}>
-          <label>
-            <input
+          <input
               type="checkbox"
               checked={showInput}
               onChange={(e) => {
@@ -771,7 +770,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
                 sessionStorage.setItem("showInput", JSON.stringify(checked));
               }}
             />
-
+          <label>
             Add More Services
           </label>
         </div>

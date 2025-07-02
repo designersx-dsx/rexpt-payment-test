@@ -122,41 +122,32 @@ const Step4 = forwardRef(
             className={`${styles.card} ${selectedRole === role.title ? styles.selected : ""
               }`}
           >
-            {/* <div className={styles.iconBox}>
-              <img src={role.icon} alt={role.title} className={styles.icon} />
-            </div> */}
-            <div className={styles.info}>
-              <p className={styles.title}>{role.title}</p>
-              {/* <p className={styles.description}>{role.description}</p> */}
+            <div className={styles.forflex}>
+              <div className={styles.info}>
+                <p className={styles.title}>{role.title}</p>
+
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="receptionist"
+                  value={role.title}
+                  checked={selectedRole === role.title}
+                  onChange={() => {
+                    setSelectedRole(role.title);
+                    detectRoleTypeChange(role?.title);
+                  }}
+                  className={styles.radio}
+                />
+                {/* <span className={styles.customRadio}></span> */}
+              </div>
+
             </div>
-            <input
-              type="radio"
-              name="receptionist"
-              value={role.title}
-              checked={selectedRole === role.title}
-              onChange={() => {
-                setSelectedRole(role.title);
-                detectRoleTypeChange(role?.title);
-              }}
-              className={styles.radio}
-            />
-            <span className={styles.customRadio}></span>
+
           </label>
         ))}
 
-        {/* <div className={styles.noteCard}> */}
-          {/* <label htmlFor="agent-note" className={styles.noteTitle}>
-            Additional Note for Your Agent
-          </label>
-          <textarea
-            id="agent-note"
-            placeholder="Note"
-            value={agentNote}
-            onChange={(e) => setAgentNote(e.target.value)}
-            className={styles.noteTextarea}
-            rows={2}
-          /> */}
-        {/* </div> */}
+
       </div>
     );
   }

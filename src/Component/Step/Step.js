@@ -1615,6 +1615,7 @@ const Step = () => {
 
 
             </div> */}
+
             {/* Nitish code */}
             <div className={styles.footerFixed}>
                 <div className={styles.stepsIndicator}>
@@ -1699,6 +1700,7 @@ const Step = () => {
                 </button>
                 }
             </div>
+            
             {showPopup && (
                 <PopUp
                     type={popupType}
