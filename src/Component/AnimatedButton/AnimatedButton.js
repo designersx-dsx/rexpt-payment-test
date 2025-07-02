@@ -20,7 +20,7 @@ const AnimatedButton = ({ label = 'Save' }) => {
   };
 
   return (
-    <div>
+    <div className={styles.btnFix}>
       <div
         className={styles.btnTheme}
         onMouseEnter={handleZoomAnimation}

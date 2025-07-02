@@ -34,6 +34,10 @@ import EditAgentNew from "./Component/EditAgentNew/EditAgentNew";
 import EditBusinessType from "./Component/EditBusinessType/EditBusinessType";
 import EditServicesOffered from "./Component/EditServicesOffered/EditServicesOffered";
 import EditPublic from "./Component/EditPublic/EditPublic";
+import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetail"
+import EditLanguage from "./Component/EditLanguage/EditLanguage"
+import EditGender from "./Component/EditGender/EditGender"
+import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar"
 
 //... Edit Screen End ....//
 
@@ -106,6 +110,10 @@ function App() {
                 <Route path="/edit-business-type" element={<EditBusinessType />} />
                 <Route path="/edit-services-offered" element={<EditServicesOffered />} />
                 <Route path="/edit-public" element={<EditPublic/>} />
+                <Route path="/edit-business-detail" element={<EditBusinessDetail/>} />
+                <Route path="/edit-language" element={<EditLanguage/>} />
+                <Route path="/edit-gender" element={<EditGender/>} />
+                <Route path="/edit-name-avtar" element={<EditNameAvtar/>} />
 
 
 

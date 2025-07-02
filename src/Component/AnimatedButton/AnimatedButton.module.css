@@ -1,3 +1,12 @@
+.btnFix{
+    position: fixed;
+    width: calc(100% - 40px);
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 10;
+}
 .btnTheme {
   position: relative;
   color: white;
@@ -30,6 +39,7 @@
   pointer-events: none;
   z-index: 1;
   transition: none;
+  max-height: 65px;
 }
 
 /* Shared animation class */
