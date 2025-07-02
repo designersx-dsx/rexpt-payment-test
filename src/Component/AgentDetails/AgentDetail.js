@@ -34,8 +34,8 @@ const AgentDashboard = () => {
   const agentID=sessionStorage.getItem('SelectAgentId');
   const agentBuisnesId=sessionStorage.getItem('SelectAgentBusinessId');
   const [agentDetails,setAgentDetail]=useState({
-     agentId:location?.state?.agentId || sessionStorage.getItem('SelectAgentBusinessId'),
-     bussinesId:location?.state?.bussinesId || sessionStorage.getItem('SelectAgentId')
+     agentId:location?.state?.agentId ||  sessionStorage.getItem('SelectAgentId'),
+     bussinesId:location?.state?.bussinesId ||sessionStorage.getItem('SelectAgentBusinessId')
   })
 
   useEffect(()=>{
