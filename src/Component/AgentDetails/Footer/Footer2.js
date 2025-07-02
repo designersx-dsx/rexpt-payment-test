@@ -8,9 +8,11 @@ import Plan from '../../Plan/Plan'
 import ChatBox from '../../ChatBox/ChatBox';
 import Modal from "../../Modal/Modal";
 const Footer2 = () => {
+
   const [activeTab, setActiveTab] = useState("home");
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 

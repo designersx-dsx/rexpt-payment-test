@@ -431,6 +431,17 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         setBusinessTypeError("");
       }
 
+
+  // useEffect(() => {
+  //   if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+  //     setShowPopup(true);
+  //     setPopupType('failed');
+  //     setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+  //   }
+  // }, [CheckingUserLimit, isLimitExceeded]);
+
+  // if (CheckingUserLimit) return 
+
       // Validate business size
       if (!businessSize) {
         setBusinessSizeError("Please select a business size.");
@@ -455,6 +466,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         setErrors((prev) => ({ ...prev, customBuisness: "" }));
       }
       console.log("I AM CALL ")
+
 
       return true; // No errors
     },
