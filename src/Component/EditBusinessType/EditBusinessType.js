@@ -32,11 +32,11 @@ const EditBusinessType = () => {
     const [popupType, setPopupType] = useState(null);
     const [popupMessage, setPopupMessage] = useState("");
     const [Loading, setLoading] = useState(null);
-    const navigate=useNavigate()    ;
+    const navigate=useNavigate();
     const setHasFetched=true;
     const userId = decodeTokenData?.id;
-      const { handleCreateAgent } = useAgentCreator({
-    stepValidator: () => "BusinessDetails",
+    const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "EditBusinessType",
     setLoading,
     setPopupMessage,
     setPopupType,
@@ -89,10 +89,13 @@ const EditBusinessType = () => {
             const businessDetails = JSON.parse(stored);
             console.log(businessDetails)
             if (businessDetails) {
-              setBusinessType(businessDetails.businessType || "");
-              setprevBuisnessType(businessDetails.businessType || "");
-              setBusinessSize(businessDetails.businessSize || "");
-              setcustomBuisness(businessDetails.customBuisness || "");
+              setBusinessType(businessDetails?.businessType || "");
+              setprevBuisnessType(businessDetails?.businessType || "");
+              if(!sessionStorage.getItem("prevBuisnessType")){
+                sessionStorage.setItem("prevBuisnessType",businessDetails?.businessType)
+              }
+              setBusinessSize(businessDetails?.businessSize || "");
+              setcustomBuisness(businessDetails?.customBuisness || "");
             }
           }
         } catch (err) {
@@ -231,7 +234,7 @@ const EditBusinessType = () => {
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
     console.log('dsdsdsdsd',prevBuisnessType, businessType)
-      if (prevBuisnessType != businessType) {
+      if (sessionStorage.getItem("prevBuisnessType") != businessType) {
       setPopupType("confirm");
       setPopupMessage(
         "Business type changed please change the related business services!"

@@ -204,7 +204,7 @@ const EditAgentNew = () => {
 
     return (
         <div>
-            <EditHeader title='Agent name' agentName='sofia' />
+            <EditHeader title='Agent name' agentName={sessionStorage.getItem("agentName")} />
             <div className={styles.wrapper}>
                 <div className={styles.stepsContainer}>
                     {steps.map((step, index) => (

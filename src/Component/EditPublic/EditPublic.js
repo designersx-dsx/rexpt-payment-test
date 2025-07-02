@@ -39,7 +39,76 @@ const EditPublic = () => {
     };
     sessionStorage.setItem("aboutBusinessForm", JSON.stringify(updated));
   }, [googleListing, displayBusinessName, businessUrl, noGoogleListing, noBusinessWebsite]);
+  const fetchPlaceDetails = (placeId) => {
+    // setLoading(true);
+    const service = new window.google.maps.places.PlacesService(
+      document.createElement("div")
+    );
 
+    service.getDetails({ placeId }, (result, status) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+      
+        generateGoogleListingUrl(result);
+
+        const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+        // Extract important fields from result
+        const businessData = {
+          businessName: result.name || "",
+          address: result.formatted_address || "",
+          phone: result.formatted_phone_number || "",
+          internationalPhone: result.international_phone_number || "",
+          website: result.website || "",
+          rating: result.rating || "",
+          totalRatings: result.user_ratings_total || "",
+          hours: result.opening_hours?.weekday_text || [],
+          businessStatus: result.business_status || "",
+          categories: result.types || [],
+        };
+        const updatedForm = {
+          ...form1,
+          ...businessData,
+        };
+        sessionStorage.setItem(
+          "placeDetailsExtract",
+          JSON.stringify(updatedForm)
+        );
+     
+      } else {
+        console.error("Place details fetch failed:", status);
+      }
+      // setLoading(false);
+    });
+  };
+    const generateGoogleListingUrl = (place) => {
+    const address = [
+      place.address_components.find((c) => c.types.includes("street_number"))
+        ?.long_name,
+      place.address_components.find((c) => c.types.includes("route"))
+        ?.long_name,
+      place.address_components.find((c) => c.types.includes("premise"))
+        ?.long_name,
+      place.address_components.find((c) => c.types.includes("subpremise"))
+        ?.long_name,
+      place.address_components.find((c) =>
+        c.types.includes("sublocality_level_1")
+      )?.long_name,
+      place.address_components.find((c) => c.types.includes("locality"))
+        ?.long_name,
+      place.address_components.find((c) =>
+        c.types.includes("administrative_area_level_2")
+      )?.long_name,
+      place.address_components.find((c) =>
+        c.types.includes("administrative_area_level_1")
+      )?.long_name,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    const googleLink = `https://www.google.com/search?q=${encodeURIComponent(
+      place.name + " " + address
+    )}`;
+    setGoogleListing(googleLink);
+  };
   const initAutocomplete = () => {
     const input = document.getElementById("google-autocomplete");
     if (!input) return;
@@ -58,10 +127,10 @@ const EditPublic = () => {
         sessionStorage.setItem("googleListing", place.url);
         sessionStorage.setItem("displayBusinessName", place.name);
         sessionStorage.setItem("googlePlaceDetails", JSON.stringify(place));
+         fetchPlaceDetails(place.place_id);
       }
     });
   };
-
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {

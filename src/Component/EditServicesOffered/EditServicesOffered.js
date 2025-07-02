@@ -2,12 +2,15 @@ import React, { useState } from 'react'
 import EditHeader from '../EditHeader/EditHeader';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import styles from '../EditServicesOffered/EditServicesOffered.module.css'
+import { useAgentCreator } from '../../hooks/useAgentCreator';
+import { useNavigate } from 'react-router-dom';
 
 
 const EditServicesOffered = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedType, setSelectedType] = useState('');
     const [newService, setNewService] = useState('');
+    const [isAddMoreChecked,setIsAddMoreChecked]=useState(false)
     const businessServices = [
         {
             type: "Restaurant",
@@ -475,7 +478,22 @@ const EditServicesOffered = () => {
     const fetchBusinessType = JSON.parse(sessionStorage.getItem("businessDetails") || "{}");
     const fetchServices = JSON.parse(sessionStorage.getItem("businesServices") || "{}");
     const services = fetchServices.selectedService
-    const [selectedServices, setSelectedServices] = useState(services || []);
+    const [selectedService, setSelectedServices] = useState(services || []);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupType, setPopupType] = useState(null);
+    const [popupMessage, setPopupMessage] = useState("");
+    const [Loading, setLoading] = useState(null);
+    const navigate=useNavigate();
+    const setHasFetched=true;
+    const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "EditServicesOffered",
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+    });
 
     const businessType = fetchBusinessType.businessType || "";
     console.log(services)
@@ -487,32 +505,70 @@ const EditServicesOffered = () => {
     const uniqueServices = Array.from(
         new Set([
             ...filteredBusinessType?.services?.filter((s) => s !== "Other") || [],
-            ...selectedServices || [],
+            ...selectedService || [],
         ])
     );
     const handleAddService = () => {
-        const trimmedService = newService.trim();
 
-        if (!trimmedService) return;
+    const trimmedService = newService.trim();
+                console.log('before',trimmedService)
 
-        // Prevent duplicates (case insensitive)
-        const isAlreadyPresent = selectedServices.some(
-            (service) => service.toLowerCase() === trimmedService.toLowerCase()
-        );
+    if (!trimmedService) return;
+        console.log('asfete')
+    // Prevent duplicates (case insensitive)
+    const isAlreadyPresent = selectedService.some(
+        (service) => service.toLowerCase() === trimmedService.toLowerCase()
+    );
 
-        if (!isAlreadyPresent) {
-            setSelectedServices([...selectedServices, trimmedService]);
-            setNewService('');
-        }
-    };
+    if (!isAlreadyPresent) {
+        setSelectedServices([...selectedService, trimmedService]);
+        setNewService('');
+    }
+};
+
 
     const defaultServices = filteredBusinessType?.services?.filter((s) => s !== "Other") || [];
 
-    const extraServices = selectedServices?.filter(service => !defaultServices.includes(service))
-    const isAddMoreChecked = extraServices.length > 0;
+    const extraServices = selectedService?.filter(service => !defaultServices.includes(service))
+    // const isAddMoreChecked = extraServices.length > 0;
 
     const icon = filteredBusinessType.icon
-    console.log(filteredBusinessType.icon, "filteredBusinessType")
+    console.log(filteredBusinessType, "filteredBusinessType")
+    console.log(uniqueServices, "selectedService")
+
+     const handleContinue = async () => {
+    // if (isSubmitting) return; // Prevent double call
+    // setIsSubmitting(true);
+    const raw = sessionStorage.getItem("businesServices");
+    let previous = {};
+    try {
+      previous = raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.error("Failed to parse businesServices:", err);
+    }
+    const updatedBusinessServices = {
+      ...previous,
+      selectedService,
+    };
+    console.log('updatedBusinessServices',updatedBusinessServices)
+    sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+     const businessDetailsRaw = sessionStorage.getItem("businessDetails");
+    const businessDetails = businessDetailsRaw
+      ? JSON.parse(businessDetailsRaw)
+      : {};
+
+    const finalBusinessDetails = {
+      ...businessDetails,
+      selectedService,
+    };
+
+    sessionStorage.setItem("businessDetails", JSON.stringify(finalBusinessDetails));
+    sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
+
+    handleCreateAgent();
+
+
+  }
 
     return (
         <>
@@ -557,14 +613,14 @@ const EditServicesOffered = () => {
                                                 type='checkbox'
                                                 name='businessType'
                                                 checked={
-                                                    selectedServices?.includes(item) &&
+                                                    selectedService?.includes(item) &&
                                                     fetchBusinessType.businessType.toLowerCase() === filteredBusinessType?.type.toLowerCase()
                                                 }
                                                 onChange={() => {
-                                                    if (selectedServices.includes(item)) {
-                                                        setSelectedServices(selectedServices.filter(s => s !== item));
+                                                    if (selectedService.includes(item)) {
+                                                        setSelectedServices(selectedService.filter(s => s !== item));
                                                     } else {
-                                                        setSelectedServices([...selectedServices, item]);
+                                                        setSelectedServices([...selectedService, item]);
                                                     }
                                                 }}
                                                 className={styles.purpleCheckbox}
@@ -583,11 +639,14 @@ const EditServicesOffered = () => {
                         <input
                             type='checkbox'
                             name='businessType'
+                            id='businessType'
                             checked={isAddMoreChecked}
                             className={styles.purpleCheckbox}
+                            onChange={()=>setIsAddMoreChecked((prev)=>!prev)}
                         />
-                        <p>Add More Services(Not on Above List)</p>
+                       <label htmlFor='businessType'> <p>Add More Services(Not on Above List)</p></label>
                     </div>
+                    {isAddMoreChecked &&
                     <div className={styles.wrapper}>
                         <label className={styles.label}>Service Name</label>
                         <div className={styles.inputContainer}>
@@ -595,13 +654,17 @@ const EditServicesOffered = () => {
                                 type="text"
                                 placeholder="Enter your service name"
                                 className={styles.input}
+                                value={newService}
+                                onChange={(e)=>setNewService(e.target.value)}
+
                             />
                             <button className={styles.addButton}>
                                 <img src='/svg/addMore-icon.svg' alt='addMore-icon' onClick={handleAddService} />
                             </button>
                         </div>
                     </div>
-                    <div className={styles.stickyWrapper}>
+                    }
+                    <div className={styles.stickyWrapper} onClick={handleContinue}> 
                         <AnimatedButton label="Save" />
                     </div>
                 </div>
