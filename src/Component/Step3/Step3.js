@@ -21,7 +21,7 @@ const avatars = {
   ],
 };
 
-const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange, setAvtarChecked }, ref) => {
+const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange, setAvtarChecked ,loading}, ref) => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -111,7 +111,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   };
 
   return (
-    <div className={styles.sliderContainer} id='avtarSlider'>
+    <div className={`${styles.sliderContainer} ${loading ? styles.blocked : ""}`} id='avtarSlider' >
       {/* <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2> */}
       <Slider ref={sliderRef} {...settings}>
         {availableAvatars.map((avatar, index) => (

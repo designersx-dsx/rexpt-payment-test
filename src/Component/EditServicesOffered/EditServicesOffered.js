@@ -509,6 +509,7 @@ const EditServicesOffered = () => {
         ])
     );
     const handleAddService = () => {
+
     const trimmedService = newService.trim();
                 console.log('before',trimmedService)
 
@@ -524,6 +525,7 @@ const EditServicesOffered = () => {
         setNewService('');
     }
 };
+
 
     const defaultServices = filteredBusinessType?.services?.filter((s) => s !== "Other") || [];
 
@@ -575,9 +577,7 @@ const EditServicesOffered = () => {
                 <div className={styles.headerWrapper}>
                     <h2 className={styles.heading}>Services Offered</h2>
                     <p className={styles.subheading}>Select the “Services You Offer” based on the Business Category</p>
-                    <div className={styles.tooltipIcon}>
-                        <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
-                    </div>
+                   
                 </div>
                 <div className={styles.section}>
                     <div className={styles.searchBox}>
@@ -659,7 +659,7 @@ const EditServicesOffered = () => {
 
                             />
                             <button className={styles.addButton}>
-                                <img src='/svg/addMore-icon.svg' alt='addMore-icon'   onClick={handleAddService}/>
+                                <img src='/svg/addMore-icon.svg' alt='addMore-icon' onClick={handleAddService} />
                             </button>
                         </div>
                     </div>

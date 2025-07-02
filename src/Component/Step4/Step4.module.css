@@ -2,9 +2,9 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 1rem;
   border-top: 1px solid #E0E5F2;
-  padding-top: 10px;
+  padding-top: 1rem;
 
 }
 
@@ -112,7 +112,7 @@
 
 .LastP{
   color: #24252C;
-  margin-top: 10px;
+  margin-top: 1rem;
   font-size: 14px;
   font-weight: 500;
 }
