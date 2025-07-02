@@ -10,7 +10,7 @@ import { useLocation } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 
 const CalendarConnect = () => {
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const token = localStorage.getItem("token");
   const userId = decodeToken(token)?.id;
