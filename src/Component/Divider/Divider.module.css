@@ -1,0 +1,27 @@
+/* components/Divider/Divider.module.css */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 20px 0;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background-color: #ECECEC;
+  border: none;
+}
+
+.text {
+  margin: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  background-color: #24252C;
+  padding: 6px 14px;
+  border-radius: 17px;
+  min-height: 21px;
+}

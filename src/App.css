@@ -24,9 +24,11 @@
  }
 
  .slick-list {
-   min-height: 400px !important;
+   /* min-height: 400px !important; */
  }
-
+#avtarSlider .slick-list{
+  min-height: unset !important;
+}
  /* .ForDesktop h1{
   
     font-size: 3rem;

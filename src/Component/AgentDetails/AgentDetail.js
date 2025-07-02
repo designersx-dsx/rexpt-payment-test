@@ -17,6 +17,7 @@ import Footer from "./Footer/Footer";
 import Footer2 from "./Footer/Footer2";
 import Card1 from "../Card1/Card1";
 import Card2 from "../Card2/Card2";
+import Divider from "../Divider/Divider";
 import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
@@ -58,8 +59,12 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
-  const [isModalOpen, setModalOpen] = useState();
-  console.log(agentData,"agentDataagentDataagentData")
+
+  const [isModalOpen, setModalOpen] = useState(
+    localStorage.getItem("UpdationModeStepWise") == "ON"
+  );
+  console.log(agentData, "agentDataagentDataagentData")
+
 
   const [openCard, setOpenCard] = useState(null);
 
@@ -825,11 +830,8 @@ const AgentDashboard = () => {
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
-            <div className={styles.divider}>
-              <hr className={styles.line} />
-              <span className={styles.text}>Agent Options</span>
-              <hr className={styles.line} />
-            </div>
+
+            <Divider label="Agent Options" />
 
             <div className={styles.managementActions}>
               <div

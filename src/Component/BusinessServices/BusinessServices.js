@@ -508,6 +508,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     (biz) => biz?.type === businessType
   );
 
+  console.log(selectedBusiness, "selectedBusiness")
   const defaultServices = selectedBusiness?.services || [];
   const allServices = [...defaultServices, ...customServices];
   const flatServices = allServices.flatMap((item) => {
@@ -704,7 +705,12 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
 
       sessionStorage.setItem("showInput", JSON.stringify(true));
     }
+
   }, [businessDetails])
+  useEffect(() => {
+    const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"))
+    setBusinessType(businessDetails?.businessType)
+  }, [])
   return (
     <div className={styles.container} id="servies">
       <div className={styles.searchBox}>
@@ -761,8 +767,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       <div className={styles.CallTransferMain1}>
         {/* Checkbox to toggle service input */}
         <div className={styles.headrPart}>
-          <label>
-            <input
+          <input
               type="checkbox"
               checked={showInput}
               onChange={(e) => {
@@ -771,7 +776,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
                 sessionStorage.setItem("showInput", JSON.stringify(checked));
               }}
             />
-
+          <label>
             Add More Services
           </label>
         </div>
@@ -793,7 +798,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
                 className={styles.addIcon}
                 onClick={handleAddService}
               >
-                Add
+              <img src='/svg/addMore-icon.svg' alt='addMore-icon' />
               </button>
             </div>
           </div>

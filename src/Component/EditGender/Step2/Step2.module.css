@@ -9,11 +9,19 @@
 }
 
 .sectionTitle {
-    font-size: 40px;
+    font-size: clamp(25px, 2vw, 35px);
     font-weight: 700;
-    margin: 12px 0 12px;
+    margin: 12px 0 8px;
     text-align: center;
     color: #24252C;
+}
+
+.sectionmPara{
+    font-size: 14px;
+    text-align: center;
+    font-weight: 600;
+    color: #86868c;
+    margin: 0 0 30px 0;
 }
 
 .genderContainer {
@@ -21,7 +29,7 @@
     justify-content: space-between;
     gap: 10px;
     margin-bottom: 24px;
-    margin-top: 1rem;
+    margin-top: 10px;
 
 }
 
@@ -69,10 +77,10 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    /* margin-bottom: 3rem; */
+    margin-bottom: 3rem;
     /* max-height: 380px; */
     overflow: overlay;
-    padding-right: 10px;
+    padding-right: 0px;
 }
 
 .voiceGrid::-webkit-scrollbar {
@@ -103,7 +111,7 @@
 }
 
 .voiceGrid> :nth-last-child(-n+2) {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 .voiceCard.active {

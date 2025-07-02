@@ -266,6 +266,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       updateSessionBusinessDetails("businessType", e.target.value);
          sessionStorage.removeItem("showInput");
     }
+    console.log(e.target.value,"e.target.value")
     updateSessionBusinessDetails("businessType", e.target.value);
     console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {

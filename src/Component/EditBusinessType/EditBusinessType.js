@@ -2,10 +2,14 @@ import React, { useState, useRef,useEffect} from 'react';
 import EditHeader from '../EditHeader/EditHeader';
 import styles from '../EditBusinessType/EditBusinessType.module.css';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
+
+import Tooltip from '../TooltipSteps/Tooltip';
+
 import decodeToken from '../../lib/decodeToken';
 import PopUp from '../Popup/Popup';
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import { useNavigate } from 'react-router-dom';
+
 
 const EditBusinessType = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -248,7 +252,9 @@ console.log('setBusinessType',businessType,customBuisness)
                     <h2 className={styles.heading}>Select Category</h2>
                     <p className={styles.subheading}>Select category     best describes your business type</p>
                     <div className={styles.tooltipIcon}>
-                        <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
+                        
+                        <Tooltip></Tooltip>
+
                     </div>
                 </div>
 

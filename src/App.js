@@ -34,6 +34,10 @@ import EditAgentNew from "./Component/EditAgentNew/EditAgentNew";
 import EditBusinessType from "./Component/EditBusinessType/EditBusinessType";
 import EditServicesOffered from "./Component/EditServicesOffered/EditServicesOffered";
 import EditPublic from "./Component/EditPublic/EditPublic";
+import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetail"
+import EditLanguage from "./Component/EditLanguage/EditLanguage"
+import EditGender from "./Component/EditGender/EditGender"
+import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar"
 
 //... Edit Screen End ....//
 
@@ -46,6 +50,7 @@ import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
 import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI"
 import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
+import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
 
 
 // import Test from "./utils/Test";
@@ -104,7 +109,14 @@ function App() {
                 <Route path="/edit-agent" element={<EditAgentNew />} />
                 <Route path="/edit-business-type" element={<EditBusinessType />} />
                 <Route path="/edit-services-offered" element={<EditServicesOffered />} />
+
+                <Route path="/edit-public-listing" element={<EditPublic />} />
+
                 <Route path="/edit-public" element={<EditPublic/>} />
+                <Route path="/edit-business-detail" element={<EditBusinessDetail/>} />
+                <Route path="/edit-language" element={<EditLanguage/>} />
+                <Route path="/edit-gender" element={<EditGender/>} />
+                <Route path="/edit-name-avtar" element={<EditNameAvtar/>} />
 
 
 
@@ -232,19 +244,29 @@ function App() {
                     </SecureRoute>
                   }
                 />
+                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
+                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
+                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
+                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
+                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
+                <Route path="/test-other" element={<Test />} />
+
+
 
 
                 <Route path="/edit-profile" element={ <SecureRoute><EditProfile /></SecureRoute>} />
                 <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
                 <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
                 <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI/></SecureRoute>} />
-                  
+
+                  <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp/></SecureRoute>} />
 
                    <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent/></SecureRoute>} />
 
 
                   <Route path="/test-other" element={<Test/>} />
                
+
 
 
               </Routes>
