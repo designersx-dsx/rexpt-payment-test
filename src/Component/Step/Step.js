@@ -49,6 +49,7 @@ const Step = () => {
     const [isContinueClicked, setIsContinueClicked] = useState(false);
     const [visibleStep, setVisibleStep] = useState(0);
     const [avtarChecked, setAvtarChecked] = useState(false)
+    console.log(avtarChecked, "avtarChecked")
     const [completedSteps, setCompletedSteps] = useState(() => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
@@ -1037,7 +1038,7 @@ const Step = () => {
     // };
 
 
-  const getStepTitle = () => {
+    const getStepTitle = () => {
         const steps = {
             0: {
                 title: EditingMode ? "Edit: Business Type" : "Business Type",
@@ -1259,7 +1260,13 @@ const Step = () => {
         }
     }, [freeTrail, currentStep, locationPath]);
     const step = getStepTitle();
-    console.log(step,"step")
+    console.log(step, "step")
+    useEffect(() => {
+        const storedAvatar = sessionStorage.getItem('avatar');
+        if (storedAvatar) {
+            setAvtarChecked(true);
+        }
+    }, []);
     return (
         <div className={styles.container}>
             <StepHeader title={step?.title}

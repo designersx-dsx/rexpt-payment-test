@@ -119,31 +119,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     }
   }, [EditingMode, noBusinessWebsite]);
 
-  // useEffect(() => {
-  //   const storedName = sessionStorage.getItem("displayBusinessName");
-  //   if (storedName) {
-  //     setDisplayBusinessName(storedName);
-
-  //     // Slight delay to let input mount
-  //     setTimeout(() => {
-  //       const input = document.getElementById("google-autocomplete");
-  //       if (input) {
-  //         input.focus();
-
-  //         // Simulate key press to trigger suggestion dropdown
-  //         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-  //           window.HTMLInputElement.prototype,
-  //           "value"
-  //         )?.set;
-
-  //         nativeInputValueSetter?.call(input, storedName);
-
-  //         const ev2 = new Event("input", { bubbles: true });
-  //         input.dispatchEvent(ev2);
-  //       }
-  //     }, 500);
-  //   }
-  // }, []);
+ 
 
   const fetchPlaceDetails = (placeId) => {
     setLoading(true);
@@ -674,42 +650,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                   </label>
                 </div>
               </div>
-              {/* <div className={styles.fixedBtn}> */}
-              {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
-              {/* {stepEditingMode != "ON" ? (
-                  <button
-                    type="submit"
-                    className={styles.btnTheme}
-                    disabled={loading}
-                    onClick={handleContinue}
-                  >
-                    <img src="svg/svg-theme.svg" alt="" />
-                    {loading ? (
-                      <>
-                        Add <Loader size={20} />
-                      </>
-                    ) : (
-                      <p>Continue</p>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    className={styles.btnTheme}
-                    disabled={loading}
-                    onClick={handleContinue}
-                  >
-                    <img src="svg/svg-theme.svg" alt="" />
-                    {loading ? (
-                      <>
-                        Add <Loader size={20} />
-                      </>
-                    ) : (
-                      <p>Save Edits  </p>
-                    )}
-                  </button>
-                )} */}
-              {/* </div> */}
+  
             </div>
           </form>
         </div>

@@ -491,20 +491,20 @@ const EditServicesOffered = () => {
         ])
     );
     const handleAddService = () => {
-    const trimmedService = newService.trim();
+        const trimmedService = newService.trim();
 
-    if (!trimmedService) return;
+        if (!trimmedService) return;
 
-    // Prevent duplicates (case insensitive)
-    const isAlreadyPresent = selectedServices.some(
-        (service) => service.toLowerCase() === trimmedService.toLowerCase()
-    );
+        // Prevent duplicates (case insensitive)
+        const isAlreadyPresent = selectedServices.some(
+            (service) => service.toLowerCase() === trimmedService.toLowerCase()
+        );
 
-    if (!isAlreadyPresent) {
-        setSelectedServices([...selectedServices, trimmedService]);
-        setNewService('');
-    }
-};
+        if (!isAlreadyPresent) {
+            setSelectedServices([...selectedServices, trimmedService]);
+            setNewService('');
+        }
+    };
 
     const defaultServices = filteredBusinessType?.services?.filter((s) => s !== "Other") || [];
 
@@ -599,7 +599,7 @@ const EditServicesOffered = () => {
                                 className={styles.input}
                             />
                             <button className={styles.addButton}>
-                                <img src='/svg/addMore-icon.svg' alt='addMore-icon'   onClick={handleAddService}/>
+                                <img src='/svg/addMore-icon.svg' alt='addMore-icon' onClick={handleAddService} />
                             </button>
                         </div>
                     </div>
