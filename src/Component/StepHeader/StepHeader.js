@@ -3,7 +3,7 @@ import styles from '../StepHeader/StepHeader.module.css'
 import Divider from '../Divider/Divider';
 import TooltipSteps from '../TooltipSteps/Tooltip'
 import Loader2 from '../Loader2/Loader2';
-const StepHeader = ({ title, subTitle, icon ,tooltip }) => {
+const StepHeader = ({ title, subTitle, icon, tooltip }) => {
     const [scale, setScale] = useState(1);
 
     useEffect(() => {
@@ -74,9 +74,9 @@ const StepHeader = ({ title, subTitle, icon ,tooltip }) => {
                     >{title}</h2>
                     <p className={styles.subHeading}>{subTitle}</p>
                 </div>
-                   <div className={styles.tooltipIcon}>
-          {tooltip}
-        </div>
+                <div className={styles.tooltipIcon}>
+                    {tooltip}
+                </div>
             </div>
 
 

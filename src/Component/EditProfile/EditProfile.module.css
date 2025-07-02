@@ -246,6 +246,14 @@
   margin-top: 2rem;
 }
 
+.stickyWrapper {
+    position: sticky;
+    bottom: 0px;
+    background: white;
+    padding: 10px 0;
+    z-index: 10;
+}
+
 @media screen and (min-width: 601px) {
   .card {
     width: 50%;

@@ -115,40 +115,45 @@ const Step4 = forwardRef(
     //   };
     // }, []);
     return (
-      <div className={`${styles.container} ${loading ? styles.blocked : ""}`}>
-        {roles.map((role, index) => (
-          <label
-            key={index}
-            className={`${styles.card} ${selectedRole === role.title ? styles.selected : ""
-              }`}
-          >
-            <div className={styles.forflex}>
-              <div className={styles.info}>
-                <p className={styles.title}>{role.title}</p>
+      <>
+        <div className={`${styles.container} ${loading ? styles.blocked : ""}`}>
+          {roles.map((role, index) => (
+            <label
+              key={index}
+              className={`${styles.card} ${selectedRole === role.title ? styles.selected : ""
+                }`}
+            >
+              <div className={styles.forflex}>
+                <div className={styles.info}>
+                  <p className={styles.title}>{role.title}</p>
+
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    name="receptionist"
+                    value={role.title}
+                    checked={selectedRole === role.title}
+                    onChange={() => {
+                      setSelectedRole(role.title);
+                      detectRoleTypeChange(role?.title);
+                    }}
+                    className={styles.radio}
+                  />
+                  {/* <span className={styles.customRadio}></span> */}
+                </div>
 
               </div>
-              <div>
-                <input
-                  type="radio"
-                  name="receptionist"
-                  value={role.title}
-                  checked={selectedRole === role.title}
-                  onChange={() => {
-                    setSelectedRole(role.title);
-                    detectRoleTypeChange(role?.title);
-                  }}
-                  className={styles.radio}
-                />
-                {/* <span className={styles.customRadio}></span> */}
-              </div>
 
-            </div>
+            </label>
 
-          </label>
-        ))}
+          ))}
 
 
-      </div>
+        </div>
+        <p className={styles.LastP}>A general receptionist will pick calls, provide information on your services and products, take appointments and guide callers.</p>
+      </>
+
     );
   }
 );
