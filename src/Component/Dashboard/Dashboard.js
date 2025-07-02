@@ -232,8 +232,8 @@ function Dashboard() {
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
-    sessionStorage.setItem('SelectAgentBusinessId', agent?.agent_id)
-    sessionStorage.setItem('SelectAgentId',agent?.businessId)
+    sessionStorage.setItem('SelectAgentId', agent?.agent_id)
+    sessionStorage.setItem('SelectAgentBusinessId',agent?.businessId)
     navigate("/agent-detail", {
       state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
     });
