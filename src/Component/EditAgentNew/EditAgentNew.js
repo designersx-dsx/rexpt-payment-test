@@ -8,8 +8,8 @@ const EditAgentNew = () => {
     const navigate=useNavigate();
       const  location= useLocation();
      const { agentId, businessId } = location.state || {};
-     const [editAgentId,setEditAgentID]=useState(sessionStorage.getItem('editAgentId')||null);
-     const [editBusinessId,setBusinessId]=useState(sessionStorage.getItem('editBusinessId')|| null);
+     const [editAgentId,setEditAgentID]=useState(sessionStorage.getItem('SelectAgentId')||null);
+     const [editBusinessId,setBusinessId]=useState(sessionStorage.getItem('SelectAgentBusinessId')|| null);
 
     const steps = [
         {
