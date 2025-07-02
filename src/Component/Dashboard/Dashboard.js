@@ -229,8 +229,10 @@ function Dashboard() {
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
+
     sessionStorage.setItem('SelectAgentId', agent?.agent_id)
     sessionStorage.setItem('SelectAgentBusinessId',agent?.businessId)
+
     navigate("/agent-detail", {
       state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
     });
@@ -1286,7 +1288,13 @@ function Dashboard() {
                           if (agent?.isDeactivated === 1) {
                             handleInactiveAgentAlert();
                           } else {
-                            handleOpenWidgetModal(agent);
+                            navigate("/integrate-agent", {
+                              state: {
+                                agentDetails: agent,
+                                // refreshFuntion: handleRefresh,
+                                // alertPopUp: handleAlertPopUp,
+                              },
+                            });
                           }
                         }}
                       >
