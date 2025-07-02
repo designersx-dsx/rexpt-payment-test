@@ -7,7 +7,7 @@ const SectionHeader = ({ heading, subheading, highlight, }) => {
             <h2 className={styles.heading}>{heading}</h2>
               <p className={styles.subheading}>{subheading}</p>
             <div className={styles.tooltipIcon}>
-                <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
+                {/* <img src='/svg/informtion-icon.svg' alt='informtion-icon' /> */}
             </div>
         </div>
     )
