@@ -545,6 +545,7 @@ function Dashboard() {
   };
   // Start call
   let micStream = "";
+  const isStartingRef = useRef(false);
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -558,10 +559,11 @@ function Dashboard() {
       return;
     }
 
-    if (isCallInProgress || !retellWebClient || !agentDetails) {
+    if (isStartingRef.current || isCallInProgress || !retellWebClient || !agentDetails) {
       console.error("RetellWebClient or agent details not ready.");
       return;
     }
+    isStartingRef.current = true;
     setCallLoading(false);
     setIsCallInProgress(true);
 
@@ -591,19 +593,31 @@ function Dashboard() {
       console.error("Error starting call:", err);
     } finally {
       setCallLoading(false);
+      isStartingRef.current = false;
     }
   };
   // End call
+  const isEndingRef = useRef(false);
   const handleEndCall = async () => {
+    console.log('isEndingRef.current,',isEndingRef.current)
+     if (isEndingRef.current) return;
+     isEndingRef.current = true;
+
     if (retellWebClient) {
-      const response = await retellWebClient.stopCall();
-      const payload = { agentId: agentDetails.agent_id, callId: callId };
-      if (isCallInProgress && callId) {
-        const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
-        setIsCallInProgress(false);
-      }
-      setHasFetched(false);
-      setIsCallInProgress(false);
+          try {
+          const response = await retellWebClient.stopCall();
+          const payload = { agentId: agentDetails.agent_id, callId: callId };
+          if (isCallInProgress && callId) {
+            const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+            setIsCallInProgress(false);
+          }
+            } catch (err) {
+          console.error("Error ending call:", err);
+        } finally {
+          setHasFetched(false);
+          setIsCallInProgress(false);
+          isEndingRef.current = false;
+        }
     }
   };
   // Open call modal
@@ -1737,7 +1751,7 @@ function Dashboard() {
 
         {/* Call Test Modal */}
         {openCallModal && (
-          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal} isEndingRef={isEndingRef} isCallInProgress={isCallInProgress}>
             <CallTest
               isCallActive={isCallActive}
               onStartCall={handleStartCall}

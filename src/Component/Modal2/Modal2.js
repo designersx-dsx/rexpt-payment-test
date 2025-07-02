@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Modal2.module.css';
 
-const Modal2 = ({ isOpen, onClose, children }) => {
+const Modal2 = ({ isOpen, onClose, children ,isEndingRef,isCallInProgress}) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
-
+  const [callstatus, setcallstatus] = useState(isCallInProgress);
+  console.log('isEndingRefddddd',isEndingRef)
 useEffect(() => {
   if (isOpen) {
     setShouldRender(true);
@@ -49,7 +50,7 @@ useEffect(() => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.modal}>
-          <button className={styles.closeBtn} onClick={handleClose}>
+          <button className={styles.closeBtn} onClick={handleClose} disabled={isEndingRef.current}>
             <img src='images/cross-icon.png' alt='cross-icon' />
           </button>
           {children}
