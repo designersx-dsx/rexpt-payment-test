@@ -1762,6 +1762,7 @@ function Dashboard() {
               agentName={agentDetails?.agentName}
               agentAvatar={agentDetails?.avatar}
               businessName={agentDetails?.business?.businessName}
+              isEndingRef={isEndingRef}
             />
           </Modal2>
         )}

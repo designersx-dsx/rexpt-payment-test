@@ -1291,6 +1291,7 @@ const AgentDashboard = () => {
                 agentName={agentData?.agent?.agentName}
                 agentAvatar={agentData?.agent?.avatar}
                 businessName={agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}
+                isEndingRef={isEndingRef}
               />
             </Modal2>
           )}

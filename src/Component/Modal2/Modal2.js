@@ -50,9 +50,11 @@ useEffect(() => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.modal}>
+          {/* {!isEndingRef.current && */}
           <button className={styles.closeBtn} onClick={handleClose} disabled={isEndingRef.current}>
             <img src='images/cross-icon.png' alt='cross-icon' />
           </button>
+          {/* } */}
           {children}
         </div>
       </div>
