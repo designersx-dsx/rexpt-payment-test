@@ -6,6 +6,8 @@ import AnimatedButton from '../AnimatedButton/AnimatedButton';
 const EditBusinessType = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedType, setSelectedType] = useState('');
+    const [businessType, setBusinessType] = useState("");
+    const [businessSize, setBusinessSize] = useState("")
     const [customBuisness, setcustomBuisness] = useState("");
     const [prevBuisnessType, setprevBuisnessType] = useState("");
     const [businessNameError, setBusinessNameError] = useState("");
@@ -49,16 +51,16 @@ const EditBusinessType = () => {
     );
     const btnImgRef = useRef(null);
 
-    const handlesave=async()=>{
 
-    }
       useEffect(() => {
         try {
           const stored = sessionStorage.getItem("businessDetails");
+          console.log(stored)
           if (stored && stored !== "undefined" && stored !== "null") {
             const businessDetails = JSON.parse(stored);
+            console.log(businessDetails)
             if (businessDetails) {
-              selectedType(businessDetails.businessType || "");
+              setBusinessType(businessDetails.businessType || "");
               setprevBuisnessType(businessDetails.businessType || "");
               setBusinessSize(businessDetails.businessSize || "");
               setcustomBuisness(businessDetails.customBuisness || "");
@@ -69,7 +71,78 @@ const EditBusinessType = () => {
         }
       }, []);
 
-console.log('setSelectedType',selectedType,customBuisness)
+        const handleBusinessSizeChange = (e) => {
+    setBusinessSize(e.target.value);
+  };
+
+  const handlesave=()=>{}
+//     const handlesave = () => {
+
+//     if (prevBuisnessType != businessType) {
+//       sessionStorage.removeItem("selectedServices");
+//       sessionStorage.removeItem("selectedCustomServices");
+//       const raw = sessionStorage.getItem("businesServices");
+//       let previous = {};
+//       try {
+//         previous = raw ? JSON.parse(raw) : {};
+//       } catch (err) {
+//         console.error("Failed to parse businesServices:", err);
+//       }
+
+//       const updatedBusinessServices = {
+//         selectedService: [],
+//         email: previous.email,
+//       };
+//       sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+//     }
+
+//     if (!businessType) {
+//       setBusinessTypeError("Please select a business type.");
+//       hasError = true;
+//     } else {
+//       setBusinessTypeError("");
+//     }
+//     const sizeError = validateBusinessSize(businessSize);
+//     if (sizeError) {
+//       setBusinessSizeError(sizeError);
+//       hasError = true;
+//     } else {
+//       setBusinessSizeError("");
+//     }
+//     const serviceError = validateServices(customBuisness);
+//     if (serviceError) {
+//       setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
+//       hasError = true;
+//     } else {
+//       setErrors((prev) => ({ ...prev, customBuisness: "" }));
+//     }
+//     if (hasError) return;
+//     let businessData;
+//     // No errors - proceed
+//     if (businessType === "Other" && customBuisness.trim()) {
+//       businessData = {
+//         userId,
+//         businessType: "Other",
+//         customBuisness: customBuisness.trim(),
+//         businessName: businessName.trim(),
+//         businessSize,
+//       };
+//       // navigate("/about-business-next");
+//     } else {
+//       businessData = {
+//         userId,
+//         businessType,
+//         businessName: businessName.trim(),
+//         businessSize,
+//       };
+
+//       // navigate("/business-services");
+//     }
+//     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+//     onStepChange?.(1);
+//   };
+
+console.log('setBusinessType',selectedType,customBuisness)
     return (
         <>
             <EditHeader title='Edit Agent ' agentName='Sofia' />
@@ -116,8 +189,8 @@ console.log('setSelectedType',selectedType,customBuisness)
                                             <input
                                                 type='radio'
                                                 name='businessType'
-                                                checked={selectedType === item.type}
-                                                onChange={() => setSelectedType(item.type)}
+                                                checked={businessType === item.type}
+                                                onChange={() => setBusinessType(item.type)}
                                             />
                                         </div>
                                     </label>
@@ -128,7 +201,7 @@ console.log('setSelectedType',selectedType,customBuisness)
 
                         </div>
                     </div>
-                      {selectedType === "Other" && (
+                      {businessType === "Other" && (
                         <div className={styles.labReq}>
                         <div className={styles.inputGroup}>
                             <div className={styles.Dblock}>
@@ -150,7 +223,10 @@ console.log('setSelectedType',selectedType,customBuisness)
 
                     <div className={styles.inputGroup}>
                         <label>Business Size (Number of Emp.)<span className={styles.requiredField}> *</span></label>
-                        <select className={styles.selectInput} defaultValue="">
+                        <select className={styles.selectInput} 
+                        value={businessSize}
+                        onChange={handleBusinessSizeChange}
+                        >
                             <option value="" disabled className={styles.selectOption}>
                                 Number of Employe
                             </option>
