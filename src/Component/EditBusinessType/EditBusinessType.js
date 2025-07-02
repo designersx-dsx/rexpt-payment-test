@@ -251,11 +251,7 @@ console.log('setBusinessType',businessType,customBuisness)
                 <div className={styles.headerWrapper}>
                     <h2 className={styles.heading}>Select Category</h2>
                     <p className={styles.subheading}>Select category     best describes your business type</p>
-                    <div className={styles.tooltipIcon}>
-                        
-                        <Tooltip></Tooltip>
-
-                    </div>
+                    
                 </div>
 
 
