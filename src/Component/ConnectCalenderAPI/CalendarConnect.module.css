@@ -105,10 +105,20 @@
 
 .guideSection {
   text-align: center;
-      margin: 30px 0;
+      margin: 0px 0;
 }
 
-.guideSection p{
+.guideSection span{
+  margin: 0px 0 !important;
+}
+
+.CallAccordion{
+  border-bottom: 0px solid #000 !important;
+}
+
+
+
+.guideSection .ShowClick{
     font-size: clamp(14px, 2vw, 16px);
     font-weight: 500;
     color: #24252C;
@@ -159,6 +169,14 @@
     font-weight: 600;
     text-decoration: none !important;
 }
+
+.AccorPara{
+  text-decoration: unset !important;
+  text-align: center;
+  font-size: 14px;
+  
+}
+
 
 .playIcon {
   /* position: absolute;

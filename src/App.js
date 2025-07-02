@@ -45,6 +45,7 @@ import BusinessListing from "./Component/BusinessListing/BusinessListing";
 import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
 import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI"
+import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
 
 
 // import Test from "./utils/Test";
@@ -237,6 +238,9 @@ function App() {
                 <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
                 <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
                 <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI/></SecureRoute>} />
+                  <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI/></SecureRoute>} />
+
+                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent/></SecureRoute>} />
 
 
                   <Route path="/test-other" element={<Test/>} />
