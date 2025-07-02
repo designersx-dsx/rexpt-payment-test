@@ -1037,7 +1037,7 @@ const Step = () => {
     // };
 
 
-    const getStepTitle = () => {
+  const getStepTitle = () => {
         const steps = {
             0: {
                 title: EditingMode ? "Edit: Business Type" : "Business Type",
@@ -1082,7 +1082,14 @@ const Step = () => {
                 tooltip: <Tooltip />,
             },
         };
+
+        return steps[currentStep] || {
+            title: "Step Not Found",
+            subTitle: "",
+            icon: "default-icon.svg",
+        };
     };
+
 
     useEffect(() => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
@@ -1252,6 +1259,7 @@ const Step = () => {
         }
     }, [freeTrail, currentStep, locationPath]);
     const step = getStepTitle();
+    console.log(step,"step")
     return (
         <div className={styles.container}>
             <StepHeader title={step?.title}
