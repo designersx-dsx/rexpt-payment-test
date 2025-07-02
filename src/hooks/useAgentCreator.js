@@ -117,7 +117,7 @@ export const useAgentCreator = ({
     //updation here
     if (isValid && localStorage.getItem("UpdationMode") == "ON") {
       setLoading(true)
-      if (isValid == 'BusinessDetails' || isValid == 'businesServices' || isValid == 'BusinessLocation') {
+      if (isValid == 'EditBusinessType' || isValid == 'EditServicesOffered' || isValid == 'BusinessLocation') {
 
         const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
         const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
@@ -144,6 +144,9 @@ export const useAgentCreator = ({
             // zip: locationData.zip,
             customServices: cleanedCustomServices,
           });
+          if(sessionStorage.getItem('prevBuisnessType')){
+            sessionStorage.removeItem('prevBuisnessType')
+          }
           console.log('updation response', response)
         } catch (error) {
           console.log('error while buinsess details updated');
