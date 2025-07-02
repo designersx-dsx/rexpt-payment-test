@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from '../SectionHeader/SectionHeader.module.css'
+import Tooltip from '../TooltipSteps/Tooltip'
 
 const SectionHeader = ({ heading, subheading, highlight, }) => {
     return (

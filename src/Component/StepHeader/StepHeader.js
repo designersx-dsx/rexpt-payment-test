@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import styles from '../StepHeader/StepHeader.module.css'
 import Divider from '../Divider/Divider';
+import TooltipSteps from '../TooltipSteps/Tooltip'
 import Loader2 from '../Loader2/Loader2';
-const StepHeader = ({ title, subTitle, icon }) => {
+const StepHeader = ({ title, subTitle, icon ,tooltip }) => {
     const [scale, setScale] = useState(1);
 
     useEffect(() => {
@@ -73,9 +74,9 @@ const StepHeader = ({ title, subTitle, icon }) => {
                     >{title}</h2>
                     <p className={styles.subHeading}>{subTitle}</p>
                 </div>
-                <div className={styles.tooltipIcon}>
-                    <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
-                </div>
+                   <div className={styles.tooltipIcon}>
+          {tooltip}
+        </div>
             </div>
 
 

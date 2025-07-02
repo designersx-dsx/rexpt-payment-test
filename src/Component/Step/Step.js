@@ -21,6 +21,7 @@ import BusinessServices from "../BusinessServices/BusinessServices";
 import AboutBusinessNext from "../BusinessServices/BusinessServicesNEXT";
 import AboutBusiness from "../AboutBusiness/AboutBusiness";
 import BusinessListing from "../BusinessListing/BusinessListing";
+import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
 const Step = () => {
     const timestamp = Date.now();
@@ -1041,37 +1042,44 @@ const Step = () => {
             0: {
                 title: EditingMode ? "Edit: Business Type" : "Business Type",
                 subTitle: "Select category which best describes your business type",
-                icon: "business-type-icon.svg",
+                // icon: "business-type-icon.svg",
+                tooltip: <Tooltip />,
             },
             1: {
                 title: EditingMode ? "Edit: Services Offered" : "Services Offered",
                 subTitle: "Select the “Services You Offer” for your Restaurant Business",
-                icon: "services-icon.svg",
+                // icon: "services-icon.svg",
+                tooltip: <Tooltip />,
             },
             3: {
                 title: EditingMode ? "Edit: Public Listing" : "Public Listing",
                 subTitle: "Enter your Google My Business Listing & Website",
-                icon: "listing-icon.svg",
+                // icon: "listing-icon.svg",
+                tooltip: <Tooltip />,
             },
             4: {
                 title: EditingMode ? "Edit: Business Details" : "Business Details",
                 subTitle: "Verify or Update your Business Details we got from your public listings",
-                icon: "details-icon.svg",
+                // icon: "details-icon.svg",
+                tooltip: <Tooltip />,
             },
             5: {
                 title: EditingMode ? "Edit: Select Language" : "Select Language",
                 subTitle: "Select the Primary Language, You want your agent to speak",
-                icon: "language-icon.svg",
+                // icon: "language-icon.svg",
+                tooltip: <Tooltip />,
             },
             6: {
                 title: EditingMode ? "Edit: Select Voice" : "Select Voice",
                 subTitle: "Select a voice for your agent as per your liking",
-                icon: "voice-icon.svg",
+                // icon: "voice-icon.svg",
+                tooltip: <Tooltip />,
             },
             7: {
                 title: EditingMode ? "Edit: Name & Avatar" : "Name & Avatar",
                 subTitle: "Select the gender of your AI receptionist for your Business",
-                icon: "gender-icon.svg",
+                // icon: "gender-icon.svg",
+                tooltip: <Tooltip />,
             },
         };
 
@@ -1254,7 +1262,9 @@ const Step = () => {
         <div className={styles.container}>
             <StepHeader title={step.title}
                 subTitle={step.subTitle}
-                icon={step.icon} />
+                // icon={step.icon} 
+                tooltip={<Tooltip />}
+            />
             <Slider ref={sliderRef} {...settings}>
                 {/* business-details */}  {/* Step 1 */}
                 {currentStep === 0 && <div>
@@ -1700,7 +1710,6 @@ const Step = () => {
                 </button>
                 }
             </div>
-            
             {showPopup && (
                 <PopUp
                     type={popupType}
