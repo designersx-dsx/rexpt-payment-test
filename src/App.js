@@ -238,7 +238,7 @@ function App() {
                 <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
                 <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
                 <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI/></SecureRoute>} />
-                  <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI/></SecureRoute>} />
+                  
 
                    <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent/></SecureRoute>} />
 
