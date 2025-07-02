@@ -508,6 +508,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     (biz) => biz?.type === businessType
   );
 
+  console.log(selectedBusiness, "selectedBusiness")
   const defaultServices = selectedBusiness?.services || [];
   const allServices = [...defaultServices, ...customServices];
   const flatServices = allServices.flatMap((item) => {
@@ -704,7 +705,12 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
 
       sessionStorage.setItem("showInput", JSON.stringify(true));
     }
+
   }, [businessDetails])
+  useEffect(() => {
+    const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"))
+    setBusinessType(businessDetails?.businessType)
+  }, [])
   return (
     <div className={styles.container} id="servies">
       <div className={styles.searchBox}>

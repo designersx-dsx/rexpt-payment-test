@@ -1082,12 +1082,6 @@ const Step = () => {
                 tooltip: <Tooltip />,
             },
         };
-
-        return steps[currentStep] || {
-            title: "Step Not Found",
-            subTitle: "",
-            icon: "default-icon.svg",
-        };
     };
 
     useEffect(() => {

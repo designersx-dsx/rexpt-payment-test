@@ -106,7 +106,7 @@ function App() {
                 </Route>
                 <Route path="/" element={<Start />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="/edit-agent-new" element={<EditAgentNew />} />
+                <Route path="/edit-agent" element={<EditAgentNew />} />
                 <Route path="/edit-business-type" element={<EditBusinessType />} />
                 <Route path="/edit-services-offered" element={<EditServicesOffered />} />
 
