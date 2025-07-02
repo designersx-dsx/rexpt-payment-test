@@ -31,10 +31,21 @@ import PopUp from "../Popup/Popup";
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
+  const agentID=sessionStorage.getItem('SelectAgentId');
+  const agentBuisnesId=sessionStorage.getItem('SelectAgentBusinessId');
   const [agentDetails,setAgentDetail]=useState({
      agentId:location?.state?.agentId || sessionStorage.getItem('SelectAgentBusinessId'),
      bussinesId:location?.state?.bussinesId || sessionStorage.getItem('SelectAgentId')
   })
+
+  useEffect(()=>{
+    if(agentID && agentBuisnesId)  {
+        setAgentDetail({
+          agentId:agentID,
+          bussinesId:agentBuisnesId
+        })
+    }
+  },[agentBuisnesId,agentBuisnesId])
   
   // const agentDetails = location.state;
   // console.log('d',location.state)
@@ -60,9 +71,7 @@ const AgentDashboard = () => {
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
 
-  const [isModalOpen, setModalOpen] = useState(
-    localStorage.getItem("UpdationModeStepWise") == "ON"
-  );
+  const [isModalOpen, setModalOpen] = useState();
   console.log(agentData, "agentDataagentDataagentData")
 
 

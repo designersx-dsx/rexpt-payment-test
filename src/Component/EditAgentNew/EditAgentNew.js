@@ -29,26 +29,31 @@ const EditAgentNew = () => {
             number: 3,
             title: 'Public Listing',
             desc: 'Edit: Google listing, Website URL.',
+             link :'/edit-public-listing'
         },
         {
             number: 4,
             title: 'Business Details',
             desc: 'Edit: Name, Email, Phone Nu...',
+             link :'/edit-business-detail'
         },
         {
             number: 5,
             title: 'Agent Language',
             desc: 'Edit: Language.',
+             link :'/edit-language'
         },
         {
             number: 6,
             title: 'Agent Gender',
             desc: 'Edit: Gender, Voice.',
+             link :'/edit-gender'
         },
         {
             number: 7,
             title: 'Name & Avatar',
             desc: 'Edit: Name, Avtar, Type.',
+             link :'/edit-name-avtar'
         },
     ];
     const fetchPrevAgentDEtails = async (agent_id, businessId) => {
