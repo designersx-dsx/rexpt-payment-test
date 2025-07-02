@@ -1042,9 +1042,9 @@ const Step = () => {
             return EditingMode ? "Edit: Select Language" : "Select Language";
         }
         else if (currentStep === 6) {
-            return EditingMode ? "Edit: Select Voice" : "Select Voice";
-        } else if (currentStep === 7) {
             return EditingMode ? "Edit: Select Gender" : "Select Gender";
+        } else if (currentStep === 7) {
+            return EditingMode ? "Edit: Name & Avatar" : "Name & Avatar";
         }
     };
 
