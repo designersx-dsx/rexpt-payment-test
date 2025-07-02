@@ -230,26 +230,50 @@ const [customerId , setCustomerId] = useState()
   }, [showPopup, popupType, popupMessage]);
 
   const [step, setStep] = useState(0);
+  const [ready, setReady] = useState(false); // NEW add
 
-  useEffect(() => {
-    const played = sessionStorage.getItem("loginAnimationPlayed");
+  // useEffect(() => {
+  //   const played = sessionStorage.getItem("loginAnimationPlayed");
 
-    if (!played) {
-      const delays = [150, 250, 350, 450, 550];
+  //   if (!played) {
+  //     const delays = [150, 250, 350, 450, 550];
 
-      const timers = delays.map((delay, index) =>
-        setTimeout(() => setStep(index + 1), delay)
-      );
+  //     const timers = delays.map((delay, index) =>
+  //       setTimeout(() => setStep(index + 1), delay)
+  //     );
 
-      setTimeout(() => {
-        sessionStorage.setItem("loginAnimationPlayed", "true");
-      }, 700);
+  //     setTimeout(() => {
+  //       sessionStorage.setItem("loginAnimationPlayed", "true");
+  //     }, 700);
 
-      return () => timers.forEach(clearTimeout);
-    } else {
-      setStep(5);
-    }
-  }, []);
+  //     return () => timers.forEach(clearTimeout);
+  //   } else {
+  //     setStep(5);
+  //   }
+  // }, []);
+
+useEffect(() => {
+  const played = sessionStorage.getItem("loginAnimationPlayed");
+
+  if (!played) {
+    const delays = [150, 250, 350, 450, 550];
+    const timers = delays.map((delay, index) =>
+      setTimeout(() => setStep(index + 1), delay)
+    );
+
+    sessionStorage.setItem("loginAnimationPlayed", "true");
+
+    setTimeout(() => {
+      setReady(true); // animation done, now render full UI
+    }, 700);
+
+    return () => timers.forEach(clearTimeout);
+  } else {
+    setStep(5);
+    setReady(true); // no animation, render directly
+  }
+}, []);
+
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
 
@@ -287,7 +311,11 @@ const [customerId , setCustomerId] = useState()
   }, [otpSent]);
 
   return (
+
     <>
+    {ready && (
+      <div className={styles.signUpContainer}>
+         <>
       <div className={styles.signUpContainer}>
         <div className={styles.StartMain}>
           <div>
@@ -504,6 +532,10 @@ const [customerId , setCustomerId] = useState()
         </div>
       </div>
     </>
+      </div>
+    )}
+  </>
+   
   );
 };
 
