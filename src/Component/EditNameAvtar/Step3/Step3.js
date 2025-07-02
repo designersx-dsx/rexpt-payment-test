@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import styles from '../Step3/Step3.module.css';
 import Slider from 'react-slick';
-import Step4 from '../Step4/Step4';
+// import Step4 from '../Step4/Step4';
 
 const avatars = {
   Male: [
@@ -21,7 +21,7 @@ const avatars = {
   ],
 };
 
-const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange, setAvtarChecked }, ref) => {
+const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange ,setAvtarChecked}, ref) => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -30,7 +30,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const [availableAvatars, setAvailableAvatars] = useState(avatars['Male']);
   const EditingMode = localStorage.getItem("UpdationMode") === "ON";
   const [scale, setScale] = useState(1);
-
+  
   useEffect(() => {
     const storedGender = sessionStorage.getItem("agentGender") || "Male";
     const storedAvatarImg = sessionStorage.getItem("avatar");
@@ -43,7 +43,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
       setAgentName(storedAgentName);
     } else {
       setAgentName(localVoiceName);
-      sessionStorage.setItem("agentName", localVoiceName)
+       sessionStorage.setItem("agentName", localVoiceName)
     }
 
     if (storedAvatarImg) {
@@ -82,7 +82,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   useImperativeHandle(ref, () => ({
     validate: () => {
       if (!agentName.trim()) {
-        onValidationError?.({
+         onValidationError?.({
           type: "failed",
           message: "Please enter agent name!"
         });
@@ -111,7 +111,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   };
 
   return (
-    <div className={styles.sliderContainer} id='avtarSlider'>
+    <div className={styles.sliderContainer}>
       {/* <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2> */}
       <Slider ref={sliderRef} {...settings}>
         {availableAvatars.map((avatar, index) => (
@@ -131,34 +131,28 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 className={styles.avatarImage}
               />
             </label>
-
-          </div>
-        ))}
-
-      </Slider>
-      <div className={styles.labReq}>
-        <div className={styles.agentInputBox} id='sliderstep'>
-          {/* <label className={styles.agentLabel}>Name Your Virtual Agent</label> */}
-          <div className={styles.Dblock}>
-            <div className={styles.inputWrapper}>
-              <input
-                type="text"
-                name="agentName"
-                onChange={handleAgentNameChange}
-                className={styles.agentInput}
-                placeholder="Ex- Smith, Nova"
-                value={agentName}
-              />
-              <button className={styles.editBtn} onClick={() => {}}>
-                <img src="/svg/edit-svg.svg" alt="edit" />
-              </button>
+            <div className={styles.labReq}>
+              <div className={styles.agentInputBox} id='sliderstep'>
+                <label className={styles.agentLabel}>Name Your Virtual Agent</label>
+                <div className={styles.Dblock}>
+                  <input
+                    type="text"
+                    name="agentName"
+                    onChange={handleAgentNameChange}
+                    className={styles.agentInput}
+                    placeholder="Ex- Smith, Nova"
+                    value={agentName}
+                  />
+                </div>
+              </div>
+              {agentNameError && (
+                <p className={styles.agenterror}>{agentNameError}</p>
+              )}
             </div>
           </div>
-        </div>
-        {agentNameError && (
-          <p className={styles.agenterror}>{agentNameError}</p>
-        )}
-      </div>
+        ))}
+      
+      </Slider>
 
       <div className={styles.customBtn}>
         <div className={styles.arrowLeft} onClick={() => sliderRef.current.slickPrev()}>

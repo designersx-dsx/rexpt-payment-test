@@ -6,7 +6,7 @@
 .heading {
     color: #24252C;
     text-align: center;
-    font-size: 35px;
+    font-size: clamp(30px, 3vw, 35px);
     margin: 0;
 }
 

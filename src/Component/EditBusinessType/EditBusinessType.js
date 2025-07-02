@@ -2,7 +2,7 @@ import React, { useState, useRef,useEffect} from 'react';
 import EditHeader from '../EditHeader/EditHeader';
 import styles from '../EditBusinessType/EditBusinessType.module.css';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
-
+import Tooltip from '../TooltipSteps/Tooltip';
 const EditBusinessType = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedType, setSelectedType] = useState('');
@@ -151,7 +151,9 @@ console.log('setBusinessType',selectedType,customBuisness)
                     <h2 className={styles.heading}>Select Category</h2>
                     <p className={styles.subheading}>Select category     best describes your business type</p>
                     <div className={styles.tooltipIcon}>
-                        <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
+                        
+                        <Tooltip></Tooltip>
+
                     </div>
                 </div>
 
