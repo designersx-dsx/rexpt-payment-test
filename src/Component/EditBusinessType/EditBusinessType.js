@@ -2,6 +2,10 @@ import React, { useState, useRef,useEffect} from 'react';
 import EditHeader from '../EditHeader/EditHeader';
 import styles from '../EditBusinessType/EditBusinessType.module.css';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
+import decodeToken from '../../lib/decodeToken';
+import PopUp from '../Popup/Popup';
+import { useAgentCreator } from '../../hooks/useAgentCreator';
+import { useNavigate } from 'react-router-dom';
 
 const EditBusinessType = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -15,6 +19,27 @@ const EditBusinessType = () => {
     const [businessTypeError, setBusinessTypeError] = useState("");
     const [serviesTypeError, setServiesTypeError] = useState("");
     const [errors, setErrors] = useState({});
+    const token = localStorage.getItem("token");
+    const decodeTokenData = decodeToken(token);
+    const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
+    const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
+    const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupType, setPopupType] = useState(null);
+    const [popupMessage, setPopupMessage] = useState("");
+    const [Loading, setLoading] = useState(null);
+    const navigate=useNavigate()    ;
+    const setHasFetched=true;
+    const userId = decodeTokenData?.id;
+      const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "BusinessDetails",
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+  });
 
     const businessTypes = [
         { type: 'Real Estate Broker', subtype: 'Your Journey Begins Here', icon: 'svg/Estate-icon.svg' },
@@ -71,78 +96,150 @@ const EditBusinessType = () => {
         }
       }, []);
 
-        const handleBusinessSizeChange = (e) => {
+    const handleBusinessSizeChange = (e) => {
     setBusinessSize(e.target.value);
   };
 
-  const handlesave=()=>{}
-//     const handlesave = () => {
+    const validateBusinessSize = (value) => {
+    if (!value?.trim()) return "Business size is required.";
+    const allowedValues = [
+      "1 to 10 employees",
+      "10 to 50 employees",
+      "50 to 100 employees",
+      "100 to 250 employees",
+      "250 to 500 employees",
+      "500 to 1000 employees",
+      "1000+ employees"
+    ];
+    if (!allowedValues?.includes(value)) {
+      return "Invalid business size selected.";
+    }
+    return "";
+  };
 
-//     if (prevBuisnessType != businessType) {
-//       sessionStorage.removeItem("selectedServices");
-//       sessionStorage.removeItem("selectedCustomServices");
-//       const raw = sessionStorage.getItem("businesServices");
-//       let previous = {};
-//       try {
-//         previous = raw ? JSON.parse(raw) : {};
-//       } catch (err) {
-//         console.error("Failed to parse businesServices:", err);
-//       }
+    const validateServices = (value) => {
+    if (businessType === "Other" && !value.trim()) {
+      return "Business type is required.";
+    }
+    return "";
+  };
 
-//       const updatedBusinessServices = {
-//         selectedService: [],
-//         email: previous.email,
-//       };
-//       sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
-//     }
+    const updateSessionBusinessDetails = (key, value) => {
+    let existing = {};
+    try {
+      const stored = sessionStorage.getItem("businessDetails");
 
-//     if (!businessType) {
-//       setBusinessTypeError("Please select a business type.");
-//       hasError = true;
-//     } else {
-//       setBusinessTypeError("");
-//     }
-//     const sizeError = validateBusinessSize(businessSize);
-//     if (sizeError) {
-//       setBusinessSizeError(sizeError);
-//       hasError = true;
-//     } else {
-//       setBusinessSizeError("");
-//     }
-//     const serviceError = validateServices(customBuisness);
-//     if (serviceError) {
-//       setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
-//       hasError = true;
-//     } else {
-//       setErrors((prev) => ({ ...prev, customBuisness: "" }));
-//     }
-//     if (hasError) return;
-//     let businessData;
-//     // No errors - proceed
-//     if (businessType === "Other" && customBuisness.trim()) {
-//       businessData = {
-//         userId,
-//         businessType: "Other",
-//         customBuisness: customBuisness.trim(),
-//         businessName: businessName.trim(),
-//         businessSize,
-//       };
-//       // navigate("/about-business-next");
-//     } else {
-//       businessData = {
-//         userId,
-//         businessType,
-//         businessName: businessName.trim(),
-//         businessSize,
-//       };
+      if (stored && stored !== "undefined" && stored !== "null") {
+        existing = JSON.parse(stored);
+        // selectedServices
+         sessionStorage.removeItem("selectedServices");
+          sessionStorage.removeItem("businesServices");
+      }
+    } catch (e) {
+      console.error("Error parsing sessionStorage businessDetails:", e);
+    }
 
-//       // navigate("/business-services");
-//     }
-//     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-//     onStepChange?.(1);
-//   };
+    const updated = {
+      ...existing,
+      [key]: value,
+    };
+    sessionStorage.setItem("businessDetails", JSON.stringify(updated));
+  };
+    const handleBusinessTypeChange = (e) => {
+        console.log(e.target.value)
+    setBusinessType(e.target.value);
+    if (e.target.value !== "Other") {
+      setcustomBuisness(""); // Clear textbox if not "Other"
+      updateSessionBusinessDetails("businessType", e.target.value);
+         sessionStorage.removeItem("showInput");
+    }
+    updateSessionBusinessDetails("businessType", e.target.value);
+    console.log("businessTypeSubmitted", businessTypeSubmitted);
+    if (businessTypeSubmitted) {
+      setBusinessTypeError("");
+    }
 
-console.log('setBusinessType',selectedType,customBuisness)
+
+  };
+
+  const handlesave = () => {
+
+    // Validate all fields
+    let hasError = false;
+
+    if (prevBuisnessType != businessType) {
+      sessionStorage.removeItem("selectedServices");
+      sessionStorage.removeItem("selectedCustomServices");
+      const raw = sessionStorage.getItem("businesServices");
+      let previous = {};
+      try {
+        previous = raw ? JSON.parse(raw) : {};
+      } catch (err) {
+        console.error("Failed to parse businesServices:", err);
+      }
+
+      const updatedBusinessServices = {
+        selectedService: [],
+        email: previous.email,
+      };
+      sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+    }
+
+    if (!businessType) {
+      setBusinessTypeError("Please select a business type.");
+      hasError = true;
+    } else {
+      setBusinessTypeError("");
+    }
+    const sizeError = validateBusinessSize(businessSize);
+    if (sizeError) {
+      setBusinessSizeError(sizeError);
+      hasError = true;
+    } else {
+      setBusinessSizeError("");
+    }
+    const serviceError = validateServices(customBuisness);
+    if (serviceError) {
+      setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
+      hasError = true;
+    } else {
+      setErrors((prev) => ({ ...prev, customBuisness: "" }));
+    }
+    if (hasError) return;
+    let businessData;
+    // No errors - proceed
+    if (businessType === "Other" && customBuisness.trim()) {
+      businessData = {
+        userId,
+        businessType: "Other",
+        customBuisness: customBuisness.trim(),
+        businessSize,
+      };
+      // navigate("/about-business-next");
+    } else {
+      businessData = {
+        userId,
+        businessType,
+        businessSize,
+      };
+
+      // navigate("/business-services");
+    }
+    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
+    console.log('dsdsdsdsd',prevBuisnessType, businessType)
+      if (prevBuisnessType != businessType) {
+      setPopupType("confirm");
+      setPopupMessage(
+        "Business type changed please change the related business services!"
+      );
+      setShowPopup(true);
+    } else {
+      handleCreateAgent();
+    }
+  
+  };
+
+console.log('setBusinessType',businessType,customBuisness)
     return (
         <>
             <EditHeader title='Edit Agent ' agentName='Sofia' />
@@ -189,8 +286,9 @@ console.log('setBusinessType',selectedType,customBuisness)
                                             <input
                                                 type='radio'
                                                 name='businessType'
+                                                value={item.type}
                                                 checked={businessType === item.type}
-                                                onChange={() => setBusinessType(item.type)}
+                                                onChange={handleBusinessTypeChange}
                                             />
                                         </div>
                                     </label>
@@ -259,6 +357,14 @@ console.log('setBusinessType',selectedType,customBuisness)
                         <AnimatedButton label="Save" />
                     </div>
                 </div>
+                  {showPopup && (
+                    <PopUp
+                    type={popupType}
+                    onClose={()=>{}}
+                    message={popupMessage}
+                    onConfirm={()=>navigate('/edit-services-offered')}
+                    />
+                )}
             </div>
         </>
     );

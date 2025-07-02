@@ -28,9 +28,19 @@ import { useDashboardStore } from "../../Store/agentZustandStore";
 import WidgetScript from "../Widgets/WidgetScript";
 import PopUp from "../Popup/Popup";
 const AgentDashboard = () => {
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const agentDetails = location.state;
+  const [loading, setLoading] = useState(true);
+  const [agentDetails,setAgentDetail]=useState({
+     agentId:location?.state?.agentId || sessionStorage.getItem('SelectAgentBusinessId'),
+     bussinesId:location?.state?.bussinesId || sessionStorage.getItem('SelectAgentId')
+  })
+  
+  // const agentDetails = location.state;
+  // console.log('d',location.state)
+  // const agentDetails = {
+  // agentId:sessionStorage.getItem('SelectAgentBusinessId'),
+  // bussinesId:sessionStorage.getItem('SelectAgentId')
+  // }
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   // const [assignedNumbers, setAssignedNumbers] = useState([]);
@@ -1037,8 +1047,8 @@ const AgentDashboard = () => {
                     //     agentData?.agent?.businessId);
                     // }
                     // setModalOpen(true);
-                    sessionStorage.setItem('editBusinessId', agentData?.agent?.businessId)
-                    sessionStorage.setItem('editAgentId',agentData?.agent?.agent_id)
+                    sessionStorage.setItem('SelectAgentBusinessId', agentData?.agent?.businessId)
+                    sessionStorage.setItem('SelectAgentId',agentData?.agent?.agent_id)
                     navigate('/edit-agent', {
                         state: {
                           agentId: agentData?.agent?.agent_id,
