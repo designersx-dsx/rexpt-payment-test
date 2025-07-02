@@ -48,9 +48,7 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
-  const [isModalOpen, setModalOpen] = useState(
-    localStorage.getItem("UpdationModeStepWise") == "ON"
-  );
+  const [isModalOpen, setModalOpen] = useState();
   console.log(agentData,"agentDataagentDataagentData")
 
   const [openCard, setOpenCard] = useState(null);
@@ -1023,22 +1021,30 @@ const AgentDashboard = () => {
 
               <div
                 className={styles.managementItem}
-                onClick={async () => {
+                onClick={async () => 
+                  {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
 
-                    try {
-                      await fetchPrevAgentDEtails(
-                        agentData?.agent?.agent_id,
-                        agentData?.agent?.businessId);
-                    } catch (error) {
-                      await fetchPrevAgentDEtails(
-                        agentData?.agent?.agent_id,
-                        agentData?.agent?.businessId);
-                    }
-                    setModalOpen(true);
-
+                    // try {
+                    //   await fetchPrevAgentDEtails(
+                    //     agentData?.agent?.agent_id,
+                    //     agentData?.agent?.businessId);
+                    // } catch (error) {
+                    //   await fetchPrevAgentDEtails(
+                    //     agentData?.agent?.agent_id,
+                    //     agentData?.agent?.businessId);
+                    // }
+                    // setModalOpen(true);
+                    sessionStorage.setItem('editBusinessId', agentData?.agent?.businessId)
+                    sessionStorage.setItem('editAgentId',agentData?.agent?.agent_id)
+                    navigate('/edit-agent', {
+                        state: {
+                          agentId: agentData?.agent?.agent_id,
+                          businessId: agentData?.agent?.businessId,
+                        },
+                      });
 
 
                   }
