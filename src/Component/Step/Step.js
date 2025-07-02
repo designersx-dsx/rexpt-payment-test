@@ -1254,8 +1254,8 @@ const Step = () => {
     const step = getStepTitle();
     return (
         <div className={styles.container}>
-            <StepHeader title={step.title}
-                subTitle={step.subTitle}
+            <StepHeader title={step?.title}
+                subTitle={step?.subTitle}
                 // icon={step.icon} 
                 tooltip={<Tooltip />}
             />
