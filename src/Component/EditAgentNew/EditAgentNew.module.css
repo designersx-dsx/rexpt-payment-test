@@ -1,0 +1,73 @@
+.wrapper {
+    padding: 20px;
+}
+
+.stepsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e0d4fa;
+    border-radius: 12px;
+    padding: 16px 16px 16px 20px;
+    position: relative;
+    min-height: 87px;
+    margin-left: 20px;
+    background: #fff;
+    transition: border 0.2s ease;
+    cursor: pointer;
+}
+
+.card:hover {
+    border: 1.5px solid #A259FF;
+}
+
+.stepNumber {
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 2px solid #6524EB;
+    color: #6524EB;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* font-weight: 600; */
+    font-size: 22px;
+}
+
+.content {
+    flex-grow: 1;
+    padding-left: 10px;
+}
+
+.content h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #242524;
+    margin: 0;
+}
+
+.content p {
+    font-size: 16px;
+    color: #A3AED0;
+    margin: 4px 0 0;
+}
+
+@media screen and (min-width: 601px) {
+    .wrapper {
+        width: 100%;
+        padding: 20px;
+        max-width: 500px;
+        margin: auto;
+    }
+}
+

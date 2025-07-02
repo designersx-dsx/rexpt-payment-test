@@ -1,0 +1,72 @@
+.btnTheme {
+  position: relative;
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 55px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.btnTheme p {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  font-weight: 500;
+  font-size: 19px;
+  text-transform: capitalize;
+  transition: none;
+}
+
+/* Image Styling */
+.btnTheme img {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  transition: none;
+}
+
+/* Shared animation class */
+.zoomAnimate {
+  animation: zoomOnce 0.4s ease forwards;
+}
+
+/* Keyframes for zoom effect */
+@keyframes zoomOnce {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Separate zoom for p tag (centered, without translate) */
+.btnTheme p.zoomAnimate {
+  animation: textZoom 0.4s ease forwards;
+}
+
+@keyframes textZoom {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

@@ -1,0 +1,68 @@
+.container {
+    background: white;
+    border-radius: 16px;
+}
+
+.header h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.header p {
+    margin: 4px 0 17px;
+    font-size: 14px;
+    color: #9A9A9A;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #EFEFEF;
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    border: 1px solid #5F33E1;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 20px;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.card img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    /* border: 1px solid #E0E5F2;
+    border-radius: 50%; */
+}
+
+.card span {
+    font-size: 18px;
+    font-weight: 500;
+    color: #24252C;
+}
+
+.card .arrow {
+    margin-left: auto;
+    font-size: 20px;
+    color: #a259ff;
+}
+
+.card:hover {
+    background-color: #5F33E1;
+    color: white;
+
+}
+
+.card:hover span {
+    color: white;
+}
+
+.card:hover .arrow svg path {
+    fill: white;
+}
+
+.primary .arrow {
+    color: rgb(255, 255, 255);
+}
