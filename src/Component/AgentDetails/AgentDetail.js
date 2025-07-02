@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import {
@@ -362,6 +362,7 @@ const AgentDashboard = () => {
 
   // Start call handler
   let micStream = '';
+    const isStartingRef = useRef(false);
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -376,10 +377,11 @@ const AgentDashboard = () => {
       return;
     }
 
-    if (isCallInProgress || !retellWebClient || !agentData?.agent) {
+    if (isStartingRef.current || isCallInProgress || !retellWebClient || !agentData?.agent) {
       console.error("RetellWebClient or agent data not ready.");
       return;
     }
+    isStartingRef.current = true;
     setCallLoading(true);
     setIsCallInProgress(true);
     try {
@@ -409,12 +411,18 @@ const AgentDashboard = () => {
       console.error("Error starting call:", err);
     } finally {
       setCallLoading(false);
+      isStartingRef.current = false;
+
     }
   };
 
   // End call handler
+  const isEndingRef = useRef(false);
   const handleEndCall = async () => {
+  if (isEndingRef.current) return;
+  isEndingRef.current = true;
     if (retellWebClient) {
+      try {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
       if (isCallInProgress && callId) {
@@ -424,6 +432,14 @@ const AgentDashboard = () => {
       setHasFetched(false);
       setIsCallInProgress(false);
       console.log("Call end response", response);
+       } catch (err) {
+      console.error("Error ending call:", err);
+    } finally {
+      setHasFetched(false);
+      setIsCallInProgress(false);
+      isEndingRef.current = false;
+    }
+
     }
   };
 
@@ -1265,7 +1281,7 @@ const AgentDashboard = () => {
           </div>
 
           {openCallModal && (
-            <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
+            <Modal2 isOpen={openCallModal} onClose={closeCallTestModal} isEndingRef={isEndingRef}>
               <CallTest
                 isCallActive={isCallActive}
                 onStartCall={handleStartCall}
@@ -1275,6 +1291,7 @@ const AgentDashboard = () => {
                 agentName={agentData?.agent?.agentName}
                 agentAvatar={agentData?.agent?.avatar}
                 businessName={agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}
+                isEndingRef={isEndingRef}
               />
             </Modal2>
           )}
