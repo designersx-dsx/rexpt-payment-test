@@ -46,33 +46,142 @@ const EditBusinessType = () => {
   });
 
     const businessTypes = [
-        { type: 'Real Estate Broker', subtype: 'Your Journey Begins Here', icon: 'svg/Estate-icon.svg' },
-        { type: 'Restaurant', subtype: 'Your Journey Begins Here', icon: 'svg/Landscaping-icon.svg' },
-        { type: 'Interior Designer', subtype: 'Your Journey Begins Here', icon: 'svg/Interior-Designer-icon.svg' },
-        { type: 'Saloon', subtype: 'Your Journey Begins Here', icon: 'svg/Saloon-icon.svg' },
-        { type: 'Landscaping Company', subtype: 'Your Journey Begins Here', icon: 'svg/Landscaping-icon.svg' },
-        { type: 'Dentist', subtype: 'Your Journey Begins Here', icon: 'svg/Dentist-Office-icon.svg' },
-        { type: "Doctor's Clinic", subtype: 'Your Journey Begins Here', icon: 'svg/Doctor-clinic-icon.svg' },
-        { type: 'Gym & Fitness Center', subtype: 'Your Journey Begins Here', icon: 'svg/Gym-icon.svg' },
-        { type: 'Personal Trainer', subtype: 'Your Journey Begins Here', icon: 'svg/Personal-Trainer-icon.svg' },
-        { type: 'Web Design Agency', subtype: 'Your Journey Begins Here', icon: 'svg/Web-Design-Agency-icon.svg' },
-        { type: 'Architect', subtype: 'Your Journey Begins Here', icon: 'svg/Architect-icon.svg' },
-        { type: 'Property Rental & Leasing Service', subtype: 'Your Journey Begins Here', icon: 'svg/Property Rental & Leasing Service.svg' },
-        { type: 'Construction Services', subtype: 'Your Journey Begins Here', icon: 'svg/Construction Services.svg' },
-        { type: 'Insurance Agency', subtype: 'Your Journey Begins Here', icon: 'svg/Insurance Agency.svg' },
-        { type: 'Old Age Home', subtype: 'Your Journey Begins Here', icon: 'svg/Old Age Home.svg' },
-        { type: 'Travel Agency', subtype: 'Your Journey Begins Here', icon: 'svg/Travel Agency.svg' },
-        { type: 'Ticket Booking', subtype: 'Your Journey Begins Here', icon: 'svg/Ticket Booking.svg' },
-        { type: 'Accounting Services', subtype: 'Your Journey Begins Here', icon: 'svg/Accounting Services.svg' },
-        { type: 'Financial Planners', subtype: 'Your Journey Begins Here', icon: 'svg/Financial Planners.svg' },
-        { type: 'Beauty Parlour', subtype: 'Your Journey Begins Here', icon: 'svg/Beauty Parlour.svg' },
-        { type: 'Nail Salon', subtype: 'Your Journey Begins Here', icon: 'svg/Nail Saloon.svg' },
-        { type: 'Barber Studio/Shop', subtype: 'Your Journey Begins Here', icon: 'svg/Barber.svg' },
-        { type: 'Hair Stylist', subtype: 'Your Journey Begins Here', icon: 'svg/Hair Stylist.svg' },
-        { type: 'Bakery', subtype: 'Your Journey Begins Here', icon: 'svg/Bakery.svg' },
-        { type: 'Dry Cleaner', subtype: 'Your Journey Begins Here', icon: 'svg/Dry Cleaner.svg' },
-        { type: 'Cleaning Janitorial Service', subtype: 'Your Journey Begins Here', icon: 'svg/Cleaning Janitorial Service.svg' },
-        { type: 'Other', subtype: 'Your Journey Begins Here', icon: 'svg/Web-Design-Agency-icon.svg' },
+        {
+      type: "Real Estate Broker",
+      subtype: "Property Transaction Facilitator",
+      icon: "svg/Estate-icon.svg",
+    },
+    {
+      type: "Restaurant",
+      subtype: "Food Service Establishment",
+      icon: "svg/Landscaping-icon.svg",
+    },
+    {
+      type: "Interior Designer",
+      subtype: "Indoor Space Beautifier",
+      icon: "svg/Interior-Designer-icon.svg",
+    },
+    {
+      type: "Saloon",
+      subtype: "Hair Styling & Grooming",
+      icon: "svg/Saloon-icon.svg",
+    },
+    {
+      type: "Landscaping Company",
+      subtype: "Outdoor Space Beautification",
+      icon: "svg/Landscaping-icon.svg",
+    },
+    {
+      type: "Dentist",
+      subtype: "Dental Care Provider",
+      icon: "svg/Dentist-Office-icon.svg",
+    },
+    {
+      type: "Doctor's Clinic",
+      subtype: "Medical Consultation & Treatment",
+      icon: "svg/Doctor-clinic-icon.svg",
+    },
+    {
+      type: "Gym & Fitness Center",
+      subtype: "Exercise Facility & Training",
+      icon: "svg/Gym-icon.svg",
+    },
+
+    {
+      type: "Personal Trainer",
+      subtype: "Individual Fitness Coaching",
+      icon: "svg/Personal-Trainer-icon.svg",
+    },
+    {
+      type: "Web Design Agency",
+      subtype: "Website Creation & Development",
+      icon: "svg/Web-Design-Agency-icon.svg",
+    },
+    {
+      type: "Architect",
+      subtype: "Building Design Expert",
+      icon: "svg/Architect-icon.svg",
+    },
+    {
+      type: "Property Rental & Leasing Service",
+      subtype: "Property Rental Management",
+      icon: "svg/Property Rental & Leasing Service.svg",
+    },
+    {
+      type: "Construction Services",
+      subtype: "Building Construction & Repair",
+      icon: "svg/Construction Services.svg",
+    },
+    {
+      type: "Insurance Agency",
+      subtype: "Risk Protection Provider",
+      icon: "svg/Insurance Agency.svg",
+    },
+    {
+      type: "Old Age Home",
+      subtype: "Senior Living Facility",
+      icon: "svg/Old Age Home.svg",
+    },
+    {
+      type: "Travel Agency",
+      subtype: "Trip Planning & Booking",
+      icon: "svg/Travel Agency.svg",
+    },
+    {
+      type: "Ticket Booking",
+      subtype: "Travel Ticket Provider",
+      icon: "svg/Ticket Booking.svg",
+    },
+    {
+      type: "Accounting Services",
+      subtype: "Financial Record Management",
+      icon: "svg/Accounting Services.svg",
+    },
+    {
+      type: "Financial Planners",
+      subtype: "Wealth Management Advice",
+      icon: "svg/Financial Planners.svg",
+    },
+    {
+      type: "Beauty Parlour",
+      subtype: "Cosmetic Beauty Services",
+      icon: "svg/Beauty Parlour.svg",
+    },
+    {
+      type: "Nail Salon",
+      subtype: "Manicure/Pedicure Services",
+      icon: "svg/Nail Saloon.svg",
+    },
+    {
+      type: "Barber Studio/Shop",
+      subtype: "Men's Hair Grooming",
+      icon: "svg/Barber.svg",
+    },
+    {
+      type: "Hair Stylist",
+      subtype: "Professional Hair Care",
+      icon: "svg/Hair Stylist.svg",
+    },
+    {
+      type: "Bakery",
+      subtype: "Baked Goods Producer",
+      icon: "svg/Bakery.svg",
+    },
+    {
+      type: "Dry Cleaner",
+      subtype: "Garment Cleaning & Care",
+      icon: "svg/Dry Cleaner.svg",
+    },
+    {
+      type: "Cleaning Janitorial Service",
+      subtype: "Professional Cleaning Solutions",
+      icon: "svg/Cleaning Janitorial Service.svg",
+    },
+    {
+      type: "Other",
+      subtype: "More Ideas, More Impact",
+      icon: "svg/Web-Design-Agency-icon.svg",
+    }
     ];
 
     const filteredBusinessTypes = businessTypes.filter((item) =>
