@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef,useEffect} from 'react';
 import EditHeader from '../EditHeader/EditHeader';
 import styles from '../EditBusinessType/EditBusinessType.module.css';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
@@ -6,6 +6,13 @@ import AnimatedButton from '../AnimatedButton/AnimatedButton';
 const EditBusinessType = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedType, setSelectedType] = useState('');
+    const [customBuisness, setcustomBuisness] = useState("");
+    const [prevBuisnessType, setprevBuisnessType] = useState("");
+    const [businessNameError, setBusinessNameError] = useState("");
+    const [businessSizeError, setBusinessSizeError] = useState("");
+    const [businessTypeError, setBusinessTypeError] = useState("");
+    const [serviesTypeError, setServiesTypeError] = useState("");
+    const [errors, setErrors] = useState({});
 
     const businessTypes = [
         { type: 'Real Estate Broker', subtype: 'Your Journey Begins Here', icon: 'svg/Estate-icon.svg' },
@@ -42,14 +49,34 @@ const EditBusinessType = () => {
     );
     const btnImgRef = useRef(null);
 
+    const handlesave=async()=>{
 
+    }
+      useEffect(() => {
+        try {
+          const stored = sessionStorage.getItem("businessDetails");
+          if (stored && stored !== "undefined" && stored !== "null") {
+            const businessDetails = JSON.parse(stored);
+            if (businessDetails) {
+              selectedType(businessDetails.businessType || "");
+              setprevBuisnessType(businessDetails.businessType || "");
+              setBusinessSize(businessDetails.businessSize || "");
+              setcustomBuisness(businessDetails.customBuisness || "");
+            }
+          }
+        } catch (err) {
+          console.error("Failed to parse businessDetails from sessionStorage:", err);
+        }
+      }, []);
+
+console.log('setSelectedType',selectedType,customBuisness)
     return (
         <>
             <EditHeader title='Edit Agent ' agentName='Sofia' />
             <div className={styles.Maindiv}>
                 <div className={styles.headerWrapper}>
                     <h2 className={styles.heading}>Select Category</h2>
-                    <p className={styles.subheading}>Select category which best describes your business type</p>
+                    <p className={styles.subheading}>Select category     best describes your business type</p>
                     <div className={styles.tooltipIcon}>
                         <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
                     </div>
@@ -101,6 +128,25 @@ const EditBusinessType = () => {
 
                         </div>
                     </div>
+                      {selectedType === "Other" && (
+                        <div className={styles.labReq}>
+                        <div className={styles.inputGroup}>
+                            <div className={styles.Dblock}>
+                            <label>Business Type<span className={styles.requiredField}> *</span></label>
+                            <input
+                                type="text"
+                                placeholder="Enter your service name"
+                                value={customBuisness}
+                                onChange={(e) => setcustomBuisness(e.target.value)}
+                                className={businessNameError ? styles.inputError : ""}
+                            />
+                            {errors.customBuisness && (
+                                <p className={styles.inlineError}>{errors.customBuisness}</p>
+                            )}
+                            </div>
+                        </div>
+                        </div>
+                    )}
 
                     <div className={styles.inputGroup}>
                         <label>Business Size (Number of Emp.)<span className={styles.requiredField}> *</span></label>
@@ -133,7 +179,7 @@ const EditBusinessType = () => {
 
 
                     </div>
-                    <div className={styles.stickyWrapper}>
+                    <div className={styles.stickyWrapper} onClick={handlesave}>
                         <AnimatedButton label="Save" />
                     </div>
                 </div>
