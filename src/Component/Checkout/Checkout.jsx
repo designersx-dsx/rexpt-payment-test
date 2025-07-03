@@ -889,7 +889,7 @@ const handleSubmit = async () => {
 
   return (
     <div className={styles.checkoutForm}>
-      {step === 1 && (
+      {/* {step === 1 && (
         <div className={styles.checkoutFormMain}>
           <h3>Billing Address & Company Details</h3>
 
@@ -969,11 +969,11 @@ const handleSubmit = async () => {
             Next
           </button>
         </div>
-      )}
+      )} */}
 
-      {step === 2 && (
+      {step === 1 && (
         <>
-          <h3>Card Details</h3>
+          {/* <h3>Card Details</h3>
 
           <label>Name on Card *</label>
           <input
@@ -1033,7 +1033,7 @@ const handleSubmit = async () => {
                 ❌
               </button>
             </div>
-          )}
+          )} */}
 
           <button
             type="button"
