@@ -36,10 +36,8 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const scrollToBottomRef = useRef(null);
 
-  useEffect(() => {
-
-  }, [])
   const businessServices = [
     {
       type: "Restaurant",
@@ -492,21 +490,15 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
         "Other"
       ],
     }
-    ,
-    ,
-    {
-      type: "Other Local Business",
-      subtype: "More Ideas, More Impact",
-      icon: "images/other.png",
-      services: [
-        "Custom Services – Please Specify Your Business Type and Needs",
-      ],
-    },
+
   ];
   const [searchTerm, setSearchTerm] = useState("");
-  const selectedBusiness = businessServices?.find(
-    (biz) => biz?.type === businessType
-  );
+  // const selectedBusiness = businessServices?.find(
+  //   (biz) => biz?.type === businessType
+  // );
+  const selectedBusiness =
+    businessServices.find((biz) => biz?.type === businessType) ||
+    (businessType === "Other" && businessServices?.find((biz) => biz?.type === "Other Local Business"));
 
   console.log(selectedBusiness, "selectedBusiness")
   const defaultServices = selectedBusiness?.services || [];
@@ -658,6 +650,8 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       }));
 
       setInputValue("");
+      scrollToBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+
     }
   };
   useEffect(() => {
@@ -711,6 +705,13 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"))
     setBusinessType(businessDetails?.businessType)
   }, [])
+  useEffect(() => {
+    if (showInput && scrollToBottomRef?.current) {
+      setTimeout(() => {
+        scrollToBottomRef?.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [customServices])
   return (
     <div className={styles.container} id="servies">
       <div className={styles.searchBox}>
@@ -725,22 +726,22 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className={styles.ListDiv}>
-        <div className={styles.optionList}>
+      <div className={styles.ListDiv}  >
+        <div className={styles.optionList} >
           {filteredServices.length > 0 ? (
             filteredServices?.filter((service) => service !== "Other")?.map((service, index) => (
               <label className={styles.option} key={index}>
                 <div className={styles.forflex}>
                   <div className={styles.icon}>
                     <img
-                      src={selectedBusiness.icon}
+                      src={selectedBusiness?.icon || "images/other.png"}
                       alt="service-icon"
                       className={styles.iconImg}
                     />
                   </div>
                   <div className={styles.strongDiv}>
                     <strong>{service}</strong>
-                    <p className={styles.subType}>{selectedBusiness.subtype}</p>
+                    <p className={styles.subType}>{selectedBusiness?.subtype || "Your Journey Begins Here"}</p>
                   </div>
                 </div>
 
@@ -758,6 +759,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
           ) : (
             <p>No item found</p>
           )}
+          <div ref={scrollToBottomRef} style={{ height: 1 }} />
         </div>
       </div>
       {serviceError && (
@@ -768,15 +770,16 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
         {/* Checkbox to toggle service input */}
         <div className={styles.headrPart}>
           <input
-              type="checkbox"
-              checked={showInput}
-              onChange={(e) => {
-                const checked = e.target.checked;
-                setShowInput(checked);
-                sessionStorage.setItem("showInput", JSON.stringify(checked));
-              }}
-            />
-          <label>
+            type="checkbox"
+            checked={showInput}
+            id="add-more-services"
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setShowInput(checked);
+              sessionStorage.setItem("showInput", JSON.stringify(checked));
+            }}
+          />
+          <label htmlFor="add-more-services">
             Add More Services
           </label>
         </div>
@@ -798,7 +801,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
                 className={styles.addIcon}
                 onClick={handleAddService}
               >
-              <img src='/svg/addMore-icon.svg' alt='addMore-icon' />
+                <img src='/svg/addMore-icon.svg' alt='addMore-icon' />
               </button>
             </div>
           </div>

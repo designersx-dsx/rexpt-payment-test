@@ -69,6 +69,12 @@
 }
 
 .fadeImage {
+  width: 24px;
+  height: 24px;
   transition: opacity 0.5s ease-in-out;
   opacity: 1;
+}
+
+.fadeOut {
+  opacity: 0;
 }

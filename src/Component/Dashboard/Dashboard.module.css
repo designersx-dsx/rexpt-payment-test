@@ -626,7 +626,16 @@
 
 
 }
+@media (max-width:370px) {
+.main{
+    display: grid;
+    margin: auto;
+    overflow: unset;
+    align-items: center;
+    justify-content: center;
+}
 
+}
 @media (max-width:350px) {
     .agentInfo2 {
         display: flex;
