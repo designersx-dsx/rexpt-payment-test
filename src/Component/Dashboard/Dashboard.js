@@ -32,6 +32,7 @@ import Modal from "../Modal2/Modal2";
 import Loader from "../Loader/Loader";
 import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
 import Refferal from "../Refferal/Refferal";
+import Modal3 from "../Modal3/Modal3";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -1759,7 +1760,7 @@ function Dashboard() {
 
         {/* Call Test Modal */}
         {openCallModal && (
-          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal} isEndingRef={isEndingRef} isCallInProgress={isCallInProgress}>
+          <Modal3 isOpen={openCallModal} onClose={handleCloseCallModal} isEndingRef={isEndingRef} isCallInProgress={isCallInProgress}>
             <CallTest
               isCallActive={isCallActive}
               onStartCall={handleStartCall}
@@ -1772,7 +1773,7 @@ function Dashboard() {
               businessName={agentDetails?.business?.businessName}
               isEndingRef={isEndingRef}
             />
-          </Modal2>
+          </Modal3>
         )}
 
         {/* WidgetModal */}

@@ -28,6 +28,7 @@ import { useAgentStore } from "../../Store/agentDetailStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import WidgetScript from "../Widgets/WidgetScript";
 import PopUp from "../Popup/Popup";
+import Modal3 from "../Modal3/Modal3";
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -1282,7 +1283,7 @@ const AgentDashboard = () => {
           </div>
 
           {openCallModal && (
-            <Modal2 isOpen={openCallModal} onClose={closeCallTestModal} isEndingRef={isEndingRef}>
+            <Modal3 isOpen={openCallModal} onClose={closeCallTestModal} isEndingRef={isEndingRef}>
               <CallTest
                 isCallActive={isCallActive}
                 onStartCall={handleStartCall}
@@ -1294,7 +1295,7 @@ const AgentDashboard = () => {
                 businessName={agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}
                 isEndingRef={isEndingRef}
               />
-            </Modal2>
+            </Modal3>
           )}
 
           {/* OffCanvas for Logout */}

@@ -26,6 +26,11 @@ const AnimatedButton = ({ isLoading, label = 'Save',position={} }) => {
         className={styles.btnTheme}
         onMouseEnter={handleZoomAnimation}
         onTouchStart={handleZoomAnimation}
+             style={{
+          pointerEvents: isLoading ? 'none' : 'auto', // 👈 Disable clicks
+          opacity: isLoading ? 0.6 : 1,              // 👈 Dim button
+          cursor: isLoading ? 'not-allowed' : 'pointer' // 👈 Show disabled cursor
+        }}
       >
         <img
           src="svg/svg-theme2.svg"

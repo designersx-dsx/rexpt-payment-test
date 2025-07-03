@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState,useRef } from 'react'
 import EditHeader from '../EditHeader/EditHeader';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import styles from '../EditServicesOffered/EditServicesOffered.module.css'
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import { useNavigate } from 'react-router-dom';
+import PopUp from '../Popup/Popup';
 
 
 const EditServicesOffered = () => {
@@ -11,6 +12,8 @@ const EditServicesOffered = () => {
     const [selectedType, setSelectedType] = useState('');
     const [newService, setNewService] = useState('');
     const [isAddMoreChecked,setIsAddMoreChecked]=useState(false)
+    const lastServiceRef = useRef(null);
+
     const businessServices = [
         {
             type: "Restaurant",
@@ -464,25 +467,26 @@ const EditServicesOffered = () => {
             ],
         }
         ,
-        ,
         {
             type: "Other Local Business",
             subtype: "Your Journey Begins Here",
             icon: "images/other.png",
-            services: [
-                "Custom Services – Please Specify Your Business Type and Needs",
-            ],
+            services: [],
         },
     ];
     // Parse sessionStorage safely
     const fetchBusinessType = JSON.parse(sessionStorage.getItem("businessDetails") || "{}");
     const fetchServices = JSON.parse(sessionStorage.getItem("businesServices") || "{}");
+    console.log('fetchServices',fetchServices)
     const services = fetchServices.selectedService
     const [selectedService, setSelectedServices] = useState(services || []);
     const [showPopup, setShowPopup] = useState(false);
     const [popupType, setPopupType] = useState(null);
     const [popupMessage, setPopupMessage] = useState("");
     const [Loading, setLoading] = useState(null);
+    const [customServices, setCustomServices] = useState([]);
+    const [isSubmitting,setIsSubmitting]=useState(false)
+    const [isEmptyListError,setEmptyListError]=useState('')
     const navigate=useNavigate();
     const setHasFetched=true;
     const { handleCreateAgent } = useAgentCreator({
@@ -505,10 +509,12 @@ const EditServicesOffered = () => {
     const uniqueServices = Array.from(
         new Set([
             ...filteredBusinessType?.services?.filter((s) => s !== "Other") || [],
-            ...selectedService || [],
+            ...services||[],
+           ...customServices || [],
         ])
     );
     const handleAddService = () => {
+        
 
     const trimmedService = newService.trim();
                 console.log('before',trimmedService)
@@ -522,7 +528,11 @@ const EditServicesOffered = () => {
 
     if (!isAlreadyPresent) {
         setSelectedServices([...selectedService, trimmedService]);
+        setCustomServices(prev => [...prev, trimmedService]);
         setNewService('');
+          setTimeout(() => {
+            lastServiceRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100); // small delay for DOM update
     }
 };
 
@@ -533,12 +543,17 @@ const EditServicesOffered = () => {
     // const isAddMoreChecked = extraServices.length > 0;
 
     const icon = filteredBusinessType.icon
-    console.log(filteredBusinessType, "filteredBusinessType")
-    console.log(uniqueServices, "selectedService")
+    // console.log(filteredBusinessType, "filteredBusinessType")
+    // console.log(selectedService, "selectedService")
 
      const handleContinue = async () => {
-    // if (isSubmitting) return; // Prevent double call
-    // setIsSubmitting(true);
+    if (Loading) return; // Prevent double call
+    if(selectedService?.length==0){
+        setEmptyListError('Service List Can not be empty') 
+        return;
+    }else{
+        setEmptyListError('') 
+    }
     const raw = sessionStorage.getItem("businesServices");
     let previous = {};
     try {
@@ -564,11 +579,14 @@ const EditServicesOffered = () => {
 
     sessionStorage.setItem("businessDetails", JSON.stringify(finalBusinessDetails));
     sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
-
-    handleCreateAgent();
-
-
+    try {
+        handleCreateAgent();
+    } catch (error) {
+        console.log('Agent Updation Hook failed',error)
+    }
+    
   }
+  console.log('dsdsd',customServices,Loading)
 
     return (
         <>
@@ -599,7 +617,7 @@ const EditServicesOffered = () => {
                         <div className={styles.optionList}>
                             {uniqueServices?.length > 0 ? (
                                 uniqueServices?.filter((service) => service !== "Other").map((item, index) => (
-                                    <label className={styles.option} key={index}>
+                                    <label className={styles.option} key={index}   ref={index === uniqueServices.length - 1 ? lastServiceRef : null}>
                                         <div className={styles.forflex}>
                                             <div className={styles.icon}>
                                                 <img src={icon} alt={`${item} icon`} className={styles.iconImg} />
@@ -619,13 +637,16 @@ const EditServicesOffered = () => {
                                                 //     selectedService?.includes(item) &&
                                                 //     fetchBusinessType.businessType.toLowerCase() === filteredBusinessType?.type.toLowerCase()
                                                 // }
-                                                onChange={() => {
-                                                    if (selectedService.includes(item)) {
-                                                        // setSelectedServices(selectedService.filter(s => s !== item));
-                                                    } else {
-                                                        setSelectedServices([...selectedService, item]);
-                                                    }
-                                                }}
+                                               onChange={() => {
+                                                if(selectedService?.length>=0){
+                                                    setEmptyListError('') 
+                                                }
+                                                if (selectedService.includes(item)) {
+                                                setSelectedServices(selectedService.filter(s => s !== item));
+                                                } else {
+                                                setSelectedServices([...selectedService, item]);
+                                                }
+                                            }}
                                                 className={styles.purpleCheckbox}
                                             />
                                         </div>
@@ -637,6 +658,7 @@ const EditServicesOffered = () => {
 
                         </div>
                     </div>
+                    {isEmptyListError && <span style={{color:'Red'}}>{isEmptyListError}</span>}
 
                     <div className={styles.addMore}>
                         <input
@@ -668,9 +690,17 @@ const EditServicesOffered = () => {
                     </div>
                     }
                     <div className={styles.stickyWrapper} onClick={handleContinue}> 
-                        <AnimatedButton label="Save" />
+                        <AnimatedButton label="Save" isLoading={Loading}/>
                     </div>
                 </div>
+        {showPopup && (
+            <PopUp
+            type={popupType}
+            onClose={()=>{}}
+            message={popupMessage}
+            onConfirm={()=>navigate('/edit-services-offered')}
+            />
+        )}
             </div>
         </>
     )
