@@ -37,6 +37,7 @@ import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
 import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI"
 import Thankyou from "./Component/ThankyouPage/Thankyou";
+import CancelPage from "./Component/CancelPage/CancelPage";
 
 // import Test from "./utils/Test";
 
@@ -225,6 +226,7 @@ function App() {
 
                   <Route path="/test-other" element={<Test/>} />
                   <Route path="/thankyou/:id" element={<Thankyou/>} />
+                  <Route path="/cancel-payment" element={<CancelPage/>} />
                
 
 

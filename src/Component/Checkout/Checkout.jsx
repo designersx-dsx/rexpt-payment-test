@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -810,14 +810,13 @@ function CheckoutForm({
     // }
     let url = "";
     if (subscriptionId || locationPath === "/update") {
-  const queryParams = new URLSearchParams();
+      const queryParams = new URLSearchParams();
 
-  if (subscriptionId) queryParams.append("subscriptionId", subscriptionId);
-  if (agentId) queryParams.append("agentId", agentId);
-  if (userId) queryParams.append("userId", userId);
+      if (subscriptionId) queryParams.append("subscriptionId", subscriptionId);
+      if (agentId) queryParams.append("agentId", agentId);
+      if (userId) queryParams.append("userId", userId);
 
-  url = `http://localhost:3000/thankyou/update?${queryParams.toString()}`;
-
+      url = `http://localhost:3000/thankyou/update?${queryParams.toString()}`;
     } else {
       url = "http://localhost:3000/thankyou/create";
     }
@@ -856,6 +855,12 @@ function CheckoutForm({
 
     setLoading(false);
   };
+
+  // useEffect(() => {
+  //   if (priceId) {
+  //     handleSubmit();
+  //   }
+  // }, []);
 
   const [promoCode, setPromoCode] = useState("");
   const [promoCodeSend, setpromoCodeSend] = useState("");
