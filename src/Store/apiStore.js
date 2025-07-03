@@ -119,11 +119,29 @@ export const updateAgent = async (agentId, updateData) => {
   return res.data;
 };
 export const updateAgentWidgetDomain = async (id, url) => {
-
   const data = { url: url }
   const res = await axios.put(`${API_BASE_URL}/agent/updateAgentWidgetDomain/${id}`, data);
   return res.data;
 };
+export const deleteDomain = async (agentId, domain) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/agent/${agentId}/deleteDomain`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ domain }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      console.log("Updated domain list:", data.agentWidgetDomain);
+    } else {
+      console.error("Delete failed:", data.error);
+    }
+  } catch (err) {
+    console.error("Error deleting domain:", err);
+  }
+};
+
 export const validateWebsite = async (websiteUrl) => {
   try {
     const res = await api.post('/validate-website', { website: websiteUrl });

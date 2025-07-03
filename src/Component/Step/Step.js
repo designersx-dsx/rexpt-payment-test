@@ -12,7 +12,7 @@ import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
 import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
-import { createAgent, listAgents, updateAgent } from "../../Store/apiStore";
+import { createAgent, listAgents, updateAgent, updateAgentWidgetDomain } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 import { getAgentPrompt } from "../../hooks/useAgentPrompt";
@@ -23,6 +23,7 @@ import AboutBusiness from "../AboutBusiness/AboutBusiness";
 import BusinessListing from "../BusinessListing/BusinessListing";
 import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
+
 const Step = () => {
     const timestamp = Date.now();
     const [isRoleTitleChanged, setIsRoleTitleChanged] = useState(false);
@@ -56,7 +57,6 @@ const Step = () => {
     const location = useLocation()
     const locationPath = location?.state?.locationPath;
     const step1Ref = useRef(null)
-
     const step3Ref = useRef(null);
     const step4Ref = useRef(null);
     const step5Ref = useRef(null);
@@ -65,7 +65,6 @@ const Step = () => {
     const step8ARef = useRef(null)
     const step8BRef = useRef(null);
     // const step9Ref = useRef(null)
-
     useEffect(() => {
         if (token) {
             setUserId(decodeTokenData.id || "");
@@ -368,6 +367,7 @@ const Step = () => {
                         // Convert string to object
                         const businessIdObj = JSON.parse(businessIdString);
                         // Now access the actual ID
+
                         const agentData = {
                             userId: userId,
                             agent_id: agentId || sessionStorage.getItem("agentId"),
@@ -399,6 +399,7 @@ const Step = () => {
                                 sessionStorage.setItem("agentStatus", true);
                                 sessionStorage.removeItem("avatar")
                                 setPopupType("success");
+                                await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
                                 setPopupMessage("Agent created successfully!");
                                 setShowPopup(true);
                                 setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
@@ -818,7 +819,6 @@ const Step = () => {
             setAvtarChecked(JSON?.parse(storedValue));
         }
     }, []);
-    console.log(step, "step")
     const tooltipContentMap = {
         0: "Please select the category that best describes your business and indicate its size. This information helps us ensure you get the right tools and insights.",
         1: "Select the services your business offers, or click Add more Services to include any unique offerings. Understanding your services allows us to personalize your dashboard and recommendations.",
