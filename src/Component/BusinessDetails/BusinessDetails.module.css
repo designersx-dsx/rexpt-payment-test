@@ -2,6 +2,8 @@
   padding: 16px 0px;
   max-width: 400px;
   margin: auto;
+  /* overflow: scroll;
+  max-height: 330px; */
 }
 
 
@@ -58,7 +60,7 @@
   flex-direction: column;
   gap: 15px;
   /* max-height: 200px; */
-  max-height: 15dvh;
+  max-height: 25dvh;
   overflow: auto;
   padding-right: 10px;
 }
@@ -258,7 +260,7 @@
   }
 
   .subType {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
@@ -279,6 +281,7 @@
   outline: none;
   min-height: 55px;
   width: 100%;
+  background-color: rgb(255, 255, 255);
 }
 
 /* Re-use the existing error style on focus/invalid */

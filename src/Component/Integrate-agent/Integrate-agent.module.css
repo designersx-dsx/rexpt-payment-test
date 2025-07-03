@@ -1,0 +1,203 @@
+.container {
+  max-width: 450px;
+  margin: auto;
+  padding: 0 20px 20px;
+}
+
+.container h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #000;
+  font-weight: 600;
+
+
+}
+
+.container p {
+  font-size: 14px;
+  line-height: 18px;
+  color: #626262;
+  margin-bottom: 20px;
+}
+
+.addDomain {
+  display: flex;
+  align-items: center;
+  color: #6c3df4;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+.plus {
+  font-size: 18px;
+  margin-right: 8px;
+  color: #5F33E1;
+  font-weight: 600;
+}
+
+.domainEntry {
+  display:flex;
+  width: fit-content;
+  align-items: center;
+  margin-bottom: 15px;
+  background-color: #F6F0FF;
+  border-radius: 8px;
+  padding: 0 10px;
+
+}
+
+.domainSpan {
+  flex: 1;
+  padding: 10px;
+  background-color: #F6F0FF;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #000;
+  margin-right: 10px;
+  word-break: break-word;
+}
+
+
+.removeBtn {
+  /* background: #000; */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  /* width: 24px; */
+  /* height: 24px; */
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: unset;
+}
+
+.generateBtn {
+  width: 100%;
+  background-color: unset;
+      border: none;
+ margin: 25px 0 0 0;
+  cursor: pointer;
+}
+
+.generateBtn svg{
+    width: 100%;
+}
+
+
+
+.helpLink {
+  display: block;
+  text-align: center;
+  color: #5F33E1;
+  margin-top: 12px;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.scriptBox {
+  border: 1px solid #6524EB;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  max-height: 277px;
+  height: 100%;
+}
+
+.scriptBox label {
+  font-weight: 600;
+  font-size: 16px;
+  display: block;
+  padding:0 0 20px 0;
+  margin:0 0 20px 0;
+  border-bottom: 1px solid #D9D9D9;
+
+}
+
+.scriptContainer {
+  background-color: #f6f6f6;
+  /* border: 1px solid #cdcdcd; */
+  padding: 12px;
+  border-radius: 8px;
+  position: relative;
+  /* min-height: 100px; */
+}
+
+.scriptText {
+    margin-top: 20px;
+  word-break:break-all;
+  font-size: 14px;
+  color: #ababab;
+  
+  /* margin: 0; */
+}
+
+.copyBtn {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: #e1d3fd;
+  color: #5F33E1;
+  border: none;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 0px 5px 0 0;
+  cursor: pointer;
+}
+
+.emailSection {
+  margin-bottom: 20px;
+}
+
+.emailSection label {
+  font-weight: bold;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.emailInput {
+  width: 100%;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #D8D9DB;
+  font-size: 14px;
+}
+
+
+.modalInput {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0 20px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.modalSubmit {
+  width: 100%;
+  border: none;
+  background-color: unset;
+    cursor: pointer;
+}
+
+.modalSubmit svg{
+    width: 100%;
+}
+.Modalheading{
+    font-size: 22px;
+    color: #24252c;
+    margin: 0 0 10px 0;
+}
+
+.ModalPara{
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #24252c;
+}

@@ -24,9 +24,11 @@
  }
 
  .slick-list {
-   min-height: 400px !important;
+   /* min-height: 400px !important; */
  }
-
+#avtarSlider .slick-list{
+  min-height: unset !important;
+}
  /* .ForDesktop h1{
   
     font-size: 3rem;
@@ -265,6 +267,13 @@
 .CallAccordion svg{
   fill: #24252C !important;
   font-size: 28px !important;
+}
+.CallAccordion.connectCalender{
+  border-bottom: 0px solid #000 !important;
+}
+
+.AccorParaPadig{
+  padding: 0;
 }
 
 

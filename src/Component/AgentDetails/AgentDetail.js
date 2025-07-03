@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import {
@@ -17,6 +17,7 @@ import Footer from "./Footer/Footer";
 import Footer2 from "./Footer/Footer2";
 import Card1 from "../Card1/Card1";
 import Card2 from "../Card2/Card2";
+import Divider from "../Divider/Divider";
 import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
@@ -27,10 +28,32 @@ import { useAgentStore } from "../../Store/agentDetailStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import WidgetScript from "../Widgets/WidgetScript";
 import PopUp from "../Popup/Popup";
+import Modal3 from "../Modal3/Modal3";
 const AgentDashboard = () => {
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const agentDetails = location.state;
+  const [loading, setLoading] = useState(true);
+  const agentID=sessionStorage.getItem('SelectAgentId');
+  const agentBuisnesId=sessionStorage.getItem('SelectAgentBusinessId');
+  const [agentDetails,setAgentDetail]=useState({
+     agentId:location?.state?.agentId ||  sessionStorage.getItem('SelectAgentId'),
+     bussinesId:location?.state?.bussinesId ||sessionStorage.getItem('SelectAgentBusinessId')
+  })
+
+  useEffect(()=>{
+    if(agentID && agentBuisnesId)  {
+        setAgentDetail({
+          agentId:agentID,
+          bussinesId:agentBuisnesId
+        })
+    }
+  },[agentBuisnesId,agentBuisnesId])
+  
+  // const agentDetails = location.state;
+  // console.log('d',location.state)
+  // const agentDetails = {
+  // agentId:sessionStorage.getItem('SelectAgentBusinessId'),
+  // bussinesId:sessionStorage.getItem('SelectAgentId')
+  // }
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   // const [assignedNumbers, setAssignedNumbers] = useState([]);
@@ -48,10 +71,10 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
-  const [isModalOpen, setModalOpen] = useState(
-    localStorage.getItem("UpdationModeStepWise") == "ON"
-  );
-  console.log(agentData,"agentDataagentDataagentData")
+
+  const [isModalOpen, setModalOpen] = useState();
+  // console.log(agentData, "agentDataagentDataagentData")
+
 
   const [openCard, setOpenCard] = useState(null);
 
@@ -340,6 +363,7 @@ const AgentDashboard = () => {
 
   // Start call handler
   let micStream = '';
+    const isStartingRef = useRef(false);
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -354,10 +378,11 @@ const AgentDashboard = () => {
       return;
     }
 
-    if (isCallInProgress || !retellWebClient || !agentData?.agent) {
+    if (isStartingRef.current || isCallInProgress || !retellWebClient || !agentData?.agent) {
       console.error("RetellWebClient or agent data not ready.");
       return;
     }
+    isStartingRef.current = true;
     setCallLoading(true);
     setIsCallInProgress(true);
     try {
@@ -387,12 +412,18 @@ const AgentDashboard = () => {
       console.error("Error starting call:", err);
     } finally {
       setCallLoading(false);
+      isStartingRef.current = false;
+
     }
   };
 
   // End call handler
+  const isEndingRef = useRef(false);
   const handleEndCall = async () => {
+  if (isEndingRef.current) return;
+  isEndingRef.current = true;
     if (retellWebClient) {
+      try {
       const response = await retellWebClient.stopCall();
       const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
       if (isCallInProgress && callId) {
@@ -401,7 +432,15 @@ const AgentDashboard = () => {
       setRefresh((prev) => !prev);
       setHasFetched(false);
       setIsCallInProgress(false);
-      console.log("Call end response", response);
+      // console.log("Call end response", response);
+       } catch (err) {
+      console.error("Error ending call:", err);
+    } finally {
+      setHasFetched(false);
+      setIsCallInProgress(false);
+      isEndingRef.current = false;
+    }
+
     }
   };
 
@@ -817,11 +856,8 @@ const AgentDashboard = () => {
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
-            <div className={styles.divider}>
-              <hr className={styles.line} />
-              <span className={styles.text}>Agent Options</span>
-              <hr className={styles.line} />
-            </div>
+
+            <Divider label="Agent Options" />
 
             <div className={styles.managementActions}>
               <div
@@ -1023,22 +1059,30 @@ const AgentDashboard = () => {
 
               <div
                 className={styles.managementItem}
-                onClick={async () => {
+                onClick={async () => 
+                  {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
 
-                    try {
-                      await fetchPrevAgentDEtails(
-                        agentData?.agent?.agent_id,
-                        agentData?.agent?.businessId);
-                    } catch (error) {
-                      await fetchPrevAgentDEtails(
-                        agentData?.agent?.agent_id,
-                        agentData?.agent?.businessId);
-                    }
-                    setModalOpen(true);
-
+                    // try {
+                    //   await fetchPrevAgentDEtails(
+                    //     agentData?.agent?.agent_id,
+                    //     agentData?.agent?.businessId);
+                    // } catch (error) {
+                    //   await fetchPrevAgentDEtails(
+                    //     agentData?.agent?.agent_id,
+                    //     agentData?.agent?.businessId);
+                    // }
+                    // setModalOpen(true);
+                    sessionStorage.setItem('SelectAgentBusinessId', agentData?.agent?.businessId)
+                    sessionStorage.setItem('SelectAgentId',agentData?.agent?.agent_id)
+                    navigate('/edit-agent', {
+                        state: {
+                          agentId: agentData?.agent?.agent_id,
+                          businessId: agentData?.agent?.businessId,
+                        },
+                      });
 
 
                   }
@@ -1179,7 +1223,7 @@ const AgentDashboard = () => {
               >
                 <div className={` ${styles.statText} `}>Total Calls</div>
                 <div className={styles.statDetail}>
-                  {agentData?.callSummary?.totalCalls || "NA"}
+                  {agentData?.callSummary?.totalCalls || "0"}
                 </div>
               </div>
 
@@ -1233,12 +1277,13 @@ const AgentDashboard = () => {
               <AgentAnalysis
                 data={agentData?.callSummary?.data}
                 calApiKey={agentData?.agent?.calApiKey}
+                callVolume={agentData?.callSummary?.totalCalls}
               />
             </section>
           </div>
 
           {openCallModal && (
-            <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
+            <Modal3 isOpen={openCallModal} onClose={closeCallTestModal} isEndingRef={isEndingRef}>
               <CallTest
                 isCallActive={isCallActive}
                 onStartCall={handleStartCall}
@@ -1248,8 +1293,9 @@ const AgentDashboard = () => {
                 agentName={agentData?.agent?.agentName}
                 agentAvatar={agentData?.agent?.avatar}
                 businessName={agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}
+                isEndingRef={isEndingRef}
               />
-            </Modal2>
+            </Modal3>
           )}
 
           {/* OffCanvas for Logout */}

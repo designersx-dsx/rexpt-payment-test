@@ -52,7 +52,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  margin-top: 10px;
+  margin-top: 1rem;
   padding-right: 10px;
   /* max-height: 550px; */
   /* max-height: 500px; */
@@ -84,12 +84,14 @@
   transition: 0.3s;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   /* gap: 10px; */
   align-items: center;
+  min-height: 125px;
 }
 
 .grid> :nth-last-child(-n+2) {
-  margin-bottom: 5rem;
+  margin-bottom: 1rem;
 }
 
 .card:hover {
@@ -123,6 +125,7 @@
 .langName {
   font-weight: 600;
   margin-top: 8px;
+  text-align: center;
 }
 
 .stats {

@@ -1,0 +1,598 @@
+import React, { useEffect, useState } from "react";
+import styles from "./Integrate-agent.module.css";
+import HeaderBar from "../HeaderBar/HeaderBar";
+import Modal2 from "../Modal2/Modal2";
+import { useLocation } from "react-router-dom";
+import { API_BASE_URL, validateWebsite } from "../../Store/apiStore";
+import PopUp from "../Popup/Popup";
+import { updateAgentWidgetDomain } from "../../Store/apiStore";
+
+const IntegrateAgent = () => {
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("failed");
+  const [showPopup, setShowPopup] = useState(false);
+  const [validatingDomain, setValidatingDomain] = useState(false);
+  const location = useLocation();
+  const { agentDetails } = location.state || {};
+  const [domains, setDomains] = useState([]);
+  const [emails, setEmails] = useState([]);
+  const [generateMode, setGenerateMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [sending, setSending] = useState(false);
+  const [scriptGenerated, setScriptGenerated] = useState(false);
+  const agentId = agentDetails?.agent_id;
+
+  const script = agentId
+    ? `<script id="rex-widget-script" src="https://aesthetic-wisp-d15448.netlify.app/index.js?agentId=${agentId}"></script>`
+    : "";
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newDomain, setNewDomain] = useState("");
+
+  const validateEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+  const handleAddEmails = () => {
+    const rawEmails = emailInput
+      .split(",")
+      .map((e) => e.trim())
+      .filter(Boolean);
+    const validEmails = rawEmails.filter(validateEmail);
+    const invalidEmails = rawEmails.filter((e) => !validateEmail(e));
+
+    if (invalidEmails.length > 0) {
+      setEmailError(`Invalid email(s): ${invalidEmails.join(", ")}`);
+      return;
+    }
+
+    setEmails((prev) => [...prev, ...validEmails]);
+    setEmailInput("");
+    setEmailError("");
+  };
+
+  const handleDeleteEmail = (index) => {
+    setEmails((prev) => prev.filter((_, i) => i !== index));
+  };
+  useEffect(() => {
+    const savedData = localStorage.getItem("widgetSetupData");
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.domains) setDomains(parsed.domains);
+        if (parsed.emails) setEmails(parsed.emails);
+        if (parsed.scriptGenerated) setScriptGenerated(parsed.scriptGenerated);
+        if (parsed.generateMode) setGenerateMode(parsed.generateMode);
+      } catch (e) {
+        console.error("Failed to parse saved widget data.");
+      }
+    }
+
+    // continue with your agentDetails domain parsing...
+    if (agentDetails) {
+      let domainList = [];
+
+      if (typeof agentDetails.agentWidgetDomain === "string") {
+        try {
+          const parsed = JSON.parse(agentDetails.agentWidgetDomain);
+          domainList = Array.isArray(parsed) ? parsed : [];
+        } catch {
+          domainList = [];
+        }
+      } else if (Array.isArray(agentDetails.agentWidgetDomain)) {
+        domainList = agentDetails.agentWidgetDomain;
+      }
+
+      const flatDomains = domainList.map((d) =>
+        typeof d === "string" ? d : d.domain
+      );
+      // Only set if localStorage doesn't already override it
+      if (!savedData) setDomains(flatDomains);
+    }
+  }, [agentDetails]);
+
+  useEffect(() => {
+    if (agentDetails) {
+      let domainList = [];
+
+      if (typeof agentDetails.agentWidgetDomain === "string") {
+        try {
+          const parsed = JSON.parse(agentDetails.agentWidgetDomain);
+          domainList = Array.isArray(parsed) ? parsed : [];
+        } catch {
+          domainList = [];
+        }
+      } else if (Array.isArray(agentDetails.agentWidgetDomain)) {
+        domainList = agentDetails.agentWidgetDomain;
+      }
+
+      // Flatten if array of objects with domain keys
+      const flatDomains = domainList.map((d) =>
+        typeof d === "string" ? d : d.domain
+      );
+      setDomains(flatDomains);
+    }
+  }, [agentDetails]);
+
+  const showErrorPopup = (msg) => {
+    setPopupMessage(msg);
+    setPopupType("failed");
+    setShowPopup(true);
+  };
+  const openModal = () => {
+    setNewDomain("");
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleAddDomain = async () => {
+    if (!newDomain.trim()) {
+      showErrorPopup("Please enter a domain.");
+      return;
+    }
+
+    setValidatingDomain(true);
+    try {
+      const response = await validateWebsite(newDomain.trim());
+      if (response.valid) {
+        setDomains((prev) => [...prev, newDomain.trim()]);
+        setNewDomain("");
+        closeModal();
+        setScriptGenerated(false); // ⬅️ Invalidate script
+      } else {
+        showErrorPopup("Please check your domain. It appears to be invalid.");
+      }
+    } catch (err) {
+      showErrorPopup("Domain validation failed. Try again later.");
+    } finally {
+      setValidatingDomain(false);
+    }
+  };
+
+  const handleGenerate = async () => {
+    setLoading(true);
+    try {
+      const verifiedDomains = domains.filter(Boolean);
+      for (const domain of verifiedDomains) {
+        await updateAgentWidgetDomain(agentId, domain);
+      }
+      setGenerateMode(true);
+      setScriptGenerated(true);
+    } catch (error) {
+      showErrorPopup("Failed to generate script. Try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendScript = async () => {
+    if (emails.length === 0) {
+      setEmailError("Please enter at least one valid email.");
+      return;
+    }
+
+    try {
+      setSending(true);
+      const res = await fetch(`${API_BASE_URL}/agent/sendScriptToEmail`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emails,
+          script,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setPopupType("success");
+        setPopupMessage("Script sent successfully!");
+        setShowPopup(true);
+        setEmails([]);
+        localStorage.removeItem("widgetSetupData");
+      } else {
+        throw new Error(data?.message || "Something went wrong");
+      }
+    } catch (err) {
+      setPopupType("failed");
+      setPopupMessage("Failed to send script.");
+      setShowPopup(true);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const removeDomain = (index) => {
+    const newDomains = domains.filter((_, i) => i !== index);
+    setDomains(newDomains);
+    setScriptGenerated(false);
+  };
+
+  const copyScript = () => {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard
+        .writeText(script)
+        .then(() => alert("Script copied to clipboard!"))
+        .catch(() => fallbackCopyTextToClipboard(script));
+    } else {
+      fallbackCopyTextToClipboard(script);
+    }
+  };
+
+  function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    // Avoid scrolling to bottom
+    textArea.style.position = "fixed";
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+    textArea.style.width = "2em";
+    textArea.style.height = "2em";
+    textArea.style.padding = 0;
+    textArea.style.border = "none";
+    textArea.style.outline = "none";
+    textArea.style.boxShadow = "none";
+    textArea.style.background = "transparent";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand("copy");
+      alert("Script copied to clipboard!");
+    } catch (err) {
+      alert("Failed to copy script. Please copy manually.");
+    }
+    document.body.removeChild(textArea);
+  }
+  useEffect(() => {
+    const persistData = {
+      domains,
+      emails,
+      scriptGenerated,
+      generateMode,
+    };
+    localStorage.setItem("widgetSetupData", JSON.stringify(persistData));
+  }, [domains, emails, scriptGenerated, generateMode]);
+
+  return (
+    <div>
+      <HeaderBar title="Integrate Agent" />
+      <div className={styles.container}>
+        <h2>Add Your Website Domain</h2>
+        <p>
+          Enter the domain where you want to integrate the AI widget. This
+          ensures the widget functions correctly on your site.
+        </p>
+        <div className={styles.addDomain} onClick={openModal}>
+          <svg
+            width="35"
+            height="35"
+            viewBox="0 0 35 35"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="35" height="35" rx="17.5" fill="#5F33E1" />
+            <path
+              d="M17.5003 9.47852C18.054 9.47852 18.5029 9.9274 18.5029 10.4811V16.4967H24.5186C25.0723 16.4967 25.5212 16.9456 25.5212 17.4993C25.5212 18.0531 25.0723 18.502 24.5186 18.502H18.5029V24.5176C18.5029 25.0713 18.054 25.5202 17.5003 25.5202C16.9466 25.5202 16.4977 25.0713 16.4977 24.5176V18.502H10.4821C9.92837 18.502 9.47949 18.0531 9.47949 17.4993C9.47949 16.9456 9.92837 16.4967 10.4821 16.4967H16.4977V10.4811C16.4977 9.9274 16.9466 9.47852 17.5003 9.47852Z"
+              fill="white"
+            />
+          </svg>
+
+          <span className={styles.plus}>Add Another Domain</span>
+        </div>
+        <Modal2 />
+
+        {domains.map((domain, index) => (
+          <div className={styles.domainEntry} key={index}>
+            <span className={styles.domainSpan}>{domain}</span>
+            <button
+              onClick={() => removeDomain(index)}
+              className={styles.removeBtn}
+            >
+              <svg
+                width="33"
+                height="33"
+                viewBox="0 0 33 33"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  x="16.5"
+                  y="0.236328"
+                  width="23"
+                  height="23"
+                  rx="11.5"
+                  transform="rotate(45 16.5 0.236328)"
+                  fill="black"
+                />
+                <path
+                  d="M20.227 12.772C20.4843 13.0293 20.4843 13.4464 20.227 13.7037L17.4318 16.499L20.227 19.2943C20.4843 19.5516 20.4843 19.9687 20.227 20.226C19.9697 20.4833 19.5526 20.4833 19.2953 20.226L16.5 17.4308L13.7047 20.226C13.4474 20.4833 13.0303 20.4833 12.773 20.226C12.5157 19.9687 12.5157 19.5516 12.773 19.2943L15.5682 16.499L12.773 13.7037C12.5157 13.4464 12.5157 13.0293 12.773 12.772C13.0303 12.5147 13.4474 12.5147 13.7047 12.772L16.5 15.5672L19.2953 12.772C19.5526 12.5147 19.9697 12.5147 20.227 12.772Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+          </div>
+        ))}
+
+        <div className={styles.scriptBox}>
+          <label>Widget Script you can add to your website</label>
+          <div className={styles.scriptContainer}>
+            {generateMode ? (
+              <>
+                <p className={styles.scriptText}>{script}</p>
+                <button className={styles.copyBtn} onClick={copyScript}>
+                  Copy
+                </button>
+              </>
+            ) : (
+              <p className={styles.scriptText} style={{ opacity: 0.6 }}>
+                Click "Generate" to display the widget script.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {scriptGenerated ? (
+          <>
+            <div className={styles.emailSection}>
+              <label>Send Script to Developer</label>
+              <input
+                type="text"
+                placeholder="Add email addresses separated by commas"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                onBlur={handleAddEmails}
+                className={styles.emailInput}
+              />
+              {emailError && <p style={{ color: "red" }}>{emailError}</p>}
+            </div>
+
+            <ul>
+              {emails.map((email, index) => (
+                <li key={index}>
+                  {email}{" "}
+                  <button
+                    onClick={() => handleDeleteEmail(index)}
+                    className={styles.removeBtn}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    X
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              className={styles.generateBtn}
+              onClick={handleSendScript}
+              disabled={sending}
+            >
+              {sending ? "Sending..." : "Send Script to Developer"}
+            </button>
+          </>
+        ) : (
+          <button
+            className={styles.generateBtn}
+            onClick={handleGenerate}
+            disabled={loading || domains.length === 0}
+          >
+            {loading ? "Generating..." : "Generate"}
+          </button>
+        )}
+
+        <a href="#" className={styles.helpLink}>
+          Need Help integrate the AI widget?
+        </a>
+      </div>
+
+      <Modal2
+        className={styles.ModalControl}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      >
+        <h3 className={styles.Modalheading}>Add Your Domain</h3>
+        <p className={styles.ModalPara}>
+          Want the widget on another domain? Enter a different address here.
+        </p>
+
+        <input
+          type="text"
+          placeholder="https://example.com"
+          value={newDomain}
+          onChange={(e) => setNewDomain(e.target.value)}
+          className={styles.modalInput}
+        />
+        <button
+          className={styles.modalSubmit}
+          onClick={handleAddDomain}
+          disabled={validatingDomain}
+        >
+          {validatingDomain ? "Validating..." : "Add Domain"}
+        </button>
+      </Modal2>
+
+      {showPopup && (
+        <PopUp
+          type={popupType}
+          message={popupMessage}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+export default IntegrateAgent;
+
+// import React, { useState } from 'react';
+// import styles from './Integrate-agent.module.css';
+// import HeaderBar from '../HeaderBar/HeaderBar';
+// import Modal2 from '../Modal2/Modal2';
+// import { useLocation } from 'react-router-dom';
+
+// const IntegrateAgent = () => {
+//   const location = useLocation();
+// const { agentDetails } = location.state || {};
+
+//   const [domains, setDomains] = useState(['https://greenlotusgroup.co', 'https://designersx.us']);
+
+//    const [emails, setEmails] = useState('');
+//   const script = `<script id="rex-widget-script" src="https://aesthetic-wisp-d15448.netlify.app/index.js?agentId=agent_a6059cc0e2b08ee1242437516"></script>`;
+
+//   const [isModalOpen, setIsModalOpen] = useState(false); // modal state
+// const [newDomain, setNewDomain] = useState('');
+
+//    const openModal = () => {
+//     setNewDomain('');
+//     setIsModalOpen(true);
+//   };
+
+//   const closeModal = () => setIsModalOpen(false);
+
+//   const handleAddDomain = () => {
+//     if (newDomain.trim()) {
+//       setDomains([...domains, newDomain.trim()]);
+//       closeModal();
+//     }
+//   };
+
+//   const removeDomain = (index) => {
+//     const newDomains = domains.filter((_, i) => i !== index);
+//     setDomains(newDomains);
+//   };
+
+//   const addDomain = () => {
+//     setDomains([...domains, '']);
+//   };
+
+// const copyScript = () => {
+//   if (navigator.clipboard && window.isSecureContext) {
+//     navigator.clipboard.writeText(script)
+//       .then(() => alert('Script copied to clipboard!'))
+//       .catch(() => fallbackCopyTextToClipboard(script));
+//   } else {
+//     fallbackCopyTextToClipboard(script);
+//   }
+// };
+
+//   const handleEmailChange = (e) => {
+//     setEmails(e.target.value);
+//   };
+
+//   function fallbackCopyTextToClipboard(text) {
+//   const textArea = document.createElement("textarea");
+//   textArea.value = text;
+//   // Avoid scrolling to bottom
+//   textArea.style.position = "fixed";
+//   textArea.style.top = 0;
+//   textArea.style.left = 0;
+//   textArea.style.width = "2em";
+//   textArea.style.height = "2em";
+//   textArea.style.padding = 0;
+//   textArea.style.border = "none";
+//   textArea.style.outline = "none";
+//   textArea.style.boxShadow = "none";
+//   textArea.style.background = "transparent";
+//   document.body.appendChild(textArea);
+//   textArea.focus();
+//   textArea.select();
+
+//   try {
+//     document.execCommand('copy');
+//     alert('Script copied to clipboard!');
+//   } catch (err) {
+//     alert('Failed to copy script. Please copy manually.');
+//   }
+//   document.body.removeChild(textArea);
+// }
+
+//   return (
+//     <div>
+//         <HeaderBar title="Integrate Agent"/>
+//     <div className={styles.container}>
+//       <h2>Add Your Website Domain</h2>
+//       <p>Enter the domain where you want to integrate the AI widget. This ensures the widget functions correctly on your site.</p>
+//       <div className={styles.addDomain} onClick={openModal}>
+//        <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+// <rect width="35" height="35" rx="17.5" fill="#5F33E1"/>
+// <path d="M17.5003 9.47852C18.054 9.47852 18.5029 9.9274 18.5029 10.4811V16.4967H24.5186C25.0723 16.4967 25.5212 16.9456 25.5212 17.4993C25.5212 18.0531 25.0723 18.502 24.5186 18.502H18.5029V24.5176C18.5029 25.0713 18.054 25.5202 17.5003 25.5202C16.9466 25.5202 16.4977 25.0713 16.4977 24.5176V18.502H10.4821C9.92837 18.502 9.47949 18.0531 9.47949 17.4993C9.47949 16.9456 9.92837 16.4967 10.4821 16.4967H16.4977V10.4811C16.4977 9.9274 16.9466 9.47852 17.5003 9.47852Z" fill="white"/>
+// </svg>
+
+//         <span className={styles.plus}>
+// Add Another Domain
+
+//             </span>
+//       </div>
+//       <Modal2/>
+
+//       {domains.map((domain, index) => (
+//         <div className={styles.domainEntry} key={index}>
+//            <span className={styles.domainSpan}>{domain}</span>
+//           <button onClick={() => removeDomain(index)} className={styles.removeBtn}>
+// <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+// <rect x="16.5" y="0.236328" width="23" height="23" rx="11.5" transform="rotate(45 16.5 0.236328)" fill="black"/>
+// <path d="M20.227 12.772C20.4843 13.0293 20.4843 13.4464 20.227 13.7037L17.4318 16.499L20.227 19.2943C20.4843 19.5516 20.4843 19.9687 20.227 20.226C19.9697 20.4833 19.5526 20.4833 19.2953 20.226L16.5 17.4308L13.7047 20.226C13.4474 20.4833 13.0303 20.4833 12.773 20.226C12.5157 19.9687 12.5157 19.5516 12.773 19.2943L15.5682 16.499L12.773 13.7037C12.5157 13.4464 12.5157 13.0293 12.773 12.772C13.0303 12.5147 13.4474 12.5147 13.7047 12.772L16.5 15.5672L19.2953 12.772C19.5526 12.5147 19.9697 12.5147 20.227 12.772Z" fill="white"/>
+// </svg>
+
+//           </button>
+//         </div>
+//       ))}
+
+//  <div className={styles.scriptBox}>
+//         <label>Widget Script you can add to your website</label>
+//         <div className={styles.scriptContainer}>
+//           <p className={styles.scriptText}>{script}</p>
+//           <button className={styles.copyBtn} onClick={copyScript}>Copy</button>
+//         </div>
+//       </div>
+
+//       <div className={styles.emailSection}>
+//         <label>Send Script to Developer</label>
+//         <input
+//           type="text"
+//           placeholder="Add email addresses separated by commas"
+//           value={emails}
+//           onChange={handleEmailChange}
+//           className={styles.emailInput}
+//         />
+//       </div>
+
+//       <button className={styles.generateBtn}>
+//         <svg width="357" height="57" viewBox="0 0 357 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+// <path d="M0 15.8809C0 8.25752 6.07777 2.03752 13.6999 1.89818C45.1625 1.32299 124.097 -0.0107212 179.02 6.50351e-05C233.456 0.0107557 311.9 1.33021 343.255 1.89985C350.878 2.03834 356.961 8.25885 356.961 15.8831V40.1954C356.961 47.8196 350.878 54.0401 343.255 54.1786C311.9 54.7483 233.456 56.0678 179.02 56.0785C124.097 56.0893 45.1625 54.7555 13.6998 54.1803C6.07776 54.041 0 47.8209 0 40.1976V15.8809Z" fill="#6524EB"/>
+// <path d="M119.272 25.5945C119.159 25.2301 119.004 24.904 118.806 24.6161C118.613 24.3237 118.379 24.0741 118.105 23.8672C117.835 23.6603 117.524 23.5051 117.174 23.4016C116.823 23.2937 116.44 23.2397 116.027 23.2397C115.284 23.2397 114.623 23.4264 114.043 23.7997C113.463 24.1731 113.006 24.7218 112.673 25.446C112.345 26.1657 112.181 27.0429 112.181 28.0774C112.181 29.121 112.345 30.0049 112.673 30.729C113.002 31.4532 113.458 32.0043 114.043 32.3821C114.628 32.7554 115.307 32.9421 116.08 32.9421C116.782 32.9421 117.389 32.8072 117.902 32.5373C118.419 32.2674 118.818 31.8851 119.096 31.3903C119.375 30.891 119.515 30.3062 119.515 29.636L120.082 29.7237H116.33V27.767H121.937V29.4268C121.937 30.6098 121.685 31.6332 121.181 32.4968C120.678 33.3604 119.985 34.0262 119.103 34.494C118.222 34.9573 117.21 35.1889 116.067 35.1889C114.794 35.1889 113.676 34.9033 112.714 34.332C111.756 33.7563 111.007 32.9399 110.467 31.8828C109.932 30.8213 109.664 29.5618 109.664 28.1044C109.664 26.9889 109.821 25.9925 110.136 25.1154C110.456 24.2383 110.901 23.4938 111.472 22.8821C112.043 22.2659 112.714 21.7981 113.483 21.4787C114.252 21.1548 115.089 20.9929 115.993 20.9929C116.757 20.9929 117.47 21.1053 118.132 21.3303C118.793 21.5507 119.38 21.8655 119.893 22.2749C120.41 22.6842 120.835 23.17 121.168 23.7322C121.501 24.2945 121.719 24.9152 121.822 25.5945H119.272ZM128.838 35.2024C127.799 35.2024 126.901 34.9865 126.146 34.5547C125.394 34.1184 124.816 33.5021 124.412 32.706C124.007 31.9053 123.804 30.9629 123.804 29.8789C123.804 28.8129 124.007 27.8772 124.412 27.0721C124.821 26.2624 125.392 25.6327 126.125 25.1829C126.859 24.7286 127.72 24.5014 128.709 24.5014C129.348 24.5014 129.951 24.6049 130.518 24.8118C131.089 25.0142 131.593 25.3291 132.029 25.7564C132.47 26.1837 132.816 26.728 133.068 27.3892C133.32 28.0459 133.446 28.8286 133.446 29.7372V30.4862H124.951V28.8398H131.105C131.1 28.372 130.999 27.956 130.801 27.5916C130.603 27.2228 130.327 26.9326 129.971 26.7212C129.62 26.5098 129.211 26.4041 128.743 26.4041C128.244 26.4041 127.805 26.5256 127.428 26.7685C127.05 27.0069 126.755 27.3217 126.544 27.7131C126.337 28.0999 126.231 28.525 126.227 28.9883V30.4254C126.227 31.0282 126.337 31.5455 126.557 31.9773C126.778 32.4046 127.086 32.733 127.481 32.9624C127.877 33.1873 128.341 33.2997 128.871 33.2997C129.227 33.2997 129.548 33.2502 129.836 33.1513C130.124 33.0478 130.374 32.8971 130.585 32.6992C130.797 32.5013 130.956 32.2562 131.064 31.9638L133.345 32.2202C133.201 32.8229 132.926 33.3492 132.522 33.799C132.121 34.2443 131.609 34.5907 130.983 34.8381C130.358 35.081 129.643 35.2024 128.838 35.2024ZM137.955 28.9276V35H135.512V24.6364H137.847V26.3974H137.968C138.207 25.8171 138.587 25.3561 139.109 25.0142C139.635 24.6723 140.285 24.5014 141.058 24.5014C141.774 24.5014 142.397 24.6544 142.927 24.9602C143.463 25.2661 143.877 25.7092 144.169 26.2894C144.466 26.8697 144.612 27.5736 144.607 28.4013V35H142.165V28.7791C142.165 28.0864 141.985 27.5444 141.625 27.1531C141.27 26.7617 140.777 26.5661 140.148 26.5661C139.72 26.5661 139.34 26.6605 139.007 26.8494C138.679 27.0339 138.42 27.3015 138.231 27.6523C138.047 28.0032 137.955 28.4283 137.955 28.9276ZM151.678 35.2024C150.639 35.2024 149.742 34.9865 148.986 34.5547C148.235 34.1184 147.657 33.5021 147.252 32.706C146.848 31.9053 146.645 30.9629 146.645 29.8789C146.645 28.8129 146.848 27.8772 147.252 27.0721C147.662 26.2624 148.233 25.6327 148.966 25.1829C149.699 24.7286 150.561 24.5014 151.55 24.5014C152.189 24.5014 152.792 24.6049 153.359 24.8118C153.93 25.0142 154.434 25.3291 154.87 25.7564C155.311 26.1837 155.657 26.728 155.909 27.3892C156.161 28.0459 156.287 28.8286 156.287 29.7372V30.4862H147.792V28.8398H153.946C153.941 28.372 153.84 27.956 153.642 27.5916C153.444 27.2228 153.167 26.9326 152.812 26.7212C152.461 26.5098 152.052 26.4041 151.584 26.4041C151.085 26.4041 150.646 26.5256 150.268 26.7685C149.89 27.0069 149.596 27.3217 149.384 27.7131C149.178 28.0999 149.072 28.525 149.067 28.9883V30.4254C149.067 31.0282 149.178 31.5455 149.398 31.9773C149.618 32.4046 149.926 32.733 150.322 32.9624C150.718 33.1873 151.181 33.2997 151.712 33.2997C152.068 33.2997 152.389 33.2502 152.677 33.1513C152.965 33.0478 153.215 32.8971 153.426 32.6992C153.637 32.5013 153.797 32.2562 153.905 31.9638L156.186 32.2202C156.042 32.8229 155.767 33.3492 155.362 33.799C154.962 34.2443 154.449 34.5907 153.824 34.8381C153.199 35.081 152.484 35.2024 151.678 35.2024ZM158.353 35V24.6364H160.721V26.3636H160.829C161.018 25.7654 161.342 25.3043 161.801 24.9805C162.264 24.6521 162.793 24.4879 163.386 24.4879C163.521 24.4879 163.672 24.4947 163.839 24.5082C164.009 24.5172 164.151 24.5329 164.264 24.5554V26.8022C164.16 26.7662 163.996 26.7347 163.771 26.7077C163.551 26.6763 163.337 26.6605 163.13 26.6605C162.685 26.6605 162.284 26.7572 161.929 26.9506C161.578 27.1396 161.302 27.4027 161.099 27.7401C160.897 28.0774 160.796 28.4665 160.796 28.9073V35H158.353ZM168.683 35.2092C168.026 35.2092 167.435 35.0922 166.909 34.8583C166.387 34.6199 165.973 34.2691 165.667 33.8058C165.366 33.3424 165.215 32.7712 165.215 32.092C165.215 31.5072 165.323 31.0237 165.539 30.6413C165.755 30.259 166.049 29.9531 166.423 29.7237C166.796 29.4943 167.217 29.3211 167.684 29.2042C168.157 29.0827 168.645 28.995 169.149 28.9411C169.756 28.8781 170.248 28.8219 170.626 28.7724C171.004 28.7184 171.278 28.6374 171.449 28.5295C171.625 28.417 171.712 28.2438 171.712 28.0099V27.9695C171.712 27.4612 171.562 27.0676 171.26 26.7887C170.959 26.5098 170.525 26.3704 169.958 26.3704C169.36 26.3704 168.885 26.5008 168.535 26.7617C168.188 27.0226 167.954 27.3307 167.833 27.6861L165.552 27.3622C165.732 26.7325 166.029 26.2062 166.443 25.7834C166.857 25.3561 167.363 25.0367 167.961 24.8253C168.559 24.6094 169.221 24.5014 169.945 24.5014C170.444 24.5014 170.941 24.5599 171.436 24.6768C171.931 24.7938 172.383 24.9872 172.792 25.2571C173.201 25.5225 173.53 25.8846 173.777 26.3434C174.029 26.8022 174.155 27.3757 174.155 28.0639V35H171.807V33.5763H171.726C171.578 33.8642 171.368 34.1341 171.098 34.386C170.833 34.6334 170.498 34.8336 170.093 34.9865C169.693 35.1349 169.223 35.2092 168.683 35.2092ZM169.317 33.4144C169.808 33.4144 170.233 33.3177 170.592 33.1243C170.952 32.9264 171.229 32.6655 171.422 32.3416C171.62 32.0178 171.719 31.6647 171.719 31.2823V30.0611C171.643 30.1241 171.512 30.1825 171.328 30.2365C171.148 30.2905 170.946 30.3377 170.721 30.3782C170.496 30.4187 170.273 30.4547 170.053 30.4862C169.832 30.5176 169.641 30.5446 169.479 30.5671C169.115 30.6166 168.789 30.6976 168.501 30.81C168.213 30.9225 167.986 31.0799 167.819 31.2823C167.653 31.4802 167.57 31.7366 167.57 32.0515C167.57 32.5013 167.734 32.8409 168.062 33.0703C168.391 33.2997 168.809 33.4144 169.317 33.4144ZM181.786 24.6364V26.5256H175.828V24.6364H181.786ZM177.299 22.1534H179.742V31.8828C179.742 32.2112 179.791 32.4631 179.89 32.6385C179.994 32.8094 180.128 32.9264 180.295 32.9893C180.461 33.0523 180.646 33.0838 180.848 33.0838C181.001 33.0838 181.141 33.0726 181.266 33.0501C181.397 33.0276 181.496 33.0073 181.563 32.9893L181.975 34.8988C181.844 34.9438 181.658 34.9933 181.415 35.0472C181.177 35.1012 180.884 35.1327 180.538 35.1417C179.926 35.1597 179.375 35.0675 178.885 34.8651C178.394 34.6581 178.005 34.3388 177.717 33.907C177.434 33.4751 177.295 32.9354 177.299 32.2876V22.1534ZM188.305 35.2024C187.266 35.2024 186.369 34.9865 185.613 34.5547C184.862 34.1184 184.284 33.5021 183.879 32.706C183.474 31.9053 183.272 30.9629 183.272 29.8789C183.272 28.8129 183.474 27.8772 183.879 27.0721C184.289 26.2624 184.86 25.6327 185.593 25.1829C186.326 24.7286 187.188 24.5014 188.177 24.5014C188.816 24.5014 189.419 24.6049 189.985 24.8118C190.557 25.0142 191.061 25.3291 191.497 25.7564C191.938 26.1837 192.284 26.728 192.536 27.3892C192.788 28.0459 192.914 28.8286 192.914 29.7372V30.4862H184.419V28.8398H190.572C190.568 28.372 190.467 27.956 190.269 27.5916C190.071 27.2228 189.794 26.9326 189.439 26.7212C189.088 26.5098 188.679 26.4041 188.211 26.4041C187.712 26.4041 187.273 26.5256 186.895 26.7685C186.517 27.0069 186.223 27.3217 186.011 27.7131C185.804 28.0999 185.699 28.525 185.694 28.9883V30.4254C185.694 31.0282 185.804 31.5455 186.025 31.9773C186.245 32.4046 186.553 32.733 186.949 32.9624C187.345 33.1873 187.808 33.2997 188.339 33.2997C188.695 33.2997 189.016 33.2502 189.304 33.1513C189.592 33.0478 189.842 32.8971 190.053 32.6992C190.264 32.5013 190.424 32.2562 190.532 31.9638L192.813 32.2202C192.669 32.8229 192.394 33.3492 191.989 33.799C191.589 34.2443 191.076 34.5907 190.451 34.8381C189.826 35.081 189.111 35.2024 188.305 35.2024ZM211.629 25.8441H209.105C209.033 25.4303 208.901 25.0637 208.707 24.7443C208.514 24.4205 208.273 24.1461 207.985 23.9212C207.697 23.6963 207.369 23.5276 207 23.4151C206.636 23.2982 206.242 23.2397 205.819 23.2397C205.068 23.2397 204.402 23.4286 203.822 23.8065C203.242 24.1798 202.788 24.7286 202.459 25.4528C202.131 26.1725 201.967 27.0518 201.967 28.0909C201.967 29.148 202.131 30.0386 202.459 30.7628C202.792 31.4825 203.246 32.0268 203.822 32.3956C204.402 32.7599 205.066 32.9421 205.813 32.9421C206.226 32.9421 206.613 32.8881 206.973 32.7802C207.337 32.6677 207.664 32.5036 207.951 32.2876C208.244 32.0717 208.489 31.8063 208.687 31.4915C208.889 31.1766 209.029 30.8168 209.105 30.4119L211.629 30.4254C211.534 31.0821 211.33 31.6984 211.015 32.2741C210.704 32.8499 210.297 33.3582 209.793 33.799C209.29 34.2353 208.7 34.5772 208.026 34.8246C207.351 35.0675 206.602 35.1889 205.779 35.1889C204.564 35.1889 203.48 34.9078 202.527 34.3455C201.573 33.7833 200.822 32.9714 200.273 31.9098C199.724 30.8482 199.45 29.5753 199.45 28.0909C199.45 26.602 199.727 25.3291 200.28 24.272C200.833 23.2105 201.587 22.3986 202.54 21.8363C203.494 21.274 204.573 20.9929 205.779 20.9929C206.548 20.9929 207.263 21.1009 207.924 21.3168C208.586 21.5327 209.175 21.8498 209.692 22.2681C210.21 22.6819 210.635 23.1902 210.967 23.793C211.305 24.3912 211.525 25.0749 211.629 25.8441ZM218.334 35.2024C217.322 35.2024 216.444 34.9798 215.702 34.5344C214.96 34.0891 214.384 33.4661 213.975 32.6655C213.57 31.8648 213.368 30.9292 213.368 29.8587C213.368 28.7881 213.57 27.8503 213.975 27.0451C214.384 26.2399 214.96 25.6147 215.702 25.1694C216.444 24.7241 217.322 24.5014 218.334 24.5014C219.346 24.5014 220.223 24.7241 220.965 25.1694C221.707 25.6147 222.281 26.2399 222.686 27.0451C223.095 27.8503 223.3 28.7881 223.3 29.8587C223.3 30.9292 223.095 31.8648 222.686 32.6655C222.281 33.4661 221.707 34.0891 220.965 34.5344C220.223 34.9798 219.346 35.2024 218.334 35.2024ZM218.347 33.2457C218.896 33.2457 219.355 33.0951 219.724 32.7937C220.092 32.4878 220.367 32.0785 220.547 31.5657C220.731 31.0529 220.823 30.4817 220.823 29.8519C220.823 29.2177 220.731 28.6442 220.547 28.1314C220.367 27.6141 220.092 27.2025 219.724 26.8967C219.355 26.5908 218.896 26.4379 218.347 26.4379C217.785 26.4379 217.317 26.5908 216.944 26.8967C216.575 27.2025 216.298 27.6141 216.114 28.1314C215.934 28.6442 215.844 29.2177 215.844 29.8519C215.844 30.4817 215.934 31.0529 216.114 31.5657C216.298 32.0785 216.575 32.4878 216.944 32.7937C217.317 33.0951 217.785 33.2457 218.347 33.2457ZM229.219 35.1822C228.404 35.1822 227.676 34.973 227.032 34.5547C226.389 34.1364 225.881 33.5291 225.508 32.733C225.134 31.9368 224.948 30.9697 224.948 29.8317C224.948 28.6802 225.136 27.7086 225.514 26.9169C225.897 26.1207 226.412 25.5202 227.059 25.1154C227.707 24.7061 228.429 24.5014 229.225 24.5014C229.833 24.5014 230.332 24.6049 230.723 24.8118C231.114 25.0142 231.425 25.2594 231.654 25.5472C231.884 25.8306 232.061 26.0982 232.187 26.3501H232.288V21.1818H234.738V35H232.336V33.3672H232.187C232.061 33.6191 231.879 33.8867 231.641 34.1701C231.402 34.449 231.087 34.6874 230.696 34.8853C230.305 35.0832 229.812 35.1822 229.219 35.1822ZM229.9 33.1783C230.417 33.1783 230.858 33.0388 231.222 32.7599C231.587 32.4766 231.863 32.083 232.052 31.5792C232.241 31.0754 232.336 30.4884 232.336 29.8182C232.336 29.148 232.241 28.5655 232.052 28.0707C231.868 27.5759 231.594 27.1913 231.229 26.9169C230.869 26.6425 230.426 26.5053 229.9 26.5053C229.356 26.5053 228.901 26.647 228.537 26.9304C228.173 27.2138 227.898 27.6051 227.714 28.1044C227.529 28.6037 227.437 29.175 227.437 29.8182C227.437 30.4659 227.529 31.0439 227.714 31.5522C227.903 32.056 228.179 32.4541 228.544 32.7464C228.913 33.0343 229.365 33.1783 229.9 33.1783ZM241.928 35.2024C240.889 35.2024 239.992 34.9865 239.236 34.5547C238.485 34.1184 237.907 33.5021 237.502 32.706C237.098 31.9053 236.895 30.9629 236.895 29.8789C236.895 28.8129 237.098 27.8772 237.502 27.0721C237.912 26.2624 238.483 25.6327 239.216 25.1829C239.949 24.7286 240.811 24.5014 241.8 24.5014C242.439 24.5014 243.042 24.6049 243.609 24.8118C244.18 25.0142 244.684 25.3291 245.12 25.7564C245.561 26.1837 245.907 26.728 246.159 27.3892C246.411 28.0459 246.537 28.8286 246.537 29.7372V30.4862H238.042V28.8398H244.196C244.191 28.372 244.09 27.956 243.892 27.5916C243.694 27.2228 243.417 26.9326 243.062 26.7212C242.711 26.5098 242.302 26.4041 241.834 26.4041C241.335 26.4041 240.896 26.5256 240.518 26.7685C240.14 27.0069 239.846 27.3217 239.634 27.7131C239.428 28.0999 239.322 28.525 239.317 28.9883V30.4254C239.317 31.0282 239.428 31.5455 239.648 31.9773C239.868 32.4046 240.176 32.733 240.572 32.9624C240.968 33.1873 241.431 33.2997 241.962 33.2997C242.318 33.2997 242.639 33.2502 242.927 33.1513C243.215 33.0478 243.465 32.8971 243.676 32.6992C243.887 32.5013 244.047 32.2562 244.155 31.9638L246.436 32.2202C246.292 32.8229 246.017 33.3492 245.612 33.799C245.212 34.2443 244.699 34.5907 244.074 34.8381C243.449 35.081 242.734 35.2024 241.928 35.2024Z" fill="white"/>
+// </svg>
+
+//       </button>
+
+//       <a href="#" className={styles.helpLink}>Need Help integrate the AI widget?</a>
+//     </div>
+
+//    <Modal2 className={styles.ModalControl} isOpen={isModalOpen} onClose={closeModal}>
+//         <h3 className={styles.Modalheading} >Add Your Domain</h3>
+//         <p className={styles.ModalPara}>Want the widget on another domain? Enter a different address here.</p>
+
+//         <input
+//           type="text"
+//           placeholder="https://example.com"
+//           value={newDomain}
+//           onChange={(e) => setNewDomain(e.target.value)}
+//           className={styles.modalInput}
+//         />
+//         <button className={styles.modalSubmit} onClick={handleAddDomain}>
+
+//         <svg width="357" height="57" viewBox="0 0 357 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+// <path d="M0 15.8809C0 8.25752 6.07777 2.03752 13.6999 1.89818C45.1625 1.32299 124.097 -0.0107212 179.02 6.50351e-05C233.456 0.0107557 311.9 1.33021 343.255 1.89985C350.878 2.03834 356.961 8.25885 356.961 15.8831V40.1954C356.961 47.8196 350.878 54.0401 343.255 54.1786C311.9 54.7483 233.456 56.0678 179.02 56.0785C124.097 56.0893 45.1625 54.7555 13.6998 54.1803C6.07776 54.041 0 47.8209 0 40.1976V15.8809Z" fill="#6524EB"/>
+// <path d="M125.186 35H122.514L127.379 21.1818H130.469L135.34 35H132.668L128.978 24.0156H128.87L125.186 35ZM125.273 29.582H132.56V31.5927H125.273V29.582ZM140.583 35.1822C139.769 35.1822 139.04 34.973 138.397 34.5547C137.753 34.1364 137.245 33.5291 136.872 32.733C136.499 31.9368 136.312 30.9697 136.312 29.8317C136.312 28.6802 136.501 27.7086 136.879 26.9169C137.261 26.1207 137.776 25.5202 138.424 25.1154C139.071 24.7061 139.793 24.5014 140.59 24.5014C141.197 24.5014 141.696 24.6049 142.087 24.8118C142.479 25.0142 142.789 25.2594 143.019 25.5472C143.248 25.8306 143.426 26.0982 143.552 26.3501H143.653V21.1818H146.102V35H143.7V33.3672H143.552C143.426 33.6191 143.243 33.8867 143.005 34.1701C142.767 34.449 142.452 34.6874 142.06 34.8853C141.669 35.0832 141.177 35.1822 140.583 35.1822ZM141.264 33.1783C141.782 33.1783 142.222 33.0388 142.587 32.7599C142.951 32.4766 143.228 32.083 143.417 31.5792C143.606 31.0754 143.7 30.4884 143.7 29.8182C143.7 29.148 143.606 28.5655 143.417 28.0707C143.232 27.5759 142.958 27.1913 142.593 26.9169C142.234 26.6425 141.791 26.5053 141.264 26.5053C140.72 26.5053 140.266 26.647 139.901 26.9304C139.537 27.2138 139.263 27.6051 139.078 28.1044C138.894 28.6037 138.802 29.175 138.802 29.8182C138.802 30.4659 138.894 31.0439 139.078 31.5522C139.267 32.056 139.544 32.4541 139.908 32.7464C140.277 33.0343 140.729 33.1783 141.264 33.1783ZM152.551 35.1822C151.736 35.1822 151.008 34.973 150.364 34.5547C149.721 34.1364 149.213 33.5291 148.84 32.733C148.466 31.9368 148.28 30.9697 148.28 29.8317C148.28 28.6802 148.469 27.7086 148.846 26.9169C149.229 26.1207 149.744 25.5202 150.391 25.1154C151.039 24.7061 151.761 24.5014 152.557 24.5014C153.165 24.5014 153.664 24.6049 154.055 24.8118C154.447 25.0142 154.757 25.2594 154.986 25.5472C155.216 25.8306 155.393 26.0982 155.519 26.3501H155.621V21.1818H158.07V35H155.668V33.3672H155.519C155.393 33.6191 155.211 33.8867 154.973 34.1701C154.734 34.449 154.42 34.6874 154.028 34.8853C153.637 35.0832 153.144 35.1822 152.551 35.1822ZM153.232 33.1783C153.749 33.1783 154.19 33.0388 154.554 32.7599C154.919 32.4766 155.195 32.083 155.384 31.5792C155.573 31.0754 155.668 30.4884 155.668 29.8182C155.668 29.148 155.573 28.5655 155.384 28.0707C155.2 27.5759 154.926 27.1913 154.561 26.9169C154.201 26.6425 153.758 26.5053 153.232 26.5053C152.688 26.5053 152.233 26.647 151.869 26.9304C151.505 27.2138 151.23 27.6051 151.046 28.1044C150.862 28.6037 150.769 29.175 150.769 29.8182C150.769 30.4659 150.862 31.0439 151.046 31.5522C151.235 32.056 151.511 32.4541 151.876 32.7464C152.245 33.0343 152.697 33.1783 153.232 33.1783ZM170.176 35H165.493V21.1818H170.27C171.642 21.1818 172.821 21.4585 173.806 22.0117C174.795 22.5605 175.556 23.3499 176.086 24.38C176.617 25.41 176.883 26.6425 176.883 28.0774C176.883 29.5168 176.615 30.7538 176.08 31.7884C175.549 32.8229 174.782 33.6168 173.779 34.1701C172.78 34.7234 171.579 35 170.176 35ZM167.996 32.8342H170.054C171.017 32.8342 171.82 32.6587 172.463 32.3079C173.106 31.9525 173.59 31.424 173.914 30.7223C174.238 30.0161 174.4 29.1345 174.4 28.0774C174.4 27.0204 174.238 26.1432 173.914 25.446C173.59 24.7443 173.111 24.2203 172.477 23.8739C171.847 23.5231 171.064 23.3477 170.129 23.3477H167.996V32.8342ZM183.674 35.2024C182.661 35.2024 181.784 34.9798 181.042 34.5344C180.3 34.0891 179.724 33.4661 179.315 32.6655C178.91 31.8648 178.708 30.9292 178.708 29.8587C178.708 28.7881 178.91 27.8503 179.315 27.0451C179.724 26.2399 180.3 25.6147 181.042 25.1694C181.784 24.7241 182.661 24.5014 183.674 24.5014C184.686 24.5014 185.563 24.7241 186.305 25.1694C187.047 25.6147 187.621 26.2399 188.025 27.0451C188.435 27.8503 188.639 28.7881 188.639 29.8587C188.639 30.9292 188.435 31.8648 188.025 32.6655C187.621 33.4661 187.047 34.0891 186.305 34.5344C185.563 34.9798 184.686 35.2024 183.674 35.2024ZM183.687 33.2457C184.236 33.2457 184.695 33.0951 185.063 32.7937C185.432 32.4878 185.707 32.0785 185.887 31.5657C186.071 31.0529 186.163 30.4817 186.163 29.8519C186.163 29.2177 186.071 28.6442 185.887 28.1314C185.707 27.6141 185.432 27.2025 185.063 26.8967C184.695 26.5908 184.236 26.4379 183.687 26.4379C183.125 26.4379 182.657 26.5908 182.284 26.8967C181.915 27.2025 181.638 27.6141 181.454 28.1314C181.274 28.6442 181.184 29.2177 181.184 29.8519C181.184 30.4817 181.274 31.0529 181.454 31.5657C181.638 32.0785 181.915 32.4878 182.284 32.7937C182.657 33.0951 183.125 33.2457 183.687 33.2457ZM190.712 35V24.6364H193.047V26.3974H193.168C193.384 25.8036 193.742 25.3403 194.241 25.0075C194.741 24.6701 195.337 24.5014 196.029 24.5014C196.731 24.5014 197.322 24.6723 197.804 25.0142C198.29 25.3516 198.631 25.8126 198.829 26.3974H198.937C199.167 25.8216 199.554 25.3628 200.098 25.021C200.647 24.6746 201.297 24.5014 202.048 24.5014C203.001 24.5014 203.779 24.8028 204.382 25.4055C204.985 26.0083 205.286 26.8877 205.286 28.0437V35H202.837V28.4215C202.837 27.7783 202.666 27.3082 202.324 27.0114C201.982 26.71 201.564 26.5593 201.069 26.5593C200.48 26.5593 200.019 26.7437 199.686 27.1126C199.358 27.4769 199.194 27.9515 199.194 28.5362V35H196.798V28.3203C196.798 27.785 196.636 27.3577 196.313 27.0384C195.993 26.719 195.575 26.5593 195.058 26.5593C194.707 26.5593 194.387 26.6493 194.1 26.8292C193.812 27.0046 193.582 27.2543 193.411 27.5781C193.24 27.8975 193.155 28.2708 193.155 28.6982V35H190.712ZM210.746 35.2092C210.09 35.2092 209.498 35.0922 208.972 34.8583C208.45 34.6199 208.036 34.2691 207.731 33.8058C207.429 33.3424 207.278 32.7712 207.278 32.092C207.278 31.5072 207.386 31.0237 207.602 30.6413C207.818 30.259 208.113 29.9531 208.486 29.7237C208.86 29.4943 209.28 29.3211 209.748 29.2042C210.22 29.0827 210.708 28.995 211.212 28.9411C211.819 28.8781 212.312 28.8219 212.69 28.7724C213.068 28.7184 213.342 28.6374 213.513 28.5295C213.688 28.417 213.776 28.2438 213.776 28.0099V27.9695C213.776 27.4612 213.625 27.0676 213.324 26.7887C213.023 26.5098 212.588 26.3704 212.022 26.3704C211.423 26.3704 210.949 26.5008 210.598 26.7617C210.252 27.0226 210.018 27.3307 209.896 27.6861L207.616 27.3622C207.796 26.7325 208.093 26.2062 208.506 25.7834C208.92 25.3561 209.426 25.0367 210.025 24.8253C210.623 24.6094 211.284 24.5014 212.008 24.5014C212.508 24.5014 213.005 24.5599 213.499 24.6768C213.994 24.7938 214.446 24.9872 214.856 25.2571C215.265 25.5225 215.593 25.8846 215.841 26.3434C216.092 26.8022 216.218 27.3757 216.218 28.0639V35H213.87V33.5763H213.789C213.641 33.8642 213.432 34.1341 213.162 34.386C212.897 34.6334 212.561 34.8336 212.157 34.9865C211.756 35.1349 211.286 35.2092 210.746 35.2092ZM211.381 33.4144C211.871 33.4144 212.296 33.3177 212.656 33.1243C213.016 32.9264 213.292 32.6655 213.486 32.3416C213.684 32.0178 213.783 31.6647 213.783 31.2823V30.0611C213.706 30.1241 213.576 30.1825 213.391 30.2365C213.211 30.2905 213.009 30.3377 212.784 30.3782C212.559 30.4187 212.337 30.4547 212.116 30.4862C211.896 30.5176 211.705 30.5446 211.543 30.5671C211.178 30.6166 210.852 30.6976 210.564 30.81C210.276 30.9225 210.049 31.0799 209.883 31.2823C209.716 31.4802 209.633 31.7366 209.633 32.0515C209.633 32.5013 209.797 32.8409 210.126 33.0703C210.454 33.2997 210.872 33.4144 211.381 33.4144ZM218.674 35V24.6364H221.117V35H218.674ZM219.902 23.1655C219.516 23.1655 219.183 23.0373 218.904 22.7809C218.625 22.52 218.485 22.2074 218.485 21.843C218.485 21.4742 218.625 21.1616 218.904 20.9052C219.183 20.6443 219.516 20.5138 219.902 20.5138C220.294 20.5138 220.627 20.6443 220.901 20.9052C221.18 21.1616 221.319 21.4742 221.319 21.843C221.319 22.2074 221.18 22.52 220.901 22.7809C220.627 23.0373 220.294 23.1655 219.902 23.1655ZM226.071 28.9276V35H223.629V24.6364H225.963V26.3974H226.084C226.323 25.8171 226.703 25.3561 227.225 25.0142C227.751 24.6723 228.401 24.5014 229.175 24.5014C229.89 24.5014 230.513 24.6544 231.044 24.9602C231.579 25.2661 231.993 25.7092 232.285 26.2894C232.582 26.8697 232.728 27.5736 232.724 28.4013V35H230.281V28.7791C230.281 28.0864 230.101 27.5444 229.741 27.1531C229.386 26.7617 228.894 26.5661 228.264 26.5661C227.836 26.5661 227.456 26.6605 227.124 26.8494C226.795 27.0339 226.537 27.3015 226.348 27.6523C226.163 28.0032 226.071 28.4283 226.071 28.9276Z" fill="white"/>
+// </svg>
+
+//         </button>
+//       </Modal2>
+
+//     </div>
+//   );
+// };
+
+// export default IntegrateAgent;

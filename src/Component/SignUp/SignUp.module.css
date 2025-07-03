@@ -11,7 +11,13 @@
     position: relative;
     width: 100%;
 }
-
+.stickyWrapper {
+    position: sticky;
+    bottom: 0px;
+    background: white;
+    padding: 10px 0;
+    z-index: 10;
+}
 .Dblock {
     display: grid;
 }
@@ -399,10 +405,8 @@
     justify-content: center;
     align-items: center;
     min-height: 55px;
-    margin-top: 2rem;
     width: 100%;
     cursor: pointer;
-    overflow: hidden;
 }
 
 /* Shine overlay using ::after */

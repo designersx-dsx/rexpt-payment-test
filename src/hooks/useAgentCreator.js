@@ -89,33 +89,7 @@ export const useAgentCreator = ({
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
 
     const CustomservicesArray = cleanedCustomServices?.map(item => item.service) || [];
-    const prompt = `You are an AI Receptionist ${agentName}, working as a ${role_title} for ${business?.businessName}.
-Your main goal is to professionally greet, assist, and guide callers or visitors. Use a helpful, polite, and clear tone. Tailor your conversation based on your role and the context.
-Here is your profile:
-- Role:  ${role_title}
-- Role Description: ${role_title}
-- Business Name:  ${business?.businessName}
-- Business Services:  ${businessType}
-- Business Location: ${BusinessLocation?.country}}
--Additional Instructions: ${aboutBusinessForm.note}
-Responsibilities:
-1. Greet customers warmly and identify their needs.
-2. Answer basic questions about the business, services, or hours.
-3. Direct them to the correct person, department, or provide contact info.
-4. Collect necessary details like name, issue type, and contact number if required.
-5. Politely handle situations you can't resolve and offer alternatives (like escalation or support request).
-6. Stay in character based on your receptionist role.
 
-If you’re unsure of something, respond with:  
-**"I’ll connect you to someone who can better assist with that."**
-
-Always maintain a tone that matches the following persona:  
-**${role_title}**
- 
----
-
-Let’s begin assisting the customer!
-`;
     const filledPrompt = getAgentPrompt({
       industryKey: business?.businessType,   // ← dynamic from businessType
       roleTitle: role_title, // ← dynamic from sessionStorage or UI
@@ -143,7 +117,7 @@ Let’s begin assisting the customer!
     //updation here
     if (isValid && localStorage.getItem("UpdationMode") == "ON") {
       setLoading(true)
-      if (isValid == 'BusinessDetails' || isValid == 'businesServices' || isValid == 'BusinessLocation') {
+      if (isValid == 'EditBusinessType' || isValid == 'EditServicesOffered' || isValid == 'BusinessLocation') {
 
         const businessDetails = JSON.parse(sessionStorage.getItem('businessDetails'));
         const locationData = JSON.parse(sessionStorage.getItem('businessLocation'));
@@ -170,10 +144,13 @@ Let’s begin assisting the customer!
             // zip: locationData.zip,
             customServices: cleanedCustomServices,
           });
+          if(sessionStorage.getItem('prevBuisnessType')){
+            sessionStorage.removeItem('prevBuisnessType')
+          }
           console.log('updation response', response)
         } catch (error) {
           console.log('error while buinsess details updated');
-          setLoading(false)
+          // setLoading(false)
           return
         }
       }
@@ -206,11 +183,11 @@ Let’s begin assisting the customer!
 
         setPopupMessage(`${isValid} Updated Succesfully`);
         setShowPopup(true);
-        setLoading(false)
+        // setLoading(false)
         // console.log(localStorage.getItem("agent_id") ,localStorage.getItem("bussinesId"))
         window.history.pushState(null, "", "/agent-detail");
         setTimeout(() =>
-          navigate("/agent-detail", {
+          navigate("/edit-agent", {
             state: {
               agentId: sessionStorage.getItem("agent_id") || localStorage.getItem("agentId"),
               bussinesId: sessionStorage.getItem("bId") || localStorage.getItem("bussinesId"),
@@ -222,7 +199,6 @@ Let’s begin assisting the customer!
         setPopupType("failed");
         setPopupMessage("LLM updation failed. Please try again.");
         setShowPopup(true);
-        setLoading(false)
       } finally {
         setLoading(false)
       }

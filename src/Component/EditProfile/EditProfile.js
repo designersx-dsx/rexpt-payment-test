@@ -22,6 +22,7 @@ import Loader from "../Loader/Loader";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
+
 const EditProfile = () => {
   const fileInputRef = useRef(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
