@@ -1,0 +1,51 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgb(93 92 93 / 75%);
+    z-index: 999;
+}
+
+.modal {
+    position: absolute;
+    left: 50%;
+    bottom: 20%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.4s ease-out;
+}
+
+.modal::after {
+    content: "";
+    position: absolute;
+    bottom: -16px;
+    right: 24px;
+    transform: rotate(45deg);
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    border-bottom-right-radius: 8px;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translate(-50%, 100%);
+    }
+
+    to {
+        transform: translate(-50%, 0);
+    }
+}
+
+.close {
+    position: absolute;
+    top: 5%;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}

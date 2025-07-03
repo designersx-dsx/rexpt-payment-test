@@ -92,7 +92,6 @@ export default function Home() {
     try {
       const res = await getAllAgentCalls(userId);
       setData(res.calls || []);
-      console.log(res, "res");
     } catch (error) {
       console.log(error);
     } finally {
@@ -143,7 +142,7 @@ export default function Home() {
       filters?.leadType.length === 0 ||
       filters?.leadType.includes(
         call.custom_analysis_data?.lead_type ||
-          call?.call_analysis?.custom_analysis_data?.lead_type
+        call?.call_analysis?.custom_analysis_data?.lead_type
       );
 
     // Channel Filter (apply only if a channel is selected)
@@ -170,6 +169,29 @@ export default function Home() {
     // Perform additional logic related to "All Agents" if needed
   };
   const navigate = useNavigate();
+  const formattedDate = (date) => {
+    return new Date(date).toLocaleDateString(
+      "en-GB",
+      {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }
+    );
+  }
+  const getSentimentClass = (sentiment) => {
+    switch (sentiment?.toLowerCase()) {
+      case "positive":
+        return styles.fromGreen;
+      case "negative":
+        return styles.fromRed;
+      case "neutral":
+        return styles.fromYellow;
+      default:
+        return "";
+    }
+  };
+
 
   return (
     <div className={styles.container}>
@@ -207,7 +229,7 @@ export default function Home() {
                 <th>Date & Time</th>
                 <th>Duration</th>
                 <th>From</th>
-                <th>Lead Type</th>
+                <th>Name</th>
                 <th>Sentiment</th>
               </tr>
             </thead>
@@ -243,17 +265,13 @@ export default function Home() {
                           {getDateTimeFromTimestamp(call.end_timestamp).time}
                         </div>
                         <div className={styles.callDate}>
-                          {getDateTimeFromTimestamp(call.end_timestamp).date}
+                          {formattedDate(call.end_timestamp)}
                         </div>
                       </div>
                     </td>
                     <td>{convertMsToMinSec(call.duration_ms)}</td>
                     <td>
-                      <p
-                        className={`${styles.fromNumber} ${
-                          styles[call.fromColor]
-                        }`}
-                      >
+                      <p className={`${styles.fromNumber} ${getSentimentClass(call.user_sentiment || call?.call_analysis?.user_sentiment)}`}>
                         {call.call_type}
                       </p>
                     </td>

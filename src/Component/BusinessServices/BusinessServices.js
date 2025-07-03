@@ -36,14 +36,12 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const scrollToBottomRef = useRef(null);
 
-  useEffect(() => {
-
-  }, [])
   const businessServices = [
     {
       type: "Restaurant",
-      subtype: "Your Journey Begins Here",
+      subtype: "Food Service Establishment",
       icon: "svg/Restaurant-icon.svg",
       services: [
         "Dine-in Service",
@@ -56,7 +54,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Real Estate Broker",
-      subtype: "Your Journey Begins Here",
+      subtype: "Property Transaction Facilitator",
       icon: "svg/Estate-icon.svg",
       services: [
         "Property Sales",
@@ -69,7 +67,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Saloon",
-      subtype: "Your Journey Begins Here",
+      subtype: "Hair Styling & Grooming",
       icon: "svg/Saloon-icon.svg",
       services: [
         "Haircuts",
@@ -82,7 +80,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Doctor's Clinic",
-      subtype: "Your Journey Begins Here",
+      subtype: "Medical Consultation & Treatment",
       icon: "svg/Doctor-clinic-icon.svg",
       services: [
         "General Checkups",
@@ -95,7 +93,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Dry Cleaner",
-      subtype: "Your Journey Begins Here",
+      subtype: "Garment Cleaning & Care",
       icon: "svg/Dry -Cleaner-icon.svg",
       services: [
         "Garment Cleaning",
@@ -107,7 +105,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Web Design Agency",
-      subtype: "Your Journey Begins Here",
+      subtype: "Website Creation & Development",
       icon: "svg/Web-Design-Agency-icon.svg",
       services: [
         "Website Creation",
@@ -120,7 +118,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Gym & Fitness Center",
-      subtype: "Your Journey Begins Here",
+      subtype: "Exercise Facility & Training",
       icon: "svg/Gym-icon.svg",
       services: [
         "Group Fitness Classes",
@@ -132,7 +130,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Marketing Agency",
-      subtype: "Your Journey Begins Here",
+      subtype: "Business Promotion Strategies",
       icon: "svg/Marketing Agency.svg",
       services: [
         "Social Media Advertising",
@@ -145,7 +143,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Personal Trainer",
-      subtype: "Your Journey Begins Here",
+      subtype: "Individual Fitness Coaching",
       icon: "images/other.png",
       services: [
         "Personalized Workout Plans",
@@ -157,7 +155,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Architect",
-      subtype: "Your Journey Begins Here",
+      subtype: "Building Design Expert",
       icon: "svg/Architect-icon.svg",
       services: [
         "Residential Building Design",
@@ -171,7 +169,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Interior Designer",
-      subtype: "Your Journey Begins Here",
+      subtype: "Indoor Space Beautifier",
       icon: "images/other.png",
       services: [
         "Space Planning",
@@ -184,7 +182,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Construction Services",
-      subtype: "Your Journey Begins Here",
+      subtype: "Building Construction & Repair",
       icon: "svg/Construction Services.svg",
       services: [
         "New Building Construction",
@@ -196,7 +194,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Cleaning/Janitorial Service",
-      subtype: "Your Journey Begins Here",
+      subtype: "Building Construction & Repair",
       icon: "images/other.png",
       services: [
         "Office Cleaning",
@@ -209,7 +207,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Transport Company",
-      subtype: "Your Journey Begins Here",
+      subtype: "Freight Transportation Services",
       icon: "images/other.png",
       services: [
         "Freight Shipping",
@@ -222,7 +220,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Landscaping Company",
-      subtype: "Your Journey Begins Here",
+      subtype: "Outdoor Space Beautification",
       icon: "images/other.png",
       services: [
         "Lawn Mowing & Maintenance",
@@ -234,7 +232,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Insurance Agency",
-      subtype: "Your Journey Begins Here",
+      subtype: "Risk Protection Provider",
       icon: "svg/Insurance Agency.svg",
       services: [
         "Life Insurance",
@@ -247,7 +245,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Financial Services",
-      subtype: "Your Journey Begins Here",
+      subtype: "Wealth Management Advice",
       icon: "images/other.png",
       services: [
         "Investment Planning",
@@ -260,7 +258,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Accounting Services",
-      subtype: "Your Journey Begins Here",
+      subtype: "Financial Record Management",
       icon: "svg/Accounting Services.svg",
       services: [
         "Bookkeeping",
@@ -273,7 +271,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Car Repair & Garage",
-      subtype: "Your Journey Begins Here",
+      subtype: "Vehicle Maintenance & Repair",
       icon: "images/other.png",
       services: [
         "Oil & Filter Change",
@@ -286,7 +284,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Boat Repair & Maintenance",
-      subtype: "Your Journey Begins Here",
+      subtype: "Watercraft Upkeep & Repair",
       icon: "images/other.png",
       services: [
         "Hull Repair",
@@ -299,7 +297,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Dentist",
-      subtype: "Your Journey Begins Here",
+      subtype: "Dental Care Provider",
       icon: "images/other.png",
       services: [
         "Teeth",
@@ -313,7 +311,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Property Rental & Leasing Service",
-      subtype: "Your Journey Begins Here",
+      subtype: "Property Rental Management",
       icon: "svg/Property Rental & Leasing Service.svg",
       services: [
         "Tenant Screening",
@@ -325,7 +323,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Old Age Home",
-      subtype: "Your Journey Begins Here",
+      subtype: "Senior Living Facility",
       icon: "svg/Old Age Home.svg",
       services: [
         "Assisted Living",
@@ -339,7 +337,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Travel Agency",
-      subtype: "Your Journey Begins Here",
+      subtype: "Trip Planning & Booking",
       icon: "svg/Travel Agency.svg",
       services: [
         "Flight Booking",
@@ -356,7 +354,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Ticket Booking",
-      subtype: "Your Journey Begins Here",
+      subtype: "Travel Ticket Provider",
       icon: "svg/Ticket Booking.svg",
       services: [
         "Flight Tickets",
@@ -373,7 +371,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     ,
     {
       type: "Financial Planners",
-      subtype: "Your Journey Begins Here",
+      subtype: "Wealth Management Advice",
       icon: "svg/Financial Planners.svg",
       services: [
         "Retirement Planning",
@@ -389,7 +387,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Beauty Parlour",
-      subtype: "Your Journey Begins Here",
+      subtype: "Cosmetic Beauty Services",
       icon: "svg/Beauty Parlour.svg",
       services: [
         "Hair Cutting & Styling",
@@ -406,7 +404,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Nail Salon",
-      subtype: "Your Journey Begins Here",
+      subtype: "Manicure/Pedicure Services",
       icon: "svg/Nail Saloon.svg",
       services: [
         "Manicure",
@@ -424,7 +422,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     ,
     {
       type: "Barber Studio/Shop",
-      subtype: "Your Journey Begins Here",
+      subtype: "Men's Hair Grooming",
       icon: "svg/Barber.svg",
       services: [
         "Haircut",
@@ -442,7 +440,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     ,
     {
       type: "Hair Stylist",
-      subtype: "Your Journey Begins Here",
+      subtype: "Professional Hair Care",
       icon: "svg/Hair Stylist.svg",
       services: [
         "Hair Cutting & Trimming",
@@ -460,7 +458,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     ,
     {
       type: "Bakery",
-      subtype: "Your Journey Begins Here",
+      subtype: "Baked Goods Producer",
       icon: "svg/Bakery.svg",
       services: [
         "Custom Cakes",
@@ -477,7 +475,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     },
     {
       type: "Cleaning Janitorial Service",
-      subtype: "Your Journey Begins Here",
+      subtype: "Professional Cleaning Solutions",
       icon: "svg/Cleaning Janitorial Service.svg",
       services: [
         "Residential Cleaning",
@@ -492,22 +490,17 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
         "Other"
       ],
     }
-    ,
-    ,
-    {
-      type: "Other Local Business",
-      subtype: "Your Journey Begins Here",
-      icon: "images/other.png",
-      services: [
-        "Custom Services – Please Specify Your Business Type and Needs",
-      ],
-    },
+
   ];
   const [searchTerm, setSearchTerm] = useState("");
-  const selectedBusiness = businessServices?.find(
-    (biz) => biz?.type === businessType
-  );
+  // const selectedBusiness = businessServices?.find(
+  //   (biz) => biz?.type === businessType
+  // );
+  const selectedBusiness =
+    businessServices.find((biz) => biz?.type === businessType) ||
+    (businessType === "Other" && businessServices?.find((biz) => biz?.type === "Other Local Business"));
 
+  console.log(selectedBusiness, "selectedBusiness")
   const defaultServices = selectedBusiness?.services || [];
   const allServices = [...defaultServices, ...customServices];
   const flatServices = allServices.flatMap((item) => {
@@ -657,6 +650,8 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       }));
 
       setInputValue("");
+      scrollToBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+
     }
   };
   useEffect(() => {
@@ -704,7 +699,19 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
 
       sessionStorage.setItem("showInput", JSON.stringify(true));
     }
+
   }, [businessDetails])
+  useEffect(() => {
+    const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"))
+    setBusinessType(businessDetails?.businessType)
+  }, [])
+  useEffect(() => {
+    if (showInput && scrollToBottomRef?.current) {
+      setTimeout(() => {
+        scrollToBottomRef?.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [customServices])
   return (
     <div className={styles.container} id="servies">
       <div className={styles.searchBox}>
@@ -719,22 +726,22 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className={styles.ListDiv}>
-        <div className={styles.optionList}>
+      <div className={styles.ListDiv}  >
+        <div className={styles.optionList} >
           {filteredServices.length > 0 ? (
             filteredServices?.filter((service) => service !== "Other")?.map((service, index) => (
               <label className={styles.option} key={index}>
                 <div className={styles.forflex}>
                   <div className={styles.icon}>
                     <img
-                      src={selectedBusiness.icon}
+                      src={selectedBusiness?.icon || "images/other.png"}
                       alt="service-icon"
                       className={styles.iconImg}
                     />
                   </div>
                   <div className={styles.strongDiv}>
                     <strong>{service}</strong>
-                    <p className={styles.subType}>{selectedBusiness.subtype}</p>
+                    <p className={styles.subType}>{selectedBusiness?.subtype || "Your Journey Begins Here"}</p>
                   </div>
                 </div>
 
@@ -752,6 +759,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
           ) : (
             <p>No item found</p>
           )}
+          <div ref={scrollToBottomRef} style={{ height: 1 }} />
         </div>
       </div>
       {serviceError && (
@@ -761,17 +769,17 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       <div className={styles.CallTransferMain1}>
         {/* Checkbox to toggle service input */}
         <div className={styles.headrPart}>
-          <label>
-            <input
-              type="checkbox"
-              checked={showInput}
-              onChange={(e) => {
-                const checked = e.target.checked;
-                setShowInput(checked);
-                sessionStorage.setItem("showInput", JSON.stringify(checked));
-              }}
-            />
-
+          <input
+            type="checkbox"
+            checked={showInput}
+            id="add-more-services"
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setShowInput(checked);
+              sessionStorage.setItem("showInput", JSON.stringify(checked));
+            }}
+          />
+          <label htmlFor="add-more-services">
             Add More Services
           </label>
         </div>
@@ -793,7 +801,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
                 className={styles.addIcon}
                 onClick={handleAddService}
               >
-                Add
+                <img src='/svg/addMore-icon.svg' alt='addMore-icon' />
               </button>
             </div>
           </div>

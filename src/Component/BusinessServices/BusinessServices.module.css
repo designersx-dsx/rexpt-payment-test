@@ -334,11 +334,11 @@
 }
 
 .headrPart {
-  margin-top: 10%;
+  /* margin-top: 5%; */
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  /* border: 1px solid black !important; */
+  /* justify-content: space-between; */
+  gap: 10px;
 }
 
 
@@ -355,14 +355,16 @@
 
   }
 }
+
 .CallTransferMain1 {
-    padding: 16px;
+    padding-block: 16px;
 }
 
 .headrPart {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+   padding-inline: 16px;
+    gap: 10px;
 
 }
 
@@ -475,6 +477,11 @@
     color: #24252C;
 
 }
+.addIcon{
+border: none;
+background-color: transparent;
+}
+
 
 .Btn {
     width: 90%;

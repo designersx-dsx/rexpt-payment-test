@@ -2,7 +2,7 @@ import React from 'react';
 import styles from "../HeaderBar/HeaderBar.module.css";
 import { useNavigate } from 'react-router-dom';
 
-const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange }) => {
+const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange ,  backgroundColor = "#fff",}) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -10,7 +10,7 @@ const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange }) 
   };
 
   return (
-    <div className={styles.headerMain}>
+    <div className={styles.headerMain} style={{ backgroundColor }}>
       <div className={styles.BothFlex}>
         <div className={styles.backIcon}>
           <img src='svg/Back-icon.svg' alt='Back-icon' onClick={handleBack} />

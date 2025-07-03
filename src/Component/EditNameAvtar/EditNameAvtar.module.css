@@ -1,0 +1,23 @@
+.Maindiv{
+   padding-inline: 20px;
+}.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+   background-color: #fff;
+}
+
+.container{
+    max-width: 500px;
+    width: 100%;
+    padding: 0 20px;
+
+}
+
+.stickyWrapper {
+    position: sticky;
+    bottom: 0px;
+    background: white;
+    padding: 10px 0;
+    z-index: 10;
+}

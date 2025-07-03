@@ -5,6 +5,14 @@
     text-align: center;
 }
 
+.LogoDiv>*:not(:first-child) {
+    margin-top: 30px;
+}
+
+.LogoDiv> :nth-child(3) {
+    margin-top: 0px;
+}
+
 .LogoWrapper {
     position: relative;
     top: 10px;
@@ -13,8 +21,16 @@
     transition: transform 0.3s ease-out;
     display: inline-block;
     margin: 0 auto;
-    width: 205px;
-    height: 205px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 50%;
+}
+.LogoWrapper img{
+    margin-top: 0.5rem;
+    margin-left: 10px;
+     width: 100%;
 }
 
 .RipplThree {
@@ -43,9 +59,11 @@
 .ripple:nth-child(1) {
     animation-delay: 0s;
 }
+
 .ripple:nth-child(2) {
     animation-delay: 0.3s;
 }
+
 .ripple:nth-child(3) {
     animation-delay: 0.6s;
 }
@@ -57,12 +75,27 @@
     height: 205px;
 }
 
+.headerWrapper {
+    position: relative;
+}
+
 .heading {
     color: #24252C;
     text-align: center;
-    margin-top: 1rem;
-    margin-bottom: 10px;
-    font-size: 40px;
+    font-size: 38px;
+}
+
+.subHeading {
+    color: #86868C;
+    font-size: 14px;
+
+
+}
+
+.tooltipIcon {
+    position: absolute;
+    top: 15px;
+    right: -15px;
 }
 
 @keyframes rippleAnimation {

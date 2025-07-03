@@ -1,0 +1,80 @@
+.tooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltipIcon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.tooltipBox {
+  position: absolute;
+  bottom: 50px;
+  right: 5px;
+  background: #661ff0;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  max-width: 320px;
+  width: max-content;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+}
+
+.tooltipTitle {
+  font-weight: 400;
+  font-size: 12px;
+ font-family: "Inter", sans-serif;
+ text-align: left;
+}
+
+.tooltipText {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Bubble Group */
+.bubbleGroup {
+    position: absolute;
+    bottom: -23px;
+    right: 0%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.smallBubble {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #661ff0;
+  right: -3px;
+  position: relative;
+  
+}
+
+.bigBubble {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #661ff0;
+}
+
+.fadeImage {
+  width: 24px;
+  height: 24px;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
+}
+
+.fadeOut {
+  opacity: 0;
+}
