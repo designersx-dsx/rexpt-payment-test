@@ -33,7 +33,10 @@ function Thankyou() {
       const result = await res.json();
 
       if (!res.ok) {
-        console.error("❌ Failed to cancel subscription:", result.error || result.message);
+        console.error(
+          "❌ Failed to cancel subscription:",
+          result.error || result.message
+        );
       } else {
         console.log("✅ Old subscription cancelled:", result);
       }
@@ -46,13 +49,16 @@ function Thankyou() {
     console.log("Calling updateFreeAgent API with:", { userId, agentId });
 
     try {
-      const res = await fetch(`http://localhost:2512/api/agent/updateFreeAgent`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId, agentId }),
-      });
+      const res = await fetch(
+        `http://localhost:2512/api/agent/updateFreeAgent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, agentId }),
+        }
+      );
 
       const data = await res.json();
 
@@ -82,7 +88,11 @@ function Thankyou() {
   };
 
   useEffect(() => {
-    if (subscriptionId && agentId && userId) {
+    const shouldRunUpdateAgent = key === "update" && agentId && userId;
+
+    const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
+
+    if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
       callNextApiAndRedirect();
     } else {
       const fallback = setTimeout(() => {
