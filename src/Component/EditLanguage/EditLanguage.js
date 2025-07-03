@@ -7,6 +7,10 @@ import AnimatedButton from '../AnimatedButton/AnimatedButton'
 
 
 function EditLanguage() {
+
+  const handleClick=()=>{
+    
+  }
   return (
     <div>
         
@@ -22,12 +26,12 @@ function EditLanguage() {
 
             <div className={styles.container}>
 
-            <SelectLauguage/>
+          <SelectLauguage />
 </div>
 
- <div className={styles.stickyWrapper}>
-                        <AnimatedButton label="Save" />
-                    </div>
+    <div className={styles.stickyWrapper} >
+      <AnimatedButton label="Save" />
+    </div>
 
     </div>
   )

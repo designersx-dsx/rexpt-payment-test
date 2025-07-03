@@ -108,6 +108,19 @@ export const useAgentCreator = ({
       agentNote
     });
 
+      const getLeadTypeChoices = () => {
+        const fixedChoices = ["Spam Caller", "Irrelvant Call", "Angry Old Customer"];
+        const allServices = [...customServices, ...businessServiceNames];
+        const cleanedServices = allServices
+            .map(service => service?.trim()) // remove extra whitespace
+            .filter(service => service && service?.toLowerCase() !== "other")
+            .map(service => {
+                const normalized = service?.replace(/\s+/g, " ")?.trim();
+                return `Customer for ${normalized}`;
+            });
+        const combinedChoices = Array.from(new Set([...fixedChoices, ...cleanedServices]));
+        return combinedChoices;
+    }
 
 
     // console.log('prompt1',filledPrompt)
@@ -159,7 +172,7 @@ export const useAgentCreator = ({
       const llm_id = localStorage.getItem('llmId') || sessionStorage.getItem('llmId');
       const agentConfig = {
         general_prompt: filledPrompt,
-        begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${ getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom}.`,
+        begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
       };
       if(isValid=='BusinessListing'){
         agentConfig.knowledge_base_ids = [storedKnowledgeBaseId] ;
@@ -179,23 +192,133 @@ export const useAgentCreator = ({
         );
         console.log('llmResponseupdate', llmResponse)
         sessionStorage.setItem("llmId", llmResponse.data.llm_id);
-        setPopupType("success");
-
-        setPopupMessage(`${isValid} Updated Succesfully`);
-        setShowPopup(true);
+     
         // setLoading(false)
         // console.log(localStorage.getItem("agent_id") ,localStorage.getItem("bussinesId"))
-        window.history.pushState(null, "", "/agent-detail");
-        setTimeout(() =>
-          navigate("/edit-agent", {
-            state: {
-              agentId: sessionStorage.getItem("agent_id") || localStorage.getItem("agentId"),
-              bussinesId: sessionStorage.getItem("bId") || localStorage.getItem("bussinesId"),
-            },
-          }), 1000);
+        // window.history.pushState(null, "", "/agent-detail");
+        // setTimeout(() =>
+        //   navigate("/edit-agent", {
+        //     state: {
+        //       agentId: sessionStorage.getItem("agent_id") || localStorage.getItem("agentId"),
+        //       bussinesId: sessionStorage.getItem("bId") || localStorage.getItem("bussinesId"),
+        //     },
+        //   }), 1000);
+        
+                  //agent updation 
+                if (isValid == 'EditBusinessType' || isValid == 'EditServicesOffered' || isValid == 'EditLanguage' || isValid == 'EditGender' || isValid=='EditNameAvtar') {
+                  const finalAgentData = {
+                        voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                        agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
+                        language: "multi",
+                        post_call_analysis_model: "gpt-4o-mini",
+                        responsiveness: 1,
+                        enable_backchannel: true,
+                        interruption_sensitivity:  0.91,
+                        backchannel_frequency: 0.7,
+                        backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
+                        post_call_analysis_data: [
+                            {
+                                type: "string",
+                                name: "Detailed Call Summery",
+                                description: "The name of the customer.",
+                                examples: [
+                                    "John Doe",
+                                    "Jane Smith"
+                                ]
+                            },
+                            {
+                                type: "enum",
+                                name: "lead_type",
+                                description: "Feedback given by the customer about the call.",
+                                choices: getLeadTypeChoices()
+                            }
+                        ],
+                         normalize_for_speech: true
+                    };
+                  const agent_id = sessionStorage.getItem("agent_id") || localStorage.getItem("agentId")
+                    try {
+                        const response = await axios.patch(
+                            `https://api.retellai.com/update-agent/${agent_id}`,
+                            finalAgentData,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                                },
+                            }
+                        );
+                        console.log('agent response',response)
+                        const agentId = response?.data?.agent_id;
+                        // Get businessId from sessionStorage
+                        const businessIdString = sessionStorage.getItem("businessId");
+
+                        // Convert string to object
+                        const businessIdObj = JSON.parse(businessIdString);
+
+                        // Now access the actual ID
+                        const agentData = {
+                            userId: userId,
+                            agent_id: agentId || sessionStorage.getItem("agentId"),
+                            knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+                            llmId: sessionStorage.getItem("llmId"),
+                            avatar: sessionStorage.getItem("avatar") || "",
+                            agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                            agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
+                            agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
+                            agentName: sessionStorage.getItem('agentName') || "",
+                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
+                            agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
+                            agentGender: sessionStorage.getItem('agentGender') || "female",
+                            agentStatus: true,
+                        }
+                        try {
+                            const response = await updateAgent(agentId, agentData);
+                            if (response.status === 200 || response.status === 201) {
+                                setPopupType("success");
+                                setPopupMessage("Agent Updated successfully!");
+                                setShowPopup(true);
+                            }
+
+                        } catch (error) {
+                            // console.log(error,error.status)
+                            if (error?.status == 400) {
+                                // console.log('errorinside',error)
+                                setPopupType("failed");
+                                setPopupMessage(error?.response?.data?.message);
+                                setShowPopup(true);
+                                setLoading(false)
+                            } else {
+                                console.error("Agent Updation failed:", error);
+                                setPopupType("failed");
+                                setPopupMessage("Agent Updation failed while saving data in Database. Please try again.");
+                                setShowPopup(true);
+                                setLoading(false)
+                            }
+
+
+                        }
+
+
+                    } catch (err) {
+                        console.error("Agent Updation failed:", err);
+                        setPopupType("failed");
+                        setPopupMessage("Agent Updation failed.");
+                        setShowPopup(true);
+                        setLoading(false)
+                    }
+                  }
+
+          setPopupType("success");
+          const screenLabels = {
+          EditBusinessType: "Business Type",
+          EditServicesOffered: "Services Offered",
+        };
+        setPopupMessage(`${screenLabels[isValid]} Updated Succesfully`);
+        setShowPopup(true);
+
       }
       catch (error) {
-        console.error("Business Details failed:", error);
+        console.error("LLM updation failed:", error);
         setPopupType("failed");
         setPopupMessage("LLM updation failed. Please try again.");
         setShowPopup(true);
