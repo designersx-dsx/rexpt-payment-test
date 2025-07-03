@@ -4,6 +4,7 @@ import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import styles from '../EditServicesOffered/EditServicesOffered.module.css'
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import { useNavigate } from 'react-router-dom';
+import PopUp from '../Popup/Popup';
 
 
 const EditServicesOffered = () => {
@@ -466,14 +467,11 @@ const EditServicesOffered = () => {
             ],
         }
         ,
-        ,
         {
             type: "Other Local Business",
             subtype: "Your Journey Begins Here",
             icon: "images/other.png",
-            services: [
-                "Custom Services – Please Specify Your Business Type and Needs",
-            ],
+            services: [],
         },
     ];
     // Parse sessionStorage safely
@@ -487,7 +485,8 @@ const EditServicesOffered = () => {
     const [popupMessage, setPopupMessage] = useState("");
     const [Loading, setLoading] = useState(null);
     const [customServices, setCustomServices] = useState([]);
-
+    const [isSubmitting,setIsSubmitting]=useState(false)
+    const [isEmptyListError,setEmptyListError]=useState('')
     const navigate=useNavigate();
     const setHasFetched=true;
     const { handleCreateAgent } = useAgentCreator({
@@ -515,6 +514,7 @@ const EditServicesOffered = () => {
         ])
     );
     const handleAddService = () => {
+        
 
     const trimmedService = newService.trim();
                 console.log('before',trimmedService)
@@ -543,12 +543,17 @@ const EditServicesOffered = () => {
     // const isAddMoreChecked = extraServices.length > 0;
 
     const icon = filteredBusinessType.icon
-    console.log(filteredBusinessType, "filteredBusinessType")
-    console.log(uniqueServices, "selectedService")
+    // console.log(filteredBusinessType, "filteredBusinessType")
+    // console.log(selectedService, "selectedService")
 
      const handleContinue = async () => {
-    // if (isSubmitting) return; // Prevent double call
-    // setIsSubmitting(true);
+    if (Loading) return; // Prevent double call
+    if(selectedService?.length==0){
+        setEmptyListError('Service List Can not be empty') 
+        return;
+    }else{
+        setEmptyListError('') 
+    }
     const raw = sessionStorage.getItem("businesServices");
     let previous = {};
     try {
@@ -574,12 +579,14 @@ const EditServicesOffered = () => {
 
     sessionStorage.setItem("businessDetails", JSON.stringify(finalBusinessDetails));
     sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
-
-    handleCreateAgent();
-
-
+    try {
+        handleCreateAgent();
+    } catch (error) {
+        console.log('Agent Updation Hook failed',error)
+    }
+    
   }
-  console.log('dsdsd',customServices)
+  console.log('dsdsd',customServices,Loading)
 
     return (
         <>
@@ -631,6 +638,9 @@ const EditServicesOffered = () => {
                                                 //     fetchBusinessType.businessType.toLowerCase() === filteredBusinessType?.type.toLowerCase()
                                                 // }
                                                onChange={() => {
+                                                if(selectedService?.length>=0){
+                                                    setEmptyListError('') 
+                                                }
                                                 if (selectedService.includes(item)) {
                                                 setSelectedServices(selectedService.filter(s => s !== item));
                                                 } else {
@@ -648,6 +658,7 @@ const EditServicesOffered = () => {
 
                         </div>
                     </div>
+                    {isEmptyListError && <span style={{color:'Red'}}>{isEmptyListError}</span>}
 
                     <div className={styles.addMore}>
                         <input
@@ -679,9 +690,17 @@ const EditServicesOffered = () => {
                     </div>
                     }
                     <div className={styles.stickyWrapper} onClick={handleContinue}> 
-                        <AnimatedButton label="Save" />
+                        <AnimatedButton label="Save" isLoading={Loading}/>
                     </div>
                 </div>
+        {showPopup && (
+            <PopUp
+            type={popupType}
+            onClose={()=>{}}
+            message={popupMessage}
+            onConfirm={()=>navigate('/edit-services-offered')}
+            />
+        )}
             </div>
         </>
     )
