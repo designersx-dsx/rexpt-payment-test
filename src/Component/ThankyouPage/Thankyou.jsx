@@ -26,7 +26,9 @@ function Thankyou() {
 
   const cancelOldSubscription = async () => {
     try {
+
       const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subscriptionId: subsid }),
@@ -52,7 +54,9 @@ function Thankyou() {
 
     try {
       const res = await fetch(
+
         `${API_BASE_URL}/agent/updateFreeAgent`,
+
         {
           method: "POST",
           headers: {
@@ -115,7 +119,7 @@ function Thankyou() {
     <div className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.heading}>🎉 Thank You!</h1>
-        <p className={styles.subtext}>Redirecting for agent creation...</p>
+        {/* <p className={styles.subtext}>Redirecting for agent creation...</p> */}
         {popupMessage && <p className={styles.popup}>{popupMessage}</p>}
       </div>
     </div>

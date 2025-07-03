@@ -210,7 +210,7 @@ export default function SubscriptionFlow() {
   // Render
   return (
     <div className={styles.container}>
-      <h2>Complete Your Payment</h2>
+      {/* <h2>Complete Your Payment</h2> */}
 
       {/* Email Input with Edit button */}
       <div
