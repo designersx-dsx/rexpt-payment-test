@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "../TooltipSteps/Tooltip.module.css";
 
-const Tooltip = () => {
+const Tooltip = ({ content }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const iconRef = useRef(null);
   const tooltipRef = useRef(null);
@@ -52,7 +52,7 @@ const Tooltip = () => {
         {showTooltip && (
           <div className={styles.tooltipBox} ref={tooltipRef}>
             <p className={styles.tooltipTitle}>
-              Pick a voice style and gender to shape your agent's identity.
+               {content}
             </p>
             <div className={styles.bubbleGroup}>
               <div className={styles.bigBubble}></div>

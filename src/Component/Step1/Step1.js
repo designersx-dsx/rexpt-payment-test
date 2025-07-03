@@ -256,13 +256,13 @@ const Step1 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
         },
 
         /* Universal / Mixed set */
-        {
-            name: "Multilingual",
-            locale: "multi",
-            flag: "/images/multi.png",
-            percentage: "—",
-            stats: "—",
-        },
+        // {
+        //     name: "Multilingual",
+        //     locale: "multi",
+        //     flag: "/images/multi.png",
+        //     percentage: "—",
+        //     stats: "—",
+        // },
     ];
 useEffect(() => {
     if (selectedLang && selectedLangCode) {
