@@ -24,8 +24,8 @@ function formatTime(isoDate) {
   return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-const AgentAnalysis = ({ data, calApiKey }) => {
-  const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
+const AgentAnalysis = ({ data, calApiKey,callVolume }) => {
+  // const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
   const [bookingDates, setBookingDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [bookingsForSelectedDate, setBookingsForSelectedDate] = useState([]);
@@ -96,7 +96,7 @@ const AgentAnalysis = ({ data, calApiKey }) => {
     <div className={styles.container}>
       <div className={styles.CallFlex}>
         <div className={styles.callVolume}>
-          {callVolume} <span>Call Volume</span>
+          {callVolume ? callVolume : "0"} <span>Call Volume</span>
         </div>
         <div className={styles.trend}>
           Last 7 Days <span className={styles.positive}>+15%</span>
