@@ -1530,7 +1530,7 @@ const AgentDashboard = () => {
             height="80vh"
           >
             <div>
-              <EditAgent agentDetails={agentDetails} />
+              <EditAgent agentDetails={agentDetails}  />
             </div>
           </DetailModal>
 

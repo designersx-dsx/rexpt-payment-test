@@ -487,6 +487,8 @@ const EditServicesOffered = () => {
     const [isSubmitting,setIsSubmitting]=useState(false)
     const [isEmptyListError,setEmptyListError]=useState('')
     const navigate=useNavigate();
+    const agentnm=sessionStorage.getItem("agentName");
+
     const setHasFetched=true;
     const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditServicesOffered",
@@ -584,7 +586,7 @@ const EditServicesOffered = () => {
 
     return (
         <>
-            <EditHeader title='Edit Agent ' agentName='Sofia' />
+            <EditHeader title='Edit Agent ' agentName={agentnm} />
             <div className={styles.Maindiv}>
                 <div className={styles.headerWrapper}>
                     <h2 className={styles.heading}>Services Offered</h2>
