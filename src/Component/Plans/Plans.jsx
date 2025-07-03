@@ -30,7 +30,7 @@ const Plan = ({ agentID, locationPath }) => {
           name: "Free Trial",
           description: "Try all features free — includes 10 minutes",
           prices: [],
-          metadata: { minutes: 10 },
+          metadata: { minutes: 20 },
         };
 
         // Map the products and add the free trial at the top
@@ -315,7 +315,7 @@ const Plan = ({ agentID, locationPath }) => {
         </div>
 
         {/* Login link */}
-        {location.pathname === "/dashboard" ? (
+        {/* {location.pathname === "/dashboard" ? (
           ""
         ) : (
           <div className={styles.loginBox}>
@@ -329,7 +329,7 @@ const Plan = ({ agentID, locationPath }) => {
               </span>
             </p>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

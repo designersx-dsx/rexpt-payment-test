@@ -39,6 +39,7 @@ function CheckoutForm({
   const stripe = useStripe();
   const elements = useElements();
 
+
   // Step state (1 or 2)
   const [step, setStep] = useState(1);
 
