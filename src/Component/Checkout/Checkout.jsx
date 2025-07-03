@@ -43,6 +43,7 @@ function CheckoutForm({
   const [step, setStep] = useState(1);
 
   const navigate = useNavigate();
+const origin = window.location.origin;
 
   const location = useLocation();
 
@@ -816,10 +817,9 @@ function CheckoutForm({
       if (agentId) queryParams.append("agentId", agentId);
       if (userId) queryParams.append("userId", userId);
 
-      url = `http://localhost:3000/thankyou/update?${queryParams.toString()}`;
+      url = `${origin}/thankyou/update?${queryParams.toString()}`;
     } else {
-      url = "http://localhost:3000/thankyou/create";
-    }
+      url = `${origin}/thankyou/create`;    }
 
     try {
       const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
@@ -833,6 +833,7 @@ function CheckoutForm({
           companyName,
           gstNumber,
           url: url,
+          cancelUrl : `${origin}/cancel-payment`
         }),
       });
 
@@ -856,11 +857,11 @@ function CheckoutForm({
     setLoading(false);
   };
 
-  // useEffect(() => {
-  //   if (priceId) {
-  //     handleSubmit();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (customerId) {
+      handleSubmit();
+    }
+  }, [customerId]);
 
   const [promoCode, setPromoCode] = useState("");
   const [promoCodeSend, setpromoCodeSend] = useState("");
@@ -1045,7 +1046,7 @@ function CheckoutForm({
             </div>
           )} */}
 
-          <button
+          {/* <button
             type="button"
             onClick={handleSubmit}
             className={styles.button}
@@ -1053,7 +1054,7 @@ function CheckoutForm({
             disabled={loading}
           >
             {loading ? "Processing..." : `Pay $${planPrice}`}
-          </button>
+          </button> */}
         </>
       )}
 
