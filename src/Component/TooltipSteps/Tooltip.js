@@ -6,20 +6,26 @@ const Tooltip = () => {
   const iconRef = useRef(null);
   const tooltipRef = useRef(null);
 
-  // Image cycling
   const images = [
-    "/svg/informtion-icon.svg",    
+    "/svg/informtion-icon.svg",
     "/svg/informtion-icon 2.svg"
   ];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [fading, setFading] = useState(false);
 
   useEffect(() => {
+    if (showTooltip) return; // Don't animate if tooltip is open
+
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 2000); // Change every 1 second
+      setFading(true);
+      setTimeout(() => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+        setFading(false);
+      }, 500);
+    }, 1500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [showTooltip]); 
 
   const handleClickOutside = (event) => {
     if (
@@ -48,19 +54,18 @@ const Tooltip = () => {
             <p className={styles.tooltipTitle}>
               Pick a voice style and gender to shape your agent's identity.
             </p>
-           
             <div className={styles.bubbleGroup}>
               <div className={styles.bigBubble}></div>
               <div className={styles.smallBubble}></div>
             </div>
           </div>
         )}
-       <img
-  key={currentImageIndex}
-  src={images[currentImageIndex]}
-  alt="info"
-  className={styles.fadeImage}
-/>
+        <img
+          key={currentImageIndex}
+          src={images[currentImageIndex]}
+          alt="info"
+          className={`${styles.fadeImage} ${fading ? styles.fadeOut : ""}`}
+        />
       </div>
     </div>
   );
