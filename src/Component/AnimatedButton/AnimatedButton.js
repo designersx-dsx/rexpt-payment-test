@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
 import styles from "../AnimatedButton/AnimatedButton.module.css";
+import Loader from '../Loader/Loader';
 
-const AnimatedButton = ({ label = 'Save' }) => {
+const AnimatedButton = ({ isLoading, label = 'Save',position={} }) => {
   const imgRef = useRef(null);
   const textRef = useRef(null);
 
@@ -20,7 +21,7 @@ const AnimatedButton = ({ label = 'Save' }) => {
   };
 
   return (
-    <div className={styles.btnFix}>
+    <div className={styles.btnFix} style={position}>
       <div
         className={styles.btnTheme}
         onMouseEnter={handleZoomAnimation}
@@ -31,7 +32,9 @@ const AnimatedButton = ({ label = 'Save' }) => {
           alt="button-bg"
           ref={imgRef}
         />
-        <p ref={textRef}>{label}</p>
+        <p ref={textRef}>
+          {isLoading ? <Loader size={17} /> : label}
+        </p>
       </div>
     </div>
   );

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Start/Start.module.css";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import AnimatedButton from "../AnimatedButton/AnimatedButton";
 
 function Start() {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const referral = searchParams.get("referral") ||"";
-  const selectedPlan = searchParams.get("plan") ||"";
-  const businessType = searchParams.get("businessType") ||"";
+  const referral = searchParams.get("referral") || "";
+  const selectedPlan = searchParams.get("plan") || "";
+  const businessType = searchParams.get("businessType") || "";
 
-  console.log(referral,selectedPlan,businessType)
+  console.log(referral, selectedPlan, businessType)
   const [step, setStep] = useState(0);
   const handleClick = () => {
     setTimeout(() => setStep(1), 150);
@@ -22,7 +23,7 @@ function Start() {
       navigate("/signup");
     }, 700);
   };
-  console.log(referral,selectedPlan)
+  console.log(referral, selectedPlan)
   useEffect(() => {
     let updated = false;
     if (referral) {
@@ -35,7 +36,7 @@ function Start() {
       searchParams.delete("plan");
       updated = true;
     }
-       if (businessType) {
+    if (businessType) {
       sessionStorage.setItem("businessType", businessType);
       searchParams.delete("businessType");
       updated = true;
@@ -81,18 +82,16 @@ function Start() {
 
         <div className={styles.content}>
           <div
-            className={`${styles.LogoDiv} ${
-              step >= 1 ? styles.slideRight : ""
-            }`}
+            className={`${styles.LogoDiv} ${step >= 1 ? styles.slideRight : ""
+              }`}
           >
             <img src="svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
           </div>
 
           <div className={styles.part}>
             <div
-              className={`${styles.part2} ${
-                step >= 2 ? styles.slideRight : ""
-              }`}
+              className={`${styles.part2} ${step >= 2 ? styles.slideRight : ""
+                }`}
             >
               <p className={styles.heading}>
                 Launch Your <b>AI Receptionist</b>
@@ -100,9 +99,8 @@ function Start() {
             </div>
 
             <div
-              className={`${styles.withlogo} ${
-                step >= 3 ? styles.slideRight : ""
-              }`}
+              className={`${styles.withlogo} ${step >= 3 ? styles.slideRight : ""
+                }`}
             >
               <p className={styles.with}>with </p>
               <p>
@@ -116,20 +114,18 @@ function Start() {
               actionable call analytics—powered by Rexpt.in.
             </p>
           </div>
-
+          <br />
           <div
-            className={`${styles.parentDiv} ${
-              step >= 5 ? styles.slideRight : ""
-            }`}
+            className={`${styles.parentDiv} ${step >= 5 ? styles.slideRight : ""
+              }`}
           >
-            <div className={styles.BtnDiv} onClick={handleClick}>
-              <img src="svg/svg-theme.svg" alt="Start Button" />
-              <p>Let's Start</p>
+            <div className={styles.stickyWrapper} onClick={handleClick}>
+              <AnimatedButton label="Let's Start" />
             </div>
           </div>
         </div>
       </div>
-    </div>    
+    </div>
   );
 }
 
