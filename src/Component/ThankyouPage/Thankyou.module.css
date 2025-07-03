@@ -1,0 +1,26 @@
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #74ebd5, #acb6e5);
+}
+
+.card {
+  text-align: center;
+  background-color: white;
+  padding: 40px 60px;
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.heading {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.subtext {
+  font-size: 1.2rem;
+  color: #555;
+}
