@@ -507,7 +507,7 @@ const Step = () => {
                         //     ],
                         // },
                     // ],
-                    starting_state: "information_collection",
+                    // starting_state: "information_collection",
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom }.`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
