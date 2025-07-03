@@ -601,7 +601,6 @@ function Dashboard() {
   // End call
   const isEndingRef = useRef(false);
   const handleEndCall = async () => {
-    console.log('isEndingRef.current,',isEndingRef.current)
      if (isEndingRef.current) return;
      isEndingRef.current = true;
 
@@ -622,6 +621,7 @@ function Dashboard() {
         }
     }
   };
+
   // Open call modal
   const handleOpenCallModal = (agent) => {
     setAgentDetails(agent);

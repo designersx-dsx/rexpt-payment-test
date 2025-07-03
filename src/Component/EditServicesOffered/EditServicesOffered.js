@@ -614,13 +614,14 @@ const EditServicesOffered = () => {
                                             <input
                                                 type='checkbox'
                                                 name='businessType'
-                                                checked={
-                                                    selectedService?.includes(item) &&
-                                                    fetchBusinessType.businessType.toLowerCase() === filteredBusinessType?.type.toLowerCase()
-                                                }
+                                                checked={selectedService.includes(item)}
+                                                // checked={
+                                                //     selectedService?.includes(item) &&
+                                                //     fetchBusinessType.businessType.toLowerCase() === filteredBusinessType?.type.toLowerCase()
+                                                // }
                                                 onChange={() => {
                                                     if (selectedService.includes(item)) {
-                                                        setSelectedServices(selectedService.filter(s => s !== item));
+                                                        // setSelectedServices(selectedService.filter(s => s !== item));
                                                     } else {
                                                         setSelectedServices([...selectedService, item]);
                                                     }

@@ -5,7 +5,6 @@ const Modal2 = ({ isOpen, onClose, children ,isEndingRef,isCallInProgress}) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
   const [callstatus, setcallstatus] = useState(isCallInProgress);
-  console.log('isEndingRefddddd',isEndingRef)
 useEffect(() => {
   if (isOpen) {
     setShouldRender(true);
