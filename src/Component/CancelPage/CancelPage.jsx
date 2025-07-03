@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CancelPage.module.css';
 
+
 const CancelPage = () => {
   const navigate = useNavigate();
 

@@ -832,7 +832,7 @@ function CheckoutForm({
           userId,
           companyName,
           gstNumber,
-          url: url,
+          url: url
         }),
       });
 

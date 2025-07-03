@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Thankyou.module.css";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { API_BASE_URL } from "../../Store/apiStore";
+
 
 function Thankyou() {
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ function Thankyou() {
 
   const cancelOldSubscription = async () => {
     try {
-      const res = await fetch(`http://localhost:2512/api/cancel-subscription`, {
+      const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subscriptionId: subsid }),
@@ -50,7 +52,7 @@ function Thankyou() {
 
     try {
       const res = await fetch(
-        `http://localhost:2512/api/agent/updateFreeAgent`,
+        `${API_BASE_URL}/agent/updateFreeAgent`,
         {
           method: "POST",
           headers: {
