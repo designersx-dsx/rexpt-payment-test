@@ -6,11 +6,11 @@ const CancelPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // const timer = setTimeout(() => {
-    //   navigate('/dashboard'); // 👈 Change if needed
-    // }, 5000);
+    const timer = setTimeout(() => {
+      navigate('/dashboard'); // 👈 Change if needed
+    }, 5000);
 
-    // return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
