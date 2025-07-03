@@ -150,7 +150,7 @@ export const useAgentCreator = ({
           console.log('updation response', response)
         } catch (error) {
           console.log('error while buinsess details updated');
-          setLoading(false)
+          // setLoading(false)
           return
         }
       }
@@ -183,7 +183,7 @@ export const useAgentCreator = ({
 
         setPopupMessage(`${isValid} Updated Succesfully`);
         setShowPopup(true);
-        setLoading(false)
+        // setLoading(false)
         // console.log(localStorage.getItem("agent_id") ,localStorage.getItem("bussinesId"))
         window.history.pushState(null, "", "/agent-detail");
         setTimeout(() =>
@@ -199,7 +199,6 @@ export const useAgentCreator = ({
         setPopupType("failed");
         setPopupMessage("LLM updation failed. Please try again.");
         setShowPopup(true);
-        setLoading(false)
       } finally {
         setLoading(false)
       }

@@ -70,6 +70,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const handleAvatarChange = (avatar) => {
     setSelectedAvatar(avatar);
     sessionStorage.setItem('avatar', avatar.img);
+    sessionStorage.setItem("avtarChecked",JSON.stringify(true));
     setAvtarChecked(true)
   };
 

@@ -420,7 +420,7 @@
     font-size: 16px;
     font-weight: 600;
     color: #5F33E1;
-        background-color: #EEE6FF;
+    background-color: #EEE6FF;
     border-radius: 7px;
     display: inline-block;
     padding: 7px 10px;
@@ -502,12 +502,12 @@
     gap: 4px;
 }
 
-.bookingDotContainer .dot{
+.bookingDotContainer .dot {
     max-width: 24px;
     max-height: 20px;
     width: auto;
-font-size: 10px;
-color: #fff;
+    font-size: 10px;
+    color: #fff;
     padding: 0 3px;
     display: flex;
     justify-content: center;
@@ -660,7 +660,7 @@ color: #fff;
 }
 
 .grayBar {
-    background-color: #bdc3c7;   
+    background-color: #bdc3c7;
 }
 
 .titleText {
@@ -674,15 +674,15 @@ color: #fff;
     color: #999999;
 }
 
-.timeRange b{
+.timeRange b {
     color: #24252C;
 
 }
 
-.timeRange span{
+.timeRange span {
     color: #6524EB;
     font-weight: 600;
-    
+
 }
 
 .statusText {
@@ -713,7 +713,7 @@ color: #fff;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    padding-right: 20px; 
+    padding-right: 20px;
 }
 
 .DateSecT::after {
@@ -731,7 +731,7 @@ color: #fff;
 }
 
 
-.DateSecT p{
+.DateSecT p {
     font-size: 12px;
     color: #24252c;
     font-weight: 500;
@@ -739,14 +739,16 @@ color: #fff;
     top: -16px;
 }
 
-.HeaderFlex{
+.HeaderFlex {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-        width: 100%;
-        
+    width: 100%;
+    background-color: #6524EB;
     padding: 0 10px 0 0;
+    border-top-right-radius: 2rem;
+    border-top-left-radius: 2rem;
 }
 
 
@@ -763,38 +765,35 @@ color: #fff;
         margin: auto;
     }
 
-    .HeaderFlex{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
+    .HeaderFlex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
         width: 50%;
         margin: auto;
-        
-    padding: 0 10px 0 0;
-}
-}
 
-
-
-@media(max-width:400px){
-    .DotINfo {
-    
-    gap: 5px;
-        padding: 8px 5px;
-    
-}
-
-.HeaderFlex {
- 
-    gap: 10px;
- }
- .calendarSection {
-    margin-top: 1rem;
-    padding-inline: 5px;
+        padding: 0 10px 0 0;
     }
 }
 
 
 
+@media(max-width:400px) {
+    .DotINfo {
 
+        gap: 5px;
+        padding: 8px 5px;
+
+    }
+
+    .HeaderFlex {
+
+        gap: 10px;
+    }
+
+    .calendarSection {
+        margin-top: 1rem;
+        padding-inline: 5px;
+    }
+}
