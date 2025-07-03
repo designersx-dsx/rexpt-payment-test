@@ -697,18 +697,15 @@
 }
 
 .managementItem {
-  border: 0.7px solid #efefef;
-  
+  border: 1px solid #d1d1d1;
   border-radius: 2rem;
   display: flex;
-  /* height: 39px; */
   min-width: 170px;
   align-items: center;
   gap: 10px;
   position: relative;
   background-color: #fff;
   padding: 3px;
-  cursor: pointer;
 }
 
 .managementItem::before {
@@ -890,6 +887,9 @@
 
   .agentDetailsFlex p:last-child strong {
     font-size: 25px;
+  }
+  .agentDetails{
+    font-size: 12px;
   }
 }
 

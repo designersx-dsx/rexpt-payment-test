@@ -12,7 +12,8 @@ const CallTest = ({
   isliveTranscript,
   agentName,
   agentAvatar,
-  businessName
+  businessName,
+  isEndingRef
 }) => {
 
   const displayAgentName = agentName && agentName.length > 15
@@ -28,16 +29,17 @@ const CallTest = ({
       <div className={styles.imgrex}>
         <img src={agentAvatar || "images/rex.png"} alt={agentName || "Agent"} />
         {isCallActive ? (
+        
           <div className={styles.reddiv}>
             <div className={styles.phoneIcon}>
               <img src="svg/Phone-call.svg" alt="Phone Call" />
             </div>
-            <div className={styles.callText} onClick={onEndCall}>
-              <p>
-                Call End <span className={styles.agentTag}>{displayAgentName}</span>
-              </p>
-              <small>{displayBusinessName}&nbsp; Agent is LIVE</small>
-            </div>
+              <div className={styles.callText} onClick={onEndCall}>
+                <p>
+                  Call End <span className={styles.agentTag}>{displayAgentName}</span>
+                </p>
+                <small>{displayBusinessName}&nbsp; Agent is LIVE</small>
+              </div>
           </div>
         ) : callLoading ? (
           <div

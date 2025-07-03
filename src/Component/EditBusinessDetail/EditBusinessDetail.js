@@ -3,13 +3,7 @@ import styles from './EditBusinessDetail.module.css'
 import EditHeader from '../EditHeader/EditHeader'
 import SectionHeader from '../SectionHeader/SectionHeader'
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
-
-
-
-
 const EditBusinessDetail = () => {
-
- 
     return (
         <>
             <EditHeader title='Edit Agent ' agentName='Sofia' />

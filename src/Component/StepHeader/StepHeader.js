@@ -23,12 +23,14 @@ const StepHeader = ({ title, subTitle, icon, tooltip }) => {
                 className={styles.LogoWrapper}
 
             >
-                <div className={styles.RipplThree}>
+
+                <img src='/svg/Rexpt-Logo.svg' alt='Rexpt-Logo'/>
+                {/* <div className={styles.RipplThree}>
                     <span className={styles.ripple}></span>
                     <span className={styles.ripple}></span>
                     <span className={styles.ripple}></span>
-                </div>
-                <div className={styles.logo}>
+                </div> */}
+                {/* <div className={styles.logo}>
                     <svg width="204" height="204" viewBox="0 0 204 204" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="102.004" cy="102.004" r="101.504" fill="url(#paint0_linear_571_1337)" stroke="white" />
                         <circle cx="102.004" cy="102.004" r="84.0974" fill="#FBFAFE" stroke="#F3EFFE" />
@@ -61,11 +63,7 @@ const StepHeader = ({ title, subTitle, icon, tooltip }) => {
                             </linearGradient>
                         </defs>
                     </svg>
-
-
-
-                    {/* heloo */}
-                </div>
+                </div> */}
             </div>
             <Divider label='Agent Setup' />
             <div className={styles.headerWrapper}>

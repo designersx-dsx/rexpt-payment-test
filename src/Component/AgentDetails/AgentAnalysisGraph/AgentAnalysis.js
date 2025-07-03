@@ -98,9 +98,9 @@ const AgentAnalysis = ({ data, calApiKey }) => {
         <div className={styles.callVolume}>
           {callVolume} <span>Call Volume</span>
         </div>
-        {/* <div className={styles.trend}>
+        <div className={styles.trend}>
           Last 7 Days <span className={styles.positive}>+15%</span>
-        </div> */}
+        </div>
       </div>
 
       <ResponsiveContainer width="100%" height={100}>
@@ -132,8 +132,18 @@ const AgentAnalysis = ({ data, calApiKey }) => {
         </LineChart>
       </ResponsiveContainer>
 
+      <div className={styles.CalendarTopPin}>
+        <img src="/svg/Calendar-Top-pin.svg" alt="Calendar-Top-pin"/>
+      
+
       <div className={styles.calendarSection}>
-        <h1>{selectedDate.toDateString()}</h1>
+        <h1 className={styles.CalendarTitleWeek}>
+          Monday
+          <p className={styles.CalendarTitleDate}>04 Wednesdays 2025</p>
+        </h1>
+
+
+        {/* <h1>{selectedDate.toDateString()}</h1> */}
         <Calendar
           onChange={handleDateClick}
           value={selectedDate}
@@ -141,6 +151,7 @@ const AgentAnalysis = ({ data, calApiKey }) => {
           calendarType="gregory"
           className={styles.reactCalendar}
         />
+      </div>
       </div>
 
       {bookingsForSelectedDate.length > 0 && (
