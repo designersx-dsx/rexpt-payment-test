@@ -125,7 +125,7 @@ const AgentAnalysis = () => {
   return (
     <div className={styles.container}>
       <div className={styles.HeaderFlex}>
-      <HeaderBar title="Calendar" />
+      <HeaderBar title="Calendar"    backgroundColor="#0000"/>
 
       <div className={styles.DateSecT}>
         <p>Agent</p>

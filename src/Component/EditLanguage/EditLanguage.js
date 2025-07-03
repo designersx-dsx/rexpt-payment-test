@@ -2,7 +2,7 @@ import React from 'react'
 import EditHeader from '../EditHeader/EditHeader'
 import SectionHeader from '../SectionHeader/SectionHeader'
 import styles from "./EditLanguage.module.css"
-import SelectLauguage from "./Step1/Step1"
+import SelectLauguage from "./Step1/Step1";
 import AnimatedButton from '../AnimatedButton/AnimatedButton'
 
 
