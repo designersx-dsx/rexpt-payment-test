@@ -491,21 +491,21 @@ const Step = () => {
                                 },
                             ],
                         },
-                        {
-                            name: "appointment_booking",
-                            state_prompt:
-                                "You will follow the steps below to book an appointment...",
-                            tools: [
-                                {
-                                    type: "book_appointment_cal",
-                                    name: "book_appointment",
-                                    description: "Book an annual check up.",
-                                    cal_api_key: "cal_live_447bd92f96b6fc71e427e51cdc40e2cf",
-                                    event_type_id: 2508223,
-                                    timezone: "America/Los_Angeles",
-                                },
-                            ],
-                        },
+                        // {
+                        //     name: "appointment_booking",
+                        //     state_prompt:
+                        //         "You will follow the steps below to book an appointment...",
+                        //     tools: [
+                        //         {
+                        //             type: "book_appointment_cal",
+                        //             name: "book_appointment",
+                        //             description: "Book an annual check up.",
+                        //             cal_api_key: "cal_live_447bd92f96b6fc71e427e51cdc40e2cf",
+                        //             event_type_id: 2508223,
+                        //             timezone: "America/Los_Angeles",
+                        //         },
+                        //     ],
+                        // },
                     ],
                     starting_state: "information_collection",
                     begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom }.`,
