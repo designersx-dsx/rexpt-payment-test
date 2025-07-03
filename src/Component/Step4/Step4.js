@@ -5,20 +5,6 @@ import React, {
   useImperativeHandle,
 } from "react";
 import styles from "../Step4/Step4.module.css";
-
-const roles = [
-  {
-    title: "General Receptionist",
-    // description: "Ready to handle all Inbound calls",
-    // icon: "svg/general-receptionist.svg",
-  },
-  {
-    title: "LEAD Qualifier",
-    // description: "Handle inbound sales queries",
-    // icon: "svg/sales receptionist.svg",
-  },
-];
-
 const Step4 = forwardRef(
   (
     {
@@ -54,8 +40,6 @@ const Step4 = forwardRef(
     useEffect(() => {
       sessionStorage.setItem("agentRole", selectedRole);
     }, [selectedRole]);
-
-
     useEffect(() => {
       sessionStorage.setItem("agentNote", agentNote);
     }, [agentNote]);
@@ -78,6 +62,18 @@ const Step4 = forwardRef(
 
       },
     }));
+    const roles = [
+      {
+        title: "General Receptionist",
+        description:
+          "A general receptionist will pick calls, provide information on your services and products, take appointments and guide callers.",
+      },
+      {
+        title: "LEAD Qualifier",
+        description:
+          "A LEAD Qualifier handles inbound sales queries and helps identify potential leads for your business.",
+      },
+    ];
     // Block refresh and context menu
     // useEffect(() => {
     //   const blockKeyboardRefresh = (e) => {
@@ -151,7 +147,13 @@ const Step4 = forwardRef(
 
 
         </div>
-        <p className={styles.LastP}>A general receptionist will pick calls, provide information on your services and products, take appointments and guide callers.</p>
+        {selectedRole && (
+          <p className={styles.LastP}>
+            {
+              roles.find((role) => role?.title === selectedRole)?.description
+            }
+          </p>
+        )}
       </>
 
     );
