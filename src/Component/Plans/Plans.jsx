@@ -5,119 +5,133 @@ import Loader from "../Loader/Loader";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
-
 const Plan = ({ agentID, locationPath }) => {
   const [products, setProducts] = useState([]);
-  console.log("products", products);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("month"); // To handle the tab state
+  const [selectedTab, setSelectedTab] = useState("month");
   const [selectedPrice, setSelectedPrice] = useState(null);
+  const [userCurrency, setUserCurrency] = useState("usd");
 
   const navigate = useNavigate();
-
   const location = useLocation();
 
+  // Get user's currency based on IP
   useEffect(() => {
+    const getLocationCurrency = async () => {
+      try {
+        const response = await fetch("https://ipapi.co/json/");
+        const data = await response.json();
+        setUserCurrency(mapCountryToCurrency(data.country));
+      } catch (error) {
+        console.error("Error getting location:", error);
+        setUserCurrency("usd");
+      }
+    };
+
+    const mapCountryToCurrency = (countryCode) => {
+      const countryCurrencyMap = {
+        IN: "inr",
+        US: "usd",
+        CA: "cad",
+        AU: "aud",
+        GB: "gbp",
+        // Add more mappings as needed
+      };
+      return countryCurrencyMap[countryCode] || "usd";
+    };
+
+    getLocationCurrency();
+  }, []);
+
+  // Fetch plans
+  useEffect(() => {
+    if (!userCurrency) return;
+
     fetch(`${API_BASE}/products`)
       .then((res) => res.json())
       .then((data) => {
-        // Add a free trial option
         const freeTrial = {
           id: "free-trial",
           name: "Free Trial",
           description: "Try all features free — includes 10 minutes",
           prices: [],
-          metadata: { minutes: 10 },
+          metadata: { minutes: 20 },
         };
 
-        // Map the products and add the free trial at the top
-        const productsWithMetadata = [
-          freeTrial,
-          ...data.map((product) => {
-            const matchedData = product.data?.data?.find(
-              (p) => p.id === product.id
-            );
-            return {
-              ...product,
-              metadata: matchedData?.metadata || {},
-            };
-          }),
-        ];
+        const currencyFilteredProducts = data.map((product) => {
+          const matchedData = product.data?.data?.find(
+            (p) => p.id === product.id
+          );
 
-        setProducts(productsWithMetadata);
+          const matchingPrices = product.prices.filter(
+            (p) =>
+              p.currency.toLowerCase() === userCurrency.toLowerCase() ||
+              p.currency_options?.some(
+                (opt) => opt.currency === userCurrency.toLowerCase()
+              )
+          );
+
+          const enrichedPrices = matchingPrices.map((price) => {
+            let displayPrice = price.unit_amount / 100;
+            let currency = price.currency;
+
+            const option = price.currency_options?.find(
+              (opt) => opt.currency === userCurrency
+            );
+            if (option) {
+              displayPrice = option.unit_amount / 100;
+              currency = option.currency;
+            }
+
+            return {
+              ...price,
+              unit_amount: displayPrice * 100,
+              currency: currency.toLowerCase(),
+            };
+          });
+
+          return {
+            ...product,
+            metadata: matchedData?.metadata || {},
+            prices: enrichedPrices,
+          };
+        });
+
+        setProducts([freeTrial, ...currencyFilteredProducts]);
         setLoading(false);
       })
       .catch(() => {
         setError("Failed to load plans.");
         setLoading(false);
       });
-  }, []);
+  }, [userCurrency]);
 
   const toggleAccordion = (id) => {
     setOpen(open === id ? null : id);
   };
 
-
-
-  // Filter the products based on selectedTab (monthly or yearly)
   const filterPlansByInterval = (interval) => {
-    return (
-      products
-        .map((product) => {
-          // If it's the free trial, just return it as is
-          if (product.id === "free-trial") return product;
+    return products
+      .map((product) => {
+        if (product.id === "free-trial") return product;
 
-          // Filter the prices based on the selected interval
-          const filteredPrices = product.prices.filter(
-            (price) => price.interval === interval
-          );
+        const filteredPrices = product.prices.filter(
+          (price) => price.interval === interval
+        );
 
-          // If the product has prices for the selected interval, return the product with only those prices
-          if (filteredPrices.length > 0) {
-            return {
-              ...product,
-              prices: filteredPrices,
-            };
-          }
-// =======
-//                     {/* Free Trial Plan */}
-//                     <div
-//                         className={`${styles.planBox} ${selected === 'free-trial' ? styles.selected : ''}`}
-//                         onClick={() => setSelected('free-trial')}
-//                     >
-//                         <div className={styles.part1}>
-//                             <label className={styles.radioLabel}>
-//                                 <input
-//                                     type="radio"
-//                                     name="plan"
-//                                     value="free-trial"
-//                                     checked={selected === 'free-trial'}
-//                                     onChange={() => setSelected('free-trial')}
-//                                 />
-//                                 <div className={styles.planContent}>
-//                                     <div className={styles.planTitle}>
-//                                         <div>
-//                                             <p>Free Trial</p>
-//                                             <span className={styles.description}>
-//                                                 Try all features free — includes 20 minutes
-//                                             </span>
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </label>
-//                         </div>
-//                     </div>
-// >>>>>>> payment_testing
+        if (filteredPrices.length > 0) {
+          return {
+            ...product,
+            prices: filteredPrices,
+          };
+        }
 
-          // Return null if no matching prices exist
-          return null;
-        })
-        // Remove null values from the array (products that don't have prices for the selected interval)
-        .filter((product) => product !== null)
-    );
+        return null;
+      })
+      .filter((product) => product !== null);
   };
 
   if (loading)
@@ -132,7 +146,6 @@ const Plan = ({ agentID, locationPath }) => {
     <div className={styles.hero_sec}>
       <div className={styles.container}>
         <div className={styles.headerCOntro}>
-          {/* Header */}
           <div className={styles.header}>
             <div className={styles.icon}>
               <img src="images/inlogo.png" alt="inlogo" />
@@ -143,7 +156,6 @@ const Plan = ({ agentID, locationPath }) => {
             </div>
           </div>
 
-          {/* Tab buttons for Yearly and Monthly plans */}
           <div className={styles.tabs}>
             <button
               className={`${styles.tabButton} ${
@@ -172,7 +184,7 @@ const Plan = ({ agentID, locationPath }) => {
           </div>
         </div>
 
-        {/* Stripe Product Plans */}
+        {/* Display Plans */}
         {filterPlansByInterval(selectedTab).map((product) => (
           <div
             key={product.id}
@@ -247,10 +259,10 @@ const Plan = ({ agentID, locationPath }) => {
                 product.prices.length > 0 &&
                 product.prices[0].metadata && (
                   <p>
-                    Includes <strong>{product.prices[0].metadata}</strong>{" "}
-                    minutes / month
+                    Includes <strong>{product.prices[0].metadata}</strong> minutes / month
                   </p>
                 )}
+
               <div className={styles.pricesContainer}>
                 {product.prices.map((price) => (
                   <div
@@ -260,7 +272,7 @@ const Plan = ({ agentID, locationPath }) => {
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelected(product.id); // make sure the product is also selected
+                      setSelected(product.id);
                       setSelectedPrice({
                         id: price.id,
                         amount: (price.unit_amount / 100).toFixed(2),
@@ -286,9 +298,11 @@ const Plan = ({ agentID, locationPath }) => {
             onClick={() => {
               if (selected) {
                 if (selected === "free-trial") {
-                  navigate("/steps" , {state : {
-                    freeTrial : true
-                  }});
+                  navigate("/steps", {
+                    state: {
+                      freeTrial: true,
+                    },
+                  });
                 } else if (selectedPrice) {
                   navigate("/checkout", {
                     state: {
@@ -300,9 +314,7 @@ const Plan = ({ agentID, locationPath }) => {
                     },
                   });
                 } else {
-                  alert(
-                    "Please select a specific plan duration (monthly/yearly)"
-                  );
+                  alert("Please select a specific plan duration (monthly/yearly)");
                 }
               } else {
                 alert("Please select a plan first");
@@ -313,23 +325,6 @@ const Plan = ({ agentID, locationPath }) => {
             <p>Continue</p>
           </div>
         </div>
-
-        {/* Login link */}
-        {location.pathname === "/dashboard" ? (
-          ""
-        ) : (
-          <div className={styles.loginBox}>
-            <p>
-              Already have an account?{" "}
-              <span
-                className={styles.loginLink}
-                onClick={() => navigate("/signup")}
-              >
-                Login
-              </span>
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
