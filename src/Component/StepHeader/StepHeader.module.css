@@ -21,8 +21,16 @@
     transition: transform 0.3s ease-out;
     display: inline-block;
     margin: 0 auto;
-    width: 205px;
-    height: 205px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 50%;
+}
+.LogoWrapper img{
+    margin-top: 0.5rem;
+    margin-left: 10px;
+     width: 100%;
 }
 
 .RipplThree {
@@ -66,9 +74,11 @@
     width: 205px;
     height: 205px;
 }
-.headerWrapper{
+
+.headerWrapper {
     position: relative;
 }
+
 .heading {
     color: #24252C;
     text-align: center;
@@ -81,7 +91,8 @@
 
 
 }
-.tooltipIcon{
+
+.tooltipIcon {
     position: absolute;
     top: 15px;
     right: -15px;
