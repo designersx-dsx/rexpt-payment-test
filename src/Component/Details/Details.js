@@ -11,6 +11,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { useRef } from "react";
+import AnimatedButton from "../AnimatedButton/AnimatedButton";
 const Details = () => {
   const navigate = useNavigate();
   const [startExit, setStartExit] = useState(false);
@@ -208,9 +209,8 @@ const Details = () => {
           </div>
           <div className={styles.logimg2}>
             <div
-              className={`${styles.logimg} ${styles.animateStep} ${
-                step >= 1 ? styles.animateStep1 : ""
-              }`}
+              className={`${styles.logimg} ${styles.animateStep} ${step >= 1 ? styles.animateStep1 : ""
+                }`}
             >
               <img
                 className={styles.logo}
@@ -221,9 +221,8 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.Maincontent} ${styles.animateStep} ${
-              step >= 2 ? styles.animateStep2 : ""
-            }`}
+            className={`${styles.Maincontent} ${styles.animateStep} ${step >= 2 ? styles.animateStep2 : ""
+              }`}
           >
             <div className={styles.welcomeTitle}>
               <h1>Personal Details</h1>
@@ -231,18 +230,16 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.container} ${styles.animateStep} ${
-              step >= 3 ? styles.animateStep3 : ""
-            }`}
+            className={`${styles.container} ${styles.animateStep} ${step >= 3 ? styles.animateStep3 : ""
+              }`}
           >
             <div className={styles.labReq}>
               <div className={styles.Dblock}>
                 <label className={styles.label}>Name</label>
                 <input
                   type="text"
-                  className={`${styles.input} ${
-                    nameError ? styles.inputError : ""
-                  }`}
+                  className={`${styles.input} ${nameError ? styles.inputError : ""
+                    }`}
                   placeholder="Your name"
                   value={name}
                   onChange={handleNameChange}
@@ -267,9 +264,8 @@ const Details = () => {
                     }
                   }}
                   onClickFlag={handleFlagClick}
-                  inputClass={`${styles.input} ${
-                    phoneError ? styles.inputError : ""
-                  }`}
+                  inputClass={`${styles.input} ${phoneError ? styles.inputError : ""
+                    }`}
                 />
               </div>
               {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
@@ -277,15 +273,20 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.Btn} ${styles.animateStep} ${
-              step >= 4 ? styles.animateStep4 : ""
-            }`}
+            className={`${styles.Btn} ${styles.animateStep} ${step >= 4 ? styles.animateStep4 : ""
+              }`}
             onClick={handleLoginClick}
           >
             <div type="submit">
               <div className={styles.btnTheme}>
-                <img src="svg/svg-theme.svg" alt="" />
-                <p>{loading ? <Loader size={20} /> : "Continue"}</p>
+
+
+                <AnimatedButton
+                  isLoading={loading}
+                  label="Continue"
+
+                />
+
               </div>
             </div>
           </div>

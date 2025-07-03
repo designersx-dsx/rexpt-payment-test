@@ -49,7 +49,6 @@ const Step = () => {
     const [isContinueClicked, setIsContinueClicked] = useState(false);
     const [visibleStep, setVisibleStep] = useState(0);
     const [avtarChecked, setAvtarChecked] = useState(false)
-    console.log(avtarChecked, "avtarChecked")
     const [completedSteps, setCompletedSteps] = useState(() => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
@@ -104,7 +103,6 @@ const Step = () => {
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
     const commaSeparatedServices = allServices?.join(", ")?.replace("Other", "") || "Your Business Services";
-    console.log(commaSeparatedServices, "commaSeparatedServices")
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
@@ -156,13 +154,18 @@ const Step = () => {
                 return;
             }
             if (currentRef.current.save) {
-                await currentRef.current.save(); // Calls handleContinue only on Next
+                await currentRef.current.save(); // 👈 Calls handleContinue only on Next
             }
             // Add this step to completed steps
             addCompletedStep(currentStep);
         }
         scrollToTop();
+
+
+
+
     };
+
     const handleBack = () => {
         if (currentStep > 0) {
             const prevStep = currentStep - 1 === 2 ? 1 : currentStep - 1;
@@ -171,13 +174,12 @@ const Step = () => {
             sliderRef.current?.slickGoTo(prevStep);
         }
     };
-    // const isAdaptiveHeight = currentStep !== 3
+
     const settings = {
         dots: false,
         infinite: false,
         speed: 500,
         slidesToShow: 1,
-        // adaptiveHeight: isAdaptiveHeight,
         slidesToScroll: 1,
         arrows: false,
         swipe: false,
@@ -199,21 +201,6 @@ const Step = () => {
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
-    //  1. Create the function that returns the choices array
-    const getLeadTypeChoices = () => {
-        const fixedChoices = ["Spam Caller", "Irrelvant Call", "Angry Old Customer"];
-        const allServices = [...customServices, ...businessServiceNames];
-        const cleanedServices = allServices
-            .map(service => service?.trim()) // remove extra whitespace
-            .filter(service => service && service?.toLowerCase() !== "other")
-            .map(service => {
-                const normalized = service?.replace(/\s+/g, " ")?.trim();
-                return `Customer for ${normalized}`;
-            });
-        const combinedChoices = Array.from(new Set([...fixedChoices, ...cleanedServices]));
-        return combinedChoices;
-    }
-  
     // const handleContinue = async () => {
     //     console.log("HY I AM ACALLED")
 
@@ -619,7 +606,11 @@ const Step = () => {
     // };
     const handleContinue = async () => {
         if (step8ARef.current) {
-     
+            // if (currentStep === 7) {
+            //     const isStep3Valid = await step8ARef.current?.validate?.();
+            //     const isStep4Valid = await step8BRef.current?.validate?.();
+            //     if (!isStep3Valid || !isStep4Valid) return;
+            // }
             setIsContinueClicked(true);
             const agentNote = sessionStorage.getItem("agentNote");
             const filledPrompt =
@@ -641,13 +632,14 @@ const Step = () => {
                     agentNote
                 });
             // const isValid = step8BRef.current.validate()
+
             //creation here
             if (localStorage.getItem("UpdationMode") != "ON") {
 
                 setLoading(true)
                 const agentConfig = {
                     version: 0,
-                    model: "gemini-2.0-flash",
+                    model: "gemini-2.0-flash-lite",
                     model_temperature: 0,
                     model_high_priority: true,
                     tool_call_strict_mode: true,
@@ -680,7 +672,7 @@ const Step = () => {
                                     description: "Transfer to the support team.",
                                     transfer_destination: {
                                         type: "predefined",
-                                        number: "+918054226461",
+                                        number: "+918054226461", // Replace with actual number
                                     },
                                 },
                             ],
@@ -692,7 +684,9 @@ const Step = () => {
                         },
                     ],
                     starting_state: "information_collection",
+
                     begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
+
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                     },
@@ -729,18 +723,26 @@ const Step = () => {
                         post_call_analysis_model: "gpt-4o-mini",
                         responsiveness: 1,
                         enable_backchannel: true,
-                        interruption_sensitivity: 0.91,
+                        interruption_sensitivity: 0.7,
                         backchannel_frequency: 0.7,
                         backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                         post_call_analysis_data: [
                             {
+                                type: "string",
+                                name: "Detailed Call Summery",
+                                description: "The name of the customer.",
+                                examples: [
+                                    "John Doe",
+                                    "Jane Smith"
+                                ]
+                            },
+                            {
                                 type: "enum",
                                 name: "lead_type",
                                 description: "Feedback given by the customer about the call.",
-                                choices: getLeadTypeChoices()
+                                choices: ["positive", "neutral", "negative"]
                             }
                         ],
-                        normalize_for_speech: true
                     };
                     // Create Agent Creation
                     try {
@@ -1011,6 +1013,29 @@ const Step = () => {
             setShowPopup(false);
         }, 3000);
     };
+    // const getStepTitle = () => {
+    //     if (currentStep === 0) {
+    //         return EditingMode ? "Edit: Business Type" : "Business Type";
+    //     } else if (currentStep === 1) {
+    //         return EditingMode ? "Edit: Services Offered" : "Services Offered"
+    //     }
+    //     else if (currentStep === 3) {
+    //         return EditingMode ? "Edit: Public Listing" : "Public Listing";
+    //     }
+    //     else if (currentStep === 4) {
+    //         return EditingMode ? "Edit: Business Details" : "Business Details";
+    //     }
+    //     else if (currentStep === 5) {
+    //         return EditingMode ? "Edit: Select Language" : "Select Language";
+    //     }
+    //     else if (currentStep === 6) {
+    //         return EditingMode ? "Edit: Select Voice" : "Select Voice";
+    //     } else if (currentStep === 7) {
+    //         return EditingMode ? "Edit: Select Gender" : "Select Gender";
+    //     }
+    // };
+
+
     const getStepTitle = () => {
         const steps = {
             0: {
@@ -1088,6 +1113,36 @@ const Step = () => {
         // }
         setShowPopup(false);
     }
+    // const validation = async (currentStep) => {
+    //     const validations = {
+    //         0: step1Ref,
+    //         1: step3Ref,
+    //         3: step4Ref,
+    //         4: step5Ref,
+    //         5: step6Ref,
+    //         6: step7Ref,
+    //         7: [step8ARef, step8BRef],
+    //         // 8: step9Ref
+    //     };
+    //     // Skip validation if already completed
+
+    //     if (completedSteps.includes(currentStep)) {
+    //         return true;
+    //     }
+    //     console.log(completedSteps, "completedSteps")
+    //     const currentRef = validations[currentStep];
+    //     if (currentRef?.current?.validate) {
+    //         const isValid = await currentRef.current.validate();
+    //         if (!isValid) {
+    //             console.warn(`Validation failed at step ${currentStep}`);
+    //             return false;
+    //         }
+    //         // Mark this step as completed
+    //         addCompletedStep(currentStep);
+    //     }
+
+    //     return true;
+    // };
     const validation = async (currentStep) => {
         const validations = {
             0: step1Ref,
@@ -1096,7 +1151,7 @@ const Step = () => {
             4: step5Ref,
             5: step6Ref,
             6: step7Ref,
-            7: [step8ARef, step8BRef],
+            7: [step8ARef, step8BRef], // both Step3 and Step4
         };
 
         const refs = validations[currentStep];
@@ -1204,12 +1259,6 @@ const Step = () => {
     }, [freeTrail, currentStep, locationPath]);
     const step = getStepTitle();
     console.log(step, "step")
-    useEffect(() => {
-        const storedAvatar = sessionStorage.getItem('avatar');
-        if (storedAvatar) {
-            setAvtarChecked(true);
-        }
-    }, []);
     return (
         <div className={styles.container}>
             <StepHeader title={step?.title}

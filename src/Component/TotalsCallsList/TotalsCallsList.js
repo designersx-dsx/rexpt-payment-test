@@ -170,6 +170,16 @@ export default function Home() {
     // Perform additional logic related to "All Agents" if needed
   };
   const navigate = useNavigate();
+  const formattedDate = (date)=>{
+     return new Date(date).toLocaleDateString(
+    "en-GB",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }
+  );
+}
 
   return (
     <div className={styles.container}>
@@ -243,7 +253,7 @@ export default function Home() {
                           {getDateTimeFromTimestamp(call.end_timestamp).time}
                         </div>
                         <div className={styles.callDate}>
-                          {getDateTimeFromTimestamp(call.end_timestamp).date}
+                          {formattedDate(call.end_timestamp)}
                         </div>
                       </div>
                     </td>

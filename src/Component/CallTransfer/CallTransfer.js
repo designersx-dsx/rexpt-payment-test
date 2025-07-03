@@ -5,6 +5,7 @@ import axios from 'axios';
 import { addGeneralTools, fetchLlmDetails, updateLlm } from '../../Store/apiStore';
 import Loader from '../Loader/Loader';
 import PopUp from '../Popup/Popup';
+import AnimatedButton from '../AnimatedButton/AnimatedButton';
 const dialToCountry = {
     '1': 'us',
     '20': 'eg',
@@ -553,10 +554,13 @@ function CallTransfer() {
                 <div className={styles.Btn} onClick={handleSubmit}>
                     <div type="submit">
                         <div className={styles.btnTheme}>
-                            <div className={styles.imageWrapper}>
-                                <img src="svg/svg-theme2.svg" alt="" />
-                            </div>
-                            <p>{loading ? <Loader size={20} /> : "Submit"}</p>
+
+                            {/* <p>{loading ? <Loader size={20} /> : "Submit"}</p> */}
+                            <AnimatedButton
+                                isLoading={loading}
+                                label="Submit"
+
+                            />
                         </div>
 
                     </div>
