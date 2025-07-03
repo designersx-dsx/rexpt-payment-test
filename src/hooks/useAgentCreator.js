@@ -203,7 +203,7 @@ export const useAgentCreator = ({
         //       bussinesId: sessionStorage.getItem("bId") || localStorage.getItem("bussinesId"),
         //     },
         //   }), 1000);
-        
+
                   //agent updation 
                 if (isValid == 'EditBusinessType' || isValid == 'EditServicesOffered' || isValid == 'EditLanguage' || isValid == 'EditGender' || isValid=='EditNameAvtar') {
                   const finalAgentData = {
@@ -312,10 +312,16 @@ export const useAgentCreator = ({
           const screenLabels = {
           EditBusinessType: "Business Type",
           EditServicesOffered: "Services Offered",
+          EditNameAvtar:"Name & Avtar",
+          EditLanguage :"Agent Language",
+          EditGender:"Agent Gender / Voice "
         };
+        console.log('isValidjsdjajdja',isValid)
         setPopupMessage(`${screenLabels[isValid]} Updated Succesfully`);
         setShowPopup(true);
-
+        setTimeout(()=>{
+          navigate('/edit-agent', { replace: true })
+        },1000)
       }
       catch (error) {
         console.error("LLM updation failed:", error);

@@ -9,7 +9,7 @@
 }
 .btnTheme {
   position: relative;
-  color: white;
+  color: white !important;
   border-radius: 12px;
   display: flex;
   justify-content: center;

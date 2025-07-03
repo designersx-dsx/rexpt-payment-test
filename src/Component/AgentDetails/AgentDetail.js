@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import {
@@ -32,22 +32,22 @@ import Modal3 from "../Modal3/Modal3";
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const agentID=sessionStorage.getItem('SelectAgentId');
-  const agentBuisnesId=sessionStorage.getItem('SelectAgentBusinessId');
-  const [agentDetails,setAgentDetail]=useState({
-     agentId:location?.state?.agentId ||  sessionStorage.getItem('SelectAgentId'),
-     bussinesId:location?.state?.bussinesId ||sessionStorage.getItem('SelectAgentBusinessId')
+  const agentID = sessionStorage.getItem('SelectAgentId');
+  const agentBuisnesId = sessionStorage.getItem('SelectAgentBusinessId');
+  const [agentDetails, setAgentDetail] = useState({
+    agentId: location?.state?.agentId || sessionStorage.getItem('SelectAgentId'),
+    bussinesId: location?.state?.bussinesId || sessionStorage.getItem('SelectAgentBusinessId')
   })
 
-  useEffect(()=>{
-    if(agentID && agentBuisnesId)  {
-        setAgentDetail({
-          agentId:agentID,
-          bussinesId:agentBuisnesId
-        })
+  useEffect(() => {
+    if (agentID && agentBuisnesId) {
+      setAgentDetail({
+        agentId: agentID,
+        bussinesId: agentBuisnesId
+      })
     }
-  },[agentBuisnesId,agentBuisnesId])
-  
+  }, [agentBuisnesId, agentBuisnesId])
+
   // const agentDetails = location.state;
   // console.log('d',location.state)
   // const agentDetails = {
@@ -363,7 +363,7 @@ const AgentDashboard = () => {
 
   // Start call handler
   let micStream = '';
-    const isStartingRef = useRef(false);
+  const isStartingRef = useRef(false);
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -420,26 +420,26 @@ const AgentDashboard = () => {
   // End call handler
   const isEndingRef = useRef(false);
   const handleEndCall = async () => {
-  if (isEndingRef.current) return;
-  isEndingRef.current = true;
+    if (isEndingRef.current) return;
+    isEndingRef.current = true;
     if (retellWebClient) {
       try {
-      const response = await retellWebClient.stopCall();
-      const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
-      if (isCallInProgress && callId) {
-        const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+        const response = await retellWebClient.stopCall();
+        const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
+        if (isCallInProgress && callId) {
+          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+        }
+        setRefresh((prev) => !prev);
+        setHasFetched(false);
+        setIsCallInProgress(false);
+        // console.log("Call end response", response);
+      } catch (err) {
+        console.error("Error ending call:", err);
+      } finally {
+        setHasFetched(false);
+        setIsCallInProgress(false);
+        isEndingRef.current = false;
       }
-      setRefresh((prev) => !prev);
-      setHasFetched(false);
-      setIsCallInProgress(false);
-      // console.log("Call end response", response);
-       } catch (err) {
-      console.error("Error ending call:", err);
-    } finally {
-      setHasFetched(false);
-      setIsCallInProgress(false);
-      isEndingRef.current = false;
-    }
 
     }
   };
@@ -513,12 +513,18 @@ const AgentDashboard = () => {
   };
   // Open Widget modal
   const handleOpenWidgetModal = (agent) => {
-    const agentData = {
-      business: agent.business,
-      ...agent.agent,
-    };
-    setOpenWidgetModal(true);
+    // const agentData = {
+    //   business: agent.business,
+    //   ...agent.agent,
+    // };
+    // setOpenWidgetModal(true);
     setAgentDetails(agentData);
+    navigate("/integrate-agent", {
+      state: {
+        agentDetails: agent?.agent,
+       
+      },
+    });
   };
 
   // Close Widget modal
@@ -1059,8 +1065,7 @@ const AgentDashboard = () => {
 
               <div
                 className={styles.managementItem}
-                onClick={async () => 
-                  {
+                onClick={async () => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
@@ -1076,13 +1081,13 @@ const AgentDashboard = () => {
                     // }
                     // setModalOpen(true);
                     sessionStorage.setItem('SelectAgentBusinessId', agentData?.agent?.businessId)
-                    sessionStorage.setItem('SelectAgentId',agentData?.agent?.agent_id)
+                    sessionStorage.setItem('SelectAgentId', agentData?.agent?.agent_id)
                     navigate('/edit-agent', {
-                        state: {
-                          agentId: agentData?.agent?.agent_id,
-                          businessId: agentData?.agent?.businessId,
-                        },
-                      });
+                      state: {
+                        agentId: agentData?.agent?.agent_id,
+                        businessId: agentData?.agent?.businessId,
+                      },
+                    });
 
 
                   }
@@ -1530,7 +1535,7 @@ const AgentDashboard = () => {
             height="80vh"
           >
             <div>
-              <EditAgent agentDetails={agentDetails} />
+              <EditAgent agentDetails={agentDetails}  />
             </div>
           </DetailModal>
 

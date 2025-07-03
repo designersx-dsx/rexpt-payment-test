@@ -20,14 +20,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [scale, setScale] = useState(1);
-  const voices = [
-    { name: "Blaze", desc: "Assertive tone" },
-    { name: "Echo", desc: "Robotic voice" },
-    { name: "Sage", desc: "Calm and wise" },
-    { name: "Echo2", desc: "Robotic voice" },
-    { name: "Sage3", desc: "Calm and wise" },
-    { name: "Echo3", desc: "Robotic voice" },
-  ];
+
 
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") === "ON" && listVoices.length > 0) {
@@ -70,7 +63,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     ) {
       sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
       sessionStorage.setItem("agentVoiceAccent", selectedVoice.accent);
-      sessionStorage.setItem("VoiceAgentName", selectedVoice.voice_name);
+      sessionStorage.setItem("VoiceAgentName", selectedVoice?.voice_name?.replace(/\s*\(.*?\)/, ""));
     }
   }, [selectedVoice]);
 
@@ -265,7 +258,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
           {filteredVoices.map((voice, idx) => (
             <label
               key={voice.voice_id ?? idx}
-              className={`${styles.voiceCard} ${selectedVoice.voice_name === voice.voice_name
+              className={`${styles.voiceCard} ${selectedVoice?.voice_name?.replace(/\s*\(.*?\)/, "") === voice?.voice_name?.replace(/\s*\(.*?\)/, "")
                 ? styles.active
                 : ""
                 }`}
@@ -274,7 +267,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 type="radio"
                 name="voice"
                 value={voice.voice_name}
-                checked={selectedVoice.voice_name === voice.voice_name}
+                checked={selectedVoice?.voice_name?.replace(/\s*\(.*?\)/, "") === voice?.voice_name?.replace(/\s*\(.*?\)/, "")}
                 onChange={() => {
                   setSelectedVoice(voice);
                   playAudio(idx); // play when selected
