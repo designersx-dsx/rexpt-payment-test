@@ -832,8 +832,10 @@ const origin = window.location.origin;
           userId,
           companyName,
           gstNumber,
+
           url: url,
           cancelUrl : `${origin}/cancel-payment`
+
         }),
       });
 
