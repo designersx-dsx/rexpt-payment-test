@@ -137,7 +137,7 @@ function HeaderFilter({
                 </div>
 
                 <select
-                  className={styles.agentSelect}
+                  className={styles.agentSelect2}
                   value={selected.id}
                   onClick={handleCloseFilter}
                   onChange={handleChange}

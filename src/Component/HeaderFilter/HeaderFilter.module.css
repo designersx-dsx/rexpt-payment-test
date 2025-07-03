@@ -78,11 +78,10 @@
 
 .dropdownContainer .agentSelect1 {
   font-size: 16px;
-  /* padding: 12px 16px; */
   color: #fff;
 }
-
-.agentSelect1 option {
+.agentSelect2 option{ color: #000 !important;}
+.agentSelect1   {
   color: #000;
 }
 
