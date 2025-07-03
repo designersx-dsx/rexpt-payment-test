@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useRef } from 'react'
 import EditHeader from '../EditHeader/EditHeader';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import styles from '../EditServicesOffered/EditServicesOffered.module.css'
@@ -11,6 +11,8 @@ const EditServicesOffered = () => {
     const [selectedType, setSelectedType] = useState('');
     const [newService, setNewService] = useState('');
     const [isAddMoreChecked,setIsAddMoreChecked]=useState(false)
+    const lastServiceRef = useRef(null);
+
     const businessServices = [
         {
             type: "Restaurant",
@@ -477,12 +479,15 @@ const EditServicesOffered = () => {
     // Parse sessionStorage safely
     const fetchBusinessType = JSON.parse(sessionStorage.getItem("businessDetails") || "{}");
     const fetchServices = JSON.parse(sessionStorage.getItem("businesServices") || "{}");
+    console.log('fetchServices',fetchServices)
     const services = fetchServices.selectedService
     const [selectedService, setSelectedServices] = useState(services || []);
     const [showPopup, setShowPopup] = useState(false);
     const [popupType, setPopupType] = useState(null);
     const [popupMessage, setPopupMessage] = useState("");
     const [Loading, setLoading] = useState(null);
+    const [customServices, setCustomServices] = useState([]);
+
     const navigate=useNavigate();
     const setHasFetched=true;
     const { handleCreateAgent } = useAgentCreator({
@@ -505,7 +510,8 @@ const EditServicesOffered = () => {
     const uniqueServices = Array.from(
         new Set([
             ...filteredBusinessType?.services?.filter((s) => s !== "Other") || [],
-            ...selectedService || [],
+            ...services||[],
+           ...customServices || [],
         ])
     );
     const handleAddService = () => {
@@ -522,7 +528,11 @@ const EditServicesOffered = () => {
 
     if (!isAlreadyPresent) {
         setSelectedServices([...selectedService, trimmedService]);
+        setCustomServices(prev => [...prev, trimmedService]);
         setNewService('');
+          setTimeout(() => {
+            lastServiceRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100); // small delay for DOM update
     }
 };
 
@@ -569,6 +579,7 @@ const EditServicesOffered = () => {
 
 
   }
+  console.log('dsdsd',customServices)
 
     return (
         <>
@@ -599,7 +610,7 @@ const EditServicesOffered = () => {
                         <div className={styles.optionList}>
                             {uniqueServices?.length > 0 ? (
                                 uniqueServices?.filter((service) => service !== "Other").map((item, index) => (
-                                    <label className={styles.option} key={index}>
+                                    <label className={styles.option} key={index}   ref={index === uniqueServices.length - 1 ? lastServiceRef : null}>
                                         <div className={styles.forflex}>
                                             <div className={styles.icon}>
                                                 <img src={icon} alt={`${item} icon`} className={styles.iconImg} />
@@ -619,13 +630,13 @@ const EditServicesOffered = () => {
                                                 //     selectedService?.includes(item) &&
                                                 //     fetchBusinessType.businessType.toLowerCase() === filteredBusinessType?.type.toLowerCase()
                                                 // }
-                                                onChange={() => {
-                                                    if (selectedService.includes(item)) {
-                                                        // setSelectedServices(selectedService.filter(s => s !== item));
-                                                    } else {
-                                                        setSelectedServices([...selectedService, item]);
-                                                    }
-                                                }}
+                                               onChange={() => {
+                                                if (selectedService.includes(item)) {
+                                                setSelectedServices(selectedService.filter(s => s !== item));
+                                                } else {
+                                                setSelectedServices([...selectedService, item]);
+                                                }
+                                            }}
                                                 className={styles.purpleCheckbox}
                                             />
                                         </div>
