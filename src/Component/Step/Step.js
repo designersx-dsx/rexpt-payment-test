@@ -475,7 +475,7 @@ const Step = () => {
                                 "You will follow the steps below to collect information...",
                             edges: [
                                 {
-                                    destination_state_name: "appointment_booking",
+                                    // destination_state_name: "appointment_booking",
                                     description: "Transition to book an appointment.",
                                 },
                             ],
