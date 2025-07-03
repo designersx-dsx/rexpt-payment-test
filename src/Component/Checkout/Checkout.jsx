@@ -406,185 +406,443 @@ function CheckoutForm({
   };
 
   // Handle subscription payment
-  const handleSubmit = async () => {
-    const newErrors = {};
-    if (!billingName.trim())
-      newErrors.billingName = "Name on card is required.";
-    if (Object.keys(newErrors).length) {
-      setErrors(newErrors);
-      return;
-    }
-    setErrors({});
-    setMessage("");
-    setLoading(true);
+  // const handleSubmit = async () => {
+  //   const newErrors = {};
+  //   if (!billingName.trim())
+  //     newErrors.billingName = "Name on card is required.";
+  //   if (Object.keys(newErrors).length) {
+  //     setErrors(newErrors);
+  //     return;
+  //   }
+  //   setErrors({});
+  //   setMessage("");
+  //   setLoading(true);
 
-    if (!stripe || !elements) {
-      setMessage("Stripe has not loaded yet.");
-      setLoading(false);
-      return;
-    }
+  //   if (!stripe || !elements) {
+  //     setMessage("Stripe has not loaded yet.");
+  //     setLoading(false);
+  //     return;
+  //   }
 
-    const cardNumberElement = elements.getElement(CardNumberElement);
+  //   const cardNumberElement = elements.getElement(CardNumberElement);
 
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardNumberElement,
-      billing_details: {
-        name: billingName,
-        email,
-        address: {
-          line1: addressLine1,
-          line2: addressLine2,
-          city,
-          state,
-          postal_code: postalCode,
-          country,
-        },
-      },
+  //   const { error, paymentMethod } = await stripe.createPaymentMethod({
+  //     type: "card",
+  //     card: cardNumberElement,
+  //     billing_details: {
+  //       name: billingName,
+  //       email,
+  //       address: {
+  //         line1: addressLine1,
+  //         line2: addressLine2,
+  //         city,
+  //         state,
+  //         postal_code: postalCode,
+  //         country,
+  //       },
+  //     },
+  //   });
+
+  //   if (error) {
+  //     setMessage(`❌ ${error.message}`);
+  //     setPopupType("failed");
+  //     setPopupMessage(error.message);
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     let data;
+  //     // console.log("subscriptionId", subscriptionId);
+  //     if (subscriptionId) {
+  //       console.log("upgrade runn");
+  //       const res = await fetch(`${API_BASE_URL}/upgrade-customer-stripe`, {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({
+  //           customerId,
+  //           priceId,
+  //           paymentMethodId: paymentMethod.id,
+  //           userId,
+  //           email,
+  //           promotionCode: promoCodeSend,
+  //           companyName,
+  //           gstNumber,
+  //           billingAddress: {
+  //             line1: addressLine1,
+  //             line2: addressLine2,
+  //             city,
+  //             state,
+  //             postalCode,
+  //             country,
+  //           },
+  //           subscriptionId: subscriptionId,
+  //           // promotionCode:"FREE99"
+  //         }),
+  //       });
+  //       data = await res.json();
+  //     } else {
+  //       console.log("create  runn");
+  //       const res = await fetch(`${API_BASE_URL}/subscribe`, {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({
+  //           customerId,
+  //           priceId,
+  //           paymentMethodId: paymentMethod.id,
+  //           userId,
+  //           email,
+  //           promotionCode: promoCodeSend,
+  //           companyName,
+  //           gstNumber,
+  //           billingAddress: {
+  //             line1: addressLine1,
+  //             line2: addressLine2,
+  //             city,
+  //             state,
+  //             postalCode,
+  //             country,
+  //           },
+  //           // promotionCode:"FREE99"
+  //         }),
+  //       });
+  //       data = await res.json();
+  //     }
+
+  //     if (data.error) {
+  //       setMessage(`❌ ${data.error}`);
+  //       setPopupType("failed");
+  //       setPopupMessage(data.error);
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     // ✅ Handle client secret (SCA / 3DS confirmation)
+  //     if (data.clientSecret) {
+  //       const { error: confirmError, paymentIntent } =
+  //         await stripe.confirmCardPayment(data.clientSecret);
+
+  //       if (confirmError) {
+  //         setMessage(`❌ ${confirmError.message}`);
+  //         setPopupType("failed");
+  //         setPopupMessage(confirmError.message);
+  //         setLoading(false);
+  //         return;
+  //       }
+  //       if (paymentIntent?.status === "succeeded" && subscriptionId) {
+  //         // onPaymentConfirm();
+  //         try {
+  //           const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
+  //             method: "POST",
+  //             headers: { "Content-Type": "application/json" },
+  //             body: JSON.stringify({ subscriptionId }),
+  //           });
+  //           const result = await res.json();
+
+  //           if (!res.ok) {
+  //             console.error(
+  //               "❌ Failed to cancel subscription:",
+  //               result.error || result.message
+  //             );
+  //           }
+  //         } catch (error) {
+  //           console.error("❌ Network error canceling subscription:", error);
+  //           // Optional: show UI feedback
+  //         }
+  //       }
+
+  //       if (
+  //         locationPath === "/update" &&
+  //         agentId !== undefined &&
+  //         agentId !== null
+  //       ) {
+  //         setShowCountdownPopup(true);
+  //       } else {
+  //         // onPaymentConfirm();
+  //         setMessage("Subscription successful!");
+  //         setPopupType("success");
+  //         setPopupMessage("Subscription successful!");
+  //       }
+  //     } else {
+  //       // Show the countdown popup if locationPath is "/dashboard" and agentId is neither undefined nor null
+  //       if (
+  //         locationPath === "/dashboard" &&
+  //         agentId !== undefined &&
+  //         agentId !== null
+  //       ) {
+  //         setShowCountdownPopup(true);
+  //       } else {
+  //         setMessage("Subscription successful!");
+  //         setPopupType("success");
+  //         setPopupMessage("Subscription successful!");
+  //       }
+  //     }
+  //   } catch (err) {
+  //     setMessage("❌ Failed to subscribe.");
+  //     setPopupType("failed");
+  //     setPopupMessage("Failed to subscribe.");
+  //   }
+
+  //   setLoading(false);
+  // };
+
+  // Handle with Setup Intent
+//   const handleSubmit = async () => {
+//     const newErrors = {};
+//     if (!billingName.trim())
+//       newErrors.billingName = "Name on card is required.";
+//     if (Object.keys(newErrors).length) {
+//       setErrors(newErrors);
+//       return;
+//     }
+//     setErrors({});
+//     setMessage("");
+//     setLoading(true);
+
+//     if (!stripe || !elements) {
+//       setMessage("Stripe has not loaded yet.");
+//       setLoading(false);
+//       return;
+//     }
+
+//     const cardNumberElement = elements.getElement(CardNumberElement);
+
+//     // 1. Create SetupIntent from backend
+// const setupIntentRes = await fetch(`${API_BASE_URL}/create-setup-intent`, {
+//   method: "POST",
+//   headers: { "Content-Type": "application/json" },
+//   body: JSON.stringify({ customerId }),
+// });
+// const { clientSecret: setupIntentClientSecret, error: setupError } = await setupIntentRes.json();
+// console.log("setupIntentRes",setupIntentRes)
+
+// if (setupError) {
+//   setMessage(`❌ ${setupError}`);
+//   setPopupType("failed");
+//   setPopupMessage(setupError);
+//   setLoading(false);
+//   return;
+// }
+
+// // 2. Confirm SetupIntent (RBI compliant)
+// const { error: confirmSetupError, setupIntent } = await stripe.confirmCardSetup(setupIntentClientSecret, {
+//   payment_method: {
+//     card: cardNumberElement,
+//     billing_details: {
+//       name: billingName,
+//       email,
+//       address: {
+//         line1: addressLine1,
+//         line2: addressLine2,
+//         city,
+//         state,
+//         postal_code: postalCode,
+//         country,
+//       },
+//     },
+//   },
+// });
+
+// console.log("confirmSetupError",confirmSetupError)
+
+// if (confirmSetupError) {
+//   setMessage(`❌ ${confirmSetupError.message}`);
+//   setPopupType("failed");
+//   setPopupMessage(confirmSetupError.message);
+//   setLoading(false);
+//   return;
+// }
+
+// console.log("setupIntent",setupIntent)
+
+// const paymentMethodId = setupIntent.payment_method;
+
+
+//     try {
+//       let data;
+//       // console.log("subscriptionId", subscriptionId);
+//       if (subscriptionId) {
+//         console.log("upgrade runn");
+//         const res = await fetch(`${API_BASE_URL}/upgrade-customer-stripe`, {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({
+//             customerId,
+//             priceId,
+//             paymentMethodId: paymentMethodId,
+//             userId,
+//             email,
+//             promotionCode: promoCodeSend,
+//             companyName,
+//             gstNumber,
+//             billingAddress: {
+//               line1: addressLine1,
+//               line2: addressLine2,
+//               city,
+//               state,
+//               postalCode,
+//               country,
+//             },
+//             subscriptionId: subscriptionId,
+//             // promotionCode:"FREE99"
+//           }),
+//         });
+//         data = await res.json();
+//       } else {
+//         console.log("create  runn");
+//         const res = await fetch(`${API_BASE_URL}/subscribe`, {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({
+//             customerId,
+//             priceId,
+//             paymentMethodId: paymentMethodId,
+//             userId,
+//             email,
+//             promotionCode: promoCodeSend,
+//             companyName,
+//             gstNumber,
+//             billingAddress: {
+//               line1: addressLine1,
+//               line2: addressLine2,
+//               city,
+//               state,
+//               postalCode,
+//               country,
+//             },
+//             // promotionCode:"FREE99"
+//           }),
+//         });
+//         data = await res.json();
+//       }
+
+//       if (data.error) {
+//         setMessage(`❌ ${data.error}`);
+//         setPopupType("failed");
+//         setPopupMessage(data.error);
+//         setLoading(false);
+//         return;
+//       }
+
+//       // ✅ Handle client secret (SCA / 3DS confirmation)
+//       if (data.clientSecret) {
+//         const { error: confirmError, paymentIntent } =
+//           await stripe.confirmCardPayment(data.clientSecret);
+
+//         if (confirmError) {
+//           setMessage(`❌ ${confirmError.message}`);
+//           setPopupType("failed");
+//           setPopupMessage(confirmError.message);
+//           setLoading(false);
+//           return;
+//         }
+//         if (paymentIntent?.status === "succeeded" && subscriptionId) {
+//           // onPaymentConfirm();
+//           try {
+//             const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
+//               method: "POST",
+//               headers: { "Content-Type": "application/json" },
+//               body: JSON.stringify({ subscriptionId }),
+//             });
+//             const result = await res.json();
+
+//             if (!res.ok) {
+//               console.error(
+//                 "❌ Failed to cancel subscription:",
+//                 result.error || result.message
+//               );
+//             }
+//           } catch (error) {
+//             console.error("❌ Network error canceling subscription:", error);
+//             // Optional: show UI feedback
+//           }
+//         }
+
+//         if (
+//           locationPath === "/update" &&
+//           agentId !== undefined &&
+//           agentId !== null
+//         ) {
+//           setShowCountdownPopup(true);
+//         } else {
+//           // onPaymentConfirm();
+//           setMessage("Subscription successful!");
+//           setPopupType("success");
+//           setPopupMessage("Subscription successful!");
+//         }
+//       } else {
+//         // Show the countdown popup if locationPath is "/dashboard" and agentId is neither undefined nor null
+//         if (
+//           locationPath === "/dashboard" &&
+//           agentId !== undefined &&
+//           agentId !== null
+//         ) {
+//           setShowCountdownPopup(true);
+//         } else {
+//           setMessage("Subscription successful!");
+//           setPopupType("success");
+//           setPopupMessage("Subscription successful!");
+//         }
+//       }
+//     } catch (err) {
+//       setMessage("❌ Failed to subscribe.");
+//       setPopupType("failed");
+//       setPopupMessage("Failed to subscribe.");
+//     }
+
+//     setLoading(false);
+//   };
+
+// with Checkout
+
+const handleSubmit = async () => {
+  setLoading(true);
+  setMessage("");
+  setErrors({});
+
+  // Optional: Validate required fields (like billingName, email, etc.)
+  const newErrors = {};
+  if (!billingName.trim()) newErrors.billingName = "Name on card is required.";
+  if (Object.keys(newErrors).length) {
+    setErrors(newErrors);
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customerId,
+        priceId,
+        promotionCode: promoCodeSend,
+        userId,
+        companyName,
+        gstNumber,
+      }),
     });
 
-    if (error) {
-      setMessage(`❌ ${error.message}`);
+    const data = await response.json();
+
+    if (data.error) {
+      setMessage(`❌ ${data.error}`);
       setPopupType("failed");
-      setPopupMessage(error.message);
-      setLoading(false);
-      return;
+      setPopupMessage(data.error);
+    } else if (data.checkoutUrl) {
+      // Redirect to Stripe Checkout
+      window.location.href = data.checkoutUrl;
     }
+  } catch (err) {
+    console.error("Checkout session error:", err);
+    setMessage("❌ Failed to initiate Stripe Checkout.");
+    setPopupType("failed");
+    setPopupMessage("Failed to initiate Stripe Checkout.");
+  }
 
-    try {
-      let data;
-      // console.log("subscriptionId", subscriptionId);
-      if (subscriptionId) {
-        console.log("upgrade runn");
-        const res = await fetch(`${API_BASE_URL}/upgrade-customer-stripe`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            customerId,
-            priceId,
-            paymentMethodId: paymentMethod.id,
-            userId,
-            email,
-            promotionCode: promoCodeSend,
-            companyName,
-            gstNumber,
-            billingAddress: {
-              line1: addressLine1,
-              line2: addressLine2,
-              city,
-              state,
-              postalCode,
-              country,
-            },
-            subscriptionId: subscriptionId,
-            // promotionCode:"FREE99"
-          }),
-        });
-        data = await res.json();
-      } else {
-        console.log("create  runn");
-        const res = await fetch(`${API_BASE_URL}/subscribe`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            customerId,
-            priceId,
-            paymentMethodId: paymentMethod.id,
-            userId,
-            email,
-            promotionCode: promoCodeSend,
-            companyName,
-            gstNumber,
-            billingAddress: {
-              line1: addressLine1,
-              line2: addressLine2,
-              city,
-              state,
-              postalCode,
-              country,
-            },
-            // promotionCode:"FREE99"
-          }),
-        });
-        data = await res.json();
-      }
+  setLoading(false);
+};
 
-      if (data.error) {
-        setMessage(`❌ ${data.error}`);
-        setPopupType("failed");
-        setPopupMessage(data.error);
-        setLoading(false);
-        return;
-      }
-
-      // ✅ Handle client secret (SCA / 3DS confirmation)
-      if (data.clientSecret) {
-        const { error: confirmError, paymentIntent } =
-          await stripe.confirmCardPayment(data.clientSecret);
-
-        if (confirmError) {
-          setMessage(`❌ ${confirmError.message}`);
-          setPopupType("failed");
-          setPopupMessage(confirmError.message);
-          setLoading(false);
-          return;
-        }
-        if (paymentIntent?.status === "succeeded" && subscriptionId) {
-          // onPaymentConfirm();
-          try {
-            const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ subscriptionId }),
-            });
-            const result = await res.json();
-
-            if (!res.ok) {
-              console.error(
-                "❌ Failed to cancel subscription:",
-                result.error || result.message
-              );
-            }
-          } catch (error) {
-            console.error("❌ Network error canceling subscription:", error);
-            // Optional: show UI feedback
-          }
-        }
-
-        if (
-          locationPath === "/update" &&
-          agentId !== undefined &&
-          agentId !== null
-        ) {
-          setShowCountdownPopup(true);
-        } else {
-          // onPaymentConfirm();
-          setMessage("Subscription successful!");
-          setPopupType("success");
-          setPopupMessage("Subscription successful!");
-        }
-      } else {
-        // Show the countdown popup if locationPath is "/dashboard" and agentId is neither undefined nor null
-        if (
-          locationPath === "/dashboard" &&
-          agentId !== undefined &&
-          agentId !== null
-        ) {
-          setShowCountdownPopup(true);
-        } else {
-          setMessage("Subscription successful!");
-          setPopupType("success");
-          setPopupMessage("Subscription successful!");
-        }
-      }
-    } catch (err) {
-      setMessage("❌ Failed to subscribe.");
-      setPopupType("failed");
-      setPopupMessage("Failed to subscribe.");
-    }
-
-    setLoading(false);
-  };
   const [promoCode, setPromoCode] = useState("");
   const [promoCodeSend, setpromoCodeSend] = useState("");
 
