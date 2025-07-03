@@ -28,9 +28,7 @@ const dataURLtoFile = (dataUrl, fileName = "file") => {
 
 const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const aboutBusinessForm1 = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-
   const [noGoogleListing, setNoGoogleListing] = useState(aboutBusinessForm1?.noGoogleListing || false);
-
   const [noBusinessWebsite, setNoBusinessWebsite] = useState(aboutBusinessForm1?.noBusinessWebsite || false);
   const [files, setFiles] = useState([]);
   const [businessUrl, setBusinessUrl] = useState("");
@@ -266,20 +264,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         setNoBusinessWebsite(savedData.noBusinessWebsite);
       }
 
-    } else {
-      const savedData = JSON.parse(
-        sessionStorage.getItem("aboutBusinessForm") || "{}"
-      );
-      if (savedData) {
-
-        if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
-        if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
-        if (savedData.note) setNote(savedData.note);
-        if (typeof savedData.noBusinessWebsite === "boolean") {
-          setNoBusinessWebsite(savedData.noBusinessWebsite);
-        }
-      }
-    }
+    } 
   }, []);
 
   useEffect(() => {

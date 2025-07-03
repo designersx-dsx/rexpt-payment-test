@@ -3,6 +3,8 @@ import styles from '../EditAgentNew/EditAgentNew.module.css'
 import EditHeader from '../EditHeader/EditHeader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getUserAgentMergedDataForAgentUpdate } from '../../Store/apiStore';
+import Loader from '../Loader/Loader';
+import Loader2 from '../Loader2/Loader2';
 
 const EditAgentNew = () => {
     const navigate=useNavigate();
@@ -10,8 +12,14 @@ const EditAgentNew = () => {
      const { agentId, businessId } = location.state || {};
      const [editAgentId,setEditAgentID]=useState(sessionStorage.getItem('SelectAgentId')||null);
      const [editBusinessId,setBusinessId]=useState(sessionStorage.getItem('SelectAgentBusinessId')|| null);
+     const [agentName,setAgentName]=useState(sessionStorage.getItem("agentName")||"")
+     const agentnm=sessionStorage.getItem("agentName");
+     const [loading, setLoading] = useState(true);
 
-    const steps = [
+      useEffect(()=>{
+          setAgentName(agentnm)
+      },[agentnm])
+     const steps = [
         {
             number: 1,
             title: 'Business Type',
@@ -56,6 +64,7 @@ const EditAgentNew = () => {
              link :'/edit-name-avtar'
         },
     ];
+
     const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       try {
         const response = await getUserAgentMergedDataForAgentUpdate(
@@ -65,7 +74,7 @@ const EditAgentNew = () => {
     
         const agent = response?.data?.agent;
         const business = response?.data?.business;
-    
+        sessionStorage.setItem("UpdationModeStepWise","ON");
         sessionStorage.setItem("agentName", agent.agentName);
         sessionStorage.setItem("agentGender", agent.agentGender);
         sessionStorage.setItem("agentLanguageCode", agent.agentLanguageCode);
@@ -190,21 +199,26 @@ const EditAgentNew = () => {
         sessionStorage.setItem("agentNote", agent?.additionalNote);
       } catch (error) {
         console.log("An Error Occured while fetching Agent Data for ", error);
-      }
+      }finally{setLoading(false)}
     };
 
     useEffect(()=>{
-       if(editAgentId && editBusinessId)
+       if((agentId||editAgentId) && (businessId||editBusinessId))
        {
-             fetchPrevAgentDEtails(editAgentId,editBusinessId);
+             fetchPrevAgentDEtails(agentId||editAgentId,businessId||editBusinessId);
        }    
     },[editAgentId,editBusinessId])
     
-    console.log('dksd',editAgentId,editBusinessId)
+
 
     return (
         <div>
-            <EditHeader title='Agent name' agentName={sessionStorage.getItem("agentName")} />
+          {
+            loading?
+              <Loader2 />
+              :
+          <>
+            <EditHeader title='Agent name' agentName={agentName} />
             <div className={styles.wrapper}>
                 <div className={styles.stepsContainer}>
                     {steps.map((step, index) => (
@@ -221,6 +235,8 @@ const EditAgentNew = () => {
                     ))}
                 </div>
             </div>
+            </>
+            }
         </div>
     )
 }

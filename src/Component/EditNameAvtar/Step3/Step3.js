@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import styles from '../Step3/Step3.module.css';
 import Slider from 'react-slick';
+import Step4 from './Step4';
 // import Step4 from '../Step4/Step4';
 
 const avatars = {
@@ -21,22 +22,29 @@ const avatars = {
   ],
 };
 
-const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange ,setAvtarChecked}, ref) => {
+const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, onStepChange}, ref) => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [agentNameError, setAgentNameError] = useState('');
-  const [gender, setGender] = useState('Male');
-  const [availableAvatars, setAvailableAvatars] = useState(avatars['Male']);
+  const [gender, setGender] = useState(sessionStorage.getItem('agentGender'));
+  const [availableAvatars, setAvailableAvatars] = useState([]);
   const EditingMode = localStorage.getItem("UpdationMode") === "ON";
   const [scale, setScale] = useState(1);
-  
+
+  const [avtarChecked,setAvtarChecked]=useState('')
+  const [agentNote, setAgentNote] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [loading,setLoading]=useState(false)
+  console.log('gender',gender,availableAvatars)
+ 
   useEffect(() => {
-    const storedGender = sessionStorage.getItem("agentGender") || "Male";
+    const storedGender = sessionStorage.getItem("agentGender") ;
+    const capitalizeGender = gender.charAt(0).toUpperCase() + gender.slice(1);
     const storedAvatarImg = sessionStorage.getItem("avatar");
     const storedAgentName = sessionStorage.getItem("agentName") || localStorage.getItem("VoiceAgentName") || "";
     const localVoiceName = sessionStorage.getItem("VoiceAgentName") || "";
-    const genderAvatars = avatars[storedGender] || avatars["Male"];
+    const genderAvatars = avatars[capitalizeGender]
     setGender(storedGender);
     setAvailableAvatars(genderAvatars);
     if (storedAgentName) {
@@ -53,10 +61,11 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
         setSelectedAvatar(matchedAvatar);
         setTimeout(() => {
           sliderRef.current?.slickGoTo(avatarIndex);
-        }, 0);
+        }, 50);
       }
     }
   }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -79,27 +88,6 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     sessionStorage.setItem('agentName', val);
     if (val.trim()) setAgentNameError('');
   };
-  useImperativeHandle(ref, () => ({
-    validate: () => {
-      if (!agentName.trim()) {
-         onValidationError?.({
-          type: "failed",
-          message: "Please enter agent name!"
-        });
-        // setAgentNameError("Please enter agent name!");
-        return false;
-      }
-      if (!selectedAvatar) {
-        onValidationError?.({
-          type: "failed",
-          message: "Please select an avatar!"
-        });
-        return false;
-      }
-      onStepChange?.(7);
-      return true;
-    },
-  }));
 
   const settings = {
     dots: false,
@@ -111,10 +99,11 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   };
 
   return (
+    <>
     <div className={styles.sliderContainer}>
       {/* <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2> */}
       <Slider ref={sliderRef} {...settings}>
-        {availableAvatars.map((avatar, index) => (
+        {availableAvatars?.map((avatar, index) => (
           <div key={index} className={styles.slide} id="slideradio">
             <label className={styles.avatarLabel}>
               <input
@@ -163,6 +152,8 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
         </div>
       </div>
     </div>
+     <Step4/>
+     </>
   );
 });
 

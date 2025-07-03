@@ -1,11 +1,19 @@
 import React from 'react';
 import styles from '../EditHeader/EditHeader.module.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 
 const EditHeader = ({ title, agentName, }) => {
-    const navigate=useNavigate();
+  const navigate=useNavigate();
+  const location = useLocation();
+    const handleBack = () => {
+    if (location.pathname === '/edit-agent') {
+      navigate('/agent-detail');
+    } else {
+      navigate('/edit-agent');
+    }
+  };
     return (
-        <div className={styles.forSticky} onClick={()=>navigate(-1)}>
+        <div className={styles.forSticky} onClick={handleBack}>
             <div className={styles.title}>
                 <img
                     src='/svg/back-svg.svg'

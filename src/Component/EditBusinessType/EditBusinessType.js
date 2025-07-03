@@ -25,6 +25,8 @@ const EditBusinessType = () => {
     const [errors, setErrors] = useState({});
     const token = localStorage.getItem("token");
     const decodeTokenData = decodeToken(token);
+         const agentnm=sessionStorage.getItem("agentName");
+
     const [businessTypeSubmitted, setBusinessTypeSubmitted] = useState(false);
     const [businessNameSubmitted, setBusinessNameSubmitted] = useState(false);
     const [businessSizeSubmitted, setBusinessSizeSubmitted] = useState(false);
@@ -358,7 +360,7 @@ const EditBusinessType = () => {
 console.log('setBusinessType',businessType,customBuisness)
     return (
         <>
-            <EditHeader title='Edit Agent ' agentName='Sofia' />
+            <EditHeader title='Edit Agent ' agentName={agentnm} />
             <div className={styles.Maindiv}>
                 <div className={styles.headerWrapper}>
                     <h2 className={styles.heading}>Select Category</h2>
@@ -432,7 +434,6 @@ console.log('setBusinessType',businessType,customBuisness)
                         </div>
                         </div>
                     )}
-
                     <div className={styles.inputGroup}>
                         <label>Business Size (Number of Emp.)<span className={styles.requiredField}> *</span></label>
                         <select className={styles.selectInput} 
