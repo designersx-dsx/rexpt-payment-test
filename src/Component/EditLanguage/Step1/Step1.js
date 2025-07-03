@@ -304,7 +304,7 @@ useEffect(() => {
             <div>
                 <div className={styles.slideContent}>
                     <div className={styles.grid}>
-                        {languages.map((lang, index) => (
+                        {languages.filter((lang)=>lang?.locale!='multi').map((lang, index) => (
                             <label
                                 key={index}
                                 className={`${styles.card} ${selectedLang === lang.name ? styles.active : ""

@@ -56,6 +56,10 @@
     margin-right: 0.5rem;
 }
 
+.searchIcon img{
+    display: flex;
+}
+
 .searchInput {
     border: none;
     outline: none;
@@ -178,6 +182,10 @@
     font-weight: 600;
     margin-bottom: 6px;
     font-size: 18px;
+}
+
+.inputGroup label span{
+    color:red;
 }
 
 .inputGroup input {

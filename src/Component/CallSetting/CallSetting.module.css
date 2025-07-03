@@ -246,3 +246,10 @@ text-transform: uppercase;
   min-width: 30px;
   text-align: right;
 }
+
+ @media screen and (min-width: 601px) {
+  .CallSettingContainer{
+    width: 50%;
+    margin: auto;
+  }
+ }

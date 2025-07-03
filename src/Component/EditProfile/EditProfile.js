@@ -347,7 +347,7 @@ const EditProfile = () => {
             <div className={styles.infoSection}>
               <div className={styles.header}>
                 <h3>Personal Info</h3>
-                <span className={styles.editText}><img src='Svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span>
+                <span className={styles.editText}><img src='/svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span>
               </div>
 
               <div className={styles.Part}>

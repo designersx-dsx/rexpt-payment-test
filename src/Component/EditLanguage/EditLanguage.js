@@ -2,11 +2,15 @@ import React from 'react'
 import EditHeader from '../EditHeader/EditHeader'
 import SectionHeader from '../SectionHeader/SectionHeader'
 import styles from "./EditLanguage.module.css"
-import SelectLauguage from "./Step1/Step1"
+import SelectLauguage from "./Step1/Step1";
 import AnimatedButton from '../AnimatedButton/AnimatedButton'
 
 
 function EditLanguage() {
+
+  const handleClick=()=>{
+    
+  }
   return (
     <div>
         
@@ -22,12 +26,12 @@ function EditLanguage() {
 
             <div className={styles.container}>
 
-            <SelectLauguage/>
+          <SelectLauguage />
 </div>
 
- <div className={styles.stickyWrapper}>
-                        <AnimatedButton label="Save" />
-                    </div>
+    <div className={styles.stickyWrapper} >
+      <AnimatedButton label="Save" />
+    </div>
 
     </div>
   )
