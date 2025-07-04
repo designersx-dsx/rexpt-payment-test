@@ -6,7 +6,8 @@
 .StartMain {
     position: relative;
     width: 100vw;
-    height: calc(var(--vh, 1vh) * 100); /* fix for mobile 100vh */
+    height: calc(var(--vh, 1vh) * 100);
+    /* fix for mobile 100vh */
     overflow: hidden;
     background-color: #fff;
 }
@@ -182,10 +183,15 @@
 .content {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     position: absolute;
     top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    padding-inline: 20px;
 }
 
 .content>*:nth-child(1) {
@@ -239,6 +245,7 @@
     display: inline-block;
     cursor: pointer;
 }
+
 .stickyWrapper {
     position: sticky;
     bottom: 0px;
@@ -246,6 +253,7 @@
     padding: 10px 0;
     z-index: 10;
 }
+
 .BtnDiv img {
     display: block;
     width: 100%;
@@ -310,36 +318,39 @@
 
 
 @media screen and (min-width: 601px) {
-   
-  .withlogo{
-    display: none;
-  }
-  .heading{
-   
-    line-height: 30px;
-}
-.content {    
-    width: 50%;
-    align-items: center;
-}
-.part {
-    width: 50%;
-    align-items: center;
-    text-align: center;
-}
-.btnTheme{
-    cursor: pointer;
-   }
 
-   @media screen and (min-width: 601px) {
- .signUpContainer{
-    align-items: center;
-        display: flex
-;
-        margin: auto;
-        justify-content: center;
- }
+    .withlogo {
+        display: none;
+    }
+
+    .heading {
+
+        line-height: 30px;
+    }
+
+    .content {
+        width: 50%;
+        align-items: center;
+    }
+
+    .part {
+        width: 50%;
+        align-items: center;
+        text-align: center;
+    }
+
+    .btnTheme {
+        cursor: pointer;
+    }
+
+    @media screen and (min-width: 601px) {
+        .signUpContainer {
+            align-items: center;
+            display: flex;
+            margin: auto;
+            justify-content: center;
+        }
+
+    }
 
 }
-
- }

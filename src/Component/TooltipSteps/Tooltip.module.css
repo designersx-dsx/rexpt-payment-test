@@ -24,6 +24,7 @@
   width: max-content;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   z-index: 9999;
+  height: fit-content;
 }
 
 .tooltipTitle {
@@ -77,4 +78,39 @@
 
 .fadeOut {
   opacity: 0;
+}
+
+.tooltipBox.top {
+  bottom: 50px;
+  right: 5px;
+}
+
+.tooltipBox.bottom {
+  top: 50px;
+  right: 5px;
+}
+
+.afterScroll {
+  flex-direction: column-reverse; 
+  gap: 6px;
+  transform: translateX(-50%) rotate(180deg); 
+}
+
+/* Default: dots below tooltip */
+.bubbleBottom {
+  bottom: -23px;
+  right: 0%;
+  transform: translateX(-50%);
+}
+
+
+.bubbleTop {
+  top: -23px;
+  right: 0%;
+  transform: translateX(-50%) rotate(180deg); 
+  height: fit-content;
+}
+
+.bottomDot {
+  right: 3px;
 }
