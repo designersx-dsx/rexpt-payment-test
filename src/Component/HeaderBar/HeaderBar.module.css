@@ -5,6 +5,9 @@
     background-color: #6524EB;
     padding: 16px;
     border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    margin-top: 2px;
+    margin-inline: 1px;
 }
 
 .BothFlex {
@@ -14,7 +17,7 @@
 }
 
 .title h2 {
-    color: #ffffff;
+    color: black;
     font-size: clamp(19px, 2vw, 22px);
     font-family: "Lato", sans-serif;
 }
@@ -33,7 +36,7 @@
 .headerMain {
     max-width: 500px;
     align-items: center;
-    /* margin: auto; */
+    margin: auto;
 }
 
 }

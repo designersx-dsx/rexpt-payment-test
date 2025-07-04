@@ -12,7 +12,7 @@ import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
 import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
-import { createAgent, listAgents, updateAgent } from "../../Store/apiStore";
+import { createAgent, listAgents, updateAgent, updateAgentWidgetDomain } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 import { getAgentPrompt } from "../../hooks/useAgentPrompt";
@@ -23,6 +23,7 @@ import AboutBusiness from "../AboutBusiness/AboutBusiness";
 import BusinessListing from "../BusinessListing/BusinessListing";
 import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
+
 const Step = () => {
     const timestamp = Date.now();
     const [isRoleTitleChanged, setIsRoleTitleChanged] = useState(false);
@@ -56,7 +57,6 @@ const Step = () => {
     const location = useLocation()
     const locationPath = location?.state?.locationPath;
     const step1Ref = useRef(null)
-
     const step3Ref = useRef(null);
     const step4Ref = useRef(null);
     const step5Ref = useRef(null);
@@ -65,7 +65,6 @@ const Step = () => {
     const step8ARef = useRef(null)
     const step8BRef = useRef(null);
     // const step9Ref = useRef(null)
-
     useEffect(() => {
         if (token) {
             setUserId(decodeTokenData.id || "");
@@ -201,7 +200,7 @@ const Step = () => {
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
-        //  1. Create the function that returns the choices array
+    //  1. Create the function that returns the choices array
     const getLeadTypeChoices = () => {
         const fixedChoices = ["Spam Caller", "Irrelvant Call", "Angry Old Customer"];
         const allServices = [...customServices, ...businessServiceNames];
@@ -329,7 +328,7 @@ const Step = () => {
                         post_call_analysis_model: "gpt-4o-mini",
                         responsiveness: 1,
                         enable_backchannel: true,
-                        interruption_sensitivity:  0.91,
+                        interruption_sensitivity: 0.91,
                         backchannel_frequency: 0.7,
                         backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                         post_call_analysis_data: [
@@ -349,7 +348,7 @@ const Step = () => {
                                 choices: getLeadTypeChoices()
                             }
                         ],
-                         normalize_for_speech: true
+                        normalize_for_speech: true
                     };
                     // Create Agent Creation
                     try {
@@ -368,6 +367,7 @@ const Step = () => {
                         // Convert string to object
                         const businessIdObj = JSON.parse(businessIdString);
                         // Now access the actual ID
+
                         const agentData = {
                             userId: userId,
                             agent_id: agentId || sessionStorage.getItem("agentId"),
@@ -399,6 +399,7 @@ const Step = () => {
                                 sessionStorage.setItem("agentStatus", true);
                                 sessionStorage.removeItem("avatar")
                                 setPopupType("success");
+                                await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
                                 setPopupMessage("Agent created successfully!");
                                 setShowPopup(true);
                                 setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
@@ -818,13 +819,21 @@ const Step = () => {
             setAvtarChecked(JSON?.parse(storedValue));
         }
     }, []);
-    console.log(step, "step")
+    const tooltipContentMap = {
+        0: "Please select the category that best describes your business and indicate its size. This information helps us ensure you get the right tools and insights.",
+        1: "Select the services your business offers, or click Add more Services to include any unique offerings. Understanding your services allows us to personalize your dashboard and recommendations.",
+        3: "Add your Google My Business URL and website link. These links help us deeply understand your business and are used to build a smart knowledge base for your voice agent, ensuring it answers questions accurately.",
+        4: "This section shows your main business details: name, address, phone number, email, and a description of your business. These are important for both your customers and our system. Feel free to add or edit any of these fields to ensure all your information is current and correct.",
+        5: "This is the main language your agent will use for all its interactions. Choosing the correct language ensures the best communication experience. We Support 25+ Languages.",
+        6: "Select the gender you prefer for your AI agent, then listen to the available voice options to pick the one that best represents your business.",
+        7: "Pcik an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
+    };
     return (
         <div className={styles.container}>
             <StepHeader title={step?.title}
                 subTitle={step?.subTitle}
                 // icon={step.icon} 
-                tooltip={<Tooltip />}
+                tooltip={<Tooltip content={tooltipContentMap[currentStep]} />}
             />
             <Slider ref={sliderRef} {...settings}>
                 {/* business-details */}  {/* Step 1 */}

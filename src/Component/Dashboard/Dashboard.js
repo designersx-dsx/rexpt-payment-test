@@ -232,7 +232,7 @@ function Dashboard() {
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
 
     sessionStorage.setItem('SelectAgentId', agent?.agent_id)
-    sessionStorage.setItem('SelectAgentBusinessId',agent?.businessId)
+    sessionStorage.setItem('SelectAgentBusinessId', agent?.businessId)
 
     navigate("/agent-detail", {
       state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
@@ -602,24 +602,24 @@ function Dashboard() {
   // End call
   const isEndingRef = useRef(false);
   const handleEndCall = async () => {
-     if (isEndingRef.current) return;
-     isEndingRef.current = true;
+    if (isEndingRef.current) return;
+    isEndingRef.current = true;
 
     if (retellWebClient) {
-          try {
-          const response = await retellWebClient.stopCall();
-          const payload = { agentId: agentDetails.agent_id, callId: callId };
-          if (isCallInProgress && callId) {
-            const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
-            setIsCallInProgress(false);
-          }
-            } catch (err) {
-          console.error("Error ending call:", err);
-        } finally {
-          setHasFetched(false);
+      try {
+        const response = await retellWebClient.stopCall();
+        const payload = { agentId: agentDetails.agent_id, callId: callId };
+        if (isCallInProgress && callId) {
+          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
           setIsCallInProgress(false);
-          isEndingRef.current = false;
         }
+      } catch (err) {
+        console.error("Error ending call:", err);
+      } finally {
+        setHasFetched(false);
+        setIsCallInProgress(false);
+        isEndingRef.current = false;
+      }
     }
   };
 
@@ -664,12 +664,22 @@ function Dashboard() {
   };
 
   const handleEditAgent = async (ag) => {
-    localStorage.setItem("UpdationMode", "ON");
-    await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
+    // localStorage.setItem("UpdationMode", "ON");
+    // await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
 
-    navigate("/business-details", {
-      state: { agentId: ag.agent_id, bussinesId: ag.businessId },
-    });
+    // navigate("/business-details", {
+    //   state: { agentId: ag.agent_id, bussinesId: ag.businessId },
+    // });
+          sessionStorage.setItem('naviateFrom','dashboard')
+          sessionStorage.setItem('SelectAgentBusinessId', ag?.businessId)
+          sessionStorage.setItem('SelectAgentId', ag?.agent_id)
+                    navigate('/edit-agent', {
+                      state: {
+                        agentId: ag?.agent_id,
+                        businessId: ag?.businessId,
+                      },
+                    });
+                  
   };
 
   const handleRefresh = () => {
@@ -942,7 +952,7 @@ function Dashboard() {
     // }
   };
 
-  const fetchPrevAgentDEtails = async (agent_id, businessId) => {};
+  const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
   const locationPath = location.pathname;
 
   // =======
@@ -1051,9 +1061,9 @@ function Dashboard() {
     <div>
       <div className={styles.forSticky}>
         <header className={styles.header}>
-          <div className={styles.profileSection} ref={profileRef}>
-            <div>
-              <button className={styles.avatarBtn} onClick={handleEditProfile}>
+          <div className={styles.profileSection} ref={profileRef} onClick={handleEditProfile}>
+            <div >
+              <button className={styles.avatarBtn} >
                 <img
                   src={
                     user?.profile ||
@@ -1075,6 +1085,7 @@ function Dashboard() {
                 {formatName(user?.name) || "John Vick"}
               </h2>
             </div>
+
             {/* {isUploadModalOpen && (
               <UploadProfile
                 onClose={closeUploadModal}
@@ -1163,9 +1174,8 @@ function Dashboard() {
         <section className={styles.agentCard}>
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2
-              className={`${styles.agentHeading} ${
-                isSmallFont ? styles.smallFont : ""
-              }`}
+              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
+                }`}
             >
               {totalCalls || 0}
             </h2>
@@ -1176,9 +1186,8 @@ function Dashboard() {
 
           <div className={styles.agentInfo2} onClick={handleCalender}>
             <h2
-              className={`${styles.agentHeading} ${
-                isSmallFont ? styles.smallFont : ""
-              }`}
+              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
+                }`}
             >
               {bookingCount}
             </h2>
@@ -1378,8 +1387,8 @@ function Dashboard() {
                   <strong>
                     {formatBusinessName(
                       agent?.business?.businessName ||
-                        agent?.business?.knowledge_base_texts?.name ||
-                        agent?.business?.googleBusinessName
+                      agent?.business?.knowledge_base_texts?.name ||
+                      agent?.business?.googleBusinessName
                     )}
                   </strong>
                 </p>
@@ -1882,8 +1891,9 @@ function Dashboard() {
           <div className={styles.Cross} onClick={showConfirmFloatingClose}>
             x
           </div>
-          <div onClick={() => setIsModalOpen(true)}>
-            <img src="/svg/floating-svg.svg" alt="floating-svg" />
+          <div className={styles.imageWrapper} onClick={() => setIsModalOpen(true)}>
+            <img src="/svg/floating-svg2.svg" alt="floating-svg" />
+            <p className={styles.imageLabel}>10<span className={styles.percentag}>%</span></p>
           </div>
         </div>
       )}

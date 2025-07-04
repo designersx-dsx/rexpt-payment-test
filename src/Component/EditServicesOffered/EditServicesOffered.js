@@ -477,7 +477,6 @@ const EditServicesOffered = () => {
     // Parse sessionStorage safely
     const fetchBusinessType = JSON.parse(sessionStorage.getItem("businessDetails") || "{}");
     const fetchServices = JSON.parse(sessionStorage.getItem("businesServices") || "{}");
-    console.log('fetchServices',fetchServices)
     const services = fetchServices.selectedService
     const [selectedService, setSelectedServices] = useState(services || []);
     const [showPopup, setShowPopup] = useState(false);
@@ -488,6 +487,8 @@ const EditServicesOffered = () => {
     const [isSubmitting,setIsSubmitting]=useState(false)
     const [isEmptyListError,setEmptyListError]=useState('')
     const navigate=useNavigate();
+    const agentnm=sessionStorage.getItem("agentName");
+
     const setHasFetched=true;
     const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditServicesOffered",
@@ -500,7 +501,6 @@ const EditServicesOffered = () => {
     });
 
     const businessType = fetchBusinessType.businessType || "";
-    console.log(services)
     // Find business object by type
     const filteredBusinessType = businessServices?.find(
         (item) =>
@@ -517,10 +517,8 @@ const EditServicesOffered = () => {
         
 
     const trimmedService = newService.trim();
-                console.log('before',trimmedService)
 
     if (!trimmedService) return;
-        console.log('asfete')
     // Prevent duplicates (case insensitive)
     const isAlreadyPresent = selectedService.some(
         (service) => service.toLowerCase() === trimmedService.toLowerCase()
@@ -565,7 +563,6 @@ const EditServicesOffered = () => {
       ...previous,
       selectedService,
     };
-    console.log('updatedBusinessServices',updatedBusinessServices)
     sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
      const businessDetailsRaw = sessionStorage.getItem("businessDetails");
     const businessDetails = businessDetailsRaw
@@ -586,11 +583,10 @@ const EditServicesOffered = () => {
     }
     
   }
-  console.log('dsdsd',customServices,Loading)
 
     return (
         <>
-            <EditHeader title='Edit Agent ' agentName='Sofia' />
+            <EditHeader title='Edit Agent ' agentName={agentnm} />
             <div className={styles.Maindiv}>
                 <div className={styles.headerWrapper}>
                     <h2 className={styles.heading}>Services Offered</h2>

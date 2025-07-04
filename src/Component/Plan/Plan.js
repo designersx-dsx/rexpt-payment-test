@@ -17,25 +17,74 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
   const navigate = useNavigate();
   const [price, setPrice] = useState()
 
+  const [userCurrency, setUserCurrency] = useState('usd');
+
+  console.log("userCurrency", userCurrency)
+
+
   useEffect(() => {
+    const getLocationCurrency = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        setUserCurrency(mapCountryToCurrency(data.country));
+      } catch (error) {
+        console.error('Error getting location:', error);
+        setUserCurrency('USD'); // fallback
+      }
+    };
+
+    const mapCountryToCurrency = (countryCode) => {
+      const countryCurrencyMap = {
+        IN: 'inr',
+        US: 'usd',
+        CA: 'cad',
+        AU: 'aud',
+        GB: 'gbp',
+        // add more as needed
+      };
+      return countryCurrencyMap[countryCode] || 'usd';
+    };
+
+    getLocationCurrency();
+  }, []);
+
+  useEffect(() => {
+    if (!userCurrency) return
     const fetchPlans = async () => {
       const apiUrl = `${API_BASE}/products`;
-
       try {
         const response = await fetch(apiUrl);
         const data = await response.json();
-        // Process the API response (products)
-        const products = data.map(product => ({
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          price: (product.prices[0].unit_amount / 100).toFixed(2),
-          currency: product.prices[0].currency.toUpperCase(),
-          minutes: product.metadata?.minutes,
-          period: product.prices[0].recurring?.interval,
-          priceId: product.prices,
-          prices: product.prices // Store all prices for each product
-        }));
+
+        const products = data.map(product => {
+          const matchingPrices = product.prices.filter(p =>
+            p.currency.toLowerCase() === userCurrency.toLowerCase() ||
+            p.currency_options?.some(opt => opt.currency === userCurrency.toLowerCase())
+          );
+
+          const selectedPrice = matchingPrices.length > 0
+            ? (matchingPrices.find(p => p.currency === userCurrency) || matchingPrices[0])
+            : product.prices[0];
+
+          let displayPrice = selectedPrice.unit_amount / 100;
+          let currency = selectedPrice.currency;
+
+          // Check if currency_options has a match and override
+          const option = selectedPrice.currency_options?.find(opt => opt.currency === userCurrency);
+          if (option) {
+            displayPrice = option.unit_amount / 100;
+            currency = option.currency;
+          }
+
+          return {
+            ...product,
+            price: displayPrice.toFixed(2),
+            currency: currency.toUpperCase(),
+            selectedPrice,
+            prices: product.prices,
+          };
+        });
 
         setPlans(products);
         setLoading(false);
@@ -47,15 +96,37 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
     };
 
     fetchPlans();
-  }, []);
+  }, [userCurrency]);
 
   // Filter plans based on selected tab (monthly/yearly)
   const filterPlansByInterval = (interval) => {
-    return plans.map((product) => ({
-      ...product,
-      prices: product.prices.filter((price) => price.interval === interval), // Filter prices by interval
-    })).filter(product => product.prices.length > 0); // Remove products with no matching prices
+    return plans.map((product) => {
+      const matchingPrices = product.prices.filter((price) => price.interval === interval &&
+        (price.currency.toLowerCase() === userCurrency.toLowerCase() ||
+          price.currency_options?.some(opt => opt.currency === userCurrency.toLowerCase()))
+      );
+
+      const selectedPrice = matchingPrices.find(p => p.currency === userCurrency) || matchingPrices[0];
+
+      let displayPrice = selectedPrice?.unit_amount / 100 || 0;
+      let currency = selectedPrice?.currency || userCurrency;
+
+      const option = selectedPrice?.currency_options?.find(opt => opt.currency === userCurrency);
+      if (option) {
+        displayPrice = option.unit_amount / 100;
+        currency = option.currency;
+      }
+
+      return {
+        ...product,
+        prices: matchingPrices,
+        selectedPrice,
+        price: displayPrice.toFixed(2),
+        currency: currency.toUpperCase()
+      };
+    }).filter(product => product.prices.length > 0);
   };
+
 
   // Accordion toggle function
   const toggleAccordion = (id) => {
@@ -112,8 +183,8 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
                   onChange={() => {
 
                     setSelected(plan.id);  // Set selected plan ID
-                    setPriceId(plan.prices[0]?.id || null);
-                    setPrice((plan.prices[0]?.unit_amount / 100).toFixed(2))
+                    setPriceId(plan.selectedPrice?.id || null);
+                    setPrice(plan.price);
 
                   }}
                 />
@@ -127,8 +198,9 @@ const Plan = ({ agentID, locationPath, subscriptionID }) => {
                   <div className={styles.planData}>
                     {plan.prices.length > 0 && (
                       <p>
-                        Price: <strong>{(plan.prices[0].unit_amount / 100).toFixed(2)} {plan.prices[0].currency.toUpperCase()}</strong> / {plan.prices[0].interval}
+                        Price: <strong>{plan.price} {plan.currency}</strong> / {plan.selectedPrice?.interval}
                       </p>
+
                     )}
                     <p>
                       <strong>{(plan.prices[0].metadata || "")}</strong> minutes included / month
