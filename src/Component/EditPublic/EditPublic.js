@@ -651,7 +651,7 @@ return (
               form.isWebsiteUrl = checked ? 0 : 1;
               sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
               if (checked) {
-                // setBusinessUrl(HTTPS_PREFIX);
+                setBusinessUrl('');
                 setBusinessUrlError("");
               }
             }}

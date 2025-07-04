@@ -15,7 +15,7 @@ const EditAgentNew = () => {
      const [agentName,setAgentName]=useState(sessionStorage.getItem("agentName")||"")
      const agentnm=sessionStorage.getItem("agentName");
      const [loading, setLoading] = useState(true);
-
+    console.log('agentnm',agentnm,agentId, businessId)
       useEffect(()=>{
           setAgentName(agentnm)
       },[agentnm])
