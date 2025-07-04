@@ -8,12 +8,19 @@ import Typography from "@mui/material/Typography";
 import decodeToken from "../../lib/decodeToken";
 import { useLocation } from "react-router-dom";
 import PopUp from "../Popup/Popup";
+import AnimatedButton from "../AnimatedButton/AnimatedButton";
+import { useDashboardStore } from "../../Store/agentZustandStore";
 
 const CalendarConnect = () => {
+  const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
+    useDashboardStore();
   const [enabled, setEnabled] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const token = localStorage.getItem("token");
-  const userId = decodeToken(token)?.id;
+    const decodeTokenData = decodeToken(token);
+    const userId = decodeTokenData?.id || "";
+ const [initialApiKey, setInitialApiKey] = useState("");
+
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showEventModal, setShowEventModal] = useState(false);
   const [eventName, setEventName] = useState("");
@@ -25,55 +32,70 @@ const CalendarConnect = () => {
   const location = useLocation();
   const [popup, setPopup] = useState({ type: "", message: "" });
   const [apiSubmitting, setApiSubmitting] = useState(false);
+  const [agentsDetails, setAgentsDetails] = useState([])
+  console.log(agentsDetails, "agentsDetails")
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const trimmedKey = apiKey.trim();
+  // if (!isValidCalApiKey(trimmedKey) || trimmedKey.length !== 37) {
+  //   setPopup({
+  //     type: "failed",
+  //     message: "Invalid API Key! It must start with 'cal_live_' and be 37 characters long.",
+  //   });
+  //   return;
+  // }
+  setApiSubmitting(true);
+  try {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agentId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ calApiKey: trimmedKey,userId:userId }),
+      }
+    );
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (!response.ok) {
+      const errorData = await response.json();
 
-    if (!isValidCalApiKey(apiKey.trim())) {
-      setPopup({
-        type: "failed",
-        message: "Invalid API Key! It must start with 'cal_live_'.",
-      });
-      return;
-    }
-
-    setApiSubmitting(true);
-
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: apiKey.trim() }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update API key");
+      if (response.status === 401 || response.status === 400) {
+        setPopup({
+          type: "failed",
+          message: "Unauthorized! Invalid API Key.",
+        });
+        return; //  Exit early on invalid key
       }
 
-      setShowEventModal(true);
-    } catch (error) {
-      setPopup({
-        type: "failed",
-        message: "Failed to save API key. Please contact Rexpt team.",
-      });
-    } finally {
-      setApiSubmitting(false);
+      throw new Error(errorData.message || "Failed to update API key");
     }
-  };
 
-  const createCalEvent = async () => {
-    if (!apiKey || !eventName || !eventSlug || !eventLength) {
+    //  Only called if response is OK
+    setHasFetched(false);
+   
+
+    createCalEvent(
+      trimmedKey,
+      `MEETING BY ${agentsDetails?.agentName}`,
+      `${agentsDetails?.agentName}_${agentsDetails?.agentCode}`,
+      15
+    );
+  } catch (error) {
+    setPopup({
+      type: "failed",
+      message: "Unauthorized! Invalid API Key.",
+    });
+  } finally {
+    setApiSubmitting(false);
+  }
+};
+  const createCalEvent = async (apiKey, eventName, slug, eventLength) => {
+    if (!apiKey || !eventName || !eventName || !eventLength) {
       alert("Please fill in all fields.");
       return;
     }
 
     try {
       setEventLoading(true);
-
       const response = await fetch(
         `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
           apiKey
@@ -83,8 +105,8 @@ const CalendarConnect = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             title: eventName,
-            slug: eventSlug,
-            length: parseInt(eventLength, 10),
+            slug: slug,
+            length: eventLength,
           }),
         }
       );
@@ -128,17 +150,17 @@ const CalendarConnect = () => {
 
       setPopup({
         type: "success",
-        message: "Cal event and Retell LLM updated successfully!",
+        message: "Cal API key added and event created successfully.",
       });
 
-      setShowEventModal(false);
+      // setShowEventModal(false);
       setEventName("");
       setEventSlug("");
       setEventLength("");
     } catch (err) {
       setPopup({
         type: "failed",
-        message: "Failed to create event. Please contact Rexpt team.",
+         message: "Unauthorized user! Please enter a valid Cal API key"
       });
     } finally {
       setEventLoading(false);
@@ -150,35 +172,22 @@ const CalendarConnect = () => {
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
+useEffect(() => {
+  const agentDetails = JSON.parse(sessionStorage.getItem("agentDetails"));
 
-  useEffect(() => {
-    const { agentId, llmId } = location.state || {};
-    setAgentId(agentId);
-    setLlmId(llmId);
-  }, [location.state]);
+  setAgentId(agentDetails?.agent_id);
+  setLlmId(agentDetails?.llmId);
+  setAgentsDetails(agentDetails);
 
-  useEffect(() => {
-    const { agentId: incomingAgentId, llmId: incomingLlmId } =
-      location.state || {};
-    setAgentId(incomingAgentId);
-    setLlmId(incomingLlmId);
+  if (agentDetails?.calApiKey && typeof agentDetails?.calApiKey === "string") {
+    setApiKey(agentDetails?.calApiKey);
+    setInitialApiKey(agentDetails?.calApiKey); // ← Save for comparison
+    setEnabled(true);
+  }
+}, []);
 
-    try {
-      const sessionData = JSON.parse(
-        sessionStorage.getItem("dashboard-session-storage")
-      );
-      const agents = sessionData?.state?.agents || [];
-      const matchedAgent = agents.find(
-        (agent) => agent.agent_id === incomingAgentId
-      );
 
-      if (matchedAgent?.calApiKey) {
-        setApiKey(matchedAgent.calApiKey);
-      }
-    } catch (err) {
-      console.error("Error reading session storage:", err);
-    }
-  }, [location.state]);
+
 
   return (
     <div>
@@ -199,7 +208,14 @@ const CalendarConnect = () => {
 
         <div className={styles.toggleSection}>
           <label>
-            I have <a href="#">Cal.com Account</a> to connect
+            I already have&nbsp;<a
+              href="https://app.cal.com/event-types"
+
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Cal.com Account
+            </a>&nbsp; to connect
           </label>
 
           <label className={styles.switch}>
@@ -214,15 +230,18 @@ const CalendarConnect = () => {
 
         {enabled && (
           <div className={styles.ONSwitch}>
-            <form onSubmit={handleSubmit}>
+            <form >
               <div className={styles.labelRow}>
                 <label htmlFor="apiKey">Enter your API Key below:</label>
                 <a
                   href="https://app.cal.com/settings/developer/api-keys"
                   className={styles.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   Where is my Key?
                 </a>
+
               </div>
 
               <input
@@ -232,7 +251,7 @@ const CalendarConnect = () => {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 className={styles.input}
-                readOnly={!!apiKey}
+              // readOnly={!!apiKey}
               />
 
               <p className={styles.description}>
@@ -240,18 +259,15 @@ const CalendarConnect = () => {
                 meeting in your Cal.com profile for your agent to book meetings
                 for you.
               </p>
-
-              <button
-                type="submit"
-                className={styles.submitButton}
-                disabled={apiSubmitting}
-              >
-                {apiSubmitting ? (
-                  "Submitting..."
-                ) : (
-                  <img src="/svg/CalSubmit.svg" alt="submit" />
-                )}
-              </button>
+            <AnimatedButton
+  onClick={handleSubmit}
+  isLoading={eventLoading}
+  label="Submit"
+  disabled={
+    apiSubmitting || apiKey.trim() === initialApiKey.trim()
+  }
+  position={{ position: "relative" }}
+/>
             </form>
 
             <div className={styles.helpLink}>
@@ -264,7 +280,9 @@ const CalendarConnect = () => {
 
         {!enabled && (
           <div className={styles.offSwitch}>
-            <a href="https://cal.com/?via=designersx&dub_id=kTPL5nvpvLqoLhE2">
+              
+            <a  target="_blank"
+                  rel="noopener noreferrer" href="https://cal.com/?via=designersx&dub_id=kTPL5nvpvLqoLhE2">
               {" "}
               <div className={styles.recommendation}>
                 <img src="/images/CalCOm.png" />
@@ -311,7 +329,7 @@ const CalendarConnect = () => {
                   </Typography>
                 </AccordionDetails>
               </Accordion>
-
+   <a href="/calinfo" target="_blank" rel="noopener noreferrer">
               <button className={styles.guideButton}>
                 <div>
                   <h6>Guide to Connect</h6>
@@ -337,6 +355,7 @@ const CalendarConnect = () => {
                   </svg>
                 </div>
               </button>
+              </a>
             </div>
           </div>
         )}
