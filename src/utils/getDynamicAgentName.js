@@ -1,16 +1,15 @@
-import { countAgentsbyUserId } from "../Store/apiStore";
-
- const getKnowledgeBaseName = async (
+const getDynamicAgentName = (
   business,
   userId,
   packageValue,
-  agentCode
-//   fetchAgentCount // this should call your backend API and return just the count
+  agentCode,
+  agentCount = 0 // pass count from outside
 ) => {
   const sanitize = (str) =>
     String(str || "")
       .trim()
       .replace(/\s+/g, "_");
+
   const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -48,32 +47,21 @@ import { countAgentsbyUserId } from "../Store/apiStore";
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" }
   ];
-  let agentCount=0;
-  try {
-    // 1. Fetch agent count from server
-     agentCount = await countAgentsbyUserId(userId);
 
-    } catch (error) {
-    console.error("Error generating knowledgeBaseName:", error);
-    return null;
-     }
+  // Match business type
+  const matchedBusiness = businessTypes.find(
+    (item) => item?.name === business?.businessType
+  );
 
-    // 2. Match business type
-    const matchedBusiness = businessTypes.find(
-      (item) => item?.name === business?.businessType
-    );
+  const businessCode = matchedBusiness
+    ? matchedBusiness.code
+    : sanitize(business?.customBuisness || "oth");
 
-    const businessCode = matchedBusiness
-      ? matchedBusiness.code
-      : sanitize(business?.customBuisness || "oth");
+  // Prepare name parts
+  const shortBusinessName = sanitize(business?.businessName).slice(0, 10);
+  const cleanPackage = sanitize(packageValue);
 
-    // 3. Prepare name parts
-    const shortBusinessName = sanitize(business?.businessName).slice(0, 10);
-    const cleanPackage = sanitize(packageValue);
-
-
-      return `${businessCode}_${userId}_${agentCode}_#${(agentCount+1)}`;
-
+  return `${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`;
 };
 
-export default getKnowledgeBaseName;
+module.exports = getDynamicAgentName;

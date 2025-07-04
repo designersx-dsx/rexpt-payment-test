@@ -23,8 +23,49 @@ import AboutBusiness from "../AboutBusiness/AboutBusiness";
 import BusinessListing from "../BusinessListing/BusinessListing";
 import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
+import getDynamicAgentName from "../../utils/getDynamicAgentName";
+
+
+  const businessTypes = [
+    { name: "Restaurant", code: "rest" },
+    { name: "Bakery", code: "bake" },
+    { name: "Deli shop", code: "deli" },
+    { name: "Real Estate Broker", code: "rea_est_bro" },
+    { name: "Property Rental & Leasing Service", code: "prop_ren_lea" },
+    { name: "Architect", code: "arch" },
+    { name: "Interior Designer", code: "int_des" },
+    { name: "Construction Services", code: "con_ser" },
+    { name: "Landscaping Company", code: "land_com" },
+    { name: "Doctor's Clinic", code: "doct_cli" },
+    { name: "Dentist", code: "dent_off" },
+    { name: "Old Age Home", code: "old_age" },
+    { name: "Gym & Fitness Center", code: "gym_fit" },
+    { name: "Personal Trainer", code: "per_tra" },
+    { name: "Insurance Agency", code: "ins_age" },
+    { name: "Accounting Services", code: "acc_ser" },
+    { name: "Financial Planners", code: "fin_pla" },
+    { name: "Travel Agency", code: "trav_age" },
+    { name: "Ticket Booking", code: "tick_boo" },
+    { name: "Tour Guides", code: "tour_gui" },
+    { name: "Beauty Parlour", code: "bea_par" },
+    { name: "Nail Saloon", code: "nai_sal" },
+    { name: "Saloon", code: "sal" },
+    { name: "Barber Studio/Shop", code: "barb" },
+    { name: "Hair Stylist", code: "hai_sty" },
+    { name: "Dry Cleaner", code: "dry_cle" },
+    { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
+    { name: "Web Design Agency", code: "web_des_age" },
+    { name: "Marketing Agency", code: "mkt_age" },
+    { name: "Car & Bus Services", code: "car_bus_ser" },
+    { name: "Taxi, Cab & Limo Booking", code: "tax_cab_limo" },
+    { name: "Movers & Packers", code: "mov_pac" },
+    { name: "Trucking Company", code: "truc_com" },
+    { name: "Car Repair & Garage", code: "car_rep" },
+    { name: "Boat Repair & Maintenance", code: "boa_rep" }
+  ];
 
 const Step = () => {
+    
     const timestamp = Date.now();
     const [isRoleTitleChanged, setIsRoleTitleChanged] = useState(false);
     const navigate = useNavigate();
@@ -111,6 +152,8 @@ const Step = () => {
     const customServicesSelected = sessionStorage.getItem("businesServices");
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
+    const agentCode=sessionStorage.getItem("AgentCode")
+
     const [isContiue, seIsContinue] = useState(false)
     const packageMap = {
         "Free": 1,
@@ -196,10 +239,25 @@ const Step = () => {
             console.log(error)
         }
     }
+                console.log('filterAgents',agentCount)
+
+  const sanitize = (str) =>
+    String(str || "")
+      .trim()
+      .replace(/\s+/g, "_");
+      const matchedBusiness = businessTypes.find(
+    (item) => item?.name === business?.businessType
+  );
+
+    const businessCode = matchedBusiness
+    ? matchedBusiness.code
+    : sanitize(business?.customBuisness || "oth");
+
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
-    const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
+    // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
+    const dynamicAgentName=`${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
+    // const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     //  1. Create the function that returns the choices array
     const getLeadTypeChoices = () => {
         const fixedChoices = ["Spam Caller", "Irrelvant Call", "Angry Old Customer"];
@@ -390,6 +448,8 @@ const Step = () => {
                             backchannel_frequency: 0.7,
                             backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                             additionalNote: agentNote || "",
+                            agentCode,
+                            
 
                         }
                         try {
@@ -530,6 +590,7 @@ const Step = () => {
                             agentStatus: true,
                             businessId: businessIdObj.businessId,
                             additionalNote: agentNote || "",
+                            agentCode
                         }
                         try {
                             const response = await updateAgent(agentId, agentData);

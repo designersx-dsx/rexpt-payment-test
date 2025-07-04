@@ -21,7 +21,6 @@ function EditGender() {
       const decodeTokenData = decodeToken(token);
       const userId = decodeTokenData?.id;
       const agentnm=sessionStorage.getItem("agentName");
-
       const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "EditGender",
       setLoading,
@@ -31,10 +30,46 @@ function EditGender() {
       navigate,
       setHasFetched,
     });
+const [stepValidation, setStepValidation] = useState({
+  genderChanged: false,
+  voiceSelected: false,
+});
   
-    const handleClick=()=>{
-      handleCreateAgent();
+const handleValidationChange = (validation) => {
+  setStepValidation(validation);
+};
+    // const handleClick=()=>{
+    //     const storedGender = localStorage.getItem("agentGender");
+    //    const  prevAgentGender=sessionStorage.getItem('prevAgentGender')
+    //    if(storedGender.toLocaleLowerCase()!=prevAgentGender.toLocaleLowerCase()){
+    //   setPopupType("confirm");
+    //   setPopupMessage("Agent Gender Changed Would you like to Update Agent Avtar?" );
+    //   setShowPopup(true);
+    //    }
+    //   else{
+    //   handleCreateAgent();
+    //   }
+    // }
+    const handleClick = () => {
+  const storedGender = localStorage.getItem("agentGender");
+  const prevAgentGender = sessionStorage.getItem('prevAgentGender');
+
+  if (
+    storedGender.toLocaleLowerCase() !== prevAgentGender?.toLocaleLowerCase()
+  ) {
+    if (!stepValidation.voiceSelected) {
+      setPopupType("failed");
+      setPopupMessage("Please select a voice after changing gender!");
+      setShowPopup(true);
+      return;
     }
+    setPopupType("confirm");
+    setPopupMessage("Agent Gender Changed. Would you like to Update Agent Avatar?");
+    setShowPopup(true);
+  } else {
+    handleCreateAgent();
+  }
+};
 
   return (
     <div>
@@ -50,7 +85,7 @@ function EditGender() {
 
                 <div className={styles.container}>
 
-        <SelectGender/>
+               <SelectGender  onValidationChange={handleValidationChange}/>
 
                 </div>
 
@@ -61,9 +96,9 @@ function EditGender() {
         {showPopup && (
             <PopUp
             type={popupType}
-            onClose={()=>{}}
+            onClose={()=>{setShowPopup(false)}}
             message={popupMessage}
-            onConfirm={()=>navigate('/edit-services-offered')}
+            onConfirm={()=>navigate('/edit-name-avtar')}
             />
         )}
     </div>
