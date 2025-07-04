@@ -1080,6 +1080,7 @@ const AgentDashboard = () => {
                     //     agentData?.agent?.businessId);
                     // }
                     // setModalOpen(true);
+                    sessionStorage.setItem('naviateFrom','editAgent')
                     sessionStorage.setItem('SelectAgentBusinessId', agentData?.agent?.businessId)
                     sessionStorage.setItem('SelectAgentId', agentData?.agent?.agent_id)
                     navigate('/edit-agent', {
