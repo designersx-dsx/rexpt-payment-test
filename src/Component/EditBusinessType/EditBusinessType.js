@@ -344,7 +344,7 @@ const EditBusinessType = () => {
       // navigate("/business-services");
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-    console.log('dsdsdsdsd',prevBuisnessType, businessType)
+    // console.log('dsdsdsdsd',prevBuisnessType, businessType)
       if (sessionStorage.getItem("prevBuisnessType") != businessType) {
       setPopupType("confirm");
       setPopupMessage(
@@ -357,7 +357,7 @@ const EditBusinessType = () => {
   
   };
 
-console.log('setBusinessType',businessType,customBuisness)
+// console.log('setBusinessType',businessType,customBuisness)
     return (
         <>
             <EditHeader title='Edit Agent ' agentName={agentnm} />

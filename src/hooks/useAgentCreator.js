@@ -76,15 +76,16 @@ export const useAgentCreator = ({
     const packageName = sessionStorage.getItem("package") || "Free";
     const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const packageValue = packageMap[packageName] || 1; // default to 1 (Free) if not found
-    const businessServices = business?.selectedService || [];
+    const businessServices = SelectedServices?.selectedService || [];
     const customServices = cleanedCustomServices?.map(item =>
 
       typeof item === 'string' ? item : item?.service) || [];
 
     const businessServiceNames = businessServices?.map(item => item);
-    const allServices = [...customServices, ...businessServiceNames];
+    const allServices = [...customServices, ...businessServices];
 
-    const commaSeparatedServices = allServices?.join(", ")?.replace("Other", "")
+    const commaSeparatedServices = allServices;
+    console.log(allServices)
 
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
 
@@ -160,7 +161,7 @@ export const useAgentCreator = ({
           if(sessionStorage.getItem('prevBuisnessType')){
             sessionStorage.removeItem('prevBuisnessType')
           }
-          console.log('updation response', response)
+          // console.log('updation response', response)
         } catch (error) {
           console.log('error while buinsess details updated');
           // setLoading(false)
@@ -178,7 +179,7 @@ export const useAgentCreator = ({
         agentConfig.knowledge_base_ids = [storedKnowledgeBaseId] ;
       }
       //Create LLm 
-      console.log(llm_id)
+      // console.log(llm_id)
       try {
         const llmResponse = await axios.patch(
           `https://api.retellai.com/update-retell-llm/${llm_id} `,
@@ -190,7 +191,7 @@ export const useAgentCreator = ({
             },
           }
         );
-        console.log('llmResponseupdate', llmResponse)
+        // console.log('llmResponseupdate', llmResponse)
         sessionStorage.setItem("llmId", llmResponse.data.llm_id);
      
         // setLoading(false)
@@ -247,7 +248,7 @@ export const useAgentCreator = ({
                                 },
                             }
                         );
-                        console.log('agent response',response)
+                        // console.log('agent response',response)
                         const agentId = response?.data?.agent_id;
                         // Get businessId from sessionStorage
                         const businessIdString = sessionStorage.getItem("businessId");
@@ -317,7 +318,7 @@ export const useAgentCreator = ({
           EditGender:"Agent Gender / Voice ",
           EditBusinessDetail:"Business Detail"
         };
-        console.log('isValidjsdjajdja',isValid)
+        // console.log('isValidjsdjajdja',isValid)
         setPopupMessage(`${screenLabels[isValid]} Updated Succesfully`);
         setShowPopup(true);
         setTimeout(()=>{

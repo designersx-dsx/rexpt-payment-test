@@ -21,7 +21,7 @@ function EditNameAvtar() {
         const decodeTokenData = decodeToken(token);
         const userId = decodeTokenData?.id;
         const agentnm=sessionStorage.getItem("agentName");
-
+    
         const { handleCreateAgent } = useAgentCreator({
         stepValidator: () => "EditNameAvtar",
         setLoading,
@@ -34,7 +34,14 @@ function EditNameAvtar() {
 
       
   const handleClick=()=>{
-    handleCreateAgent();
+    if(!sessionStorage.getItem('avatar')){
+      setPopupType("failed");
+      setPopupMessage("Please select a Agent Avtar!");
+      setShowPopup(true);
+      return;
+    }else{
+          handleCreateAgent();
+    }
   }
   
   return (
@@ -68,7 +75,7 @@ function EditNameAvtar() {
             type={popupType}
             onClose={()=>{}}
             message={popupMessage}
-            onConfirm={()=>navigate('/edit-services-offered')}
+            onConfirm={()=>{}}
             />
         )}
     </div>

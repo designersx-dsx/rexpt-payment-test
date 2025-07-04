@@ -15,7 +15,7 @@ const EditAgentNew = () => {
      const [agentName,setAgentName]=useState(sessionStorage.getItem("agentName")||"")
      const agentnm=sessionStorage.getItem("agentName");
      const [loading, setLoading] = useState(true);
-    console.log('agentnm',agentnm,agentId, businessId)
+    // console.log('agentnm',agentnm,agentId, businessId)
       useEffect(()=>{
           setAgentName(agentnm)
       },[agentnm])
@@ -71,7 +71,7 @@ const EditAgentNew = () => {
           agent_id,
           businessId
         );
-    console.log('response',response.data)
+    // console.log('response',response.data)
         const agent = response?.data?.agent;
         const business = response?.data?.business;
         sessionStorage.setItem("UpdationModeStepWise","ON");

@@ -22,7 +22,7 @@ const avatars = {
   ],
 };
 
-const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, onStepChange}, ref) => {
+const Step3 = () => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -152,9 +152,11 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
         </div>
       </div>
     </div>
+    {selectedAvatar &&
      <Step4/>
+     }
      </>
   );
-});
+};
 
 export default Step3;
