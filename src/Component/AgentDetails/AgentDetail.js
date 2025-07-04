@@ -29,6 +29,7 @@ import { useDashboardStore } from "../../Store/agentZustandStore";
 import WidgetScript from "../Widgets/WidgetScript";
 import PopUp from "../Popup/Popup";
 import Modal3 from "../Modal3/Modal3";
+import { clearSessionAfterEdit } from "../../utils/helperFunctions";
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -109,6 +110,10 @@ const AgentDashboard = () => {
   const [fullAddress, setFullAddress] = useState("");
   const [knowledge_base_texts, setknowledge_base_texts] = useState("")
   const [businessDetails, setBusinessDetails] = useState([])
+
+  useEffect(()=>{
+    clearSessionAfterEdit();
+  },[])
   const openAddressModal = (address) => {
     setFullAddress(address);
     setIsAddressModalOpen(true);

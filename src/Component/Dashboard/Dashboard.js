@@ -224,6 +224,11 @@ function Dashboard() {
       sessionStorage.removeItem("selectedfilterOption");
       sessionStorage.removeItem("placeDetailsExtract");
       sessionStorage.removeItem("agentNote");
+      sessionStorage.removeItem("prevBuisnessType");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("UpdationModeStepWise");
+      sessionStorage.removeItem("customServices");
     }
   }, []);
   // Navigate on agent card click

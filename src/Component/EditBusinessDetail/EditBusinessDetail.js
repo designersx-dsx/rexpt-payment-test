@@ -27,8 +27,9 @@ const EditBusinessDetail = () => {
   const navigate = useNavigate();
   const EditingMode1 = localStorage.getItem("UpdationMode");
   const setHasFetched = true;
+  const agentCode=sessionStorage.getItem('agentCode')||"";
   const { handleCreateAgent } = useAgentCreator({
-    stepValidator: () => "BusinessListing",
+    stepValidator: () => "EditBusinessDetail",
     setLoading,
     setPopupMessage,
     setPopupType,
@@ -39,7 +40,6 @@ const EditBusinessDetail = () => {
 
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
-    console.log('storedDetails',storedDetails)
     if (storedDetails) {
       const details = JSON.parse(storedDetails);
       setBusinessName( details?.businessName || "");;
@@ -107,6 +107,7 @@ const EditBusinessDetail = () => {
       const packageName = sessionStorage.getItem("package") || "Free";
       const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
       const EditingMode = localStorage.getItem("UpdationMode");
+      const googleListing=sessionStorage.getItem('googleListing')
       const agentCount = 0;
       if (!businessName || !address || !phoneNumber) {
         alert("Please fill all required fields.");
@@ -135,7 +136,7 @@ const EditBusinessDetail = () => {
         Enterprise: 6,
       };
       const packageValue = packageMap[packageName] || 1;
-      const knowledgeBaseName=await getKnowledgeBaseName(business,userId,packageValue);
+      const knowledgeBaseName=await getKnowledgeBaseName(business,userId,packageValue,agentCode);
     
       const businessData = {
         businessName:  businessName || placeDetails?.businessName || "",
@@ -167,8 +168,16 @@ const EditBusinessDetail = () => {
       ];
 
       const rawUrl = aboutBusinessForm.businessUrl?.trim();
-      const mergedUrls = rawUrl ? [rawUrl] : [];
+      const mergedUrls = [];
+      if (rawUrl) {
+        mergedUrls.push(rawUrl); // add businessUrl
+      }
 
+      if (googleListing) {
+        mergedUrls.push(googleListing); // add googleListing
+      }
+
+      // const mergedUrls = rawUrl ? [rawUrl] : [];
       const formData = new FormData();
       const formData2 = new FormData();
       const formData3 = new FormData();
@@ -186,24 +195,29 @@ const EditBusinessDetail = () => {
         "knowledge_base_texts",
         JSON.stringify(businessData)
       );
+
+      //   formData3.append(
+      //   "knowledge_base_texts",
+      //   JSON.stringify(knowledgeBaseText)
+      // );
     //Crate Knowledge Base
-      formData2.append("googleUrl", aboutBusinessForm.googleListing);
-      formData2.append("webUrl", aboutBusinessForm.businessUrl.trim());
+      formData2.append("googleUrl", aboutBusinessForm?.googleListing);
+      formData2.append("webUrl", aboutBusinessForm?.businessUrl?.trim());
       formData2.append("aboutBusiness", aboutBussiness);
-      formData2.append("additionalInstruction", aboutBusinessForm.note || "");
+      formData2.append("additionalInstruction", aboutBusinessForm?.note || "");
       formData2.append("agentId", localStorage.getItem("agent_id"));
       formData2.append("googleBusinessName",displayBusinessName || "");
-      formData2.append("address1", businessData.address);
+      formData2.append("address1", businessData?.address);
       formData2.append("businessEmail", email);
       formData2.append("businessName",placeDetails?.businessName|| businessName);
       formData2.append("phoneNumber", phoneNumber);
-      formData2.append("isGoogleListing", aboutBusinessForm.noGoogleListing);
-      formData2.append("isWebsiteUrl", aboutBusinessForm.noBusinessWebsite)
-
-        formData3.append(
-        "knowledge_base_texts",
-        JSON.stringify(knowledgeBaseText)
-      );
+      formData2.append("isGoogleListing", aboutBusinessForm?.noGoogleListing);
+      formData2.append("isWebsiteUrl", aboutBusinessForm?.noBusinessWebsite)
+      // if(googleListing)
+      // { 
+      //   formData.append("knowledge_base_urls", JSON.stringify(googleListing));
+      // }
+   
       let knowledge_Base_ID = knowledgeBaseId;
 
       if (knowledge_Base_ID !== null &&
@@ -211,34 +225,44 @@ const EditBusinessDetail = () => {
         knowledge_Base_ID !== "null" &&
         knowledge_Base_ID !== "undefined" &&
         knowledge_Base_ID !== "") {
-        const response = await axios.post(
-          `https://api.retellai.com/add-knowledge-base-sources/${knowledge_Base_ID}`,
-          formData3,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-              "Content-Type": "multipart/form-data",
-            },
+        
+          try {
+                 const sourcesResp = await axios.delete(
+                  `https://api.retellai.com/delete-knowledge-base/${knowledge_Base_ID}`,
+                  {   
+                      headers: {
+                      Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                      "Content-Type": "multipart/form-data",
+                    },
+                  }
+                );
+               console.log('prev Knowledgbase deleted')
+          } catch (error) {
+            console.log('error while removing prev Knowledgbase ',error)
           }
-        );
-        formData2.append("knowledge_base_id", response?.data?.knowledge_base_id);
-      } else {
-        const response = await axios.post(
-          "https://api.retellai.com/create-knowledge-base",
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-            },
-          }
-        );
-        formData2.append("knowledge_base_id", response?.data?.knowledge_base_id);
-        formData2.append("knowledge_base_name", knowledgeBaseName);
-
-        knowledge_Base_ID = response.data.knowledge_base_id;
-        sessionStorage.setItem("knowledgeBaseId", knowledge_Base_ID);
       }
 
+      try {
+          const response = await axios.post(
+            "https://api.retellai.com/create-knowledge-base",
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          formData2.append("knowledge_base_id", response?.data?.knowledge_base_id);
+          formData2.append("knowledge_base_name", knowledgeBaseName);
+  
+          knowledge_Base_ID = response?.data?.knowledge_base_id;
+          sessionStorage.setItem("knowledgeBaseId", knowledge_Base_ID);
+      } catch (error) {
+        console.log('error while adding knowlde create-knowledge-base',error)
+      }
+
+    
       await axios.patch(
         `${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,
         formData2,
@@ -250,7 +274,7 @@ const EditBusinessDetail = () => {
         }
       );
 
-      if (stepEditingMode === "ON" && knowledge_Base_ID) {
+      if (EditingMode === "ON" && knowledge_Base_ID) {
 
         handleCreateAgent()
       }
@@ -373,7 +397,7 @@ const EditBusinessDetail = () => {
        
 
      <div className={styles.stickyWrapper} onClick={handleSubmit}>
-                        <AnimatedButton label="Save" />
+                        <AnimatedButton label="Save" isLoading={loading}/>
                     </div>
               {showPopup && (
         <PopUp

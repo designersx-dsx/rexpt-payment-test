@@ -71,7 +71,7 @@ const EditAgentNew = () => {
           agent_id,
           businessId
         );
-    
+    console.log('response',response.data)
         const agent = response?.data?.agent;
         const business = response?.data?.business;
         sessionStorage.setItem("UpdationModeStepWise","ON");
@@ -82,6 +82,7 @@ const EditAgentNew = () => {
         sessionStorage.setItem("llmId", agent.llmId);
         sessionStorage.setItem("agent_id", agent.agent_id);
         sessionStorage.setItem("knowledgeBaseId", agent.knowledgeBaseId);
+        sessionStorage.setItem("agentCode", agent?.agentCode);
     
         //need to clear later
         localStorage.setItem("UpdationMode", "ON");

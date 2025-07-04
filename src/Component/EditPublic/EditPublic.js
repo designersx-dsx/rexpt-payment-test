@@ -24,7 +24,9 @@ const EditPublic = () => {
   const navigate = useNavigate();
   const location = useLocation();  
   const [placeDetails, setPlaceDetails] = useState(null);
-
+  const [originalForm, setOriginalForm] = useState(null);
+  const [currentForm, setcurrentForm] = useState(null);
+  
 
   const [loading, setLoading] = useState(true);
   const [googleListing, setGoogleListing] = useState("");
@@ -273,7 +275,6 @@ const EditPublic = () => {
       }
     });
   };
-
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
@@ -398,6 +399,10 @@ const EditPublic = () => {
     v = v.replace(/\s+/g, "").toLowerCase();
     const final = HTTPS_PREFIX + v;
     setBusinessUrl(final);
+      setcurrentForm(prev => ({
+    ...prev,
+    businessUrl: final
+  }));
     setNoBusinessWebsite(false)
     if (businessUrlError) {
       setBusinessUrlError("");
@@ -415,20 +420,27 @@ const EditPublic = () => {
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
+        setOriginalForm({
+        googleListing: savedData.googleListing || "",
+        businessUrl: savedData.businessUrl || "",
+        isWebsiteUrl:savedData.isWebsiteUrl,
+        isGoogleListing:savedData.isGoogleListing,
+
+      });
+        setcurrentForm({
+        googleListing: savedData.googleListing || "",
+        businessUrl: savedData.businessUrl || "",
+        isWebsiteUrl:savedData.isWebsiteUrl,
+        isGoogleListing:savedData.isGoogleListing,
+ 
+      });
 
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
-      // if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
-      // if (savedData.note) setNote(savedData.note);
+
       if (savedData.googleListing) {
         setGoogleListing(savedData.googleListing);
       }
-      // rebuild File objects
-      // if (Array.isArray(savedData.files) && savedData.files.length) {
-      //   const rebuiltFiles = savedData.files.map((d, i) =>
-      //     dataURLtoFile(d, `file${i + 1}`)
-      //   );
-      //   setFiles(rebuiltFiles);
-      // }
+
       if (typeof savedData.noGoogleListing === "boolean") {
         setNoGoogleListing(savedData.noGoogleListing);
       } if (typeof savedData.noBusinessWebsite === "boolean") {
@@ -536,7 +548,7 @@ const EditPublic = () => {
     );
     navigate("/edit-business-detail");
   };
-
+const isFormChanged = JSON.stringify(originalForm) !== JSON.stringify(currentForm);
 return (
     <>
             <EditHeader title='Edit Agent ' agentName={agentnm} />
@@ -556,24 +568,77 @@ return (
             className={styles.input}
             placeholder="Type the name of your Business to Search"
             value={displayBusinessName}
-            onChange={(e) => setDisplayBusinessName(e.target.value)}
+            onChange={(e) => {
+              setDisplayBusinessName(e.target.value);
+                setcurrentForm(prev => ({
+                ...prev,
+                displayBusinessName: e.target.value
+              }));
+            }}
             disabled={noGoogleListing}
           />
         </div>
         <label className={styles.checkboxContainer}>
-                <input
+            {/* <input
             type="checkbox"
             checked={noGoogleListing}
             onChange={(e) => {
               setNoGoogleListing(e.target.checked);
+              console.log('dsdsdsdsddsd')
               if (e.target.checked) {
+                const checked = e.target.checked;
+                setNoGoogleListing(checked)
+                setGoogleListing("");
+                setDisplayBusinessName("");
+                const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+                sessionStorage.removeItem("googleListing");
+                sessionStorage.removeItem("displayBusinessName");
+                form.isGoogleListing = checked ? 0 : 1;
+                console.log('dsdsdsdsds',form)
+                sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
+              }
+            }}
+          /> */}
+          <input
+            type="checkbox"
+            checked={noGoogleListing}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setNoGoogleListing(checked);
+              setcurrentForm(prev => ({
+              ...prev,
+              isGoogleListing: checked ? 1 : 0,}))
+
+              const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
+              form.isGoogleListing = checked ? 0 : 1;
+
+              if (checked) {
+                // Clear values if user says they don’t have Google Listing
                 setGoogleListing("");
                 setDisplayBusinessName("");
                 sessionStorage.removeItem("googleListing");
                 sessionStorage.removeItem("displayBusinessName");
+                form.googleListing = "";
+                form.displayBusinessName = "";
+              } else {
+                // Restore previous values if user unticks
+                const prevGoogleListing = sessionStorage.getItem("googleListing");
+                const prevDisplayName = sessionStorage.getItem("displayBusinessName");
+
+                if (prevGoogleListing) {
+                  setGoogleListing(prevGoogleListing);
+                  form.googleListing = prevGoogleListing;
+                }
+                if (prevDisplayName) {
+                  setDisplayBusinessName(prevDisplayName);
+                  form.displayBusinessName = prevDisplayName;
+                }
               }
+
+              sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
             }}
-          />
+/>
+
           <span className={styles.customCheckbox}></span>
           I do not have Google My Business Listing
         </label>
@@ -647,21 +712,32 @@ return (
             onChange={(e) => {
               const checked = e.target.checked;
               setNoBusinessWebsite(checked);
+               setcurrentForm(prev => ({
+              ...prev,
+              isWebsiteUrl: checked ? 0 : 1,}))
               const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
               form.isWebsiteUrl = checked ? 0 : 1;
-              sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
               if (checked) {
                 setBusinessUrl('');
                 setBusinessUrlError("");
+                 setNoBusinessWebsite(checked);
+               setcurrentForm(prev => ({
+              ...prev,
+              businessUrl:""}))
               }
+              sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
+
             }}
           />
           <span className={styles.customCheckbox}></span>
           I do not have a business website
         </label>
 
-        <div className={styles.stickyWrapper} onClick={handleContinue}>
-          <AnimatedButton label="Save" />
+        <div className={styles.stickyWrapper} onClick={handleContinue}   style={{
+    pointerEvents: isFormChanged ? "auto" : "none",
+    opacity: isFormChanged ? 1 : 0.5, // Optional visual effect
+  }}>
+          <AnimatedButton label="Save" disabled={!isFormChanged}  />
         </div>
            {showPopup && (
                     <PopUp
