@@ -23,24 +23,35 @@ const Step2 = ({ onValidationChange }) => {
   const [isGenderChanging, setIsGenderChanging] = useState(false);
   const [isVoiceDirty, setIsVoiceDirty] = useState(false);
 
-  const handleGenderChange = (gender) => {
+const handleGenderChange = (gender) => {
+  if (gender !== selectedGender) { // ✅ Only if actual change
     setSelectedGender(gender);
-    sessionStorage.setItem('prevAgentGender', gender);
-    setSelectedVoice(null); // Reset voice
-    sessionStorage.removeItem('agentVoice');
-    setIsVoiceDirty(false); // Reset dirty state
-    // Notify parent that validation state has changed
-    onValidationChange?.({ genderChanged: true, voiceSelected: false });
-  };
+    // setSelectedVoice(null);
+    // sessionStorage.removeItem('agentVoice');
+    // sessionStorage.removeItem('agentVoiceAccent');
+    // sessionStorage.removeItem('VoiceAgentName');
+    setIsVoiceDirty(false);
+    setIsGenderChanging(true);
+
+    // 🪝 Tell parent gender changed & no voice selected
+    onValidationChange?.({
+      genderChanged: true,
+      voiceSelected: false, // 🔥 Force false here
+    });
+  }
+};
+
+
 
   useEffect(() => {
-    if (localStorage.getItem("UpdationMode") === "ON" && listVoices.length > 0) {
+    if (localStorage.getItem("UpdationModeStepWise") === "ON" && listVoices.length > 0) {
       const storedGender = localStorage.getItem("agentGender");
       if (storedGender) {
         const formattedGender =
           storedGender.charAt(0).toUpperCase() + storedGender.slice(1).toLowerCase();
         setSelectedGender(formattedGender);
-      
+        sessionStorage.setItem('prevAgentGender', formattedGender);
+
       }
 
       const storedVoiceId = localStorage.getItem("agentVoice");
@@ -87,9 +98,9 @@ const Step2 = ({ onValidationChange }) => {
           voice.provider == "elevenlabs" &&
           voice.gender === selectedGender?.toLocaleLowerCase()
       );
-      // console.log("Filtered voices:", filtered);
       setFilteredVoices(filtered);
       sessionStorage.setItem("agentGender", selectedGender);
+      
     }
   }, [selectedGender, listVoices]);
 
@@ -264,10 +275,11 @@ const Step2 = ({ onValidationChange }) => {
                 value={gender}
                 checked={selectedGender === gender}
                 onChange={() => {
-                  setSelectedGender(gender);
-                    sessionStorage.setItem('prevAgentGender',gender);
-                     sessionStorage.setItem('agentVoice','');
-                     setSelectedVoice(null);
+                  // setSelectedGender(gender);
+                  //   sessionStorage.setItem('prevAgentGender',gender);
+                  //    sessionStorage.setItem('agentVoice','');
+                  //    setSelectedVoice(null);
+                  handleGenderChange(gender)
                     }
                     }
                 className={styles.radioInput}
@@ -300,7 +312,10 @@ const Step2 = ({ onValidationChange }) => {
                   setSelectedVoice(voice);
                   playAudio(idx); // play when selected
                   setIsVoiceDirty(true);
-                  onValidationChange?.({ genderChanged: true, voiceSelected: true });
+                  onValidationChange?.({
+                  genderChanged: false, // gender already selected
+                  voiceSelected: true,  // voice just selected
+                });                  
                 }}
                 className={styles.radioInput}
               />

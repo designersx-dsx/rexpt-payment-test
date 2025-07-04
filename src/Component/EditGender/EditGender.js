@@ -34,6 +34,7 @@ const [stepValidation, setStepValidation] = useState({
   genderChanged: false,
   voiceSelected: false,
 });
+
   
 const handleValidationChange = (validation) => {
   setStepValidation(validation);
@@ -50,13 +51,11 @@ const handleValidationChange = (validation) => {
     //   handleCreateAgent();
     //   }
     // }
-    const handleClick = () => {
-  const storedGender = localStorage.getItem("agentGender");
+  const handleClick = () => {
+  const storedGender = sessionStorage.getItem("agentGender");
   const prevAgentGender = sessionStorage.getItem('prevAgentGender');
-
-  if (
-    storedGender.toLocaleLowerCase() !== prevAgentGender?.toLocaleLowerCase()
-  ) {
+  // console.log(storedGender.toLocaleLowerCase(),prevAgentGender?.toLocaleLowerCase())
+  if (storedGender.toLocaleLowerCase() != prevAgentGender?.toLocaleLowerCase() ) {
     if (!stepValidation.voiceSelected) {
       setPopupType("failed");
       setPopupMessage("Please select a voice after changing gender!");
@@ -66,6 +65,8 @@ const handleValidationChange = (validation) => {
     setPopupType("confirm");
     setPopupMessage("Agent Gender Changed. Would you like to Update Agent Avatar?");
     setShowPopup(true);
+    return; // 🔥 Stop further processing
+
   } else {
     handleCreateAgent();
   }
@@ -98,7 +99,10 @@ const handleValidationChange = (validation) => {
             type={popupType}
             onClose={()=>{setShowPopup(false)}}
             message={popupMessage}
-            onConfirm={()=>navigate('/edit-name-avtar')}
+            onConfirm={ ()=>{sessionStorage.removeItem('avatar'); // 🗑 Remove old avatar
+                        setTimeout(() => {
+                          navigate('/edit-name-avtar'); // 🔥 Navigate back to avatar screen
+                        }, 500);}}
             />
         )}
     </div>
