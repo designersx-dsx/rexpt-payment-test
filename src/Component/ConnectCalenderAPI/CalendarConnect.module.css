@@ -110,6 +110,7 @@
 
 .guideSection span{
   margin: 0px 0 !important;
+  width:100%;
 }
 
 .CallAccordion{
@@ -125,6 +126,7 @@
     text-decoration: underline;
     text-underline-offset: 3px;
     line-height: 24px;
+    text-align: center;
 }
 .guideSection a{
     /* font-size: 16px; */

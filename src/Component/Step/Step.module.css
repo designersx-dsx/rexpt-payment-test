@@ -4,8 +4,8 @@
   overflow: auto;
   max-height: 90dvh;
 
- 
-  scrollbar-width: thin; 
+
+  scrollbar-width: thin;
   scrollbar-color: rgb(255, 255, 255) transparent;
 }
 
@@ -158,6 +158,7 @@
   background-color: #7b61ff;
   border-radius: 50%;
 }
+
 .footerFixed {
   position: fixed;
   bottom: 0px;
@@ -221,16 +222,20 @@
     transform: scale(0.7);
     opacity: 0.6;
   }
+
   40% {
     transform: scale(1.3);
     opacity: 1;
   }
+
   60% {
     transform: scale(0.9);
   }
+
   80% {
     transform: scale(1.05);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -242,16 +247,20 @@
     transform: scale(0.9);
     opacity: 0.8;
   }
+
   40% {
     transform: scale(1.2);
     opacity: 1;
   }
+
   60% {
     transform: scale(0.95);
   }
+
   80% {
     transform: scale(1.05);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -274,6 +283,7 @@
   justify-content: center;
   border: unset;
   cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .arrowIcon {
@@ -281,6 +291,17 @@
   width: 24px;
   height: 24px;
   pointer-events: none;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.navBtn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(101, 36, 235, 0.4);
+}
+
+.navBtn:hover .arrowIcon {
+  transform: scale(1.1);
+  filter: brightness(1.2);
 }
 
 @media screen and (min-width: 601px) {
@@ -298,12 +319,14 @@
   }
 
   .footerFixed {
-    position: fixed;
+    display: flex;
+    align-items: center;
     width: 500px;
     margin: auto;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     background-color: #fff;
     border-radius: 15px 15px 0px 0px;
+    padding-top: 10px;
 
   }
 
