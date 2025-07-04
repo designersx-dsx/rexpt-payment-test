@@ -376,7 +376,7 @@ const SignUp = () => {
                           <p className={styles.inlineError}>{emailError}</p>
                         )}
                       </div>
-                      <br/>
+                      <br />
                       <div
                         className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""
                           }`}
@@ -462,7 +462,7 @@ const SignUp = () => {
                             : "Resend One Time Password"}
                         </button>
                       </div>
-<br/>
+                      <br />
                       <div className={styles.Btn} onClick={handleLoginClick}>
                         <div type="submit">
                           <div className={styles.btnTheme}>
@@ -479,11 +479,11 @@ const SignUp = () => {
                               )}
                             </p> */}
                             <AnimatedButton
-                          isLoading={isVerifyingOtp}
-                          label="Continue"
-                       
-                          position={{ position: 'relative' }}
-                        />
+                              isLoading={isVerifyingOtp}
+                              label="Continue"
+
+                              position={{ position: 'relative' }}
+                            />
                           </div>
                         </div>
                       </div>

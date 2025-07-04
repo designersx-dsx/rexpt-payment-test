@@ -314,7 +314,8 @@ export const useAgentCreator = ({
           EditServicesOffered: "Services Offered",
           EditNameAvtar:"Name & Avtar",
           EditLanguage :"Agent Language",
-          EditGender:"Agent Gender / Voice "
+          EditGender:"Agent Gender / Voice ",
+          EditBusinessDetail:"Business Detail"
         };
         console.log('isValidjsdjajdja',isValid)
         setPopupMessage(`${screenLabels[isValid]} Updated Succesfully`);

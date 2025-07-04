@@ -114,10 +114,11 @@
   margin-right: 10px;
 }
 
-.strongDiv{
+.strongDiv {
   text-align: left;
 }
-.strongDiv strong{
+
+.strongDiv strong {
   margin-bottom: 5px;
 }
 
@@ -136,14 +137,12 @@
 
 .inputGroup {
   margin-top: 1rem;
-  /* display: flex; */
   flex-direction: column;
   position: relative;
 }
 
 .selectGroup {
   margin-top: 1rem;
-  /* display: flex; */
   flex-direction: column;
   position: relative;
 }
@@ -191,6 +190,7 @@
   text-align: center;
   color: #A3AED0;
 }
+
 /* dsad */
 .btnTheme {
   position: relative;
@@ -250,6 +250,16 @@
   background-color: #f0f0f0;
 }
 
+@media (min-width: 376px) and (max-width: 410px) {
+  .option strong {
+    font-size: 15px;
+  }
+  .subType {
+    font-size: 13px;
+
+  }
+}
+
 @media (max-width:375px) {
   .title {
     font-size: 36px;
@@ -291,7 +301,6 @@
 
 .selectDropdown {
   width: 200px;
-  /* or adjust to your desired smaller width */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -305,8 +314,8 @@
   background-position: right 10px center;
   background-size: 16px;
   appearance: none;
+  color: #24252C;
 }
-
 
 .requiredField {
   color: red;

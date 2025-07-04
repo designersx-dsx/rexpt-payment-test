@@ -459,6 +459,7 @@
   font-size: 18px;
   font-weight: 600;
   color: #24252c;
+  word-break: break-word;
 }
 
 .businessEdit {

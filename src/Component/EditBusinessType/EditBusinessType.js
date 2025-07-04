@@ -195,10 +195,10 @@ const EditBusinessType = () => {
       useEffect(() => {
         try {
           const stored = sessionStorage.getItem("businessDetails");
-          console.log(stored)
+          // console.log(stored)
           if (stored && stored !== "undefined" && stored !== "null") {
             const businessDetails = JSON.parse(stored);
-            console.log(businessDetails)
+            // console.log(businessDetails)
             if (businessDetails) {
               setBusinessType(businessDetails?.businessType || "");
               setprevBuisnessType(businessDetails?.businessType || "");
@@ -264,7 +264,7 @@ const EditBusinessType = () => {
     sessionStorage.setItem("businessDetails", JSON.stringify(updated));
   };
     const handleBusinessTypeChange = (e) => {
-        console.log(e.target.value)
+        // console.log(e.target.value)
     setBusinessType(e.target.value);
     if (e.target.value !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
@@ -272,7 +272,7 @@ const EditBusinessType = () => {
          sessionStorage.removeItem("showInput");
     }
     updateSessionBusinessDetails("businessType", e.target.value);
-    console.log("businessTypeSubmitted", businessTypeSubmitted);
+    // console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
     }

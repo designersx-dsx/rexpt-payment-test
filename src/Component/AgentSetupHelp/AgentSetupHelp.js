@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styles from './AgentSetupHelp.module.css';
-import HeaderBar from '../HeaderBar/HeaderBar';
+
+import EditHeader from "../EditHeader/EditHeader" 
+import AnimatedButton from '../AnimatedButton/AnimatedButton';
 
 const agents = ['Create New', 'Agent 1', 'Agent 2'];
 const timeSlots = ['01:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM'];
@@ -56,7 +58,7 @@ export default function AppointmentScheduler() {
   return (
     <div>
 
-<HeaderBar title="Agent Setup" />
+<EditHeader title="Agent Setup" />
 
     <div className={styles.container}>
 
@@ -102,7 +104,7 @@ export default function AppointmentScheduler() {
               className={`${styles.dayItem} ${selectedDate?.toDateString() === dayObj.date.toDateString() ? styles.selectedDay : ''}`}
               onClick={() => setSelectedDate(dayObj.date)}
             >
-              <div>{dayObj.label}</div>
+              <div className={styles.DateNumber}>{dayObj.label}</div>
               <div className={styles.dayText}>{dayObj.day}</div>
             </div>
           ))}
@@ -124,9 +126,7 @@ export default function AppointmentScheduler() {
         </div>
       </div>
 
-      <button onClick={handleSubmit} className={styles.confirmButton}>
-        Confirm Call
-      </button>
+   <AnimatedButton label="Submit"/>
     </div>
     </div>
   );

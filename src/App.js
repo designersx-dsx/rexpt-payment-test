@@ -10,6 +10,7 @@ import Start from "./Component/Start/Start";
 import SignUp from "./Component/SignUp/SignUp";
 import Details from "./Component/Details/Details";
 import Step from "./Component/Step/Step";
+import SubscriptionPlan from "./Component/SubscriptionPlan/SubscriptionPlan";
 import AboutBusiness from "./Component/AboutBusiness/AboutBusiness";
 import BusinessDetails from "./Component/BusinessDetails/BusinessDetails";
 import "react-toastify/dist/ReactToastify.css";
@@ -122,6 +123,7 @@ function App() {
                 <Route path="/edit-gender" element={<EditGender/>} />
                 <Route path="/edit-name-avtar" element={<EditNameAvtar/>} />
 
+                <Route path="/subscription-plan" element={<SubscriptionPlan/>} />
 
 
 

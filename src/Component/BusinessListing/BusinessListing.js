@@ -29,6 +29,7 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
+  const agentCode=sessionStorage.getItem("AgentCode")
   const navigate = useNavigate();
   const EditingMode1 = localStorage.getItem("UpdationMode");
   const setHasFetched = true;
@@ -138,7 +139,7 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
         Enterprise: 6,
       };
       const packageValue = packageMap[packageName] || 1;
-      const knowledgeBaseName = await getKnowledgeBaseName(business, userId, packageValue);
+      const knowledgeBaseName = await getKnowledgeBaseName(business, userId, packageValue,agentCode);
 
       const businessData = {
         businessName: businessName || placeDetails?.businessName || "",

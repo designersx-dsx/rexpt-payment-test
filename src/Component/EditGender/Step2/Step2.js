@@ -2,15 +2,15 @@ import React, {
   useEffect,
   useState,
   useRef,
-  forwardRef,
   useImperativeHandle,
 } from "react";
 import styles from "./Step2.module.css";
 // import { getRetellVoices } from "../../Store/apiStore";
 import { getRetellVoices } from "../../../Store/apiStore";
 import PopUp from "../../Popup/Popup";
-const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
+const Step2 = ({ onValidationChange }) => {
   const [selectedGender, setSelectedGender] = useState("");
+    const [prevAgentGender,setprevAgentGender]=useState("")
   const [selectedVoice, setSelectedVoice] = useState("");
   const [listVoices, setListVoices] = useState([]);
   const [filteredVoices, setFilteredVoices] = useState([]);
@@ -20,7 +20,18 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [scale, setScale] = useState(1);
+  const [isGenderChanging, setIsGenderChanging] = useState(false);
+  const [isVoiceDirty, setIsVoiceDirty] = useState(false);
 
+  const handleGenderChange = (gender) => {
+    setSelectedGender(gender);
+    sessionStorage.setItem('prevAgentGender', gender);
+    setSelectedVoice(null); // Reset voice
+    sessionStorage.removeItem('agentVoice');
+    setIsVoiceDirty(false); // Reset dirty state
+    // Notify parent that validation state has changed
+    onValidationChange?.({ genderChanged: true, voiceSelected: false });
+  };
 
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") === "ON" && listVoices.length > 0) {
@@ -29,6 +40,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
         const formattedGender =
           storedGender.charAt(0).toUpperCase() + storedGender.slice(1).toLowerCase();
         setSelectedGender(formattedGender);
+      
       }
 
       const storedVoiceId = localStorage.getItem("agentVoice");
@@ -59,7 +71,8 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
       selectedVoice &&
       selectedVoice.voice_id &&
       selectedVoice.voice_name &&
-      selectedVoice.accent
+      selectedVoice.accent &&     !isGenderChanging // Block if gender is being changed
+
     ) {
       sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
       sessionStorage.setItem("agentVoiceAccent", selectedVoice.accent);
@@ -79,6 +92,14 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
       sessionStorage.setItem("agentGender", selectedGender);
     }
   }, [selectedGender, listVoices]);
+
+  useEffect(() => {
+  if (isGenderChanging) {
+    setTimeout(() => {
+      setIsGenderChanging(false);
+    }, 500); // Give it 500ms delay for safety
+  }
+}, [isGenderChanging]);
 
   const togglePlay = (idx) => {
     const thisAudio = audioRefs.current[idx];
@@ -144,26 +165,26 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     }
   }, [listVoices]);
 
-  useImperativeHandle(ref, () => ({
-    validate: () => {
-      if (!selectedGender) {
-        onValidationError?.({
-          type: "failed",
-          message: "Please select a gender!",
-        });
-        return false;
-      }
-      if (!selectedVoice || !selectedVoice.voice_name) {
-        onValidationError?.({
-          type: "failed",
-          message: "Please select a voice!",
-        });
-        return false;
-      }
-      onStepChange?.(7);
-      return true;
-    },
-  }));
+  // useImperativeHandle(ref, () => ({
+  //   validate: () => {
+  //     if (!selectedGender) {
+  //       onValidationError?.({
+  //         type: "failed",
+  //         message: "Please select a gender!",
+  //       });
+  //       return false;
+  //     }
+  //     if (!selectedVoice || !selectedVoice.voice_name) {
+  //       onValidationError?.({
+  //         type: "failed",
+  //         message: "Please select a voice!",
+  //       });
+  //       return false;
+  //     }
+  //     onStepChange?.(7);
+  //     return true;
+  //   },
+  // }));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -175,6 +196,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  
   //user not refresh
   // useEffect(() => {
   //   const blockKeyboardRefresh = (e) => {
@@ -241,7 +263,13 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 name="gender"
                 value={gender}
                 checked={selectedGender === gender}
-                onChange={() => setSelectedGender(gender)}
+                onChange={() => {
+                  setSelectedGender(gender);
+                    sessionStorage.setItem('prevAgentGender',gender);
+                     sessionStorage.setItem('agentVoice','');
+                     setSelectedVoice(null);
+                    }
+                    }
                 className={styles.radioInput}
               />
             </label>
@@ -271,6 +299,8 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 onChange={() => {
                   setSelectedVoice(voice);
                   playAudio(idx); // play when selected
+                  setIsVoiceDirty(true);
+                  onValidationChange?.({ genderChanged: true, voiceSelected: true });
                 }}
                 className={styles.radioInput}
               />
@@ -317,6 +347,6 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
       )}
     </>
   );
-});
+};
 
 export default Step2;

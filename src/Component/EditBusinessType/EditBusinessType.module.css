@@ -56,7 +56,7 @@
     margin-right: 0.5rem;
 }
 
-.searchIcon img{
+.searchIcon img {
     display: flex;
 }
 
@@ -184,8 +184,8 @@
     font-size: 18px;
 }
 
-.inputGroup label span{
-    color:red;
+.inputGroup label span {
+    color: red;
 }
 
 .inputGroup input {
@@ -229,6 +229,17 @@
 
 
 /* Media Query Start */
+@media (min-width: 376px) and (max-width: 410px) {
+    .option strong {
+        font-size: 15px;
+    }
+
+    .subType {
+        font-size: 13px;
+
+    }
+}
+
 @media (max-width:375px) {
     .option strong {
         font-size: 15px;

@@ -3,7 +3,7 @@ import styles from "./Dashboard.module.css";
 
 import Footer from "../AgentDetails/Footer/Footer";
 import Plan from "../Plan/Plan";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Await } from "react-router-dom";
 
 import {
   deleteAgent,
@@ -49,13 +49,11 @@ function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
   const packageName = sessionStorage.getItem("package") || "Free";
-
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
-
   // Agents and UI states
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -83,6 +81,8 @@ function Dashboard() {
   const [popupType, setPopupType] = useState("success");
   const [popupMessage2, setPopupMessage2] = useState("");
   const [popupType2, setPopupType2] = useState("success");
+  const [popupMessage3, setPopupMessage3] = useState();
+  const [popupType3, setPopupType3] = useState("confirm");
   const [callLoading, setCallLoading] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState();
 
@@ -128,7 +128,12 @@ function Dashboard() {
     localStorage.getItem("showreferralfloating") || "true"
   );
   const [copied, setCopied] = useState(false);
+  const [userCalApiKey, setUserCalApiKey] = useState(sessionStorage.getItem("userCalApiKey"))
+  const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
+  const [isConfirming, setIsConfirming] = useState(false);
+  const isConfirmedRef = useRef(false);
 
+console.log(isConfirming)
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -224,6 +229,11 @@ function Dashboard() {
       sessionStorage.removeItem("selectedfilterOption");
       sessionStorage.removeItem("placeDetailsExtract");
       sessionStorage.removeItem("agentNote");
+      sessionStorage.removeItem("prevBuisnessType");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("UpdationModeStepWise");
+      sessionStorage.removeItem("customServices");
     }
   }, []);
   // Navigate on agent card click
@@ -279,7 +289,6 @@ function Dashboard() {
     setEventLength("");
     setIsCalModalOpen(true);
   };
-
   // Fetch Cal API keys from backend
   const fetchCalApiKeys = async (userId) => {
     const response = await fetch(
@@ -294,6 +303,10 @@ function Dashboard() {
     if (!userId) return;
     try {
       const res = await fetchDashboardDetails(userId);
+      console.log(res, "res")
+      setUserCalApiKey(res?.calApiKey)
+      sessionStorage.setItem("userCalApiKey", res?.calApiKey)
+
       let agentsWithCalKeys = res.agents || [];
       const calApiAgents = await fetchCalApiKeys(userId);
       const calApiKeyMap = {};
@@ -330,22 +343,16 @@ function Dashboard() {
 
   // Submit API key for selected agent
   const handleApiKeySubmit = async () => {
-    if (!selectedAgent) return;
-
-    if (!isValidCalApiKey(apiKey.trim())) {
-      setPopupType("failed");
-      setPopupMessage("Invalid API Key! It must start with 'cal_live_'.");
-      return;
-    }
-
+    const agent = agentDetailsForCal
     try {
       setCalapiloading(true);
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agent?.agent_id
+        }`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: apiKey.trim() }),
+          body: JSON.stringify({ calApiKey: userCalApiKey.trim(), userId: userId }),
         }
       );
 
@@ -353,14 +360,6 @@ function Dashboard() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update API key");
       }
-
-      const updatedAgents = localAgents.map((agent) =>
-        agent.agent_id === selectedAgent.agent_id
-          ? { ...agent, calApiKey: apiKey.trim() }
-          : agent
-      );
-
-      setLocalAgents(updatedAgents);
       setHasFetched(false);
       setShowCalKeyInfo(true);
       setShowEventInputs(true);
@@ -377,27 +376,22 @@ function Dashboard() {
 
   // Create Cal event
   const createCalEvent = async () => {
-    if (!apiKey.trim()) {
-      alert("API Key is required to create an event.");
-      return;
-    }
-    if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
-      alert("Please fill all event fields.");
-      return;
-    }
+
+    const agent = agentDetailsForCal
+    await handleApiKeySubmit()
     try {
       setcalloading(true);
       // Call Cal API to create an event
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
-        apiKey.trim()
+        userCalApiKey.trim()
       )}`;
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: eventName.trim(),
-          slug: eventSlug.trim(),
-          length: parseInt(eventLength, 10),
+          title: `MEETING BY ${agent?.agentName}`,
+          slug: `${agent?.agentName}_${agent?.agentCode}`,
+          length: 15,
         }),
       });
 
@@ -413,14 +407,14 @@ function Dashboard() {
           {
             type: "book_appointment_cal",
             name: "cal_tool",
-            cal_api_key: apiKey.trim(),
+            cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
           },
         ],
       };
 
       // Update LLM using the Retell API
-      const retellUrl = `https://api.retellai.com/update-retell-llm/${selectedAgent.llmId}`;
+      const retellUrl = `https://api.retellai.com/update-retell-llm/${agent.llmId}`;
       const retellResponse = await fetch(retellUrl, {
         method: "PATCH",
         headers: {
@@ -432,14 +426,15 @@ function Dashboard() {
 
       if (!retellResponse.ok) {
         const retellError = await retellResponse.json();
-        console.error("Error updating Retell LLM:", retellError);
+        console.error("Error updating  LLM:", retellError);
       } else {
-        console.log("Retell LLM updated successfully!");
+        // console.log("Updated successfully!");
       }
 
       // Success
       setPopupType("success");
       setPopupMessage("Your Cal event has been created successfully!");
+      setHasFetched(false)
       setShowCalKeyInfo(false);
       setEventName("");
       setEventSlug("");
@@ -450,13 +445,14 @@ function Dashboard() {
       }, 1000);
     } catch (error) {
       setEventCreateStatus("error");
-      setEventCreateMessage(`Error creating event: ${error.message}`);
+
+      setEventCreateMessage(`Unauthorized! Invalid API Key.`);
       console.error("Error in createCalEvent:", error);
     } finally {
       setcalloading(false);
+      setIsConfirming(false)
     }
   };
-
   const closeModal = () => {
     setIsCalModalOpen(false);
     setApiKey("");
@@ -500,7 +496,7 @@ function Dashboard() {
     client.on("call_started", () => setIsCallActive(true));
     client.on("call_ended", () => setIsCallActive(false));
     client.on("update", (update) => {
-      // ✅ Mark the update clearly as AGENT message
+      //  Mark the update clearly as AGENT message
       const customUpdate = {
         ...update,
         source: "agent", // Add explicit source
@@ -670,16 +666,16 @@ function Dashboard() {
     // navigate("/business-details", {
     //   state: { agentId: ag.agent_id, bussinesId: ag.businessId },
     // });
-          sessionStorage.setItem('naviateFrom','dashboard')
-          sessionStorage.setItem('SelectAgentBusinessId', ag?.businessId)
-          sessionStorage.setItem('SelectAgentId', ag?.agent_id)
-                    navigate('/edit-agent', {
-                      state: {
-                        agentId: ag?.agent_id,
-                        businessId: ag?.businessId,
-                      },
-                    });
-                  
+    sessionStorage.setItem('naviateFrom', 'dashboard')
+    sessionStorage.setItem('SelectAgentBusinessId', ag?.businessId)
+    sessionStorage.setItem('SelectAgentId', ag?.agent_id)
+    navigate('/edit-agent', {
+      state: {
+        agentId: ag?.agent_id,
+        businessId: ag?.businessId,
+      },
+    });
+
   };
 
   const handleRefresh = () => {
@@ -701,34 +697,6 @@ function Dashboard() {
     sessionStorage.removeItem("agentId");
     navigate("/totalcall-list");
   };
-
-  //   function formatName(name) {
-  //     if (!name) return "";
-
-  //     if (name.includes(" ")) {
-  //       const firstName = name.split(" ")[0];
-  //       if (firstName.length <= 7) {
-  //         return firstName;
-  //       } else {
-  //         return firstName.substring(0, 10) + "...";
-  //       }
-  //     } else {
-  // // <<<<<<< dev_Shorya
-  // //       if (name.length > 7) {
-  // //         return name.substring(0, 10) + "...";
-  // //       }
-  // //       return name;
-  // // =======
-  //       return firstName.substring(0, 10) + "...";
-  //     }
-  //   else {
-  //     if (name.length > 7) {
-  //       return name.substring(0, 10) + "...";
-  //     } else {
-  //       return name; // <-- This was missing
-
-  //     }
-  //   }
 
   function formatName(name) {
     if (!name) return "";
@@ -943,37 +911,15 @@ function Dashboard() {
   };
 
   const handleUpgradeClick = (agent) => {
-    // if (agent?.subscriptionId) {
-    //   alert("Coming Soon");
-    // } else {
+
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
     setModelOpen(true);
-    // }
   };
 
   const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
   const locationPath = location.pathname;
 
-  // =======
-  //       setPopupType("success");
-  //       setPopupMessage(
-  //         isCurrentlyDeactivated
-  //           ? "Agent activated successfully."
-  //           : "Agent deactivated successfully."
-  //       );
-  //       setShowDeactivateConfirm(false);
-  //       setHasFetched(false);
-  //     } catch (error) {
-  //       console.error("Activation/Deactivation Error:", error);
-  //       setPopupType("failed");
-  //       setPopupMessage("Failed to update agent status.");
-  //       setShowDeactivateConfirm(false);
-  //     } finally {
-  //       setDeactivateLoading(false);
-  //     }
-  //   };
-  // >>>>>>> payment_testing
 
   const getUserReferralCode = async () => {
     try {
@@ -1007,9 +953,6 @@ function Dashboard() {
       return;
     }
 
-    // Use localhost for dev, replace with production URL (e.g., https://rexpt.in) later
-    //   const shareUrl = `http://localhost:3000?referral=${encodeURIComponent(code)}`;
-
     if (navigator.share) {
       try {
         await navigator.share({
@@ -1028,8 +971,6 @@ function Dashboard() {
       }
     }
   };
-
-  // console.log('ddsds',typeof showreferralfloating)
 
   const showConfirmFloatingClose = () => {
     setPopupType2("confirm");
@@ -1051,12 +992,40 @@ function Dashboard() {
       console.error(error);
     }
   };
+  const handleConnectCal = (agent) => {
+    navigate("/connect-calender")
+    sessionStorage.setItem("agentDetails", JSON.stringify(agent))
+  }
+  const handleCalConnectWithConfirm = async () => {
+    try {
+      await createCalEvent();  // event creation logic
+    } finally {
+      setIsConfirming(false);
+      setPopupMessage3("");   //  Close the popup after confirm logic completes
+    }
+  };
 
+  const handleConnectCalApiAlready = (agent) => {
+  
+    setAgentDetailsForCal(agent)
+    setPopupType3("confirm");
+    setPopupMessage3(
+      "Your Cal API key is already added. Do you want to continue with this key and automatically create a Cal event?"
+    );
+  }
+  const handleClosePopUp3 = async () => {
+ 
+    setPopupMessage3("");
+    console.log(isConfirming, "isConfirming")
+    if (isConfirming) {
+
+      handleConnectCal(agentDetailsForCal);
+    }
+  }
   const checkRecentPageLocation = location.state?.currentLocation;
   useEffect(() => {
     if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
   }, []);
-
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1086,15 +1055,6 @@ function Dashboard() {
               </h2>
             </div>
 
-            {/* {isUploadModalOpen && (
-              <UploadProfile
-                onClose={closeUploadModal}
-                onUpload={handleUpload}
-                currentProfile={
-                  uploadedImage || user?.profile || "images/camera-icon.avif"
-                }
-              />
-            )} */}
           </div>
           <div className={styles.notifiMain}>
             <div
@@ -1155,19 +1115,6 @@ function Dashboard() {
             </div>
           </div>
         </header>
-
-        {/* <section className={styles.agentCard}>
-
-          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
-            <h2>{totalCalls || 0}</h2>
-            <img src="svg/total-call.svg" alt="total-call" />
-          </div>
-          <hr />
-          <div className={styles.agentInfo2}>
-            <h2>{bookingCount}</h2>
-            <img src="svg/calender-booking.svg" alt="calender-booking" />
-          </div>
-        </section> */}
 
         {/* Ankush Code Start */}
 
@@ -1403,12 +1350,9 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          navigate("/connect-calender", {
-                            state: {
-                              agentId: agent?.agent_id,
-                              llmId: agent?.llmId,
-                            },
-                          });
+
+                          handleConnectCal(agent)
+
                         }
                       }}
                     />
@@ -1422,12 +1366,12 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          navigate("/connect-calender", {
-                            state: {
-                              agentId: agent?.agent_id,
-                              llmId: agent?.llmId,
-                            },
-                          });
+                          if (userCalApiKey) {
+                            handleConnectCalApiAlready(agent)
+                          }
+                          else {
+                            handleConnectCal(agent)
+                          }
                         }
                       }}
                       title="Cal API Key not set"
@@ -2013,6 +1957,30 @@ function Dashboard() {
           onConfirm={handleChangeStatus}
         />
       )}
+
+
+    <Popup
+  type={popupType3}
+  message={popupMessage3}
+  onClose={() => {
+    // Only handle close if confirm hasn't already been clicked
+    if (!isConfirmedRef.current) {
+      handleConnectCal(agentDetailsForCal);
+    }
+    isConfirmedRef.current = false; // Always reset
+    setPopupMessage3("");           // Close popup
+  }}
+  onConfirm={() => {
+    isConfirmedRef.current = true;         // Mark confirm
+    handleCalConnectWithConfirm();         // Confirm logic
+    setPopupMessage3("");                  // Close popup
+    // Do NOT reset ref here, let onClose do it after
+  }}
+/>
+
+
+
+
     </div>
   );
 }

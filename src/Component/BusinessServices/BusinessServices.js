@@ -564,7 +564,12 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
           customServices: [],
         },
       });
-      const id = response.data.businessId;
+      // console.log('dsdsdsdsddsd',response)
+      const id = response?.data?.record?.businessId;
+      if(!checkIfBusinessIdExist){
+        console.log('dsdsdsdsd',response.data)
+        sessionStorage.setItem("AgentCode",response?.data?.agentCode)
+      }
       sessionStorage.setItem("bId", id);
       sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
       if (onSuccess && !checkIfBusinessIdExist) {
@@ -623,7 +628,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"));
   const businesServices = JSON.parse(sessionStorage.getItem("businesServices"));
 
-  const servicesType = Object.values(businesServices).filter(
+  const servicesType = Object?.values(businesServices)?.filter(
     (val) => typeof val === "string" && val !== "" && val !== "email"
   );
   const handleAddService = () => {
