@@ -664,12 +664,22 @@ function Dashboard() {
   };
 
   const handleEditAgent = async (ag) => {
-    localStorage.setItem("UpdationMode", "ON");
-    await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
+    // localStorage.setItem("UpdationMode", "ON");
+    // await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
 
-    navigate("/business-details", {
-      state: { agentId: ag.agent_id, bussinesId: ag.businessId },
-    });
+    // navigate("/business-details", {
+    //   state: { agentId: ag.agent_id, bussinesId: ag.businessId },
+    // });
+          sessionStorage.setItem('naviateFrom','dashboard')
+          sessionStorage.setItem('SelectAgentBusinessId', ag?.businessId)
+          sessionStorage.setItem('SelectAgentId', ag?.agent_id)
+                    navigate('/edit-agent', {
+                      state: {
+                        agentId: ag?.agent_id,
+                        businessId: ag?.businessId,
+                      },
+                    });
+                  
   };
 
   const handleRefresh = () => {

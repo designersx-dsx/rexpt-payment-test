@@ -5,9 +5,15 @@ import { useNavigate,useLocation } from 'react-router-dom';
 const EditHeader = ({ title, agentName, }) => {
   const navigate=useNavigate();
   const location = useLocation();
+
     const handleBack = () => {
     if (location.pathname === '/edit-agent') {
-      navigate('/agent-detail');
+      if(sessionStorage.getItem('naviateFrom')=='dashboard'){
+          navigate('/');
+      }else{
+              navigate('/agent-detail');
+
+      }
     } else {
       navigate('/edit-agent');
     }
