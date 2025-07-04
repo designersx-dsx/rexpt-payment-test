@@ -1,0 +1,347 @@
+/* Wrapper & Layout */
+.wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    padding: 0px 0px 0px 2rem;
+    overflow: visible;
+    position: relative;
+    height: fit-content;
+    /* height: 80dvh; */
+    margin-block: 0px 2rem;
+}
+
+.slick-list {
+    overflow: visible !important;
+}
+
+.slick-track {
+    display: flex !important;
+    gap: 20px;
+}
+
+.slide {
+    width: 100%;
+    padding-right: 30px;
+    box-sizing: border-box;
+    /* opacity: 0.5; */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slick-slide.slick-active .slide {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Card Base */
+.card {
+
+    border-radius: 16px;
+
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.CardiSection {
+    padding: 12px;
+
+}
+
+/* Plan-Specific Colors */
+.starter {
+    border: 1px solid #00B2FF;
+    color: #00B2FF;
+
+}
+
+.scaler {
+    border: 1px solid #3CD856;
+    color: #3CD856;
+}
+
+.growth {
+    border: 1px solid #E83BAC;
+    color: #E83BAC;
+}
+
+.corporate {
+    border: 1px solid #FE5E00;
+    color: #FE5E00;
+}
+
+/* Text & Structure */
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: #555;
+}
+
+.priceTop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.subPrice {
+    font-weight: bold;
+    font-size: 16px;
+    color: #24252C;
+}
+
+.pricdec {
+    display: block;
+}
+
+.billedText {
+    font-size: 10px;
+    color: #555555;
+}
+
+.Title {
+    font-size: 36px;
+}
+
+.doolor {
+    font-size: 15px;
+    color: #24252C;
+    font-weight: 600 !important;
+}
+
+.mainPrice {
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #24252C;
+}
+
+.description {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Dynamic SectionTop Backgrounds */
+.starterBg {
+    background-color: #D5F0FF;
+    border-radius: 16px;
+}
+
+.scalerBg {
+    background-color: #dcffe1;
+    border-radius: 16px;
+}
+
+.growthBg {
+    background-color: #ffd7f1;
+    border-radius: 16px;
+}
+
+.corporateBg {
+    background-color: #ffeadf;
+    border-radius: 16px;
+}
+
+.featuresList {
+    text-align: left;
+    padding-left: 0;
+    margin: 16px 16px;
+    list-style: none;
+    font-size: 13px;
+    color: #24252C;
+    border-bottom: 1px solid #DEDEDE
+}
+
+.featureItem {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.seeAll {
+    display: inline-block;
+    font-size: 12px;
+    color: #5F33E1;
+    margin-bottom: 10px;
+    text-decoration: underline;
+}
+
+/* Toggle Switch */
+.toggleWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #333;
+}
+
+.toggleSwitch {
+    position: relative;
+    width: 40px;
+    height: 20px;
+}
+
+.toggleSwitch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: 0.4s;
+}
+
+.toggleSwitch input:checked+.slider {
+    background-color: #6524EB;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.toggleSwitch input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+.active {
+    color: #5F33E1;
+    font-weight: 600;
+}
+
+.inactive {
+    color: #4B5577;
+    font-weight: 600;
+}
+
+/* Pricing Note */
+.discount {
+    font-size: 12px;
+    color: green;
+    font-weight: 500;
+    text-align: center;
+    background-color: #DCFCE7;
+    width: max-content;
+    margin: 10px auto;
+    padding: 3px 6px;
+}
+
+
+/* Subscribe Button */
+.subscribeBtn {
+    margin-top: 16px;
+    background-color: #6524EB;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Footer Plan Buttons */
+.footerButtons {
+    display: flex;
+
+    /* margin-top: 24px; */
+    gap: 5px;
+    /* position: fixed; */
+    bottom: 0;
+    width: 100%;
+    background-color: white;
+    padding: 20px 10px;
+}
+
+.ForSticky {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    background: #fff;
+    padding: 10px 0;
+    /* box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);  */
+}
+
+.footerBtn {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 2px solid;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+}
+
+.featuresWrapper {
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+    max-height: 150px;
+    margin-bottom: 5px;
+}
+
+.featuresWrapper::-webkit-scrollbar {
+    width: 3px;
+}
+
+.featuresWrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.featuresWrapper::-webkit-scrollbar-thumb {
+    background-color: #5F33E1;
+    border-radius: 20px;
+}
+
+.expanded {
+    overflow: auto;
+}
+
+
+.featureItem {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.4s ease;
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+}
+
+.featureItem.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    height: auto;
+    margin-bottom: 6px;
+}
+
+.featureItem.hidden {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    height: 0;
+    margin-bottom: 0;
+}

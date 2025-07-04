@@ -7,13 +7,15 @@
   height: 35vh;
   margin-inline: 1px;
 }
-.backIcon{
+
+.backIcon {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
 }
-.backIcon p{
+
+.backIcon p {
   color: #ffff;
   font-size: 22px;
   font-weight: 600;
@@ -58,7 +60,7 @@
   margin-top: 20px;
   background-color: #ffffff;
   border-radius: 15px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 4px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 4px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
 
@@ -109,7 +111,7 @@
 }
 
 .hrLine {
-  margin-top: 10px;
+  margin-top: 5px;
   height: 1px;
   border: 0.5px solid #D9D9D9;
 }
@@ -125,7 +127,7 @@
   font-size: 16px;
   font-weight: 500;
   color: #24252C;
-  padding: 10px 12px;
+  padding: 10px 0px;
   border-radius: 8px;
   border: 0px solid #e7e4e4 !important;
   outline: none;
@@ -133,7 +135,7 @@
   transition: border 0.3s ease;
   width: 100% !important;
   min-height: 40px !important;
-  background-color: #f7f9fc !important;
+  background-color: #ffffff !important;
 }
 
 .infoItem input:focus,
@@ -247,11 +249,11 @@
 }
 
 .stickyWrapper {
-    position: sticky;
-    bottom: 0px;
-    background: white;
-    padding: 10px 0;
-    z-index: 10;
+  position: sticky;
+  bottom: 0px;
+  background: white;
+  padding: 10px 0;
+  z-index: 10;
 }
 
 @media screen and (min-width: 601px) {

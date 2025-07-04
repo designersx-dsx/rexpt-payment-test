@@ -276,7 +276,15 @@
 .dropdownItem:hover {
   background-color: #f0f0f0;
 }
+@media (min-width: 376px) and (max-width: 410px) {
+  .option strong {
+    font-size: 15px;
+  }
+  .subType {
+    font-size: 13px;
 
+  }
+}
 @media (max-width:375px) {
   .title {
     font-size: 36px;
