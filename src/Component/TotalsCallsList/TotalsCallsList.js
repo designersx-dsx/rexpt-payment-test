@@ -19,7 +19,7 @@ const callsPerPage = 6;
 
 export default function Home() {
   const totalAgentView = localStorage.getItem("filterType");
-  const sessionAgentId = sessionStorage.getItem("agentId") || ""
+  const sessionAgentId = sessionStorage.getItem("agentId") || "";
   const [agentId, setAgentId] = useState(
     totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
@@ -29,11 +29,13 @@ export default function Home() {
     startDate: "",
     endDate: "",
   });
-  const [selectedSentiment, setSelectedSentiment] = useState(sessionStorage.getItem('selectedfilterOption')||"All");
+  const [selectedSentiment, setSelectedSentiment] = useState(
+    sessionStorage.getItem("selectedfilterOption") || "All"
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem('token') || "";
+  const token = localStorage.getItem("token") || "";
   const fetchAgents = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
@@ -42,7 +44,7 @@ export default function Home() {
   function extractCallIdFromRecordingUrl(url) {
     if (!url) return null;
     try {
-      const parts = url.split('/');
+      const parts = url.split("/");
       return parts[3] || null;
     } catch {
       return null;
@@ -60,20 +62,22 @@ export default function Home() {
     try {
       setLoading(true);
       if (agentId) {
-        const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const calls = (response.data.filteredCalls || []).map(call => ({
+        const response = await axios.get(
+          `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const calls = (response.data.filteredCalls || []).map((call) => ({
           ...call,
-          call_id: call.call_id || extractCallIdFromRecordingUrl(call.recording_url)
+          call_id:
+            call.call_id || extractCallIdFromRecordingUrl(call.recording_url),
         }));
 
         setData(calls);
-
       } else {
-        
         setData([]);
       }
     } catch (error) {
@@ -86,12 +90,15 @@ export default function Home() {
   const fetchAllAgentCalls = async () => {
     setLoading(true);
     try {
-      const res = await getAllAgentCalls(userId)
+      const res = await getAllAgentCalls(userId);
       setData(res.calls || []);
-    } catch (error) { console.log(error) } finally {
+    } catch (error) {
+      console.log(error);
+    } finally {
       setLoading(false);
     }
   };
+
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
     const seconds = Math.floor((durationMs % 60000) / 1000);
@@ -106,7 +113,10 @@ export default function Home() {
   };
   const filteredData = data.filter((call) => {
     // Sentiment Filter (apply only if not "All")
-    const sentimentMatch = selectedSentiment === "All" || call?.user_sentiment === selectedSentiment||call?.call_analysis?.user_sentiment === selectedSentiment;
+    const sentimentMatch =
+      selectedSentiment === "All" ||
+      call?.user_sentiment === selectedSentiment ||
+      call?.call_analysis?.user_sentiment === selectedSentiment;
 
     // Date Range Filter (apply only if both dates are selected)
     const inDateRange = (() => {
@@ -130,7 +140,10 @@ export default function Home() {
       !filters ||
       !Array.isArray(filters?.leadType) ||
       filters?.leadType.length === 0 ||
-      filters?.leadType.includes(call.custom_analysis_data?.lead_type||call?.call_analysis?.custom_analysis_data?.lead_type);
+      filters?.leadType.includes(
+        call.custom_analysis_data?.lead_type ||
+        call?.call_analysis?.custom_analysis_data?.lead_type
+      );
 
     // Channel Filter (apply only if a channel is selected)
     const channelMatch =
@@ -156,6 +169,29 @@ export default function Home() {
     // Perform additional logic related to "All Agents" if needed
   };
   const navigate = useNavigate();
+  const formattedDate = (date) => {
+    return new Date(date).toLocaleDateString(
+      "en-GB",
+      {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }
+    );
+  }
+  const getSentimentClass = (sentiment) => {
+    switch (sentiment?.toLowerCase()) {
+      case "positive":
+        return styles.fromGreen;
+      case "negative":
+        return styles.fromRed;
+      case "neutral":
+        return styles.fromYellow;
+      default:
+        return "";
+    }
+  };
+
 
   return (
     <div className={styles.container}>
@@ -173,7 +209,11 @@ export default function Home() {
             setCurrentPage(1);
           }}
           selectedAgentId={agentId}
-          onAgentChange={(newAgentId) => {setAgentId(newAgentId);sessionStorage.setItem("agentId",newAgentId);localStorage.setItem("filterType","agent")}}
+          onAgentChange={(newAgentId) => {
+            setAgentId(newAgentId);
+            sessionStorage.setItem("agentId", newAgentId);
+            localStorage.setItem("filterType", "agent");
+          }}
           isCallSummary={data}
           filters={filters}
           onFilterChange={(newFilters) => {
@@ -189,8 +229,8 @@ export default function Home() {
                 <th>Date & Time</th>
                 <th>Duration</th>
                 <th>From</th>
-                {/* <th>Name</th>
-                <th>Actions</th> */}
+                <th>Name</th>
+                <th>Sentiment</th>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -200,7 +240,6 @@ export default function Home() {
                     <Loader2 />
                   </td>
                 </tr>
-
               ) : currentCalls.length === 0 ? (
                 <tr>
                   <td colSpan="5" style={{ textAlign: "center" }}>
@@ -209,7 +248,8 @@ export default function Home() {
                 </tr>
               ) : (
                 currentCalls.map((call, i) => (
-                  <tr key={i}
+                  <tr
+                    key={i}
                     className={styles.clickableRow}
                     onClick={() => {
                       if (!call.call_id) {
@@ -218,7 +258,6 @@ export default function Home() {
                       }
                       navigate(`/call-details/${call.call_id}`);
                     }}
-
                   >
                     <td>
                       <div className={styles.callDateTime}>
@@ -226,19 +265,42 @@ export default function Home() {
                           {getDateTimeFromTimestamp(call.end_timestamp).time}
                         </div>
                         <div className={styles.callDate}>
-                          {getDateTimeFromTimestamp(call.end_timestamp).date}
+                          {formattedDate(call.end_timestamp)}
                         </div>
                       </div>
                     </td>
                     <td>{convertMsToMinSec(call.duration_ms)}</td>
                     <td>
-                      <p
-                        className={`${styles.fromNumber} ${styles[call.fromColor]
-                          }`}
-                      >
+                      <p className={`${styles.fromNumber} ${getSentimentClass(call.user_sentiment || call?.call_analysis?.user_sentiment)}`}>
                         {call.call_type}
                       </p>
                     </td>
+
+                    <td>
+                      {(() => {
+                        const leadType =
+                          call?.custom_analysis_data?.lead_type ||
+                          call?.call_analysis?.custom_analysis_data
+                            ?.lead_type ||
+                          "-";
+                        return (
+                          leadType.charAt(0).toUpperCase() + leadType.slice(1)
+                        );
+                      })()}
+                    </td>
+
+                    <td>
+                      {(() => {
+                        const sentiment =
+                          call?.user_sentiment ||
+                          call?.call_analysis?.user_sentiment ||
+                          "-";
+                        return (
+                          sentiment.charAt(0).toUpperCase() + sentiment.slice(1)
+                        );
+                      })()}
+                    </td>
+
                     {/* <td className={styles.CallName}>-</td>
                     <td>
                       <div className={styles.actionIcons}>

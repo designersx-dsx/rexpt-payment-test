@@ -9,6 +9,7 @@ import {
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 import useUser from "../../Store/Context/UserContext";
+import AnimatedButton from "../AnimatedButton/AnimatedButton";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -29,21 +30,9 @@ const SignUp = () => {
   const [resendTimer, setResendTimer] = useState(0);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [resendEndTime, setResendEndTime] = useState(null);
-
-  // useEffect(() => {
-  //   let timerInterval = null;
-
-  //   if (resendTimer > 0) {
-  //     timerInterval = setInterval(() => {
-  //       setResendTimer((prev) => prev - 1);
-  //     }, 1000);
-  //   } else if (resendTimer === 0) {
-  //     setIsResendDisabled(false);
-  //     clearInterval(timerInterval);
-  //   }
-
-  //   return () => clearInterval(timerInterval);
-  // }, [resendTimer]);
+  const tempReferral = sessionStorage.getItem("referredBy") || "";
+  const tempLandingSelectedPlan = sessionStorage.getItem("plan") || "";
+  const [customerId, setCustomerId] = useState()
   useEffect(() => {
     if (!resendEndTime) return;
 
@@ -95,7 +84,6 @@ const SignUp = () => {
     setEmailError(emailValidationMsg);
 
     if (emailValidationMsg) {
-      // Return early, no popup for email validation error
       return;
     }
 
@@ -109,11 +97,17 @@ const SignUp = () => {
 
     setIsVerifyingOtp(true);
     try {
-      const response = await verifyEmailOTP(email, fullOtp);
+
+      const response = await verifyEmailOTP(email, fullOtp, customerId);
       // console.log('response',response)
+
       if (response?.status === 200) {
+
         localStorage.setItem("token", response?.data.token);
         sessionStorage.clear();
+        sessionStorage.setItem("referredBy", tempReferral);
+        sessionStorage.setItem("plan", tempLandingSelectedPlan);
+        localStorage.setItem("showreferralfloating", response?.data?.user?.showreferralfloating)
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");
@@ -141,7 +135,9 @@ const SignUp = () => {
       } else {
         setPopupType("failed");
         setShowPopup(true);
-        setPopupMessage("Failed to verify One Time Password. Please try again.");
+        setPopupMessage(
+          "Failed to verify One Time Password. Please try again."
+        );
       }
     } catch (error) {
       setPopupType("failed");
@@ -158,12 +154,12 @@ const SignUp = () => {
     setEmailError(emailValidationMsg);
 
     if (emailValidationMsg) {
-      // Return early, no popup
       return;
     }
 
     setEmailError("");
     setIsVerifyingOtp(true);
+
     try {
       const response = await LoginWithEmailOTP(email);
       if (response?.status === 200) {
@@ -171,7 +167,10 @@ const SignUp = () => {
         setShowPopup(true);
         setPopupType("success");
         setPopupMessage("One Time Password sent successfully!");
+
         setOtpSent(true);
+        setOtp(["", "", "", "", "", ""]);
+        inputRefs.current[0]?.blur();
         const endTime = Date.now() + 120 * 1000;
         setResendEndTime(endTime);
         setIsResendDisabled(true);
@@ -182,20 +181,26 @@ const SignUp = () => {
       }
     } catch (error) {
       console.log(error);
-      if (error.status == 409) {
+      if (error.status === 409) {
+        setOtp(["", "", "", "", "", ""]);
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
+        setPopupMessage(
+          error?.response?.data.error || "Failed to send OTP. Please try again."
+        );
         setOtpSent(true);
       } else {
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
+        setPopupMessage(
+          error?.response?.data.error || "Failed to send OTP. Please try again."
+        );
       }
     } finally {
       setIsVerifyingOtp(false);
     }
   };
+
 
   const handleOtpChange = (value, index) => {
     const newOtp = [...otp];
@@ -226,38 +231,61 @@ const SignUp = () => {
   }, [showPopup, popupType, popupMessage]);
 
   const [step, setStep] = useState(0);
+  const [ready, setReady] = useState(false); // NEW add
+
+  // useEffect(() => {
+  //   const played = sessionStorage.getItem("loginAnimationPlayed");
+
+  //   if (!played) {
+  //     const delays = [150, 250, 350, 450, 550];
+
+  //     const timers = delays.map((delay, index) =>
+  //       setTimeout(() => setStep(index + 1), delay)
+  //     );
+
+  //     setTimeout(() => {
+  //       sessionStorage.setItem("loginAnimationPlayed", "true");
+  //     }, 700);
+
+  //     return () => timers.forEach(clearTimeout);
+  //   } else {
+  //     setStep(5);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const played = sessionStorage.getItem("loginAnimationPlayed");
 
     if (!played) {
       const delays = [150, 250, 350, 450, 550];
-
       const timers = delays.map((delay, index) =>
         setTimeout(() => setStep(index + 1), delay)
       );
 
+      sessionStorage.setItem("loginAnimationPlayed", "true");
+
       setTimeout(() => {
-        sessionStorage.setItem("loginAnimationPlayed", "true");
+        setReady(true); // animation done, now render full UI
       }, 700);
 
       return () => timers.forEach(clearTimeout);
     } else {
       setStep(5);
+      setReady(true); // no animation, render directly
     }
   }, []);
+
   useEffect(() => {
-    window.history.pushState(null, '', window.location.href);
+    window.history.pushState(null, "", window.location.href);
 
     const handlePopState = () => {
-
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     };
 
-    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, []);
 
@@ -273,74 +301,93 @@ const SignUp = () => {
   }, [email]);
 
   useEffect(() => {
-    if (otpSent && inputRefs.current[0]) {
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
+    if (!isMobile && otpSent && inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
   }, [otpSent]);
-  return (
-    <>
-      <div className={styles.signUpContainer}>
-        <div className={styles.StartMain}>
-          <div>
-            <img src="images/Ellipse 6.png" alt="Ellipse 6" />
-            <img src="images/Ellipse 7.png" alt="Ellipse 7" />
-            <img src="images/Ellipse 8.png" alt="Ellipse 8" />
-            <img src="images/Ellipse 9.png" alt="Ellipse 9" />
-            <img src="images/Ellipse 10.png" alt="Ellipse 10" />
-            <img src="images/Ellipse 11.png" alt="Ellipse 11" />
-          </div>
-        </div>
-        <div className={styles.pageEnterAnimation}>
-          <div className={`${styles.mask} ${styles.maskZoomFadeIn}`}>
-            <img src="images/Mask.png" alt="Mask.png" />
-          </div>
-          <div
-            className={`${styles.logimg} ${step >= 1 ? styles.animate1 : ""}`}
-          >
-            <img
-              className={styles.logo}
-              src="svg/Rexpt-Logo.svg"
-              alt="Rexpt-Logo"
-            />
-          </div>
-          <div
-            className={`${styles.Maincontent} ${step >= 2 ? styles.animate2 : ""
-              }`}
-          >
-            <div className={styles.welcomeTitle}>
-              <h1>Log In to your Account</h1>
-              <p >If it does not exist, We will create a<b> New FREE Account</b> for you. Make sure the email ID provided is correct.</p>
-            </div>
-          </div>
 
-          <div className={styles.container}>
-            {!otpSent && (
-              <>
-                <div
-                  className={`${styles.labReq} ${step >= 3 ? styles.animate3 : ""
-                    }`}
-                >
-                  <div className={styles.Dblock}>
-                    <input
-                      type="email"
-                      className={`${styles.emailInput} ${emailError ? styles.inputError : ""
-                        }`}
-                      placeholder="Johnvick@gmail.com"
-                      value={email}
-                      onChange={handleEmailChange}
-                      required
-                    />
-                  </div>
-                  {emailError && (
-                    <p className={styles.inlineError}>{emailError}</p>
-                  )}
+  return (
+
+    <>
+      {ready && (
+        <div className={styles.signUpContainer}>
+          <>
+            <div className={styles.signUpContainer}>
+              <div className={styles.StartMain}>
+                <div>
+                  <img src="images/Ellipse 6.png" alt="Ellipse 6" />
+                  <img src="images/Ellipse 7.png" alt="Ellipse 7" />
+                  <img src="images/Ellipse 8.png" alt="Ellipse 8" />
+                  <img src="images/Ellipse 9.png" alt="Ellipse 9" />
+                  <img src="images/Ellipse 10.png" alt="Ellipse 10" />
+                  <img src="images/Ellipse 11.png" alt="Ellipse 11" />
+                </div>
+              </div>
+              <div className={styles.pageEnterAnimation}>
+                <div className={`${styles.mask} ${styles.maskZoomFadeIn}`}>
+                  <img src="images/Mask.png" alt="Mask.png" />
                 </div>
                 <div
-                  className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""
-                    }`}
-                  onClick={handleSendOTP}
+                  className={`${styles.logimg} ${step >= 1 ? styles.animate1 : ""}`}
                 >
-                  <img src="svg/svg-theme2.svg" alt="" />
+                  <img
+                    className={styles.logo}
+                    src="svg/Rexpt-Logo.svg"
+                    alt="Rexpt-Logo"
+                  />
+                </div>
+                <div
+                  className={`${styles.Maincontent} ${step >= 2 ? styles.animate2 : ""
+                    }`}
+                >
+                  <div className={styles.welcomeTitle}>
+                    <h1>Log In to your Account</h1>
+                    <p>
+                      If it does not exist, We will create a<b> New FREE Account</b>{" "}
+                      for you. Make sure the email ID provided is correct.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={styles.container}>
+                  {!otpSent && (
+                    <>
+                      <div
+                        className={`${styles.labReq} ${step >= 3 ? styles.animate3 : ""
+                          }`}
+                      >
+                        <div className={styles.Dblock}>
+                          <input
+                            type="email"
+                            className={`${styles.emailInput} ${emailError ? styles.inputError : ""
+                              }`}
+                            placeholder="Johnvick@gmail.com"
+                            value={email}
+                            onChange={handleEmailChange}
+                            required
+                          />
+                        </div>
+                        {emailError && (
+                          <p className={styles.inlineError}>{emailError}</p>
+                        )}
+                      </div>
+                      <br />
+                      <div
+                        className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""
+                          }`}
+                        onClick={handleSendOTP}
+                      ><AnimatedButton
+                          isLoading={isVerifyingOtp}
+                          label="Send One Time Password"
+                          // onClick={handleSendOTP}
+                          position={{ position: 'relative' }}
+                        />
+                        {/* <img src="svg/svg-theme2.svg" alt="" />
                   <p>
                     {" "}
                     {isVerifyingOtp ? (
@@ -350,149 +397,139 @@ const SignUp = () => {
                     ) : (
                       "Send One Time Password"
                     )}
-                  </p>
-                </div>
-              </>
-            )}
+                  </p> */}
+                      </div>
 
-            {/* OTP Input Fields & Continue Button */}
-            {otpSent && (
-              <>
-                {email && (
-                  <p className={styles.codeText}>
-                    Email has been sent to <strong>{email}</strong>
-                  </p>
-                )}
-                <p className={styles.codeText}>
-                  Enter the code sent to your email
-                </p>
+                    </>
+                  )}
 
-                <div className={styles.otpContainer}>
-                  {[...Array(6)].map((_, i) => (
-                    <input
-                      key={i}
-                      id={`otp-${i}`}
-                      maxLength="1"
-                      value={otp[i]}
-                      onChange={(e) => handleOtpChange(e.target.value, i)}
-                      className={styles.otpInput}
-                      onKeyDown={(e) => handleKeyDown(e, i)}
-                      ref={(el) => (inputRefs.current[i] = el)}
-                      onInput={(e) => {
-                        const target = e.target;
-                        target.value = target.value.replace(/[^0-9]/g, "");
-                      }}
-                      inputMode="numeric"
-                      type="tel"
-                    />
-                  ))}
-                </div>
-                {/* <div className={styles.resendContainer}>
-                  <button
-                    type="button"
-                    className={styles.resendButton}
-                    onClick={handleSendOTP}
-                    disabled={isResendDisabled}
-                    style={{
-                      cursor: isResendDisabled ? "not-allowed" : "pointer",
-                      opacity: isResendDisabled ? 0.5 : 1,
-                      background: "none",
-                      border: "none",
-                      color: "#6524EB",
-                      fontWeight: "bold",
-                      fontSize: "14px",
-                    }}
-
-                  >
-                    {isResendDisabled && resendTimer > 0
-                      ? `Resend OTP in ${String(
-                        Math.floor(resendTimer / 60)
-                      ).padStart(2, "0")}:${String(resendTimer % 60).padStart(
-                        2,
-                        "0"
-                      )}`
-                      : "Resend OTP"}
-                  </button>
-                </div> */}
-
-
-
-
-                <div
-                  className={styles.resendContainer}
-
-                >
-                  <button
-                    type="button"
-                    className={styles.resendButton}
-                    onClick={handleSendOTP}
-                    disabled={isResendDisabled}
-                    style={{
-                      cursor: isResendDisabled ? "not-allowed" : "pointer",
-                      opacity: isResendDisabled ? 0.5 : 1,
-                      background: "none",
-                      border: "none",
-                      color: "#6524EB",
-                      fontWeight: "bold",
-                      fontSize: "14px",
-                    }}
-                  >
-                    {isResendDisabled && resendTimer > 0
-                      ? `Resend One Time Password in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
-                      : "Resend One Time Password"}
-                  </button>
-                </div>
-
-
-
-                <div className={styles.Btn} onClick={handleLoginClick}>
-                  <div type="submit">
-                    <div className={styles.btnTheme}>
-                      <img src="svg/svg-theme.svg" alt="" />
-                      <p>
-                        {isVerifyingOtp ? (
-                          <>
-                            <Loader size={17} />
-                          </>
-                        ) : (
-                          "Continue"
-                        )}
+                  {/* OTP Input Fields & Continue Button */}
+                  {otpSent && (
+                    <>
+                      {email && (
+                        <p className={styles.codeText}>
+                          Email has been sent to <strong>{email}</strong>
+                        </p>
+                      )}
+                      <p className={styles.codeText}>
+                        Enter the code sent to your email
                       </p>
+
+                      <div className={styles.otpContainer}>
+                        {[...Array(6)].map((_, i) => (
+                          <input
+                            key={i}
+                            id={`otp-${i}`}
+                            maxLength="1"
+                            value={otp[i]}
+                            onChange={(e) => handleOtpChange(e.target.value, i)}
+                            className={styles.otpInput}
+                            onKeyDown={(e) => handleKeyDown(e, i)}
+                            ref={(el) => (inputRefs.current[i] = el)}
+                            onInput={(e) => {
+                              const target = e.target;
+                              target.value = target.value.replace(/[^0-9]/g, "");
+                            }}
+                            inputMode="numeric"
+                            type="tel"
+                          />
+                        ))}
+                      </div>
+
+                      <div className={styles.resendContainer}>
+                        <button
+                          type="button"
+                          className={styles.resendButton}
+                          onClick={handleSendOTP}
+                          disabled={isResendDisabled}
+                          style={{
+                            cursor: isResendDisabled ? "not-allowed" : "pointer",
+                            opacity: isResendDisabled ? 0.5 : 1,
+                            background: "none",
+                            border: "none",
+                            color: "#6524EB",
+                            fontWeight: "bold",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {isResendDisabled && resendTimer > 0
+                            ? `Resend One Time Password in ${String(
+                              Math.floor(resendTimer / 60)
+                            ).padStart(2, "0")}:${String(resendTimer % 60).padStart(
+                              2,
+                              "0"
+                            )}`
+                            : "Resend One Time Password"}
+                        </button>
+                      </div>
+                      <br />
+                      <div className={styles.Btn} onClick={handleLoginClick}>
+                        <div type="submit">
+                          <div className={styles.btnTheme}>
+                            {/* <div className={styles.imageWrapper}>
+                              <img src="svg/svg-theme2.svg" alt="" />
+                            </div>
+                            <p>
+                              {isVerifyingOtp ? (
+                                <>
+                                  <Loader size={17} />
+                                </>
+                              ) : (
+                                "Continue"
+                              )}
+                            </p> */}
+                            <AnimatedButton
+                              isLoading={isVerifyingOtp}
+                              label="Continue"
+
+                              position={{ position: 'relative' }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div
+                    className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
+                      }`}
+                  >
+                    <div className={styles.divider}>
+                      <hr className={styles.line} />
+                      <span className={styles.text}>Or continue with</span>
+                      <hr className={styles.line} />
                     </div>
+
+                    <div className={styles.socialMedia}>
+                      <img src="svg/Coming-Soon.svg" />
+                    </div>
+                    <p className={styles.PrivaceTerms}>
+                      By providing your email address & creating an account, you agree to the Rexptin&nbsp;
+                      <a href="https://www.rexpt.in/Terms-Condition" target="_blank" rel="noopener noreferrer">
+                        Terms & Conditions
+                      </a>
+                      &nbsp;and&nbsp;
+                      <a href="https://www.rexpt.in/Privacy-Policy" target="_blank" rel="noopener noreferrer">
+                        Privacy Policy
+                      </a>
+                    </p>
+
                   </div>
                 </div>
-              </>
-            )}
-            <div
-              className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
-                }`}
-            >
-              <div className={styles.divider}>
-                <hr className={styles.line} />
-                <span className={styles.text}>Or continue with</span>
-                <hr className={styles.line} />
-              </div>
 
-              <div className={styles.socialMedia}>
-                <img src="svg/Coming-Soon.svg" />
-
-                {/* <img src="svg/google.svg" alt="" />
-            <img src="svg/facbook.svg" alt="" />
-            <img src="svg/apple.svg" alt="" /> */}
+                {showPopup && (
+                  <PopUp
+                    type={popupType}
+                    onClose={() => setShowPopup(false)}
+                    message={popupMessage}
+                  />
+                )}
               </div>
             </div>
-          </div>
-
-          {showPopup && (
-            <PopUp
-              type={popupType}
-              onClose={() => setShowPopup(false)}
-              message={popupMessage}
-            />
-          )}
+          </>
         </div>
-      </div>
+      )}
     </>
+
   );
 };
 

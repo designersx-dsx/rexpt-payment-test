@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect, useState, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import styles from "../BusinessDetails/BusinessDetails.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
@@ -7,8 +11,7 @@ import { getUserAgentMergedDataForAgentUpdate } from "../../Store/apiStore";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import Loader from "../Loader/Loader";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
-
-const BusinessDetails = () => {
+const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepChange }, ref) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [businessType, setBusinessType] = useState("");
@@ -46,78 +49,159 @@ const BusinessDetails = () => {
   const [prevBuisnessType, setprevBuisnessType] = useState("");
   const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
 
-
-
-  // console.log(customBuisness, "customBuisness")
   const location = useLocation();
 
   const businessTypes = [
     {
       type: "Real Estate Broker",
-      subtype: "Your Journey Begins Here",
+      subtype: "Property Transaction Facilitator",
       icon: "svg/Estate-icon.svg",
     },
     {
       type: "Restaurant",
-      subtype: "Your Journey Begins Here",
+      subtype: "Food Service Establishment",
       icon: "svg/Landscaping-icon.svg",
     },
     {
       type: "Interior Designer",
-      subtype: "Your Journey Begins Here",
+      subtype: "Indoor Space Beautifier",
       icon: "svg/Interior-Designer-icon.svg",
     },
     {
       type: "Saloon",
-      subtype: "Your Journey Begins Here",
+      subtype: "Hair Styling & Grooming",
       icon: "svg/Saloon-icon.svg",
     },
     {
       type: "Landscaping Company",
-      subtype: "Your Journey Begins Here",
+      subtype: "Outdoor Space Beautification",
       icon: "svg/Landscaping-icon.svg",
     },
     {
       type: "Dentist",
-      subtype: "Your Journey Begins Here",
+      subtype: "Dental Care Provider",
       icon: "svg/Dentist-Office-icon.svg",
     },
     {
       type: "Doctor's Clinic",
-      subtype: "Your Journey Begins Here",
+      subtype: "Medical Consultation & Treatment",
       icon: "svg/Doctor-clinic-icon.svg",
     },
     {
       type: "Gym & Fitness Center",
-      subtype: "Your Journey Begins Here",
+      subtype: "Exercise Facility & Training",
       icon: "svg/Gym-icon.svg",
     },
 
     {
       type: "Personal Trainer",
-      subtype: "Your Journey Begins Here",
+      subtype: "Individual Fitness Coaching",
       icon: "svg/Personal-Trainer-icon.svg",
     },
     {
       type: "Web Design Agency",
-      subtype: "Your Journey Begins Here",
+      subtype: "Website Creation & Development",
       icon: "svg/Web-Design-Agency-icon.svg",
     },
     {
+      type: "Architect",
+      subtype: "Building Design Expert",
+      icon: "svg/Architect-icon.svg",
+    },
+    {
+      type: "Property Rental & Leasing Service",
+      subtype: "Property Rental Management",
+      icon: "svg/Property Rental & Leasing Service.svg",
+    },
+    {
+      type: "Construction Services",
+      subtype: "Building Construction & Repair",
+      icon: "svg/Construction Services.svg",
+    },
+    {
+      type: "Insurance Agency",
+      subtype: "Risk Protection Provider",
+      icon: "svg/Insurance Agency.svg",
+    },
+    {
+      type: "Old Age Home",
+      subtype: "Senior Living Facility",
+      icon: "svg/Old Age Home.svg",
+    },
+    {
+      type: "Travel Agency",
+      subtype: "Trip Planning & Booking",
+      icon: "svg/Travel Agency.svg",
+    },
+    {
+      type: "Ticket Booking",
+      subtype: "Travel Ticket Provider",
+      icon: "svg/Ticket Booking.svg",
+    },
+    {
+      type: "Accounting Services",
+      subtype: "Financial Record Management",
+      icon: "svg/Accounting Services.svg",
+    },
+    {
+      type: "Financial Planners",
+      subtype: "Wealth Management Advice",
+      icon: "svg/Financial Planners.svg",
+    },
+    {
+      type: "Beauty Parlour",
+      subtype: "Cosmetic Beauty Services",
+      icon: "svg/Beauty Parlour.svg",
+    },
+    {
+      type: "Nail Salon",
+      subtype: "Manicure/Pedicure Services",
+      icon: "svg/Nail Saloon.svg",
+    },
+    {
+      type: "Barber Studio/Shop",
+      subtype: "Men's Hair Grooming",
+      icon: "svg/Barber.svg",
+    },
+    {
+      type: "Hair Stylist",
+      subtype: "Professional Hair Care",
+      icon: "svg/Hair Stylist.svg",
+    },
+    {
+      type: "Bakery",
+      subtype: "Baked Goods Producer",
+      icon: "svg/Bakery.svg",
+    },
+    {
+      type: "Dry Cleaner",
+      subtype: "Garment Cleaning & Care",
+      icon: "svg/Dry Cleaner.svg",
+    },
+    {
+      type: "Cleaning Janitorial Service",
+      subtype: "Professional Cleaning Solutions",
+      icon: "svg/Cleaning Janitorial Service.svg",
+    },
+    // {
+    //   type: "Marketing Agency",
+    //   subtype: "Your Journey Begins Here",
+    //   icon: "svg/Marketing Agency.svg",
+    // },
+
+
+    {
       type: "Other",
-      subtype: "Your Journey Begins Here",
+      subtype: "More Ideas, More Impact",
       icon: "svg/Web-Design-Agency-icon.svg",
     }
   ];
-
   const stored = sessionStorage.getItem("businessDetails");
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem("businessDetails");
-
       if (stored && stored !== "undefined" && stored !== "null") {
         const businessDetails = JSON.parse(stored);
-
         if (businessDetails) {
           setBusinessType(businessDetails.businessType || "");
           setprevBuisnessType(businessDetails.businessType || "");
@@ -160,17 +244,59 @@ const BusinessDetails = () => {
 
   const handleBusinessTypeChange = (e) => {
     setBusinessType(e.target.value);
+    // if (prevBuisnessType != businessType) {
+    //   sessionStorage.removeItem("selectedServices");
+    //   sessionStorage.removeItem("selectedCustomServices");
+    //   const raw = sessionStorage.getItem("businesServices");
+    //   let previous = {};
+    //   try {
+    //     previous = raw ? JSON.parse(raw) : {};
+    //   } catch (err) {
+    //     console.error("Failed to parse businesServices:", err);
+    //   }
+
+    //   const updatedBusinessServices = {
+    //     selectedService: [],
+    //     email: previous.email,
+    //   };
+    //   sessionStorage.setItem("businesServices", JSON.stringify(updatedBusinessServices));
+    // }
     if (e.target.value !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
+      updateSessionBusinessDetails("businessType", e.target.value);
+         sessionStorage.removeItem("showInput");
     }
+    console.log(e.target.value,"e.target.value")
+    updateSessionBusinessDetails("businessType", e.target.value);
     console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
-
     }
 
 
   };
+  const updateSessionBusinessDetails = (key, value) => {
+    let existing = {};
+    try {
+      const stored = sessionStorage.getItem("businessDetails");
+
+      if (stored && stored !== "undefined" && stored !== "null") {
+        existing = JSON.parse(stored);
+        // selectedServices
+         sessionStorage.removeItem("selectedServices");
+          sessionStorage.removeItem("businesServices");
+      }
+    } catch (e) {
+      console.error("Error parsing sessionStorage businessDetails:", e);
+    }
+
+    const updated = {
+      ...existing,
+      [key]: value,
+    };
+    sessionStorage.setItem("businessDetails", JSON.stringify(updated));
+  };
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -237,7 +363,7 @@ const BusinessDetails = () => {
         businessName: businessName.trim(),
         businessSize,
       };
-      navigate("/about-business-next");
+      // navigate("/about-business-next");
     } else {
       businessData = {
         userId,
@@ -245,10 +371,11 @@ const BusinessDetails = () => {
         businessName: businessName.trim(),
         businessSize,
       };
-      navigate("/business-services");
+
+      // navigate("/business-services");
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-
+    onStepChange?.(1);
   };
   const handleSaveEdit = (e) => {
     console.log("helo")
@@ -288,17 +415,66 @@ const BusinessDetails = () => {
       handleCreateAgent()
     }
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      // Validate business type
+      console.log("Hello")
+      if (!businessType) {
 
-  useEffect(() => {
-    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-      setShowPopup(true);
-      setPopupType('failed');
-      setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
-    }
-  }, [CheckingUserLimit, isLimitExceeded]);
+        setBusinessTypeError("Please select a business type.");
+        onValidationError?.({
+          type: "failed",
+          message: "Please select a business type.",
+        });
+        return false;
+      } else {
+        setBusinessTypeError("");
+      }
+
+
+  // useEffect(() => {
+  //   if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+  //     setShowPopup(true);
+  //     setPopupType('failed');
+  //     setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+  //   }
+  // }, [CheckingUserLimit, isLimitExceeded]);
 
   // if (CheckingUserLimit) return 
 
+      // Validate business size
+      if (!businessSize) {
+        setBusinessSizeError("Please select a business size.");
+        onValidationError?.({
+          type: "failed",
+          message: "Please select a business size.",
+        });
+        return false;
+      } else {
+        setBusinessSizeError("");
+      }
+      // Validate custom business if "Other" is selected
+      const serviceError = validateServices(customBuisness);
+      if (serviceError) {
+        setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
+        onValidationError?.({
+          type: "failed",
+          message: serviceError,
+        });
+        return false;
+      } else {
+        setErrors((prev) => ({ ...prev, customBuisness: "" }));
+      }
+      console.log("I AM CALL ")
+
+
+      return true; // No errors
+    },
+    save: async () => {
+      handleLoginClick()
+    }
+  }));
   const handleClosePopup = () => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       navigate('/dashboard');
@@ -307,10 +483,17 @@ const BusinessDetails = () => {
       setShowPopup(false);
     }
   }
+  useEffect(() => {
+    if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      setShowPopup(true);
+      setPopupType('failed');
+      setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+    }
+  }, [CheckingUserLimit, isLimitExceeded]);
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{EditingMode ? ' Edit Business Details' : 'Business Details'}</h1>
+      {/* <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1> */}
       <div className={styles.searchBox}>
         <span className={styles.searchIcon}>
           <img src="svg/Search-Icon.svg" alt="Search icon" />
@@ -336,7 +519,7 @@ const BusinessDetails = () => {
                       className={styles.iconImg}
                     />
                   </div>
-                  <div>
+                  <div className={styles.strongDiv}>
                     <strong>{item.type}</strong>
                     <p className={styles.subType}>{item.subtype}</p>
                   </div>
@@ -423,7 +606,7 @@ const BusinessDetails = () => {
           <p className={styles.inlineError}>{businessSizeError}</p>
         )}
       </div>
-      {stepEditingMode != 'ON' ?
+      {/* {stepEditingMode != 'ON' ?
         <div onClick={handleLoginClick}>
           <div type="submit">
             <div className={styles.btnTheme}>
@@ -441,7 +624,7 @@ const BusinessDetails = () => {
             </div>
           </div>
         </div>
-      }
+      } */}
 
 
       {showPopup && (
@@ -454,24 +637,7 @@ const BusinessDetails = () => {
       )}
     </div>
   );
-};
+});
 
 export default BusinessDetails;
 
-
-// Safe parser for JSON-like strings
-const safeParse = (value, fallback = null) => {
-  try {
-    if (typeof value === "string") {
-      const cleaned = value.trim();
-      if ((cleaned.startsWith("[") && cleaned.endsWith("]")) ||
-        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-        (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
-        return JSON.parse(cleaned);
-      }
-    }
-    return value;
-  } catch {
-    return fallback;
-  }
-};

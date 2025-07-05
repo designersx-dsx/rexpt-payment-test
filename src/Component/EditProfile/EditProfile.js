@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "../EditProfile/EditProfile.module.css";
+import Refferal from "../Refferal/Refferal";
 import {
   API_BASE_URL,
   getUserDetails,
@@ -21,6 +22,7 @@ import Loader from "../Loader/Loader";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
+
 const EditProfile = () => {
   const fileInputRef = useRef(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -37,6 +39,8 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(false);
   const [addLoading, addSetLoading] = useState(false)
   const [sendOtpLoading, setSendOtpLoading] = useState(false)
+  const [referralCode, setReferralCode] = useState("")
+  const [showDashboardReferral, setShowDashboardReferral] = useState(true)
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -100,6 +104,9 @@ const EditProfile = () => {
       try {
         setLoading(true);
         const user = await getUserDetails(userId);
+        setReferralCode(user?.referralCode)
+        setShowDashboardReferral(user?.showreferralfloating)
+        localStorage.setItem('showreferralfloating', user?.showreferralfloating)
         setFormData({
           name: user.name || "",
           email: user.email || "",
@@ -290,6 +297,7 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
+  // console.log('showDashboardReferral',showDashboardReferral)
 
   return (
     <>
@@ -305,6 +313,7 @@ const EditProfile = () => {
                 className={styles.imageIcon}
                 onClick={handleBack}
               />
+              <p>My Account</p>
             </div>
             <div className={styles.profilePic}>
               <button
@@ -315,15 +324,15 @@ const EditProfile = () => {
                   <img
                     src={uploadedImage || formData.profilePicture}
                     onError={(e) => {
-                      e.target.src = "images/camera-icon.avif";
+                      e.target.src = "/svg/profile-icon.svg";
                     }}
                     alt="Profile"
                   />
                 ) : (
                   <img
-                    src={"/images/camera-icon.avif"}
+                    src={"/svg/profile-icon.svg"}
                     onError={(e) => {
-                      e.target.src = "images/camera-icon.avif";
+                      e.target.src = "/svg/profile-icon.svg";
                     }}
                     alt="Profile"
                   />
@@ -338,7 +347,7 @@ const EditProfile = () => {
             <div className={styles.infoSection}>
               <div className={styles.header}>
                 <h3>Personal Info</h3>
-                {/* <span className={styles.editText}><img src='Svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span> */}
+                <span className={styles.editText}><img src='/svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span>
               </div>
 
               <div className={styles.Part}>
@@ -353,7 +362,10 @@ const EditProfile = () => {
                     onChange={handleChange}
                   />
                   {errors.name && <p className={styles.error}>{errors.name}</p>}
+                  <hr className={styles.hrLine} />
                 </div>
+
+
               </div>
               <div className={styles.Part}>
                 <img src="svg/line-email.svg" />
@@ -366,6 +378,7 @@ const EditProfile = () => {
                     onChange={handleChange}
                   />
                   {errors.email && <p className={styles.error}>{errors.email}</p>}
+                  <hr className={styles.hrLine} />
                 </div>
               </div>
 
@@ -478,6 +491,7 @@ const EditProfile = () => {
                     }}
                   />
                   {errors.phone && <p className={styles.error}>{errors.phone}</p>}
+                  <hr className={styles.hrLine} />
                 </div>
               </div>
               <div className={styles.Part}>
@@ -503,7 +517,7 @@ const EditProfile = () => {
                       }
                     />
                   )}
-
+          
                 </div>
 
               </div>
@@ -571,6 +585,9 @@ const EditProfile = () => {
                   <p  >{addLoading ? <>Saving... &nbsp; <Loader size={18} /></> : "Save"}</p>
                 </div>
               </div>
+            </div>
+            <div className={styles.RefferalMain}>
+              <Refferal referralCode={referralCode} setShowDashboardReferral={setShowDashboardReferral} showDashboardReferral={showDashboardReferral} userId={userId} />
             </div>
 
           </div>

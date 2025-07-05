@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import {
@@ -16,19 +16,42 @@ import Loader2 from "../Loader2/Loader2";
 import Footer from "./Footer/Footer";
 import Footer2 from "./Footer/Footer2";
 import Card1 from "../Card1/Card1";
-import Card2  from "../Card2/Card2";
+import Card2 from "../Card2/Card2";
+import Divider from "../Divider/Divider";
 import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
 import DetailModal from "../DetailModal/DetailModal";
+import CallSetting from "../CallSetting/CallSetting"
+
 import { useAgentStore } from "../../Store/agentDetailStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import WidgetScript from "../Widgets/WidgetScript";
 import PopUp from "../Popup/Popup";
+import Modal3 from "../Modal3/Modal3";
+import { clearSessionAfterEdit } from "../../utils/helperFunctions";
 const AgentDashboard = () => {
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const agentDetails = location.state;
+  const [loading, setLoading] = useState(true);
+  const agentID = sessionStorage.getItem('SelectAgentId');
+  const [userCalApiKey, setUserCalApiKey] = useState(sessionStorage.getItem("userCalApiKey"))
+  const agentBuisnesId = sessionStorage.getItem('SelectAgentBusinessId');
+  const [agentDetails, setAgentDetail] = useState({
+    agentId: location?.state?.agentId || sessionStorage.getItem('SelectAgentId'),
+    bussinesId: location?.state?.bussinesId || sessionStorage.getItem('SelectAgentBusinessId')
+  })
+  const isConfirmedRef = useRef(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+  const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
+  useEffect(() => {
+    if (agentID && agentBuisnesId) {
+      setAgentDetail({
+        agentId: agentID,
+        bussinesId: agentBuisnesId
+      })
+    }
+  }, [agentBuisnesId, agentBuisnesId])
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   // const [assignedNumbers, setAssignedNumbers] = useState([]);
@@ -36,7 +59,6 @@ const AgentDashboard = () => {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [callLoading, setCallLoading] = useState(false);
-
   const {
     agentData,
     assignedNumbers,
@@ -46,12 +68,8 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
-  const [isModalOpen, setModalOpen] = useState(
-    localStorage.getItem("UpdationModeStepWise") == "ON"
-  );
-
+  const [isModalOpen, setModalOpen] = useState();
   const [openCard, setOpenCard] = useState(null);
-
   const { setHasFetched } = useDashboardStore();
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -81,8 +99,15 @@ const AgentDashboard = () => {
   const [isAssignNumberModal, setIsAssignNumberModal] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [fullAddress, setFullAddress] = useState("");
-  const [knowledge_base_texts,setknowledge_base_texts]=useState("")
-  const [businessDetails,setBusinessDetails]=useState([])
+  const [knowledge_base_texts, setknowledge_base_texts] = useState("")
+  const [businessDetails, setBusinessDetails] = useState([])
+  const [popupMessage3, setPopupMessage3] = useState();
+  const [popupType3, setPopupType3] = useState("confirm");
+  const [calapiloading, setCalapiloading] = useState(false);
+  const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
+  useEffect(() => {
+    clearSessionAfterEdit();
+  }, [])
   const openAddressModal = (address) => {
     setFullAddress(address);
     setIsAddressModalOpen(true);
@@ -111,7 +136,7 @@ const AgentDashboard = () => {
     setEventSlug("");
     setEventLength("");
   };
-   function formatName(name) {
+  function formatName(name) {
     if (!name) return "";
 
     if (name.includes(" ")) {
@@ -128,24 +153,18 @@ const AgentDashboard = () => {
       return name;
     }
   }
-
   // sdsds
   const handleApiKeySubmit = async () => {
-    if (!agentData?.agent) return;
-
-    if (!isValidCalApiKey(apiKey.trim())) {
-      setEventCreateStatus("error");
-      setEventCreateMessage("Invalid API Key! It must start with 'cal_live_'.");
-      return;
-    }
-
+    const agent = agentDetailsForCal
     try {
+      setCalapiloading(true);
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agent?.agent_id
+        }`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: apiKey.trim() }),
+          body: JSON.stringify({ calApiKey: userCalApiKey.trim(), userId: userId }),
         }
       );
 
@@ -153,45 +172,35 @@ const AgentDashboard = () => {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update API key");
       }
-
-      setEventCreateStatus("success");
-      setEventCreateMessage("Cal API key updated successfully!");
-      setShowEventInputs(true);
+      setHasFetched(false);
       setShowCalKeyInfo(true);
-
-      setAgentById(agentDetails.agentId, {
-        ...agentData,
-        agent: {
-          ...agentData.agent,
-          calApiKey: apiKey.trim(),
-        },
-      });
+      setShowEventInputs(true);
+      setTimeout(() => {
+        setIsApiKeySubmitted(true);
+      }, 0);
     } catch (error) {
-      setEventCreateStatus("error");
-      setEventCreateMessage(`Failed to save API Key: ${error.message}`);
+      setPopupType("failed");
+      setPopupMessage(`Failed to save API Key: ${error.message}`);
+    } finally {
+      setCalapiloading(false);
     }
   };
 
   const createCalEvent = async () => {
-    if (!apiKey.trim()) {
-      alert("API Key is required to create an event.");
-      return;
-    }
-    if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
-      alert("Please fill all event fields.");
-      return;
-    }
+    const agent = agentDetailsForCal
+    await handleApiKeySubmit()
     try {
+      // Call Cal API to create an event
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
-        apiKey.trim()
+        userCalApiKey.trim()
       )}`;
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: eventName.trim(),
-          slug: eventSlug.trim(),
-          length: parseInt(eventLength, 10),
+          title: `MEETING BY ${agent?.agentName}`,
+          slug: `${agent?.agentName}_${agent?.agentCode}`,
+          length: 15,
         }),
       });
 
@@ -202,24 +211,28 @@ const AgentDashboard = () => {
 
       const responseData = await response.json();
       const eventTypeId = responseData.event_type.id;
-
-      setEventCreateStatus("success");
-      setEventCreateMessage("Your Cal event has been created successfully!");
-      setShowCalKeyInfo(false);
-
-      // Update Retell LLM with Cal event info
       const retellPayload = {
         general_tools: [
           {
             type: "book_appointment_cal",
             name: "cal_tool",
-            cal_api_key: apiKey.trim(),
+            cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
           },
+          {
+            type: "check_availability_cal",
+            name: "check_availability",
+            cal_api_key: userCalApiKey.trim(),
+            event_type_id: eventTypeId,
+            description: "Checking availability for event booking",
+            timezone: timeZone
+
+          }
         ],
       };
 
-      const retellUrl = `https://api.retellai.com/update-retell-llm/${agentData.agent.llmId}`;
+      // Update LLM using the Retell API
+      const retellUrl = `https://api.retellai.com/update-retell-llm/${agent.llmId}`;
       const retellResponse = await fetch(retellUrl, {
         method: "PATCH",
         headers: {
@@ -228,84 +241,90 @@ const AgentDashboard = () => {
         },
         body: JSON.stringify(retellPayload),
       });
-
+      getAgentDetailsAndBookings()
       if (!retellResponse.ok) {
         const retellError = await retellResponse.json();
-        console.error("Error updating Retell LLM:", retellError);
+        console.error("Error updating  LLM:", retellError);
       } else {
-        console.log("Retell LLM updated successfully!");
+        // console.log("Updated successfully!");
       }
 
+      // Success
+      setPopupType("success");
+      setPopupMessage("Your Cal event has been created successfully!");
+      setHasFetched(false)
+      setShowCalKeyInfo(false);
       setEventName("");
       setEventSlug("");
       setEventLength("");
-
-      setTimeout(() => {
-        closeCalModal();
-      }, 1000);
     } catch (error) {
       setEventCreateStatus("error");
-      setEventCreateMessage(`Error creating event: ${error.message}`);
+
+      setEventCreateMessage(`Unauthorized! Invalid API Key.`);
       console.error("Error in createCalEvent:", error);
+    } finally {
+
+      setIsConfirming(false)
+    }
+  };
+  const getAgentDetailsAndBookings = async () => {
+    if (!agentDetails?.agentId) return;
+
+    const cached = getAgentById(agentDetails.agentId);
+    if (cached) {
+      setCurrentAgentId(agentDetails.agentId); // Load into active context
+      // setAgentId(agentDetails.agentId);
+      setLoading(false);
+    }
+
+    try {
+      const response = await fetchAgentDetailById(agentDetails);
+      const agentInfo = response?.data;
+      // console.log('agentInfo',agentInfo)
+      let numbersArray = [];
+
+      const voipNumbersStr = agentInfo?.agent?.voip_numbers;
+      if (voipNumbersStr) {
+        try {
+          numbersArray = JSON.parse(voipNumbersStr);
+        } catch {
+          console.warn("Failed to parse voip_numbers");
+        }
+      }
+
+      let total = 0;
+      const calApiKey = agentInfo?.agent?.calApiKey;
+      if (calApiKey) {
+        try {
+          const calResponse = await fetch(
+            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+              calApiKey
+            )}`
+          );
+          const bookingsData = await calResponse.json();
+          total = bookingsData.bookings?.length || 0;
+        } catch {
+          console.warn("Failed to fetch bookings from Cal.com");
+        }
+      }
+
+      // Set all data into zustand
+      setAgentById(agentDetails.agentId, agentInfo, numbersArray, total);
+    } catch (err) {
+      console.error(
+        "Failed to fetch data",
+        err.response || err.message || err
+      );
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
-    const getAgentDetailsAndBookings = async () => {
-      if (!agentDetails?.agentId) return;
-
-      const cached = getAgentById(agentDetails.agentId);
-      if (cached) {
-        setCurrentAgentId(agentDetails.agentId); // Load into active context
-        // setAgentId(agentDetails.agentId);
-        setLoading(false);
-      }
-
-      try {
-        const response = await fetchAgentDetailById(agentDetails);
-        const agentInfo = response?.data;
-        // console.log('agentInfo',agentInfo)
-        let numbersArray = [];
-
-        const voipNumbersStr = agentInfo?.agent?.voip_numbers;
-        if (voipNumbersStr) {
-          try {
-            numbersArray = JSON.parse(voipNumbersStr);
-          } catch {
-            console.warn("Failed to parse voip_numbers");
-          }
-        }
-
-        let total = 0;
-        const calApiKey = agentInfo?.agent?.calApiKey;
-        if (calApiKey) {
-          try {
-            const calResponse = await fetch(
-              `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
-                calApiKey
-              )}`
-            );
-            const bookingsData = await calResponse.json();
-            total = bookingsData.bookings?.length || 0;
-          } catch {
-            console.warn("Failed to fetch bookings from Cal.com");
-          }
-        }
-
-        // Set all data into zustand
-        setAgentById(agentDetails.agentId, agentInfo, numbersArray, total);
-      } catch (err) {
-        console.error(
-          "Failed to fetch data",
-          err.response || err.message || err
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
     getAgentDetailsAndBookings();
   }, [agentDetails, refresh]);
-
+const handleAssignNumber=()=>{
+  getAgentDetailsAndBookings();
+}
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
@@ -327,16 +346,20 @@ const AgentDashboard = () => {
   const handleBackClick = () => {
     navigate("/dashboard");
   };
+
   useEffect(() => {
     const client = new RetellWebClient();
     client.on("call_started", () => setIsCallActive(true));
     client.on("call_ended", () => setIsCallActive(false));
     setRetellWebClient(client);
     sessionStorage.removeItem('selectedfilterOption')
+    const calApiKey = agentData?.calApiKey
+    sessionStorage.setItem("userCalApiKey", calApiKey)
   }, []);
 
   // Start call handler
   let micStream = '';
+  const isStartingRef = useRef(false);
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -351,10 +374,11 @@ const AgentDashboard = () => {
       return;
     }
 
-    if (isCallInProgress || !retellWebClient || !agentData?.agent) {
+    if (isStartingRef.current || isCallInProgress || !retellWebClient || !agentData?.agent) {
       console.error("RetellWebClient or agent data not ready.");
       return;
     }
+    isStartingRef.current = true;
     setCallLoading(true);
     setIsCallInProgress(true);
     try {
@@ -366,6 +390,17 @@ const AgentDashboard = () => {
           body: JSON.stringify({ agent_id: agentData?.agent?.agent_id }),
         }
       );
+      if (res.status == 403) {
+
+        setPopupMessage("Agent Plan minutes exhausted");
+        setPopupType("failed");
+        setIsCallInProgress(false);
+        setTimeout(() => {
+          setPopupMessage("")
+
+        }, 5000);
+        return;
+      }
       const data = await res.json();
       await retellWebClient.startCall({ accessToken: data.access_token });
       setCallId(data?.call_id);
@@ -373,21 +408,35 @@ const AgentDashboard = () => {
       console.error("Error starting call:", err);
     } finally {
       setCallLoading(false);
+      isStartingRef.current = false;
+
     }
   };
 
   // End call handler
+  const isEndingRef = useRef(false);
   const handleEndCall = async () => {
+    if (isEndingRef.current) return;
+    isEndingRef.current = true;
     if (retellWebClient) {
-      const response = await retellWebClient.stopCall();
-      const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
-      if (isCallInProgress && callId) {
-        const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+      try {
+        const response = await retellWebClient.stopCall();
+        const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
+        if (isCallInProgress && callId) {
+          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+        }
+        setRefresh((prev) => !prev);
+        setHasFetched(false);
+        setIsCallInProgress(false);
+        // console.log("Call end response", response);
+      } catch (err) {
+        console.error("Error ending call:", err);
+      } finally {
+        setHasFetched(false);
+        setIsCallInProgress(false);
+        isEndingRef.current = false;
       }
-      setRefresh((prev) => !prev);
-      setHasFetched(false);
-      setIsCallInProgress(false);
-      console.log("Call end response", response);
+
     }
   };
 
@@ -456,32 +505,36 @@ const AgentDashboard = () => {
     localStorage.removeItem("knowledge_base_id");
     sessionStorage.removeItem("placeDetailsExtract")
     sessionStorage.removeItem("agentNote")
+    sessionStorage.removeItem("prevBuisnessType");
+    sessionStorage.removeItem("prevAgentGender");
+    sessionStorage.removeItem("prevAgentGender");
+    sessionStorage.removeItem("UpdationModeStepWise");
+    sessionStorage.removeItem("customServices");
+    sessionStorage.removeItem("agentCode");
+    sessionStorage.removeItem("businessUrl");
     setModalOpen(false);
   };
   // Open Widget modal
   const handleOpenWidgetModal = (agent) => {
-    const agentData = {
-      business: agent.business,
-      ...agent.agent,
-    };
-    setOpenWidgetModal(true);
     setAgentDetails(agentData);
-  };
+    navigate("/integrate-agent", {
+      state: {
+        agentDetails: agent?.agent,
 
+      },
+    });
+  };
   // Close Widget modal
   const handleCloseWidgetModal = () => {
     setOpenWidgetModal(false);
   };
-
   const handleRefresh = () => {
     setHasFetched(false);
   };
-
   const handleAlertPopUp = (show, message, type) => {
     setPopupMessage(message);
     setPopupType(type);
   };
-
   const handleCloseAssignNumberModal = () => {
     setIsAssignNumberModal(false);
   };
@@ -491,7 +544,6 @@ const AgentDashboard = () => {
       "Your agent is not active. Please activate your agent first."
     );
   };
-
   const handleCallTransfer = () => {
     if (agentData) {
       sessionStorage.setItem("agentDetails", JSON.stringify(agentData));
@@ -503,7 +555,6 @@ const AgentDashboard = () => {
       navigate("/call-transfer");
     }
   };
-
   const truncateAddress = (address, wordLimit) => {
     const words = address?.split(" ") || [];
     return words.length > wordLimit
@@ -516,17 +567,16 @@ const AgentDashboard = () => {
       ? words.slice(0, wordLimit).join("/") + "..."
       : url;
   };
+  const handleOpenKnowledgeView = (knowledge_base_texts) => {
+    setknowledge_base_texts(knowledge_base_texts)
+    setOpenCard("card2")
+  }
+  const handleOpenBusinessView = (agentData) => {
+    setOpenCard("card1")
+    setBusinessDetails(agentData?.business)
 
- const handleOpenKnowledgeView=(knowledge_base_texts)=>{
-setknowledge_base_texts(knowledge_base_texts)
-  setOpenCard("card2")
- }
- const handleOpenBusinessView=(agentData)=>{
-   setOpenCard("card1")
-   setBusinessDetails(agentData?.business)
-
- }
- function formatName(name) {
+  }
+  function formatName(name) {
     if (!name) return "";
 
     if (name.includes(" ")) {
@@ -543,15 +593,36 @@ setknowledge_base_texts(knowledge_base_texts)
       return name;
     }
   }
-   function formatBusinessName(name) {
-  if (!name) return "";
+  function formatBusinessName(name) {
+    if (!name) return "";
 
-  if (name.length > 25) {
-    return name.substring(0, 25) + "...";
+    if (name.length > 25) {
+      return name.substring(0, 25) + "...";
+    }
+
+    return name;
   }
+  const handleConnectCal = (agent) => {
+    console.log(agent, "agent")
+    navigate("/connect-calender")
+    sessionStorage.setItem("agentDetails", JSON.stringify(agent))
+  }
+  const handleConnectCalApiAlready = (agent) => {
 
-  return name;
-}
+    setAgentDetailsForCal(agent)
+    setPopupType3("confirm");
+    setPopupMessage3(
+      "Your Cal API key is already added. Do you want to continue with this key and automatically create a Cal event?"
+    );
+  }
+  const handleCalConnectWithConfirm = async () => {
+    try {
+      await createCalEvent();
+    } finally {
+      setIsConfirming(false);
+      setPopupMessage3("");
+    }
+  };
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -566,8 +637,9 @@ setknowledge_base_texts(knowledge_base_texts)
                   alt="Back button"
                   onClick={handleBackClick}
                 ></img>
+                <div className={styles.profileSection}><p className={styles.name}>Agent detail</p></div>
               </div>
-              <div className={styles.profileSection}></div>
+
               <div className={styles.notifiMain}>
                 <div
                   className={styles.notificationIcon}
@@ -630,7 +702,7 @@ setknowledge_base_texts(knowledge_base_texts)
 
             <section>
               <div className={styles.agentCard}>
-                <h3 className={styles.PlanTitle}>Free Plan</h3>
+                <h3 className={`${styles.PlanTitle}  `}>{agentData?.agent?.agentPlan}</h3>
                 <div className={styles.agentInfo}>
                   <div className={styles.agentAvatarContainer}>
                     <img
@@ -645,15 +717,15 @@ setknowledge_base_texts(knowledge_base_texts)
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
                       <h3 className={styles.agentName}>
-                          {formatName(agentData?.agent?.agentName) || "John Vick"}
+                        {formatName(agentData?.agent?.agentName) || "John Vick"}
                         <span
                           className={
-                            agentData?.agent?.isDeactivated==1
-                              ? styles.InactiveText 
-                              :  styles.activeText
+                            agentData?.agent?.isDeactivated == 1
+                              ? styles.InactiveText
+                              : styles.activeText
                           }
                         >
-                          {agentData?.agent?.isDeactivated== 1
+                          {agentData?.agent?.isDeactivated == 1
                             ? "Inactive"
                             : "Active"}
                         </span>
@@ -667,26 +739,29 @@ setknowledge_base_texts(knowledge_base_texts)
                     <hr className={styles.agentLine}></hr>
 
                     <div className={styles.agentDetailsFlex}>
-                      {assignedNumbers.length > 0 ? (
-                        <div className={styles.AssignNumText}>
-                          Assigned Number<p>{assignedNumbers.join(", ")}</p>
-                        </div>
-                      ) : (
-                        <div
-                          className={styles.AssignNum}
-                          onClick={() => {
-                            if (agentStatus === true) {
-                              handleInactiveAgentAlert();
-                            } else {
-                              setIsAssignNumberModal(true);
-                              // setIsAssignModalOpen(true)
-                            }
-                          }}
-                        // onClick={() => setIsAssignModalOpen(true)}
-                        >
-                          Assign Number
-                        </div>
-                      )}
+                      {
+                        agentData?.agent?.subscriptionId === null ?
+                          <div className={styles.AssignNumText}>
+                          </div> :
+                          assignedNumbers?.length > 0 ? (
+                            <div className={styles.AssignNumText}>
+                              AI Agent Toll Free<p>{assignedNumbers?.join(", ")}</p>
+                            </div>
+                          ) : (
+                            <div
+                              className={styles.AssignNum}
+                              onClick={() => {
+                                if (agentStatus === true) {
+                                  handleInactiveAgentAlert();
+                                } else {
+                                  setIsAssignModalOpen(true)
+
+                                }
+                              }}
+                            >
+                              <img src="/svg/assign-number.svg" />
+                            </div>
+                          )}
 
                       <p className={styles.agentDetails}>
                         Agent Code{" "}
@@ -718,8 +793,11 @@ setknowledge_base_texts(knowledge_base_texts)
                     </span>
                   </h3>
                 </div>
+                <div className={styles.businessEdit} onClick={() => handleOpenBusinessView(agentData)}>
+                  <h4 >Business Details</h4>
+                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                </div>
 
-                <h4 onClick={() =>handleOpenBusinessView(agentData)}>Business Details</h4>
               </div>
 
               <div className={styles.card2} >
@@ -746,7 +824,7 @@ setknowledge_base_texts(knowledge_base_texts)
                   </span>
                 </h2>
                 <div className={styles.google}>
-                  <img src="images/google-icon.png" alt="google-icon" />
+                  <img src="/svg/Goole-icon.svg" alt="google-icon" />
                   <p>
                     <span style={{ fontSize: "12px" }}>
                       {(() => {
@@ -791,11 +869,17 @@ setknowledge_base_texts(knowledge_base_texts)
                     </>
                   }
                 </div>
+                <div className={styles.businessEdit} onClick={() => handleOpenKnowledgeView(agentData)}>
+                  <h4  >Knowledge Base</h4>
+                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                </div>
 
-                <h4 onClick={() => handleOpenKnowledgeView(agentData)} >Knowledge Base</h4>
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
+
+            <Divider label="Agent Options" />
+
             <div className={styles.managementActions}>
               <div
                 onClick={() => {
@@ -838,18 +922,22 @@ setknowledge_base_texts(knowledge_base_texts)
               </div>
               <div
                 className={styles.managementItem}
-                onClick={() => {
-                  if (agentStatus === true) {
-                    handleInactiveAgentAlert();
-                  } else {
-                    openCalModal();
-                  }
-                }}
-                style={{ cursor: "pointer" }}
+
+
               >
                 <div className={styles.SvgDesign}>
                   {agentData?.agent?.calApiKey ? (
                     <svg
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (agentStatus === true) {
+                          handleInactiveAgentAlert();
+                        } else {
+
+                          handleConnectCal(agentData?.agent)
+
+                        }
+                      }}
                       width="20"
                       height="21"
                       viewBox="0 0 20 21"
@@ -892,6 +980,21 @@ setknowledge_base_texts(knowledge_base_texts)
                     </svg>
                   ) : (
                     <svg
+
+                      style={{ cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (agentStatus === true) {
+                          handleInactiveAgentAlert();
+                        } else {
+                          if (userCalApiKey) {
+                            handleConnectCalApiAlready(agentData?.agent)
+                          }
+                          else {
+                            handleConnectCal(agentData?.agent)
+                          }
+                        }
+                      }}
                       width="20"
                       height="21"
                       viewBox="0 0 20 21"
@@ -966,14 +1069,14 @@ setknowledge_base_texts(knowledge_base_texts)
               </div>
               <div
                 className={styles.managementItem}
-                  onClick={() => {
+                onClick={() => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
                     handleCallTransfer();
                   }
                 }}
-                // onClick={handleCallTransfer}
+              // onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -996,33 +1099,41 @@ setknowledge_base_texts(knowledge_base_texts)
 
               <div
                 className={styles.managementItem}
-                   onClick={async() => {
+                onClick={async () => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                   
-                     try {
-                    await fetchPrevAgentDEtails(
-                    agentData?.agent?.agent_id,
-                    agentData?.agent?.businessId);
-                     } catch (error) {
-                    await fetchPrevAgentDEtails(
-                    agentData?.agent?.agent_id,
-                    agentData?.agent?.businessId);
-                    }
-                    setModalOpen(true);
-                  
-                  
-                 
+
+                    // try {
+                    //   await fetchPrevAgentDEtails(
+                    //     agentData?.agent?.agent_id,
+                    //     agentData?.agent?.businessId);
+                    // } catch (error) {
+                    //   await fetchPrevAgentDEtails(
+                    //     agentData?.agent?.agent_id,
+                    //     agentData?.agent?.businessId);
+                    // }
+                    // setModalOpen(true);
+                    sessionStorage.setItem('naviateFrom', 'editAgent')
+                    sessionStorage.setItem('SelectAgentBusinessId', agentData?.agent?.businessId)
+                    sessionStorage.setItem('SelectAgentId', agentData?.agent?.agent_id)
+                    navigate('/edit-agent', {
+                      state: {
+                        agentId: agentData?.agent?.agent_id,
+                        businessId: agentData?.agent?.businessId,
+                      },
+                    });
+
+
                   }
                 }}
-                // onClick={async () => {
-                //   await fetchPrevAgentDEtails(
-                //     agentData?.agent?.agent_id,
-                //     agentData?.agent?.businessId
-                //   );
-                //   setModalOpen(true);
-                // }}
+              // onClick={async () => {
+              //   await fetchPrevAgentDEtails(
+              //     agentData?.agent?.agent_id,
+              //     agentData?.agent?.businessId
+              //   );
+              //   setModalOpen(true);
+              // }}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1050,9 +1161,11 @@ setknowledge_base_texts(knowledge_base_texts)
                 </div>
                 <p className={styles.managementText}>Edit Agent</p>
               </div>
+
               <div
                 className={styles.managementItem}
-                onClick={() => setShowModal(true)}
+                // onClick={() => setShowModal(true)}
+                onClick={() => navigate("/call-setting")}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1141,7 +1254,7 @@ setknowledge_base_texts(knowledge_base_texts)
                 <p className={styles.managementText}>Delete Agent</p>
               </div> */}
             </div>
-
+            <hr className={styles.line} />
             <h1 className={styles.Agenttitle}>Agent Analysis</h1>
             <div className={styles.agentStats}>
               <div
@@ -1150,7 +1263,7 @@ setknowledge_base_texts(knowledge_base_texts)
               >
                 <div className={` ${styles.statText} `}>Total Calls</div>
                 <div className={styles.statDetail}>
-                  {agentData?.callSummary?.totalCalls || "NA"}
+                  {agentData?.callSummary?.totalCalls || "0"}
                 </div>
               </div>
 
@@ -1204,12 +1317,13 @@ setknowledge_base_texts(knowledge_base_texts)
               <AgentAnalysis
                 data={agentData?.callSummary?.data}
                 calApiKey={agentData?.agent?.calApiKey}
+                callVolume={agentData?.callSummary?.totalCalls}
               />
             </section>
           </div>
 
           {openCallModal && (
-            <Modal2 isOpen={openCallModal} onClose={closeCallTestModal}>
+            <Modal3 isOpen={openCallModal} onClose={closeCallTestModal} isEndingRef={isEndingRef}>
               <CallTest
                 isCallActive={isCallActive}
                 onStartCall={handleStartCall}
@@ -1219,8 +1333,9 @@ setknowledge_base_texts(knowledge_base_texts)
                 agentName={agentData?.agent?.agentName}
                 agentAvatar={agentData?.agent?.avatar}
                 businessName={agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}
+                isEndingRef={isEndingRef}
               />
-            </Modal2>
+            </Modal3>
           )}
 
           {/* OffCanvas for Logout */}
@@ -1441,11 +1556,11 @@ setknowledge_base_texts(knowledge_base_texts)
             onClose={() => setOpenCard(null)}
             height="80vh">
             {openCard === "card1" && (
-              <Card1  data={businessDetails}/>
+              <Card1 data={businessDetails} />
             )}
 
             {openCard === "card2" && (
-       <Card2 agentKnowledge={knowledge_base_texts} />
+              <Card2 agentKnowledge={knowledge_base_texts} />
             )}
           </DetailModal>
 
@@ -1463,6 +1578,7 @@ setknowledge_base_texts(knowledge_base_texts)
             isOpen={isAssignModalOpen}
             agentId={agentDetails?.agentId}
             onClose={() => setIsAssignModalOpen(false)}
+            onCallApi={handleAssignNumber}
           />
 
           {isAssignNumberModal && (
@@ -1478,6 +1594,24 @@ setknowledge_base_texts(knowledge_base_texts)
               onClose={() => setPopupMessage("")}
             />
           )}
+          <PopUp
+            type={popupType3}
+            message={popupMessage3}
+            onClose={() => {
+              if (!isConfirmedRef.current) {
+                handleConnectCal(agentDetailsForCal);
+              }
+              isConfirmedRef.current = false;
+              setPopupMessage3("");
+            }}
+            onConfirm={() => {
+              isConfirmedRef.current = true;
+              handleCalConnectWithConfirm();
+              setPopupMessage3("");
+
+            }}
+          />
+
           <Footer2 />
         </>
       )}

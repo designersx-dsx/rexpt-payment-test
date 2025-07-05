@@ -9,8 +9,6 @@ const CalInfo = () => {
       <div className={styles.step}>
         <h4 className={styles.stepTitle}>1. Click Here to start the <a href="https://refer.cal.com/designersx" target="_blank" rel="noopener noreferrer"> Cal.com
         </a> Setup Process.</h4>
-
-
       </div>
       <div className={styles.step}>
         <h4 className={styles.stepTitle}>2. Start Here:</h4>

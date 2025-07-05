@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
-import { useNavigate } from "react-router-dom";
+
+import Footer from "../AgentDetails/Footer/Footer";
+import Plan from "../Plan/Plan";
+import { useNavigate, useLocation, Await } from "react-router-dom";
+
 import {
   deleteAgent,
   EndWebCallUpdateAgentMinutesLeft,
@@ -9,6 +13,8 @@ import {
   getUserAgentMergedDataForAgentUpdate,
   toggleAgentActivation,
   updateAgentKnowledgeBaseId,
+  getUserReferralCodeForDashboard,
+  updateShowReferralFloatingStatus,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -24,6 +30,9 @@ import CommingSoon from "../ComingSoon/CommingSoon";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 import Modal from "../Modal2/Modal2";
 import Loader from "../Loader/Loader";
+import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
+import Refferal from "../Refferal/Refferal";
+import Modal3 from "../Modal3/Modal3";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -37,14 +46,14 @@ function Dashboard() {
   const [agentDetails, setAgentDetails] = useState(null);
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
-
+  const packageName = sessionStorage.getItem("package") || "Free";
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
-
   // Agents and UI states
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -70,11 +79,17 @@ function Dashboard() {
   //pop0up
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
+  const [popupMessage2, setPopupMessage2] = useState("");
+  const [popupType2, setPopupType2] = useState("success");
+  const [popupMessage3, setPopupMessage3] = useState();
+  const [popupType3, setPopupType3] = useState("confirm");
   const [callLoading, setCallLoading] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState();
 
   //cam-icon
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const isSmallFont =
+    totalCalls?.toString().length > 1 || bookingCount?.toString().length > 1;
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -86,31 +101,44 @@ function Dashboard() {
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
   const [show, setShow] = useState(false);
   const [close, setClose] = useState(false);
-
+  const [modelOpen, setModelOpen] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
-  const [deactivateLoading, setDeactivateLoading] = useState(false);
 
-  const [calloading, setcalloading] = useState(false)
-  const [calapiloading, setCalapiloading] = useState(false)
-
+  const [agentId, setagentId] = useState();
+  const [subscriptionId, setsubscriptionId] = useState();
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const dropdownRef = useRef(null);
-  const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
+  const location = useLocation();
 
+  const [deactivateLoading, setDeactivateLoading] = useState(false);
+
+  const [calloading, setcalloading] = useState(false);
+  const [calapiloading, setCalapiloading] = useState(false);
+  const [deleteloading, setdeleteloading] = useState(false);
+  const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [agentToDelete, setAgentToDelete] = useState(null);
+  const [showDashboardReferral, setShowDashboardReferral] = useState("");
+  const [showreferralfloating, setShowreferralfloating] = useState(
+    localStorage.getItem("showreferralfloating") || "true"
+  );
+  const [copied, setCopied] = useState(false);
+  const [userCalApiKey, setUserCalApiKey] = useState(sessionStorage.getItem("userCalApiKey"))
+  const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
+  const [isConfirming, setIsConfirming] = useState(false);
+  const isConfirmedRef = useRef(false);
+  //getTimeZone
+  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+  // console.log(isConfirming)
   useEffect(() => {
-    // Dashboard pe aate hi naya history state add karo
     window.history.pushState(null, document.title, window.location.pathname);
 
-    // Back button dabane pe redirect karo
     const handlePopState = () => {
-      navigate("/dashboard"); // Wapas dashboard pe hi rakho
+      navigate("/dashboard");
     };
-
     window.addEventListener("popstate", handlePopState);
-
-    // Cleanup karo jab component unmount ho
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
   const handleAssignNumberClick = (agent, e) => {
@@ -199,19 +227,31 @@ function Dashboard() {
       sessionStorage.removeItem("selectedfilterOption");
       sessionStorage.removeItem("placeDetailsExtract");
       sessionStorage.removeItem("agentNote");
+      sessionStorage.removeItem("prevBuisnessType");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("UpdationModeStepWise");
+      sessionStorage.removeItem("customServices");
+      sessionStorage.removeItem("agentCode");
+      sessionStorage.removeItem("businessUrl");
+      sessionStorage.removeItem("selectedServices");
+
     }
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
+
+    sessionStorage.setItem('SelectAgentId', agent?.agent_id)
+    sessionStorage.setItem('SelectAgentBusinessId', agent?.businessId)
+
     navigate("/agent-detail", {
-      state: { agentId: agent.agent_id, bussinesId: agent.businessId },
+      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
     });
   };
   useEffect(() => {
     const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
-
     if (agentWithCalKey?.calApiKey) {
       const fetchBookings = async () => {
         try {
@@ -250,7 +290,6 @@ function Dashboard() {
     setEventLength("");
     setIsCalModalOpen(true);
   };
-
   // Fetch Cal API keys from backend
   const fetchCalApiKeys = async (userId) => {
     const response = await fetch(
@@ -265,6 +304,10 @@ function Dashboard() {
     if (!userId) return;
     try {
       const res = await fetchDashboardDetails(userId);
+      // console.log(res, "res")
+      setUserCalApiKey(res?.calApiKey)
+      sessionStorage.setItem("userCalApiKey", res?.calApiKey)
+
       let agentsWithCalKeys = res.agents || [];
       const calApiAgents = await fetchCalApiKeys(userId);
       const calApiKeyMap = {};
@@ -301,39 +344,23 @@ function Dashboard() {
 
   // Submit API key for selected agent
   const handleApiKeySubmit = async () => {
-    if (!selectedAgent) return;
-
-    if (!isValidCalApiKey(apiKey.trim())) {
-      setPopupType("failed");
-      setPopupMessage("Invalid API Key! It must start with 'cal_live_'.");
-      return;
-    }
-
-
+    const agent = agentDetailsForCal
     try {
-      setCalapiloading(true)
+      setCalapiloading(true);
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${userId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agent?.agent_id
+        }`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: apiKey.trim() }),
+          body: JSON.stringify({ calApiKey: userCalApiKey.trim(), userId: userId }),
         }
       );
-
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update API key");
       }
-
-      const updatedAgents = localAgents.map((agent) =>
-        agent.agent_id === selectedAgent.agent_id
-          ? { ...agent, calApiKey: apiKey.trim() }
-          : agent
-      );
-
-      setLocalAgents(updatedAgents);
       setHasFetched(false);
       setShowCalKeyInfo(true);
       setShowEventInputs(true);
@@ -344,36 +371,27 @@ function Dashboard() {
       setPopupType("failed");
       setPopupMessage(`Failed to save API Key: ${error.message}`);
     } finally {
-      setCalapiloading(false)
+      setCalapiloading(false);
     }
   };
 
-
-
-
   // Create Cal event
   const createCalEvent = async () => {
-    if (!apiKey.trim()) {
-      alert("API Key is required to create an event.");
-      return;
-    }
-    if (!eventName.trim() || !eventSlug.trim() || !eventLength.trim()) {
-      alert("Please fill all event fields.");
-      return;
-    }
+    const agent = agentDetailsForCal
+    await handleApiKeySubmit()
     try {
-      setcalloading(true)
+      setcalloading(true);
       // Call Cal API to create an event
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
-        apiKey.trim()
+        userCalApiKey.trim()
       )}`;
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: eventName.trim(),
-          slug: eventSlug.trim(),
-          length: parseInt(eventLength, 10),
+          title: `MEETING BY ${agent?.agentName}`,
+          slug: `${agent?.agentName}_${agent?.agentCode}`,
+          length: 15,
         }),
       });
 
@@ -389,14 +407,23 @@ function Dashboard() {
           {
             type: "book_appointment_cal",
             name: "cal_tool",
-            cal_api_key: apiKey.trim(),
+            cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
           },
+          {
+            type: "check_availability_cal",
+            name: "check_availability",
+            cal_api_key: userCalApiKey.trim(),
+            event_type_id: eventTypeId,
+            description: "Checking availability for event booking",
+            timezone: timeZone
+
+          }
         ],
       };
 
       // Update LLM using the Retell API
-      const retellUrl = `https://api.retellai.com/update-retell-llm/${selectedAgent.llmId}`;
+      const retellUrl = `https://api.retellai.com/update-retell-llm/${agent.llmId}`;
       const retellResponse = await fetch(retellUrl, {
         method: "PATCH",
         headers: {
@@ -408,14 +435,15 @@ function Dashboard() {
 
       if (!retellResponse.ok) {
         const retellError = await retellResponse.json();
-        console.error("Error updating Retell LLM:", retellError);
+        console.error("Error updating  LLM:", retellError);
       } else {
-        console.log("Retell LLM updated successfully!");
+        // console.log("Updated successfully!");
       }
 
       // Success
       setPopupType("success");
       setPopupMessage("Your Cal event has been created successfully!");
+      setHasFetched(false)
       setShowCalKeyInfo(false);
       setEventName("");
       setEventSlug("");
@@ -426,13 +454,14 @@ function Dashboard() {
       }, 1000);
     } catch (error) {
       setEventCreateStatus("error");
-      setEventCreateMessage(`Error creating event: ${error.message}`);
+
+      setEventCreateMessage(`Unauthorized! Invalid API Key.`);
       console.error("Error in createCalEvent:", error);
     } finally {
-      setcalloading(false)
+      setcalloading(false);
+      setIsConfirming(false)
     }
   };
-
   const closeModal = () => {
     setIsCalModalOpen(false);
     setApiKey("");
@@ -442,7 +471,6 @@ function Dashboard() {
     setEventCreateMessage("");
     setIsApiKeySubmitted(false);
   };
-
 
   const toggleDropdown = (e, id) => {
     e.preventDefault();
@@ -477,7 +505,7 @@ function Dashboard() {
     client.on("call_started", () => setIsCallActive(true));
     client.on("call_ended", () => setIsCallActive(false));
     client.on("update", (update) => {
-      // ✅ Mark the update clearly as AGENT message
+      //  Mark the update clearly as AGENT message
       const customUpdate = {
         ...update,
         source: "agent", // Add explicit source
@@ -491,8 +519,41 @@ function Dashboard() {
 
     setRetellWebClient(client);
   }, []);
+  const handleDelete = async (agentId) => {
+    try {
+      setdeleteloading(true);
+      const storedDashboard = JSON.parse(
+        sessionStorage.getItem("dashboard-session-storage")
+      );
+
+      const agents = storedDashboard?.state?.agents || [];
+
+      if (agents.length === 1) {
+        setPopupType("failed");
+        setPopupMessage(
+          "Cannot delete. You must have at least two agents to delete one agent."
+        );
+        setShowDeleteConfirm(false);
+        return;
+      }
+      await deleteAgent(agentId);
+      const updatedAgents = localAgents.filter(
+        (agent) => agent.agent_id !== agentId
+      );
+      setLocalAgents(updatedAgents);
+      setPopupMessage("Agent deleted successfully!");
+      setPopupType("success");
+      setHasFetched(false);
+    } catch (error) {
+      setPopupMessage(`Failed to delete agent: ${error.message}`);
+      setPopupType("failed");
+    } finally {
+      setdeleteloading(false);
+    }
+  };
   // Start call
   let micStream = "";
+  const isStartingRef = useRef(false);
   const handleStartCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -506,10 +567,11 @@ function Dashboard() {
       return;
     }
 
-    if (isCallInProgress || !retellWebClient || !agentDetails) {
+    if (isStartingRef.current || isCallInProgress || !retellWebClient || !agentDetails) {
       console.error("RetellWebClient or agent details not ready.");
       return;
     }
+    isStartingRef.current = true;
     setCallLoading(false);
     setIsCallInProgress(true);
 
@@ -523,27 +585,46 @@ function Dashboard() {
           body: JSON.stringify({ agent_id: agentDetails.agent_id }),
         }
       );
+      if (res.status == 403) {
+        setPopupMessage("Agent Plan minutes exhausted");
+        setPopupType("failed");
+        setIsCallInProgress(false);
+        setTimeout(() => {
+          setPopupMessage("");
+        }, 5000);
+        return;
+      }
       const data = await res.json();
-
       await retellWebClient.startCall({ accessToken: data.access_token });
       setCallId(data?.call_id);
     } catch (err) {
       console.error("Error starting call:", err);
     } finally {
       setCallLoading(false);
+      isStartingRef.current = false;
     }
   };
   // End call
+  const isEndingRef = useRef(false);
   const handleEndCall = async () => {
+    if (isEndingRef.current) return;
+    isEndingRef.current = true;
+
     if (retellWebClient) {
-      const response = await retellWebClient.stopCall();
-      const payload = { agentId: agentDetails.agent_id, callId: callId };
-      if (isCallInProgress && callId) {
-        const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+      try {
+        const response = await retellWebClient.stopCall();
+        const payload = { agentId: agentDetails.agent_id, callId: callId };
+        if (isCallInProgress && callId) {
+          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+          setIsCallInProgress(false);
+        }
+      } catch (err) {
+        console.error("Error ending call:", err);
+      } finally {
+        setHasFetched(false);
         setIsCallInProgress(false);
+        isEndingRef.current = false;
       }
-      setHasFetched(false);
-      setIsCallInProgress(false);
     }
   };
 
@@ -588,12 +669,22 @@ function Dashboard() {
   };
 
   const handleEditAgent = async (ag) => {
-    localStorage.setItem("UpdationMode", "ON");
-    await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
+    // localStorage.setItem("UpdationMode", "ON");
+    // await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
 
-    navigate("/business-details", {
-      state: { agentId: ag.agent_id, bussinesId: ag.businessId },
+    // navigate("/business-details", {
+    //   state: { agentId: ag.agent_id, bussinesId: ag.businessId },
+    // });
+    sessionStorage.setItem('naviateFrom', 'dashboard')
+    sessionStorage.setItem('SelectAgentBusinessId', ag?.businessId)
+    sessionStorage.setItem('SelectAgentId', ag?.agent_id)
+    navigate('/edit-agent', {
+      state: {
+        agentId: ag?.agent_id,
+        businessId: ag?.businessId,
+      },
     });
+
   };
 
   const handleRefresh = () => {
@@ -605,7 +696,9 @@ function Dashboard() {
     setPopupMessage(message);
     setPopupType(type);
   };
-
+  const handleCalender = () => {
+    navigate("/calendar");
+  };
   const handleTotalCallClick = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("totalCallView", true);
@@ -614,24 +707,24 @@ function Dashboard() {
     navigate("/totalcall-list");
   };
 
- function formatName(name) {
-  if (!name) return "";
+  function formatName(name) {
+    if (!name) return "";
 
-  if (name.includes(" ")) {
-    const firstName = name.split(" ")[0];
-    if (firstName.length <= 7) {
-      return firstName;
+    if (name.includes(" ")) {
+      const firstName = name.split(" ")[0];
+      if (firstName.length <= 7) {
+        return firstName;
+      } else {
+        return firstName.substring(0, 10) + "...";
+      }
     } else {
-      return firstName.substring(0, 10) + "...";
-    }
-  } else {
-    if (name.length > 7) {
-      return name.substring(0, 10) + "...";
-    } else {
-      return name; // <-- This was missing
+      if (name.length > 7) {
+        return name.substring(0, 10) + "...";
+      } else {
+        return name;
+      }
     }
   }
-}
 
   function formatBusinessName(name) {
     if (!name) return "";
@@ -711,14 +804,22 @@ function Dashboard() {
         const businessDetails = await getBusinessDetailsByBusinessId(
           businessId
         );
+        const packageMap = {
+          Free: 1,
+          Starter: 2,
+          Scaler: 3,
+          Growth: 4,
+          Corporate: 5,
+          Enterprise: 6,
+        };
+        const packageValue = packageMap[packageName] || 1;
 
-        const shortName = (businessDetails?.businessName || "Business")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g, "_")
-          .slice(0, 20);
-
-        const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
+        // const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
+        const knowledgeBaseName = await getKnowledgeBaseName(
+          businessDetails,
+          userId,
+          packageValue
+        );
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
         const businessData = businessDetails.knowledge_base_texts;
@@ -804,61 +905,157 @@ function Dashboard() {
             "LLM ID or Knowledge Base ID missing. LLM update skipped."
           );
         }
-
-        // ✅ Step 3: Update Agent's knowledgeBaseId in DB
-        if (agentToDeactivate?.agent_id && knowledgeBaseId) {
-          try {
-            await updateAgentKnowledgeBaseId(
-              agentToDeactivate.agent_id,
-              knowledgeBaseId
-            );
-          } catch (err) {
-            console.error(" Failed to update agent's KB ID:", err);
-          }
-        }
       }
-
-      await toggleAgentActivation(
-        agentToDeactivate.agent_id,
-        !isCurrentlyDeactivated
-      );
-
-      setPopupType("success");
-      setPopupMessage(
-        isCurrentlyDeactivated
-          ? "Agent activated successfully."
-          : "Agent deactivated successfully."
-      );
-      setShowDeactivateConfirm(false);
-      setHasFetched(false);
     } catch (error) {
-      console.error("Activation/Deactivation Error:", error);
-      setPopupType("failed");
-      setPopupMessage("Failed to update agent status.");
-      setShowDeactivateConfirm(false);
+      console.error("Error during agent deactivation/reactivation:", error);
     } finally {
       setDeactivateLoading(false);
     }
   };
+
+  const handleUpgradeClick = (agent) => {
+
+    setagentId(agent?.agent_id);
+    setsubscriptionId(agent?.subscriptionId);
+ 
+
+    navigate("/plan" , {
+state: {
+  agentID : agent?.agent_id , 
+  locationPath : locationPath , 
+  subscriptionID : agent?.subscriptionId
+}
+    })
+  };
+
+  const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
+  const locationPath = location.pathname;
+
+
+  const getUserReferralCode = async () => {
+    try {
+      const res = await getUserReferralCodeForDashboard(userId);
+      // console.log(res.referralCode)
+      setShowDashboardReferral(
+        `${window.location.origin}?referral=${encodeURIComponent(
+          res?.referralCode
+        )}` || ""
+      );
+    } catch (error) {
+      console.log("error occured while fetching user referal code", error);
+    }
+  };
+
+  const handleCopy = async (referralLink) => {
+    navigator.clipboard
+      .writeText(referralLink)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1000); // hide after 2 seconds
+      })
+      .catch((err) => {
+        console.error("Copy failed:", err);
+      });
+  };
+
+  const shareReferralLink = async (referralLink) => {
+    if (!referralLink) {
+      console.error("No referral code provided");
+      return;
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          url: referralLink,
+        });
+        console.log("Share URL:", referralLink); // Debug
+      } catch (error) {
+        console.error("Error sharing:", error);
+        await navigator.clipboard.writeText(referralLink);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(referralLink);
+      } catch (err) {
+        console.error("Copy failed:", err);
+      }
+    }
+  };
+
+  const showConfirmFloatingClose = () => {
+    setPopupType2("confirm");
+    setPopupMessage2(
+      "Are you sure you want to remove the floating icon? You can enable it again later from the profile section."
+    );
+  };
+  const handleChangeStatus = async () => {
+    try {
+      const res = await updateShowReferralFloatingStatus(
+        userId,
+        !showreferralfloating
+      );
+      // console.log(res)
+      // setReferralCode(user?.referralCode)
+      setShowreferralfloating(res?.data);
+      localStorage.setItem("showreferralfloating", res?.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleConnectCal = (agent) => {
+    console.log(agent, "agent")
+    navigate("/connect-calender")
+    sessionStorage.setItem("agentDetails", JSON.stringify(agent))
+  }
+  const handleCalConnectWithConfirm = async () => {
+    try {
+      await createCalEvent();  // event creation logic
+    } finally {
+      setIsConfirming(false);
+      setPopupMessage3("");   //  Close the popup after confirm logic completes
+    }
+  };
+
+  const handleConnectCalApiAlready = (agent) => {
+
+    setAgentDetailsForCal(agent)
+    setPopupType3("confirm");
+    setPopupMessage3(
+      "Your Cal API key is already added. Do you want to continue with this key and automatically create a Cal event?"
+    );
+  }
+  const handleClosePopUp3 = async () => {
+
+    setPopupMessage3("");
+    console.log(isConfirming, "isConfirming")
+    if (isConfirming) {
+
+      handleConnectCal(agentDetailsForCal);
+    }
+  }
+  const checkRecentPageLocation = location.state?.currentLocation;
+  useEffect(() => {
+    if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
+  }, []);
   return (
     <div>
       <div className={styles.forSticky}>
-
         <header className={styles.header}>
-          <div className={styles.profileSection} ref={profileRef}>
-            <div>
-              <button className={styles.avatarBtn} onClick={handleEditProfile}>
+          <div className={styles.profileSection} ref={profileRef} onClick={handleEditProfile}>
+            <div >
+              <button className={styles.avatarBtn} >
                 <img
                   src={
                     user?.profile ||
                     capturedImage ||
                     uploadedImage ||
-                    "images/camera-icon.avif"
+                    "/svg/profile-icon.svg"
                   }
                   alt="Profile"
                   className={styles.profilePic}
                   onError={(e) => {
-                    e.target.src = "images/camera-icon.avif";
+                    e.target.src = "/svg/profile-icon.svg";
                   }}
                 />
               </button>
@@ -869,15 +1066,7 @@ function Dashboard() {
                 {formatName(user?.name) || "John Vick"}
               </h2>
             </div>
-            {/* {isUploadModalOpen && (
-              <UploadProfile
-                onClose={closeUploadModal}
-                onUpload={handleUpload}
-                currentProfile={
-                  uploadedImage || user?.profile || "images/camera-icon.avif"
-                }
-              />
-            )} */}
+
           </div>
           <div className={styles.notifiMain}>
             <div
@@ -939,18 +1128,33 @@ function Dashboard() {
           </div>
         </header>
 
-        <section className={styles.agentCard}>
+        {/* Ankush Code Start */}
 
+        <section className={styles.agentCard}>
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
-            <h2>{totalCalls || 0}</h2>
+            <h2
+              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
+                }`}
+            >
+              {totalCalls || 0}
+            </h2>
             <img src="svg/total-call.svg" alt="total-call" />
           </div>
+
           <hr />
-          <div className={styles.agentInfo2}>
-            <h2>{bookingCount}</h2>
+
+          <div className={styles.agentInfo2} onClick={handleCalender}>
+            <h2
+              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
+                }`}
+            >
+              {bookingCount}
+            </h2>
             <img src="svg/calender-booking.svg" alt="calender-booking" />
           </div>
         </section>
+
+        {/* Ankush code end */}
       </div>
 
       <div className={styles.main}>
@@ -1033,16 +1237,18 @@ function Dashboard() {
                   ref={dropdownRef}
                 >
                   <svg
-                    width="18"
-                    height="4"
-                    viewBox="0 0 18 4"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 30 30"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <circle cx="2" cy="2" r="2" fill="black" />
-                    <circle cx="9" cy="2" r="2" fill="black" />
-                    <circle cx="16" cy="2" r="2" fill="black" />
+                    <rect width="30" height="30" rx="5" fill="white" />
+                    <circle cx="8" cy="15" r="2" fill="#24252C" />
+                    <circle cx="15" cy="15" r="2" fill="#24252C" />
+                    <circle cx="22" cy="15" r="2" fill="#24252C" />
                   </svg>
+
                   {openDropdown === agent?.agent_id && (
                     <div className={styles.OptionsDropdown}>
                       <div
@@ -1065,7 +1271,13 @@ function Dashboard() {
                           if (agent?.isDeactivated === 1) {
                             handleInactiveAgentAlert();
                           } else {
-                            handleOpenWidgetModal(agent);
+                            navigate("/integrate-agent", {
+                              state: {
+                                agentDetails: agent,
+                                // refreshFuntion: handleRefresh,
+                                // alertPopUp: handleAlertPopUp,
+                              },
+                            });
                           }
                         }}
                       >
@@ -1093,16 +1305,12 @@ function Dashboard() {
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
                           e.stopPropagation();
-                          if (agent?.isDeactivated === 1) {
-                            handleInactiveAgentAlert();
-                          } else {
-                            handleUpgrade(agent.agent_id);
-                          }
+                          handleUpgradeClick(agent);
                         }}
                       >
                         Upgrade
                       </div>
-                      {/* <div key={agent.agent_id}>
+                      <div key={agent.agent_id}>
                         <div
                           className={styles.OptionItem}
                           onMouseDown={(e) => {
@@ -1113,7 +1321,7 @@ function Dashboard() {
                         >
                           Delete Agent
                         </div>
-                      </div> */}
+                      </div>
                       <div
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
@@ -1136,9 +1344,11 @@ function Dashboard() {
                 <p className={styles.agentPara}>
                   For:{" "}
                   <strong>
-                    {formatBusinessName(agent?.business?.businessName ||
+                    {formatBusinessName(
+                      agent?.business?.businessName ||
                       agent?.business?.knowledge_base_texts?.name ||
-                      agent?.business?.googleBusinessName)}
+                      agent?.business?.googleBusinessName
+                    )}
                   </strong>
                 </p>
                 <div className={styles.VIA}>
@@ -1152,7 +1362,9 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          handleCalClick(agent, e);
+
+                          handleConnectCal(agent)
+
                         }
                       }}
                     />
@@ -1166,7 +1378,12 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          handleCalClick(agent, e);
+                          if (userCalApiKey) {
+                            handleConnectCalApiAlready(agent)
+                          }
+                          else {
+                            handleConnectCal(agent)
+                          }
                         }
                       }}
                       title="Cal API Key not set"
@@ -1190,7 +1407,7 @@ function Dashboard() {
                     onClick={(e) => handleAssignNumberClick(agent, e)}
                     style={{ cursor: "pointer" }}
                   >
-                    Assign Number
+                    <img src="/svg/assign-number.svg" />
                   </div>
                 )}
 
@@ -1297,7 +1514,7 @@ function Dashboard() {
                 <div className={styles.modalButtons}>
                   <button
                     className={`${styles.modalButton} ${styles.cancel}`}
-                    onClick={closeModal} // Close the modal only when "Cancel" is clicked
+                    onClick={closeModal}
                   >
                     Cancel
                   </button>
@@ -1311,14 +1528,16 @@ function Dashboard() {
                       }}
                     >
                       Updating <Loader size={18} />
-                    </button>) :
-                    (<button
+                    </button>
+                  ) : (
+                    <button
                       className={`${styles.modalButton} ${styles.submit}`}
                       onClick={handleApiKeySubmit}
                       disabled={!isValidCalApiKey(apiKey.trim())}
                     >
                       {apiKey && !isApiKeyEditable ? "Update" : "Submit"}
-                    </button>)}
+                    </button>
+                  )}
                   {/* <button
                     className={`${styles.modalButton} ${styles.submit}`}
                     onClick={handleApiKeySubmit}
@@ -1429,10 +1648,84 @@ function Dashboard() {
             </div>
           </div>
         )}
+        {showDeleteConfirm && agentToDelete && (
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <div
+              className={styles.modalContainer}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2>Are you sure?</h2>
+              <p>
+                Do you want to delete agent{" "}
+                <strong>{agentToDelete.agentName}</strong>?
+              </p>
+              <div className={styles.modalButtons}>
+                <button
+                  className={`${styles.modalButton} ${styles.cancel}`}
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  No
+                </button>
+                {deleteloading ? (
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    Deleting <Loader size={18} />
+                  </button>
+                ) : (
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={async () => {
+                      try {
+                        await handleDelete(agentToDelete.agent_id);
+                        setShowDeleteConfirm(false);
+                        setAgentToDelete(null);
+                      } catch (error) {
+                        setPopupMessage(
+                          `Failed to delete agent: ${error.message}`
+                        );
+                        setPopupType("failed");
+                        setShowDeleteConfirm(false);
+                      }
+                    }}
+                  >
+                    Yes
+                  </button>
+                )}
+                {/* <button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  onClick={async () => {
+                    try {
+                      await handleDelete(agentToDelete.agent_id);
+                      setShowDeleteConfirm(false);
+                      setAgentToDelete(null);
+                    } catch (error) {
+                      setPopupMessage(
+                        `Failed to delete agent: ${error.message}`
+                      );
+                      setPopupType("failed");
+                      setShowDeleteConfirm(false);
+                    }
+                  }}
+                >
+                  Yes
+                </button> */}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Call Test Modal */}
         {openCallModal && (
-          <Modal2 isOpen={openCallModal} onClose={handleCloseCallModal}>
+          <Modal3 isOpen={openCallModal} onClose={handleCloseCallModal} isEndingRef={isEndingRef} isCallInProgress={isCallInProgress}>
             <CallTest
               isCallActive={isCallActive}
               onStartCall={handleStartCall}
@@ -1443,8 +1736,9 @@ function Dashboard() {
               agentName={agentDetails?.agentName}
               agentAvatar={agentDetails?.avatar}
               businessName={agentDetails?.business?.businessName}
+              isEndingRef={isEndingRef}
             />
-          </Modal2>
+          </Modal3>
         )}
 
         {/* WidgetModal */}
@@ -1542,9 +1836,108 @@ function Dashboard() {
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
+      {/* Floating Button */}
+      {showreferralfloating == "true" && (
+        <div
+          className={styles.floating}
+          onClick={async () => {
+            await getUserReferralCode();
+          }}
+        >
+          <div className={styles.Cross} onClick={showConfirmFloatingClose}>
+            x
+          </div>
+          <div className={styles.imageWrapper} onClick={() => setIsModalOpen(true)}>
+            <img src="/svg/floating-svg2.svg" alt="floating-svg" />
+            <p className={styles.imageLabel}>10<span className={styles.percentag}>%</span></p>
+          </div>
+        </div>
+      )}
+
+      {/* Modal */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className={styles.Refferalinfo}>
+          <div className={styles.headerPart}>
+            <h3>Earn 10% Referral Commission</h3>
+          </div>
+          <div className={styles.card}>
+            {/* <label className={styles.checkboxLabel}>
+              Show Referral link on Dashboard
+              <input type="checkbox" className={styles.customCheckbox} />
+            </label> */}
+
+            <div className={styles.linkSection}>
+              <p className={styles.label}>Referral Link</p>
+              <div className={styles.linkDiv}>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    value={showDashboardReferral}
+                    readOnly
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.copyWrapper}>
+                  <button
+                    className={styles.copyButton}
+                    onClick={async () => handleCopy(showDashboardReferral)}
+                  >
+                    <img src="/svg/copy-icon.svg" alt="Copy" />
+                  </button>
+                  {copied && <span className={styles.tooltip}>Copied!</span>}
+                </div>
+              </div>
+            </div>
+
+            <hr className={styles.divider} />
+
+            <div className={styles.infoSection}>
+              <div className={styles.Linkdec}>
+                <img src="/svg/earn-icon.svg" alt="earn-icon" />
+                <p>
+                  Share your referral link and <b>earn 10% commission</b> of
+                  your friends’ spending.
+                </p>
+              </div>
+              <div className={styles.Linkdec}>
+                <img src="/svg/commission-icon.svg" alt="commission-icon" />
+                <p>
+                  You will earn “Commission” every month for upto{" "}
+                  <b>12 months</b> or Customer Lifespan(Whichever is lower){" "}
+                </p>
+              </div>
+              <div className={styles.Linkdec}>
+                <img src="/svg/commission2.svg" alt="commission-icon" />
+                <p>
+                  We pay “Referral Commission” to our affiliate partners on{" "}
+                  <b>1st Day of every following month.</b>
+                </p>
+              </div>
+            </div>
+
+            <div
+              className={styles.btnTheme}
+              onClick={async () => shareReferralLink(showDashboardReferral)}
+            >
+              <div className={styles.imageWrapper}>
+                <img src="svg/svg-theme2.svg" alt="" />
+              </div>
+              <p>Share Referral Link</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
 
       {/* <Footer /> */}
       <Footer2 />
+      <Modal isOpen={modelOpen} onClose={() => setModelOpen(false)}>
+        <Plan
+          agentID={agentId}
+          subscriptionID={subscriptionId}
+          locationPath={locationPath}
+        />
+      </Modal>
+
       <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
 
       {isAssignModalOpen && selectedAgentForAssign && (
@@ -1567,160 +1960,40 @@ function Dashboard() {
           onConfirm={handleLogoutConfirm}
         />
       )}
+
+      {popupMessage2 && (
+        <Popup
+          type={popupType2}
+          message={popupMessage2}
+          onClose={() => setPopupMessage2("")}
+          onConfirm={handleChangeStatus}
+        />
+      )}
+
+
+      <Popup
+        type={popupType3}
+        message={popupMessage3}
+        onClose={() => {
+          if (!isConfirmedRef.current) {
+            handleConnectCal(agentDetailsForCal);
+          }
+          isConfirmedRef.current = false;
+          setPopupMessage3("");           
+        }}
+        onConfirm={() => {
+          isConfirmedRef.current = true;        
+          handleCalConnectWithConfirm();        
+          setPopupMessage3("");                
+        
+        }}
+      />
+
+
+
+
     </div>
   );
 }
 
 export default Dashboard;
-
-const fetchPrevAgentDEtails = async (agent_id, businessId) => {
-  try {
-    const response = await getUserAgentMergedDataForAgentUpdate(
-      agent_id,
-      businessId
-    );
-    const agent = response?.data?.agent;
-    const business = response?.data?.business;
-    sessionStorage.setItem("UpdationMode", "ON");
-    sessionStorage.setItem("agentName", agent?.agentName);
-    sessionStorage.setItem("agentGender", agent?.agentGender);
-    sessionStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
-    sessionStorage.setItem("agentLanguage", agent?.agentLanguage);
-    sessionStorage.setItem("llmId", agent?.llmId);
-    sessionStorage.setItem("agent_id", agent?.agent_id);
-    sessionStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
-
-    //need to clear later
-    localStorage.setItem("UpdationMode", "ON");
-    localStorage.setItem("agentName", agent?.agentName);
-    localStorage.setItem("agentGender", agent?.agentGender);
-    localStorage.setItem("agentLanguageCode", agent?.agentLanguageCode);
-    localStorage.setItem("agentLanguage", agent?.agentLanguage);
-    localStorage.setItem("llmId", agent?.llmId);
-    localStorage.setItem("agent_id", agent?.agent_id);
-    localStorage.setItem("knowledgeBaseId", agent?.knowledgeBaseId);
-    localStorage.setItem("agentRole", agent?.agentRole);
-    localStorage.setItem("agentVoice", agent?.agentVoice);
-    localStorage.setItem("agentVoiceAccent", agent?.agentAccent);
-    localStorage.setItem("avatar", agent?.avatar);
-    sessionStorage.setItem("googleListing", business?.googleUrl);
-    sessionStorage.getItem("displayBusinessName");
-    localStorage.setItem("googleUrl", business?.googleUrl);
-    localStorage.setItem("webUrl", business?.webUrl);
-    localStorage.setItem("aboutBusiness", business?.aboutBusiness);
-    localStorage.setItem(
-      "additionalInstruction",
-      business?.additionalInstruction
-    );
-    localStorage.setItem("knowledge_base_name", business?.knowledge_base_name);
-    localStorage.setItem("knowledge_base_id", business?.knowledge_base_id);
-    //need to clear above
-    sessionStorage.setItem(
-      "aboutBusinessForm",
-      JSON.stringify({
-        businessUrl: business?.webUrl,
-        googleListing: business?.googleUrl,
-        aboutBusiness: business?.aboutBusiness,
-        note: business?.additionalInstruction,
-        isGoogleListing: business?.isGoogleListing,
-        isWebsiteUrl: business?.isWebsiteUrl,
-      })
-    );
-
-    sessionStorage.setItem("agentRole", agent?.agentRole);
-    sessionStorage.setItem("agentVoice", agent?.agentVoice);
-    sessionStorage.setItem("agentVoiceAccent", agent?.agentAccent);
-    sessionStorage.setItem("avatar", agent?.avatar);
-    sessionStorage.setItem("businessDetails", agent?.business);
-    sessionStorage.setItem("businessId", agent?.businessId);
-    sessionStorage.setItem("bId", agent?.businessId);
-    sessionStorage.setItem("displayBusinessName", business?.googleBusinessName);
-
-    const businessData = {
-      userId: business.userId,
-      businessType: business?.businessType,
-      businessName: business?.businessName.trim(),
-      businessSize: business?.businessSize,
-      customBuisness: business?.customBuisness,
-    };
-
-    let parsedServices = safeParse(business?.buisnessService, []);
-    sessionStorage.setItem(
-      "businesServices",
-      JSON.stringify({
-        selectedService: parsedServices,
-        email: business.buisnessEmail,
-      })
-    );
-    //custom servcice save and filter
-    let rawCustomServices = business?.customServices || [];
-
-    if (typeof rawCustomServices === "string") {
-      try {
-        rawCustomServices = JSON.parse(rawCustomServices);
-      } catch (err) {
-        console.error("Failed to parse customServices:", rawCustomServices);
-        rawCustomServices = [];
-      }
-    }
-
-    const cleanedCustomServices = Array.isArray(rawCustomServices)
-      ? rawCustomServices
-        .map((item) => item?.service?.trim())
-        .filter(Boolean)
-        .map((service) => ({ service }))
-      : [];
-
-    sessionStorage.setItem(
-      "selectedCustomServices",
-      JSON.stringify(cleanedCustomServices)
-    );
-
-    sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
-
-    let raw_knowledge_base_texts = business?.knowledge_base_texts || [];
-
-    if (typeof raw_knowledge_base_texts === "string") {
-      try {
-        raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
-      } catch (err) {
-        console.error(
-          "Failed to parse customServices:",
-          raw_knowledge_base_texts
-        );
-        raw_knowledge_base_texts = [];
-      }
-    }
-    const cleaned_raw_knowledge_base_texts = Array.isArray(
-      raw_knowledge_base_texts
-    )
-      ? raw_knowledge_base_texts
-      : [];
-
-    sessionStorage.setItem(
-      "placeDetailsExtract",
-      JSON.stringify(raw_knowledge_base_texts)
-    );
-    sessionStorage.setItem("agentNote", agent?.additionalNote);
-  } catch (error) {
-    console.log("An Error Occured while fetching Agent Data for ", error);
-  }
-};
-
-const safeParse = (value, fallback = null) => {
-  try {
-    if (typeof value === "string") {
-      const cleaned = value.trim();
-      if (
-        (cleaned.startsWith("[") && cleaned.endsWith("]")) ||
-        (cleaned.startsWith("{") && cleaned.endsWith("}")) ||
-        (cleaned.startsWith('"') && cleaned.endsWith('"'))
-      ) {
-        return JSON.parse(cleaned);
-      }
-    }
-    return value;
-  } catch {
-    return fallback;
-  }
-};

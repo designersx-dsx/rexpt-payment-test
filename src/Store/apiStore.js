@@ -22,8 +22,16 @@ export const LoginWithEmailOTP = async (email) => {
   return res;
 };
 
-export const verifyEmailOTP = async (email, otp) => {
-  const res = await api.post('/auth/verifyEmailOTP', { email, otp });
+export const verifyEmailOTP = async (email, otp ) => {
+  const customerRes = await fetch(`${API_BASE_URL}/customer`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+
+          const customerData = await customerRes.json();
+        let customerId =  customerData.customerId;
+  const res = await api.post('/auth/verifyEmailOTP', { email, otp , customerId});
   return res;
 };
 
@@ -85,6 +93,17 @@ export const listAgents = async () => {
   return res.data;
 }
 
+export const countAgentsbyUserId = async (userId) => {
+  try {
+    const res = await api.get(`${API_BASE_URL}/agent/listAgents?userId=${userId}`);
+    console.log('res',res)
+    return res.data.length  || 0;
+  } catch (error) {
+    console.error("Error fetching agent count:", error);
+    return 0;
+  }
+};
+
 export const updateProfilePicture = async (userId, data) => {
   const res = await api.patch(`${API_BASE_URL}/endusers/user/update_profile_picture/${userId}`, data, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -100,11 +119,29 @@ export const updateAgent = async (agentId, updateData) => {
   return res.data;
 };
 export const updateAgentWidgetDomain = async (id, url) => {
-
   const data = { url: url }
   const res = await axios.put(`${API_BASE_URL}/agent/updateAgentWidgetDomain/${id}`, data);
   return res.data;
 };
+export const deleteDomain = async (agentId, domain) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/agent/${agentId}/deleteDomain`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ domain }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      console.log("Updated domain list:", data.agentWidgetDomain);
+    } else {
+      console.error("Delete failed:", data.error);
+    }
+  } catch (err) {
+    console.error("Error deleting domain:", err);
+  }
+};
+
 export const validateWebsite = async (websiteUrl) => {
   try {
     const res = await api.post('/validate-website', { website: websiteUrl });
@@ -121,10 +158,19 @@ export const deleteAgent = async (agentId) => {
         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
       },
     });
+    await axios.delete(`https://api.retellai.com/delete-agent/${agentId}`, {
+      headers: {
+        Authorization:`Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+      },
+    });
+
     return res.data;
   } catch (error) {
-    console.error("Error deleting agent:", error.response?.data || error.message);
-    throw new Error("Failed to delete agent");
+    console.error(
+      "Error deleting agent:",
+      error.response?.data || error.message
+    );
+    throw new Error("Failed to delete agent from one or both systems.");
   }
 };
 
@@ -187,7 +233,7 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
 export const getUserDetails = async (userId) => {
   try {
     const response = await api.get(`/endusers/users/${userId}`);
-    console.log(response, "response")
+    // console.log(response, "response")
     return response.data;
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -296,6 +342,27 @@ export const updateEmailSendOtp = async (email, userId) => {
   const res = await api.post('/endusers/updateEmailSendOtp', { email, userId });
   return res;
 };
+
+export const updateShowReferralFloatingStatus = async (userId, status) => {
+  try {
+    const response = await api.patch(`/endusers/updateShowReferralFloatingStatus?userId=${userId}`,{status});
+    return response.data
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
+
+export const getUserReferralCodeForDashboard = async (userId) => {
+  try {
+    const response = await api.get(`/endusers/getUserReferralCodeForDashboard?userId=${userId}`);
+    return response.data
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
+
 
 
 export default api;

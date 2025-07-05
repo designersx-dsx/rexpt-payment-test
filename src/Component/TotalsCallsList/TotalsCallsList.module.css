@@ -52,7 +52,7 @@
 
 .thead th {
   text-align: left;
-  padding: 12px 24px 12px 0;
+  padding: 12px 24px 12px 10px;
   font-weight: 500;
   color: #888888;
   border-bottom: 1px solid #e5e7eb;
@@ -62,10 +62,25 @@
 
 .tbody tr {
   border-bottom: 1px solid #e0e5f2;
+  cursor: pointer;
 }
 
+
+.tbody tr {
+  border-bottom: 1px solid #e0e5f2;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.tbody tr:hover {
+  background-color: #F3EEFF; 
+  border-bottom: 1px solid #d4d4d4; 
+
+}
+
+
 .tbody td {
-  padding: 12px 24px 12px 0;
+  padding: 12px 24px 12px 10px;
   vertical-align: middle;
   color: #24252c;
   font-size: 1rem;

@@ -1,28 +1,43 @@
 import React from 'react';
 import styles from "../HeaderBar/HeaderBar.module.css";
 import { useNavigate } from 'react-router-dom';
-const HeaderBar = ({ title }) => {
-    const navigate=useNavigate()
-    const handleBack=()=>{
-       navigate(-1)
-    }
-    return (
-        <div>
-            <div className={styles.headerMain}>
-                <div className={styles.BothFlex}>
-                    <div className={styles.backIcon}>
-                        <img src='svg/Back-icon.svg' alt='Back-icon'  onClick={handleBack} />
-                    </div>
-                    <div className={styles.title}>
-                        <h2>{title}</h2>
-                    </div>
-                </div>
-                {/* <div className={styles.filterIcon}>
-                    <img src='svg/Filter-icon.svg' alt='Filter-icon' />
-                </div> */}
-            </div>
+
+const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange ,  backgroundColor = "#fff",color ='#24252C'}) => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  return (
+    <div className={styles.headerMain} style={{ backgroundColor }}>
+      <div className={styles.BothFlex}>
+        <div className={styles.backIcon}>
+          <img src='svg/Back-icon.svg' alt='Back-icon' onClick={handleBack} />
         </div>
-    );
+
+        <div className={styles.titleWrapper}>
+          <div className={styles.title}>
+            {subtitle && <h6>{subtitle}</h6>}
+            <h2 style={{ color }}>{title}</h2 >
+          </div>
+
+          {dropdownOptions.length > 0 && (
+            <select
+              className={styles.dropdown}
+              onChange={(e) => onDropdownChange?.(e.target.value)}
+            >
+              {dropdownOptions.map((option, idx) => (
+                <option key={idx} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default HeaderBar;

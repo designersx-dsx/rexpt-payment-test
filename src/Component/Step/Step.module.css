@@ -1,19 +1,38 @@
 .container {
   padding-block: 0px;
   padding-inline: 20px;
+  overflow: auto;
+  max-height: 90dvh;
 
-  text-align: center;
 
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255, 255, 255) transparent;
 }
 
-.container .Step3Container{
+.container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background-color: rgb(255, 255, 255);
+  border-radius: 4px;
+}
+
+
+.container .Step3Container {
   overflow: auto;
   /* margin-bottom: 5rem; */
 }
-.container .Step4Container{
+
+.container .Step4Container {
   overflow: auto;
   /* margin-bottom: 5rem; */
 }
+
 .LogoDiv {
   background-color: #ffff;
   position: sticky;
@@ -147,10 +166,9 @@
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: 12px 24px;
+  padding: 0px 12px 10px 12px;
   z-index: 1000;
   background-color: #fff;
-
 }
 
 .stepsIndicator {
@@ -161,30 +179,44 @@
   cursor: pointer;
 }
 
-.nextBtn {
-  cursor: pointer;
-}
-
-.newStep {
-  text-align: center;
-}
-
-.stepDot {
+/* Dot style */
+.stepNumber {
   width: 8px;
   height: 8px;
-  background-color: #e0e0e0;
   border-radius: 50%;
+  background-color: #e0e0e0;
+  border: none;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.activeDot {
+.activeStepNumber {
   background-color: #6524EB;
   border-radius: 6px;
   width: 23px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  /* animation: bounceActiveDot 0.4s ease forwards; */
+  animation: bounceActiveDot 0.4s ease forwards;
 }
 
+.completedStep {
+  background-color: #aaa;
+}
+
+.upcomingStep {
+  opacity: 0.5;
+}
+
+/* Arrow Button */
+.navBtn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.arrowIcon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Animations */
 @keyframes bounceActiveDot {
   0% {
     transform: scale(0.7);
@@ -210,6 +242,36 @@
   }
 }
 
+@keyframes bounceButton {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  60% {
+    transform: scale(0.95);
+  }
+
+  80% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animateBtn {
+  animation: bounceButton 0.4s ease forwards;
+}
+
+
 .navBtn {
   position: relative;
   height: 50px;
@@ -221,6 +283,7 @@
   justify-content: center;
   border: unset;
   cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .arrowIcon {
@@ -228,27 +291,119 @@
   width: 24px;
   height: 24px;
   pointer-events: none;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.navBtn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(101, 36, 235, 0.4);
+}
+
+.navBtn:hover .arrowIcon {
+  transform: scale(1.1);
+  filter: brightness(1.2);
 }
 
 @media screen and (min-width: 601px) {
   .btnTheme {
     cursor: pointer;
   }
+
   .container {
     max-width: 500px;
     margin: auto;
   }
+
   .fixedBtn {
     position: unset;
   }
+
   .footerFixed {
-  position: fixed;
-  width: 500px;
-  margin: auto;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  background-color: #fff;
-  border-radius: 15px 15px 0px 0px;
+    display: flex;
+    align-items: center;
+    width: 500px;
+    margin: auto;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    background-color: #fff;
+    border-radius: 15px 15px 0px 0px;
+    padding-top: 10px;
+
+  }
 
 }
 
+
+
+
+
+.stepsIndicator {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stepButton {
+  width: 30px;
+  height: 30px;
+  background-color: #eee;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.stepButton:hover {
+  background-color: #ccc;
+}
+
+.activeStep {
+  background-color: #007bff;
+  color: white;
+}
+
+.stepsIndicator {
+  display: flex;
+  gap: 0px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.stepNumber {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0 4px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Current Step */
+.activeStepNumber {
+  background-color: #6524EB;
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+
+/* Completed Step */
+.completedStep {
+  background-color: #EEE6FF;
+  color: transparent;
+  pointer-events: auto;
+}
+
+/* Upcoming Step */
+.upcomingStep {
+  background-color: #e0e0e0;
+  color: transparent;
+  pointer-events: none;
 }

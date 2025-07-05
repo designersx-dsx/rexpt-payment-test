@@ -24,12 +24,12 @@ function formatTime(isoDate) {
   return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-const AgentAnalysis = ({ data, calApiKey }) => {
-  const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
+const AgentAnalysis = ({ data, calApiKey,callVolume }) => {
+  // const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
   const [bookingDates, setBookingDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [bookingsForSelectedDate, setBookingsForSelectedDate] = useState([]);
-  const bookingsRef = useRef(null); // Ref for booking details section
+  const bookingsRef = useRef(null); 
 
   useEffect(() => {
     async function fetchBookingDates() {
@@ -96,7 +96,7 @@ const AgentAnalysis = ({ data, calApiKey }) => {
     <div className={styles.container}>
       <div className={styles.CallFlex}>
         <div className={styles.callVolume}>
-          {callVolume} <span>Call Volume</span>
+          {callVolume ? callVolume : "0"} <span>Call Volume</span>
         </div>
         <div className={styles.trend}>
           Last 7 Days <span className={styles.positive}>+15%</span>
@@ -132,15 +132,26 @@ const AgentAnalysis = ({ data, calApiKey }) => {
         </LineChart>
       </ResponsiveContainer>
 
+      <div className={styles.CalendarTopPin}>
+        <img src="/svg/Calendar-Top-pin.svg" alt="Calendar-Top-pin"/>
+      
+
       <div className={styles.calendarSection}>
-        <h1>{selectedDate.toDateString()}</h1>
+        <h1 className={styles.CalendarTitleWeek}>
+          Monday
+          <p className={styles.CalendarTitleDate}>04 Wednesdays 2025</p>
+        </h1>
+
+
+        {/* <h1>{selectedDate.toDateString()}</h1> */}
         <Calendar
           onChange={handleDateClick}
           value={selectedDate}
-          tileContent={tileContent} // Insert the dots
+          tileContent={tileContent} 
           calendarType="gregory"
           className={styles.reactCalendar}
         />
+      </div>
       </div>
 
       {bookingsForSelectedDate.length > 0 && (

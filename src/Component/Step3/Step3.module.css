@@ -8,10 +8,23 @@
 .labReq {
   position: relative;
   width: 100%;
+  margin-top: -5px;
 }
 
 .Dblock {
   display: grid;
+  min-height: 60px;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border: 1px solid #E0E5F2;
+  border-radius: 12px;
+  background-color: #fff;
+  max-width: 100%;
 }
 
 .sliderContainer {
@@ -19,6 +32,7 @@
   margin: 0 auto;
   text-align: center;
   position: relative;
+
 }
 
 .sliderContainer img {
@@ -40,11 +54,38 @@
 .agentInputBox {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 16px 20px;
+  padding: 0px;
   max-width: 500px;
   background-color: #fff;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1c1c1c;
+  background-color: transparent;
+  flex: 1;
 
 }
+.agentInput::placeholder {
+  color: #a1a1a1;
+  font-weight: 400;
+}
+
+.editBtn {
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  background-color: unset;
+  position: absolute;
+  right: 10px;
+}
+.editBtn img{
+  width:30px;
+}
+
 
 .agentLabel {
   font-weight: 600;
@@ -58,9 +99,11 @@
 .agentInput {
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 35px;
   color: #2d2d2d;
   width: 100%;
+  text-align: center;
+  text-transform: capitalize;
 }
 
 .agentInput::placeholder {
@@ -99,4 +142,20 @@
   position: absolute;
   top: 50%;
   width: 100%;
+}
+
+.arrowLeft {
+  cursor: pointer;
+
+}
+
+.arrowRight {
+  cursor: pointer;
+}
+
+
+.blocked {
+  pointer-events: none;
+  opacity: 0.6;
+  /* Optional: adds visual indication */
 }

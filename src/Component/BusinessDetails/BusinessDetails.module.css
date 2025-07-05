@@ -1,7 +1,9 @@
 .container {
-  padding: 16px 20px;
+  padding: 16px 0px;
   max-width: 400px;
   margin: auto;
+  /* overflow: scroll;
+  max-height: 330px; */
 }
 
 
@@ -56,9 +58,9 @@
 .optionList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   /* max-height: 200px; */
-  max-height: 35dvh;
+  max-height: 25dvh;
   overflow: auto;
   padding-right: 10px;
 }
@@ -101,6 +103,7 @@
   transition: all 0.3s;
   min-height: 70px;
   padding-inline: 10px;
+  padding-block: 5px;
 }
 
 .option:hover {
@@ -108,10 +111,16 @@
 }
 
 .icon {
-  margin-right: 1rem;
+  margin-right: 10px;
 }
 
+.strongDiv {
+  text-align: left;
+}
 
+.strongDiv strong {
+  margin-bottom: 5px;
+}
 
 .option strong {
   flex-grow: 1;
@@ -123,18 +132,17 @@
 .subType {
   color: #A3AED0;
   font-size: 16px;
+  margin-top: 5px;
 }
 
 .inputGroup {
   margin-top: 1rem;
-  /* display: flex; */
   flex-direction: column;
   position: relative;
 }
 
 .selectGroup {
   margin-top: 1rem;
-  /* display: flex; */
   flex-direction: column;
   position: relative;
 }
@@ -182,6 +190,7 @@
   text-align: center;
   color: #A3AED0;
 }
+
 /* dsad */
 .btnTheme {
   position: relative;
@@ -241,6 +250,16 @@
   background-color: #f0f0f0;
 }
 
+@media (min-width: 376px) and (max-width: 410px) {
+  .option strong {
+    font-size: 15px;
+  }
+  .subType {
+    font-size: 13px;
+
+  }
+}
+
 @media (max-width:375px) {
   .title {
     font-size: 36px;
@@ -251,7 +270,7 @@
   }
 
   .subType {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
@@ -272,6 +291,7 @@
   outline: none;
   min-height: 55px;
   width: 100%;
+  background-color: rgb(255, 255, 255);
 }
 
 /* Re-use the existing error style on focus/invalid */
@@ -281,7 +301,6 @@
 
 .selectDropdown {
   width: 200px;
-  /* or adjust to your desired smaller width */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -295,8 +314,8 @@
   background-position: right 10px center;
   background-size: 16px;
   appearance: none;
+  color: #24252C;
 }
-
 
 .requiredField {
   color: red;

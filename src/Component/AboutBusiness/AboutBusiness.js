@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState, useEffect, useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import styles from "../AboutBusiness/AboutBusiness.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
@@ -22,11 +26,9 @@ const dataURLtoFile = (dataUrl, fileName = "file") => {
   return new File([buf], fileName, { type: mime });
 };
 
-function AboutBusiness() {
+const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
   const aboutBusinessForm1 = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
-
   const [noGoogleListing, setNoGoogleListing] = useState(aboutBusinessForm1?.noGoogleListing || false);
-
   const [noBusinessWebsite, setNoBusinessWebsite] = useState(aboutBusinessForm1?.noBusinessWebsite || false);
   const [files, setFiles] = useState([]);
   const [businessUrl, setBusinessUrl] = useState("");
@@ -39,7 +41,7 @@ function AboutBusiness() {
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [agentCount, setAgentCount] = useState(0);
   const HTTPS_PREFIX = "https://";
   const PREFIX_LEN = HTTPS_PREFIX.length;
@@ -64,7 +66,7 @@ function AboutBusiness() {
   const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
   const [placeInfoText, setPlaceInfoText] = useState("");
   const setHasFetched = true;
-  
+
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
     setLoading,
@@ -110,36 +112,12 @@ function AboutBusiness() {
   }, []);
 
   useEffect(() => {
-  if (EditingMode === "ON" && !noBusinessWebsite) {
-    handleBlur();
-  }
-}, [EditingMode, noBusinessWebsite]);
+    if (EditingMode === "ON" && !noBusinessWebsite) {
+      handleBlur();
+    }
+  }, [EditingMode, noBusinessWebsite]);
 
-  // useEffect(() => {
-  //   const storedName = sessionStorage.getItem("displayBusinessName");
-  //   if (storedName) {
-  //     setDisplayBusinessName(storedName);
-
-  //     // Slight delay to let input mount
-  //     setTimeout(() => {
-  //       const input = document.getElementById("google-autocomplete");
-  //       if (input) {
-  //         input.focus();
-
-  //         // Simulate key press to trigger suggestion dropdown
-  //         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-  //           window.HTMLInputElement.prototype,
-  //           "value"
-  //         )?.set;
-
-  //         nativeInputValueSetter?.call(input, storedName);
-
-  //         const ev2 = new Event("input", { bubbles: true });
-  //         input.dispatchEvent(ev2);
-  //       }
-  //     }, 500);
-  //   }
-  // }, []);
+ 
 
   const fetchPlaceDetails = (placeId) => {
     setLoading(true);
@@ -152,7 +130,7 @@ function AboutBusiness() {
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
 
-        const form1= JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+        const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
         // Extract important fields from result
         const businessData = {
           businessName: result.name || "",
@@ -167,9 +145,9 @@ function AboutBusiness() {
           categories: result.types || [],
         };
         const updatedForm = {
-        ...form1,
-        ...businessData,
-      };
+          ...form1,
+          ...businessData,
+        };
         sessionStorage.setItem(
           "placeDetailsExtract",
           JSON.stringify(updatedForm)
@@ -286,20 +264,7 @@ function AboutBusiness() {
         setNoBusinessWebsite(savedData.noBusinessWebsite);
       }
 
-    } else {
-      const savedData = JSON.parse(
-        sessionStorage.getItem("aboutBusinessForm") || "{}"
-      );
-      if (savedData) {
-
-        if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
-        if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
-        if (savedData.note) setNote(savedData.note);
-        if (typeof savedData.noBusinessWebsite === "boolean") {
-          setNoBusinessWebsite(savedData.noBusinessWebsite);
-        }
-      }
-    }
+    } 
   }, []);
 
   useEffect(() => {
@@ -351,27 +316,26 @@ function AboutBusiness() {
     }
   };
   const handleContinue = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
-    const isWebsiteValid = businessUrl && isVerified;
-    const isGoogleListingValid = googleListing.trim();
-        if (!isGoogleListingValid && !noGoogleListing) {
-      setPopupType("failed");
-      setPopupMessage(
-        "Please provide a Google Listing or check the box if you don't have one."
-      );
-      setShowPopup(true);
-      return;
-    }
-    if (!isWebsiteValid && !noBusinessWebsite) {
-      setPopupType("failed");
-      setPopupMessage(
-        "Please provide a valid website or check the box if you don't have one."
-      );
-      setShowPopup(true);
-      return;
-    }
-
+    // const isWebsiteValid = businessUrl && isVerified;
+    // const isGoogleListingValid = googleListing.trim();
+    // if (!isGoogleListingValid && !noGoogleListing) {
+    //   setPopupType("failed");
+    //   setPopupMessage(
+    //     "Please provide a Google Listing or check the box if you don't have one."
+    //   );
+    //   setShowPopup(true);
+    //   return;
+    // }
+    // if (!isWebsiteValid && !noBusinessWebsite) {
+    //   setPopupType("failed");
+    //   setPopupMessage(
+    //     "Please provide a valid website or check the box if you don't have one."
+    //   );
+    //   setShowPopup(true);
+    //   return;
+    // }
 
     sessionStorage.setItem(
       "aboutBusinessForm",
@@ -385,7 +349,8 @@ function AboutBusiness() {
 
       })
     );
-    navigate("/your-business-Listing");
+    onStepChange?.(4);
+    // navigate("/your-business-Listing");
   };
 
   const handleSkip = (e) => {
@@ -437,6 +402,7 @@ function AboutBusiness() {
     }, 800);
   };
 
+
   useEffect(() => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       setShowPopup(true);
@@ -446,6 +412,7 @@ function AboutBusiness() {
       );
     }
   }, [CheckingUserLimit, isLimitExceeded]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
@@ -466,17 +433,47 @@ function AboutBusiness() {
       setShowPopup(false);
     }
   };
+  //Using Error Handling
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      let hasError = false;
+      const isWebsiteValid = businessUrl && isVerified;
+      const isGoogleListingValid = googleListing.trim();
+
+      // Google Listing validation
+      if (!isGoogleListingValid && !noGoogleListing) {
+        onValidationError?.({
+          type: "failed",
+          message: "Please provide a Google Listing or check the box if you don't have one.",
+        });
+        hasError = true;
+      }
+
+      // Website validation
+      if (!isWebsiteValid && !noBusinessWebsite) {
+        onValidationError?.({
+          type: "failed",
+          message: "Please provide a valid website or check the box if you don't have one.",
+        });
+        hasError = true;
+      }
+      return !hasError;
+    },
+    save: async () => {
+      handleContinue();
+    }
+  }));
 
   return (
     <>
       <div>
         <div className={styles.container}>
           <div className={styles.header}>
-            <h1>
+            {/* <h1>
               {EditingMode
-                ? "Edit: About Your Business"
-                : "About Your Business"}
-            </h1>
+                ? "Edit: Your business Listing"
+                : "Your business Listing"}
+            </h1> */}
           </div>
           <form className={styles.formContainer}>
             <div className={styles.form}>
@@ -493,7 +490,7 @@ function AboutBusiness() {
                     placeholder="Type the name of your Business to Search"
                     value={displayBusinessName}
                     // onChange={(e) => setGoogleListing(e.target.value)}
-                     onChange={(e) => {setDisplayBusinessName(e.target.value)}}
+                    onChange={(e) => { setDisplayBusinessName(e.target.value) }}
                     required
                     disabled={noGoogleListing}
                   />
@@ -502,6 +499,7 @@ function AboutBusiness() {
                   <input
                     id="no-google-listing"
                     type="checkbox"
+                    className={styles.customCheckbox}
                     checked={noGoogleListing}
                     onChange={(e) => {
                       const checked = e.target.checked;
@@ -510,40 +508,39 @@ function AboutBusiness() {
                       const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
                       form.noGoogleListing = checked;
                       sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
-                      const form1= JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+
+                      const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+
                       if (checked) {
                         setGoogleListing("");
                         setDisplayBusinessName("");
                         sessionStorage.removeItem("googleListing");
                         sessionStorage.removeItem("displayBusinessName");
-                        // sessionStorage.removeItem("placeDetailsExtract");
-                            const clearedGoogleData = {
-                            name: "", // Optional: keep or clear as needed
-                            address: "",
-                            phone: "",
-                            internationalPhone: "",
-                            website: "",
-                            rating: "",
-                            totalRatings: "",
-                            hours: [],
-                            businessStatus: "",
-                            categories: [],
-                            aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness|| "",
-                            businessName:"",
-                          };
 
-                          // Merge cleared Google fields into existing form
-                          const updatedForm = {
-                            ...form1,
-                            ...clearedGoogleData,
-                          };
+                        const clearedGoogleData = {
+                          name: "",
+                          address: "",
+                          phone: "",
+                          internationalPhone: "",
+                          website: "",
+                          rating: "",
+                          totalRatings: "",
+                          hours: [],
+                          businessStatus: "",
+                          categories: [],
+                          aboutBussiness: form1?.aboutBusiness || form1?.aboutBussiness || "",
+                          businessName: "",
+                        };
 
-                          // Update sessionStorage
-                          sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedForm));
+                        const updatedForm = {
+                          ...form1,
+                          ...clearedGoogleData,
+                        };
+
+                        sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedForm));
                       }
                     }}
                   />
-
                   <label htmlFor="no-google-listing">
                     I do not have Google My Business Listing
                   </label>
@@ -615,6 +612,7 @@ function AboutBusiness() {
                   <input
                     id="no-business-website"
                     type="checkbox"
+                    className={styles.customCheckbox}
                     checked={noBusinessWebsite}
                     onChange={(e) => {
                       const checked = e.target.checked;
@@ -632,48 +630,12 @@ function AboutBusiness() {
                       }
                     }}
                   />
-
                   <label htmlFor="no-business-website">
                     I do not have a business website
                   </label>
                 </div>
               </div>
-              <div className={styles.fixedBtn}>
-                {/* {stepEditingMode != "ON" || knowledgeBaseId ? (*/}
-                {stepEditingMode != "ON" ? (
-                  <button
-                    type="submit"
-                    className={styles.btnTheme}
-                    disabled={loading}
-                    onClick={handleContinue}
-                  >
-                    <img src="svg/svg-theme.svg" alt="" />
-                    {loading ? (
-                      <>
-                        Add <Loader size={20} />
-                      </>
-                    ) : (
-                      <p>Continue</p>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    className={styles.btnTheme}
-                    disabled={loading}
-                    onClick={handleContinue}
-                  >
-                    <img src="svg/svg-theme.svg" alt="" />
-                    {loading ? (
-                      <>
-                        Add <Loader size={20} />
-                      </>
-                    ) : (
-                      <p>Save Edits  </p>
-                    )}
-                  </button>
-                )}
-              </div>
+  
             </div>
           </form>
         </div>
@@ -688,6 +650,6 @@ function AboutBusiness() {
       </div>
     </>
   );
-}
+})
 
 export default AboutBusiness;

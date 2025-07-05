@@ -1,0 +1,170 @@
+.logoWrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.logo {
+    height: auto;
+}
+
+.sectionTitle {
+    font-size: clamp(25px, 2vw, 35px);
+    font-weight: 700;
+    margin: 12px 0 8px;
+    text-align: center;
+    color: #24252C;
+}
+
+.sectionmPara{
+    font-size: 14px;
+    text-align: center;
+    font-weight: 600;
+    color: #86868c;
+    margin: 0 0 30px 0;
+}
+
+.genderContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 24px;
+    margin-top: 10px;
+
+}
+
+.genderCard {
+    display: flex;
+    align-items: center;
+    background: #f7f5ff;
+    padding: 12px;
+    border-radius: 12px;
+    width: 50%;
+    position: relative;
+    cursor: pointer;
+    border: 2px solid transparent;
+    gap: 10px;
+}
+
+.radioInput {
+    position: absolute;
+    right: 10px;
+    top: 20px;
+}
+
+.genderCard.active {
+    border-color: #8b5cf6;
+}
+
+.icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+/* .radio {
+    width: 12px;
+    height: 12px;
+    background: #ccc;
+    border-radius: 50%;
+    margin-top: 8px;
+} */
+
+.genderCard.active .radio {
+    background: #8b5cf6;
+}
+
+.voiceGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 3rem;
+    /* max-height: 380px; */
+    overflow: overlay;
+    padding-right: 0px;
+}
+
+.voiceGrid::-webkit-scrollbar {
+    width: 4px;
+}
+
+.voiceGrid::-webkit-scrollbar-track {
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+.voiceGrid::-webkit-scrollbar-thumb {
+    background-color: #6524EB;
+    border-radius: 8px;
+}
+
+.voiceCard {
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-color: #E0E5F2 !important;
+    text-align: center;
+}
+
+.voiceGrid> :nth-last-child(-n+2) {
+    margin-bottom: 2rem;
+}
+
+.voiceCard.active {
+    border-color: #8b5cf6 !important;
+}
+
+.playIcon {
+
+
+    margin-bottom: 8px;
+}
+
+.voiceName {
+    font-weight: 600;
+    margin: 0;
+}
+
+.voiceDesc {
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dots {
+    display: flex;
+    gap: 4px;
+    margin-left: 12px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #ccc;
+    border-radius: 50%;
+}
+
+.activeDot {
+    background: #8b5cf6;
+}
+
+.nextBtn {
+    background: black;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    font-size: 18px;
+    border-radius: 50%;
+    margin-right: 12px;
+    cursor: pointer;
+}

@@ -1,0 +1,55 @@
+.Maindiv{
+   padding-inline: 20px;
+}.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+   background-color: #fff;
+       margin: 0 auto 40px ;
+}
+
+.inputSection {
+  margin-bottom: 10px;
+  border: 1px solid #E0E5F2;
+  padding: 15px;
+border-radius: 12px;
+
+
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 18px;
+  color: #24252C;
+}
+
+.input {
+  width: 100%;
+  padding: 0px;
+  border: none;
+  font-size: 16px;
+  color: #A3AED0;
+  margin-bottom: 5px;
+  outline: none;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0px;
+  border: none;
+  font-size: 16px;
+  color: #A3AED0;
+  margin-bottom: 5px;
+  outline: none;
+}
+
+
+.stickyWrapper {
+    position: sticky;
+    bottom: 0px;
+    background: white;
+    padding: 10px 0;
+    z-index: 10;
+}
