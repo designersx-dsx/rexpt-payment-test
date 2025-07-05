@@ -24,8 +24,6 @@ import BusinessListing from "../BusinessListing/BusinessListing";
 import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
 import getDynamicAgentName from "../../utils/getDynamicAgentName";
-
-
   const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -239,8 +237,6 @@ const Step = () => {
             console.log(error)
         }
     }
-                console.log('filterAgents',agentCount)
-
   const sanitize = (str) =>
     String(str || "")
       .trim()
@@ -272,6 +268,8 @@ const Step = () => {
         const combinedChoices = Array.from(new Set([...fixedChoices, ...cleanedServices]));
         return combinedChoices;
     }
+    //getTimeZone
+    const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
     const handleContinue = async () => {
         if (step8ARef.current) {
             setIsContinueClicked(true);
@@ -292,7 +290,8 @@ const Step = () => {
                     businessType,
                     aboutBusinessForm,
                     commaSeparatedServices,
-                    agentNote
+                    agentNote,
+                    timeZone
                 });
             // const isValid = step8BRef.current.validate()
 
@@ -352,6 +351,7 @@ const Step = () => {
 
                     default_dynamic_variables: {
                         customer_name: "John Doe",
+                        timeZone:timeZone
                     },
                 };
                 const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");

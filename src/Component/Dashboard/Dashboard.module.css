@@ -467,7 +467,7 @@
 }
 
 .OptionItem {
-    padding: 8px 12px;
+    padding: 7.5px 12px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
 }
@@ -499,9 +499,8 @@
         transform: translate(50%, 0%);
 
     }
-
     .OptionsDropdown {
-        top: -50%;
+        top: -80%;
         right: 40px;
     }
 

@@ -250,7 +250,6 @@ console.log(isConfirming)
   };
   useEffect(() => {
     const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
-
     if (agentWithCalKey?.calApiKey) {
       const fetchBookings = async () => {
         try {
@@ -376,7 +375,6 @@ console.log(isConfirming)
 
   // Create Cal event
   const createCalEvent = async () => {
-
     const agent = agentDetailsForCal
     await handleApiKeySubmit()
     try {
@@ -795,12 +793,6 @@ console.log(isConfirming)
         const businessDetails = await getBusinessDetailsByBusinessId(
           businessId
         );
-
-        // const shortName = (businessDetails?.businessName || "Business")
-        //   .trim()
-        //   .toLowerCase()
-        //   .replace(/\s+/g, "_")
-        //   .slice(0, 20);
         const packageMap = {
           Free: 1,
           Starter: 2,
