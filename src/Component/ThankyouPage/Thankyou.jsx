@@ -181,16 +181,16 @@ function Thankyou() {
         await callNextApiAndRedirect(); // handles update + cancellation
         await fetchSubscriptionInfo(); // fetch updated subscription data
       } else {
-        // const fallback = setTimeout(() => {
-        //   if (key === "create") {
-        //     navigate("/steps", {
-        //       state: { locationPath: "/checkout" },
-        //     });
-        //   }
-        //   // Removed the "else if (key === 'update')" dashboard navigation
-        // }, 3000);
+        const fallback = setTimeout(() => {
+          if (key === "create") {
+            navigate("/steps", {
+              state: { locationPath: "/checkout" },
+            });
+          }
+          // Removed the "else if (key === 'update')" dashboard navigation
+        }, 3000);
 
-        // return () => clearTimeout(fallback);
+        return () => clearTimeout(fallback);
       }
     };
 
