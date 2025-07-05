@@ -220,7 +220,14 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
     return (
         <div>
+            <div className={styles.firstdiv}>
             <HeaderBar title="Upgrade Plan" />
+             <button onClick={()=> navigate("/steps", {
+                    state: {
+                      freeTrial: true,
+                    },
+                  })}>Free plans</button>
+             </div>
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {

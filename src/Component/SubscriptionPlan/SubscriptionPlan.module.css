@@ -14,6 +14,16 @@
 .slick-list {
     overflow: visible !important;
 }
+.firstdiv{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.firstdiv button{
+    width: 100px;
+    height: 35px;
+
+}
 
 .slick-track {
     display: flex !important;
