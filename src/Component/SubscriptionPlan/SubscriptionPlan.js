@@ -226,7 +226,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     state: {
                       freeTrial: true,
                     },
-                  })}>Free plans</button>
+                  })}>Continue with Free plans</button>
              </div>
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
