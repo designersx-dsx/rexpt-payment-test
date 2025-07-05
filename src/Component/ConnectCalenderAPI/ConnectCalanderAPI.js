@@ -17,9 +17,9 @@ const CalendarConnect = () => {
   const [enabled, setEnabled] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const token = localStorage.getItem("token");
-    const decodeTokenData = decodeToken(token);
-    const userId = decodeTokenData?.id || "";
- const [initialApiKey, setInitialApiKey] = useState("");
+  const decodeTokenData = decodeToken(token);
+  const userId = decodeTokenData?.id || "";
+  const [initialApiKey, setInitialApiKey] = useState("");
 
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showEventModal, setShowEventModal] = useState(false);
@@ -34,60 +34,55 @@ const CalendarConnect = () => {
   const [apiSubmitting, setApiSubmitting] = useState(false);
   const [agentsDetails, setAgentsDetails] = useState([])
   console.log(agentsDetails, "agentsDetails")
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const trimmedKey = apiKey.trim();
-  // if (!isValidCalApiKey(trimmedKey) || trimmedKey.length !== 37) {
-  //   setPopup({
-  //     type: "failed",
-  //     message: "Invalid API Key! It must start with 'cal_live_' and be 37 characters long.",
-  //   });
-  //   return;
-  // }
-  setApiSubmitting(true);
-  try {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agentId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ calApiKey: trimmedKey,userId:userId }),
-      }
-    );
+  //getTimeZone
+  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const trimmedKey = apiKey.trim();
+    setApiSubmitting(true);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agentId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ calApiKey: trimmedKey, userId: userId }),
+        }
+      );
 
-    if (!response.ok) {
-      const errorData = await response.json();
+      if (!response.ok) {
+        const errorData = await response.json();
 
-      if (response.status === 401 || response.status === 400) {
-        setPopup({
-          type: "failed",
-          message: "Unauthorized! Invalid API Key.",
-        });
-        return; //  Exit early on invalid key
+        if (response.status === 401 || response.status === 400) {
+          setPopup({
+            type: "failed",
+            message: "Unauthorized! Invalid API Key.",
+          });
+          return; //  Exit early on invalid key
+        }
+
+        throw new Error(errorData.message || "Failed to update API key");
       }
 
-      throw new Error(errorData.message || "Failed to update API key");
+      //  Only called if response is OK
+      setHasFetched(false);
+
+
+      createCalEvent(
+        trimmedKey,
+        `MEETING BY ${agentsDetails?.agentName}`,
+        `${agentsDetails?.agentName}_${agentsDetails?.agentCode}`,
+        15
+      );
+    } catch (error) {
+      setPopup({
+        type: "failed",
+        message: "Unauthorized! Invalid API Key.",
+      });
+    } finally {
+      setApiSubmitting(false);
     }
-
-    //  Only called if response is OK
-    setHasFetched(false);
-   
-
-    createCalEvent(
-      trimmedKey,
-      `MEETING BY ${agentsDetails?.agentName}`,
-      `${agentsDetails?.agentName}_${agentsDetails?.agentCode}`,
-      15
-    );
-  } catch (error) {
-    setPopup({
-      type: "failed",
-      message: "Unauthorized! Invalid API Key.",
-    });
-  } finally {
-    setApiSubmitting(false);
-  }
-};
+  };
   const createCalEvent = async (apiKey, eventName, slug, eventLength) => {
     if (!apiKey || !eventName || !eventName || !eventLength) {
       alert("Please fill in all fields.");
@@ -126,6 +121,15 @@ const handleSubmit = async (e) => {
             cal_api_key: apiKey.trim(),
             event_type_id: eventTypeId,
           },
+          {
+            type: "check_availability_cal",
+            name: "check_availability",
+            cal_api_key: apiKey.trim(),
+            event_type_id: eventTypeId,
+            description: "Checking availability for event booking",
+            timezone: timeZone
+
+          }
         ],
       };
 
@@ -160,7 +164,7 @@ const handleSubmit = async (e) => {
     } catch (err) {
       setPopup({
         type: "failed",
-         message: "Unauthorized user! Please enter a valid Cal API key"
+        message: "Unauthorized user! Please enter a valid Cal API key"
       });
     } finally {
       setEventLoading(false);
@@ -172,19 +176,19 @@ const handleSubmit = async (e) => {
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-useEffect(() => {
-  const agentDetails = JSON.parse(sessionStorage.getItem("agentDetails"));
+  useEffect(() => {
+    const agentDetails = JSON.parse(sessionStorage.getItem("agentDetails"));
 
-  setAgentId(agentDetails?.agent_id);
-  setLlmId(agentDetails?.llmId);
-  setAgentsDetails(agentDetails);
+    setAgentId(agentDetails?.agent_id);
+    setLlmId(agentDetails?.llmId);
+    setAgentsDetails(agentDetails);
 
-  if (agentDetails?.calApiKey && typeof agentDetails?.calApiKey === "string") {
-    setApiKey(agentDetails?.calApiKey);
-    setInitialApiKey(agentDetails?.calApiKey); // ← Save for comparison
-    setEnabled(true);
-  }
-}, []);
+    if (agentDetails?.calApiKey && typeof agentDetails?.calApiKey === "string") {
+      setApiKey(agentDetails?.calApiKey);
+      setInitialApiKey(agentDetails?.calApiKey); // ← Save for comparison
+      setEnabled(true);
+    }
+  }, []);
 
 
 
@@ -259,15 +263,15 @@ useEffect(() => {
                 meeting in your Cal.com profile for your agent to book meetings
                 for you.
               </p>
-            <AnimatedButton
-  onClick={handleSubmit}
-  isLoading={eventLoading}
-  label="Submit"
-  disabled={
-    apiSubmitting || apiKey.trim() === initialApiKey.trim()
-  }
-  position={{ position: "relative" }}
-/>
+              <AnimatedButton
+                onClick={handleSubmit}
+                isLoading={eventLoading}
+                label="Submit"
+                disabled={
+                  apiSubmitting || apiKey.trim() === initialApiKey.trim()
+                }
+                position={{ position: "relative" }}
+              />
             </form>
 
             <div className={styles.helpLink}>
@@ -280,9 +284,9 @@ useEffect(() => {
 
         {!enabled && (
           <div className={styles.offSwitch}>
-              
-            <a  target="_blank"
-                  rel="noopener noreferrer" href="https://cal.com/?via=designersx&dub_id=kTPL5nvpvLqoLhE2">
+
+            <a target="_blank"
+              rel="noopener noreferrer" href="https://cal.com/?via=designersx&dub_id=kTPL5nvpvLqoLhE2">
               {" "}
               <div className={styles.recommendation}>
                 <img src="/images/CalCOm.png" />
@@ -329,32 +333,32 @@ useEffect(() => {
                   </Typography>
                 </AccordionDetails>
               </Accordion>
-   <a href="/calinfo" target="_blank" rel="noopener noreferrer">
-              <button className={styles.guideButton}>
-                <div>
-                  <h6>Guide to Connect</h6>
+              <a href="/calinfo" target="_blank" rel="noopener noreferrer">
+                <button className={styles.guideButton}>
+                  <div>
+                    <h6>Guide to Connect</h6>
 
-                  <p className={styles.paraTest}>
-                    your agent to Cal.com Account
-                  </p>
-                </div>
-                <div className={styles.playIcon}>
-                  {/* <img src='/images/PlayBox.png'/> */}
-                  <svg
-                    width="55"
-                    height="55"
-                    viewBox="0 0 67 65"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect x="2" width="65" height="65" rx="16" fill="#5F33E1" />
-                    <path
-                      d="M25.1855 21.8388C25.1855 16.4934 31.6484 13.8164 35.4282 17.5962L46.1284 28.2964C48.4716 30.6396 48.4716 34.4385 46.1284 36.7817L35.4282 47.4819C31.6484 51.2617 25.1855 48.5847 25.1855 43.2393V32.5391V21.8388Z"
-                      fill="#E0E5F2"
-                    />
-                  </svg>
-                </div>
-              </button>
+                    <p className={styles.paraTest}>
+                      your agent to Cal.com Account
+                    </p>
+                  </div>
+                  <div className={styles.playIcon}>
+                    {/* <img src='/images/PlayBox.png'/> */}
+                    <svg
+                      width="55"
+                      height="55"
+                      viewBox="0 0 67 65"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <rect x="2" width="65" height="65" rx="16" fill="#5F33E1" />
+                      <path
+                        d="M25.1855 21.8388C25.1855 16.4934 31.6484 13.8164 35.4282 17.5962L46.1284 28.2964C48.4716 30.6396 48.4716 34.4385 46.1284 36.7817L35.4282 47.4819C31.6484 51.2617 25.1855 48.5847 25.1855 43.2393V32.5391V21.8388Z"
+                        fill="#E0E5F2"
+                      />
+                    </svg>
+                  </div>
+                </button>
               </a>
             </div>
           </div>

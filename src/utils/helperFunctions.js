@@ -69,6 +69,12 @@ export const clearSessionAfterEdit=()=>{
       sessionStorage.removeItem("placeDetailsExtract");
       sessionStorage.removeItem("agentNote");
       sessionStorage.removeItem("UpdationModeStepWise");
-      sessionStorage.removeItem("prevBuisnessType");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("UpdationModeStepWise");
+      sessionStorage.removeItem("customServices");
+      sessionStorage.removeItem("agentCode");
+      sessionStorage.removeItem("businessUrl");
+      sessionStorage.removeItem("selectedServices");
     }
 }

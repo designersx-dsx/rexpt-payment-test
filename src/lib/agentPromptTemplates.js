@@ -11,6 +11,7 @@ export const agentPromptTemplates = {
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+      timeZone
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}, who understands all aspects of the below-listed services of the business:
 ## services list :
@@ -36,7 +37,7 @@ Clarity and Simplicity: Keep responses clear, concise, and to the point. Use sim
 Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
 Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
 Current Time: {{current_time}}
-Timezone: {{current_time_[timezone]}}
+Timezone: ${timeZone}
 
 Greeting and Initial Engagement
 Start Strong: Immediately offer a warm and professional greeting. Example: “Hello, my name is  ${agentName}, thank you for calling ${business?.businessName}. How may I assist you today?”
