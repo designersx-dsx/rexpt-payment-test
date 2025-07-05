@@ -503,9 +503,16 @@ const SignUp = () => {
                       <img src="svg/Coming-Soon.svg" />
                     </div>
                     <p className={styles.PrivaceTerms}>
-                      By providing your email address & creating an account
-                      You agree to the Rexptin <a href="#">Terms of Service</a> & <a href="#">Terms of Use</a>
+                      By providing your email address & creating an account, you agree to the Rexptin&nbsp;
+                      <a href="https://www.rexpt.in/Terms-Condition" target="_blank" rel="noopener noreferrer">
+                        Terms & Conditions
+                      </a>
+                      &nbsp;and&nbsp;
+                      <a href="https://www.rexpt.in/Privacy-Policy" target="_blank" rel="noopener noreferrer">
+                        Privacy Policy
+                      </a>
                     </p>
+
                   </div>
                 </div>
 
