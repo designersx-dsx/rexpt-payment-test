@@ -387,6 +387,9 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    text-align: center;
+    margin: auto;
+    justify-content: center;
 }
 
 
@@ -459,6 +462,15 @@
     transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 1;
+}
+.PrivaceTerms{
+    font-size: 11px;
+    color: #24252C;
+    text-align: center;
+}
+.PrivaceTerms a{
+    color: #0078D4;
+    
 }
 
 @media screen and (min-width: 601px) {

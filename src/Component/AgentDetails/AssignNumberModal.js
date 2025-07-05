@@ -1,21 +1,23 @@
 import React, { useState } from "react";
 import styles from "./AssignNumberModal.module.css";
 import axios from "axios";
-import { updateAgent } from "../../Store/apiStore"; 
+import { updateAgent } from "../../Store/apiStore";
+import PopUp from "../Popup/Popup";
 
-const AssignNumberModal = ({ isOpen, onClose, agentId }) => {
+const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
   const [loading, setLoading] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success");
   if (!isOpen) return null;
   const handleAssignNumber = async () => {
     try {
       setLoading(true);
-    //  const agentsData = JSON.parse(localStorage.getItem("agents") || "[]");
-      // const agentId = agentId;
+      const agentsData = JSON.parse(localStorage.getItem("agents") || "[]");
+
 
       if (!agentId) {
         throw new Error("Agent ID not found in localStorage.");
       }
-
       const payload = {
         inbound_agent_id: agentId,
         outbound_agent_id: agentId,
@@ -36,16 +38,19 @@ const AssignNumberModal = ({ isOpen, onClose, agentId }) => {
       );
 
       console.log("Phone number created:", response.data);
-    const phoneNumber = response?.data?.phone_number;
+      const phoneNumber = response?.data?.phone_number;
 
       if (!phoneNumber) {
         throw new Error("No phone number returned from Retell API.");
       }
 
       await updateAgent(agentId, { voip_numbers: [phoneNumber] });
-
-      alert(`Number ${phoneNumber} assigned and saved! 🎉`);
-      onClose();
+      setPopupType("success")
+      setPopupMessage(`Number ${phoneNumber} assigned and saved! 🎉`)
+      onCallApi()
+      setTimeout(() => {
+        onClose()
+      }, 2000);
     } catch (error) {
       console.error("Error assigning number:", error.response?.data || error.message);
       alert("Failed to assign number. Please try again.");
@@ -84,6 +89,14 @@ const AssignNumberModal = ({ isOpen, onClose, agentId }) => {
           ✨ <strong>Coming Soon:</strong> We will provide option to choose your custom new support number.
         </p>
       </div>
+      {popupMessage && (
+        <PopUp
+          type={popupType}
+          message={popupMessage}
+          onClose={() => setPopupMessage("")}
+
+        />
+      )}
     </div>
   );
 };
