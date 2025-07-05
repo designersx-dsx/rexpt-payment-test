@@ -508,17 +508,13 @@
     width: auto;
     font-size: 10px;
     color: #fff;
-    padding: 0 3px;
+    padding: 0 7px;
     display: flex;
     justify-content: center;
     align-items: center;
 
 }
-
-/* Style for each individual dot */
 .bookingDot {
-    /* width: 8px;
-    height: 8px; */
     border-radius: 50px;
     background-color: #6A0DAD;
     display: inline-block;
