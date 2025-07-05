@@ -298,10 +298,10 @@ const Planss = () => {
     const location = useLocation();
 
     let agentID = location?.state?.agentID
- 
+
     let subscriptionID = location?.state?.subscriptionID
     let locationPath = location?.state?.locationPath
-    console.log(location , "agent")
+    console.log(location, "agent")
 
     const settings = {
         infinite: false,
@@ -323,15 +323,17 @@ const Planss = () => {
 
 
     const mapCountryToCurrency = (countryCode) => {
-      const countryCurrencyMap = {
-        IN: 'inr',
-        US: 'usd',
-        CA: 'cad',
-        AU: 'aud',
-        GB: 'gbp',
-        // add more as needed
-      };
-      return countryCurrencyMap[countryCode] || 'usd';
+
+        const countryCurrencyMap = {
+            // IN: 'inr',
+            US: 'usd',
+            CA: 'cad',
+            AU: 'aud',
+            GB: 'gbp',
+            // add more as needed
+        };
+        return countryCurrencyMap[countryCode] || 'usd';
+
     }
 
     const toggleExpand = (index) => {
@@ -379,7 +381,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -646,48 +648,48 @@ const Planss = () => {
                                             onClick={() => {
                                                 if (priceForInterval) {
 
-                                                   if (agentID) {
-                navigate(`/checkout`, { state: { priceId : priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId",  priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
-              }
-                                                 
-                                                  else{
-                                                    const today = new Date();
-                                                    const nextBillingDate = new Date(today);
-
-                                                    if (priceForInterval.interval === "month") {
-                                                        nextBillingDate.setMonth(today.getMonth() + 1);
-                                                    } else {
-                                                        nextBillingDate.setFullYear(today.getFullYear() + 1);
+                                                    if (agentID) {
+                                                        navigate(`/checkout`, { state: { priceId: priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
                                                     }
 
-                                                    const selectedPlanData = {
-                                                        priceId: priceForInterval.id,
-                                                        agentId: agentID,
-                                                        price: (priceForInterval.unit_amount / 100).toFixed(2),
-                                                        interval: priceForInterval.interval,
-                                                        currency: priceForInterval.currency,
-                                                        billingTodayAmount:
-                                                            priceForInterval.interval === "month"
-                                                                ? (priceForInterval.unit_amount / 100).toFixed(2)
-                                                                : ((priceForInterval.unit_amount / 100) * 12 * 0.95).toFixed(2),
-                                                        billingDate: today.toISOString(),
-                                                        nextBillingDate: nextBillingDate.toISOString(),
-                                                    };
+                                                    else {
+                                                        const today = new Date();
+                                                        const nextBillingDate = new Date(today);
 
-                                                    // ✅ Save to localStorage
-                                                    localStorage.setItem("selectedPlanData", JSON.stringify(selectedPlanData));
-                                                      navigate("/steps", {
-                                                        state: {
+                                                        if (priceForInterval.interval === "month") {
+                                                            nextBillingDate.setMonth(today.getMonth() + 1);
+                                                        } else {
+                                                            nextBillingDate.setFullYear(today.getFullYear() + 1);
+                                                        }
+
+                                                        const selectedPlanData = {
                                                             priceId: priceForInterval.id,
                                                             agentId: agentID,
-                                                            locationPath1: locationPath,
                                                             price: (priceForInterval.unit_amount / 100).toFixed(2),
                                                             interval: priceForInterval.interval,
-                                                        },      
-                                                    } , 
-                                                   sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2))
-                                                  );
-                                                  }
+                                                            currency: priceForInterval.currency,
+                                                            billingTodayAmount:
+                                                                priceForInterval.interval === "month"
+                                                                    ? (priceForInterval.unit_amount / 100).toFixed(2)
+                                                                    : ((priceForInterval.unit_amount / 100) * 12 * 0.95).toFixed(2),
+                                                            billingDate: today.toISOString(),
+                                                            nextBillingDate: nextBillingDate.toISOString(),
+                                                        };
+
+                                                        // ✅ Save to localStorage
+                                                        localStorage.setItem("selectedPlanData", JSON.stringify(selectedPlanData));
+                                                        navigate("/steps", {
+                                                            state: {
+                                                                priceId: priceForInterval.id,
+                                                                agentId: agentID,
+                                                                locationPath1: locationPath,
+                                                                price: (priceForInterval.unit_amount / 100).toFixed(2),
+                                                                interval: priceForInterval.interval,
+                                                            },
+                                                        },
+                                                            sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2))
+                                                        );
+                                                    }
                                                 } else {
                                                     alert("Price not available for selected interval");
                                                 }
