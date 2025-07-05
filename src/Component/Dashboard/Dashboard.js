@@ -132,8 +132,9 @@ function Dashboard() {
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
-
-console.log(isConfirming)
+ //getTimeZone
+  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+// console.log(isConfirming)
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -234,6 +235,10 @@ console.log(isConfirming)
       sessionStorage.removeItem("prevAgentGender");
       sessionStorage.removeItem("UpdationModeStepWise");
       sessionStorage.removeItem("customServices");
+      sessionStorage.removeItem("agentCode");
+      sessionStorage.removeItem("businessUrl");
+      sessionStorage.removeItem("selectedServices");
+
     }
   }, []);
   // Navigate on agent card click
@@ -250,7 +255,6 @@ console.log(isConfirming)
   };
   useEffect(() => {
     const agentWithCalKey = localAgents?.find((agent) => agent.calApiKey);
-
     if (agentWithCalKey?.calApiKey) {
       const fetchBookings = async () => {
         try {
@@ -303,7 +307,7 @@ console.log(isConfirming)
     if (!userId) return;
     try {
       const res = await fetchDashboardDetails(userId);
-      console.log(res, "res")
+      // console.log(res, "res")
       setUserCalApiKey(res?.calApiKey)
       sessionStorage.setItem("userCalApiKey", res?.calApiKey)
 
@@ -376,7 +380,6 @@ console.log(isConfirming)
 
   // Create Cal event
   const createCalEvent = async () => {
-
     const agent = agentDetailsForCal
     await handleApiKeySubmit()
     try {
@@ -410,6 +413,15 @@ console.log(isConfirming)
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
           },
+          {
+            type: "check_availability_cal",
+            name: "check_availability",
+            cal_api_key: userCalApiKey.trim(),
+            event_type_id: eventTypeId,
+            description: "Checking availability for event booking",
+            timezone: timeZone
+
+          }
         ],
       };
 
@@ -795,12 +807,6 @@ console.log(isConfirming)
         const businessDetails = await getBusinessDetailsByBusinessId(
           businessId
         );
-
-        // const shortName = (businessDetails?.businessName || "Business")
-        //   .trim()
-        //   .toLowerCase()
-        //   .replace(/\s+/g, "_")
-        //   .slice(0, 20);
         const packageMap = {
           Free: 1,
           Starter: 2,

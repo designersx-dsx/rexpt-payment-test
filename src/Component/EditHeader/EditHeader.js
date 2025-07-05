@@ -15,7 +15,7 @@ const EditHeader = ({ title, agentName, }) => {
 
       }
     } else {
-      navigate('/edit-agent');
+      navigate(-1);
     }
   };
     return (
