@@ -23,6 +23,7 @@ const StepHeader = ({ title, subTitle, icon, tooltip }) => {
                 className={styles.LogoWrapper}
 
             >
+                {/* hel */}
 
                 <img src='/svg/Rexpt-Logo.svg' alt='Rexpt-Logo'/>
                 {/* <div className={styles.RipplThree}>
