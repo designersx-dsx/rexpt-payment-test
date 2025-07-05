@@ -178,15 +178,7 @@ function App() {
                 />
 
 
-                <Route
-                  path="/business-services"
-                  element={
-                    <SecureRoute>
-                      <BusinessServices />
-                    </SecureRoute>
-                  }
-                />
-
+  
 
                 {/* <Route path="/home" element={<Home />} /> */}
                 <Route
