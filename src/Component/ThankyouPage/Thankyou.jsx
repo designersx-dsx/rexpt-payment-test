@@ -61,9 +61,9 @@ function Thankyou() {
           : null;
 
         setAgentCode(sessionStorage.getItem("AgentCode") || "XXXXXX");
-          setAgentName(sessionStorage.getItem("agentName") || "Agent");
+        setAgentName(sessionStorage.getItem("agentName") || "Agent");
 
-        
+
 
         // 1. From businessDetails first
         if (businessData) {
@@ -79,6 +79,23 @@ function Thankyou() {
         }
 
         setBusinessName(businessNameVal || "Your Business");
+        // ✅ Load plan details from localStorage
+        const selectedPlanRaw = localStorage.getItem("selectedPlanData");
+        if (selectedPlanRaw) {
+          try {
+            const plan = JSON.parse(selectedPlanRaw);
+
+            setSubscriptionInfo({
+              planName: plan.planName || "N/A",
+              planAmount: plan.price || 0,
+              planMins: plan.minutes || "N/A",
+              interval: plan.interval || "month",
+              nextRenewalDate: plan.nextBillingDate || null,
+            });
+          } catch (err) {
+            console.warn("Failed to parse selected plan data from localStorage:", err);
+          }
+        }
       }
     } catch (e) {
       console.error("Failed to parse session storage values:", e);
@@ -184,6 +201,7 @@ function Thankyou() {
       } else {
         const fallback = setTimeout(() => {
           if (key === "create") {
+            localStorage.removeItem("selectedPlanData");
             navigate("/steps", {
               state: { locationPath: "/checkout" },
             });
@@ -250,8 +268,8 @@ function Thankyou() {
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? `US $${Number(
-                    subscriptionInfo.planAmount
-                  ).toLocaleString()} / month`
+                  subscriptionInfo.planAmount
+                ).toLocaleString()} / month`
                 : "US $499 / month"}
             </div>
           </div>
@@ -265,13 +283,13 @@ function Thankyou() {
               {subscriptionInfo
                 ? subscriptionInfo.interval === "month"
                   ? `$${Number(subscriptionInfo.planAmount).toFixed(
-                      2
-                    )} per month`
+                    2
+                  )} per month`
                   : `$${(
-                      Number(subscriptionInfo.planAmount) *
-                      12 *
-                      0.95
-                    ).toFixed(2)} for 12 months`
+                    Number(subscriptionInfo.planAmount) *
+                    12 *
+                    0.95
+                  ).toFixed(2)} for 12 months`
                 : "$5,688.60 for 12 months"}
             </div>
           </div>
@@ -281,23 +299,26 @@ function Thankyou() {
               <a href="#">
                 {subscriptionInfo
                   ? new Date(
-                      subscriptionInfo.nextRenewalDate
-                    ).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })
+                    subscriptionInfo.nextRenewalDate
+                  ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
                   : "06 July 2026"}
               </a>
             </div>
           </div>
           <div className={styles.ButtonTakeME}>
             <button
-              onClick={() =>
-                navigate(key === "create" ? null : "dashboard", {
-                  state: { currentLocation },
-                })
-              }
+              onClick={() => {
+                if (key !== "create") {
+                  localStorage.removeItem("selectedPlanData");
+                  navigate("/dashboard", {
+                    state: { currentLocation },
+                  });
+                }
+              }}
               className={styles.dashboardBtn}
               disabled={key === "create" ? true : false}
             >

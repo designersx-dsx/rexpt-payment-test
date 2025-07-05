@@ -52,6 +52,7 @@ import Loader from '../Loader/Loader';
 
 const AnimatedButton = ({
   isLoading,
+  size  , 
   label = 'Save',
   position = {},
   onClick = () => {},
@@ -87,7 +88,7 @@ const AnimatedButton = ({
         }}
       >
         <img src="svg/svg-theme2.svg" alt="button-bg" ref={imgRef} />
-        <p ref={textRef}>
+        <p style={{fontSize: size ? size : null}} ref={textRef}>
           {isLoading ? <Loader size={17} /> : label}
         </p>
       </div>

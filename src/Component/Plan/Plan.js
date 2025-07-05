@@ -332,6 +332,7 @@ const Planss = () => {
         // add more as needed
       };
       return countryCurrencyMap[countryCode] || 'usd';
+    }
 
     const toggleExpand = (index) => {
         setExpandedPlans((prev) => ({
@@ -650,6 +651,31 @@ const Planss = () => {
               }
                                                  
                                                   else{
+                                                    const today = new Date();
+                                                    const nextBillingDate = new Date(today);
+
+                                                    if (priceForInterval.interval === "month") {
+                                                        nextBillingDate.setMonth(today.getMonth() + 1);
+                                                    } else {
+                                                        nextBillingDate.setFullYear(today.getFullYear() + 1);
+                                                    }
+
+                                                    const selectedPlanData = {
+                                                        priceId: priceForInterval.id,
+                                                        agentId: agentID,
+                                                        price: (priceForInterval.unit_amount / 100).toFixed(2),
+                                                        interval: priceForInterval.interval,
+                                                        currency: priceForInterval.currency,
+                                                        billingTodayAmount:
+                                                            priceForInterval.interval === "month"
+                                                                ? (priceForInterval.unit_amount / 100).toFixed(2)
+                                                                : ((priceForInterval.unit_amount / 100) * 12 * 0.95).toFixed(2),
+                                                        billingDate: today.toISOString(),
+                                                        nextBillingDate: nextBillingDate.toISOString(),
+                                                    };
+
+                                                    // ✅ Save to localStorage
+                                                    localStorage.setItem("selectedPlanData", JSON.stringify(selectedPlanData));
                                                       navigate("/steps", {
                                                         state: {
                                                             priceId: priceForInterval.id,
@@ -697,4 +723,4 @@ const Planss = () => {
     );
 };
 
-export default Planss;
+export default Planss

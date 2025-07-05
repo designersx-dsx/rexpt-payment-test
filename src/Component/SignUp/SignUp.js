@@ -384,7 +384,7 @@ const SignUp = () => {
                       ><AnimatedButton
                           isLoading={isVerifyingOtp}
                           label="Send One Time Password"
-                          onClick={handleSendOTP}
+                          // onClick={handleSendOTP}
                           position={{ position: 'relative' }}
                         />
                         {/* <img src="svg/svg-theme2.svg" alt="" />

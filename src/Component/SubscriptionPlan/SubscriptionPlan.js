@@ -340,16 +340,17 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         Save up to 20% when billed yearly
                                     </div>
                                     <br />
-                                    <div className={styles.stickyWrapper}>
+                                    <div style={{fontSize: "14px"}} className={styles.stickyWrapper}>
                                         <AnimatedButton
                                             label={
                                                 priceForInterval
                                                     ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
                                                         priceForInterval.unit_amount / 100
                                                     ).toFixed(2)}/${priceForInterval.interval}`
-                                                    : "Unavailable"
-                                            }
+                                                     : "Unavailable"
+                                            } 
                                             position={{ position: "relative" }}
+                                            size="14px"
                                             onClick={() => {
                                                 if (priceForInterval) {
                                                     navigate("/checkout", {
