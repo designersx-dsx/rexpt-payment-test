@@ -514,6 +514,13 @@ const AgentDashboard = () => {
     localStorage.removeItem("knowledge_base_id");
     sessionStorage.removeItem("placeDetailsExtract")
     sessionStorage.removeItem("agentNote")
+    sessionStorage.removeItem("prevBuisnessType");
+    sessionStorage.removeItem("prevAgentGender");
+    sessionStorage.removeItem("prevAgentGender");
+    sessionStorage.removeItem("UpdationModeStepWise");
+    sessionStorage.removeItem("customServices");
+    sessionStorage.removeItem("agentCode");
+    sessionStorage.removeItem("businessUrl");
     setModalOpen(false);
   };
   // Open Widget modal

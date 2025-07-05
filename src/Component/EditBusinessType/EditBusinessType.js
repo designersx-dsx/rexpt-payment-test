@@ -9,6 +9,7 @@ import decodeToken from '../../lib/decodeToken';
 import PopUp from '../Popup/Popup';
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import { useNavigate } from 'react-router-dom';
+import { useDashboardStore } from '../../Store/agentZustandStore';
 
 
 const EditBusinessType = () => {
@@ -35,7 +36,7 @@ const EditBusinessType = () => {
     const [popupMessage, setPopupMessage] = useState("");
     const [Loading, setLoading] = useState(null);
     const navigate=useNavigate();
-    const setHasFetched=true;
+    const { setHasFetched } =    useDashboardStore();   
     const userId = decodeTokenData?.id;
     const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessType",
@@ -353,6 +354,8 @@ const EditBusinessType = () => {
       setShowPopup(true);
     } else {
       handleCreateAgent();
+      // setHasFetched(false)
+      
     }
   
   };

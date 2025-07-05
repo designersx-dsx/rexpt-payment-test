@@ -10,6 +10,7 @@ import PopUp from '../Popup/Popup';
 import axios from 'axios';
 import getKnowledgeBaseName from '../../utils/getKnowledgeBaseName';
 import { API_BASE_URL } from '../../Store/apiStore';
+import { useDashboardStore } from '../../Store/agentZustandStore';
 const EditBusinessDetail = () => {
     const agentnm=sessionStorage.getItem("agentName");
      const [businessName, setBusinessName] = useState("");
@@ -26,7 +27,8 @@ const EditBusinessDetail = () => {
   const userId = decodeTokenData?.id;
   const navigate = useNavigate();
   const EditingMode1 = localStorage.getItem("UpdationMode");
-  const setHasFetched = true;
+   const { setHasFetched } =    useDashboardStore();   
+
   const agentCode=sessionStorage.getItem('agentCode')||"";
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessDetail",
@@ -277,6 +279,7 @@ const EditBusinessDetail = () => {
       if (EditingMode === "ON" && knowledge_Base_ID) {
 
         handleCreateAgent()
+        setHasFetched(false);
       }
 
       // if (stepEditingMode !== "ON") {
@@ -352,8 +355,15 @@ const EditBusinessDetail = () => {
           type="text"
           className={styles.input}
           placeholder="88XX 77X X55"
-              value={phoneNumber}
-    onChange={(e) => handleInputChange("phone", e.target.value)}
+          value={phoneNumber}
+           maxLength={15}
+                minLength={8}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const cleaned = raw.replace(/[^0-9\s]/g, "");
+                  handleInputChange("phone", cleaned);
+                }}
+          // onChange={(e) => {handleInputChange("phone", e.target.value)}
          
         />
       </div>
@@ -373,7 +383,7 @@ const EditBusinessDetail = () => {
       <div className={styles.inputSection}>
         <label className={styles.label}>Business Email</label>
         <input
-          type="text"
+          type="email"
           className={styles.input}
           placeholder="Business Email Address"
            value={email}

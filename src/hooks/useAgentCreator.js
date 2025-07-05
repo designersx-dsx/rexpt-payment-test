@@ -324,6 +324,7 @@ export const useAgentCreator = ({
         setTimeout(()=>{
           navigate('/edit-agent', { replace: true })
         },1000)
+        setHasFetched(false);
       }
       catch (error) {
         console.error("LLM updation failed:", error);

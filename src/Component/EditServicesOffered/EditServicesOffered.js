@@ -5,6 +5,7 @@ import styles from '../EditServicesOffered/EditServicesOffered.module.css'
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import { useNavigate } from 'react-router-dom';
 import PopUp from '../Popup/Popup';
+import { useDashboardStore } from '../../Store/agentZustandStore';
 
 
 const EditServicesOffered = () => {
@@ -488,8 +489,8 @@ const EditServicesOffered = () => {
     const [isEmptyListError,setEmptyListError]=useState('')
     const navigate=useNavigate();
     const agentnm=sessionStorage.getItem("agentName");
+    const { setHasFetched } =    useDashboardStore()  
 
-    const setHasFetched=true;
     const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditServicesOffered",
     setLoading,
@@ -578,6 +579,7 @@ const EditServicesOffered = () => {
     sessionStorage.setItem("selectedServices", JSON.stringify(selectedService));
     try {
         handleCreateAgent();
+        
     } catch (error) {
         console.log('Agent Updation Hook failed',error)
     }
