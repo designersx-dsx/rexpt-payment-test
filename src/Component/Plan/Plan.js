@@ -644,7 +644,8 @@ const Planss = () => {
                                                     ).toFixed(2)}/${priceForInterval.interval}`
                                                     : "Unavailable"
                                             }
-                                            position={{ position: "relative" }}
+                                            position={{ position: "relative" }} 
+                                            size = "14px" 
                                             onClick={() => {
                                                 if (priceForInterval) {
 
