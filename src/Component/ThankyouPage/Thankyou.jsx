@@ -93,27 +93,7 @@ function Thankyou() {
     }
   };
 
-  useEffect(() => {
-    const shouldRunUpdateAgent = key === "update" && agentId && userId;
-
-    const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
-
-    if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
-      callNextApiAndRedirect();
-    } else {
-      const fallback = setTimeout(() => {
-        if (key === "create") {
-          navigate("/steps", {
-            state: { locationPath: "/checkout" },
-          });
-        } else if (key === "update") {
-          navigate("/dashboard");
-        }
-      }, 3000);
-
-      return () => clearTimeout(fallback);
-    }
-  }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+             
 
   return (
     <div className={styles.container}>

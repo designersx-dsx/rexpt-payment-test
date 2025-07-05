@@ -914,7 +914,15 @@ console.log(isConfirming)
 
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
-    setModelOpen(true);
+ 
+
+    navigate("/plan" , {
+state: {
+  agentID : agent?.agent_id , 
+  locationPath : locationPath , 
+  subscriptionID : agent?.subscriptionId
+}
+    })
   };
 
   const fetchPrevAgentDEtails = async (agent_id, businessId) => { };

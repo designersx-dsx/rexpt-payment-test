@@ -56,6 +56,8 @@ import CancelPage from "./Component/CancelPage/CancelPage";
 
 import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
 import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
+import Plan from "./Component/Plans/Plans";
+import Planss from "./Component/Plan/Plan";
 
 
 // import Test from "./utils/Test";
@@ -124,6 +126,7 @@ function App() {
                 <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
 
                 <Route path="/plans" element={<SubscriptionPlan />} />
+                <Route path="/plan" element={<Planss />} />
 
 
 
@@ -240,7 +243,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                <Route path="/plans" element={<Plans />} />
+                {/* <Route path="/plans" element={<Plans />} /> */}
                 <Route path="/checkout" element={<SubscriptionFlow />} />
                 <Route
                   path="/calendar"
