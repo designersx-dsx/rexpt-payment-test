@@ -501,11 +501,11 @@ const SignUp = () => {
 
                     <div className={styles.socialMedia}>
                       <img src="svg/Coming-Soon.svg" />
-
-                      {/* <img src="svg/google.svg" alt="" />
-            <img src="svg/facbook.svg" alt="" />
-            <img src="svg/apple.svg" alt="" /> */}
                     </div>
+                    <p className={styles.PrivaceTerms}>
+                      By providing your email address & creating an account
+                      You agree to the Rexptin <a href="#">Terms of Service</a> & <a href="#">Terms of Use</a>
+                    </p>
                   </div>
                 </div>
 

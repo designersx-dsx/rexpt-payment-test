@@ -117,12 +117,9 @@ function Dashboard() {
   const [calloading, setcalloading] = useState(false);
   const [calapiloading, setCalapiloading] = useState(false);
   const [deleteloading, setdeleteloading] = useState(false);
-
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
-
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
-
   const [showDashboardReferral, setShowDashboardReferral] = useState("");
   const [showreferralfloating, setShowreferralfloating] = useState(
     localStorage.getItem("showreferralfloating") || "true"
@@ -132,9 +129,9 @@ function Dashboard() {
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
- //getTimeZone
+  //getTimeZone
   const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
-// console.log(isConfirming)
+  // console.log(isConfirming)
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -999,6 +996,7 @@ function Dashboard() {
     }
   };
   const handleConnectCal = (agent) => {
+    console.log(agent, "agent")
     navigate("/connect-calender")
     sessionStorage.setItem("agentDetails", JSON.stringify(agent))
   }
@@ -1012,7 +1010,7 @@ function Dashboard() {
   };
 
   const handleConnectCalApiAlready = (agent) => {
-  
+
     setAgentDetailsForCal(agent)
     setPopupType3("confirm");
     setPopupMessage3(
@@ -1020,7 +1018,7 @@ function Dashboard() {
     );
   }
   const handleClosePopUp3 = async () => {
- 
+
     setPopupMessage3("");
     console.log(isConfirming, "isConfirming")
     if (isConfirming) {
@@ -1965,24 +1963,23 @@ function Dashboard() {
       )}
 
 
-    <Popup
-  type={popupType3}
-  message={popupMessage3}
-  onClose={() => {
-    // Only handle close if confirm hasn't already been clicked
-    if (!isConfirmedRef.current) {
-      handleConnectCal(agentDetailsForCal);
-    }
-    isConfirmedRef.current = false; // Always reset
-    setPopupMessage3("");           // Close popup
-  }}
-  onConfirm={() => {
-    isConfirmedRef.current = true;         // Mark confirm
-    handleCalConnectWithConfirm();         // Confirm logic
-    setPopupMessage3("");                  // Close popup
-    // Do NOT reset ref here, let onClose do it after
-  }}
-/>
+      <Popup
+        type={popupType3}
+        message={popupMessage3}
+        onClose={() => {
+          if (!isConfirmedRef.current) {
+            handleConnectCal(agentDetailsForCal);
+          }
+          isConfirmedRef.current = false;
+          setPopupMessage3("");           
+        }}
+        onConfirm={() => {
+          isConfirmedRef.current = true;        
+          handleCalConnectWithConfirm();        
+          setPopupMessage3("");                
+        
+        }}
+      />
 
 
 

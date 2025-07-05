@@ -799,3 +799,11 @@
         padding-inline: 5px;
     }
 }
+.selectNoText {
+  color: transparent;          /* hides the selected text */
+  text-shadow: 0 0 0 black;    /* keeps dropdown list readable */
+}
+
+.selectNoText option {
+  color: black;                /* makes dropdown options visible */
+}
