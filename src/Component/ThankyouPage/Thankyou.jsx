@@ -151,6 +151,7 @@ function Thankyou() {
     }
   };
 
+
   const fetchSubscriptionInfo = async () => {
     if (!agentId) return;
 
@@ -196,6 +197,7 @@ function Thankyou() {
 
     run();
   }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+
 
   return (
     // <div className={styles.container}>
