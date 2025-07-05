@@ -132,7 +132,8 @@ function Dashboard() {
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
-
+ //getTimeZone
+  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 // console.log(isConfirming)
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
@@ -412,6 +413,15 @@ function Dashboard() {
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
           },
+          {
+            type: "check_availability_cal",
+            name: "check_availability",
+            cal_api_key: userCalApiKey.trim(),
+            event_type_id: eventTypeId,
+            description: "Checking availability for event booking",
+            timezone: timeZone
+
+          }
         ],
       };
 
