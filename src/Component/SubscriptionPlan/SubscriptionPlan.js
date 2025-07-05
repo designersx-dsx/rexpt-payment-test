@@ -71,10 +71,11 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
             try {
                 const response = await fetch("https://ipwho.is/");
                 const data = await response.json();
-
+               
                 if (data.success && data.country_code) {
                     const currency = mapCountryToCurrency(data.country_code);
                     setUserCurrency(currency);
+                     console.log(data)
                 } else {
                     throw new Error("Invalid IP data");
                 }
