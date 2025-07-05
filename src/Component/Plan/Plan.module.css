@@ -345,3 +345,11 @@
     height: 0;
     margin-bottom: 0;
 }
+
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full screen height */
+  width: 100%;
+}

@@ -7,6 +7,7 @@ import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import HeaderBar from "../HeaderBar/HeaderBar";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader";
+import Loader2 from '../Loader2/Loader2';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
@@ -212,7 +213,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     if (loading)
         return (
             <p className={styles.status}>
-                <Loader />
+                <Loader2 />
             </p>
         );
     if (error) return <p className={styles.statusError}>{error}</p>;
