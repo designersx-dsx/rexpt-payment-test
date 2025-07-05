@@ -464,7 +464,7 @@ const Planss = () => {
                     };
                 });
 
-                // Step 2: Sort by highest monthly price
+                // Step 2: Sort by highest monthly priceee
                 enrichedPlans.sort((a, b) => {
                     const aPrice =
                         a.prices.find((p) => p.interval === "month")?.unit_amount || 0;
