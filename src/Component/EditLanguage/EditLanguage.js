@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import decodeToken from '../../lib/decodeToken';
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import PopUp from '../Popup/Popup';
+import { useDashboardStore } from '../../Store/agentZustandStore';
 
 
 function EditLanguage() {
@@ -16,11 +17,12 @@ function EditLanguage() {
     const [popupMessage, setPopupMessage] = useState("");
     const [Loading, setLoading] = useState(null);
     const navigate=useNavigate();
-    const setHasFetched=true;
+    const { setHasFetched } =    useDashboardStore();   
+
     const token = localStorage.getItem("token");
     const decodeTokenData = decodeToken(token);
     const userId = decodeTokenData?.id;
-             const agentnm=sessionStorage.getItem("agentName");
+    const agentnm=sessionStorage.getItem("agentName");
 
       const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "EditLanguage",

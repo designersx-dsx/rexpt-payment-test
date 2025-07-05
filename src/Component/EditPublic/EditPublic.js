@@ -10,6 +10,7 @@ import decodeToken from '../../lib/decodeToken';
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import PopUp from '../Popup/Popup';
 import { set } from 'date-fns';
+import { useDashboardStore } from '../../Store/agentZustandStore';
 
 const HTTPS_PREFIX = 'https://';
 const PREFIX_LEN = HTTPS_PREFIX?.length;
@@ -41,7 +42,8 @@ const EditPublic = () => {
       const [popupType, setPopupType] = useState(null);
       const tempPlaceRef = useRef(null);
       const [popupMessage, setPopupMessage] = useState("");
-      const setHasFetched=true;
+          const { setHasFetched } =    useDashboardStore();   
+        // const setHasFetched=true;
       const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "EditBusinessType",
       setLoading,
@@ -657,7 +659,8 @@ return (
               onBlur={handleUrlBlur}
               disabled={noBusinessWebsite}
             /> */}
-             <input
+             <input               className={styles.input}
+
                         id="https://your-website-url"
                         type="url"
                         placeholder="https://your website url"

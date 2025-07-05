@@ -8,6 +8,7 @@ import { useAgentCreator } from '../../hooks/useAgentCreator'
 import decodeToken from '../../lib/decodeToken'
 import { useNavigate } from 'react-router-dom'
 import PopUp from '../Popup/Popup'
+import { useDashboardStore } from '../../Store/agentZustandStore'
 
 
 function EditGender() {
@@ -16,11 +17,13 @@ function EditGender() {
       const [popupMessage, setPopupMessage] = useState("");
       const [Loading, setLoading] = useState(null);
       const navigate=useNavigate();
-      const setHasFetched=true;
+      // const setHasFetched=true;
       const token = localStorage.getItem("token");
       const decodeTokenData = decodeToken(token);
       const userId = decodeTokenData?.id;
       const agentnm=sessionStorage.getItem("agentName");
+      const { setHasFetched } =    useDashboardStore(); 
+
       const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "EditGender",
       setLoading,

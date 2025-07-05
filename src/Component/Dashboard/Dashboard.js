@@ -133,7 +133,7 @@ function Dashboard() {
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
 
-console.log(isConfirming)
+// console.log(isConfirming)
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -234,6 +234,10 @@ console.log(isConfirming)
       sessionStorage.removeItem("prevAgentGender");
       sessionStorage.removeItem("UpdationModeStepWise");
       sessionStorage.removeItem("customServices");
+      sessionStorage.removeItem("agentCode");
+      sessionStorage.removeItem("businessUrl");
+      sessionStorage.removeItem("selectedServices");
+
     }
   }, []);
   // Navigate on agent card click
@@ -302,7 +306,7 @@ console.log(isConfirming)
     if (!userId) return;
     try {
       const res = await fetchDashboardDetails(userId);
-      console.log(res, "res")
+      // console.log(res, "res")
       setUserCalApiKey(res?.calApiKey)
       sessionStorage.setItem("userCalApiKey", res?.calApiKey)
 

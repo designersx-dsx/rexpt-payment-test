@@ -36,7 +36,7 @@ const Step3 = () => {
   const [agentNote, setAgentNote] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
   const [loading,setLoading]=useState(false)
-  console.log('gender',gender,availableAvatars)
+  // console.log('gender',gender,availableAvatars)
  
   useEffect(() => {
     const storedGender = sessionStorage.getItem("agentGender") ;
