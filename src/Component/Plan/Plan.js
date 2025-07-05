@@ -321,11 +321,24 @@ const Planss = () => {
         ],
     };
 
+
+    const mapCountryToCurrency = (countryCode) => {
+      const countryCurrencyMap = {
+        // IN: 'inr',
+        US: 'usd',
+        CA: 'cad',
+        AU: 'aud',
+        GB: 'gbp',
+        // add more as needed
+      };
+      return countryCurrencyMap[countryCode] || 'usd';
+
     const toggleExpand = (index) => {
         setExpandedPlans((prev) => ({
             ...prev,
             [index]: !prev[index],
         }));
+
     };
 
     const getCurrencySymbol = (currencyCode) => {
