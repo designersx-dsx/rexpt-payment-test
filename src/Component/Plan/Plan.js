@@ -323,6 +323,7 @@ const Planss = () => {
 
 
     const mapCountryToCurrency = (countryCode) => {
+
         const countryCurrencyMap = {
             // IN: 'inr',
             US: 'usd',
@@ -332,6 +333,7 @@ const Planss = () => {
             // add more as needed
         };
         return countryCurrencyMap[countryCode] || 'usd';
+
     }
 
     const toggleExpand = (index) => {
