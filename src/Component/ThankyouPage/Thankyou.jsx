@@ -20,8 +20,87 @@ function Thankyou() {
   const agentId = getQueryParam("agentId");
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
+  const [subscriptionInfo, setSubscriptionInfo] = useState(null);
 
   const currentLocation = "/update";
+
+  const [agentName, setAgentName] = useState("Agent");
+  const [agentCode, setAgentCode] = useState("XXXXXX");
+  const [businessName, setBusinessName] = useState("Your Business");
+
+  useEffect(() => {
+    const storedDashboard = sessionStorage.getItem("dashboard-session-storage");
+    const storedBusinessDetails = sessionStorage.getItem("businessDetails");
+    const storedPlaceDetails = sessionStorage.getItem("placeDetailsExtract");
+
+    try {
+      if (key === "update" && storedDashboard) {
+        const parsed = JSON.parse(storedDashboard);
+        const agents = parsed?.state?.agents || [];
+        const matchedAgent = agents.find((a) => a.agent_id === agentId);
+
+        if (matchedAgent) {
+          setAgentName(matchedAgent.agentName || "Agent");
+          setAgentCode(matchedAgent.agentCode || "XXXXXX");
+          setBusinessName(
+            matchedAgent.business?.businessName || "Your Business"
+          );
+        } else {
+          console.warn("No matching agent found for agentId:", agentId);
+        }
+      }
+
+      if (key === "create") {
+        let businessNameVal = "";
+
+        const businessData = storedBusinessDetails
+          ? JSON.parse(storedBusinessDetails)
+          : null;
+        const placeData = storedPlaceDetails
+          ? JSON.parse(storedPlaceDetails)
+          : null;
+
+        setAgentCode(sessionStorage.getItem("AgentCode") || "XXXXXX");
+        setAgentName(sessionStorage.getItem("agentName") || "Agent");
+
+
+
+        // 1. From businessDetails first
+        if (businessData) {
+          // setAgentCode(businessData.AgentCode || "XXXXXX");
+          // setAgentName(businessData.agentName || "Agent");
+
+          businessNameVal = businessData.businessName;
+        }
+
+        // 2. If missing, fallback to placeDetailsExtract
+        if (!businessNameVal && placeData?.businessName) {
+          businessNameVal = placeData.businessName;
+        }
+
+        setBusinessName(businessNameVal || "Your Business");
+        // ✅ Load plan details from localStorage
+        const selectedPlanRaw = localStorage.getItem("selectedPlanData");
+        if (selectedPlanRaw) {
+          try {
+            const plan = JSON.parse(selectedPlanRaw);
+
+            setSubscriptionInfo({
+              planName: plan.planName || "N/A",
+              planAmount: plan.price || 0,
+              planMins: plan.minutes || "N/A",
+              interval: plan.interval || "month",
+              nextRenewalDate: plan.nextBillingDate || null,
+            });
+          } catch (err) {
+            console.warn("Failed to parse selected plan data from localStorage:", err);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to parse session storage values:", e);
+    }
+  }, [agentId, key]);
 
   const cancelOldSubscription = async () => {
     try {
@@ -73,11 +152,11 @@ function Thankyou() {
           await cancelOldSubscription();
         }
 
-        setTimeout(() => {
-          navigate("/dashboard", {
-            state: { currentLocation },
-          });
-        }, 2000);
+        // setTimeout(() => {
+        //   navigate("/dashboard", {
+        //     state: { currentLocation },
+        //   });
+        // }, 2000);
       } else {
         setPopupType("failed");
         setPopupMessage("Error completing subscription.");
@@ -89,32 +168,60 @@ function Thankyou() {
     }
   };
 
-  // useEffect(() => {
-  //   const shouldRunUpdateAgent = key === "update" && agentId && userId;
 
-  //   const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
+  const fetchSubscriptionInfo = async () => {
+    if (!agentId) return;
 
-  //   if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
-  //     callNextApiAndRedirect();
-  //   } else {
-  //     const fallback = setTimeout(() => {
-  //       if (key === "create") {
-  //         navigate("/steps", {
-  //           state: { locationPath: "/checkout" },
-  //         });
-  //       } else if (key === "update") {
-  //         navigate("/dashboard");
-  //       }
-  //     }, 3000);
+    try {
+      const res = await fetch(`${API_BASE_URL}/subscription-details`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agentId }),
+      });
 
-  //     return () => clearTimeout(fallback);
-  //   }
-  // }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+      const data = await res.json();
+      if (data && !data.error) {
+        setSubscriptionInfo(data);
+      } else {
+        console.warn("No subscription found, falling back to static info.");
+      }
+    } catch (error) {
+      console.error("Failed to fetch subscription info:", error);
+    }
+  };
+
+  useEffect(() => {
+    const shouldRunUpdateAgent = key === "update" && agentId && userId;
+    const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
+
+    const run = async () => {
+      if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
+        await callNextApiAndRedirect(); // handles update + cancellation
+        await fetchSubscriptionInfo(); // fetch updated subscription data
+      } else {
+        const fallback = setTimeout(() => {
+          if (key === "create") {
+            localStorage.removeItem("selectedPlanData");
+            navigate("/steps", {
+              state: { locationPath: "/checkout" },
+            });
+          }
+          // Removed the "else if (key === 'update')" dashboard navigation
+        }, 3000);
+
+        return () => clearTimeout(fallback);
+      }
+    };
+
+    run();
+  }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+
 
   return (
     // <div className={styles.container}>
     //   <div className={styles.card}>
     //     <h1 className={styles.heading}>🎉 Thank You!</h1>
+    //     {/* <p className={styles.subtext}>Redirecting for agent creation...</p> */}
     //     {popupMessage && <p className={styles.popup}>{popupMessage}</p>}
     //   </div>
     // </div>
@@ -136,29 +243,86 @@ function Thankyou() {
         <div className={styles.infoBox}>
           <p>Below is some Quick Info for your Reference:</p>
           <div className={styles.row}>
-            <span>Business Name:</span> <div className={styles.Right50}>ACME Construction Services</div>
+            <span>Business Name:</span>{" "}
+            <div className={styles.Right50}>
+              {businessName || "ACME Construction Services"}
+            </div>
           </div>
           <div className={styles.row}>
-            <span>Agent Name & ID:</span><div className={styles.Right50}>Oliver (HS23D4)</div> 
+            <span>Agent Name & ID:</span>
+            <div className={styles.Right50}>
+              {agentName && agentCode
+                ? `${agentName} (${agentCode})`
+                : "Oliver (HS23D4)"}
+            </div>
           </div>
           <div className={styles.row}>
-            <span>Plan Activated:</span> <div className={styles.Right50}>Growth - 1500 minutes</div> 
+            <span>Plan Activated:</span>
+            <div className={styles.Right50}>
+              {subscriptionInfo?.planName || "Growth"} -{" "}
+              {subscriptionInfo?.planMins || "1500"} minutes
+            </div>
           </div>
           <div className={styles.row}>
-            <span>Frequency & Price:</span><div className={styles.Right50}>US $5,988 / year</div> 
+            <span>Frequency & Price:</span>
+            <div className={styles.Right50}>
+              {subscriptionInfo
+                ? `US $${Number(
+                  subscriptionInfo.planAmount
+                ).toLocaleString()} / month`
+                : "US $499 / month"}
+            </div>
           </div>
           <div className={styles.row}>
-            <span>Discount Applied:</span><div className={styles.Right50}>Yearly 17% OFF + 5% Coupon</div> 
+            <span>Discount Applied:</span>
+            <div className={styles.Right50}>N/A</div>
           </div>
           <div className={styles.row}>
-            <span>Billed Today:</span> <div className={styles.Right50}>$5,688.60 for 12 months</div>
+            <span>Billed Today:</span>
+            <div className={styles.Right50}>
+              {subscriptionInfo
+                ? subscriptionInfo.interval === "month"
+                  ? `$${Number(subscriptionInfo.planAmount).toFixed(
+                    2
+                  )} per month`
+                  : `$${(
+                    Number(subscriptionInfo.planAmount) *
+                    12 *
+                    0.95
+                  ).toFixed(2)} for 12 months`
+                : "$5,688.60 for 12 months"}
+            </div>
           </div>
           <div className={styles.row}>
-            <span>Next Billing Date:</span> <div className={styles.Right50}><a href="#">06 July 2026</a></div> 
+            <span>Next Billing Date:</span>
+            <div className={styles.Right50}>
+              <a href="#">
+                {subscriptionInfo
+                  ? new Date(
+                    subscriptionInfo.nextRenewalDate
+                  ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                  : "06 July 2026"}
+              </a>
+            </div>
           </div>
           <div className={styles.ButtonTakeME}>
-            <button className={styles.dashboardBtn}>
-              Take me to Dashboard
+            <button
+              onClick={() => {
+                if (key !== "create") {
+                  localStorage.removeItem("selectedPlanData");
+                  navigate("/dashboard", {
+                    state: { currentLocation },
+                  });
+                }
+              }}
+              className={styles.dashboardBtn}
+              disabled={key === "create" ? true : false}
+            >
+              {key === "create" ? "Redirecting.." : "Take me to Dashboard"}
             </button>
           </div>
         </div>

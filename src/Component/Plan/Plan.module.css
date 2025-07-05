@@ -1,470 +1,347 @@
-.planCard {
-  flex: 1 1 280px;
-  border: 2px solid #6772e5;
-  border-radius: 10px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease;
-  background: white;
-  box-shadow: 0 2px 6px rgb(103 114 229 / 0.2);
+/* Wrapper & Layout */
+.wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    padding: 0px 0px 0px 2rem;
+    overflow: visible;
+    position: relative;
+    height: fit-content;
+    /* height: 80dvh; */
+    margin-block: 0px 2rem;
 }
 
-.planCard:hover {
-  box-shadow: 0 8px 20px rgb(103 114 229 / 0.5);
+.slick-list {
+    overflow: visible !important;
 }
 
-.planName {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: #32325d;
+.slick-track {
+    display: flex !important;
+    gap: 20px;
 }
 
-.planDesc {
-  font-size: 1rem;
-  color: #6b7c93;
-  margin-bottom: 1rem;
+.slide {
+    width: 100%;
+    padding-right: 30px;
+    box-sizing: border-box;
+    /* opacity: 0.5; */
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.planPrice {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #6772e5;
+.slick-slide.slick-active .slide {
+    opacity: 1;
+    transform: scale(1);
 }
 
-.priceOption {
-  margin-top: 8px;
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-weight: 600;
-  color: #32325d;
-  cursor: pointer;
-  max-width: fit-content;
-  transition: background-color 0.2s ease;
+/* Card Base */
+.card {
+
+    border-radius: 16px;
+
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
-.priceOption:hover {
-  background-color: #f0f3ff;
+.CardiSection {
+    padding: 12px;
+
 }
 
-/* existing styles... */
+/* Plan-Specific Colors */
+.starter {
+    border: 1px solid #00B2FF;
+    color: #00B2FF;
 
-.metaMinutes {
-  font-size: 0.9rem;
-  color: #555;
-  margin: 0.25rem 0 0.75rem 0;
-  font-style: italic;
 }
 
-.toggleSwitchContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin: 20px 0;
-  user-select: none;
+.scaler {
+    border: 1px solid #3CD856;
+    color: #3CD856;
 }
 
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 26px;
+.growth {
+    border: 1px solid #E83BAC;
+    color: #E83BAC;
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+.corporate {
+    border: 1px solid #FE5E00;
+    color: #FE5E00;
 }
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  border-radius: 34px;
-  transition: 0.4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 22px;
-  width: 22px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.4s;
-}
-
-input:checked + .slider {
-  background-color: #007bff;
-}
-
-input:checked + .slider:before {
-  transform: translateX(24px);
-}
-
-.labels {
-  display: flex;
-  gap: 10px;
-  font-weight: 600;
-  font-size: 14px;
-  color: #666;
-}
-
-.activeLabel {
-  color: #007bff;
-}
-
-.planData {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #24252c;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-/* Gourav Css  start */
-.container {
-  width: 100%;
-  margin: 0 auto;
-  background-color: #fff;
-  border-radius: 12px;
-  /* max-height: 500px; */
-  height: 60dvh;
-  overflow: auto;
-  display: flex;
-  flex-wrap: wrap;
-  padding-right: 10px;
-}
-/* Custom scrollbar */
-.container::-webkit-scrollbar {
-  width: 4px;
-}
-
-.container::-webkit-scrollbar-thumb {
-  background-color: #6524eb;
-  border-radius: 8px;
-}
-
-.container::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
-}
+/* Text & Structure */
 .header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: #555;
 }
 
-.headercontent h3 {
-  font-size: 22px;
-  color: #24252c;
+.priceTop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.headercontent p {
-  font-size: 14px;
-  color: #9a9a9a;
+.subPrice {
+    font-weight: bold;
+    font-size: 16px;
+    color: #24252C;
 }
 
-.icon {
-  width: 50px;
-  height: 50px;
-  background: #eae9ff;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+.pricdec {
+    display: block;
 }
 
-.icon img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
+.billedText {
+    font-size: 10px;
+    color: #555555;
 }
 
-.customClass {
-  max-height: 400px;
-  overflow: scroll;
-  padding-right: 10px;
+.Title {
+    font-size: 36px;
 }
 
-.customClass::-webkit-scrollbar {
-  width: 4px;
+.doolor {
+    font-size: 15px;
+    color: #24252C;
+    font-weight: 600 !important;
 }
 
-.customClass::-webkit-scrollbar-track {
-  background: transparent;
-}
+.mainPrice {
+    font-size: 12px;
+    font-weight: 600;
 
-.customClass::-webkit-scrollbar-thumb {
-  background-color: #6524EB;
-  border-radius: 4px;
-}
-
-
-
-
-
-
-.planBox {
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  transition: border-color 0.3s;
-  overflow: hidden;
-  min-height: 55px;
-  width: 100%;
-}
-
-.selected {
-  border: 1px solid #7a4eff;
-}
-
-.radioLabel {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
-  width: 100%;
-  cursor: pointer;
-}
-
-.radioLabel input {
-}
-
-.part1 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-}
-
-.planContent {
-  flex-grow: 1;
-}
-
-.planTitle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.planTitle p {
-  font-size: 18px;
-  color: #24252c;
-  font-weight: 600;
-}
-
-.planTitle span {
-  font-size: 16px;
-  color: #a3aed0;
-  font-weight: 300;
-}
-
-.badge {
-  font-size: 12px !important;
-  background: #e3dbff;
-  color: #6524eb !important;
-  padding: 2px 6px;
-  border-radius: 6px;
-  white-space: nowrap;
-  position: relative;
-  top: -10px;
+    color: #24252C;
 }
 
 .description {
-  font-size: 0.9rem;
-  color: #666;
-  margin-top: 4px;
-  display: block;
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
 }
 
-.arrowIcon {
-  width: 20px;
-  height: 20px;
-  margin-right: 1rem;
-  cursor: pointer;
-  transition: transform 0.3s ease;
+/* Dynamic SectionTop Backgrounds */
+.starterBg {
+    background-color: #D5F0FF;
+    border-radius: 16px;
 }
 
-.rotated {
-  transform: rotate(180deg);
+.scalerBg {
+    background-color: #dcffe1;
+    border-radius: 16px;
 }
 
-/* Accordion animation */
-.accordion {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease, opacity 0.4s ease;
-  background: #f9f9f9;
-  padding: 0 1rem;
-  border-radius: 0 0 12px 12px;
+.growthBg {
+    background-color: #ffd7f1;
+    border-radius: 16px;
 }
 
-.open {
-  max-height: 200px;
-  opacity: 1;
+.corporateBg {
+    background-color: #ffeadf;
+    border-radius: 16px;
 }
 
-.hero_sec {
-  padding: 20px;
-  /* height: 60dvh; */
-  /* overflow: auto; */
-  /* box-shadow: inset 0 0 10px #f5f5f5;
-  box-shadow: 0 8px 6px -6px #dddddd; */
+.featuresList {
+    text-align: left;
+    padding-left: 0;
+    margin: 16px 16px;
+    list-style: none;
+    font-size: 13px;
+    color: #24252C;
+    border-bottom: 1px solid #DEDEDE
 }
 
-.status {
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.featureItem {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.status2 {
-  height: 200px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.seeAll {
+    display: inline-block;
+    font-size: 12px;
+    color: #5F33E1;
+    margin-bottom: 10px;
+    text-decoration: underline;
 }
 
-/* Gaurav  CSS End */
-
-/* Ankush CSS Start */
-
-.forsticky {
-  position: sticky;
-  top: 0px;
-  z-index: 11;
+/* Toggle Switch */
+.toggleWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #333;
 }
 
-.Part {
-  position: relative;
-  background-color: rgb(255, 255, 255);
+.toggleSwitch {
+    position: relative;
+    width: 40px;
+    height: 20px;
 }
 
-.Part svg {
-  width: 100%;
+.toggleSwitch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-.rexptLogo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: 0.4s;
 }
 
-.welcomeTitle h1 {
-  color: #24252c;
-  font-size: 40px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  text-align: left !important;
-  line-height: normal;
+.toggleSwitch input:checked+.slider {
+    background-color: #6524EB;
 }
 
-.tabs {
-  display: flex;
-  gap: 10px;
-  border-radius: 8px;
-  justify-content: left;
-  margin-bottom: 1rem;
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
 }
 
-.tabButton {
-  padding: 10px 20px;
-  border: none;
-  background-color: white;
-  border: 1px solid #e0e5f2;
-  color: #24252c;
-  cursor: pointer;
-  border-radius: 6px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  font-size: 16px;
+.toggleSwitch input:checked+.slider:before {
+    transform: translateX(20px);
 }
 
 .active {
-  background-color: #6524eb;
-  color: white;
-  border-color: #6524eb;
+    color: #5F33E1;
+    font-weight: 600;
 }
 
-.activeTab {
-  background-color: #6524eb;
-  color: white;
+.inactive {
+    color: #4B5577;
+    font-weight: 600;
 }
 
-.bottomBtn {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 20px;
-  position: sticky;
-  bottom: 0;
-  background-color: rgb(255, 255, 255);
-  /* position: fixed; */
+/* Pricing Note */
+.discount {
+    font-size: 12px;
+    color: green;
+    font-weight: 500;
+    text-align: center;
+    background-color: #DCFCE7;
+    width: max-content;
+    margin: 10px auto;
+    padding: 3px 6px;
 }
 
-.btnTheme {
-  position: relative;
-  color: white;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 55px;
-  margin-block: 0px 1rem;
+
+/* Subscribe Button */
+.subscribeBtn {
+    margin-top: 16px;
+    background-color: #6524EB;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
 }
 
-.btnTheme img {
-  position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+/* Footer Plan Buttons */
+.footerButtons {
+    display: flex;
+
+    /* margin-top: 24px; */
+    gap: 5px;
+    /* position: fixed; */
+    bottom: 0;
+    width: 100%;
+    background-color: white;
+    padding: 20px 10px;
 }
 
-.btnTheme p {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  font-weight: 500;
-  font-size: 19px;
+.ForSticky {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    background: #fff;
+    padding: 10px 0;
+    /* box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);  */
 }
 
-.loginLink {
-  color: #7b4fdd;
-  font-weight: bold;
-  cursor: pointer;
-  transition: color 0.2s ease;
+.footerBtn {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 2px solid;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
 }
 
-.loginLink:hover {
-  color: #5a38b1;
-  text-decoration: underline;
+.featuresWrapper {
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+    max-height: 150px;
+    margin-bottom: 5px;
 }
 
-.loginBox p {
-  text-align: center;
-  font-size: 18px;
+.featuresWrapper::-webkit-scrollbar {
+    width: 3px;
 }
 
-@media (max-width: 360px) {
-  .welcomeTitle h1 {
-    font-size: 35px;
-  }
+.featuresWrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.featuresWrapper::-webkit-scrollbar-thumb {
+    background-color: #5F33E1;
+    border-radius: 20px;
+}
+
+.expanded {
+    overflow: auto;
+}
+
+
+.featureItem {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.4s ease;
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+}
+
+.featureItem.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    height: auto;
+    margin-bottom: 6px;
+}
+
+.featureItem.hidden {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    height: 0;
+    margin-bottom: 0;
 }

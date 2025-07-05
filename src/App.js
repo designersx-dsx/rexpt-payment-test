@@ -56,6 +56,8 @@ import CancelPage from "./Component/CancelPage/CancelPage";
 
 import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
 import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
+import Plan from "./Component/Plans/Plans";
+import Planss from "./Component/Plan/Plan";
 
 
 // import Test from "./utils/Test";
@@ -117,13 +119,14 @@ function App() {
 
                 <Route path="/edit-public-listing" element={<EditPublic />} />
 
-                <Route path="/edit-public" element={<EditPublic/>} />
-                <Route path="/edit-business-detail" element={<EditBusinessDetail/>} />
-                <Route path="/edit-language" element={<EditLanguage/>} />
-                <Route path="/edit-gender" element={<EditGender/>} />
-                <Route path="/edit-name-avtar" element={<EditNameAvtar/>} />
+                <Route path="/edit-public" element={<EditPublic />} />
+                <Route path="/edit-business-detail" element={<EditBusinessDetail />} />
+                <Route path="/edit-language" element={<EditLanguage />} />
+                <Route path="/edit-gender" element={<EditGender />} />
+                <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
 
-                <Route path="/subscription-plan" element={<SubscriptionPlan/>} />
+                <Route path="/plans" element={<SubscriptionPlan />} />
+                <Route path="/plan" element={<Planss />} />
 
 
 
@@ -202,7 +205,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                <Route path="/plans" element={<Plans />} />
+                {/* <Route path="/plans" element={<Plans />} /> */}
                 <Route path="/checkout" element={<SubscriptionFlow />} />
                 <Route
                   path="/calendar"
@@ -240,7 +243,7 @@ function App() {
                     </SecureRoute>
                   }
                 />
-                <Route path="/plans" element={<Plans />} />
+                {/* <Route path="/plans" element={<Plans />} /> */}
                 <Route path="/checkout" element={<SubscriptionFlow />} />
                 <Route
                   path="/calendar"
@@ -260,20 +263,20 @@ function App() {
 
 
 
-                <Route path="/edit-profile" element={ <SecureRoute><EditProfile /></SecureRoute>} />
-                <Route path="/your-business-Listing" element={ <SecureRoute><BusinessListing/></SecureRoute>} />
-                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage/></SecureRoute>} />
-                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI/></SecureRoute>} />
+                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
+                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
+                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
+                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
 
-                  <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp/></SecureRoute>} />
+                <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
 
-                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent/></SecureRoute>} />
+                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
 
 
-                  <Route path="/test-other" element={<Test/>} />
-                  <Route path="/thankyou/:id" element={<Thankyou/>} />
-                  <Route path="/cancel-payment" element={<CancelPage/>} />
-               
+                <Route path="/test-other" element={<Test />} />
+                <Route path="/thankyou/:id" element={<Thankyou />} />
+                <Route path="/cancel-payment" element={<CancelPage />} />
+
 
 
 

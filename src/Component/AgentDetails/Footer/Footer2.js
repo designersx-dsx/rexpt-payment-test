@@ -83,7 +83,7 @@ const Footer2 = () => {
         </button>
 
         <div className={styles.createWrapper} onClick={() => setOpen(true)}>
-          <button className={styles.createBtn}>
+          <button className={styles.createBtn} onClick={()=>navigate('/plan')}>
             <span className={styles.createIcon}>＋</span>
             <span className={styles.createText}>Create</span>
           </button>
@@ -106,9 +106,9 @@ const Footer2 = () => {
         </button>
       </div>
       {/* Plan Modal Start */}
-      <Modal isOpen={open} onClose={() => setOpen(false)}>
+      {/* <Modal isOpen={open} onClose={() => setOpen(false)}>
         <Plan />
-      </Modal>
+      </Modal> */}
       {/* Plan Modal End */}
 
       {/* Help Modal End */}
