@@ -514,7 +514,10 @@ const Planss = () => {
 
     return (
         <div>
-            <HeaderBar title="Upgrade Plan" />
+            <div className={styles.firstdiv}>
+                <HeaderBar title="Upgrade Plan" />
+            </div>
+
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {
@@ -533,7 +536,12 @@ const Planss = () => {
                         return (
                             <div key={plan.id} className={styles.slide}>
                                 <div
-                                    className={`${styles.card} ${styles[plan.color]}`}
+                                    className={`
+      ${styles.card}
+      ${styles[plan.color]}
+      ${index === activeIndex ? styles.activeOverlay : ""}
+      ${index !== activeIndex ? styles.inactiveCard : ""}
+    `}
 
                                 >
                                     <div className={`${styles.sectionTop} ${styles[`${plan.color}Bg`]}`}>
@@ -645,8 +653,8 @@ const Planss = () => {
                                                     ).toFixed(2)}/${priceForInterval.interval}`
                                                     : "Unavailable"
                                             }
-                                            position={{ position: "relative" }} 
-                                            size = "12px" 
+                                            position={{ position: "relative" }}
+                                            size="12px"
                                             onClick={() => {
                                                 if (priceForInterval) {
 
@@ -708,18 +716,38 @@ const Planss = () => {
 
             <div className={styles.ForSticky}>
                 <div className={styles.footerButtons}>
+
                     {products.map((plan, index) => (
-                        <button
-                            key={index}
-                            className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""
-                                }`}
-                            onClick={() => {
-                                setActiveIndex(index);
-                                sliderRef.current.slickGoTo(index);
-                            }}
-                        >
-                            {plan.title}
-                        </button>
+                        <>
+                            <div
+                                className={styles.navBox}
+                                onClick={() => {
+                                    setActiveIndex(index);
+                                    sliderRef.current.slickGoTo(index);
+                                }}
+                            >
+
+                                <input
+                                    type="radio"
+                                    name="plan"
+                                    checked={activeIndex === index}
+                                    onChange={() => setActiveIndex(index)}
+                                    className={styles.radiobtn}
+                                />
+
+                                <img src="/svg/starter-icon.svg" />
+                                <button
+                                    key={index}
+                                    className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""
+                                        }`}
+                                >
+                                    {plan.title}
+                                </button>
+                                <p className={styles.monthPrice}>from $99/m</p>
+                            </div>
+
+                        </>
+
                     ))}
                 </div>
             </div>
