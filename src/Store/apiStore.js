@@ -363,6 +363,23 @@ export const getUserReferralCodeForDashboard = async (userId) => {
   }
 };
 
+export const updateAgentEventId = async (agentId, eventId) => {
+  try {
+    const res = await api.patch(`agent/${agentId}/event-id`, {
+      eventId
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error updating agent eventId:", error.response?.data || error.message);
+    throw new Error("Failed to update eventId for agent");
+  }
+};
+
+
 
 
 export default api;

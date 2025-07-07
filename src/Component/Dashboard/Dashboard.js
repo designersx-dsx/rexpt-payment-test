@@ -15,6 +15,7 @@ import {
   updateAgentKnowledgeBaseId,
   getUserReferralCodeForDashboard,
   updateShowReferralFloatingStatus,
+  updateAgentEventId,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -402,6 +403,15 @@ function Dashboard() {
 
       const responseData = await response.json();
       const eventTypeId = responseData.event_type.id;
+      if (!eventTypeId) {
+            throw new Error("Event ID not received from Cal.com");
+          }
+          try {
+           await updateAgentEventId(agent.agent_id, eventTypeId);
+            console.log(" Event ID saved to agent.");
+          } catch (err) {
+            console.error("Failed to update agent with event ID:", err);
+          }
       const retellPayload = {
         general_tools: [
           {
