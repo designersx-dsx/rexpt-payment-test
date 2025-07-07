@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import { useDashboardStore } from "../../Store/agentZustandStore";
+import { updateAgentEventId } from "../../Store/apiStore";
 
 const CalendarConnect = () => {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -114,9 +115,15 @@ const CalendarConnect = () => {
       const data = await response.json();
       const eventTypeId = data?.event_type?.id;
 
-
-
-
+    if (!eventTypeId) {
+      throw new Error("Event ID not received from Cal.com");
+    }
+    try {
+      await updateAgentEventId(agentId, eventTypeId);
+      console.log(" Event ID saved to agent.");
+    } catch (err) {
+      console.error("Failed to update agent with event ID:", err);
+    }
 
       const retellPayload = {
         general_tools: [
@@ -175,6 +182,7 @@ const CalendarConnect = () => {
       setEventLoading(false);
     }
   };
+
   const [expanded, setExpanded] = useState("panel1");
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -188,7 +196,7 @@ const CalendarConnect = () => {
 
     if (agentDetails?.calApiKey && typeof agentDetails?.calApiKey === "string") {
       setApiKey(agentDetails?.calApiKey);
-      setInitialApiKey(agentDetails?.calApiKey); // ← Save for comparison
+      setInitialApiKey(agentDetails?.calApiKey); 
       setEnabled(true);
     }
   }, []);
