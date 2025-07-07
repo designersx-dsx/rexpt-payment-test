@@ -113,6 +113,11 @@ const CalendarConnect = () => {
 
       const data = await response.json();
       const eventTypeId = data?.event_type?.id;
+
+
+
+
+
       const retellPayload = {
         general_tools: [
           {
@@ -170,9 +175,7 @@ const CalendarConnect = () => {
       setEventLoading(false);
     }
   };
-
   const [expanded, setExpanded] = useState("panel1");
-
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -189,10 +192,6 @@ const CalendarConnect = () => {
       setEnabled(true);
     }
   }, []);
-
-
-
-
   return (
     <div>
       <HeaderBar title="Connect Calendar" />
