@@ -21,7 +21,6 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
     const [toggleStates, setToggleStates] = useState({}); // { planId: true/false }
     const [products, setProducts] = useState([]);
-    console.log("products", products)
     const [loading, setLoading] = useState(true);
     const [freeTrial, setFreeTrial] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,7 +40,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         slidesToScroll: 1,
         arrows: false,
         cssEase: 'ease-in-out',
-        afterChange: (index) => setActiveIndex(index),
+        afterChange: (index) => {
+            setActiveIndex(Math.round(index));
+        },
         responsive: [
             {
                 breakpoint: 768,
@@ -97,7 +98,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                IN: "inr",
+                // IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -383,12 +384,21 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                 <input
                                                     type="checkbox"
                                                     checked={toggleStates[plan.id]}
-                                                    onChange={(e) =>
-                                                        setToggleStates((prev) => ({
-                                                            ...prev,
-                                                            [plan.id]: e.target.checked,
-                                                        }))
-                                                    }
+                                                    // onChange={(e) =>
+                                                    //     setToggleStates((prev) => ({
+                                                    //         ...prev,
+                                                    //         [plan.id]: e.target.checked,
+                                                    //     }))
+                                                    // }
+                                                    onChange={(e) => {
+                                                        const isYearly = e.target.checked;
+                                                        const newState = {};
+                                                        products.forEach((p) => {
+                                                            newState[p.id] = false; // default to Monthly
+                                                        });
+                                                        newState[plan.id] = isYearly; // only current one is Yearly if checked
+                                                        setToggleStates(newState);
+                                                    }}
                                                 />
                                                 <span className={styles.slider}></span>
                                             </label>
@@ -442,7 +452,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 </div>
             </div>
 
-            <FreeTrialModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <FreeTrialModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setFreeTrial(false); 
+                }}>
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
                         <h1>FREE TRIAL</h1>
@@ -468,7 +483,13 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         <p className={styles.toggleText} onClick={handleToggle}>
                             ~ {expanded ? 'Hide Features' : 'See All Features'}
                         </p>
-                        <AnimatedButton label='Subscribe' position={{ position: "relative" }}/>
+                        <AnimatedButton onClick={() => {
+                            navigate("/steps", {
+                                state: {
+                                    freeTrial: true,
+                                },
+                            });
+                        }} label='Subscribe' position={{ position: "relative" }} />
 
                     </div>
 
@@ -479,16 +500,22 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
             <div className={styles.ForSticky}>
                 <div className={styles.footerButtons}>
 
-                    {products.map((plan, index) => (
-                        <>
+                    {products.map((plan, index) => {
+                        const isYearly = toggleStates[plan.id];
+                        const interval = isYearly ? "year" : "month";
+                        const selectedPrice = plan.prices.find(p => p.interval === interval);
+                        const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
+                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100).toFixed(0) : "0";
+
+                        return (
                             <div
+                                key={plan.id}
                                 className={styles.navBox}
                                 onClick={() => {
                                     setActiveIndex(index);
                                     sliderRef.current.slickGoTo(index);
                                 }}
                             >
-
                                 <input
                                     type="radio"
                                     name="plan"
@@ -498,19 +525,21 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                 />
 
                                 <img src="/svg/starter-icon.svg" />
+
                                 <button
-                                    key={index}
                                     className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""
                                         }`}
                                 >
                                     {plan.title}
                                 </button>
-                                <p className={styles.monthPrice}>from $99/m</p>
+
+                                <p className={styles.monthPrice}>
+                                    from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
+                                </p>
                             </div>
+                        );
+                    })}
 
-                        </>
-
-                    ))}
                 </div>
             </div>
         </div>
