@@ -18,7 +18,7 @@ export default function SubscriptionFlow() {
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const priceId = location.state?.priceId || sessionStorage.getItem("priceId") ;
-  console.log("priceId",priceId)
+  // console.log("priceId",priceId)
   const agentId = location.state?.agentId || sessionStorage.getItem("agentId");
   const price = location.state?.price ||  sessionStorage.getItem("price");
   const subscriptionId = location.state?.subscriptionId || sessionStorage.getItem("subscriptionId")
