@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
-
 import Footer from "../AgentDetails/Footer/Footer";
 import Plan from "../Plan/Plan";
 import { useNavigate, useLocation, Await } from "react-router-dom";
@@ -15,6 +14,7 @@ import {
   updateAgentKnowledgeBaseId,
   getUserReferralCodeForDashboard,
   updateShowReferralFloatingStatus,
+  updateAgentEventId,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -33,7 +33,11 @@ import Loader from "../Loader/Loader";
 import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
 import Refferal from "../Refferal/Refferal";
 import Modal3 from "../Modal3/Modal3";
+
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
+
+import axios from "axios";
+
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -403,6 +407,15 @@ function Dashboard() {
 
       const responseData = await response.json();
       const eventTypeId = responseData.event_type.id;
+      if (!eventTypeId) {
+            throw new Error("Event ID not received from Cal.com");
+          }
+          try {
+           await updateAgentEventId(agent.agent_id, eventTypeId);
+            console.log(" Event ID saved to agent.");
+          } catch (err) {
+            console.error("Failed to update agent with event ID:", err);
+          }
       const retellPayload = {
         general_tools: [
           {
@@ -774,6 +787,237 @@ function Dashboard() {
   const handleEditProfile = () => {
     navigate("/edit-profile");
   };
+  //   const handleDeactivateAgent = async () => {
+  //     try {
+  //       setDeactivateLoading(true);
+  //       const dashboardState = JSON.parse(
+  //         sessionStorage.getItem("dashboard-session-storage")
+  //       );
+
+  //       const agentData = dashboardState?.state?.agents?.find(
+  //         (ag) => ag.agent_id === agentToDeactivate.agent_id
+  //       );
+  //       console.log("agentToDeactivate", agentToDeactivate)
+
+  //       const knowledgeBaseId = agentData?.knowledgeBaseId;
+  //       const businessId = agentData?.businessId;
+
+  //       const isCurrentlyDeactivated = agentToDeactivate.isDeactivated === 1;
+  //       if (!isCurrentlyDeactivated && knowledgeBaseId) {
+
+  //         // try{
+  //         //      await fetch(
+  //         //   `https://api.retellai.com/delete-knowledge-base/${knowledgeBaseId}`,
+  //         //   {
+  //         //     method: "DELETE",
+  //         //     headers: {
+  //         //       Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+  //         //       "Content-Type": "application/json",
+  //         //     },
+  //         //   }
+  //         // );
+  //         // }catch(error){
+  //         //   console.log(error,"Error while deleting delete-knowledge-base")
+  //         // }
+
+
+  // try {
+  //   console.log("Checking if knowledge base exists:", knowledgeBaseId);
+
+  //   const checkRes = await axios.get(
+  //     `https://api.retellai.com/get-knowledge-base/${knowledgeBaseId}`,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+  //       },
+  //     }
+  //   );
+
+  //   // If found, try deleting
+  //   try {
+  //     const deleteRes = await axios.delete(
+  //       `https://api.retellai.com/delete-knowledge-base/${knowledgeBaseId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+  //         },
+  //       }
+  //     );
+  //     console.log("Knowledge base deleted:", deleteRes.data);
+  //   } catch (deleteErr) {
+  //     console.error("Error during delete:", deleteErr.response?.data || deleteErr.message);
+  //   }
+  // } catch (checkErr) {
+  //   if (checkErr.response?.status === 404) {
+  //     console.warn(`Knowledge base ${knowledgeBaseId} not found. Skipping delete.`);
+  //     // ✅ Do not throw, continue to next part
+  //   } else {
+  //     console.error("Error checking knowledge base:", checkErr.response?.data || checkErr.message);
+  //   }
+  // }
+
+  // // ✅ Control will continue here, e.g. pause subscription
+  // console.log("Continuing with subscription pause or next steps...");
+
+
+
+
+  //         // try {
+  //         //   const pauseRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-pause`, {
+  //         //     method: "POST",
+  //         //     headers: {
+  //         //       "Content-Type": "application/json",
+  //         //     },
+  //         //     body: JSON.stringify({
+  //         //       subscriptionId: agentToDeactivate.subscriptionId,
+  //         //     }),
+  //         //   });
+
+  //         //   if (!pauseRes.ok) {
+  //         //     const pauseErr = await pauseRes.json();
+  //         //     console.error("Subscription pause failed:", pauseErr);
+  //         //     throw new Error("Failed to pause subscription");
+  //         //   }
+  //         // } catch (pauseError) {
+  //         //   console.error("Error pausing subscription:", pauseError);
+  //         // }
+  //       }
+  //       if (isCurrentlyDeactivated && businessId) {
+  //         const businessDetails = await getBusinessDetailsByBusinessId(
+  //           businessId
+  //         );
+  //         const packageMap = {
+  //           Free: 1,
+  //           Starter: 2,
+  //           Scaler: 3,
+  //           Growth: 4,
+  //           Corporate: 5,
+  //           Enterprise: 6,
+  //         };
+  //         const packageValue = packageMap[packageName] || 1;
+
+  //         // const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
+  //         const knowledgeBaseName = await getKnowledgeBaseName(
+  //           businessDetails,
+  //           userId,
+  //           packageValue
+  //         );
+  //         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
+  //         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
+  //         const businessData = businessDetails.knowledge_base_texts;
+  //         const knowledgeBaseText = {
+  //           title: businessDetails?.businessType || "Business Info",
+  //           text: `
+  //                 Business Name: ${businessData?.name}
+  //                 Address: ${businessData?.address}
+  //                 Phone: ${businessData?.phone}
+  //                 Website: ${businessData?.website}
+  //                 Rating: ${businessData?.rating} (${businessData?.totalRatings} reviews)
+  //                 Business Status: ${businessData?.businessStatus}
+  //                 Categories: ${businessData?.categories}
+  //                 Opening Hours: ${businessData?.hours}
+  //                 `.trim(),
+  //         };
+
+  //         // Step 1: Create Knowledge Base
+  //         const formData = new FormData();
+  //         formData.append("knowledge_base_name", knowledgeBaseName);
+  //         formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+  //         formData.append("enable_auto_refresh", "true");
+  //         formData.append(
+  //           "knowledge_base_texts",
+  //           JSON.stringify([knowledgeBaseText])
+  //         );
+
+  //         const createRes = await fetch(
+  //           `https://api.retellai.com/create-knowledge-base`,
+  //           {
+  //             method: "POST",
+  //             headers: {
+  //               Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+  //             },
+  //             body: formData,
+  //           }
+  //         );
+
+  //         if (!createRes.ok) {
+  //           const errData = await createRes.json();
+  //           console.error("Knowledge base creation failed:", errData);
+  //           throw new Error("Failed to create knowledge base during activation");
+  //         }
+
+  //         const createdKB = await createRes.json();
+  //         const knowledgeBaseId = createdKB.knowledge_base_id;
+  //         sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
+
+  //         // Step 2: Update LLM for the agent
+  //         const llmId =
+  //           agentToDeactivate?.llmId ||
+  //           localStorage.getItem("llmId") ||
+  //           sessionStorage.getItem("llmId");
+
+  //         if (llmId && knowledgeBaseId) {
+  //           const llmPayload = {
+  //             knowledge_base_ids: [knowledgeBaseId],
+  //           };
+
+  //           try {
+  //             const updateLLMRes = await fetch(
+  //               `https://api.retellai.com/update-retell-llm/${llmId}`,
+  //               {
+  //                 method: "PATCH",
+  //                 headers: {
+  //                   "Content-Type": "application/json",
+  //                   Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+  //                 },
+  //                 body: JSON.stringify(llmPayload),
+  //               }
+  //             );
+
+  //             if (!updateLLMRes.ok) {
+  //               const err = await updateLLMRes.json();
+  //               console.error("Failed to update LLM:", err);
+  //               throw new Error("LLM update failed");
+  //             }
+  //           } catch (error) {
+  //             console.error("Error updating LLM:", error);
+  //           }
+  //           // Resume subscription
+  //           try {
+  //             const resumeRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-resume`, {
+  //               method: "POST",
+  //               headers: {
+  //                 "Content-Type": "application/json",
+  //               },
+  //               body: JSON.stringify({
+  //                 subscriptionId: agentToDeactivate.subscriptionId,
+  //               }),
+  //             });
+
+  //             if (!resumeRes.ok) {
+  //               const resumeErr = await resumeRes.json();
+  //               console.error("Subscription resume failed:", resumeErr);
+  //               throw new Error("Failed to resume subscription");
+  //             } else {
+  //               console.log("Subscription resumed successfully");
+  //             }
+  //           } catch (resumeError) {
+  //             console.error("Error resuming subscription:", resumeError);
+  //           }
+  //         } else {
+  //           console.warn(
+  //             "LLM ID or Knowledge Base ID missing. LLM update skipped."
+  //           );
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error during agent deactivation/reactivation:", error);
+  //     } finally {
+  //       setDeactivateLoading(false);
+  //     }
+  //   };
+
+
   const handleDeactivateAgent = async () => {
     try {
       setDeactivateLoading(true);
@@ -800,11 +1044,36 @@ function Dashboard() {
             },
           }
         );
+        try {
+          const pauseRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-pause`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              subscriptionId: agentToDeactivate.subscriptionId,
+            }),
+          });
+
+          if (!pauseRes.ok) {
+            const pauseErr = await pauseRes.json();
+            console.error("Subscription pause failed:", pauseErr);
+            throw new Error("Failed to pause subscription");
+          }
+        } catch (pauseError) {
+          console.error("Error pausing subscription:", pauseError);
+        }
       }
       if (isCurrentlyDeactivated && businessId) {
         const businessDetails = await getBusinessDetailsByBusinessId(
           businessId
         );
+
+        // const shortName = (businessDetails?.businessName || "Business")
+        //   .trim()
+        //   .toLowerCase()
+        //   .replace(/\s+/g, "_")
+        //   .slice(0, 20);
         const packageMap = {
           Free: 1,
           Starter: 2,
@@ -816,11 +1085,7 @@ function Dashboard() {
         const packageValue = packageMap[packageName] || 1;
 
         // const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
-        const knowledgeBaseName = await getKnowledgeBaseName(
-          businessDetails,
-          userId,
-          packageValue
-        );
+        const knowledgeBaseName = await getKnowledgeBaseName(businessDetails, userId, packageValue);
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
         const businessData = businessDetails.knowledge_base_texts;
@@ -840,7 +1105,7 @@ function Dashboard() {
 
         // Step 1: Create Knowledge Base
         const formData = new FormData();
-        formData.append("knowledge_base_name", knowledgeBaseName);
+        formData.append("knowledge_base_name", knowledgeBaseName?.slice(0, 39));
         formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
         formData.append("enable_auto_refresh", "true");
         formData.append(
@@ -901,14 +1166,65 @@ function Dashboard() {
           } catch (error) {
             console.error("Error updating LLM:", error);
           }
+          // Resume subscription
+          try {
+            const resumeRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-resume`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                subscriptionId: agentToDeactivate.subscriptionId,
+              }),
+            });
+
+            if (!resumeRes.ok) {
+              const resumeErr = await resumeRes.json();
+              console.error("Subscription resume failed:", resumeErr);
+              throw new Error("Failed to resume subscription");
+            } else {
+              console.log("Subscription resumed successfully");
+            }
+          } catch (resumeError) {
+            console.error("Error resuming subscription:", resumeError);
+          }
         } else {
           console.warn(
             "LLM ID or Knowledge Base ID missing. LLM update skipped."
           );
         }
+
+        // ✅ Step 3: Update Agent's knowledgeBaseId in DB
+        if (agentToDeactivate?.agent_id && knowledgeBaseId) {
+          try {
+            await updateAgentKnowledgeBaseId(
+              agentToDeactivate.agent_id,
+              knowledgeBaseId
+            );
+          } catch (err) {
+            console.error(" Failed to update agent's KB ID:", err);
+          }
+        }
       }
+
+      await toggleAgentActivation(
+        agentToDeactivate.agent_id,
+        !isCurrentlyDeactivated
+      );
+
+      setPopupType("success");
+      setPopupMessage(
+        isCurrentlyDeactivated
+          ? "Agent activated successfully."
+          : "Agent deactivated successfully."
+      );
+      setShowDeactivateConfirm(false);
+      setHasFetched(false);
     } catch (error) {
-      console.error("Error during agent deactivation/reactivation:", error);
+      console.error("Activation/Deactivation Error:", error);
+      setPopupType("failed");
+      setPopupMessage("Failed to update agent status.");
+      setShowDeactivateConfirm(false);
     } finally {
       setDeactivateLoading(false);
     }
@@ -918,14 +1234,14 @@ function Dashboard() {
 
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
- 
 
-    navigate("/plan" , {
-state: {
-  agentID : agent?.agent_id , 
-  locationPath : locationPath , 
-  subscriptionID : agent?.subscriptionId
-}
+
+    navigate("/plan", {
+      state: {
+        agentID: agent?.agent_id,
+        locationPath: locationPath,
+        subscriptionID: agent?.subscriptionId
+      }
     })
   };
 
@@ -1980,13 +2296,13 @@ state: {
             handleConnectCal(agentDetailsForCal);
           }
           isConfirmedRef.current = false;
-          setPopupMessage3("");           
+          setPopupMessage3("");
         }}
         onConfirm={() => {
-          isConfirmedRef.current = true;        
-          handleCalConnectWithConfirm();        
-          setPopupMessage3("");                
-        
+          isConfirmedRef.current = true;
+          handleCalConnectWithConfirm();
+          setPopupMessage3("");
+
         }}
       />
 

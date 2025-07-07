@@ -95,6 +95,7 @@ const Step = () => {
     });
     const location = useLocation()
     const locationPath = location?.state?.locationPath;
+    let value = location?.state?.value
     const step1Ref = useRef(null)
     const step3Ref = useRef(null);
     const step4Ref = useRef(null);
@@ -872,7 +873,7 @@ const Step = () => {
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.freeTrial
-        if (locationPath === "/checkout") {
+        if (locationPath === "/checkout" || value==="chatke") {
             handleContinue()
         }
         else if (locationPath !== "/checkout" && priceId) {
