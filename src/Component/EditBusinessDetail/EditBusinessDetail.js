@@ -45,7 +45,7 @@ const EditBusinessDetail = () => {
     if (storedDetails) {
       const details = JSON.parse(storedDetails);
       setBusinessName( details?.businessName || "");;
-      setPhoneNumber(details?.phone || details.internationalPhone || "");
+      setPhoneNumber( details.internationalPhone ||details?.phone || "");
       setAddress(details?.address || "");
       setEmail(details?.email || "");
       setAboutBusiness(details?.aboutBusiness ||details?.aboutBussiness|| "");
@@ -360,7 +360,7 @@ const EditBusinessDetail = () => {
                 minLength={8}
                 onChange={(e) => {
                   const raw = e.target.value;
-                  const cleaned = raw.replace(/[^0-9\s]/g, "");
+                  const cleaned = raw.replace(/[^0-9+\s]/g, "");
                   handleInputChange("phone", cleaned);
                 }}
           // onChange={(e) => {handleInputChange("phone", e.target.value)}

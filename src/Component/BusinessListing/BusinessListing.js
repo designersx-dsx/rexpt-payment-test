@@ -48,7 +48,7 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
     if (storedDetails) {
       const details = JSON.parse(storedDetails);
       setBusinessName(details?.businessName || "");;
-      setPhoneNumber(details?.phone || details.internationalPhone || "");
+      setPhoneNumber( details.internationalPhone  ||details?.phone );
       setAddress(details?.address || "");
       setEmail(details?.email || "");
       setAboutBusiness(details?.aboutBusiness || details?.aboutBussiness || "");

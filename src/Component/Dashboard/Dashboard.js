@@ -33,7 +33,11 @@ import Loader from "../Loader/Loader";
 import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
 import Refferal from "../Refferal/Refferal";
 import Modal3 from "../Modal3/Modal3";
+
+import AnimatedButton from "../AnimatedButton/AnimatedButton";
+
 import axios from "axios";
+
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -2227,15 +2231,15 @@ function Dashboard() {
                 </p>
               </div>
             </div>
-
+            {/* <AnimatedButton label = 'Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)}/> */}
             <div
               className={styles.btnTheme}
-              onClick={async () => shareReferralLink(showDashboardReferral)}
+              // onClick={async () => shareReferralLink(showDashboardReferral)}
             >
               <div className={styles.imageWrapper}>
                 <img src="svg/svg-theme2.svg" alt="" />
               </div>
-              <p>Share Referral Link</p>
+              <AnimatedButton label = 'Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)}/>
             </div>
           </div>
         </div>

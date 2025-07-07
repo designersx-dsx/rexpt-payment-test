@@ -119,7 +119,10 @@ const Step = () => {
     const Buisness = JSON.parse(sessionStorage.getItem("businessDetails"))
     const businessType = Buisness?.businessType === "Other" ? Buisness?.customBuisness : Buisness?.businessType;
     const totalSlides = 8;
-
+    const removeSpaces = (phone) => {
+    if (!phone) return null;
+    return phone.replace(/\s+/g, "");
+    };
     const role_title =
         sessionStorage.getItem("agentRole") || "General Receptionist";
     const business =
@@ -151,7 +154,8 @@ const Step = () => {
     const customServicesSelected = sessionStorage.getItem("businesServices");
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
-    const agentCode = sessionStorage.getItem("AgentCode")
+
+    const agentCode=sessionStorage.getItem("AgentCode")
 
     const [isContiue, seIsContinue] = useState(false)
     const packageMap = {
@@ -252,6 +256,8 @@ const Step = () => {
 
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
+    const businessPhone=removeSpaces(getBusinessNameFromGoogleListing?.phone)
+
     // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
     // const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
@@ -380,21 +386,7 @@ const Step = () => {
                                 }
                             ]
                         },
-                        {
-                            name: "send_email",
-                            state_prompt: "## Task\nSend the company address to the user's email.",
-                            script: `
-                                 speak("Thank you! Sending the company address to your email now.");
-                   run_tool("send_company_address_email", {email: user_input.email});
-                        transition("appointment_booking");
-    `,
-                            edges: [
-                                {
-                                    destination_state_name: "appointment_booking",
-                                    description: "After sending the address, move to booking an appointment"
-                                }
-                            ]
-                        },
+                      
                         {
                             name: "appointment_booking",
                             state_prompt: "## Task\nYou will now help the user book an appointment."
