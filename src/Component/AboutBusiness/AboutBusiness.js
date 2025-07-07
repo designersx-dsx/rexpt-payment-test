@@ -127,6 +127,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
     service.getDetails({ placeId }, (result, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
 
@@ -158,6 +159,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         console.error("Place details fetch failed:", status);
       }
       setLoading(false);
+      console.log('result',result)
     });
   };
 

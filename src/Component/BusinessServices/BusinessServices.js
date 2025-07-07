@@ -37,7 +37,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   const userId = decodeTokenData?.id;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const scrollToBottomRef = useRef(null);
-
+  
   const businessServices = [
     {
       type: "Restaurant",
