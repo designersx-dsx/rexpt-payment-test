@@ -200,10 +200,6 @@ const CalendarConnect = () => {
       setEnabled(true);
     }
   }, []);
-
-
-
-
   return (
     <div>
       <HeaderBar title="Connect Calendar" />

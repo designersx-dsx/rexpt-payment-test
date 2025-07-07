@@ -24,7 +24,7 @@ import BusinessListing from "../BusinessListing/BusinessListing";
 import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
 import getDynamicAgentName from "../../utils/getDynamicAgentName";
-  const businessTypes = [
+const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
     { name: "Deli shop", code: "deli" },
@@ -60,10 +60,10 @@ import getDynamicAgentName from "../../utils/getDynamicAgentName";
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" }
-  ];
+];
 
 const Step = () => {
-    
+
     const timestamp = Date.now();
     const [isRoleTitleChanged, setIsRoleTitleChanged] = useState(false);
     const navigate = useNavigate();
@@ -151,7 +151,7 @@ const Step = () => {
     const customServicesSelected = sessionStorage.getItem("businesServices");
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
-    const agentCode=sessionStorage.getItem("AgentCode")
+    const agentCode = sessionStorage.getItem("AgentCode")
 
     const [isContiue, seIsContinue] = useState(false)
     const packageMap = {
@@ -238,22 +238,22 @@ const Step = () => {
             console.log(error)
         }
     }
-  const sanitize = (str) =>
-    String(str || "")
-      .trim()
-      .replace(/\s+/g, "_");
-      const matchedBusiness = businessTypes.find(
-    (item) => item?.name === business?.businessType
-  );
+    const sanitize = (str) =>
+        String(str || "")
+            .trim()
+            .replace(/\s+/g, "_");
+    const matchedBusiness = businessTypes.find(
+        (item) => item?.name === business?.businessType
+    );
 
     const businessCode = matchedBusiness
-    ? matchedBusiness.code
-    : sanitize(business?.customBuisness || "oth");
+        ? matchedBusiness.code
+        : sanitize(business?.customBuisness || "oth");
 
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const dynamicAgentName=`${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
+    const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
     // const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     //  1. Create the function that returns the choices array
     const getLeadTypeChoices = () => {
@@ -298,7 +298,6 @@ const Step = () => {
 
             //creation here
             if (localStorage.getItem("UpdationMode") != "ON") {
-
                 setLoading(true)
                 const agentConfig = {
                     version: 0,
@@ -313,46 +312,104 @@ const Step = () => {
                             name: "end_call",
                             description: "End the call with user.",
                         },
+                        {
+                            type: "extract_dynamic_variable",
+                            name: "extract_user_email",
+                            description: "Extract the user's email address from the conversation.",
+                            variables: [
+                                {
+                                    type: "string",
+                                    name: "email",
+                                    description: "The user's email address.",
+                                    examples: ["john.doe@example.com", "nitish@company.in"]
+                                }
+                            ]
+                        },
+                        {
+                            type: "custom",
+                            name: "send_company_address_email",
+                            url: "https://11ec-103-99-202-70.ngrok-free.app/api/businessDetails/sendEmailToUserViaMakeWebhook",
+                            description: "Send the company address to the user's provided email. Ask the user for their email if it's not already available.",
+                            speak_during_execution: true,
+                            speak_after_execution: true,
+                            method: "POST",
+                            headers: {
+                                "Authorization": "Bearer YOUR_API_KEY",
+                                "Content-Type": "application/json"
+                            },
+                            input_schema: {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "description": "Send the company address to the user's provided email. Ask the user for their email if it's not already available."
 
-
+                                    }
+                                },
+                                "required": ["email"]
+                            }
+                        }
                     ],
+
 
                     states: [
                         {
                             name: "information_collection",
-                            state_prompt:
-                                "You will follow the steps below to collect information...",
+                            state_prompt: "## Task\nIf the user wants the company address, ask them to provide their email if it’s not already available.",
+                            script: `
+      if (wait_for_user_input) {
+        speak("Could you please provide your email address so I can send you the company address?");
+      wait_for_user_input({ name: "email", type: "string" });
+        transition("send_email", { email: user_input.email });
+      }
+    `,
+                            edges: [
+                                {
+                                    destination_state_name: "send_email",
+                                    description: "Once the email is collected, move to send email state",
+                                    parameters: {
+                                        type: "object",
+                                        properties: {
+                                            email: {
+                                                type: "string",
+                                                description: "User's email address"
+                                            }
+                                        },
+                                        required: ["email"]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "send_email",
+                            state_prompt: "## Task\nSend the company address to the user's email.",
+                            script: `
+                                 speak("Thank you! Sending the company address to your email now.");
+                   run_tool("send_company_address_email", {email: user_input.email});
+                        transition("appointment_booking");
+    `,
                             edges: [
                                 {
                                     destination_state_name: "appointment_booking",
-                                    description: "Transition to book an appointment.",
-                                },
-                            ],
-                            tools: [
-                                {
-                                    type: "transfer_call",
-                                    name: "transfer_to_support",
-                                    description: "Transfer to the support team.",
-                                    transfer_destination: {
-                                        type: "predefined",
-                                        number: "+918054226461", // Replace with actual number
-                                    },
-                                },
-                            ],
+                                    description: "After sending the address, move to booking an appointment"
+                                }
+                            ]
                         },
                         {
                             name: "appointment_booking",
-                            state_prompt:
-                                "You will follow the steps below to book an appointment...",
-                        },
+                            state_prompt: "## Task\nYou will now help the user book an appointment."
+                        }
                     ],
+
+
                     starting_state: "information_collection",
 
                     begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
 
                     default_dynamic_variables: {
                         customer_name: "John Doe",
-                        timeZone:timeZone
+                        timeZone: timeZone
+
                     },
                 };
                 const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
@@ -450,7 +507,7 @@ const Step = () => {
                             backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                             additionalNote: agentNote || "",
                             agentCode,
-                            
+
 
                         }
                         try {
