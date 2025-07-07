@@ -229,7 +229,7 @@ export default function Home() {
                 <th>Date & Time</th>
                 <th>Duration</th>
                 <th>From</th>
-                <th>Name</th>
+                <th>Lead Type</th>
                 <th>Sentiment</th>
               </tr>
             </thead>

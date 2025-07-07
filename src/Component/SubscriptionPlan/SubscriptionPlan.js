@@ -483,6 +483,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         <p className={styles.toggleText} onClick={handleToggle}>
                             ~ {expanded ? 'Hide Features' : 'See All Features'}
                         </p>
+
                         <AnimatedButton onClick={() => {
                             navigate("/steps", {
                                 state: {
@@ -490,6 +491,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                 },
                             });
                         }} label='Subscribe' position={{ position: "relative" }} />
+
 
                     </div>
 

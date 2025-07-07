@@ -87,7 +87,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* margin-right: 16px; */
+    margin-right: 16px;
 }
 
 .firstdiv button {
@@ -139,14 +139,17 @@
 
 }
 
+.listdata {
+   
+}
+
 .liData {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 5px;
     transition: all 0.3s ease;
-    overflow: scroll;
-    max-height: 190px;
+
 }
 
 .liData p {
