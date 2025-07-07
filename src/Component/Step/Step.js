@@ -118,7 +118,10 @@ const Step = () => {
     const Buisness = JSON.parse(sessionStorage.getItem("businessDetails"))
     const businessType = Buisness?.businessType === "Other" ? Buisness?.customBuisness : Buisness?.businessType;
     const totalSlides = 8;
-
+    const removeSpaces = (phone) => {
+    if (!phone) return null;
+    return phone.replace(/\s+/g, "");
+    };
     const role_title =
         sessionStorage.getItem("agentRole") || "General Receptionist";
     const business =
@@ -151,7 +154,6 @@ const Step = () => {
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
     const agentCode=sessionStorage.getItem("AgentCode")
-
     const [isContiue, seIsContinue] = useState(false)
     const packageMap = {
         "Free": 1,
@@ -251,6 +253,8 @@ const Step = () => {
 
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
+    const businessPhone=removeSpaces(getBusinessNameFromGoogleListing?.phone)
+
     // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName=`${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
     // const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
@@ -330,11 +334,12 @@ const Step = () => {
                             tools: [
                                 {
                                     type: "transfer_call",
-                                    name: "transfer_to_support",
-                                    description: "Transfer to the support team.",
+                                    name: "transfer_to_business",
+                                    description: "Transfer the call to the business’s official number.",
+                                    pre_transfer_message:"I’ll now connect you to the business’s official line.",
                                     transfer_destination: {
                                         type: "predefined",
-                                        number: "+918054226461", // Replace with actual number
+                                        number: businessPhone, // Replace with actual number
                                     },
                                 },
                             ],

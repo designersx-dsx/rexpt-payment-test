@@ -37,6 +37,10 @@ export const useAgentCreator = ({
     }
   }
 
+      const removeSpaces = (phone) => {
+    if (!phone) return null;
+    return phone.replace(/\s+/g, "");
+    };
 
   useEffect(() => {
     fetchAgentCountFromUser()
@@ -78,7 +82,7 @@ export const useAgentCreator = ({
     const packageValue = packageMap[packageName] || 1; // default to 1 (Free) if not found
     const businessServices = SelectedServices?.selectedService || [];
     const customServices = cleanedCustomServices?.map(item =>
-
+      
       typeof item === 'string' ? item : item?.service) || [];
 
     const businessServiceNames = businessServices?.map(item => item);
@@ -90,6 +94,7 @@ export const useAgentCreator = ({
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName ||getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
 
     const CustomservicesArray = cleanedCustomServices?.map(item => item.service) || [];
+    const businessPhone=removeSpaces(getBusinessNameFromGoogleListing?.phone)
 
     const filledPrompt = getAgentPrompt({
       industryKey: business?.businessType,   // ← dynamic from businessType
@@ -171,10 +176,592 @@ export const useAgentCreator = ({
 
       const storedKnowledgeBaseId = sessionStorage.getItem('knowledgeBaseId');
       const llm_id = localStorage.getItem('llmId') || sessionStorage.getItem('llmId');
-      const agentConfig = {
-        general_prompt: filledPrompt,
-        begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
-      };
+  //     const agentConfig = {
+  //       general_prompt: filledPrompt,
+  //       general_tools: [
+  //                       // {
+  //                       //     type: "end_call",
+  //                       //     name: "end_call",
+  //                       //     description: "End the call with user.",
+  //                       // },
+
+
+  //                   ],
+  //        states: [
+  //   {
+  //     name: "information_collection",
+  //     state_prompt: `
+  //       You are ${agentName?.split(" ")[0]}, a virtual assistant for ${
+  //       getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom
+  //     }. Greet the user with the begin_message and assist with their query.
+  //       If the user expresses dissatisfaction (e.g., "not satisfied", "unhappy", "talk to someone else", "human agent", "waste of time"), transition to the dissatisfaction_handling state.
+  //       If the user asks for an appointment (e.g., "appointment", "book", "schedule"), transition to appointment_booking.
+  //       For other queries, respond helpfully based on the business context.
+  //       If the user is silent or unclear, say: "I'm sorry, I didn't catch that. Could you please repeat?"
+  //     `,
+  //     edges: [
+  //       {
+  //         destination_state_name: "appointment_booking",
+  //         description: "Transition to book an appointment.",
+  //         condition: {
+  //           type: "text_contains",
+  //           value: ["appointment", "book", "schedule"],
+  //         },
+  //       },
+  //       {
+  //         destination_state_name: "dissatisfaction_handling",
+  //         description: "Handle user dissatisfaction and confirm transfer.",
+  //         condition: {
+  //           type: "text_contains",
+  //           value: ["not satisfied", "unhappy", "talk to someone else", "human agent", "waste of time", "transfer"],
+  //         },
+  //       },
+  //       {
+  //         destination_state_name: "information_collection",
+  //         description: "Handle unclear or unrelated input by staying in the same state.",
+  //         condition: {
+  //           type: "text_contains",
+  //           value: [""], // Handle empty or unclear input
+  //         },
+  //       },
+  //     ],
+  //     tools: [],
+  //   },
+  //   {
+  //     name: "dissatisfaction_handling",
+  //     state_prompt: `
+  //       Say: "I'm sorry you're not satisfied. Would you like to speak to a human agent? Please say yes or no."
+  //       If the user says "yes" or similar (e.g., "yeah", "okay", "sure"), transfer the call to the business's official number.
+  //       If the user says "no" or is unclear, end the call with: "Okay, thank you for calling. Goodbye."
+  //     `,
+  //     edges: [
+  //       {
+  //         destination_state_name: "end_call_state",
+  //         description: "End the call if user declines transfer.",
+  //         condition: {
+  //           type: "text_contains",
+  //           value: ["no", "nope", "not really"],
+  //         },
+  //       },
+  //     ],
+  //     tools: [
+  //       {
+  //         type: "transfer_call",
+  //         name: "transfer_to_business",
+  //         description: "Transfer the call to the business’s official number.",
+  //         pre_transfer_message: "I’m sorry you’re not satisfied. I’ll now connect you to our team.",
+  //         transfer_destination: {
+  //           type: "predefined",
+  //           number: businessPhone,
+  //         },
+  //         condition: {
+  //           type: "text_contains",
+  //           value: ["yes", "yeah", "okay", "sure"],
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     name: "appointment_booking",
+  //     state_prompt: `
+  //       Assist the user in booking an appointment. Ask for details like date, time, and service type.
+  //       If the user provides sufficient information, confirm the appointment.
+  //       If the user is unclear, say: "Could you please provide more details about your appointment request?"
+  //     `,
+  //     edges: [],
+  //     tools: [],
+  //   },
+  //   {
+  //     name: "end_call_state",
+  //     state_prompt: `
+  //       Say: "Okay, thank you for calling. Goodbye." and end the call.
+  //     `,
+  //     tools: [
+  //       {
+  //         type: "end_call",
+  //         name: "end_call",
+  //         description: "End the call with user.",
+  //       },
+  //     ],
+  //     edges: [],
+  //   },
+  // ],
+  //       begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
+  //     };
+
+//   const agentConfig = {
+//   version: 0,
+//   model: "gemini-2.0-flash",
+//   model_temperature: 0,
+//   model_high_priority: true,
+//   tool_call_strict_mode: true,
+//   general_prompt: filledPrompt,
+//   general_tools: [
+//     {
+//       type: "transfer_call",
+//       name: `dissatisfaction_handling`,
+//       transfer_destination: {
+//         type: "inferred",
+//         prompt: `Say: "I'm sorry you're not satisfied. Would you like to speak to a human agent? Please say yes or no."
+//             If the user says "yes", transfer the call to the {{business_Phone}}.
+//             If the user says "no", use end_call_state tool to end the call with: "Okay, thank you for calling`,
+//       },
+//       transfer_option: {
+//         type: "cold_transfer",
+//         public_handoff_option: {
+//           message: "Please hold while I transfer your call to the requested department.",
+//         },
+//       },
+//       speak_during_execution: true,
+//       speak_after_execution: true,
+//     failure_message: "I'm sorry, I'm unable to connect you at the moment. Please contact us at {{business_email}} or call {{business_Phone}} directly.",
+//     },
+//     // {
+//     //   type: "end_call",
+//     //   name: "end_call",
+//     //   description: "End the call with user.",
+//     // },
+//   ],
+//   states: [
+//     {
+//       name: "information_collection",
+//       state_prompt: `
+//         You are ${agentName?.split(" ")[0]}, a virtual assistant for ${
+//         getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.
+//         Greet the user with the begin_message and assist with their query.
+//         Only If the user expresses dissatisfaction (e.g., "not satisfied", "unhappy", "waste of time","looks angry"), and have negative sentiments,use the dissatisfaction_handling tool to transfer to the {{business_Phone}}.
+//         If the user asks for an appointment (e.g., "appointment", "book", "schedule"), transition to appointment_booking.
+//         If the user is silent or unclear, say in the current language: "I'm sorry, I didn't catch that. Could you please repeat?"
+//       `,
+//       edges: [
+//         {
+//           destination_state_name: "appointment_booking",
+//           description: "Transition to book an appointment.",
+//           condition: {
+//             type: "text_contains",
+//             value: ["appointment", "book", "schedule", "prenotazione", "appuntamento"],
+//           },
+//         },
+//         {
+//           destination_state_name: "information_collection",
+//           description: "Handle unclear or unrelated input by staying in the same state.",
+//           condition: {
+//             type: "text_contains",
+//             value: [""],
+//           },
+//         },
+//       ],
+//       tools: [],
+//     },
+//        {
+//       name: "appointment_booking",
+//       state_prompt: `
+//         Assist the user in booking an appointment. Ask for details like date, time, and service type.
+//         If the user provides sufficient information, confirm the appointment.
+//         If the user is unclear, say: "Could you please provide more details about your appointment request?"
+//       `,
+//       edges: [],
+//       tools: [],
+//     },
+//     {
+//       name: "end_call_state",
+//       state_prompt: `
+//         if user ask to End the then greet then end the call.
+//       `,
+//       tools: [
+//         {
+//           type: "end_call",
+//           name: "end_call",
+//           description: "End the call with user.",
+//         },
+//       ],
+//       edges: [],
+//     },
+//   ],
+//   starting_state: "information_collection",
+//   begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
+//   default_dynamic_variables: {
+//     customer_name: "John Doe",
+//     timeZone: "Asia/Kolkata",
+//     sales_number: "", // Will be set by CallTransfer
+//     billing_number: "",
+//     business_Phone: businessPhone, // Default for dissatisfaction
+//     business_email:business.email
+//   },
+//   knowledge_base_ids: ["knowledge_base_4c8aed88c4ad5a67"],
+// };
+
+//working 1
+//   const agentConfig = {
+//   version: 0,
+//   model: "gemini-2.0-flash",
+//   model_temperature: 0,
+//   model_high_priority: true,
+//   tool_call_strict_mode: true,
+//   general_prompt: filledPrompt,
+//   general_tools: [
+//     {
+//       type: "transfer_call",
+//       name: `dissatisfaction_handling`,
+//       transfer_destination: {
+//         type: "inferred",
+//         prompt:`Say: "I'm sorry you're not satisfied. Would you like to speak to a team member? Please say yes or no."
+//             If the user says "yes", transfer the call to the {{business_Phone}}.
+//             If the user says "no", use the end_call tool to end the call with: "Thank you for calling. Have a great day!"`,
+//       },
+//       transfer_option: {
+//         type: "cold_transfer",
+//         public_handoff_option: {
+//           message: "Please hold while I transfer your call to the requested department.",
+//         },
+//       },
+//       speak_during_execution: true,
+//       speak_after_execution: true,
+//     failure_message: "I'm sorry, I'm unable to connect you at the moment. Please contact us at {{business_email}} or call {{business_Phone}} directly.",
+//     },
+//     // {
+//     //   type: "end_call",
+//     //   name: "end_call",
+//     //   description: "End the call with user.",
+//     // },
+//   ],
+//   states: [
+//     {
+//       name: "information_collection",
+//       state_prompt:  `
+//         You are ${agentName?.split(" ")[0]}, a virtual assistant for ${
+//         getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.
+//         Greet the user with the begin_message and assist with their query.
+//         If the user expresses dissatisfaction through tone (e.g., angry, frustrated) or specific words (e.g., "not satisfied", "unhappy", "disappointed", "waste of time", "terrible", "awful", "bad service"), say: "I'm sorry to hear that. Could you please tell me about your concern?"
+//         If the concern is related to service (e.g., "poor service", "bad experience", "staff issue", "service problem"), use the dissatisfaction_handling tool to suggest connecting to a team member.
+//         If the concern is unrelated to service or unclear, say: "Thank you for sharing. Would you like to discuss this further with a team member? Please say yes or no."
+//         If the user asks for an appointment (e.g., "appointment", "book", "schedule"), transition to appointment_booking.
+//         If the user is silent or unclear, say in the current language: "I'm sorry, I didn't catch that. Could you please repeat?"`,
+//       edges: [
+//         {
+//           destination_state_name: "appointment_booking",
+//           description: "Transition to book an appointment.",
+//           condition: {
+//             type: "text_contains",
+//             value: ["appointment", "book", "schedule", "prenotazione", "appuntamento"],
+//           },
+//         },
+//         {
+//           destination_state_name: "information_collection",
+//           description: "Handle unclear or unrelated input by staying in the same state.",
+//           condition: {
+//             type: "text_contains",
+//             value: [""],
+//           },
+//         },
+//       ],
+//       tools: [],
+//     },
+//        {
+//       name: "appointment_booking",
+//       state_prompt: `
+//         Assist the user in booking an appointment. Ask for details like date, time, and service type.
+//         If the user provides sufficient information, confirm the appointment.
+//         If the user is unclear, say: "Could you please provide more details about your appointment request?"
+//       `,
+//       edges: [],
+//       tools: [],
+//     },
+//     {
+//       name: "end_call_state",
+//       state_prompt: `
+//         if user ask to End the then greet then end the call.
+//       `,
+//       tools: [
+//         {
+//           type: "end_call",
+//           name: "end_call",
+//           description: "End the call with user.",
+//         },
+//       ],
+//       edges: [],
+//     },
+//   ],
+//   starting_state: "information_collection",
+//   begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
+//   default_dynamic_variables: {
+//     customer_name: "John Doe",
+//     timeZone: "Asia/Kolkata",
+//     sales_number: "", // Will be set by CallTransfer
+//     billing_number: "",
+//     business_Phone: businessPhone, // Default for dissatisfaction
+//     business_email:business.email
+//   },
+// };
+
+// working2 
+const agentConfig = {
+  version: 0,
+  model: "gemini-2.0-flash",
+  model_temperature: 0,
+  model_high_priority: true,
+  tool_call_strict_mode: true,
+  general_prompt: filledPrompt,
+  general_tools: [],
+  states: [
+    // 🌟 State: Information Collection
+    {
+      name: "information_collection",
+      state_prompt: `
+        You are ${agentName?.split(" ")[0]}, a virtual assistant for ${
+        getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.
+        Greet the user with the begin_message and assist with their query.
+
+        If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible"), 
+        transition to dissatisfaction_confirmation.
+
+        If the user asks for an appointment (e.g., "appointment", "book", "schedule"),
+        transition to appointment_booking.
+
+        If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
+      `,
+      edges: [
+        {
+          destination_state_name: "appointment_booking",
+          description: "User wants to book an appointment."
+        },
+        {
+          destination_state_name: "dissatisfaction_confirmation",
+          description: "User sounds angry or expresses dissatisfaction."
+        }
+      ],
+      tools: []
+    },
+
+    // 🌟 State: Dissatisfaction Confirmation
+    {
+      name: "dissatisfaction_confirmation",
+      state_prompt: `
+        Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
+        Wait for their response.
+
+        If the user says yes, transition to call_transfer.
+        If the user says no, transition to end_call_state.
+        If the response is unclear, repeat the question once.
+      `,
+      edges: [
+        {
+          destination_state_name: "call_transfer",
+          description: "User agreed to speak to team member."
+        },
+        {
+          destination_state_name: "end_call_state",
+          description: "User declined to speak to team member."
+        }
+      ],
+      tools: []
+    },
+
+    // 🌟 State: Call Transfer
+    {
+      name: "call_transfer",
+      state_prompt: `
+        Connecting you to a team member now. Please hold.
+      `,
+      tools: [
+        {
+          type: "transfer_call",
+          name: "transfer_to_team",
+          description: "Transfer the call to the team member.",
+          transfer_destination: {
+            type: "predefined",
+            number: "{{business_Phone}}"
+          },
+          transfer_option: {
+            type: "cold_transfer",
+            public_handoff_option: {
+              message: "Please hold while I transfer your call."
+            }
+          },
+          speak_during_execution: true,
+          speak_after_execution: true,
+          failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
+        }
+      ],
+      edges: []
+    },
+
+    // 🌟 State: Appointment Booking
+    {
+      name: "appointment_booking",
+      state_prompt: `
+        Help the user book an appointment by asking date, time, and service details.
+        Confirm once all details are provided.
+      `,
+      edges: [],
+      tools: []
+    },
+
+    // 🌟 State: End Call
+    {
+      name: "end_call_state",
+      state_prompt: `
+        Politely end the call by saying: "Thank you for calling. Have a great day!"
+      `,
+      tools: [
+        {
+          type: "end_call",
+          name: "end_call",
+          description: "End the call with the user."
+        }
+      ],
+      edges: []
+    }
+  ],
+  starting_state: "information_collection",
+  begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may I help you?`,
+  default_dynamic_variables: {
+    customer_name: "John Doe",
+    timeZone: "Asia/Kolkata",
+    business_Phone: businessPhone,
+    business_email: business.email
+  }
+};
+// working 3 but undefined if departnment other
+// const agentConfig = {
+//   version: 0,
+//   model: "gemini-2.0-flash",
+//   model_temperature: 0,
+//   model_high_priority: true,
+//   tool_call_strict_mode: true,
+//   general_prompt: filledPrompt,
+//   general_tools: [],
+//   states: [
+//     // 🌟 State: Information Collection
+//     {
+//       name: "information_collection",
+//       state_prompt: `
+//         You are ${agentName?.split(" ")[0]}, a virtual assistant for ${
+//         getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.
+//         Greet the user with the begin_message and assist with their query.
+
+//         If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words 
+//         (like "bad service", "unhappy", "terrible", "poor experience"), 
+//         transition to dissatisfaction_confirmation.
+
+//         If the user asks for an appointment (e.g., "appointment", "book", "schedule"),
+//         transition to appointment_booking.
+
+//         If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
+//       `,
+//       edges: [
+//         {
+//           destination_state_name: "appointment_booking",
+//           description: "User wants to book an appointment."
+//         },
+//         {
+//           destination_state_name: "dissatisfaction_confirmation",
+//           description: "User sounds angry or expresses dissatisfaction."
+//         }
+//       ],
+//       tools: []
+//     },
+
+//     // 🌟 State: Dissatisfaction Confirmation
+//     {
+//       name: "dissatisfaction_confirmation",
+//       state_prompt: `
+//         Say: "I'm sorry to hear that. Could you please tell me about your concern?"
+
+//         Wait for user's response and analyze:
+//         - If the concern is **service-related** (e.g., staff issue, poor service, delay),
+//           ask: "Would you like me to connect you to a team member? Please say yes or no."
+
+//         - If the concern is unrelated to service (e.g., general query, spam, request for info),
+//           handle it yourself and do NOT suggest transfer.
+
+//         If the user says yes to transfer, transition to call_transfer.
+//         If the user says no, transition to end_call_state.
+//         If response is unclear, repeat the question once politely.
+//       `,
+//       edges: [
+//         {
+//           destination_state_name: "call_transfer",
+//           description: "User agreed to speak to team member."
+//         },
+//         {
+//           destination_state_name: "end_call_state",
+//           description: "User declined to speak to team member."
+//         }
+//       ],
+//       tools: []
+//     },
+
+//     // 🌟 State: Call Transfer
+//     {
+//       name: "call_transfer",
+//       state_prompt: `
+//         Before transferring, check if {{business_Phone}} is available.
+//         - If available: Say "Connecting you to a team member now. Please hold."
+//         - If not available: Say "I’m sorry, I don’t have a number to connect you right now. Can I assist you with something else?"
+//       `,
+//       tools: [
+//         {
+//           type: "transfer_call",
+//           name: "transfer_to_team",
+//           description: "Transfer the call to the team member if business_Phone exists.",
+//           transfer_destination: {
+//             type: "predefined",
+//             number: "{{business_Phone}}"
+//           },
+//           transfer_option: {
+//             type: "cold_transfer",
+//             public_handoff_option: {
+//               message: "Please hold while I transfer your call."
+//             }
+//           },
+//           speak_during_execution: true,
+//           speak_after_execution: true,
+//           failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
+//         }
+//       ],
+//       edges: []
+//     },
+
+//     // 🌟 State: Appointment Booking
+//     {
+//       name: "appointment_booking",
+//       state_prompt: `
+//         Help the user book an appointment by asking for details like date, time, and service type.
+//         Confirm once all details are provided.
+//       `,
+//       edges: [],
+//       tools: []
+//     },
+
+//     // 🌟 State: End Call
+//     {
+//       name: "end_call_state",
+//       state_prompt: `
+//         Politely end the call by saying: "Thank you for calling. Have a great day!"
+//       `,
+//       tools: [
+//         {
+//           type: "end_call",
+//           name: "end_call",
+//           description: "End the call with the user."
+//         }
+//       ],
+//       edges: []
+//     }
+//   ],
+//   starting_state: "information_collection",
+//   begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may I help you?`,
+//   default_dynamic_variables: {
+//     customer_name: "John Doe",
+//     timeZone: "Asia/Kolkata",
+//     business_Phone: businessPhone,
+//     business_email: business.email
+//   }
+// };
+
+
+
       if(isValid=='BusinessListing'){
         agentConfig.knowledge_base_ids = [storedKnowledgeBaseId] ;
       }
