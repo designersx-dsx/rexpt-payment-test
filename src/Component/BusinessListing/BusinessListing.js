@@ -439,6 +439,7 @@ const BusinessListing = forwardRef(
                 />{" "}
               </div>
 
+
               <div className={styles.formGroup}>
                 <label>
                   Phone Number <span className={styles.requiredStar1}>*</span>
@@ -457,6 +458,7 @@ const BusinessListing = forwardRef(
                   required
                 />
               </div>
+
 
               <div className={styles.formGroup}>
                 <label>
@@ -481,6 +483,7 @@ const BusinessListing = forwardRef(
                 />
               </div>
 
+
               <div className={styles.formGroup}>
                 <label>About My Business</label>
                 <textarea
@@ -492,7 +495,7 @@ const BusinessListing = forwardRef(
                   placeholder="Describe"
                 />
               </div>
-            </div>
+
 
             {/* <div className={styles.fixedBtn}>
             <button
