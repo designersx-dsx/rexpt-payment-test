@@ -9,7 +9,9 @@
     margin-top: 2px;
     margin-inline: 1px;
 }
-
+.backIcon{
+    cursor: pointer;
+}
 .BothFlex {
     display: flex;
     align-items: center;
