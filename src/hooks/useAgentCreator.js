@@ -476,10 +476,18 @@ export const useAgentCreator = ({
           {
             name: "information_collection",
             state_prompt: `
-        You are ${agentName?.split(" ")[0]}, a virtual assistant for ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.
         Greet the user with the begin_message and assist with their query.
 
-        If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible"), 
+        If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible","waste of time"),
+        ask them: "I'm sorry to hear that. Could you please tell me about your concern?"
+        Analyze their response. 
+        
+        If the concern contains **spam, irrelevant or abusive content**
+        (e.g., random questions, profanity, jokes), say:
+        "I’m here to assist with service-related concerns. Could you please share your issue regarding our service?"
+        and stay in this state.
+
+        If the concern is **service-related** or **business** (e.g., staff, delay, poor support),
         transition to dissatisfaction_confirmation.
 
         If the user asks for an appointment (e.g., "appointment", "book", "schedule"),
