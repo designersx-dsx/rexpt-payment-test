@@ -103,7 +103,7 @@
 .Linkdec {
     display: flex;
     gap: 10px;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     margin-bottom: 10px;
 }
 

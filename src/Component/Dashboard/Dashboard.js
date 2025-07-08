@@ -1780,7 +1780,11 @@ function Dashboard() {
               </div>
 
               <div className={styles.LangButton}>
-                {assignedNumbers.length > 0 ? (
+                { agent?.subscriptionId === null ?
+                  <div className={styles.AssignNumText}>
+                  </div> 
+                  :
+                assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
                     Assigned Number
                     <p className={styles.NumberCaller}>

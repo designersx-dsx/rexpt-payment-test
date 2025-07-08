@@ -115,15 +115,15 @@ const CalendarConnect = () => {
       const data = await response.json();
       const eventTypeId = data?.event_type?.id;
 
-    if (!eventTypeId) {
-      throw new Error("Event ID not received from Cal.com");
-    }
-    try {
-      await updateAgentEventId(agentId, eventTypeId);
-      console.log(" Event ID saved to agent.");
-    } catch (err) {
-      console.error("Failed to update agent with event ID:", err);
-    }
+      if (!eventTypeId) {
+        throw new Error("Event ID not received from Cal.com");
+      }
+      try {
+        await updateAgentEventId(agentId, eventTypeId);
+        console.log(" Event ID saved to agent.");
+      } catch (err) {
+        console.error("Failed to update agent with event ID:", err);
+      }
 
       const retellPayload = {
         general_tools: [
@@ -196,14 +196,15 @@ const CalendarConnect = () => {
 
     if (agentDetails?.calApiKey && typeof agentDetails?.calApiKey === "string") {
       setApiKey(agentDetails?.calApiKey);
-      setInitialApiKey(agentDetails?.calApiKey); 
+      setInitialApiKey(agentDetails?.calApiKey);
       setEnabled(true);
     }
   }, []);
   return (
-    <div>
-      <HeaderBar title="Connect Calendar" />
+    <div className={styles.calenderMain}>
+    <HeaderBar title="Connect Calendar" />
       <div className={styles.container}>
+    
         <p className={styles.TopPara}>
           You can easily{" "}
           <strong>Connect your personal or business Calendar</strong> with your{" "}

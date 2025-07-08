@@ -129,7 +129,7 @@
 }
 
 .btnTheme {
-    position: relative;
+    /* position: relative;
     color: white;
     border-radius: 12px;
     display: flex;
@@ -138,7 +138,7 @@
     min-height: 55px;
     margin-top: 2rem;
     width: 100%;
-    cursor: pointer;
+    cursor: pointer; */
 }
 
 .imageWrapper {
