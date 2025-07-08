@@ -218,7 +218,7 @@ const CallDetails = () => {
 
       <section>
         <div className={styles.DataMain}>
-          <div className={styles.dataTitle}>
+          {/* <div className={styles.dataTitle}>
             <h2>Data Collected</h2>
           </div>
           <div className={styles.dataCard}>
@@ -238,7 +238,7 @@ const CallDetails = () => {
               <p>Reason</p>
               <b>-</b>
             </div>
-          </div>
+          </div> */}
           <div className={styles.moredetailsDiv}>
             <div className={styles.dataTitle}>
               <h2>More Details</h2>

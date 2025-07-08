@@ -105,6 +105,34 @@ const AgentDashboard = () => {
   const [popupType3, setPopupType3] = useState("confirm");
   const [calapiloading, setCalapiloading] = useState(false);
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
+  const [meetingCount, setMeetingCount] = useState(0);
+
+  
+
+useEffect(() => {
+  const fetchMeetingCount = async () => {
+    if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
+
+    try {
+      const res = await fetch(
+        `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(agentData.agent.calApiKey)}`
+      );
+      const data = await res.json();
+
+      const meetings = data?.bookings?.filter(
+        (b) => Number(b.eventTypeId) === Number(agentData.agent.eventId)
+      );
+
+      setMeetingCount(meetings?.length || 0);
+    } catch (error) {
+      console.error("Error fetching meeting bookings:", error);
+      setMeetingCount(0);
+    }
+  };
+
+  fetchMeetingCount();
+}, [agentData]);
+
   useEffect(() => {
     clearSessionAfterEdit();
   }, [])
@@ -1295,7 +1323,7 @@ const handleAssignNumber=()=>{
               >
                 <span className={` ${styles.statText}`}>Bookings</span>
                 <span className={styles.statDetail}>
-                  {totalBookings !== null ? totalBookings : "0"}
+                 {meetingCount}
                 </span>
               </div>
 
