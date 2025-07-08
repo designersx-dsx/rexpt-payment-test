@@ -2111,7 +2111,10 @@ function Dashboard() {
                 : "Deactivate Agent"}
             </h2>
             <p>
-              Are you sure you want to{" "}
+          {agentToDeactivate?.isDeactivated === 1
+  ? 'Are you sure you want to activate this agent?'
+  : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."
+}
               <strong>
                 {agentToDeactivate?.isDeactivated === 1
                   ? "activate"
@@ -2125,7 +2128,10 @@ function Dashboard() {
                 className={`${styles.modalButton} ${styles.cancel}`}
                 onClick={() => setShowDeactivateConfirm(false)}
               >
-                No
+                {agentToDeactivate?.isDeactivated === 1
+  ? "No"
+  : "Keep Active"
+}
               </button>
               <button
                 className={`${styles.modalButton} ${styles.submit}`}
@@ -2142,7 +2148,12 @@ function Dashboard() {
                     Updating <Loader size={18} />
                   </span>
                 ) : (
-                  "Yes"
+                 <>
+                 {agentToDeactivate?.isDeactivated === 1
+  ? 'Yes'
+  : "Yes, Pause"
+}
+                 </> 
                 )}
               </button>
             </div>
