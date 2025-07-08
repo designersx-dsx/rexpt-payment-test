@@ -1707,19 +1707,19 @@ function Dashboard() {
                           : "Deactivate Agent"}
                       </div>
                       {agent?.subscription && agent?.subscription?.plan_name?.toLowerCase() !== "free" && (
-  <div>
-    <div
-      className={styles.OptionItem}
-      onMouseDown={(e) => {
-        e.stopPropagation();
-        setAgentToCancel(agent);
-        setShowCancelConfirm(true);
-      }}
-    >
-      Cancel Subscription
-    </div>
-  </div>
-)}
+                        <div>
+                          <div
+                            className={styles.OptionItem}
+                            onMouseDown={(e) => {
+                              e.stopPropagation();
+                              setAgentToCancel(agent);
+                              setShowCancelConfirm(true);
+                            }}
+                          >
+                            Cancel Subscription
+                          </div>
+                        </div>
+                      )}
 
                     </div>
                   )}
