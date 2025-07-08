@@ -318,71 +318,31 @@ const Step = () => {
                             name: "end_call",
                             description: "End the call with user.",
                         },
-                        {
-                            type: "extract_dynamic_variable",
-                            name: "extract_user_email",
-                            description: "Extract the user's email address from the conversation.",
-                            variables: [
-                                {
-                                    type: "string",
-                                    name: "email",
-                                    description: "The user's email address.",
-                                    examples: ["john.doe@example.com", "nitish@company.in"]
-                                }
-                            ]
-                        },
-                        {
-                            type: "custom",
-                            name: "send_company_address_email",
-                            url: "https://11ec-103-99-202-70.ngrok-free.app/api/businessDetails/sendEmailToUserViaMakeWebhook",
-                            description: "Send the company address to the user's provided email. Ask the user for their email if it's not already available.",
-                            speak_during_execution: true,
-                            speak_after_execution: true,
-                            method: "POST",
-                            headers: {
-                                "Authorization": "Bearer YOUR_API_KEY",
-                                "Content-Type": "application/json"
-                            },
-                            input_schema: {
-                                "type": "object",
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "description": "Send the company address to the user's provided email. Ask the user for their email if it's not already available."
-
-                                    }
-                                },
-                                "required": ["email"]
-                            }
-                        }
+                    
                     ],
 
 
                     states: [
                         {
                             name: "information_collection",
-                            state_prompt: "## Task\nIf the user wants the company address, ask them to provide their email if it’s not already available.",
-                            script: `
-      if (wait_for_user_input) {
-        speak("Could you please provide your email address so I can send you the company address?");
-      wait_for_user_input({ name: "email", type: "string" });
-        transition("send_email", { email: user_input.email });
-      }
-    `,
+                            state_prompt: `
+                                You are ${agentName?.split(" ")[0]}, a virtual assistant for ${
+                                getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.
+                                Greet the user with the begin_message and assist with their query.
+
+                                If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible"), 
+                                transition to dissatisfaction_confirmation.
+
+                                If the user asks for an appointment (e.g., "appointment", "book", "schedule"),
+                                transition to appointment_booking.
+
+                                If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
+                                If the user wants to end the call transition to end_call`,
                             edges: [
+                               
                                 {
-                                    destination_state_name: "send_email",
-                                    description: "Once the email is collected, move to send email state",
-                                    parameters: {
-                                        type: "object",
-                                        properties: {
-                                            email: {
-                                                type: "string",
-                                                description: "User's email address"
-                                            }
-                                        },
-                                        required: ["email"]
-                                    }
+                                destination_state_name: "dissatisfaction_confirmation",
+                                description: "User sounds angry or expresses dissatisfaction."
                                 }
                             ]
                         },
@@ -390,6 +350,73 @@ const Step = () => {
                         {
                             name: "appointment_booking",
                             state_prompt: "## Task\nYou will now help the user book an appointment."
+                        },
+
+                            // 🌟 State: Dissatisfaction Confirmation
+                        {
+                        name: "dissatisfaction_confirmation",
+                        state_prompt: `
+                            Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
+                            Wait for their response.
+
+                            If the user says yes, transition to call_transfer.
+                            If the user says no, transition to end_call_state.
+                            If the response is unclear, repeat the question once.
+                        `,
+                        edges: [
+                            {
+                            destination_state_name: "call_transfer",
+                            description: "User agreed to speak to team member."
+                            },
+                            {
+                            destination_state_name: "end_call_state",
+                            description: "User declined to speak to team member."
+                            }
+                        ],
+                        tools: []
+                        },
+
+                        // 🌟 State: Call Transfer
+                        {
+                        name: "call_transfer",
+                        state_prompt: `
+                            Connecting you to a team member now. Please hold.
+                        `,
+                        tools: [
+                            {
+                            type: "transfer_call",
+                            name: "transfer_to_team",
+                            description: "Transfer the call to the team member.",
+                            transfer_destination: {
+                                type: "predefined",
+                                number: "{{business_Phone}}"
+                            },
+                            transfer_option: {
+                                type: "cold_transfer",
+                                public_handoff_option: {
+                                message: "Please hold while I transfer your call."
+                                }
+                            },
+                            speak_during_execution: true,
+                            speak_after_execution: true,
+                            failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
+                            }
+                        ],
+                        edges: []
+                        },
+                         {
+                        name: "end_call_state",
+                        state_prompt: `
+                            Politely end the call by saying: "Thank you for calling. Have a great day!"
+                        `,
+                        tools: [
+                            {
+                            type: "end_call",
+                            name: "end_call1",
+                            description: "End the call with the user."
+                            }
+                        ],
+                        edges: []
                         }
                     ],
 
@@ -937,7 +964,7 @@ const Step = () => {
         4: "This section shows your main business details: name, address, phone number, email, and a description of your business. These are important for both your customers and our system. Feel free to add or edit any of these fields to ensure all your information is current and correct.",
         5: "This is the main language your agent will use for all its interactions. Choosing the correct language ensures the best communication experience. We Support 25+ Languages.",
         6: "Select the gender you prefer for your AI agent, then listen to the available voice options to pick the one that best represents your business.",
-        7: "Pcik an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
+        7: "Pick an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
     };
     return (
         <div className={styles.container}>

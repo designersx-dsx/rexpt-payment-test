@@ -23,7 +23,7 @@ const EditAgentNew = () => {
         {
             number: 1,
             title: 'Business Type',
-            desc: 'Edit Business List, Business Size.',
+            desc: 'Edit: Business List, Business Size.',
             active: true,
             link:'/edit-business-type'
         },
