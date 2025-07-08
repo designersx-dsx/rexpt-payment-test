@@ -412,7 +412,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         </div>
 
                                         <div className={styles.discount}>
-                                            Save up to 20% when billed yearly
+                                            You saved 17% ($240) compared to monthly billing
                                         </div>
                                         <br />
                                         <div style={{ fontSize: "12px" }} className={styles.stickyWrapper}>
@@ -456,7 +456,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 isOpen={isModalOpen}
                 onClose={() => {
                     setIsModalOpen(false);
-                    setFreeTrial(false); 
+                    setFreeTrial(false);
                 }}>
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
@@ -526,7 +526,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                     className={styles.radiobtn}
                                 />
 
-                                <img src="/svg/starter-icon.svg" />
+                                {plan.title === "Starter" ? <img src="/svg/starter-icon.svg" /> : null}
+                                {plan.title === "Scaler" ? <img src="/svg/scaler-icon.svg" /> : null}
+                                {plan.title === "Growth" ? <img src="/svg/growth-icon.svg" /> : null}
+                                {plan.title === "Corporate" ? <img src="/svg/corporate-icon.svg" /> : null}
 
                                 <button
                                     className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""

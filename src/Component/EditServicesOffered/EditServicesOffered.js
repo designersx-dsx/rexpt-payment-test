@@ -622,7 +622,7 @@ const EditServicesOffered = () => {
                                             </div>
                                             <div className={styles.strongDiv}>
                                                 <strong>{item}</strong>
-                                                <p className={styles.subType}>{item}</p>
+                                                {/* <p className={styles.subType}>{item}</p> */}
                                             </div>
                                         </div>
 
@@ -688,7 +688,7 @@ const EditServicesOffered = () => {
                     </div>
                     }
                     <div className={styles.stickyWrapper} onClick={handleContinue}> 
-                        <AnimatedButton label="Save" isLoading={Loading}/>
+                        <AnimatedButton label="Save" isLoading={Loading}  position={{ position: "relative" }}/>
                     </div>
                 </div>
         {showPopup && (
