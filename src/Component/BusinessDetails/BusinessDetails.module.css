@@ -104,6 +104,7 @@
   min-height: 70px;
   padding-inline: 10px;
   padding-block: 5px;
+  cursor: pointer;
 }
 
 .option:hover {
@@ -292,6 +293,7 @@
   min-height: 55px;
   width: 100%;
   background-color: rgb(255, 255, 255);
+  cursor: pointer;
 }
 
 /* Re-use the existing error style on focus/invalid */

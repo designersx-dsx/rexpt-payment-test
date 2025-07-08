@@ -401,7 +401,8 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
             <div className={styles.formGroup}>
               <label>About My Business</label>
               <textarea
-                rows="5"
+               rows="5" cols="50"
+              
                 value={aboutBussiness}
                 onChange={(e) =>
                   handleInputChange("aboutBussiness", e.target.value)

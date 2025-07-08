@@ -937,7 +937,7 @@ const Step = () => {
         4: "This section shows your main business details: name, address, phone number, email, and a description of your business. These are important for both your customers and our system. Feel free to add or edit any of these fields to ensure all your information is current and correct.",
         5: "This is the main language your agent will use for all its interactions. Choosing the correct language ensures the best communication experience. We Support 25+ Languages.",
         6: "Select the gender you prefer for your AI agent, then listen to the available voice options to pick the one that best represents your business.",
-        7: "Pcik an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
+        7: "Pick an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
     };
     return (
         <div className={styles.container}>
