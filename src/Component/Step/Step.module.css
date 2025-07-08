@@ -3,10 +3,8 @@
   padding-inline: 20px;
   overflow: auto;
   max-height: 90dvh;
-
-
   scrollbar-width: thin;
-  scrollbar-color: rgb(255, 255, 255) transparent;
+  /* scrollbar-color: rgb(255, 255, 255) transparent; */
 }
 
 .container::-webkit-scrollbar {

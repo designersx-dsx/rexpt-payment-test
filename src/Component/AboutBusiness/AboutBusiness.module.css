@@ -131,7 +131,7 @@
 .verifyButton {
   position: absolute;
   right: 20px;
-  top: 30%;
+  /* top: 30%;/ */
   border: unset;
   background-color: #6524eb;
   color: #fff;
@@ -191,7 +191,7 @@
   .verifyStatus {
     position: absolute;
     right: 20px;
-    top: 30%;
+    /* top: 30%; */
     border: unset;
     color: #fff;
     padding: 5px 15px;
