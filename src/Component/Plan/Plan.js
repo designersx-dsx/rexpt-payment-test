@@ -286,7 +286,7 @@ const Planss = () => {
     if (error) return <p className={styles.statusError}>{error}</p>;
 
     return (
-        <div>
+        <div className={styles.subscriptionMain}>
             <div className={styles.firstdiv}>
                 <HeaderBar title="Upgrade Plan" />
                 {agentCount == 0 ? <label className={styles.freeTrialBtn} onChange={handleClick}>
@@ -442,7 +442,7 @@ const Planss = () => {
                                     </div>
 
                                     <div className={styles.discount}>
-                                        Save up to 20% when billed yearly
+                                        You saved 17% ($240) compared to monthly billing
                                     </div>
                                     <br />
                                     <div className={styles.stickyWrapper}>
@@ -579,8 +579,10 @@ const Planss = () => {
                                     onChange={() => setActiveIndex(index)}
                                     className={styles.radiobtn}
                                 />
-
-                                <img src="/svg/starter-icon.svg" />
+                                 {plan.title==="Starter" ?   <img src="/svg/starter-icon.svg" />: null}
+                                 {plan.title==="Scaler" ?   <img src="/svg/scaler-icon.svg" />: null}
+                                 {plan.title==="Growth" ?   <img src="/svg/growth-icon.svg" />: null}
+                                 {plan.title==="Corporate" ?   <img src="/svg/corporate-icon.svg" />: null}
 
                                 <button
                                     className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""

@@ -367,7 +367,7 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
                 minLength={8}
                 onChange={(e) => {
                   const raw = e.target.value;
-                  const cleaned = raw.replace(/[^0-9\s]/g, "");
+                  const cleaned = raw.replace(/[^0-9+\s]/g, "");
                   handleInputChange("phone", cleaned);
                 }}
                 placeholder="88XX 77X 6XX"
@@ -401,7 +401,8 @@ const BusinessListing = forwardRef(({ onNext, onBack, onValidationError, onSucce
             <div className={styles.formGroup}>
               <label>About My Business</label>
               <textarea
-                rows="5"
+               rows="5" cols="50"
+              
                 value={aboutBussiness}
                 onChange={(e) =>
                   handleInputChange("aboutBussiness", e.target.value)
