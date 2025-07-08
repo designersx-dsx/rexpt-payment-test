@@ -22,16 +22,16 @@ export const LoginWithEmailOTP = async (email) => {
   return res;
 };
 
-export const verifyEmailOTP = async (email, otp ) => {
+export const verifyEmailOTP = async (email, otp) => {
   const customerRes = await fetch(`${API_BASE_URL}/customer`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-          });
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
 
-          const customerData = await customerRes.json();
-        let customerId =  customerData.customerId;
-  const res = await api.post('/auth/verifyEmailOTP', { email, otp , customerId});
+  const customerData = await customerRes.json();
+  let customerId = customerData.customerId;
+  const res = await api.post('/auth/verifyEmailOTP', { email, otp, customerId });
   return res;
 };
 
@@ -96,8 +96,8 @@ export const listAgents = async () => {
 export const countAgentsbyUserId = async (userId) => {
   try {
     const res = await api.get(`${API_BASE_URL}/agent/listAgents?userId=${userId}`);
-    console.log('res',res)
-    return res.data.length  || 0;
+    console.log('res', res)
+    return res.data.length || 0;
   } catch (error) {
     console.error("Error fetching agent count:", error);
     return 0;
@@ -160,7 +160,7 @@ export const deleteAgent = async (agentId) => {
     });
     await axios.delete(`https://api.retellai.com/delete-agent/${agentId}`, {
       headers: {
-        Authorization:`Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+        Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
       },
     });
 
@@ -345,7 +345,7 @@ export const updateEmailSendOtp = async (email, userId) => {
 
 export const updateShowReferralFloatingStatus = async (userId, status) => {
   try {
-    const response = await api.patch(`/endusers/updateShowReferralFloatingStatus?userId=${userId}`,{status});
+    const response = await api.patch(`/endusers/updateShowReferralFloatingStatus?userId=${userId}`, { status });
     return response.data
   } catch (error) {
     console.error("Error updating user details:", error);
@@ -379,7 +379,22 @@ export const updateAgentEventId = async (agentId, eventId) => {
   }
 };
 
+export const refundAndCancelSubscriptionAgnetApi = async (agentId, minutesLeft) => {
 
+  try {
+    const res = await axios.post(`${API_BASE_URL}/refund`, {
+      agentId, minutesLeft
+    }, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    return res.data
+  } catch (error) {
+    console.error("Error refunding user", error.response?.data || error.message);
+    throw new Error("Failed to refund user for agent");
+  }
+}
 
 
 export default api;
