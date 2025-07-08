@@ -325,10 +325,7 @@ const Step = () => {
                     states: [
                         {
                             name: "information_collection",
-                            state_prompt: `
-                                You are ${agentName?.split(" ")[0]}, a virtual assistant for ${
-                                getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.
-                                Greet the user with the begin_message and assist with their query.
+                            state_prompt: `Greet the user with the begin_message and assist with their query.
 
                                 If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible"), 
                                 transition to dissatisfaction_confirmation.
@@ -337,7 +334,7 @@ const Step = () => {
                                 transition to appointment_booking.
 
                                 If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
-                                If the user wants to end the call transition to end_call`,
+                                If the user wants to end the call transition to end_call_state`,
                             edges: [
                                
                                 {
@@ -427,6 +424,8 @@ const Step = () => {
 
                     default_dynamic_variables: {
                         customer_name: "John Doe",
+                        business_Phone: businessPhone,
+                         business_email: business.email,
                         timeZone: timeZone
 
                     },
