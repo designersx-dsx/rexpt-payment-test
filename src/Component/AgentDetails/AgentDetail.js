@@ -272,8 +272,7 @@ const AgentDashboard = () => {
 
     const cached = getAgentById(agentDetails.agentId);
     if (cached) {
-      setCurrentAgentId(agentDetails.agentId); // Load into active context
-      // setAgentId(agentDetails.agentId);
+      setCurrentAgentId(agentDetails.agentId); 
       setLoading(false);
     }
 
