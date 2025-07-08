@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Helper function to format date
+// Helper to format date
 function formatDateISO(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -18,41 +18,53 @@ function formatDateISO(date) {
   return `${y}-${m}-${d}`;
 }
 
-// Helper function to format time
 function formatTime(isoDate) {
   const date = new Date(isoDate);
   return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-const AgentAnalysis = ({ data, calApiKey,callVolume }) => {
-  // const callVolume = data?.reduce((acc, day) => acc + day.calls, 0);
+const AgentAnalysis = ({ data, calApiKey, callVolume }) => {
   const [bookingDates, setBookingDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [bookingsForSelectedDate, setBookingsForSelectedDate] = useState([]);
-  const bookingsRef = useRef(null); 
+  const [agentEventId, setAgentEventId] = useState(null);
+  const bookingsRef = useRef(null);
 
+  // ✅ Get selected agent from sessionStorage on mount
+  useEffect(() => {
+    try {
+      const agentData = JSON.parse(sessionStorage.getItem("SelectAgentId"));
+      if (agentData && agentData.eventId) {
+        setAgentEventId(agentData.eventId);
+      } else {
+        console.warn("SelectAgentId not found or invalid in sessionStorage");
+      }
+    } catch (e) {
+      console.error("Error parsing SelectAgentId from sessionStorage:", e);
+    }
+  }, []);
+
+  // ✅ Fetch and filter bookings based on agentEventId
   useEffect(() => {
     async function fetchBookingDates() {
-      try {
-        if (!calApiKey) {
-          console.warn("No Cal API Key provided to AgentAnalysis");
-          return;
-        }
+      if (!calApiKey || !agentEventId) return;
 
+      try {
         const response = await fetch(
           `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`
         );
         if (!response.ok) throw new Error("Failed to fetch bookings");
+
         const bookingsData = await response.json();
-        const bookingsMap = {}; 
+        const bookingsMap = {};
+
         bookingsData.bookings?.forEach((booking) => {
-          if (booking.startTime) {
+          // Filter by agent's eventId
+          if (Number(booking.eventTypeId) === Number(agentEventId)) {
             const date = new Date(booking.startTime);
             const formattedDate = formatDateISO(date);
-            if (!bookingsMap[formattedDate]) {
-              bookingsMap[formattedDate] = [];
-            }
-            bookingsMap[formattedDate].push(booking); 
+            if (!bookingsMap[formattedDate]) bookingsMap[formattedDate] = [];
+            bookingsMap[formattedDate].push(booking);
           }
         });
 
@@ -64,12 +76,11 @@ const AgentAnalysis = ({ data, calApiKey,callVolume }) => {
     }
 
     fetchBookingDates();
-  }, [calApiKey, selectedDate]);
+  }, [calApiKey, selectedDate, agentEventId]);
 
   const handleDateClick = (date) => {
-    setSelectedDate(date); // Set the selected date
+    setSelectedDate(date);
     setBookingsForSelectedDate(bookingDates[formatDateISO(date)] || []);
-    // Scroll to the bookings list after selecting a date
     if (bookingsRef.current) {
       bookingsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -78,15 +89,22 @@ const AgentAnalysis = ({ data, calApiKey,callVolume }) => {
   const tileContent = ({ date, view }) => {
     if (view === "month") {
       const dateStr = formatDateISO(date);
-      const bookingsCount = bookingDates[dateStr] ? bookingDates[dateStr].length : 0;
+      const bookingsCount = bookingDates[dateStr]?.length || 0;
+
       if (bookingsCount > 0) {
-        const dots = [];
-        for (let i = 0; i < bookingsCount; i++) {
-          dots.push(
-            <div key={i} className={`${styles.bookingDot} ${bookingsCount === 2 ? styles.two : bookingsCount === 3 ? styles.three : ""}`}></div>
-          );
-        }
-        return <div className={styles.bookingDotContainer}>{dots}</div>;
+        return (
+          <div className={styles.bookingDotContainer}>
+            <div
+              className={`${styles.bookingDot} ${
+                bookingsCount === 2
+                  ? styles.two
+                  : bookingsCount >= 3
+                  ? styles.three
+                  : ""
+              }`}
+            ></div>
+          </div>
+        );
       }
     }
     return null;
@@ -96,7 +114,7 @@ const AgentAnalysis = ({ data, calApiKey,callVolume }) => {
     <div className={styles.container}>
       <div className={styles.CallFlex}>
         <div className={styles.callVolume}>
-          {callVolume ? callVolume : "0"} <span>Call Volume</span>
+          {callVolume || "0"} <span>Call Volume</span>
         </div>
         <div className={styles.trend}>
           Last 7 Days <span className={styles.positive}>+15%</span>
@@ -133,25 +151,20 @@ const AgentAnalysis = ({ data, calApiKey,callVolume }) => {
       </ResponsiveContainer>
 
       <div className={styles.CalendarTopPin}>
-        <img src="/svg/Calendar-Top-pin.svg" alt="Calendar-Top-pin"/>
-      
-
-      <div className={styles.calendarSection}>
-        <h1 className={styles.CalendarTitleWeek}>
-          Monday
-          <p className={styles.CalendarTitleDate}>04 Wednesdays 2025</p>
-        </h1>
-
-
-        {/* <h1>{selectedDate.toDateString()}</h1> */}
-        <Calendar
-          onChange={handleDateClick}
-          value={selectedDate}
-          tileContent={tileContent} 
-          calendarType="gregory"
-          className={styles.reactCalendar}
-        />
-      </div>
+        <img src="/svg/Calendar-Top-pin.svg" alt="Calendar Pin" />
+        <div className={styles.calendarSection}>
+          <h1 className={styles.CalendarTitleWeek}>
+            Monday
+            <p className={styles.CalendarTitleDate}>04 Wednesday 2025</p>
+          </h1>
+          <Calendar
+            onChange={handleDateClick}
+            value={selectedDate}
+            tileContent={tileContent}
+            calendarType="gregory"
+            className={styles.reactCalendar}
+          />
+        </div>
       </div>
 
       {bookingsForSelectedDate.length > 0 && (
@@ -160,16 +173,12 @@ const AgentAnalysis = ({ data, calApiKey,callVolume }) => {
           <ul>
             {bookingsForSelectedDate.map((booking, index) => (
               <li key={index} className={styles.bookingCard}>
-                <div className={styles.bookingCard}>
-                  <div className={styles.time}>
-                    {formatTime(booking.startTime)} - {formatTime(booking.endTime)}
-                  </div>
-                  <div className={styles.title}>
-                    {booking.title}
-                  </div>
-                  <div className={styles.status}>
-                    {booking.status === "ACCEPTED" ? "Accepted" : "Pending"}
-                  </div>
+                <div className={styles.time}>
+                  {formatTime(booking.startTime)} - {formatTime(booking.endTime)}
+                </div>
+                <div className={styles.title}>{booking.title}</div>
+                <div className={styles.status}>
+                  {booking.status === "ACCEPTED" ? "Accepted" : "Pending"}
                 </div>
               </li>
             ))}
