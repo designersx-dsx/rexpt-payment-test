@@ -451,7 +451,7 @@ const BusinessListing = forwardRef(
                   minLength={8}
                   onChange={(e) => {
                     const raw = e.target.value;
-                    const cleaned = raw.replace(/[^0-9\s]/g, "");
+                    const cleaned = raw.replace(/[^0-9+\s]/g, "");
                     handleInputChange("phone", cleaned);
                   }}
                   placeholder="88XX 77X 6XX"
