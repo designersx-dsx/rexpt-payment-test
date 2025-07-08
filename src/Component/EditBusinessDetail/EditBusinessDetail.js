@@ -112,9 +112,12 @@ const EditBusinessDetail = () => {
       const googleListing=sessionStorage.getItem('googleListing')
       const agentCount = 0;
       if (!businessName || !address || !phoneNumber) {
-        alert("Please fill all required fields.");
+       setShowPopup(true)
+        setPopupType("failed")
+        setPopupMessage("Please fill all required fields.")
         return;
       }
+      console.log("businessName", phoneNumber, address);
       const updatedPlaceDetails = {
         ...placeDetails,
         businessName: businessName || placeDetails?.businessName ,
@@ -412,7 +415,7 @@ const EditBusinessDetail = () => {
               {showPopup && (
         <PopUp
         type={popupType}
-        onClose={()=>{}}
+        onClose={()=>{setShowPopup(false)}}
         message={popupMessage}
         onConfirm={()=>{}}
         />

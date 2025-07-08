@@ -56,7 +56,7 @@ const Plan = ({ agentID, locationPath }) => {
         const freeTrial = {
           id: "free-trial",
           name: "Free Trial",
-          description: "Try all features free — includes 10 minutes",
+          description: "Try all features free — includes 20 minutes",
           prices: [],
           metadata: { minutes: 20 },
         };
