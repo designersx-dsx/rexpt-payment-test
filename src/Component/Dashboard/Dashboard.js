@@ -3,6 +3,8 @@ import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import Plan from "../Plan/Plan";
 import { useNavigate, useLocation, Await } from "react-router-dom";
+import dayjs from 'dayjs';
+
 
 import {
   deleteAgent,
@@ -15,6 +17,7 @@ import {
   getUserReferralCodeForDashboard,
   updateShowReferralFloatingStatus,
   updateAgentEventId,
+  refundAndCancelSubscriptionAgnetApi,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -125,6 +128,9 @@ function Dashboard() {
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
+
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [agentToCancel, setAgentToCancel] = useState(null)
   const [showDashboardReferral, setShowDashboardReferral] = useState("");
   const [showreferralfloating, setShowreferralfloating] = useState(
     localStorage.getItem("showreferralfloating") || "true"
@@ -408,14 +414,14 @@ function Dashboard() {
       const responseData = await response.json();
       const eventTypeId = responseData.event_type.id;
       if (!eventTypeId) {
-            throw new Error("Event ID not received from Cal.com");
-          }
-          try {
-           await updateAgentEventId(agent.agent_id, eventTypeId);
-            console.log(" Event ID saved to agent.");
-          } catch (err) {
-            console.error("Failed to update agent with event ID:", err);
-          }
+        throw new Error("Event ID not received from Cal.com");
+      }
+      try {
+        await updateAgentEventId(agent.agent_id, eventTypeId);
+        console.log(" Event ID saved to agent.");
+      } catch (err) {
+        console.error("Failed to update agent with event ID:", err);
+      }
       const retellPayload = {
         general_tools: [
           {
@@ -533,7 +539,10 @@ function Dashboard() {
 
     setRetellWebClient(client);
   }, []);
-  const handleDelete = async (agentId) => {
+  const handleDelete = async (agent) => {
+    console.log("agentId", agent)
+    const agent_id = agent?.agent_id
+    const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
     try {
       setdeleteloading(true);
       const storedDashboard = JSON.parse(
@@ -550,7 +559,21 @@ function Dashboard() {
         setShowDeleteConfirm(false);
         return;
       }
-      await deleteAgent(agentId);
+
+      // Try to refund API
+      try {
+        await refundAndCancelSubscriptionAgnetApi(agent_id, mins_left); // Replace with your actual API
+      } catch (notifyError) {
+        throw new Error(`Refund failed: ${notifyError.message}`);
+      }
+      // Try to delete the agent
+      try {
+        await deleteAgent(agent_id);
+      } catch (deleteError) {
+        throw new Error(`Delete failed: ${deleteError.message}`);
+      }
+
+
       const updatedAgents = localAgents.filter(
         (agent) => agent.agent_id !== agentId
       );
@@ -565,6 +588,38 @@ function Dashboard() {
       setdeleteloading(false);
     }
   };
+
+  const handleCancelSubscription = async (agent) => {
+    console.log("agent", agent)
+    const agent_id = agent?.agent_id;
+    const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
+
+    try {
+      setdeleteloading(true);
+
+
+      try {
+        await refundAndCancelSubscriptionAgnetApi(agent_id, mins_left);
+      } catch (notifyError) {
+        throw new Error(`Refund failed: ${notifyError.message}`);
+      }
+
+
+      const updatedAgents = localAgents.filter(
+        (a) => a.agent_id !== agent_id
+      );
+      setLocalAgents(updatedAgents);
+      setPopupMessage("Subscription Cancelled successfully!");
+      setPopupType("success");
+      setHasFetched(false);
+    } catch (error) {
+      setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
+      setPopupType("failed");
+    } finally {
+      setdeleteloading(false);
+    }
+  };
+
   // Start call
   let micStream = "";
   const isStartingRef = useRef(false);
@@ -1651,6 +1706,21 @@ function Dashboard() {
                           ? "Activate Agent"
                           : "Deactivate Agent"}
                       </div>
+                      {agent?.subscription && agent?.subscription?.plan_name?.toLowerCase() !== "free" && (
+  <div>
+    <div
+      className={styles.OptionItem}
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        setAgentToCancel(agent);
+        setShowCancelConfirm(true);
+      }}
+    >
+      Cancel Subscription
+    </div>
+  </div>
+)}
+
                     </div>
                   )}
                 </div>
@@ -2002,7 +2072,7 @@ function Dashboard() {
                     className={`${styles.modalButton} ${styles.submit}`}
                     onClick={async () => {
                       try {
-                        await handleDelete(agentToDelete.agent_id);
+                        await handleDelete(agentToDelete);
                         setShowDeleteConfirm(false);
                         setAgentToDelete(null);
                       } catch (error) {
@@ -2039,6 +2109,78 @@ function Dashboard() {
             </div>
           </div>
         )}
+
+        {showCancelConfirm && agentToCancel && (() => {
+          const totalMins = agentToCancel?.subscription?.totalMinutes || 0;
+          const minsLeft = agentToCancel?.mins_left || 0;
+          const plan_mins = totalMins;
+          const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
+          const current_period_start = agentToCancel?.subscription?.current_period_start;
+          const current_period_end = agentToCancel?.subscription?.current_period_end;
+          const subscriptionAgeDays = dayjs().diff(dayjs(current_period_start), 'day');
+
+          const isRefundEligible = usedPercentage < 5 && subscriptionAgeDays <= 2;
+
+          return (
+            <div className={styles.modalBackdrop} onClick={() => setShowCancelConfirm(false)}>
+              <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
+                <h2>Are you sure?</h2>
+                <p>
+                  {isRefundEligible ? (
+                    <>
+                      Since you're canceling within 2 days of purchasing and have used less than 5% of your minutes, you're eligible for a refund! We'll process a refund of your subscription amount, minus a 3% payment gateway fee, back to your original payment method. You should see it in your account within 5-7 business days.
+                    </>
+                  ) : (
+                    <>
+                      It's been more than 2 days since your subscription started, or you've used a significant portion of your minutes. Due to our cancellation & refund policy, you're not eligible for a refund. Your subscription will be canceled on <strong>{dayjs(current_period_end).format('MMMM D, YYYY')}</strong>, and you can continue to use all features until then.
+                    </>
+                  )}
+                </p>
+
+                <p style={{ marginTop: '16px' }}>
+                  Are you sure you want to cancel?
+                </p>
+
+                <div className={styles.modalButtons}>
+                  <button
+                    className={`${styles.modalButton} ${styles.cancel}`}
+                    onClick={() => setShowCancelConfirm(false)}
+                  >
+                    No
+                  </button>
+                  {deleteloading ? (
+                    <button
+                      className={`${styles.modalButton} ${styles.submit}`}
+                      style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                    >
+                      Cancelling <Loader size={18} />
+                    </button>
+                  ) : (
+                    <button
+                      className={`${styles.modalButton} ${styles.submit}`}
+                      onClick={async () => {
+                        try {
+                          await handleCancelSubscription(agentToCancel);
+                          setShowCancelConfirm(false);
+                          setAgentToCancel(null);
+                        } catch (error) {
+                          setPopupMessage(
+                            `Failed to Cancel subscription: ${error.message}`
+                          );
+                          setPopupType("failed");
+                          setShowCancelConfirm(false);
+                        }
+                      }}
+                    >
+                      Yes
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
 
         {/* Call Test Modal */}
         {openCallModal && (
@@ -2234,12 +2376,12 @@ function Dashboard() {
             {/* <AnimatedButton label = 'Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)}/> */}
             <div
               className={styles.btnTheme}
-              // onClick={async () => shareReferralLink(showDashboardReferral)}
+            // onClick={async () => shareReferralLink(showDashboardReferral)}
             >
               <div className={styles.imageWrapper}>
                 <img src="svg/svg-theme2.svg" alt="" />
               </div>
-              <AnimatedButton label = 'Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)}/>
+              <AnimatedButton label='Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)} />
             </div>
           </div>
         </div>
