@@ -508,6 +508,7 @@ const BusinessListing = forwardRef(
             </button>
           </div> */}
           </div>
+          </div>
         </form>
         {showPopup && (
           <PopUp
