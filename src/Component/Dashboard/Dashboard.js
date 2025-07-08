@@ -140,6 +140,7 @@ function Dashboard() {
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
+
   //getTimeZone
   const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
   // console.log(isConfirming)
@@ -344,7 +345,8 @@ function Dashboard() {
     if (!hasFetched || !agents.length) {
       fetchAndMergeCalApiKeys();
     }
-  }, [userId, hasFetched, setDashboardData, setHasFetched]);
+  }, [userId, hasFetched, setDashboardData, setHasFetched   ]);
+ 
   // Sync local agents with store
   useEffect(() => {
     if (agents && agents.length > 0) {
@@ -491,6 +493,7 @@ function Dashboard() {
     setEventCreateMessage("");
     setIsApiKeySubmitted(false);
   };
+  
 
   const toggleDropdown = (e, id) => {
     e.preventDefault();
@@ -540,7 +543,6 @@ function Dashboard() {
     setRetellWebClient(client);
   }, []);
   const handleDelete = async (agent) => {
-    console.log("agentId", agent)
     const agent_id = agent?.agent_id
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
     try {
@@ -590,20 +592,28 @@ function Dashboard() {
   };
 
   const handleCancelSubscription = async (agent) => {
-    console.log("agent", agent)
     const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
 
     try {
       setdeleteloading(true);
 
-
       try {
-        await refundAndCancelSubscriptionAgnetApi(agent_id, mins_left);
+       let res =  await refundAndCancelSubscriptionAgnetApi(agent_id, mins_left);
+      if(res){
+      setTimeout(()=>{
+
+          fetchAndMergeCalApiKeys()
+
+      }, 1000)
+         
+       
+
+console.log(res)
+      } 
       } catch (notifyError) {
         throw new Error(`Refund failed: ${notifyError.message}`);
       }
-
 
       const updatedAgents = localAgents.filter(
         (a) => a.agent_id !== agent_id
@@ -611,7 +621,7 @@ function Dashboard() {
       setLocalAgents(updatedAgents);
       setPopupMessage("Subscription Cancelled successfully!");
       setPopupType("success");
-      setHasFetched(false);
+     fetchAndMergeCalApiKeys()
     } catch (error) {
       setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
       setPopupType("failed");
