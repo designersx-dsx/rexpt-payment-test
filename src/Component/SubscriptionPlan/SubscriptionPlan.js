@@ -216,30 +216,30 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 setLoading(false);
 
                 // ✅ Preselect saved plan name (e.g., "Growth")
-const savedPlanName = sessionStorage.getItem("selectedPlan");
-if (savedPlanName) {
-    const matchingIndex = finalPlans.findIndex(plan => plan.title.toLowerCase() === savedPlanName.toLowerCase());
+                const savedPlanName = sessionStorage.getItem("selectedPlan");
+                if (savedPlanName) {
+                    const matchingIndex = finalPlans.findIndex(plan => plan.title.toLowerCase() === savedPlanName.toLowerCase());
 
-    if (matchingIndex >= 0) {
-        setActiveIndex(matchingIndex);
-        setTimeout(() => {
-            sliderRef.current?.slickGoTo(matchingIndex);
-        }, 100); // Ensure slider is ready
-    }
+                    if (matchingIndex >= 0) {
+                        setActiveIndex(matchingIndex);
+                        setTimeout(() => {
+                            sliderRef.current?.slickGoTo(matchingIndex);
+                        }, 100); // Ensure slider is ready
+                    }
 
-    // Optional: remove it after selection
-    // sessionStorage.removeItem("selectedPlan");
-}
+                    // Optional: remove it after selection
+                    // sessionStorage.removeItem("selectedPlan");
+                }
 
-                
+
             })
 
-            
+
             .catch(() => {
                 setError("Failed to load plans.");
                 setLoading(false);
             });
-            
+
     }, [userCurrency]);
 
 
@@ -435,21 +435,21 @@ if (savedPlanName) {
                                         </div>
 
                                         {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
-                                        (() => {
-                                            const monthlyTotal = monthlyPrice.unit_amount;
-                                            console.log("monthlyPrice", monthlyPrice)
-                                            const yearlyTotal = yearlyPrice.unit_amount / 12;
-                                            console.log("yearlyTotal", yearlyPrice)
-                                            const savings = monthlyTotal - yearlyTotal;
-                                            const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
+                                            (() => {
+                                                const monthlyTotal = monthlyPrice.unit_amount;
+                                                console.log("monthlyPrice", monthlyPrice)
+                                                const yearlyTotal = yearlyPrice.unit_amount / 12;
+                                                console.log("yearlyTotal", yearlyPrice)
+                                                const savings = monthlyTotal - yearlyTotal;
+                                                const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
 
-                                            return (
-                                                <div className={styles.discount}>
-                                                    You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{(savings / 100).toFixed(0)}) compared to monthly billing
-                                                </div>
-                                            );
-                                        })()
-                                    )}
+                                                return (
+                                                    <div className={styles.discount}>
+                                                        You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{(savings / 100).toFixed(0)}) compared to monthly billing
+                                                    </div>
+                                                );
+                                            })()
+                                        )}
                                         <br />
                                         <div style={{ fontSize: "12px" }} className={styles.stickyWrapper}>
                                             <AnimatedButton

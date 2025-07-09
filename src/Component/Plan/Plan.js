@@ -486,6 +486,11 @@ const Planss = () => {
                                                             nextBillingDate.setFullYear(today.getFullYear() + 1);
                                                         }
 
+                                                        // Extract minutes if found in first feature (e.g., "120 minutes / month")
+                                                        const firstFeature = plan.features[0] || "";
+                                                        const planMinsMatch = firstFeature.match(/(\d+)\s*minutes/i);
+                                                        const planMins = planMinsMatch ? parseInt(planMinsMatch[1], 10) : 0;
+
                                                         const selectedPlanData = {
                                                             priceId: priceForInterval.id,
                                                             agentId: agentID,
@@ -498,6 +503,8 @@ const Planss = () => {
                                                                     : ((priceForInterval.unit_amount / 100) * 12 * 0.95).toFixed(2),
                                                             billingDate: today.toISOString(),
                                                             nextBillingDate: nextBillingDate.toISOString(),
+                                                            planName: plan.title,           
+                                                            planMins: planMins              
                                                         };
 
                                                         // ✅ Save to localStorage
