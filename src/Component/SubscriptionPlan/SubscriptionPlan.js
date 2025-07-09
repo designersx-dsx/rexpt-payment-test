@@ -98,7 +98,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                IN: "inr",
+                // IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -209,14 +209,37 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     toggleInit[plan.id] = false; // monthly by default
                 });
 
+                const finalPlans = enrichedPlans.reverse()
+
                 setToggleStates(toggleInit);
-                setProducts(enrichedPlans.reverse()); // no .reverse()
+                setProducts(finalPlans); // no .reverse()
                 setLoading(false);
+
+                // ✅ Preselect saved plan name (e.g., "Growth")
+const savedPlanName = sessionStorage.getItem("selectedPlan");
+if (savedPlanName) {
+    const matchingIndex = finalPlans.findIndex(plan => plan.title.toLowerCase() === savedPlanName.toLowerCase());
+
+    if (matchingIndex >= 0) {
+        setActiveIndex(matchingIndex);
+        setTimeout(() => {
+            sliderRef.current?.slickGoTo(matchingIndex);
+        }, 100); // Ensure slider is ready
+    }
+
+    // Optional: remove it after selection
+    // sessionStorage.removeItem("selectedPlan");
+}
+
+                
             })
+
+            
             .catch(() => {
                 setError("Failed to load plans.");
                 setLoading(false);
             });
+            
     }, [userCurrency]);
 
 
