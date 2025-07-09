@@ -67,7 +67,7 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
         <h2 className={styles.title}>Assign a New Number</h2>
 
         <p className={styles.warning}>
-          ⚠️ <strong style={{ color: 'red' }}>Warning:</strong> You will not be able to change this number before <strong>30 days</strong>
+         <strong style={{ color: " #5a20d8" }}>Disclaimer:</strong> You will not be able to change this number before <strong>30 days</strong>
         </p>
 
         <p className={styles.subTitle}>You will be able to use this number as below:</p>

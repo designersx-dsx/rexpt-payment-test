@@ -694,13 +694,16 @@ console.log(res)
         const response = await retellWebClient.stopCall();
         const payload = { agentId: agentDetails.agent_id, callId: callId };
         if (isCallInProgress && callId) {
-          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+          // const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
           setIsCallInProgress(false);
         }
       } catch (err) {
         console.error("Error ending call:", err);
       } finally {
-        setHasFetched(false);
+        setTimeout(()=>{
+          setHasFetched(false);
+        },2000)
+        
         setIsCallInProgress(false);
         isEndingRef.current = false;
       }

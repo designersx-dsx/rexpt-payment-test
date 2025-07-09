@@ -116,6 +116,7 @@ const AgentDashboard = () => {
     const fetchMeetingCount = async () => {
       if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
 
+
       try {
         const res = await fetch(
           `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
@@ -454,16 +455,18 @@ const AgentDashboard = () => {
         const response = await retellWebClient.stopCall();
         const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
         if (isCallInProgress && callId) {
-          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+          // const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
         }
-        setRefresh((prev) => !prev);
-        setHasFetched(false);
-        setIsCallInProgress(false);
+        
         // console.log("Call end response", response);
       } catch (err) {
         console.error("Error ending call:", err);
       } finally {
+        setTimeout(() => {
         setHasFetched(false);
+        setRefresh((prev) => !prev);
+        }, 2000);
+       
         setIsCallInProgress(false);
         isEndingRef.current = false;
       }
@@ -769,26 +772,30 @@ const AgentDashboard = () => {
                     <hr className={styles.agentLine}></hr>
 
                     <div className={styles.agentDetailsFlex}>
-                      {agentData?.agent?.subscriptionId === null ? (
-                        <div className={styles.AssignNumText}></div>
-                      ) : assignedNumbers?.length > 0 ? (
-                        <div className={styles.AssignNumText}>
-                          AI Agent Toll Free<p>{assignedNumbers?.join(", ")}</p>
-                        </div>
-                      ) : (
-                        <div
-                          className={styles.AssignNum}
-                          onClick={() => {
-                            if (agentStatus === true) {
-                              handleInactiveAgentAlert();
-                            } else {
-                              setIsAssignModalOpen(true);
-                            }
-                          }}
-                        >
-                          <img src="/svg/assign-number.svg" />
-                        </div>
-                      )}
+                      {
+                        agentData?.agent?.subscriptionId === null ?
+                          <div className={styles.AssignNumText}>
+                          </div> :
+                          assignedNumbers?.length > 0 ? (
+                            <div className={styles.AssignNumText}>
+                              AI Agent Toll Free<p>{assignedNumbers?.join(", ")}</p>
+                            </div>
+                          ) : (
+                            <div
+                              className={styles.AssignNum}
+                              onClick={() => {
+                                if (agentStatus === true) {
+                                  handleInactiveAgentAlert();
+                                } else {
+                                  setIsAssignModalOpen(true)
+
+                                }
+                              }}
+                            
+                            >
+                              <img src="/svg/assign-number.svg" />
+                            </div>
+                          )}
 
                       <p className={styles.agentDetails}>
                         Agent Code{" "}
@@ -1358,6 +1365,7 @@ const AgentDashboard = () => {
 
             <section className={styles.management}>
               <AgentAnalysis
+                agentId={agentDetails?.agentId}
                 data={agentData?.callSummary?.data}
                 calApiKey={agentData?.agent?.calApiKey}
                 callVolume={agentData?.callSummary?.totalCalls}
