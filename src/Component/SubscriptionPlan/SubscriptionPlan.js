@@ -411,9 +411,22 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                             </span>
                                         </div>
 
-                                        <div className={styles.discount}>
-                                            You saved 17% ($240) compared to monthly billing
-                                        </div>
+                                        {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
+                                        (() => {
+                                            const monthlyTotal = monthlyPrice.unit_amount;
+                                            console.log("monthlyPrice", monthlyPrice)
+                                            const yearlyTotal = yearlyPrice.unit_amount / 12;
+                                            console.log("yearlyTotal", yearlyPrice)
+                                            const savings = monthlyTotal - yearlyTotal;
+                                            const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
+
+                                            return (
+                                                <div className={styles.discount}>
+                                                    You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{(savings / 100).toFixed(0)}) compared to monthly billing
+                                                </div>
+                                            );
+                                        })()
+                                    )}
                                         <br />
                                         <div style={{ fontSize: "12px" }} className={styles.stickyWrapper}>
                                             <AnimatedButton
@@ -504,7 +517,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
                     {products.map((plan, index) => {
                         const isYearly = toggleStates[plan.id];
-                        const interval = isYearly ? "year" : "month";
+                        // const interval = isYearly ? "year" : ;
+                        const interval = "month"
                         const selectedPrice = plan.prices.find(p => p.interval === interval);
                         const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
                         const amount = selectedPrice ? (selectedPrice.unit_amount / 100).toFixed(0) : "0";
