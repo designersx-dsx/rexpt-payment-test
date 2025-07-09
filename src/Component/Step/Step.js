@@ -459,7 +459,7 @@ const Step = () => {
                         }
                     ],
                     starting_state: "information_collection",
-                    begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
+                    // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                         business_Phone: businessPhone,
@@ -625,7 +625,7 @@ const Step = () => {
                 setLoading(true)
                 const agentConfig = {
                     general_prompt: filledPrompt,
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
+                    // begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
 
                 };
                 const llm_id = localStorage.getItem('llmId')

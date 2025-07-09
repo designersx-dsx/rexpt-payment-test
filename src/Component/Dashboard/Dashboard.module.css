@@ -1261,5 +1261,41 @@
         transform: translateY(-5px);
     }
 }
+.NativeSelectWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.NativeSelect {
+  appearance: none;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.FilterIcon {
+  position: relative;
+  cursor: pointer;
+}
+
+.DropdownMenu {
+  position: absolute;
+  top: 100%;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+  z-index: 100;
+}
+
+.OptionItem {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.OptionItem:hover {
+  background-color: #f0f0f0;
+}
 
 /* ajay css end */
