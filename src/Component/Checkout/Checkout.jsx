@@ -15,6 +15,7 @@ import CountdownPopup from "../CountDownPopup/CountdownPopup";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "recharts";
 import Select from "react-select";
+import Loader2 from "../Loader2/Loader2";
 
 const stripePromise = loadStripe(
   "pk_live_51RYjjKSCQQfKS3WDzVLb6c2Xk6Gdt2NaJ7pF5eWRDk345NQY1TNBOgxy5CUYCWAsWsqU1pJx8Bi56Ue7U5vg2Noe00HMCU3IXV"
@@ -903,6 +904,11 @@ const origin = window.location.origin;
 
   return (
     <div className={styles.checkoutForm}>
+      {loading && !popupMessage && !message && (
+      <div className={styles.loaderWrapper}>
+        <Loader2 />
+      </div>
+    )}
       {/* {step === 1 && (
         <div className={styles.checkoutFormMain}>
           <h3>Billing Address & Company Details</h3>
