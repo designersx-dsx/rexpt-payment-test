@@ -5,11 +5,12 @@ import styles from "./CancelPage.module.css";
 const CancelPage = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const price = sessionStorage.getItem("priceId")
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (token) {
-        navigate("/plan"); // 👈 Change if needed
+      if (token && price) {
+        navigate("/plan"); // 
       } else {
         navigate("/plans");
       }
