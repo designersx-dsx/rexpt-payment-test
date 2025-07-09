@@ -611,8 +611,9 @@ const Planss = () => {
                                 >
                                     {plan.title}
                                 </button>
-
-                                <p className={styles.monthPrice}>
+                                {/* monthPrice */}
+                                <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
+                                    }`}>
                                     from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
                                 </p>
                             </div>

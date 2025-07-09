@@ -127,14 +127,14 @@
   font-size: 16px;
   font-weight: 500;
   color: #24252C;
-  padding: 10px 0px;
+  padding: 2px 0px;
   border-radius: 8px;
   border: 0px solid #e7e4e4 !important;
   outline: none;
   background-color: #f7f9fc;
   transition: border 0.3s ease;
   width: 100% !important;
-  min-height: 40px !important;
+  min-height: 20px !important;
   background-color: #ffffff !important;
 }
 
