@@ -112,6 +112,21 @@ const AgentDashboard = () => {
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
   const [meetingCount, setMeetingCount] = useState(0);
 
+
+   function formatE164USNumber(number) {
+  const cleaned = number.replace(/\D/g, ""); 
+
+  if (cleaned.length === 11 && cleaned.startsWith("1")) {
+    const country = cleaned[0];
+    const area = cleaned.slice(1, 4);
+    const prefix = cleaned.slice(4, 7);
+    const line = cleaned.slice(7, 11);
+    return `+${country} (${area}) ${prefix}-${line}`;
+  }
+  return number;
+}
+
+
   useEffect(() => {
     const fetchMeetingCount = async () => {
       if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
@@ -652,6 +667,7 @@ const AgentDashboard = () => {
       setPopupMessage3("");
     }
   };
+  
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -778,7 +794,7 @@ const AgentDashboard = () => {
                           </div> :
                           assignedNumbers?.length > 0 ? (
                             <div className={styles.AssignNumText}>
-                              AI Agent Toll Free<p>{assignedNumbers?.join(", ")}</p>
+                              AI Agent Toll Free<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
                             </div>
                           ) : (
                             <div
