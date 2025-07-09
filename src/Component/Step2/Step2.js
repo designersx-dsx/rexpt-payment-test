@@ -70,6 +70,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
       sessionStorage.setItem("agentVoice", selectedVoice.voice_id);
       sessionStorage.setItem("agentVoiceAccent", selectedVoice.accent);
       sessionStorage.setItem("VoiceAgentName", selectedVoice.voice_name);
+      sessionStorage.setItem("agentName", selectedVoice?.voice_name?.replace(/\s*\(.*?\)/, ""));
     }
   }, [selectedVoice]);
 
@@ -263,7 +264,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
           {filteredVoices.map((voice, idx) => (
             <label
               key={voice.voice_id ?? idx}
-              className={`${styles.voiceCard} ${selectedVoice.voice_name === voice.voice_name
+              className={`${styles.voiceCard} ${selectedVoice.voice_name?.replace(/\s*\(.*?\)/, "") === voice.voice_name?.replace(/\s*\(.*?\)/, "")
                 ? styles.active
                 : ""
                 }`}
@@ -271,8 +272,8 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
               <input
                 type="radio"
                 name="voice"
-                value={voice.voice_name}
-                checked={selectedVoice.voice_name === voice.voice_name}
+                value={voice.voice_name?.replace(/\s*\(.*?\)/, "")}
+                checked={selectedVoice?.voice_name?.replace(/\s*\(.*?\)/, "") === voice.voice_name?.replace(/\s*\(.*?\)/, "")}
                 onChange={() => {
                   setSelectedVoice(voice);
                   playAudio(idx); // play when selected
@@ -306,7 +307,7 @@ const Step2 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
               </audio>
 
               <div>
-                <p className={styles.voiceName}>{voice.voice_name}</p>
+                <p className={styles.voiceName?.replace(/\s*\(.*?\)/, "")}>{voice.voice_name?.replace(/\s*\(.*?\)/, "")}</p>
                 <p className={styles.voiceDesc}>{voice.accent} Accent</p>
               </div>
             </label>

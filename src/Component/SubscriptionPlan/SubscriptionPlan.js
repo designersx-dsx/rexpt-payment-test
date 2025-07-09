@@ -98,7 +98,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -411,9 +411,22 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                             </span>
                                         </div>
 
-                                        <div className={styles.discount}>
-                                            Save up to 20% when billed yearly
-                                        </div>
+                                        {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
+                                            (() => {
+                                                const monthlyTotal = monthlyPrice.unit_amount;
+                                                console.log("monthlyPrice", monthlyPrice)
+                                                const yearlyTotal = yearlyPrice.unit_amount / 12;
+                                                console.log("yearlyTotal", yearlyPrice)
+                                                const savings = monthlyTotal - yearlyTotal;
+                                                const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
+
+                                                return (
+                                                    <div className={styles.discount}>
+                                                        You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{(savings / 100).toFixed(0)}) compared to monthly billing
+                                                    </div>
+                                                );
+                                            })()
+                                        )}
                                         <br />
                                         <div style={{ fontSize: "12px" }} className={styles.stickyWrapper}>
                                             <AnimatedButton
@@ -456,7 +469,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 isOpen={isModalOpen}
                 onClose={() => {
                     setIsModalOpen(false);
-                    setFreeTrial(false); 
+                    setFreeTrial(false);
                 }}>
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
@@ -504,7 +517,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
                     {products.map((plan, index) => {
                         const isYearly = toggleStates[plan.id];
-                        const interval = isYearly ? "year" : "month";
+                        // const interval = isYearly ? "year" : ;
+                        const interval = "month"
                         const selectedPrice = plan.prices.find(p => p.interval === interval);
                         const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
                         const amount = selectedPrice ? (selectedPrice.unit_amount / 100).toFixed(0) : "0";
@@ -526,7 +540,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                     className={styles.radiobtn}
                                 />
 
-                                <img src="/svg/starter-icon.svg" />
+                                {plan.title === "Starter" ? <img src="/svg/starter-icon.svg" /> : null}
+                                {plan.title === "Scaler" ? <img src="/svg/scaler-icon.svg" /> : null}
+                                {plan.title === "Growth" ? <img src="/svg/growth-icon.svg" /> : null}
+                                {plan.title === "Corporate" ? <img src="/svg/corporate-icon.svg" /> : null}
 
                                 <button
                                     className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""
@@ -535,7 +552,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                     {plan.title}
                                 </button>
 
-                                <p className={styles.monthPrice}>
+                                <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
+                                    }`}>
                                     from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
                                 </p>
                             </div>

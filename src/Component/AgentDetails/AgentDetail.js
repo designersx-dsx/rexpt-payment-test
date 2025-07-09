@@ -105,6 +105,34 @@ const AgentDashboard = () => {
   const [popupType3, setPopupType3] = useState("confirm");
   const [calapiloading, setCalapiloading] = useState(false);
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
+  const [meetingCount, setMeetingCount] = useState(0);
+
+  
+
+useEffect(() => {
+  const fetchMeetingCount = async () => {
+    if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
+
+    try {
+      const res = await fetch(
+        `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(agentData.agent.calApiKey)}`
+      );
+      const data = await res.json();
+
+      const meetings = data?.bookings?.filter(
+        (b) => Number(b.eventTypeId) === Number(agentData.agent.eventId)
+      );
+
+      setMeetingCount(meetings?.length || 0);
+    } catch (error) {
+      console.error("Error fetching meeting bookings:", error);
+      setMeetingCount(0);
+    }
+  };
+
+  fetchMeetingCount();
+}, [agentData]);
+
   useEffect(() => {
     clearSessionAfterEdit();
   }, [])
@@ -272,8 +300,7 @@ const AgentDashboard = () => {
 
     const cached = getAgentById(agentDetails.agentId);
     if (cached) {
-      setCurrentAgentId(agentDetails.agentId); // Load into active context
-      // setAgentId(agentDetails.agentId);
+      setCurrentAgentId(agentDetails.agentId); 
       setLoading(false);
     }
 
@@ -795,7 +822,7 @@ const handleAssignNumber=()=>{
                 </div>
                 <div className={styles.businessEdit} onClick={() => handleOpenBusinessView(agentData)}>
                   <h4 >Business Details</h4>
-                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                  <img className={styles.Editsvg} src="/svg/eye-svg.svg" />
                 </div>
 
               </div>
@@ -871,7 +898,7 @@ const handleAssignNumber=()=>{
                 </div>
                 <div className={styles.businessEdit} onClick={() => handleOpenKnowledgeView(agentData)}>
                   <h4  >Knowledge Base</h4>
-                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                  <img className={styles.Editsvg} src="/svg/eye-svg.svg" />
                 </div>
 
               </div>
@@ -1296,7 +1323,7 @@ const handleAssignNumber=()=>{
               >
                 <span className={` ${styles.statText}`}>Bookings</span>
                 <span className={styles.statDetail}>
-                  {totalBookings !== null ? totalBookings : "0"}
+                 {meetingCount}
                 </span>
               </div>
 
