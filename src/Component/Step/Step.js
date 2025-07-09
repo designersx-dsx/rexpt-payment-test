@@ -12,7 +12,7 @@ import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
 import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
-import { createAgent, listAgents, updateAgent, updateAgentWidgetDomain } from "../../Store/apiStore";
+import { API_BASE_URL, createAgent, listAgents, updateAgent, updateAgentWidgetDomain } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 import { getAgentPrompt } from "../../hooks/useAgentPrompt";
@@ -333,7 +333,7 @@ const Step = () => {
                     agentNote,
                     timeZone
                 });
-        console.log(filledPrompt,"filledPrompt")
+            console.log(filledPrompt,"filledPrompt")
                 // return
             // const isValid = step8BRef.current.validate()
             //creation here
@@ -520,7 +520,8 @@ const Step = () => {
                                 choices: getLeadTypeChoices()
                             }
                         ],
-                        normalize_for_speech: true
+                        normalize_for_speech: true,
+                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                     };
                     // Create Agent Creation
                     const promptVariablesList = extractPromptVariables(rawPromptTemplate);
@@ -670,6 +671,8 @@ const Step = () => {
                                 choices: ["positive", "neutral", "negative"]
                             }
                         ],
+                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+                        
                     };
                     // update Agent Creation
                     const agent_id = localStorage.getItem('agent_id')
