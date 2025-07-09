@@ -1,24 +1,19 @@
 import React from 'react'
 import styles from '../Card1/Card1.module.css'
 
-const Card1 = ({data}) => {
-    console.log(data,"data")
-   const formatServices = (services) => {
-  // If services is a string, parse it
+const Card1 = ({ data }) => {
+    console.log(data, "data")
+ const formatServices = (services) => {
   if (typeof services === 'string') {
     try {
-      services = JSON.parse(services);
+      return JSON.parse(services); // will return array if it's JSON string
     } catch (e) {
-      return services;
+      return services; // fallback to string if not JSON
     }
   }
-
-  if (Array?.isArray(services)) {
-    return services?.join(', ');
-  }
-
-  return ''; // fallback if not array or string
+  return services;
 };
+
     return (
         <div className={styles.CardMain}>
             <h2 className={styles.title}>Business Details</h2>
@@ -45,7 +40,7 @@ const Card1 = ({data}) => {
                         }</strong>
                     </div>
                 </div>
-            
+
                 {/* <div className={styles.details}>
                     <p className={styles.Ptext}>Phone</p>
                     <div className={styles.rightpart}>
@@ -55,7 +50,18 @@ const Card1 = ({data}) => {
                 <div className={styles.details}>
                     <p className={styles.Ptext}>Services</p>
                     <div className={styles.rightpart}>
-                        <strong>{formatServices(data?.buisnessService)}</strong>
+                        <div className={styles.rightpart}>
+                            {Array.isArray(formatServices(data?.buisnessService))
+                                ? formatServices(data?.buisnessService).map((service, index) => (
+                                    <strong key={index} className={styles.capsul}>
+                                        {service}
+                                    </strong>
+                                ))
+                                : 
+                                <strong className={styles.capsul}>{formatServices(data?.buisnessService)}</strong>
+                                
+                                }
+                        </div>
                     </div>
                 </div>
                 {/* <div className={styles.About}>
