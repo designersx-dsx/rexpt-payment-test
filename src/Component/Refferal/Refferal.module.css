@@ -125,6 +125,7 @@
     margin: auto;
     cursor: pointer;
     overflow: hidden;
+    z-index: 0;
 }
 
 
