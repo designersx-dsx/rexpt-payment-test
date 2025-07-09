@@ -28,6 +28,14 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
   const bookingsRef = useRef(null);
 
   const token = localStorage.getItem("token") || "";
+const today = new Date();
+
+const dayName = today.toLocaleDateString("en-GB", { weekday: "long" }); // e.g. Wednesday
+const dateString = today.toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "long",
+  year: "numeric"
+}); // 09 July 2025
 
   // Fetch Call History
   const fetchCallHistory = async () => {
@@ -133,8 +141,8 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
 
         <div className={styles.calendarSection}>
           <h1 className={styles.CalendarTitleWeek}>
-            Monday
-            <p className={styles.CalendarTitleDate}>04 Wednesdays 2025</p>
+            {dayName}
+            <p className={styles.CalendarTitleDate}>{dateString}</p>
           </h1>
 
           <Calendar
