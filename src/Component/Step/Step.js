@@ -104,6 +104,17 @@ const Step = () => {
     const saved = sessionStorage.getItem("completedSteps");
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Plans
+  const [allPlans, setAllPlans] = useState(() => {
+    const stored = localStorage.getItem("allPlans");
+    return stored ? JSON.parse(stored) : [];
+  });
+  console.log("allPlans", allPlans)
+  const [selectedPriceId, setSelectedPriceId] = useState(() => {
+    return sessionStorage.getItem("priceId") || "";
+  });
+  console.log("selectedPriceId", selectedPriceId)
   const location = useLocation();
   const locationPath = location?.state?.locationPath;
   let value = location?.state?.value;
@@ -286,9 +297,8 @@ const Step = () => {
   const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone);
 
   // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-  const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${
-    agentCount + 1
-  }`;
+  const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1
+    }`;
   // const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
   //  1. Create the function that returns the choices array
   const getLeadTypeChoices = () => {
@@ -499,10 +509,9 @@ const Step = () => {
             },
           ],
           starting_state: "information_collection",
-          begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${
-            getBusinessNameFromGoogleListing?.businessName ||
+          begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName ||
             getBusinessNameFormCustom
-          }. How may i help you`,
+            }. How may i help you`,
           default_dynamic_variables: {
             customer_name: "John Doe",
             business_Phone: businessPhone,
@@ -688,10 +697,9 @@ const Step = () => {
         setLoading(true);
         const agentConfig = {
           general_prompt: filledPrompt,
-          begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${
-            getBusinessNameFromGoogleListing?.businessName ||
+          begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName ||
             getBusinessNameFormCustom
-          }.`,
+            }.`,
         };
         const llm_id = localStorage.getItem("llmId");
 
@@ -1490,16 +1498,27 @@ const Step = () => {
             return acc;
           }, [])}
         </div>
+        {currentStep === 7 && allPlans.length > 0 && (
+          <div className={styles.PlansSelectDrop}>
+            <select
+              name="plans"
+              id="plans"
+              value={selectedPriceId}
+              onChange={(e) => {
+                const newPriceId = e.target.value;
+                setSelectedPriceId(newPriceId);
+                sessionStorage.setItem("priceId", newPriceId);
+              }}
+            >
+              {allPlans.map((plan, index) => (
+                <option key={index} value={plan.priceId}>
+                  {plan.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-        <div className={styles.PlansSelectDrop}>       
-
-          <select name="plans" id="plans">
-            <option value="starter">Starter</option>
-            <option value="scaler">Scaler</option>
-            <option value="growth">Growth</option>
-            <option value="corporate">Corporate</option>
-          </select>
-        </div>
         {/* //Button */}
         {currentStep === 7 ? (
           <button className={styles.navBtn} onClick={handleSubmit}>

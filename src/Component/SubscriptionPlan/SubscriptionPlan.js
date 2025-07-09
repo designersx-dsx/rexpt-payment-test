@@ -98,7 +98,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -541,10 +541,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     {products.map((plan, index) => {
                         const isYearly = toggleStates[plan.id];
                         // const interval = isYearly ? "year" : ;
-                        const interval = "month"
+                        const interval = "year"
                         const selectedPrice = plan.prices.find(p => p.interval === interval);
                         const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
-                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100).toFixed(0) : "0";
+                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100 / 12).toFixed(0) : "0";
 
                         return (
                             <div
@@ -577,7 +577,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
                                 <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
                                     }`}>
-                                    from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
+                                    from {symbol}{amount}/m
+                                    {/* {interval === "year" ? "yr" : "m"} */}
                                 </p>
                             </div>
                         );
