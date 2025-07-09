@@ -2,13 +2,18 @@ import React from 'react';
 import styles from "../HeaderBar/HeaderBar.module.css";
 import { useNavigate } from 'react-router-dom';
 
-const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange ,  backgroundColor = "#fff",color ='#24252C'}) => {
+const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange, backgroundColor = "#fff", color = '#24252C' }) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1);
-  };
+    const currentPath = window.location.pathname;
 
+    if (currentPath.endsWith("/plan") || currentPath === "/plan") {
+      navigate("/dashboard");
+    } else {
+      navigate(-1);
+    }
+  };
   return (
     <div className={styles.headerMain} style={{ backgroundColor }}>
       <div className={styles.BothFlex}>

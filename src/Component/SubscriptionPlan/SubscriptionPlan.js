@@ -209,14 +209,37 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     toggleInit[plan.id] = false; // monthly by default
                 });
 
+                const finalPlans = enrichedPlans.reverse()
+
                 setToggleStates(toggleInit);
-                setProducts(enrichedPlans.reverse()); // no .reverse()
+                setProducts(finalPlans); // no .reverse()
                 setLoading(false);
+
+                // ✅ Preselect saved plan name (e.g., "Growth")
+                const savedPlanName = sessionStorage.getItem("selectedPlan");
+                if (savedPlanName) {
+                    const matchingIndex = finalPlans.findIndex(plan => plan.title.toLowerCase() === savedPlanName.toLowerCase());
+
+                    if (matchingIndex >= 0) {
+                        setActiveIndex(matchingIndex);
+                        setTimeout(() => {
+                            sliderRef.current?.slickGoTo(matchingIndex);
+                        }, 100); // Ensure slider is ready
+                    }
+
+                    // Optional: remove it after selection
+                    // sessionStorage.removeItem("selectedPlan");
+                }
+
+
             })
+
+
             .catch(() => {
                 setError("Failed to load plans.");
                 setLoading(false);
             });
+
     }, [userCurrency]);
 
 
@@ -518,10 +541,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     {products.map((plan, index) => {
                         const isYearly = toggleStates[plan.id];
                         // const interval = isYearly ? "year" : ;
-                        const interval = "month"
+                        const interval = "year"
                         const selectedPrice = plan.prices.find(p => p.interval === interval);
                         const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
-                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100).toFixed(0) : "0";
+                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100 / 12).toFixed(0) : "0";
 
                         return (
                             <div
@@ -554,7 +577,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
                                 <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
                                     }`}>
-                                    from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
+                                    from {symbol}{amount}/m
+                                    {/* {interval === "year" ? "yr" : "m"} */}
                                 </p>
                             </div>
                         );

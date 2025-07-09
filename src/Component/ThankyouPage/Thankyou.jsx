@@ -21,6 +21,7 @@ function Thankyou() {
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
+  console.log("subscriptionInfo", subscriptionInfo);
 
   const currentLocation = "/update";
 
@@ -102,6 +103,41 @@ function Thankyou() {
       console.error("Failed to parse session storage values:", e);
     }
   }, [agentId, key]);
+
+  useEffect(() => {
+    const priceIdFromSession = sessionStorage.getItem("priceId");
+    if (!priceIdFromSession) return;
+
+    const fetchPlanFromAPI = async () => {
+      try {
+        const res = await fetch("http://localhost:2512/api/products");
+        const products = await res.json();
+
+        for (const plan of products) {
+          const price = plan.prices.find((p) => p.id === priceIdFromSession);
+          if (price) {
+            const today = new Date();
+            const nextDate =
+              price.interval === "month"
+                ? new Date(today.setMonth(today.getMonth() + 1))
+                : new Date(today.setFullYear(today.getFullYear() + 1));
+            setSubscriptionInfo({
+              planName: plan.name,
+              planAmount: (price.unit_amount / 100).toFixed(2),
+              interval: price.interval,
+              planMins: price.metadata || plan.metadata?.minutes || "N/A",
+              nextRenewalDate: nextDate.toISOString(), // set this if available
+            });
+            break;
+          }
+        }
+      } catch (err) {
+        console.error("Error loading plan from API:", err);
+      }
+    };
+
+    fetchPlanFromAPI();
+  }, []);
 
   const cancelOldSubscription = async () => {
     try {
@@ -197,7 +233,9 @@ function Thankyou() {
     const run = async () => {
       if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
         await callNextApiAndRedirect(); // handles update + cancellation
-        await fetchSubscriptionInfo(); // fetch updated subscription data
+        setTimeout(async () => {
+          await fetchSubscriptionInfo();
+        }, 1500); // fetch updated subscription data
       } else {
         // const fallback = setTimeout(() => {
         //   if (key === "create") {
@@ -312,11 +350,13 @@ function Thankyou() {
               onClick={() => {
                 if (key !== "create") {
                   localStorage.removeItem("selectedPlanData");
+                  localStorage.removeItem("allPlans");
                   navigate("/dashboard", {
                     state: { currentLocation },
                   });
                 } else {
                   localStorage.removeItem("selectedPlanData");
+                  localStorage.removeItem("allPlans");
                   navigate("/steps", {
                     state: { locationPath: "/checkout" },
                   });
@@ -326,7 +366,7 @@ function Thankyou() {
               // disabled={key === "create" ? true : false}
             >
               {key === "create"
-                ? "Continue to Agent Creation"
+                ? "Finish Your Agent Creation"
                 : "Take me to Dashboard"}
             </button>
           </div>

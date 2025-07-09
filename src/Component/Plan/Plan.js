@@ -83,7 +83,7 @@ const Planss = () => {
     const mapCountryToCurrency = (countryCode) => {
 
         const countryCurrencyMap = {
-            // IN: 'inr',
+            IN: 'inr',
             US: 'usd',
             CA: 'cad',
             AU: 'aud',
@@ -486,6 +486,24 @@ const Planss = () => {
                                                             nextBillingDate.setFullYear(today.getFullYear() + 1);
                                                         }
 
+                                                        // Extract minutes if found in first feature (e.g., "120 minutes / month")
+                                                        const firstFeature = plan.features[0] || "";
+                                                        const planMinsMatch = firstFeature.match(/(\d+)\s*minutes/i);
+                                                        const planMins = planMinsMatch ? parseInt(planMinsMatch[1], 10) : 0;
+
+                                                        const currentInterval = toggleStates[plan.id] ? "year" : "month";
+
+                                                        // Prepare simplified plan data
+                                                        const allPlans = products.map(p => {
+                                                            const price = p.prices.find(pr => pr.interval === currentInterval);
+                                                            return price ? {
+                                                                title: p.title,
+                                                                priceId: price.id,
+                                                                interval: currentInterval
+                                                            } : null;
+                                                        }).filter(Boolean); // remove nulls (in case some plans lack the interval)
+
+
                                                         const selectedPlanData = {
                                                             priceId: priceForInterval.id,
                                                             agentId: agentID,
@@ -498,10 +516,13 @@ const Planss = () => {
                                                                     : ((priceForInterval.unit_amount / 100) * 12 * 0.95).toFixed(2),
                                                             billingDate: today.toISOString(),
                                                             nextBillingDate: nextBillingDate.toISOString(),
+                                                            planName: plan.title,
+                                                            planMins: planMins
                                                         };
 
                                                         // ✅ Save to localStorage
                                                         localStorage.setItem("selectedPlanData", JSON.stringify(selectedPlanData));
+                                                        localStorage.setItem("allPlans", JSON.stringify(allPlans));
                                                         navigate("/steps", {
                                                             state: {
                                                                 priceId: priceForInterval.id,
@@ -572,10 +593,10 @@ const Planss = () => {
                     {products.map((plan, index) => {
                         const isYearly = toggleStates[plan.id];
                         // const interval = isYearly ? "year" : "month";
-                        const interval = "month"
+                        const interval = "year"
                         const selectedPrice = plan.prices.find(p => p.interval === interval);
                         const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
-                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100).toFixed(0) : "0";
+                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100 / 12).toFixed(0) : "0";
 
                         return (
                             <div
@@ -607,7 +628,8 @@ const Planss = () => {
                                 {/* monthPrice */}
                                 <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
                                     }`}>
-                                    from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
+                                    from {symbol}{amount}/m
+                                    {/* {interval === "year" ? "yr" : "m"} */}
                                 </p>
                             </div>
                         );

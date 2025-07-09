@@ -389,7 +389,7 @@ export const useAgentCreator = ({
           }
         ],
         starting_state: "information_collection",
-        begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may I help you?`,
+        // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may I help you?`,
         default_dynamic_variables: {
           customer_name: "John Doe",
           timeZone: "Asia/Kolkata",
