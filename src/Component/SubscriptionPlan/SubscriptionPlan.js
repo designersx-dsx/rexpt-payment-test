@@ -412,21 +412,21 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         </div>
 
                                         {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
-                                        (() => {
-                                            const monthlyTotal = monthlyPrice.unit_amount;
-                                            console.log("monthlyPrice", monthlyPrice)
-                                            const yearlyTotal = yearlyPrice.unit_amount / 12;
-                                            console.log("yearlyTotal", yearlyPrice)
-                                            const savings = monthlyTotal - yearlyTotal;
-                                            const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
+                                            (() => {
+                                                const monthlyTotal = monthlyPrice.unit_amount;
+                                                console.log("monthlyPrice", monthlyPrice)
+                                                const yearlyTotal = yearlyPrice.unit_amount / 12;
+                                                console.log("yearlyTotal", yearlyPrice)
+                                                const savings = monthlyTotal - yearlyTotal;
+                                                const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
 
-                                            return (
-                                                <div className={styles.discount}>
-                                                    You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{(savings / 100).toFixed(0)}) compared to monthly billing
-                                                </div>
-                                            );
-                                        })()
-                                    )}
+                                                return (
+                                                    <div className={styles.discount}>
+                                                        You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{(savings / 100).toFixed(0)}) compared to monthly billing
+                                                    </div>
+                                                );
+                                            })()
+                                        )}
                                         <br />
                                         <div style={{ fontSize: "12px" }} className={styles.stickyWrapper}>
                                             <AnimatedButton
@@ -552,7 +552,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                     {plan.title}
                                 </button>
 
-                                <p className={styles.monthPrice}>
+                                <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
+                                    }`}>
                                     from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
                                 </p>
                             </div>
