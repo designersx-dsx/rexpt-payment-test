@@ -93,6 +93,16 @@ const Step = () => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
+  
+  // Plans
+  const [allPlans, setAllPlans] = useState(() => {
+    const stored = localStorage.getItem("allPlans");
+    return stored ? JSON.parse(stored) : [];
+  });
+  console.log("allPlans", allPlans)
+  const [selectedPriceId, setSelectedPriceId] = useState(() => {
+    return sessionStorage.getItem("priceId") || "";
+  });
     const location = useLocation()
     const locationPath = location?.state?.locationPath;
     let value = location?.state?.value
@@ -1447,6 +1457,27 @@ const Step = () => {
                     }
 
                 </div>
+
+{currentStep === 7 && allPlans.length > 0 && (
+          <div className={styles.PlansSelectDrop}>
+            <select
+              name="plans"
+              id="plans"
+              value={selectedPriceId}
+              onChange={(e) => {
+                const newPriceId = e.target.value;
+                setSelectedPriceId(newPriceId);
+                sessionStorage.setItem("priceId", newPriceId);
+              }}
+            >
+              {allPlans.map((plan, index) => (
+                <option key={index} value={plan.priceId}>
+                  {plan.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
                 {/* //Button */}
                 {currentStep === 7 ? <button className={styles.navBtn} onClick={handleSubmit}>
                     {
