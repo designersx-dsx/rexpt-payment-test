@@ -540,3 +540,23 @@
   background-color: #8A2BE2;
   /* Different color for 3 dots */
 }
+.dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px auto;
+  color: white;
+  font-weight: bold;
+}
+
+.greenDot {
+  background-color: #4CAF50; 
+}
+
+.orangeDot {
+  background-color: #FF9800; 
+}
