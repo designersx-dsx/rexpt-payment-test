@@ -22,7 +22,7 @@ import AssignNumberModal from "./AssignNumberModal";
 import CommingSoon from "../ComingSoon/CommingSoon";
 import EditAgent from "../EditAgent/EditAgent";
 import DetailModal from "../DetailModal/DetailModal";
-import CallSetting from "../CallSetting/CallSetting"
+import CallSetting from "../CallSetting/CallSetting";
 
 import { useAgentStore } from "../../Store/agentDetailStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -33,25 +33,30 @@ import { clearSessionAfterEdit } from "../../utils/helperFunctions";
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const agentID = sessionStorage.getItem('SelectAgentId');
-  const [userCalApiKey, setUserCalApiKey] = useState(sessionStorage.getItem("userCalApiKey"))
-  const agentBuisnesId = sessionStorage.getItem('SelectAgentBusinessId');
+  const agentID = sessionStorage.getItem("SelectAgentId");
+  const [userCalApiKey, setUserCalApiKey] = useState(
+    sessionStorage.getItem("userCalApiKey")
+  );
+  const agentBuisnesId = sessionStorage.getItem("SelectAgentBusinessId");
   const [agentDetails, setAgentDetail] = useState({
-    agentId: location?.state?.agentId || sessionStorage.getItem('SelectAgentId'),
-    bussinesId: location?.state?.bussinesId || sessionStorage.getItem('SelectAgentBusinessId')
-  })
+    agentId:
+      location?.state?.agentId || sessionStorage.getItem("SelectAgentId"),
+    bussinesId:
+      location?.state?.bussinesId ||
+      sessionStorage.getItem("SelectAgentBusinessId"),
+  });
   const isConfirmedRef = useRef(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
-  const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
+  const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
   useEffect(() => {
     if (agentID && agentBuisnesId) {
       setAgentDetail({
         agentId: agentID,
-        bussinesId: agentBuisnesId
-      })
+        bussinesId: agentBuisnesId,
+      });
     }
-  }, [agentBuisnesId, agentBuisnesId])
+  }, [agentBuisnesId, agentBuisnesId]);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   // const [assignedNumbers, setAssignedNumbers] = useState([]);
@@ -99,41 +104,44 @@ const AgentDashboard = () => {
   const [isAssignNumberModal, setIsAssignNumberModal] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [fullAddress, setFullAddress] = useState("");
-  const [knowledge_base_texts, setknowledge_base_texts] = useState("")
-  const [businessDetails, setBusinessDetails] = useState([])
+  const [knowledge_base_texts, setknowledge_base_texts] = useState("");
+  const [businessDetails, setBusinessDetails] = useState([]);
   const [popupMessage3, setPopupMessage3] = useState();
   const [popupType3, setPopupType3] = useState("confirm");
   const [calapiloading, setCalapiloading] = useState(false);
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
   const [meetingCount, setMeetingCount] = useState(0);
 
-useEffect(() => {
-  const fetchMeetingCount = async () => {
-    if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
+  useEffect(() => {
+    const fetchMeetingCount = async () => {
+      if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
 
-    try {
-      const res = await fetch(
-        `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(agentData.agent.calApiKey)}`
-      );
-      const data = await res.json();
 
-      const meetings = data?.bookings?.filter(
-        (b) => Number(b.eventTypeId) === Number(agentData.agent.eventId)
-      );
+      try {
+        const res = await fetch(
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+            agentData.agent.calApiKey
+          )}`
+        );
+        const data = await res.json();
 
-      setMeetingCount(meetings?.length || 0);
-    } catch (error) {
-      console.error("Error fetching meeting bookings:", error);
-      setMeetingCount(0);
-    }
-  };
+        const meetings = data?.bookings?.filter(
+          (b) => Number(b.eventTypeId) === Number(agentData.agent.eventId)
+        );
 
-  fetchMeetingCount();
-}, [agentData]);
+        setMeetingCount(meetings?.length || 0);
+      } catch (error) {
+        console.error("Error fetching meeting bookings:", error);
+        setMeetingCount(0);
+      }
+    };
+
+    fetchMeetingCount();
+  }, [agentData]);
 
   useEffect(() => {
     clearSessionAfterEdit();
-  }, [])
+  }, []);
   const openAddressModal = (address) => {
     setFullAddress(address);
     setIsAddressModalOpen(true);
@@ -181,16 +189,18 @@ useEffect(() => {
   }
   // sdsds
   const handleApiKeySubmit = async () => {
-    const agent = agentDetailsForCal
+    const agent = agentDetailsForCal;
     try {
       setCalapiloading(true);
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agent?.agent_id
-        }`,
+        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agent?.agent_id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: userCalApiKey.trim(), userId: userId }),
+          body: JSON.stringify({
+            calApiKey: userCalApiKey.trim(),
+            userId: userId,
+          }),
         }
       );
 
@@ -213,8 +223,8 @@ useEffect(() => {
   };
 
   const createCalEvent = async () => {
-    const agent = agentDetailsForCal
-    await handleApiKeySubmit()
+    const agent = agentDetailsForCal;
+    await handleApiKeySubmit();
     try {
       // Call Cal API to create an event
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
@@ -251,9 +261,8 @@ useEffect(() => {
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
             description: "Checking availability for event booking",
-            timezone: timeZone
-
-          }
+            timezone: timeZone,
+          },
         ],
       };
 
@@ -267,7 +276,7 @@ useEffect(() => {
         },
         body: JSON.stringify(retellPayload),
       });
-      getAgentDetailsAndBookings()
+      getAgentDetailsAndBookings();
       if (!retellResponse.ok) {
         const retellError = await retellResponse.json();
         console.error("Error updating  LLM:", retellError);
@@ -278,7 +287,7 @@ useEffect(() => {
       // Success
       setPopupType("success");
       setPopupMessage("Your Cal event has been created successfully!");
-      setHasFetched(false)
+      setHasFetched(false);
       setShowCalKeyInfo(false);
       setEventName("");
       setEventSlug("");
@@ -289,8 +298,7 @@ useEffect(() => {
       setEventCreateMessage(`Unauthorized! Invalid API Key.`);
       console.error("Error in createCalEvent:", error);
     } finally {
-
-      setIsConfirming(false)
+      setIsConfirming(false);
     }
   };
   const getAgentDetailsAndBookings = async () => {
@@ -298,7 +306,7 @@ useEffect(() => {
 
     const cached = getAgentById(agentDetails.agentId);
     if (cached) {
-      setCurrentAgentId(agentDetails.agentId); 
+      setCurrentAgentId(agentDetails.agentId);
       setLoading(false);
     }
 
@@ -336,10 +344,7 @@ useEffect(() => {
       // Set all data into zustand
       setAgentById(agentDetails.agentId, agentInfo, numbersArray, total);
     } catch (err) {
-      console.error(
-        "Failed to fetch data",
-        err.response || err.message || err
-      );
+      console.error("Failed to fetch data", err.response || err.message || err);
     } finally {
       setLoading(false);
     }
@@ -347,9 +352,9 @@ useEffect(() => {
   useEffect(() => {
     getAgentDetailsAndBookings();
   }, [agentDetails, refresh]);
-const handleAssignNumber=()=>{
-  getAgentDetailsAndBookings();
-}
+  const handleAssignNumber = () => {
+    getAgentDetailsAndBookings();
+  };
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
@@ -377,13 +382,13 @@ const handleAssignNumber=()=>{
     client.on("call_started", () => setIsCallActive(true));
     client.on("call_ended", () => setIsCallActive(false));
     setRetellWebClient(client);
-    sessionStorage.removeItem('selectedfilterOption')
-    const calApiKey = agentData?.calApiKey
-    sessionStorage.setItem("userCalApiKey", calApiKey)
+    sessionStorage.removeItem("selectedfilterOption");
+    const calApiKey = agentData?.calApiKey;
+    sessionStorage.setItem("userCalApiKey", calApiKey);
   }, []);
 
   // Start call handler
-  let micStream = '';
+  let micStream = "";
   const isStartingRef = useRef(false);
   const handleStartCall = async () => {
     try {
@@ -399,7 +404,12 @@ const handleAssignNumber=()=>{
       return;
     }
 
-    if (isStartingRef.current || isCallInProgress || !retellWebClient || !agentData?.agent) {
+    if (
+      isStartingRef.current ||
+      isCallInProgress ||
+      !retellWebClient ||
+      !agentData?.agent
+    ) {
       console.error("RetellWebClient or agent data not ready.");
       return;
     }
@@ -416,13 +426,11 @@ const handleAssignNumber=()=>{
         }
       );
       if (res.status == 403) {
-
         setPopupMessage("Agent Plan minutes exhausted");
         setPopupType("failed");
         setIsCallInProgress(false);
         setTimeout(() => {
-          setPopupMessage("")
-
+          setPopupMessage("");
         }, 5000);
         return;
       }
@@ -434,7 +442,6 @@ const handleAssignNumber=()=>{
     } finally {
       setCallLoading(false);
       isStartingRef.current = false;
-
     }
   };
 
@@ -461,7 +468,6 @@ const handleAssignNumber=()=>{
         setIsCallInProgress(false);
         isEndingRef.current = false;
       }
-
     }
   };
 
@@ -481,7 +487,6 @@ const handleAssignNumber=()=>{
     sessionStorage.setItem("userId", userId);
     navigate("/totalcall-list");
     localStorage.setItem("filterType", "single");
-
   };
   const handleCloseEditagentModalOpen = () => {
     localStorage.removeItem("selectedStepEditMode");
@@ -528,8 +533,8 @@ const handleAssignNumber=()=>{
     localStorage.removeItem("additionalInstruction");
     localStorage.removeItem("knowledge_base_name");
     localStorage.removeItem("knowledge_base_id");
-    sessionStorage.removeItem("placeDetailsExtract")
-    sessionStorage.removeItem("agentNote")
+    sessionStorage.removeItem("placeDetailsExtract");
+    sessionStorage.removeItem("agentNote");
     sessionStorage.removeItem("prevBuisnessType");
     sessionStorage.removeItem("prevAgentGender");
     sessionStorage.removeItem("prevAgentGender");
@@ -545,7 +550,6 @@ const handleAssignNumber=()=>{
     navigate("/integrate-agent", {
       state: {
         agentDetails: agent?.agent,
-
       },
     });
   };
@@ -593,14 +597,13 @@ const handleAssignNumber=()=>{
       : url;
   };
   const handleOpenKnowledgeView = (knowledge_base_texts) => {
-    setknowledge_base_texts(knowledge_base_texts)
-    setOpenCard("card2")
-  }
+    setknowledge_base_texts(knowledge_base_texts);
+    setOpenCard("card2");
+  };
   const handleOpenBusinessView = (agentData) => {
-    setOpenCard("card1")
-    setBusinessDetails(agentData?.business)
-
-  }
+    setOpenCard("card1");
+    setBusinessDetails(agentData?.business);
+  };
   function formatName(name) {
     if (!name) return "";
 
@@ -628,18 +631,17 @@ const handleAssignNumber=()=>{
     return name;
   }
   const handleConnectCal = (agent) => {
-    console.log(agent, "agent")
-    navigate("/connect-calender")
-    sessionStorage.setItem("agentDetails", JSON.stringify(agent))
-  }
+    console.log(agent, "agent");
+    navigate("/connect-calender");
+    sessionStorage.setItem("agentDetails", JSON.stringify(agent));
+  };
   const handleConnectCalApiAlready = (agent) => {
-
-    setAgentDetailsForCal(agent)
+    setAgentDetailsForCal(agent);
     setPopupType3("confirm");
     setPopupMessage3(
       "Your Cal API key is already added. Do you want to continue with this key and automatically create a Cal event?"
     );
-  }
+  };
   const handleCalConnectWithConfirm = async () => {
     try {
       await createCalEvent();
@@ -662,7 +664,9 @@ const handleAssignNumber=()=>{
                   alt="Back button"
                   onClick={handleBackClick}
                 ></img>
-                <div className={styles.profileSection}><p className={styles.name}>Agent detail</p></div>
+                <div className={styles.profileSection}>
+                  <p className={styles.name}>Agent detail</p>
+                </div>
               </div>
 
               <div className={styles.notifiMain}>
@@ -727,7 +731,9 @@ const handleAssignNumber=()=>{
 
             <section>
               <div className={styles.agentCard}>
-                <h3 className={`${styles.PlanTitle}  `}>{agentData?.agent?.agentPlan}</h3>
+                <h3 className={`${styles.PlanTitle}  `}>
+                  {agentData?.agent?.agentPlan}
+                </h3>
                 <div className={styles.agentInfo}>
                   <div className={styles.agentAvatarContainer}>
                     <img
@@ -802,9 +808,14 @@ const handleAssignNumber=()=>{
 
           <div className={styles.container}>
             <div className={styles.businessInfo}>
-
-              <div className={styles.card1} >
-                <h2>{formatBusinessName(agentData?.business?.businessName || (agentData?.knowledge_base_texts?.name) || agentData?.business?.googleBusinessName)}</h2>
+              <div className={styles.card1}>
+                <h2>
+                  {formatBusinessName(
+                    agentData?.business?.businessName ||
+                      agentData?.knowledge_base_texts?.name ||
+                      agentData?.business?.googleBusinessName
+                  )}
+                </h2>
 
                 <p>{agentData?.business?.businessSize || "NA"}</p>
                 <div className={styles.health}>
@@ -819,14 +830,18 @@ const handleAssignNumber=()=>{
                     </span>
                   </h3>
                 </div>
-                <div className={styles.businessEdit} onClick={() => handleOpenBusinessView(agentData)}>
-                  <h4 >Business Details</h4>
-                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
-                </div>
 
+                <div
+                  className={styles.businessEdit}
+                  onClick={() => handleOpenBusinessView(agentData)}
+                >
+                  <h4>Business Details</h4>
+                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+
+                </div>
               </div>
 
-              <div className={styles.card2} >
+              <div className={styles.card2}>
                 <h2>
                   URL:
                   <span style={{ fontSize: "12px" }}>
@@ -886,20 +901,32 @@ const handleAssignNumber=()=>{
                 </div>
 
                 <div className={styles.address}>
-                  {agentData?.business?.address1 &&
-                    <><img src="svg/location.svg" alt="location" />
+                  {agentData?.business?.address1 && (
+                    <>
+                      <img src="svg/location.svg" alt="location" />
                       <p
-                        onClick={() => openAddressModal(agentData?.business?.address1)}
-                        style={{ cursor: "pointer", textDecoration: "underline" }}
-                      >{truncateAddress(agentData?.business?.address1, 5)}</p>
+                        onClick={() =>
+                          openAddressModal(agentData?.business?.address1)
+                        }
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        {truncateAddress(agentData?.business?.address1, 5)}
+                      </p>
                     </>
-                  }
-                </div>
-                <div className={styles.businessEdit} onClick={() => handleOpenKnowledgeView(agentData)}>
-                  <h4  >Knowledge Base</h4>
-                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                  )}
                 </div>
 
+                <div
+                  className={styles.businessEdit}
+                  onClick={() => handleOpenKnowledgeView(agentData)}
+                >
+                  <h4>Knowledge Base</h4>
+                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+
+                </div>
               </div>
             </div>
             <CommingSoon show={showModal} onClose={() => setShowModal(false)} />
@@ -948,8 +975,18 @@ const handleAssignNumber=()=>{
               </div>
               <div
                 className={styles.managementItem}
-
-
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (agentStatus === true) {
+                    handleInactiveAgentAlert();
+                  } else {
+                    if (userCalApiKey) {
+                      handleConnectCalApiAlready(agentData?.agent);
+                    } else {
+                      handleConnectCal(agentData?.agent);
+                    }
+                  }
+                }}
               >
                 <div className={styles.SvgDesign}>
                   {agentData?.agent?.calApiKey ? (
@@ -959,9 +996,7 @@ const handleAssignNumber=()=>{
                         if (agentStatus === true) {
                           handleInactiveAgentAlert();
                         } else {
-
-                          handleConnectCal(agentData?.agent)
-
+                          handleConnectCal(agentData?.agent);
                         }
                       }}
                       width="20"
@@ -1006,21 +1041,7 @@ const handleAssignNumber=()=>{
                     </svg>
                   ) : (
                     <svg
-
                       style={{ cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (agentStatus === true) {
-                          handleInactiveAgentAlert();
-                        } else {
-                          if (userCalApiKey) {
-                            handleConnectCalApiAlready(agentData?.agent)
-                          }
-                          else {
-                            handleConnectCal(agentData?.agent)
-                          }
-                        }
-                      }}
                       width="20"
                       height="21"
                       viewBox="0 0 20 21"
@@ -1102,7 +1123,7 @@ const handleAssignNumber=()=>{
                     handleCallTransfer();
                   }
                 }}
-              // onClick={handleCallTransfer}
+                // onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1129,7 +1150,6 @@ const handleAssignNumber=()=>{
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-
                     // try {
                     //   await fetchPrevAgentDEtails(
                     //     agentData?.agent?.agent_id,
@@ -1140,26 +1160,30 @@ const handleAssignNumber=()=>{
                     //     agentData?.agent?.businessId);
                     // }
                     // setModalOpen(true);
-                    sessionStorage.setItem('naviateFrom', 'editAgent')
-                    sessionStorage.setItem('SelectAgentBusinessId', agentData?.agent?.businessId)
-                    sessionStorage.setItem('SelectAgentId', agentData?.agent?.agent_id)
-                    navigate('/edit-agent', {
+                    sessionStorage.setItem("naviateFrom", "editAgent");
+                    sessionStorage.setItem(
+                      "SelectAgentBusinessId",
+                      agentData?.agent?.businessId
+                    );
+                    sessionStorage.setItem(
+                      "SelectAgentId",
+                      agentData?.agent?.agent_id
+                    );
+                    navigate("/edit-agent", {
                       state: {
                         agentId: agentData?.agent?.agent_id,
                         businessId: agentData?.agent?.businessId,
                       },
                     });
-
-
                   }
                 }}
-              // onClick={async () => {
-              //   await fetchPrevAgentDEtails(
-              //     agentData?.agent?.agent_id,
-              //     agentData?.agent?.businessId
-              //   );
-              //   setModalOpen(true);
-              // }}
+                // onClick={async () => {
+                //   await fetchPrevAgentDEtails(
+                //     agentData?.agent?.agent_id,
+                //     agentData?.agent?.businessId
+                //   );
+                //   setModalOpen(true);
+                // }}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1303,7 +1327,7 @@ const handleAssignNumber=()=>{
 
                 <span className={styles.statDetail}>
                   {agentData?.avgCallTime?.minutes ||
-                    agentData?.avgCallTime?.seconds ? (
+                  agentData?.avgCallTime?.seconds ? (
                     <>
                       {agentData?.avgCallTime?.minutes}
                       <span className={styles.MinFont}>m</span>
@@ -1321,9 +1345,7 @@ const handleAssignNumber=()=>{
                 onClick={() => setShowModal(true)}
               >
                 <span className={` ${styles.statText}`}>Bookings</span>
-                <span className={styles.statDetail}>
-                 {meetingCount}
-                </span>
+                <span className={styles.statDetail}>{meetingCount}</span>
               </div>
 
               <div
@@ -1350,7 +1372,11 @@ const handleAssignNumber=()=>{
           </div>
 
           {openCallModal && (
-            <Modal3 isOpen={openCallModal} onClose={closeCallTestModal} isEndingRef={isEndingRef}>
+            <Modal3
+              isOpen={openCallModal}
+              onClose={closeCallTestModal}
+              isEndingRef={isEndingRef}
+            >
               <CallTest
                 isCallActive={isCallActive}
                 onStartCall={handleStartCall}
@@ -1359,7 +1385,11 @@ const handleAssignNumber=()=>{
                 setCallLoading={setCallLoading}
                 agentName={agentData?.agent?.agentName}
                 agentAvatar={agentData?.agent?.avatar}
-                businessName={agentData?.business?.businessName || agentData?.business?.googleBusinessName || (agentData?.knowledge_base_texts?.name)}
+                businessName={
+                  agentData?.business?.businessName ||
+                  agentData?.business?.googleBusinessName ||
+                  agentData?.knowledge_base_texts?.name
+                }
                 isEndingRef={isEndingRef}
               />
             </Modal3>
@@ -1368,11 +1398,14 @@ const handleAssignNumber=()=>{
           {/* OffCanvas for Logout */}
 
           {isCalModalOpen && (
-            <div className={styles.modalBackdrop} onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                e.stopPropagation();
-              }
-            }}>
+            <div
+              className={styles.modalBackdrop}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  e.stopPropagation();
+                }
+              }}
+            >
               <div
                 className={styles.modalContainer}
                 onClick={(e) => e.stopPropagation()}
@@ -1561,7 +1594,9 @@ const handleAssignNumber=()=>{
               <div className={styles.modalContainer1}>
                 <h3>Full Address</h3>
                 <p>{fullAddress}</p>
-                <button className={styles.hello} onClick={closeAddressModal}>Close</button>
+                <button className={styles.hello} onClick={closeAddressModal}>
+                  Close
+                </button>
               </div>
             </div>
           )}
@@ -1581,10 +1616,9 @@ const handleAssignNumber=()=>{
           <DetailModal
             isOpen={!!openCard}
             onClose={() => setOpenCard(null)}
-            height="80vh">
-            {openCard === "card1" && (
-              <Card1 data={businessDetails} />
-            )}
+            height="80vh"
+          >
+            {openCard === "card1" && <Card1 data={businessDetails} />}
 
             {openCard === "card2" && (
               <Card2 agentKnowledge={knowledge_base_texts} />
@@ -1635,7 +1669,6 @@ const handleAssignNumber=()=>{
               isConfirmedRef.current = true;
               handleCalConnectWithConfirm();
               setPopupMessage3("");
-
             }}
           />
 
@@ -1702,7 +1735,7 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
         aboutBusiness: business.aboutBusiness,
         note: business.additionalInstruction,
         isGoogleListing: business.isGoogleListing,
-        isWebsiteUrl: business.isWebsiteUrl
+        isWebsiteUrl: business.isWebsiteUrl,
       })
     );
 
@@ -1753,11 +1786,10 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-        .map((item) => item?.service?.trim())
-        .filter(Boolean)
-        .map((service) => ({ service }))
+          .map((item) => item?.service?.trim())
+          .filter(Boolean)
+          .map((service) => ({ service }))
       : [];
-
 
     sessionStorage.setItem(
       "selectedCustomServices",
@@ -1771,7 +1803,10 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
       try {
         raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
       } catch (err) {
-        console.error("Failed to parse customServices:", raw_knowledge_base_texts);
+        console.error(
+          "Failed to parse customServices:",
+          raw_knowledge_base_texts
+        );
         raw_knowledge_base_texts = [];
       }
     }

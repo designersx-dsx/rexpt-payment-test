@@ -226,7 +226,15 @@ const BusinessListing = forwardRef(
         ];
 
         const rawUrl = aboutBusinessForm.businessUrl?.trim();
-        const mergedUrls = rawUrl ? [rawUrl] : [];
+      const mergedUrls = [];
+      if (rawUrl) {
+        mergedUrls.push(rawUrl); // add businessUrl
+      }
+
+      if (aboutBusinessForm?.googleListing) {
+        mergedUrls.push(aboutBusinessForm?.googleListing); // add googleListing
+      }
+      // const mergedUrls = rawUrl ? [rawUrl] : [];
 
         const formData = new FormData();
         const formData2 = new FormData();
