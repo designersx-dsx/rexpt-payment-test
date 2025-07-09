@@ -1,0 +1,63 @@
+.container {
+    padding-block: 0px 20px;
+    background-color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #24252c;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    font-size: 18px;
+    font-weight: 500;
+    color: #888888;
+    padding-bottom: 12px;
+}
+
+td {
+    padding: 16px 0;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+    vertical-align: middle;
+    color: #24252c;
+}
+
+.dateCell {
+    line-height: 1.4;
+}
+
+.time {
+    font-weight: 700;
+    color: #24252c;
+    font-size: 16px;
+}
+
+.date {
+    font-size: 16px;
+    color: #24252C;
+}
+
+.amount {
+    background-color: #efe9fe;
+    color: #7a5af8;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.actionIcon {
+    cursor: pointer;
+
+}
