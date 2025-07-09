@@ -40,7 +40,7 @@ const IntegrateAgent = () => {
   const webUrl = agentDetails?.business?.webUrl
   const agentWidgetDomain = agentDetails
   const script = agentId
-    ? `<script id="rex-widget-script" src="https://aesthetic-wisp-d15448.netlify.app/index.js?agentId=${agentId}"></script>`
+    ? `<script id="rex-widget-script" src="https://celadon-starlight-781c55.netlify.app/index.js?agentId=${agentId}"></script>`
     : "";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
