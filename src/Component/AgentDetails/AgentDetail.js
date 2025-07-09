@@ -454,16 +454,18 @@ const AgentDashboard = () => {
         const response = await retellWebClient.stopCall();
         const payload = { agentId: agentData?.agent?.agent_id, callId: callId };
         if (isCallInProgress && callId) {
-          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+          // const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
         }
-        setRefresh((prev) => !prev);
-        setHasFetched(false);
-        setIsCallInProgress(false);
+        
         // console.log("Call end response", response);
       } catch (err) {
         console.error("Error ending call:", err);
       } finally {
+        setTimeout(() => {
         setHasFetched(false);
+        setRefresh((prev) => !prev);
+        }, 2000);
+       
         setIsCallInProgress(false);
         isEndingRef.current = false;
       }

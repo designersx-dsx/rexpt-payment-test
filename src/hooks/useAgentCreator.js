@@ -438,7 +438,7 @@ export const useAgentCreator = ({
                 choices: getLeadTypeChoices()
               }
             ],
-            webhook_url: "https://d055398962e7.ngrok-free.app/api/agent/updateAgentCallEventsViaWebHook",
+            webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
             normalize_for_speech: true
           };
           const agent_id = sessionStorage.getItem("agent_id") || localStorage.getItem("agentId")
