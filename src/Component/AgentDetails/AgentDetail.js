@@ -825,12 +825,14 @@ const AgentDashboard = () => {
                     </span>
                   </h3>
                 </div>
+
                 <div
                   className={styles.businessEdit}
                   onClick={() => handleOpenBusinessView(agentData)}
                 >
                   <h4>Business Details</h4>
                   <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+
                 </div>
               </div>
 
@@ -911,12 +913,14 @@ const AgentDashboard = () => {
                     </>
                   )}
                 </div>
+
                 <div
                   className={styles.businessEdit}
                   onClick={() => handleOpenKnowledgeView(agentData)}
                 >
                   <h4>Knowledge Base</h4>
                   <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+
                 </div>
               </div>
             </div>
