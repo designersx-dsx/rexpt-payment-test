@@ -10,7 +10,7 @@ const CancelPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (token && price) {
-        navigate("/plan"); // 👈 Change if needed
+        navigate("/plan"); // 
       } else {
         navigate("/plans");
       }
