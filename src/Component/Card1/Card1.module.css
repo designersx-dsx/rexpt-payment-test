@@ -36,7 +36,12 @@
     display: flex;
     font-weight: 600;
 }
-
+.capsul{
+    background-color: #EDE9FC;
+    padding: 4px 15px;
+    border-radius: 20px;
+    margin-bottom: 5px;
+}
 .About h3{
     color: #24252C;
     font-size: 18px;
