@@ -120,8 +120,8 @@ const Step = () => {
     const businessType = Buisness?.businessType === "Other" ? Buisness?.customBuisness : Buisness?.businessType;
     const totalSlides = 8;
     const removeSpaces = (phone) => {
-    if (!phone) return null;
-    return phone.replace(/\s+/g, "");
+        if (!phone) return null;
+        return phone.replace(/\s+/g, "");
     };
     const role_title =
         sessionStorage.getItem("agentRole") || "General Receptionist";
@@ -144,7 +144,11 @@ const Step = () => {
     );
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
-    const commaSeparatedServices = allServices?.join(", ")?.replace("Other", "") || "Your Business Services";
+    const commaSeparatedServices =   (allServices?.join(", ").replace("Other", "") || "Your Business Services")
+    .split(",")
+    .filter(service => service.trim() !== "")
+    .map(service => `- ${service.trim()}`)
+    .join("\n");
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
@@ -155,7 +159,7 @@ const Step = () => {
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
 
-    const agentCode=sessionStorage.getItem("AgentCode")
+    const agentCode = sessionStorage.getItem("AgentCode")
 
     const [isContiue, seIsContinue] = useState(false)
     const packageMap = {
@@ -256,7 +260,7 @@ const Step = () => {
 
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
-    const businessPhone=removeSpaces(getBusinessNameFromGoogleListing?.phone)
+    const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone)
 
     // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
@@ -277,10 +281,39 @@ const Step = () => {
     }
     //getTimeZone
     const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+    ///extractPromptVariables
+    function extractPromptVariables(template) {
+        const matches = [...template.matchAll(/{{(.*?)}}/g)];
+        const uniqueVars = new Set(matches.map(m => m[1].trim()));
+
+        return Array.from(uniqueVars).map(variable => ({
+            name: variable,
+            status: true
+        }));
+    }
     const handleContinue = async () => {
         if (step8ARef.current) {
             setIsContinueClicked(true);
             const agentNote = sessionStorage.getItem("agentNote");
+            const rawPromptTemplate =
+                getAgentPrompt({
+                    industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                    roleTitle: sessionStorage.getItem("agentRole"),
+                    agentName: "{{AGENT NAME}}",
+                    agentGender: "{{MALE or FEMALE}}",
+                    business: {
+                        businessName: "{{BUSINESS NAME}}",
+                        email: "{{BUSINESS EMAIL ID}}",
+                        aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
+                        address: "{{ CITY}},{{ STATE}}, {{COUNTRY}}"
+                    },
+                    languageSelect: "{{LANGUAGE}}",
+                    businessType: "{{BUSINESSTYPE}}",
+                    aboutBusinessForm: "{{}}",
+                    commaSeparatedServices: "{{SERVICES}}",
+                    agentNote: "{{AGENTNOTE}}",
+                    timeZone: "{{TIMEZONE}}"
+                });
             const filledPrompt =
                 getAgentPrompt({
                     industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
@@ -300,8 +333,9 @@ const Step = () => {
                     agentNote,
                     timeZone
                 });
+        console.log(filledPrompt,"filledPrompt")
+                // return
             // const isValid = step8BRef.current.validate()
-
             //creation here
             if (localStorage.getItem("UpdationMode") != "ON") {
                 setLoading(true)
@@ -318,9 +352,8 @@ const Step = () => {
                             name: "end_call",
                             description: "End the call with user.",
                         },
-                    
-                    ],
 
+                    ],
 
                     states: [
                         {
@@ -345,23 +378,23 @@ const Step = () => {
                                 If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
                                 If the user wants to end the call transition to end_call_state`,
                             edges: [
-                               
+
                                 {
-                                destination_state_name: "dissatisfaction_confirmation",
-                                description: "User sounds angry or expresses dissatisfaction."
+                                    destination_state_name: "dissatisfaction_confirmation",
+                                    description: "User sounds angry or expresses dissatisfaction."
                                 }
                             ]
                         },
-                      
+
                         {
                             name: "appointment_booking",
                             state_prompt: "## Task\nYou will now help the user book an appointment."
                         },
 
-                            // 🌟 State: Dissatisfaction Confirmation
+                        // 🌟 State: Dissatisfaction Confirmation
                         {
-                        name: "dissatisfaction_confirmation",
-                        state_prompt: `
+                            name: "dissatisfaction_confirmation",
+                            state_prompt: `
                             Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
                             Wait for their response.
 
@@ -369,72 +402,68 @@ const Step = () => {
                             If the user says no, transition to end_call_state.
                             If the response is unclear, repeat the question once.
                         `,
-                        edges: [
-                            {
-                            destination_state_name: "call_transfer",
-                            description: "User agreed to speak to team member."
-                            },
-                            {
-                            destination_state_name: "end_call_state",
-                            description: "User declined to speak to team member."
-                            }
-                        ],
-                        tools: []
+                            edges: [
+                                {
+                                    destination_state_name: "call_transfer",
+                                    description: "User agreed to speak to team member."
+                                },
+                                {
+                                    destination_state_name: "end_call_state",
+                                    description: "User declined to speak to team member."
+                                }
+                            ],
+                            tools: []
                         },
 
                         // 🌟 State: Call Transfer
                         {
-                        name: "call_transfer",
-                        state_prompt: `
+                            name: "call_transfer",
+                            state_prompt: `
                             Connecting you to a team member now. Please hold.
                         `,
-                        tools: [
-                            {
-                            type: "transfer_call",
-                            name: "transfer_to_team",
-                            description: "Transfer the call to the team member.",
-                            transfer_destination: {
-                                type: "predefined",
-                                number: "{{business_Phone}}"
-                            },
-                            transfer_option: {
-                                type: "cold_transfer",
-                                public_handoff_option: {
-                                message: "Please hold while I transfer your call."
+                            tools: [
+                                {
+                                    type: "transfer_call",
+                                    name: "transfer_to_team",
+                                    description: "Transfer the call to the team member.",
+                                    transfer_destination: {
+                                        type: "predefined",
+                                        number: "{{business_Phone}}"
+                                    },
+                                    transfer_option: {
+                                        type: "cold_transfer",
+                                        public_handoff_option: {
+                                            message: "Please hold while I transfer your call."
+                                        }
+                                    },
+                                    speak_during_execution: true,
+                                    speak_after_execution: true,
+                                    failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
                                 }
-                            },
-                            speak_during_execution: true,
-                            speak_after_execution: true,
-                            failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
-                            }
-                        ],
-                        edges: []
+                            ],
+                            edges: []
                         },
-                         {
-                        name: "end_call_state",
-                        state_prompt: `
+                        {
+                            name: "end_call_state",
+                            state_prompt: `
                             Politely end the call by saying: "Thank you for calling. Have a great day!"
                         `,
-                        tools: [
-                            {
-                            type: "end_call",
-                            name: "end_call1",
-                            description: "End the call with the user."
-                            }
-                        ],
-                        edges: []
+                            tools: [
+                                {
+                                    type: "end_call",
+                                    name: "end_call1",
+                                    description: "End the call with the user."
+                                }
+                            ],
+                            edges: []
                         }
                     ],
-
-
                     starting_state: "information_collection",
-
                     begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
-
                     default_dynamic_variables: {
                         customer_name: "John Doe",
                         business_Phone: businessPhone,
-                         business_email: business.email,
+                        business_email: business.email,
                         timeZone: timeZone
 
                     },
@@ -494,6 +523,7 @@ const Step = () => {
                         normalize_for_speech: true
                     };
                     // Create Agent Creation
+                    const promptVariablesList = extractPromptVariables(rawPromptTemplate);
                     try {
                         const response = await axios.post(
                             "https://api.retellai.com/create-agent",
@@ -510,7 +540,6 @@ const Step = () => {
                         // Convert string to object
                         const businessIdObj = JSON.parse(businessIdString);
                         // Now access the actual ID
-
                         const agentData = {
                             userId: userId,
                             agent_id: agentId || sessionStorage.getItem("agentId"),
@@ -534,7 +563,11 @@ const Step = () => {
                             backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                             additionalNote: agentNote || "",
                             agentCode,
+                            knowledgeBaseStatus: true,
+                            dynamicPromptTemplate: filledPrompt,
+                            rawPromptTemplate: rawPromptTemplate,
 
+                            promptVariablesList: JSON.stringify(promptVariablesList)
 
                         }
                         try {
@@ -908,7 +941,7 @@ const Step = () => {
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.freeTrial
-        if (locationPath === "/checkout" || value==="chatke") {
+        if (locationPath === "/checkout" || value === "chatke") {
             handleContinue()
         }
         else if (locationPath !== "/checkout" && priceId) {

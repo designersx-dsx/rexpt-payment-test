@@ -45,6 +45,16 @@ export const useAgentCreator = ({
   useEffect(() => {
     fetchAgentCountFromUser()
   }, [])
+  ///extractPromptVariables
+  function extractPromptVariables(template) {
+    const matches = [...template.matchAll(/{{(.*?)}}/g)];
+    const uniqueVars = new Set(matches.map(m => m[1].trim()));
+
+    return Array.from(uniqueVars).map(variable => ({
+      name: variable,
+      status: true
+    }));
+  }
   const handleCreateAgent = useCallback(async () => {
     const isValid = stepValidator();
     if (!isValid) return;
@@ -95,6 +105,25 @@ export const useAgentCreator = ({
 
     const CustomservicesArray = cleanedCustomServices?.map(item => item.service) || [];
     const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone)
+    const rawPromptTemplate =
+      getAgentPrompt({
+        industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+        roleTitle: sessionStorage.getItem("agentRole"),
+        agentName: "{{AGENT NAME}}",
+        agentGender: "{{MALE or FEMALE}}",
+        business: {
+          businessName: "{{BUSINESS NAME}}",
+          email: "{{BUSINESS EMAIL ID}}",
+          aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
+          address: "{{ CITY}},{{ STATE}}, {{COUNTRY}}"
+        },
+        languageSelect: "{{LANGUAGE}}",
+        businessType: "{{BUSINESSTYPE}}",
+        aboutBusinessForm: "{{}}",
+        commaSeparatedServices: "{{SERVICES}}",
+        agentNote: "{{AGENTNOTE}}",
+        timeZone: "{{TIMEZONE}}"
+      });
 
     const filledPrompt = getAgentPrompt({
       industryKey: business?.businessType,   // ← dynamic from businessType
@@ -155,12 +184,6 @@ export const useAgentCreator = ({
             buisnessEmail: buisenessServices?.email,
             buisnessService: buisenessServices?.selectedService,
             customBuisness: businessDetails?.customBuisness || "",
-            // address1: locationData.address1,
-            // address2: locationData.address2,
-            // city: locationData.city,
-            // state: locationData.state,
-            // country: locationData.country,
-            // zip: locationData.zip,
             customServices: cleanedCustomServices,
           });
           if (sessionStorage.getItem('prevBuisnessType')) {
@@ -176,280 +199,6 @@ export const useAgentCreator = ({
 
       const storedKnowledgeBaseId = sessionStorage.getItem('knowledgeBaseId');
       const llm_id = localStorage.getItem('llmId') || sessionStorage.getItem('llmId');
-      // working2 
-      // const agentConfig = {
-      //   version: 0,
-      //   model: "gemini-2.0-flash",
-      //   model_temperature: 0,
-      //   model_high_priority: true,
-      //   tool_call_strict_mode: true,
-      //   general_prompt: filledPrompt,
-      //   general_tools: [
-      //     {
-      //       type: "extract_dynamic_variable",
-      //       name: "extract_user_email",
-      //       description: "Extract the user's email address from the conversation.",
-      //       variables: [
-      //         {
-      //           type: "string",
-      //           name: "email",
-      //           description: "The user's email address.",
-      //           examples: ["john.doe@example.com", "nitish@company.in"]
-      //         }
-      //       ]
-      //     },
-      //     {
-      //       type: "custom",
-      //       name: "send_company_address_email",
-      //       url: " https://26ed8f12e60d.ngrok-free.app/api/businessDetails/sendEmailToUserViaMakeWebhook",
-      //       description: "Send the company address to the user's provided email. Ask the user for their email if it's not already available.",
-      //       prerequisites: ["email"], // ✅ Make sure email is extracted
-      //       speak_after_execution: true,
-      //       method: "POST",
-      //       headers: {
-      //         "Authorization": "Bearer YOUR_API_KEY",
-      //         "Content-Type": "application/json"
-      //       },
-      //       body: {
-      //         email: "{{email}}" // ✅ Use global variable
-      //       },
-      //       response_variables: {
-      //         confirmationMessage: "message",
-      //         sentToEmail: "to"
-      //       },
-      //     },
-
-
-      //   ]
-      //   ,
-      //   states: [
-      //     // 🌟 State: Information Collection
-      //     {
-      //       name: "information_collection",
-      //       state_prompt: `
-      //   You are ${agentName?.split(" ")[0]}, a virtual assistant for ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.
-      //   Greet the user with the begin_message and assist with their query.
-
-      //   If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible"), 
-      //   transition to dissatisfaction_confirmation.
-
-      //   If the user asks for an appointment (e.g., "appointment", "book", "schedule"),
-      //   transition to appointment_booking.
-
-      //   If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
-      // `,
-      //  script: `run_tool("extract_user_email")`,
-
-      //       edges: [
-      //         {
-      //           destination_state_name: "appointment_booking",
-      //           description: "User wants to book an appointment."
-      //         },
-      //         {
-      //           destination_state_name: "dissatisfaction_confirmation",
-      //           description: "User sounds angry or expresses dissatisfaction."
-      //         },
-      //       ],
-
-      //     },
-
-      //     // 🌟 State: Dissatisfaction Confirmation
-      //     {
-      //       name: "dissatisfaction_confirmation",
-      //       state_prompt: `
-      //   Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
-      //   Wait for their response.
-
-      //   If the user says yes, transition to call_transfer.
-      //   If the user says no, transition to end_call_state.
-      //   If the response is unclear, repeat the question once.
-      // `,
-      //       edges: [
-      //         {
-      //           destination_state_name: "call_transfer",
-      //           description: "User agreed to speak to team member."
-      //         },
-      //         {
-      //           destination_state_name: "end_call_state",
-      //           description: "User declined to speak to team member."
-      //         }
-      //       ],
-      //       tools: []
-      //     },
-
-      //     // 🌟 State: Call Transfer
-      //     {
-      //       name: "call_transfer",
-      //       state_prompt: `
-      //   Connecting you to a team member now. Please hold.
-      // `,
-      //       tools: [
-      //         {
-      //           type: "transfer_call",
-      //           name: "transfer_to_team",
-      //           description: "Transfer the call to the team member.",
-      //           transfer_destination: {
-      //             type: "predefined",
-      //             number: "{{business_Phone}}"
-      //           },
-      //           transfer_option: {
-      //             type: "cold_transfer",
-      //             public_handoff_option: {
-      //               message: "Please hold while I transfer your call."
-      //             }
-      //           },
-      //           speak_during_execution: true,
-      //           speak_after_execution: true,
-      //           failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
-      //         }
-      //       ],
-      //       edges: []
-      //     },
-
-      //     // 🌟 State: Appointment Booking
-      //     {
-      //       name: "appointment_booking",
-      //       state_prompt: `
-      //   Help the user book an appointment by asking date, time, and service details.
-      //   Confirm once all details are provided.
-      // `,
-      //       edges: [],
-      //       tools: []
-      //     },
-
-      //     // 🌟 State: End Call
-      //     {
-      //       name: "end_call_state",
-      //       state_prompt: `
-      //   Politely end the call by saying: "Thank you for calling. Have a great day!"
-      // `,
-      //       tools: [
-      //         {
-      //           type: "end_call",
-      //           name: "end_call",
-      //           description: "End the call with the user."
-      //         }
-      //       ],
-      //       edges: []
-      //     },
-      //       {
-      //       name: "extract_user_email",
-      //       state_prompt: `
-      //   Politely end the call by saying: "Thank you for calling. Have a great day!"
-      // `,
-      //       tools: [
-      //         {
-      //           type: "end_call",
-      //           name: "end_call",
-      //           description: "End the call with the user."
-      //         }
-      //       ],
-      //       edges: []
-      //     },
-      //     //           {
-      //     //             name: "send_business_address_email",
-      //     //             state_prompt: "## Task\nIf the user wants the company address, extract or ask for email and immediately send the address.",
-      //     //             script: `
-      //     //   run_tool("extract_user_email");
-
-      //     //   let finalEmail = email || user_input?.email;
-
-      //     //   function convertSpokenEmail(raw) {
-      //     //     return raw
-      //     //       .toLowerCase()
-      //     //       .replace(/at the rate|at/g, "@")
-      //     //       .replace(/dot/g, ".")
-      //     //       .replace(/one/g, "1")
-      //     //       .replace(/two/g, "2")
-      //     //       .replace(/three/g, "3")
-      //     //       .replace(/four/g, "4")
-      //     //       .replace(/five/g, "5")
-      //     //       .replace(/six/g, "6")
-      //     //       .replace(/seven/g, "7")
-      //     //       .replace(/eight/g, "8")
-      //     //       .replace(/nine/g, "9")
-      //     //       .replace(/zero/g, "0")
-      //     //       .replace(/\s+/g, "");
-      //     //   }
-
-      //     //   function isValidEmail(email) {
-      //     //     const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-      //     //     return emailRegex.test(email);
-      //     //   }
-
-      //     //   if (finalEmail) {
-      //     //     finalEmail = convertSpokenEmail(finalEmail);
-      //     //   }
-
-      //     //   if (finalEmail && isValidEmail(finalEmail)) {
-      //     //     speak("Thank you! I'm sending the company address to your email now.");
-      //     //     run_tool("send_company_address_email", { email: finalEmail }); // ✅ ACTUAL EMAIL
-      //     //     transition("appointment_booking");
-      //     //   } else {
-      //     //     speak("Hmm, that doesn't look like a valid email. Could you please spell it out again?");
-      //     //     wait_for_user_input({ name: "email", type: "string" });
-      //     //   }
-      //     // `
-      //     //             ,
-      //     //             edges: [
-      //     //               {
-      //     //                 destination_state_name: "send_email",
-      //     //                 description: "Once the email is collected or available, move to send email state",
-      //     //                 parameters: {
-      //     //                   type: "object",
-      //     //                   properties: {
-      //     //                     email: {
-      //     //                       type: "string",
-      //     //                       description: "User's email address"
-      //     //                     }
-      //     //                   },
-      //     //                   required: ["email"]
-      //     //                 }
-      //     //               }
-      //     //             ]
-      //     //           },
-
-      //     //       {
-      //     //         name: "send_email",
-      //     //         state_prompt: "## Task\nSend the company address to the user's email.",
-      //     //         script: `const finalEmail = user_input.email || email;
-      //     //         function isValidEmail(email) {
-      //     //   const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-      //     //   return emailRegex.test(email);
-      //     // }
-
-      //     //       if (finalEmail && isValidEmail(finalEmail)) {
-      //     //   speak("Thank you! Sending the company address to your email now.");
-      //     //   run_tool("send_company_address_email", { email: finalEmail });
-      //     //   transition("appointment_booking");
-      //     // } else {
-      //     //   speak("Hmm, that doesn't look like a valid email address. Could you please spell it out like 'example at gmail dot com'?");
-      //     //   transition("information_collection");
-      //     // }
-      //     //   `,
-      //     //         edges: [
-      //     //           {
-      //     //             destination_state_name: "appointment_booking",
-      //     //             description: "After sending the address, move to booking an appointment"
-      //     //           },
-      //     //           {
-      //     //             destination_state_name: "information_collection",
-      //     //             description: "If email was not valid, go back to email collection"
-      //     //           }
-      //     //         ]
-      //     //       }
-
-      //   ],
-      //   starting_state: "information_collection",
-      //   begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may I help you?`,
-      //   default_dynamic_variables: {
-      //     customer_name: "John Doe",
-      //     timeZone: "Asia/Kolkata",
-      //     business_Phone: businessPhone,
-      //     business_email: business.email,
-      //     email: "",
-      //   }
-      // };
       const agentConfig = {
         version: 0,
         model: "gemini-2.0-flash",
@@ -683,15 +432,6 @@ export const useAgentCreator = ({
             backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
             post_call_analysis_data: [
               {
-                type: "string",
-                name: "Detailed Call Summery",
-                description: "The name of the customer.",
-                examples: [
-                  "John Doe",
-                  "Jane Smith"
-                ]
-              },
-              {
                 type: "enum",
                 name: "lead_type",
                 description: "Feedback given by the customer about the call.",
@@ -719,7 +459,7 @@ export const useAgentCreator = ({
 
             // Convert string to object
             const businessIdObj = JSON.parse(businessIdString);
-
+            const promptVariablesList = extractPromptVariables(rawPromptTemplate);
             // Now access the actual ID
             const agentData = {
               userId: userId,
@@ -735,7 +475,11 @@ export const useAgentCreator = ({
               agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
               agentGender: sessionStorage.getItem('agentGender') || "female",
               agentStatus: true,
+              dynamicPromptTemplate: filledPrompt,
+              rawPromptTemplate: rawPromptTemplate,
+              promptVariablesList: JSON.stringify(promptVariablesList),
             }
+            //update agent in DB
             try {
               const response = await updateAgent(agentId, agentData);
               if (response.status === 200 || response.status === 201) {
