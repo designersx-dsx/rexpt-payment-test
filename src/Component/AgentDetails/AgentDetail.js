@@ -107,8 +107,6 @@ const AgentDashboard = () => {
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
   const [meetingCount, setMeetingCount] = useState(0);
 
-  
-
 useEffect(() => {
   const fetchMeetingCount = async () => {
     if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
@@ -785,6 +783,7 @@ const handleAssignNumber=()=>{
 
                                 }
                               }}
+                            
                             >
                               <img src="/svg/assign-number.svg" />
                             </div>
@@ -1342,6 +1341,7 @@ const handleAssignNumber=()=>{
 
             <section className={styles.management}>
               <AgentAnalysis
+                agentId={agentDetails?.agentId}
                 data={agentData?.callSummary?.data}
                 calApiKey={agentData?.agent?.calApiKey}
                 callVolume={agentData?.callSummary?.totalCalls}

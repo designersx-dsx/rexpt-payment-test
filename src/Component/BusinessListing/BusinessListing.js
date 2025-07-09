@@ -46,6 +46,7 @@ const BusinessListing = forwardRef(
     const agentCode = sessionStorage.getItem("AgentCode");
     const navigate = useNavigate();
     const EditingMode1 = localStorage.getItem("UpdationMode");
+    const [selectedCountry, setSelectedCountry] = useState("us");
     const setHasFetched = true;
     const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "BusinessListing",
@@ -99,8 +100,10 @@ const BusinessListing = forwardRef(
           break;
         case "phone":
         case "internationalPhone":
-          setPhoneNumber(value);
+          const formattedPhone = value.startsWith("+") ? value : `+${value}`;
+          setPhoneNumber(formattedPhone);
           break;
+
         case "address":
           setAddress(value);
           break;
@@ -123,6 +126,17 @@ const BusinessListing = forwardRef(
     const handleSubmit = async (e) => {
       try {
         setLoading(true);
+        const phoneNumberObj = parsePhoneNumberFromString(
+          phoneNumber,
+          selectedCountry
+        );
+
+        if (!phoneNumberObj || !phoneNumberObj.isValid()) {
+          setLoading(false);
+          alert("Please enter a valid phone number.");
+          return;
+        }
+
         const aboutBusinessForm = JSON.parse(
           sessionStorage.getItem("aboutBusinessForm") || "{}"
         );
@@ -352,67 +366,75 @@ const BusinessListing = forwardRef(
     const EditingMode = localStorage.getItem("UpdationMode");
     //Using Error Handling
     useImperativeHandle(ref, () => ({
-  validate: () => {
-    let hasError = false;
+      validate: () => {
+        let hasError = false;
 
-    if (!businessName.trim()) {
-      hasError = true;
-      onValidationError?.({
-        type: "failed",
-        message: "Please enter the business name.",
-      });
-    } else if (containsEmoji(businessName)) {
-      hasError = true;
-      onValidationError?.({
-        type: "failed",
-        message: "Business name cannot contain special characters or emojis.",
-      });
-    } else if (!address.trim()) {
-      hasError = true;
-      onValidationError?.({
-        type: "failed",
-        message: "Please enter the business address.",
-      });
-    } else if (containsEmoji(address)) {
-      hasError = true;
-      onValidationError?.({
-        type: "failed",
-        message: "Address cannot contain emojis.",
-      });
-    } else if (!phoneNumber.trim()) {
-      hasError = true;
-      onValidationError?.({
-        type: "failed",
-        message: "Please enter a valid phone number.",
-      });
-    } else if (containsSpecialChars(phoneNumber) || containsEmoji(phoneNumber)) {
-      hasError = true;
-      onValidationError?.({
-        type: "failed",
-        message: "Phone number cannot contain special characters or emojis.",
-      });
-    } else if (email.trim() && !isValidEmail(email)) {
-      hasError = true;
-      onValidationError?.({
-        type: "failed",
-        message: "Please enter a valid email address.",
-      });
-    } else if (aboutBussiness.trim() &&
-      (containsSpecialChars(aboutBussiness) || containsEmoji(aboutBussiness))) {
-      hasError = true;
-      onValidationError?.({
-        type: "failed",
-        message: "About Business cannot contain special characters or emojis.",
-      });
-    }
+        if (!businessName.trim()) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message: "Please enter the business name.",
+          });
+        } else if (containsEmoji(businessName)) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message:
+              "Business name cannot contain special characters or emojis.",
+          });
+        } else if (!address.trim()) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message: "Please enter the business address.",
+          });
+        } else if (containsEmoji(address)) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message: "Address cannot contain emojis.",
+          });
+        } else if (!phoneNumber.trim()) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message: "Please enter a valid phone number.",
+          });
+        } else if (
+          containsSpecialChars(phoneNumber) ||
+          containsEmoji(phoneNumber)
+        ) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message:
+              "Phone number cannot contain special characters or emojis.",
+          });
+        } else if (email.trim() && !isValidEmail(email)) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message: "Please enter a valid email address.",
+          });
+        } else if (
+          aboutBussiness.trim() &&
+          (containsSpecialChars(aboutBussiness) ||
+            containsEmoji(aboutBussiness))
+        ) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message:
+              "About Business cannot contain special characters or emojis.",
+          });
+        }
 
-    return !hasError;
-  },
-  save: async () => {
-    handleSubmit();
-  },
-}));
-
+        return !hasError;
+      },
+      save: async () => {
+        handleSubmit();
+      },
+    }));
 
     return (
       <div className={styles.container}>
@@ -439,26 +461,31 @@ const BusinessListing = forwardRef(
                 />{" "}
               </div>
 
-
               <div className={styles.formGroup}>
                 <label>
                   Phone Number <span className={styles.requiredStar1}>*</span>
                 </label>
-                <input
-                  type="text"
+                <PhoneInput
+                  country={selectedCountry}
                   value={phoneNumber}
-                  maxLength={15}
-                  minLength={8}
-                  onChange={(e) => {
-                    const raw = e.target.value;
-                    const cleaned = raw.replace(/[^0-9+\s]/g, "");
-                    handleInputChange("phone", cleaned);
+                  onChange={(phone, countryData) => {
+                    const fullPhone = phone.startsWith("+")
+                      ? phone
+                      : `+${phone}`;
+                    setPhoneNumber(fullPhone);
+                    setSelectedCountry(countryData?.countryCode || "us");
+                    handleInputChange("phone", fullPhone);
                   }}
-                  placeholder="88XX 77X 6XX"
+                  inputStyle={{
+                    width: "100%",
+                    height: "40px",
+                    paddingLeft: "45px",
+                    borderRadius: "5px",
+                  }}
+                  placeholder="+1 (123)456-7890"
                   required
                 />
               </div>
-
 
               <div className={styles.formGroup}>
                 <label>
@@ -483,7 +510,6 @@ const BusinessListing = forwardRef(
                 />
               </div>
 
-
               <div className={styles.formGroup}>
                 <label>About My Business</label>
                 <textarea
@@ -496,8 +522,7 @@ const BusinessListing = forwardRef(
                 />
               </div>
 
-
-            {/* <div className={styles.fixedBtn}>
+              {/* <div className={styles.fixedBtn}>
             <button
               type="submit"
               className={styles.btnTheme}
@@ -507,7 +532,7 @@ const BusinessListing = forwardRef(
               <p  className="subBtn">{loading ? <>Saving &nbsp; <Loader size={18} /></> : "Submit"}</p>
             </button>
           </div> */}
-          </div>
+            </div>
           </div>
         </form>
         {showPopup && (
