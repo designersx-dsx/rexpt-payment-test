@@ -3,16 +3,61 @@ import styles from "../TooltipSteps/Tooltip.module.css";
 
 const Tooltip = ({ content }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState("top"); // default top
+  const [tooltipPosition, setTooltipPosition] = useState("top");
   const iconRef = useRef(null);
   const tooltipRef = useRef(null);
 
-  const images = [
-    "/svg/informtion-icon.svg",
-    "/svg/informtion-icon 2.svg"
-  ];
+  const images = ["/svg/informtion-icon.svg", "/svg/informtion-icon 2.svg"];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+  if (!showTooltip) return;
+
+  const calculateContentLength = () => {
+    if (typeof content === "string") return content.length;
+
+    if (typeof content === "object" && content?.props?.children) {
+      const children = content.props.children;
+      if (typeof children === "string") return children.length;
+      if (Array.isArray(children)) {
+        return children.reduce((acc, child) => {
+          if (typeof child === "string") return acc + child.length;
+          if (typeof child === "object" && child?.props?.children) {
+            if (typeof child.props.children === "string") {
+              return acc + child.props.children.length;
+            }
+          }
+          return acc;
+        }, 0);
+      }
+    }
+
+    return 0;
+  };
+
+  const handlePositioning = () => {
+    const rect = iconRef.current?.getBoundingClientRect();
+    const spaceAbove = rect?.top || 0;
+    const spaceBelow = window.innerHeight - (rect?.bottom || 0);
+
+    const contentLength = calculateContentLength();
+
+    if (contentLength > 200 || (spaceAbove < 90 && spaceBelow > 90)) {
+      setTooltipPosition("bottom");
+    } else {
+      setTooltipPosition("top");
+    }
+  };
+
+  handlePositioning(); // run once on open
+  window.addEventListener("scroll", handlePositioning, true); // attach scroll listener
+
+  return () => {
+    window.removeEventListener("scroll", handlePositioning, true);
+  };
+}, [showTooltip, content]);
+
 
   // Auto-change icon
   useEffect(() => {
@@ -28,34 +73,30 @@ const Tooltip = ({ content }) => {
 
     return () => clearInterval(interval);
   }, [showTooltip]);
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (!iconRef.current) return;
 
-  // Handle tooltip position on scroll ONLY after open
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!iconRef.current) return;
+  //     const rect = iconRef.current.getBoundingClientRect();
+  //     const spaceAbove = rect.top;
+  //     const spaceBelow = window.innerHeight - rect.bottom;
+  //     if (spaceAbove < 90 && spaceBelow > 90) {
+  //       setTooltipPosition("bottom");
+  //     } else {
+  //       setTooltipPosition("top");
+  //     }
+  //   };
 
-      const rect = iconRef.current.getBoundingClientRect();
-      const spaceAbove = rect.top;
-      const spaceBelow = window.innerHeight - rect.bottom;
+  //   if (showTooltip) {
+  //     window.addEventListener("scroll", handleScroll, true);
+  //     // Run once on open
+  //     handleScroll();
+  //   }
 
-      // Shift to bottom only if not enough space above
-      if (spaceAbove < 90 && spaceBelow > 90) {
-        setTooltipPosition("bottom");
-      } else {
-        setTooltipPosition("top"); // stay top if enough space
-      }
-    };
-
-    if (showTooltip) {
-      window.addEventListener("scroll", handleScroll, true);
-      // Run once on open
-      handleScroll();
-    }
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll, true);
-    };
-  }, [showTooltip]);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll, true);
+  //   };
+  // }, [showTooltip]);
 
   const handleClickOutside = (event) => {
     if (
@@ -78,24 +119,31 @@ const Tooltip = ({ content }) => {
 
   return (
     <div className={styles.tooltipWrapper}>
-      <div className={styles.tooltipIcon} onClick={handleIconClick} ref={iconRef}>
+      <div
+        className={styles.tooltipIcon}
+        onClick={handleIconClick}
+        ref={iconRef}
+      >
         {showTooltip && (
           <div
-            className={`${styles.tooltipBox} ${tooltipPosition === "bottom" ? styles.bottom : styles.top
-              }`}
+            className={`${styles.tooltipBox} ${
+              tooltipPosition === "bottom" ? styles.bottom : styles.top
+            }`}
             ref={tooltipRef}
           >
-            <p className={styles.tooltipTitle}>
-               {content}
-            </p>
+            <p className={styles.tooltipTitle}>{content}</p>
             <div
-              className={`${styles.bubbleGroup} ${tooltipPosition === "bottom" ? styles.bubbleTop : styles.bubbleBottom
-                }`}
+              className={`${styles.bubbleGroup} ${
+                tooltipPosition === "bottom"
+                  ? styles.bubbleTop
+                  : styles.bubbleBottom
+              }`}
             >
               <div className={styles.bigBubble}></div>
               <div
-                className={`${styles.smallBubble} ${tooltipPosition === "bottom" ? styles.bottomDot : ""
-                  }`}
+                className={`${styles.smallBubble} ${
+                  tooltipPosition === "bottom" ? styles.bottomDot : ""
+                }`}
               />
             </div>
           </div>

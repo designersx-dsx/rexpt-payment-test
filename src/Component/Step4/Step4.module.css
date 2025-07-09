@@ -53,11 +53,6 @@
   align-items: center;
   gap: 10px;
 }
-
-.radio {
-  /* display: none; */
-}
-
 .customRadio {
   width: 20px;
   height: 20px;
