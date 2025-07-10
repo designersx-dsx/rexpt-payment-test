@@ -96,7 +96,6 @@ export const listAgents = async () => {
 export const countAgentsbyUserId = async (userId) => {
   try {
     const res = await api.get(`${API_BASE_URL}/agent/listAgents?userId=${userId}`);
-    console.log('res', res)
     return res.data.length || 0;
   } catch (error) {
     console.error("Error fetching agent count:", error);
