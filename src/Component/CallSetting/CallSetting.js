@@ -63,15 +63,14 @@ export default function CallSetting() {
       const agent = agents.find(
         (agent) => `${agent.agentName}-${agent.agentCode}` === selectedAgent
       );
-      if (agent) {
-        const kb_data = JSON.parse(agent?.business?.knowledge_base_texts || "{}");
-        console.log(kb_data, "kb_data in call setting");
-        setSettings((prev) => ({
-          ...prev,
-          phoneNumber: kb_data?.phone || "",
-          selectedCountry: agent?.country || "us",
-        }));
-      }
+      // if (agent) {
+      //   const kb_data = agent?.business?.knowledge_base_texts || "{}";
+      //   setSettings((prev) => ({
+      //     ...prev,
+      //     phoneNumber: kb_data?.phone || "",
+      //     selectedCountry: agent?.country || "us",
+      //   }));
+      // }
     }
   }, [agents, selectedAgent, setHasFetched]);
 
