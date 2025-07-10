@@ -111,6 +111,10 @@ const AgentDashboard = () => {
   const [calapiloading, setCalapiloading] = useState(false);
   const [isApiKeySubmitted, setIsApiKeySubmitted] = useState(false);
   const [meetingCount, setMeetingCount] = useState(0);
+  const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
+  const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
+  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
 
 
    function formatE164USNumber(number) {
@@ -668,6 +672,21 @@ const AgentDashboard = () => {
     }
   };
   
+    const handleAssignNumberClick = (agent, e) => {
+    e.stopPropagation();
+    if (agent?.isDeactivated === 1) {
+      handleInactiveAgentAlert();
+      return;
+    }
+
+    const planName = agent?.subscription?.plan_name || "Frees";
+    if (!agent.subscriptionId) {
+      openAssignNumberModal();
+    } else {
+      setSelectedAgentForAssign(agent);
+      setIsAssignModalOpen(true);
+    }
+  };
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -789,9 +808,6 @@ const AgentDashboard = () => {
 
                     <div className={styles.agentDetailsFlex}>
                       {
-                        agentData?.agent?.subscriptionId === null ?
-                          <div className={styles.AssignNumText}>
-                          </div> :
                           assignedNumbers?.length > 0 ? (
                             <div className={styles.AssignNumText}>
                               AI Agent Toll Free<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
@@ -799,11 +815,13 @@ const AgentDashboard = () => {
                           ) : (
                             <div
                               className={styles.AssignNum}
-                              onClick={() => {
+                              onClick={(e) => {
                                 if (agentStatus === true) {
                                   handleInactiveAgentAlert();
                                 } else {
-                                  setIsAssignModalOpen(true)
+                                  // setIsAssignModalOpen(true)
+                                  // setIsAssignNumberModalOpen(true);
+                                 handleAssignNumberClick(agentData?.agent, e);
 
                                 }
                               }}
@@ -1659,7 +1677,28 @@ const AgentDashboard = () => {
             onClose={() => setIsAssignModalOpen(false)}
             onCallApi={handleAssignNumber}
           />
-
+            {isAssignNumberModalOpen && (
+                  <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
+                    <div
+                      className={styles.modalContainer}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <h2>Upgrade Required!</h2>
+                      <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
+                      To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
+          
+                      </p>
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        onClick={closeAssignNumberModal}
+                        style={{ width: "100%" }}
+                      >
+                        Got it!
+                      </button>
+                    </div>
+                  </div>
+                )}
+          
           {isAssignNumberModal && (
             <CommingSoon
               show={isAssignNumberModal}
