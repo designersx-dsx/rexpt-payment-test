@@ -193,7 +193,7 @@ const AgentAnalysis = () => {
       <div className={styles.HeaderFlex}>
         <HeaderBar title="Calendar" backgroundColor="#0000" color="#ffff" />
 
-        {agents.length === 1 ? (
+ {agents.length === 1 ? (
           <div className={styles.DateSecT}>
             <p>Agent</p>
             <div className={styles.singleAgentName}>
