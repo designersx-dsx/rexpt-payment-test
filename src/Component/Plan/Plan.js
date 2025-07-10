@@ -132,6 +132,7 @@ const Planss = () => {
     useEffect(() => {
         fetchAgentCountFromUser()
         localStorage.removeItem("allPlans")
+        sessionStorage.removeItem("checkPage")
     }, [])
 
 

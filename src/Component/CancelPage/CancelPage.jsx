@@ -11,14 +11,15 @@ const CancelPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (updatetn) {
-        navigate("/dashboard"); //
+        navigate("/dashboard"); //d
       } else if (token && price) {
         navigate("/plan");
       } else {
         navigate("/plans");
       }
+      
     }, 5000);
-
+    sessionStorage.removeItem("checkPage");
     return () => clearTimeout(timer);
   }, [navigate]);
 
