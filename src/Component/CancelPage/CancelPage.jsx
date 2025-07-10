@@ -17,8 +17,9 @@ const CancelPage = () => {
       } else {
         navigate("/plans");
       }
+      
     }, 5000);
-
+    sessionStorage.removeItem("checkPage");
     return () => clearTimeout(timer);
   }, [navigate]);
 

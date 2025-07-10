@@ -252,6 +252,7 @@ function Dashboard() {
     sessionStorage.removeItem("selectedPlan");
     sessionStorage.removeItem("updateBtn");
     localStorage.removeItem("allPlans");
+    sessionStorage.removeItem("checkPage")
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
