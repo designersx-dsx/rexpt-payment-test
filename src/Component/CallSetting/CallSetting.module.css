@@ -42,7 +42,7 @@
 }
 
 .sliderContainer {
-  margin-bottom: 25px;
+  margin-bottom: 5px;
 }
 
 .sliderLabel {
@@ -57,11 +57,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-      margin: 10px 0 20px 0;
+      /* margin: 10px 0 20px 0; */
 
 }
 
-
+.toggleRow1{
+  margin: 30px 0 0 0;
+}
 
 
 .sliderValue {

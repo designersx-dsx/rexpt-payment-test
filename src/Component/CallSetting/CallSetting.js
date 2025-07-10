@@ -7,6 +7,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "./CallSetting.module.css";
 import ListeningAffirmations from "./ListeningAffirmation";
+import SpeechSetting from "./SpeechSetting"
+import CallSeting1 from "./CallSeting1"
 
 import Footer2 from "../AgentDetails/Footer/Footer2";
 
@@ -39,7 +41,7 @@ export default function CallSetting() {
           id="panel1bh-header"
         >
           <Typography component="span" sx={{ width: "80%" }}>
-            <p className={styles.DropDownHeader}> Speech Setting</p>
+            <p className={styles.DropDownHeader}>Conversational Nods</p>
            
           </Typography>
         </AccordionSummary>
@@ -52,14 +54,13 @@ export default function CallSetting() {
         <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel2bh-header">
           <Typography component="span" sx={{ width: "80%", flexShrink: 0 }}>
             
-             <p className={styles.DropDownHeader}> Ring Duration</p>
+             <p className={styles.DropDownHeader}> Speech Setting</p>
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
-            Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar
-            diam eros in elit. Pellentesque convallis laoreet laoreet.
-          </Typography>
+
+        <SpeechSetting/>
+ 
         </AccordionDetails>
       </Accordion>
 
@@ -67,31 +68,17 @@ export default function CallSetting() {
         <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel3bh-header">
           <Typography component="span" sx={{ width: "80%", flexShrink: 0 }}>
             
-             <p className={styles.DropDownHeader}>Max Call Duration </p>
+             <p className={styles.DropDownHeader}> Call Setting </p>
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas eros,
-            vitae egestas augue. Duis vel est augue.
-          </Typography>
+         
+<CallSeting1/>
+
         </AccordionDetails>
       </Accordion>
 
-      <Accordion className="CallAccordion" expanded={expanded === "panel4"} onChange={handleChange("panel4")}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel4bh-header">
-          <Typography component="span" sx={{ width: "80%", flexShrink: 0 }}>
-            
-             <p className={styles.DropDownHeader}> End Call on Silence</p>
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas eros,
-            vitae egestas augue. Duis vel est augue.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+    
     </div>
 
 
