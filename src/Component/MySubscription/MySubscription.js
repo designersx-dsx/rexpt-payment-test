@@ -65,7 +65,7 @@ const MySubscription = ({agents}) => {
                 </div>
                 <div className={styles.row2}>
                     <span className={styles.label}>Plan Activated</span>
-                    <span className={styles.plan}> {agent?.latestSubscription?.plan_name ? agent?.latestSubscription?.plan_name : "NA"}</span>
+                    <span className={styles.plan}> {agent?.latestSubscription?.plan_name ? agent?.latestSubscription?.plan_name : "Free"}</span>
                 </div>
                 <div className={styles.row2}>
                     <span className={styles.label}>Minutes Remaining</span>
