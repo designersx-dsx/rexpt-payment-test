@@ -46,7 +46,8 @@ import { countAgentsbyUserId } from "../Store/apiStore";
     { name: "Movers & Packers", code: "mov_pac" },
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
-    { name: "Boat Repair & Maintenance", code: "boa_rep" }
+    { name: "Boat Repair & Maintenance", code: "boa_rep" },
+     { name: "Other", code: "Other" }
   ];
   let agentCount=0;
   try {

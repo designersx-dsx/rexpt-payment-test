@@ -12,7 +12,7 @@ import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
 import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
-import { createAgent, listAgents, updateAgent, updateAgentWidgetDomain } from "../../Store/apiStore";
+import { API_BASE_URL, createAgent, listAgents, updateAgent, updateAgentWidgetDomain } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 import { getAgentPrompt } from "../../hooks/useAgentPrompt";
@@ -93,6 +93,15 @@ const Step = () => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
+
+    // Plans
+    const [allPlans, setAllPlans] = useState(() => {
+        const stored = localStorage.getItem("allPlans");
+        return stored ? JSON.parse(stored) : [];
+    });
+    const [selectedPriceId, setSelectedPriceId] = useState(() => {
+        return sessionStorage.getItem("priceId") || "";
+    });
     const location = useLocation()
     const locationPath = location?.state?.locationPath;
     let value = location?.state?.value
@@ -144,11 +153,11 @@ const Step = () => {
     );
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
-    const commaSeparatedServices =   (allServices?.join(", ").replace("Other", "") || "Your Business Services")
-    .split(",")
-    .filter(service => service.trim() !== "")
-    .map(service => `- ${service.trim()}`)
-    .join("\n");
+    const commaSeparatedServices = (allServices?.join(", ").replace("Other", "") || "Your Business Services")
+        .split(",")
+        .filter(service => service.trim() !== "")
+        .map(service => `- ${service.trim()}`)
+        .join("\n");
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
@@ -333,8 +342,8 @@ const Step = () => {
                     agentNote,
                     timeZone
                 });
-        console.log(filledPrompt,"filledPrompt")
-                // return
+            console.log(filledPrompt, "filledPrompt")
+            // return
             // const isValid = step8BRef.current.validate()
             //creation here
             if (localStorage.getItem("UpdationMode") != "ON") {
@@ -520,7 +529,8 @@ const Step = () => {
                                 choices: getLeadTypeChoices()
                             }
                         ],
-                        normalize_for_speech: true
+                        normalize_for_speech: true,
+                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                     };
                     // Create Agent Creation
                     const promptVariablesList = extractPromptVariables(rawPromptTemplate);
@@ -670,6 +680,8 @@ const Step = () => {
                                 choices: ["positive", "neutral", "negative"]
                             }
                         ],
+                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+
                     };
                     // update Agent Creation
                     const agent_id = localStorage.getItem('agent_id')
@@ -999,10 +1011,73 @@ const Step = () => {
         }
     }, []);
     const tooltipContentMap = {
-        0: "Please select the category that best describes your business and indicate its size. This information helps us ensure you get the right tools and insights.",
-        1: "Select the services your business offers, or click Add more Services to include any unique offerings. Understanding your services allows us to personalize your dashboard and recommendations.",
-        3: "Add your Google My Business URL and website link. These links help us deeply understand your business and are used to build a smart knowledge base for your voice agent, ensuring it answers questions accurately.",
-        4: "This section shows your main business details: name, address, phone number, email, and a description of your business. These are important for both your customers and our system. Feel free to add or edit any of these fields to ensure all your information is current and correct.",
+        0: <>
+            <strong style={{
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontSize: '1rem',
+                marginBottom: '15px',
+            }}> Tell Us About Your Business</strong>
+            <br></br>
+            <br></br>
+            <p>To ensure you get the most relevant output from your Virtual Receptionist, please tell us a little about your business. This information helps us personalize your experience and recommend features that best fit your specific needs.</p>
+            <br></br>
+            <ul>
+                <li><strong>1. What best describes your Business Category?</strong></li>
+                <p>Example: Retail, Hospitality, Healthcare, Services, Technology</p>
+                <br></br>
+                <li><strong>2. What is your Business Size?</strong></li>
+                <p>Small Business: (2-50 employees)</p>
+                <p>Medium Business: (51-250 employees)</p>
+                <p>Large Business: (250+ employees)</p>
+            </ul>
+        </>,
+        1: <>
+
+            <p> Please select the services your business provides. Knowing your service offerings helps us recommend the best features for your Virtual Receptionist and personalize your experience. Don't see your service? Just click "Add More Services."</p>
+            <br></br>
+            <ul>
+                <li><strong>Example:</strong> For a restaurant, you might select services like "Table Reservations," "Takeout Orders," and "Menu Inquiries."</li>
+            </ul>
+        </>,
+        3: <>
+            <strong
+                style={{
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    marginBottom: '15px',
+                }}> Enhance Your Voice Agent's Knowledge</strong>
+            <br></br>
+            <br></br>
+            <p>Please add your Google My Business URL and website link. These public listings help us deeply understand your business, allowing us to build a smart knowledge base for your Virtual Receptionist, so it can answer customer questions accurately.</p>
+            <br></br>
+            <ul>
+                <li><strong>1. Google My Business URL:</strong> Simply type your business name and select it from the results shown.</li>
+                <li><strong>2. Website:</strong> https://www.yourwebsite.com</li>
+            </ul>
+            <br></br>
+            <p>If you don't have a Google My Business listing or a website, simply click "I do not have Google My Business or Website."</p>
+        </>,
+        4: <>
+            <strong
+                style={{
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    marginBottom: '15px',
+                }}> Review Your Business Information</strong>
+            <br></br>
+            <br></br>
+            <p>This screen provides a centralized view of your essential business details: your Business Name, Address, Phone Number, and Email, along with a space for your Business Description.</p>
+            <br></br>
+            <ol>
+                <li>We've either pre-filled this information directly from your Google My Business listing, or if you don't have one, these fields will be ready for your input.</li>
+                <li>You have the flexibility to add or edit any of these fields as needed.</li>
+                <li>Please ensure these details are current and correct. Accurate information helps your Virtual Receptionist agent provide precise answers and ensures your customers can easily connect with you.</li>
+                <li>Don't worry if you don't have everything ready! Your Business Email and "About your business" description are optional and can be completed at your convenience.</li>
+            </ol>
+        </>,
         5: "This is the main language your agent will use for all its interactions. Choosing the correct language ensures the best communication experience. We Support 25+ Languages.",
         6: "Select the gender you prefer for your AI agent, then listen to the available voice options to pick the one that best represents your business.",
         7: "Pick an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
@@ -1447,6 +1522,32 @@ const Step = () => {
                     }
 
                 </div>
+
+                {currentStep === 7 && allPlans.length > 0 && (
+                    <div className={styles.PlansSelectDrop}>
+                        <select
+                            name="plans"
+                            id="plans"
+                            value={selectedPriceId}
+                            onChange={(e) => {
+                                const newPriceId = e.target.value;
+                                setSelectedPriceId(newPriceId);
+                                sessionStorage.setItem("priceId", newPriceId);
+                                const selectedPlan = allPlans.find(plan => plan.priceId === newPriceId);
+                                if (selectedPlan) {
+                                    sessionStorage.setItem("selectedPlan", selectedPlan.title);
+                                }
+                            }}
+
+                        >
+                            {allPlans.map((plan, index) => (
+                                <option key={index} value={plan.priceId}>
+                                    {plan.title}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 {/* //Button */}
                 {currentStep === 7 ? <button className={styles.navBtn} onClick={handleSubmit}>
                     {

@@ -19,7 +19,6 @@ const Planss = () => {
     const [expandedPlans, setExpandedPlans] = useState({});
     const [toggleStates, setToggleStates] = useState({}); // { planId: true/false }
     const [products, setProducts] = useState([]);
-    console.log("products", products)
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [userCurrency, setUserCurrency] = useState("usd");
@@ -83,7 +82,7 @@ const Planss = () => {
     const mapCountryToCurrency = (countryCode) => {
 
         const countryCurrencyMap = {
-            // IN: 'inr',
+            IN: 'inr',
             US: 'usd',
             CA: 'cad',
             AU: 'aud',
@@ -132,6 +131,7 @@ const Planss = () => {
     }
     useEffect(() => {
         fetchAgentCountFromUser()
+        localStorage.removeItem("allPlans")
     }, [])
 
 
@@ -215,6 +215,8 @@ const Planss = () => {
                         };
                     });
 
+                    
+
                     return {
                         ...product,
                         title: product.name || `Plan`,
@@ -266,15 +268,37 @@ const Planss = () => {
                     toggleInit[plan.id] = false; // monthly by default
                 });
 
+                const finalPlans = enrichedPlans.reverse()
+
                 setToggleStates(toggleInit);
-                setProducts(enrichedPlans.reverse()); // no .reverse()
+                setProducts(finalPlans); // no .reverse()
                 setLoading(false);
+
+                // ✅ Preselect saved plan name (e.g., "Growth")
+                const savedPlanName = sessionStorage.getItem("selectedPlan");
+                if (savedPlanName) {
+                    const matchingIndex = finalPlans.findIndex(plan => plan.title.toLowerCase() === savedPlanName.toLowerCase());
+
+                    if (matchingIndex >= 0) {
+                        setActiveIndex(matchingIndex);
+                        setTimeout(() => {
+                            sliderRef.current?.slickGoTo(matchingIndex);
+                        }, 100); // Ensure slider is ready
+                    }
+
+                    // Optional: remove it after selection
+                    // sessionStorage.removeItem("selectedPlan");
+                }
             })
             .catch(() => {
                 setError("Failed to load plans.");
                 setLoading(false);
             });
     }, [userCurrency]);
+
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('en-IN').format(price);
+    };
 
 
     if (loading)
@@ -315,7 +339,10 @@ const Planss = () => {
                 </label> : null}
 
             </div>
-
+            <div className={styles.sectionPart}>
+                <h2>Subscriptions Plans </h2>
+                <p>Choose a suitable plan for your agent & business case</p>
+            </div>
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {
@@ -352,7 +379,7 @@ const Planss = () => {
                                                     <div className={styles.pricdec}>
                                                         <p className={styles.subPrice}>
                                                             {yearlyPrice
-                                                                ? `${yearlySymbol}${(yearlyPrice.unit_amount / 100 / 12).toFixed(0)}/m`
+                                                                ? `${yearlySymbol}${formatPrice((yearlyPrice.unit_amount / 100 / 12))}/m`
                                                                 : `${yearlySymbol}0/m`}
                                                         </p>
                                                         <p className={styles.billedText}>{plan.billedText}</p>
@@ -365,7 +392,7 @@ const Planss = () => {
                                             <p className={styles.mainPrice}>
                                                 <b className={styles.doolor}>
                                                     {monthlyPrice
-                                                        ? `${currencySymbol}${(monthlyPrice.unit_amount / 100).toFixed(0)}`
+                                                        ? `${currencySymbol}${formatPrice((monthlyPrice.unit_amount / 100))}`
                                                         : `${currencySymbol}0`}
                                                 </b>
                                                 /month per agent
@@ -421,14 +448,14 @@ const Planss = () => {
                                                 type="checkbox"
                                                 checked={toggleStates[plan.id]}
                                                 onChange={(e) => {
-  const isYearly = e.target.checked;
-  const newState = {};
-  products.forEach((p) => {
-    newState[p.id] = false; // default to Monthly
-  });
-  newState[plan.id] = isYearly; // only current one is Yearly if checked
-  setToggleStates(newState);
-}}
+                                                    const isYearly = e.target.checked;
+                                                    const newState = {};
+                                                    products.forEach((p) => {
+                                                        newState[p.id] = false; // default to Monthly
+                                                    });
+                                                    newState[plan.id] = isYearly; // only current one is Yearly if checked
+                                                    setToggleStates(newState);
+                                                }}
                                             />
                                             <span className={styles.slider}></span>
                                         </label>
@@ -441,23 +468,38 @@ const Planss = () => {
                                         </span>
                                     </div>
 
-                                    <div className={styles.discount}>
-                                        You saved 17% ($240) compared to monthly billing
-                                    </div>
+                                    {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
+                                        (() => {
+                                            const monthlyTotal = monthlyPrice.unit_amount;
+                                            console.log("monthlyPrice", monthlyPrice)
+                                            const yearlyTotal = yearlyPrice.unit_amount / 12;
+                                            console.log("yearlyTotal", yearlyPrice)
+                                            const savings = monthlyTotal - yearlyTotal;
+                                            const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
+
+                                            return (
+                                                <div className={styles.discount}>
+                                                    You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100))}/month) compared to monthly billing
+                                                </div>
+                                            );
+                                        })()
+                                    )}
                                     <br />
                                     <div className={styles.stickyWrapper}>
                                         <AnimatedButton
                                             label={
                                                 priceForInterval
                                                     ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
-                                                        priceForInterval.unit_amount / 100
-                                                    ).toFixed(2)}/${priceForInterval.interval}`
+                                                        formatPrice(priceForInterval.unit_amount / 100
+                                                    ))}/${priceForInterval.interval}`
                                                     : "Unavailable"
                                             }
                                             position={{ position: "relative" }}
-                                            size="12px"
+                                            size="13px"
                                             onClick={() => {
                                                 if (priceForInterval) {
+                                                    console.log("plan",plan)
+                                                    sessionStorage.setItem("selectedPlan",plan?.name)
 
                                                     if (agentID) {
                                                         navigate(`/checkout`, { state: { priceId: priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
@@ -473,6 +515,24 @@ const Planss = () => {
                                                             nextBillingDate.setFullYear(today.getFullYear() + 1);
                                                         }
 
+                                                        // Extract minutes if found in first feature (e.g., "120 minutes / month")
+                                                        const firstFeature = plan.features[0] || "";
+                                                        const planMinsMatch = firstFeature.match(/(\d+)\s*minutes/i);
+                                                        const planMins = planMinsMatch ? parseInt(planMinsMatch[1], 10) : 0;
+
+                                                        const currentInterval = toggleStates[plan.id] ? "year" : "month";
+
+                                                        // Prepare simplified plan data
+                                                        const allPlans = products.map(p => {
+                                                            const price = p.prices.find(pr => pr.interval === currentInterval);
+                                                            return price ? {
+                                                                title: p.title,
+                                                                priceId: price.id,
+                                                                interval: currentInterval
+                                                            } : null;
+                                                        }).filter(Boolean); // remove nulls (in case some plans lack the interval)
+
+
                                                         const selectedPlanData = {
                                                             priceId: priceForInterval.id,
                                                             agentId: agentID,
@@ -485,10 +545,13 @@ const Planss = () => {
                                                                     : ((priceForInterval.unit_amount / 100) * 12 * 0.95).toFixed(2),
                                                             billingDate: today.toISOString(),
                                                             nextBillingDate: nextBillingDate.toISOString(),
+                                                            planName: plan.title,
+                                                            planMins: planMins
                                                         };
 
                                                         // ✅ Save to localStorage
                                                         localStorage.setItem("selectedPlanData", JSON.stringify(selectedPlanData));
+                                                        localStorage.setItem("allPlans", JSON.stringify(allPlans));
                                                         navigate("/steps", {
                                                             state: {
                                                                 priceId: priceForInterval.id,
@@ -558,10 +621,11 @@ const Planss = () => {
 
                     {products.map((plan, index) => {
                         const isYearly = toggleStates[plan.id];
-                        const interval = isYearly ? "year" : "month";
+                        // const interval = isYearly ? "year" : "month";
+                        const interval = "year"
                         const selectedPrice = plan.prices.find(p => p.interval === interval);
                         const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
-                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100).toFixed(0) : "0";
+                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100 / 12).toFixed(0) : "0";
 
                         return (
                             <div
@@ -579,10 +643,10 @@ const Planss = () => {
                                     onChange={() => setActiveIndex(index)}
                                     className={styles.radiobtn}
                                 />
-                                 {plan.title==="Starter" ?   <img src="/svg/starter-icon.svg" />: null}
-                                 {plan.title==="Scaler" ?   <img src="/svg/scaler-icon.svg" />: null}
-                                 {plan.title==="Growth" ?   <img src="/svg/growth-icon.svg" />: null}
-                                 {plan.title==="Corporate" ?   <img src="/svg/corporate-icon.svg" />: null}
+                                {plan.title === "Starter" ? <img src="/svg/starter-icon.svg" /> : null}
+                                {plan.title === "Scaler" ? <img src="/svg/scaler-icon.svg" /> : null}
+                                {plan.title === "Growth" ? <img src="/svg/growth-icon.svg" /> : null}
+                                {plan.title === "Corporate" ? <img src="/svg/corporate-icon.svg" /> : null}
 
                                 <button
                                     className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""
@@ -590,9 +654,11 @@ const Planss = () => {
                                 >
                                     {plan.title}
                                 </button>
-
-                                <p className={styles.monthPrice}>
-                                    from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
+                                {/* monthPrice */}
+                                <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
+                                    }`}>
+                                    from {symbol}{formatPrice(amount)}/m
+                                    {/* {interval === "year" ? "yr" : "m"} */}
                                 </p>
                             </div>
                         );

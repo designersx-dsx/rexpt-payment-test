@@ -3,8 +3,7 @@ import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import Plan from "../Plan/Plan";
 import { useNavigate, useLocation, Await } from "react-router-dom";
-import dayjs from 'dayjs';
-
+import dayjs from "dayjs";
 
 import {
   deleteAgent,
@@ -40,7 +39,6 @@ import Modal3 from "../Modal3/Modal3";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 
 import axios from "axios";
-
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -129,15 +127,17 @@ function Dashboard() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
 
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
-  const [agentToCancel, setAgentToCancel] = useState(null)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [agentToCancel, setAgentToCancel] = useState(null);
   const [showDashboardReferral, setShowDashboardReferral] = useState("");
   const [showreferralfloating, setShowreferralfloating] = useState(
     localStorage.getItem("showreferralfloating") || "true"
   );
   const [copied, setCopied] = useState(false);
-  const [userCalApiKey, setUserCalApiKey] = useState(sessionStorage.getItem("userCalApiKey"))
-  const [agentDetailsForCal, setAgentDetailsForCal] = useState([])
+  const [userCalApiKey, setUserCalApiKey] = useState(
+    sessionStorage.getItem("userCalApiKey")
+  );
+  const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
 
@@ -217,6 +217,7 @@ function Dashboard() {
       sessionStorage.removeItem("businessLocation");
       sessionStorage.removeItem("selectedCustomServices");
       sessionStorage.removeItem("bId");
+      
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("UpdationModeStepWise");
       localStorage.removeItem("agentName");
@@ -247,16 +248,17 @@ function Dashboard() {
       sessionStorage.removeItem("agentCode");
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
-
     }
+    sessionStorage.removeItem("selectedPlan");
+    localStorage.removeItem("allPlans");
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
 
-    sessionStorage.setItem('SelectAgentId', agent?.agent_id)
-    sessionStorage.setItem('SelectAgentBusinessId', agent?.businessId)
+    sessionStorage.setItem("SelectAgentId", agent?.agent_id);
+    sessionStorage.setItem("SelectAgentBusinessId", agent?.businessId);
 
     navigate("/agent-detail", {
       state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
@@ -317,8 +319,8 @@ function Dashboard() {
     try {
       const res = await fetchDashboardDetails(userId);
       // console.log(res, "res")
-      setUserCalApiKey(res?.calApiKey)
-      sessionStorage.setItem("userCalApiKey", res?.calApiKey)
+      setUserCalApiKey(res?.calApiKey);
+      sessionStorage.setItem("userCalApiKey", res?.calApiKey);
 
       let agentsWithCalKeys = res.agents || [];
       const calApiAgents = await fetchCalApiKeys(userId);
@@ -345,8 +347,8 @@ function Dashboard() {
     if (!hasFetched || !agents.length) {
       fetchAndMergeCalApiKeys();
     }
-  }, [userId, hasFetched, setDashboardData, setHasFetched   ]);
- 
+  }, [userId, hasFetched, setDashboardData, setHasFetched]);
+
   // Sync local agents with store
   useEffect(() => {
     if (agents && agents.length > 0) {
@@ -357,16 +359,18 @@ function Dashboard() {
 
   // Submit API key for selected agent
   const handleApiKeySubmit = async () => {
-    const agent = agentDetailsForCal
+    const agent = agentDetailsForCal;
     try {
       setCalapiloading(true);
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agent?.agent_id
-        }`,
+        `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agent?.agent_id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ calApiKey: userCalApiKey.trim(), userId: userId }),
+          body: JSON.stringify({
+            calApiKey: userCalApiKey.trim(),
+            userId: userId,
+          }),
         }
       );
 
@@ -390,8 +394,8 @@ function Dashboard() {
 
   // Create Cal event
   const createCalEvent = async () => {
-    const agent = agentDetailsForCal
-    await handleApiKeySubmit()
+    const agent = agentDetailsForCal;
+    await handleApiKeySubmit();
     try {
       setcalloading(true);
       // Call Cal API to create an event
@@ -438,9 +442,8 @@ function Dashboard() {
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
             description: "Checking availability for event booking",
-            timezone: timeZone
-
-          }
+            timezone: timeZone,
+          },
         ],
       };
 
@@ -465,7 +468,7 @@ function Dashboard() {
       // Success
       setPopupType("success");
       setPopupMessage("Your Cal event has been created successfully!");
-      setHasFetched(false)
+      setHasFetched(false);
       setShowCalKeyInfo(false);
       setEventName("");
       setEventSlug("");
@@ -481,7 +484,7 @@ function Dashboard() {
       console.error("Error in createCalEvent:", error);
     } finally {
       setcalloading(false);
-      setIsConfirming(false)
+      setIsConfirming(false);
     }
   };
   const closeModal = () => {
@@ -493,7 +496,6 @@ function Dashboard() {
     setEventCreateMessage("");
     setIsApiKeySubmitted(false);
   };
-  
 
   const toggleDropdown = (e, id) => {
     e.preventDefault();
@@ -543,7 +545,7 @@ function Dashboard() {
     setRetellWebClient(client);
   }, []);
   const handleDelete = async (agent) => {
-    const agent_id = agent?.agent_id
+    const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
     try {
       setdeleteloading(true);
@@ -575,7 +577,6 @@ function Dashboard() {
         throw new Error(`Delete failed: ${deleteError.message}`);
       }
 
-
       const updatedAgents = localAgents.filter(
         (agent) => agent.agent_id !== agentId
       );
@@ -599,29 +600,26 @@ function Dashboard() {
       setdeleteloading(true);
 
       try {
-       let res =  await refundAndCancelSubscriptionAgnetApi(agent_id, mins_left);
-      if(res){
-      setTimeout(()=>{
+        let res = await refundAndCancelSubscriptionAgnetApi(
+          agent_id,
+          mins_left
+        );
+        if (res) {
+          setTimeout(() => {
+            fetchAndMergeCalApiKeys();
+          }, 1000);
 
-          fetchAndMergeCalApiKeys()
-
-      }, 1000)
-         
-       
-
-console.log(res)
-      } 
+          console.log(res);
+        }
       } catch (notifyError) {
         throw new Error(`Refund failed: ${notifyError.message}`);
       }
 
-      const updatedAgents = localAgents.filter(
-        (a) => a.agent_id !== agent_id
-      );
+      const updatedAgents = localAgents.filter((a) => a.agent_id !== agent_id);
       setLocalAgents(updatedAgents);
       setPopupMessage("Subscription Cancelled successfully!");
       setPopupType("success");
-     fetchAndMergeCalApiKeys()
+      fetchAndMergeCalApiKeys();
     } catch (error) {
       setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
       setPopupType("failed");
@@ -646,7 +644,12 @@ console.log(res)
       return;
     }
 
-    if (isStartingRef.current || isCallInProgress || !retellWebClient || !agentDetails) {
+    if (
+      isStartingRef.current ||
+      isCallInProgress ||
+      !retellWebClient ||
+      !agentDetails
+    ) {
       console.error("RetellWebClient or agent details not ready.");
       return;
     }
@@ -694,13 +697,16 @@ console.log(res)
         const response = await retellWebClient.stopCall();
         const payload = { agentId: agentDetails.agent_id, callId: callId };
         if (isCallInProgress && callId) {
-          const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
+          // const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
           setIsCallInProgress(false);
         }
       } catch (err) {
         console.error("Error ending call:", err);
       } finally {
-        setHasFetched(false);
+        setTimeout(() => {
+          setHasFetched(false);
+        }, 2000);
+
         setIsCallInProgress(false);
         isEndingRef.current = false;
       }
@@ -754,16 +760,15 @@ console.log(res)
     // navigate("/business-details", {
     //   state: { agentId: ag.agent_id, bussinesId: ag.businessId },
     // });
-    sessionStorage.setItem('naviateFrom', 'dashboard')
-    sessionStorage.setItem('SelectAgentBusinessId', ag?.businessId)
-    sessionStorage.setItem('SelectAgentId', ag?.agent_id)
-    navigate('/edit-agent', {
+    sessionStorage.setItem("naviateFrom", "dashboard");
+    sessionStorage.setItem("SelectAgentBusinessId", ag?.businessId);
+    sessionStorage.setItem("SelectAgentId", ag?.agent_id);
+    navigate("/edit-agent", {
       state: {
         agentId: ag?.agent_id,
         businessId: ag?.businessId,
       },
     });
-
   };
 
   const handleRefresh = () => {
@@ -885,7 +890,6 @@ console.log(res)
   //         //   console.log(error,"Error while deleting delete-knowledge-base")
   //         // }
 
-
   // try {
   //   console.log("Checking if knowledge base exists:", knowledgeBaseId);
 
@@ -923,9 +927,6 @@ console.log(res)
 
   // // ✅ Control will continue here, e.g. pause subscription
   // console.log("Continuing with subscription pause or next steps...");
-
-
-
 
   //         // try {
   //         //   const pauseRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-pause`, {
@@ -1082,14 +1083,13 @@ console.log(res)
   //     }
   //   };
 
-
   const handleDeactivateAgent = async () => {
     try {
       setDeactivateLoading(true);
       const dashboardState = JSON.parse(
         sessionStorage.getItem("dashboard-session-storage")
       );
-// fdf
+      // fdf
       const agentData = dashboardState?.state?.agents?.find(
         (ag) => ag.agent_id === agentToDeactivate.agent_id
       );
@@ -1110,15 +1110,18 @@ console.log(res)
           }
         );
         try {
-          const pauseRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-pause`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              subscriptionId: agentToDeactivate.subscriptionId,
-            }),
-          });
+          const pauseRes = await fetch(
+            `${process.env.REACT_APP_API_BASE_URL}/subscription-pause`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                subscriptionId: agentToDeactivate.subscriptionId,
+              }),
+            }
+          );
 
           if (!pauseRes.ok) {
             const pauseErr = await pauseRes.json();
@@ -1150,7 +1153,11 @@ console.log(res)
         const packageValue = packageMap[packageName] || 1;
 
         // const knowledgeBaseName = `${shortName}_kb_${Date.now()}`;
-        const knowledgeBaseName = await getKnowledgeBaseName(businessDetails, userId, packageValue);
+        const knowledgeBaseName = await getKnowledgeBaseName(
+          businessDetails,
+          userId,
+          packageValue
+        );
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
         const businessData = businessDetails.knowledge_base_texts;
@@ -1233,15 +1240,18 @@ console.log(res)
           }
           // Resume subscription
           try {
-            const resumeRes = await fetch(`${process.env.REACT_APP_API_BASE_URL}/subscription-resume`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                subscriptionId: agentToDeactivate.subscriptionId,
-              }),
-            });
+            const resumeRes = await fetch(
+              `${process.env.REACT_APP_API_BASE_URL}/subscription-resume`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  subscriptionId: agentToDeactivate.subscriptionId,
+                }),
+              }
+            );
 
             if (!resumeRes.ok) {
               const resumeErr = await resumeRes.json();
@@ -1296,23 +1306,20 @@ console.log(res)
   };
 
   const handleUpgradeClick = (agent) => {
-
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
-
 
     navigate("/plan", {
       state: {
         agentID: agent?.agent_id,
         locationPath: locationPath,
-        subscriptionID: agent?.subscriptionId
-      }
-    })
+        subscriptionID: agent?.subscriptionId,
+      },
+    });
   };
 
-  const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
+  const fetchPrevAgentDEtails = async (agent_id, businessId) => {};
   const locationPath = location.pathname;
-
 
   const getUserReferralCode = async () => {
     try {
@@ -1386,47 +1393,63 @@ console.log(res)
     }
   };
   const handleConnectCal = (agent) => {
-    console.log(agent, "agent")
-    navigate("/connect-calender")
-    sessionStorage.setItem("agentDetails", JSON.stringify(agent))
-  }
+    console.log(agent, "agent");
+    navigate("/connect-calender");
+    sessionStorage.setItem("agentDetails", JSON.stringify(agent));
+  };
   const handleCalConnectWithConfirm = async () => {
     try {
-      await createCalEvent();  // event creation logic
+      await createCalEvent(); // event creation logic
     } finally {
       setIsConfirming(false);
-      setPopupMessage3("");   //  Close the popup after confirm logic completes
+      setPopupMessage3(""); //  Close the popup after confirm logic completes
     }
   };
 
   const handleConnectCalApiAlready = (agent) => {
-
-    setAgentDetailsForCal(agent)
+    setAgentDetailsForCal(agent);
     setPopupType3("confirm");
     setPopupMessage3(
       "Your Cal API key is already added. Do you want to continue with this key and automatically create a Cal event?"
     );
-  }
+  };
   const handleClosePopUp3 = async () => {
-
     setPopupMessage3("");
-    console.log(isConfirming, "isConfirming")
+    console.log(isConfirming, "isConfirming");
     if (isConfirming) {
-
       handleConnectCal(agentDetailsForCal);
     }
-  }
+  };
   const checkRecentPageLocation = location.state?.currentLocation;
   useEffect(() => {
     if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
   }, []);
+
+ function formatE164USNumber(number) {
+  const cleaned = number.replace(/\D/g, ""); 
+
+  if (cleaned.length === 11 && cleaned.startsWith("1")) {
+    const country = cleaned[0];
+    const area = cleaned.slice(1, 4);
+    const prefix = cleaned.slice(4, 7);
+    const line = cleaned.slice(7, 11);
+    return `+${country} (${area}) ${prefix}-${line}`;
+  }
+  return number;
+}
+
+
   return (
     <div>
       <div className={styles.forSticky}>
         <header className={styles.header}>
-          <div className={styles.profileSection} ref={profileRef} onClick={handleEditProfile}>
-            <div >
-              <button className={styles.avatarBtn} >
+          <div
+            className={styles.profileSection}
+            ref={profileRef}
+            onClick={handleEditProfile}
+          >
+            <div>
+              <button className={styles.avatarBtn}>
                 <img
                   src={
                     user?.profile ||
@@ -1448,7 +1471,6 @@ console.log(res)
                 {formatName(user?.name) || "John Vick"}
               </h2>
             </div>
-
           </div>
           <div className={styles.notifiMain}>
             <div
@@ -1515,8 +1537,9 @@ console.log(res)
         <section className={styles.agentCard}>
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2
-              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
-                }`}
+              className={`${styles.agentHeading} ${
+                isSmallFont ? styles.smallFont : ""
+              }`}
             >
               {totalCalls || 0}
             </h2>
@@ -1527,8 +1550,9 @@ console.log(res)
 
           <div className={styles.agentInfo2} onClick={handleCalender}>
             <h2
-              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
-                }`}
+              className={`${styles.agentHeading} ${
+                isSmallFont ? styles.smallFont : ""
+              }`}
             >
               {bookingCount}
             </h2>
@@ -1716,21 +1740,22 @@ console.log(res)
                           ? "Activate Agent"
                           : "Deactivate Agent"}
                       </div>
-                      {agent?.subscription && agent?.subscription?.plan_name?.toLowerCase() !== "free" && (
-                        <div>
-                          <div
-                            className={styles.OptionItem}
-                            onMouseDown={(e) => {
-                              e.stopPropagation();
-                              setAgentToCancel(agent);
-                              setShowCancelConfirm(true);
-                            }}
-                          >
-                            Cancel Subscription
+                      {agent?.subscription &&
+                        agent?.subscription?.plan_name?.toLowerCase() !==
+                          "free" && (
+                          <div>
+                            <div
+                              className={styles.OptionItem}
+                              onMouseDown={(e) => {
+                                e.stopPropagation();
+                                setAgentToCancel(agent);
+                                setShowCancelConfirm(true);
+                              }}
+                            >
+                              Cancel Subscription
+                            </div>
                           </div>
-                        </div>
-                      )}
-
+                        )}
                     </div>
                   )}
                 </div>
@@ -1743,8 +1768,8 @@ console.log(res)
                   <strong>
                     {formatBusinessName(
                       agent?.business?.businessName ||
-                      agent?.business?.knowledge_base_texts?.name ||
-                      agent?.business?.googleBusinessName
+                        agent?.business?.knowledge_base_texts?.name ||
+                        agent?.business?.googleBusinessName
                     )}
                   </strong>
                 </p>
@@ -1759,9 +1784,7 @@ console.log(res)
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-
-                          handleConnectCal(agent)
-
+                          handleConnectCal(agent);
                         }
                       }}
                     />
@@ -1776,10 +1799,9 @@ console.log(res)
                           handleInactiveAgentAlert();
                         } else {
                           if (userCalApiKey) {
-                            handleConnectCalApiAlready(agent)
-                          }
-                          else {
-                            handleConnectCal(agent)
+                            handleConnectCalApiAlready(agent);
+                          } else {
+                            handleConnectCal(agent);
                           }
                         }
                       }}
@@ -1790,16 +1812,12 @@ console.log(res)
               </div>
 
               <div className={styles.LangButton}>
-                { agent?.subscriptionId === null ?
-                  <div className={styles.AssignNumText}>
-                  </div> 
-                  :
-                assignedNumbers.length > 0 ? (
+                { assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
                     Assigned Number
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
-                      {assignedNumbers.join(", ")}
+                     {assignedNumbers.map(formatE164USNumber).join(", ")}
                     </p>
                   </div>
                 ) : (
@@ -2124,81 +2142,116 @@ console.log(res)
           </div>
         )}
 
-        {showCancelConfirm && agentToCancel && (() => {
-          const totalMins = agentToCancel?.subscription?.totalMinutes || 0;
-          const minsLeft = agentToCancel?.mins_left || 0;
-          const plan_mins = totalMins;
-          const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
-          const current_period_start = agentToCancel?.subscription?.current_period_start;
-          const current_period_end = agentToCancel?.subscription?.current_period_end;
-          const subscriptionAgeDays = dayjs().diff(dayjs(current_period_start), 'day');
+        {showCancelConfirm &&
+          agentToCancel &&
+          (() => {
+            const totalMins = agentToCancel?.subscription?.totalMinutes || 0;
+            const minsLeft = agentToCancel?.mins_left || 0;
+            const plan_mins = totalMins;
+            const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
+            const current_period_start =
+              agentToCancel?.subscription?.current_period_start;
+            const current_period_end =
+              agentToCancel?.subscription?.current_period_end;
+            const subscriptionAgeDays = dayjs().diff(
+              dayjs(current_period_start),
+              "day"
+            );
 
-          const isRefundEligible = usedPercentage < 5 && subscriptionAgeDays <= 2;
+            const isRefundEligible =
+              usedPercentage < 5 && subscriptionAgeDays <= 2;
 
-          return (
-            <div className={styles.modalBackdrop} onClick={() => setShowCancelConfirm(false)}>
-              <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
-                <h2>Are you sure?</h2>
-                <p>
-                  {isRefundEligible ? (
-                    <>
-                      Since you're canceling within 2 days of purchasing and have used less than 5% of your minutes, you're eligible for a refund! We'll process a refund of your subscription amount, minus a 3% payment gateway fee, back to your original payment method. You should see it in your account within 5-7 business days.
-                    </>
-                  ) : (
-                    <>
-                      It's been more than 2 days since your subscription started, or you've used a significant portion of your minutes. Due to our cancellation & refund policy, you're not eligible for a refund. Your subscription will be canceled on <strong>{dayjs(current_period_end).format('MMMM D, YYYY')}</strong>, and you can continue to use all features until then.
-                    </>
-                  )}
-                </p>
+            return (
+              <div
+                className={styles.modalBackdrop}
+                onClick={() => setShowCancelConfirm(false)}
+              >
+                <div
+                  className={styles.modalContainer}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h2>Are you sure?</h2>
+                  <p>
+                    {isRefundEligible ? (
+                      <>
+                        Since you're canceling within 2 days of purchasing and
+                        have used less than 5% of your minutes, you're eligible
+                        for a refund! We'll process a refund of your
+                        subscription amount, minus a 3% payment gateway fee,
+                        back to your original payment method. You should see it
+                        in your account within 5-7 business days.
+                      </>
+                    ) : (
+                      <>
+                        It's been more than 2 days since your subscription
+                        started, or you've used a significant portion of your
+                        minutes. Due to our cancellation & refund policy, you're
+                        not eligible for a refund. Your subscription will be
+                        canceled on{" "}
+                        <strong>
+                          {dayjs(current_period_end).format("MMMM D, YYYY")}
+                        </strong>
+                        , and you can continue to use all features until then.
+                      </>
+                    )}
+                  </p>
 
-                <p style={{ marginTop: '16px' }}>
-                  Are you sure you want to cancel?
-                </p>
+                  <p style={{ marginTop: "16px" }}>
+                    Are you sure you want to cancel?
+                  </p>
 
-                <div className={styles.modalButtons}>
-                  <button
-                    className={`${styles.modalButton} ${styles.cancel}`}
-                    onClick={() => setShowCancelConfirm(false)}
-                  >
-                    No
-                  </button>
-                  {deleteloading ? (
+                  <div className={styles.modalButtons}>
                     <button
-                      className={`${styles.modalButton} ${styles.submit}`}
-                      style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                      className={`${styles.modalButton} ${styles.cancel}`}
+                      onClick={() => setShowCancelConfirm(false)}
                     >
-                      Cancelling <Loader size={18} />
+                      No
                     </button>
-                  ) : (
-                    <button
-                      className={`${styles.modalButton} ${styles.submit}`}
-                      onClick={async () => {
-                        try {
-                          await handleCancelSubscription(agentToCancel);
-                          setShowCancelConfirm(false);
-                          setAgentToCancel(null);
-                        } catch (error) {
-                          setPopupMessage(
-                            `Failed to Cancel subscription: ${error.message}`
-                          );
-                          setPopupType("failed");
-                          setShowCancelConfirm(false);
-                        }
-                      }}
-                    >
-                      Yes
-                    </button>
-                  )}
+                    {deleteloading ? (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Cancelling <Loader size={18} />
+                      </button>
+                    ) : (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        onClick={async () => {
+                          try {
+                            await handleCancelSubscription(agentToCancel);
+                            setShowCancelConfirm(false);
+                            setAgentToCancel(null);
+                          } catch (error) {
+                            setPopupMessage(
+                              `Failed to Cancel subscription: ${error.message}`
+                            );
+                            setPopupType("failed");
+                            setShowCancelConfirm(false);
+                          }
+                        }}
+                      >
+                        Yes
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })()}
-
+            );
+          })()}
 
         {/* Call Test Modal */}
         {openCallModal && (
-          <Modal3 isOpen={openCallModal} onClose={handleCloseCallModal} isEndingRef={isEndingRef} isCallInProgress={isCallInProgress}>
+          <Modal3
+            isOpen={openCallModal}
+            onClose={handleCloseCallModal}
+            isEndingRef={isEndingRef}
+            isCallInProgress={isCallInProgress}
+          >
             <CallTest
               isCallActive={isCallActive}
               onStartCall={handleStartCall}
@@ -2232,10 +2285,10 @@ console.log(res)
             className={styles.modalContainer}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>Coming Soon!</h2>
+            <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-              Our exciting plans will be available shortly. You'll be able to
-              select the best one to suit your needs!
+            To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
+
             </p>
             <button
               className={`${styles.modalButton} ${styles.submit}`}
@@ -2267,10 +2320,9 @@ console.log(res)
                 : "Deactivate Agent"}
             </h2>
             <p>
-          {agentToDeactivate?.isDeactivated === 1
-  ? 'Are you sure you want to activate this agent?'
-  : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."
-}
+              {agentToDeactivate?.isDeactivated === 1
+                ? "Are you sure you want to activate this agent?"
+                : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."}
               <strong>
                 {agentToDeactivate?.isDeactivated === 1
                   ? "activate"
@@ -2284,10 +2336,7 @@ console.log(res)
                 className={`${styles.modalButton} ${styles.cancel}`}
                 onClick={() => setShowDeactivateConfirm(false)}
               >
-                {agentToDeactivate?.isDeactivated === 1
-  ? "No"
-  : "Keep Active"
-}
+                {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
               </button>
               <button
                 className={`${styles.modalButton} ${styles.submit}`}
@@ -2304,12 +2353,11 @@ console.log(res)
                     Updating <Loader size={18} />
                   </span>
                 ) : (
-                 <>
-                 {agentToDeactivate?.isDeactivated === 1
-  ? 'Yes'
-  : "Yes, Pause"
-}
-                 </> 
+                  <>
+                    {agentToDeactivate?.isDeactivated === 1
+                      ? "Yes"
+                      : "Yes, Pause"}
+                  </>
                 )}
               </button>
             </div>
@@ -2331,9 +2379,14 @@ console.log(res)
           <div className={styles.Cross} onClick={showConfirmFloatingClose}>
             x
           </div>
-          <div className={styles.imageWrapper} onClick={() => setIsModalOpen(true)}>
+          <div
+            className={styles.imageWrapper}
+            onClick={() => setIsModalOpen(true)}
+          >
             <img src="/svg/floating-svg2.svg" alt="floating-svg" />
-            <p className={styles.imageLabel}>10<span className={styles.percentag}>%</span></p>
+            <p className={styles.imageLabel}>
+              10<span className={styles.percentag}>%</span>
+            </p>
           </div>
         </div>
       )}
@@ -2401,12 +2454,15 @@ console.log(res)
             {/* <AnimatedButton label = 'Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)}/> */}
             <div
               className={styles.btnTheme}
-            // onClick={async () => shareReferralLink(showDashboardReferral)}
+              // onClick={async () => shareReferralLink(showDashboardReferral)}
             >
               <div className={styles.imageWrapper}>
                 <img src="svg/svg-theme2.svg" alt="" />
               </div>
-              <AnimatedButton label='Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)} />
+              <AnimatedButton
+                label="Share Referral Link"
+                onClick={async () => shareReferralLink(showDashboardReferral)}
+              />
             </div>
           </div>
         </div>
@@ -2454,7 +2510,6 @@ console.log(res)
         />
       )}
 
-
       <Popup
         type={popupType3}
         message={popupMessage3}
@@ -2469,13 +2524,8 @@ console.log(res)
           isConfirmedRef.current = true;
           handleCalConnectWithConfirm();
           setPopupMessage3("");
-
         }}
       />
-
-
-
-
     </div>
   );
 }

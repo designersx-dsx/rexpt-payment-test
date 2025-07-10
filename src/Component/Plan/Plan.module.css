@@ -215,28 +215,28 @@
 
     border: 1px solid #00B2FF;
     color: #00B2FF;
-    margin: 20px 5px 20px 20px
+    margin: 20px 5px 8rem 20px
 }
 
 .scaler {
 
     border: 1px solid #3CD856;
     color: #3CD856;
-    margin: 20px 5px 20px 20px
+     margin: 20px 5px 8rem 20px
 }
 
 .growth {
 
     border: 1px solid #E83BAC;
     color: #E83BAC;
-    margin: 20px 5px 20px 20px
+    margin: 20px 5px 8rem 20px
 }
 
 .corporate {
 
     border: 1px solid #FE5E00;
     color: #FE5E00;
-    margin: 20px 5px 20px 20px
+   margin: 20px 5px 8rem 20px
 }
 
 /* Text & Structure */
@@ -437,7 +437,7 @@
 .footerButtons {
     display: flex;
     justify-content: space-between;
-    gap: 5px;
+    /* gap: 3px; */
     bottom: 0;
     width: 100%;
     background-color: white;
@@ -447,7 +447,7 @@
 }
 
 .ForSticky {
-    position: sticky;
+    position:fixed;
     bottom: 0px;
     left: 0;
     width: 100%;
@@ -460,7 +460,7 @@
 }
 
 .footerBtn {
-    font-size: 14px;
+    font-size: 12.5px;
     font-weight: 600;
     border-radius: 20px;
     background: transparent;
@@ -469,6 +469,7 @@
     transition: background 0.3s, color 0.3s;
     box-shadow: unset;
     margin: unset;
+   
 }
 
 .featuresWrapper {
@@ -526,6 +527,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     text-align: center;
     gap: 5px;
 }
@@ -546,13 +548,24 @@
     filter: blur(1px);
 }
 
+.extraClass {
+    font-size: 11px;
+    font-weight: 400;
+}
+
 @media screen and (min-width: 601px) {
     .subscriptionMain {
         max-width: 500px;
-        margin: auto;
+        margin: 0px 10px;
     }
 
     .firstdiv {
         margin-right: unset;
     }
+}
+@media (max-width: 400px){
+    .footerBtn {    
+    line-height: 0.8;
+}
+
 }

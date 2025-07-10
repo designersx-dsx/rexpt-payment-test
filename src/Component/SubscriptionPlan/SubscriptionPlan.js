@@ -209,14 +209,37 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     toggleInit[plan.id] = false; // monthly by default
                 });
 
+                const finalPlans = enrichedPlans.reverse()
+
                 setToggleStates(toggleInit);
-                setProducts(enrichedPlans.reverse()); // no .reverse()
+                setProducts(finalPlans); // no .reverse()
                 setLoading(false);
+
+                // ✅ Preselect saved plan name (e.g., "Growth")
+                const savedPlanName = sessionStorage.getItem("selectedPlan");
+                if (savedPlanName) {
+                    const matchingIndex = finalPlans.findIndex(plan => plan.title.toLowerCase() === savedPlanName.toLowerCase());
+
+                    if (matchingIndex >= 0) {
+                        setActiveIndex(matchingIndex);
+                        setTimeout(() => {
+                            sliderRef.current?.slickGoTo(matchingIndex);
+                        }, 100); // Ensure slider is ready
+                    }
+
+                    // Optional: remove it after selection
+                    // sessionStorage.removeItem("selectedPlan");
+                }
+
+
             })
+
+
             .catch(() => {
                 setError("Failed to load plans.");
                 setLoading(false);
             });
+
     }, [userCurrency]);
 
 
@@ -244,6 +267,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
     const handleToggle = () => {
         setExpanded((prev) => !prev);
+    };
+
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('en-IN').format(price);
     };
 
     return (
@@ -316,7 +343,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                         <div className={styles.pricdec}>
                                                             <p className={styles.subPrice}>
                                                                 {yearlyPrice
-                                                                    ? `${yearlySymbol}${(yearlyPrice.unit_amount / 100 / 12).toFixed(0)}/m`
+                                                                    ? `${yearlySymbol}${formatPrice((yearlyPrice.unit_amount / 100 / 12))}/m`
                                                                     : `${yearlySymbol}0/m`}
                                                             </p>
                                                             <p className={styles.billedText}>{plan.billedText}</p>
@@ -329,7 +356,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                 <p className={styles.mainPrice}>
                                                     <b className={styles.doolor}>
                                                         {monthlyPrice
-                                                            ? `${currencySymbol}${(monthlyPrice.unit_amount / 100).toFixed(0)}`
+                                                            ? `${currencySymbol}${formatPrice((monthlyPrice.unit_amount / 100))}`
                                                             : `${currencySymbol}0`}
                                                     </b>
                                                     /month per agent
@@ -411,21 +438,34 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                             </span>
                                         </div>
 
-                                        <div className={styles.discount}>
-                                            You saved 17% ($240) compared to monthly billing
-                                        </div>
+                                        {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
+                                            (() => {
+                                                const monthlyTotal = monthlyPrice.unit_amount;
+                                                console.log("monthlyPrice", monthlyPrice)
+                                                const yearlyTotal = yearlyPrice.unit_amount / 12;
+                                                console.log("yearlyTotal", yearlyPrice)
+                                                const savings = monthlyTotal - yearlyTotal;
+                                                const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
+
+                                                return (
+                                                    <div className={styles.discount}>
+                                                        You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100))}/month) compared to monthly billing
+                                                    </div>
+                                                );
+                                            })()
+                                        )}
                                         <br />
                                         <div style={{ fontSize: "12px" }} className={styles.stickyWrapper}>
                                             <AnimatedButton
                                                 label={
                                                     priceForInterval
                                                         ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
-                                                            priceForInterval.unit_amount / 100
-                                                        ).toFixed(2)}/${priceForInterval.interval}`
+                                                            formatPrice(priceForInterval.unit_amount / 100
+                                                        ))}/${priceForInterval.interval}`
                                                         : "Unavailable"
                                                 }
                                                 position={{ position: "relative" }}
-                                                size="10px"
+                                                size="13px"
                                                 onClick={() => {
                                                     if (priceForInterval) {
                                                         navigate("/checkout", {
@@ -504,10 +544,11 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
                     {products.map((plan, index) => {
                         const isYearly = toggleStates[plan.id];
-                        const interval = isYearly ? "year" : "month";
+                        // const interval = isYearly ? "year" : ;
+                        const interval = "year"
                         const selectedPrice = plan.prices.find(p => p.interval === interval);
                         const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
-                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100).toFixed(0) : "0";
+                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100 / 12).toFixed(0) : "0";
 
                         return (
                             <div
@@ -538,8 +579,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                     {plan.title}
                                 </button>
 
-                                <p className={styles.monthPrice}>
-                                    from {symbol}{amount}/{interval === "year" ? "yr" : "m"}
+                                <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
+                                    }`}>
+                                    from {symbol}{formatPrice(amount)}/m
+                                    {/* {interval === "year" ? "yr" : "m"} */}
                                 </p>
                             </div>
                         );

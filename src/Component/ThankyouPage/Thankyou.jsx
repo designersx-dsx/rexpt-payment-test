@@ -21,6 +21,7 @@ function Thankyou() {
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
+  console.log("subscriptionInfo", subscriptionInfo);
 
   const currentLocation = "/update";
 
@@ -63,8 +64,6 @@ function Thankyou() {
         setAgentCode(sessionStorage.getItem("AgentCode") || "XXXXXX");
         setAgentName(sessionStorage.getItem("agentName") || "Agent");
 
-
-
         // 1. From businessDetails first
         if (businessData) {
           // setAgentCode(businessData.AgentCode || "XXXXXX");
@@ -93,7 +92,10 @@ function Thankyou() {
               nextRenewalDate: plan.nextBillingDate || null,
             });
           } catch (err) {
-            console.warn("Failed to parse selected plan data from localStorage:", err);
+            console.warn(
+              "Failed to parse selected plan data from localStorage:",
+              err
+            );
           }
         }
       }
@@ -101,6 +103,41 @@ function Thankyou() {
       console.error("Failed to parse session storage values:", e);
     }
   }, [agentId, key]);
+
+  useEffect(() => {
+    const priceIdFromSession = sessionStorage.getItem("priceId");
+    if (!priceIdFromSession) return;
+
+    const fetchPlanFromAPI = async () => {
+      try {
+        const res = await fetch("http://localhost:2512/api/products");
+        const products = await res.json();
+
+        for (const plan of products) {
+          const price = plan.prices.find((p) => p.id === priceIdFromSession);
+          if (price) {
+            const today = new Date();
+            const nextDate =
+              price.interval === "month"
+                ? new Date(today.setMonth(today.getMonth() + 1))
+                : new Date(today.setFullYear(today.getFullYear() + 1));
+            setSubscriptionInfo({
+              planName: plan.name,
+              planAmount: (price.unit_amount / 100).toFixed(2),
+              interval: price.interval,
+              planMins: price.metadata || plan.metadata?.minutes || "N/A",
+              nextRenewalDate: nextDate.toISOString(), // set this if available
+            });
+            break;
+          }
+        }
+      } catch (err) {
+        console.error("Error loading plan from API:", err);
+      }
+    };
+
+    fetchPlanFromAPI();
+  }, []);
 
   const cancelOldSubscription = async () => {
     try {
@@ -168,7 +205,6 @@ function Thankyou() {
     }
   };
 
-
   const fetchSubscriptionInfo = async () => {
     if (!agentId) return;
 
@@ -197,25 +233,25 @@ function Thankyou() {
     const run = async () => {
       if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
         await callNextApiAndRedirect(); // handles update + cancellation
-        await fetchSubscriptionInfo(); // fetch updated subscription data
+        setTimeout(async () => {
+          await fetchSubscriptionInfo();
+        }, 1500); // fetch updated subscription data
       } else {
-        const fallback = setTimeout(() => {
-          if (key === "create") {
-            localStorage.removeItem("selectedPlanData");
-            navigate("/steps", {
-              state: { locationPath: "/checkout" },
-            });
-          }
-          // Removed the "else if (key === 'update')" dashboard navigation
-        }, 3000);
-
-        return () => clearTimeout(fallback);
+        // const fallback = setTimeout(() => {
+        //   if (key === "create") {
+        //     localStorage.removeItem("selectedPlanData");
+        //     navigate("/steps", {
+        //       state: { locationPath: "/checkout" },
+        //     });
+        //   }
+        //   // Removed the "else if (key === 'update')" dashboard navigation
+        // }, 3000);
+        // return () => clearTimeout(fallback);
       }
     };
 
     run();
   }, [navigate, key, subscriptionId, agentId, userId, subsid]);
-
 
   return (
     // <div className={styles.container}>
@@ -268,8 +304,8 @@ function Thankyou() {
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? `US $${Number(
-                  subscriptionInfo.planAmount
-                ).toLocaleString()} / month`
+                    subscriptionInfo.planAmount
+                  ).toLocaleString()} / month`
                 : "US $499 / month"}
             </div>
           </div>
@@ -283,13 +319,13 @@ function Thankyou() {
               {subscriptionInfo
                 ? subscriptionInfo.interval === "month"
                   ? `$${Number(subscriptionInfo.planAmount).toFixed(
-                    2
-                  )} per month`
+                      2
+                    )} per month`
                   : `$${(
-                    Number(subscriptionInfo.planAmount) *
-                    12 *
-                    0.95
-                  ).toFixed(2)} for 12 months`
+                      Number(subscriptionInfo.planAmount) *
+                      12 *
+                      0.95
+                    ).toFixed(2)} for 12 months`
                 : "$5,688.60 for 12 months"}
             </div>
           </div>
@@ -299,12 +335,12 @@ function Thankyou() {
               <a href="#">
                 {subscriptionInfo
                   ? new Date(
-                    subscriptionInfo.nextRenewalDate
-                  ).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
+                      subscriptionInfo.nextRenewalDate
+                    ).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
                   : "06 July 2026"}
               </a>
             </div>
@@ -314,15 +350,24 @@ function Thankyou() {
               onClick={() => {
                 if (key !== "create") {
                   localStorage.removeItem("selectedPlanData");
+                  localStorage.removeItem("allPlans");
                   navigate("/dashboard", {
                     state: { currentLocation },
+                  });
+                } else {
+                  localStorage.removeItem("selectedPlanData");
+                  localStorage.removeItem("allPlans");
+                  navigate("/steps", {
+                    state: { locationPath: "/checkout" },
                   });
                 }
               }}
               className={styles.dashboardBtn}
-              disabled={key === "create" ? true : false}
+              // disabled={key === "create" ? true : false}
             >
-              {key === "create" ? "Redirecting.." : "Take me to Dashboard"}
+              {key === "create"
+                ? "Finish Your Agent Creation"
+                : "Take me to Dashboard"}
             </button>
           </div>
         </div>
