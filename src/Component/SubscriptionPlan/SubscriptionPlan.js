@@ -130,6 +130,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     const matchedData = product.data?.data?.find(
                         (p) => p.id === product.id
                     );
+                    console.log("matchedDatamatchedData",matchedData)
 
                     const matchingPrices = product.prices.filter(
                         (p) =>
