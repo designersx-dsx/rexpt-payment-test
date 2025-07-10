@@ -312,6 +312,9 @@
 .LangStyle.GrowthPlan {
     background-color: #F4DFE1;
 }
+.LangStyle.CorporatePlan {
+    background-color: #ffeadf;
+}
 
 
 .LangStyle.StarterPlan .PlanPrice {
@@ -326,6 +329,9 @@
     background-color: #FFBEC4;
 }
 
+.LangStyle.CorporatePlan .PlanPrice {
+    background-color: #f8a574;
+}
 
 
 
