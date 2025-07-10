@@ -14,6 +14,7 @@ import Footer2 from "../AgentDetails/Footer/Footer2";
 import PhoneInput from "react-phone-input-2";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function CallSetting() {
   const [expanded, setExpanded] = useState("panel1");
@@ -128,6 +129,10 @@ export default function CallSetting() {
     //   return () => clearTimeout(timer);
     // }
   }, [settings, selectedAgent, agents]);
+    const navigate = useNavigate();
+    const handleCloseOverlay = () => {
+    navigate(-1); // Navigate to the previous page
+  };
 
   return (
     <div>
@@ -298,6 +303,15 @@ export default function CallSetting() {
             />
           </AccordionDetails>
         </Accordion>
+      </div>
+       <div className={styles.overlay}>
+        <div className={styles.overlayContent}>
+          <h2> Coming Soon</h2>
+          <p>This feature is under development.</p>
+          <button onClick={handleCloseOverlay} className={styles.closeButton}>
+            Close
+          </button>
+        </div>
       </div>
 
       <Footer2 />
