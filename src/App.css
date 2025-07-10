@@ -5,7 +5,10 @@
 /* overflow: auto;
   overscroll-behavior: none; */
  }
-
+html {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
  
  * {
    margin: 0;

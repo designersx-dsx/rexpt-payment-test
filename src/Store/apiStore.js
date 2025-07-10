@@ -96,7 +96,6 @@ export const listAgents = async () => {
 export const countAgentsbyUserId = async (userId) => {
   try {
     const res = await api.get(`${API_BASE_URL}/agent/listAgents?userId=${userId}`);
-    console.log('res', res)
     return res.data.length || 0;
   } catch (error) {
     console.error("Error fetching agent count:", error);
@@ -395,7 +394,6 @@ export const refundAndCancelSubscriptionAgnetApi = async (agentId, minutesLeft) 
     throw new Error("Failed to refund user for agent");
   }
 }
-
 export const getEndUserSubscriptions_Billings = async (userId) => {
   try {
     const response = await api.get(`/endusers/fetchEndUserSubscriptions_Billings/${userId}`);
@@ -405,7 +403,19 @@ export const getEndUserSubscriptions_Billings = async (userId) => {
     throw new Error("Failed to update user details");
   }
 };
+export const deleteUser = async (userId) => {
+  try {
+    const res = await api.delete(`/agent/delete-user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting user:", error.response?.data || error.message);
+    throw new Error("Failed to delete user");
+  }
+};
 
 export default api;

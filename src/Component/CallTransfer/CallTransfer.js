@@ -295,7 +295,9 @@ function CallTransfer() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
-  console.log(llmId, "llmId");
+
+
+
   const prepareTransfersWithDialCode = (transfers) => {
     return transfers.map((transfer) => {
       console.log(transfer, "transfer");
@@ -400,16 +402,22 @@ function CallTransfer() {
           );
           return;
         }
-        const fullNumber = `+${dialCode}${phone}`;
+        const fullNumber = `+${transfer.dialCode}${transfer.phone}`;
         const phoneNumber = parsePhoneNumberFromString(fullNumber);
 
-        if (!phoneNumber || !phoneNumber.isValid()) {
+        if (
+          !phoneNumber ||
+          !phoneNumber.isValid() ||
+          phoneNumber.country?.toLowerCase() !== transfer.countryCode
+        ) {
           setShowPopup(true);
           setPopupType("failed");
           setPopupMessage(
-            `Phone number for entry ${
+            `Invalid phone number for entry ${
               index + 1
-            } is invalid for country code +${dialCode}.`
+            }. Ensure the number matches the country code +${
+              transfer.dialCode
+            } (${transfer.countryCode.toUpperCase()}).`
           );
           return;
         }
@@ -418,10 +426,8 @@ function CallTransfer() {
       setLoading(true);
       sessionStorage.removeItem("agentGeneralTools");
       const timestamp = Date.now();
-      // Create a reusable prompt for dynamic transfer routing
       const fullPrompt =
         `The user might ask to be transferred to departments.If they say Sales, transfer to {{sales_number}}.If they say Billing, transfer to {{billing_number}}.If they say Support, transfer to {{support_number}}.Use the appropriate number based on the conversation.`.trim();
-      // Build the general_tools array with a single inferred transfer tool
       const transferTool = {
         type: "transfer_call",
         name: `transfer_on_inferred_${timestamp}`,
