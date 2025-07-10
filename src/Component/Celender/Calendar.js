@@ -202,7 +202,7 @@ const AgentAnalysis = () => {
               {agents.map((agent) => (
                 <option key={agent.agent_id} value={agent.agent_id}>
                   {agent.agentName.length > 7
-                    ? agent.agentName.slice(0, 12) + "..."
+                    ? agent.agentName.slice(0, 7) + ".."
                     : agent.agentName}
                 </option>
               ))}
