@@ -98,7 +98,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                IN: "inr",
+                // IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -269,6 +269,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         setExpanded((prev) => !prev);
     };
 
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('en-IN').format(price);
+    };
+
     return (
         <div>
             <div className={styles.firstdiv}>
@@ -339,7 +343,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                         <div className={styles.pricdec}>
                                                             <p className={styles.subPrice}>
                                                                 {yearlyPrice
-                                                                    ? `${yearlySymbol}${(yearlyPrice.unit_amount / 100 / 12).toFixed(0)}/m`
+                                                                    ? `${yearlySymbol}${formatPrice((yearlyPrice.unit_amount / 100 / 12))}/m`
                                                                     : `${yearlySymbol}0/m`}
                                                             </p>
                                                             <p className={styles.billedText}>{plan.billedText}</p>
@@ -352,7 +356,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                 <p className={styles.mainPrice}>
                                                     <b className={styles.doolor}>
                                                         {monthlyPrice
-                                                            ? `${currencySymbol}${(monthlyPrice.unit_amount / 100).toFixed(0)}`
+                                                            ? `${currencySymbol}${formatPrice((monthlyPrice.unit_amount / 100))}`
                                                             : `${currencySymbol}0`}
                                                     </b>
                                                     /month per agent
@@ -445,7 +449,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
                                                 return (
                                                     <div className={styles.discount}>
-                                                        You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{(savings / 100).toFixed(0)}) compared to monthly billing
+                                                        You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100))}/month) compared to monthly billing
                                                     </div>
                                                 );
                                             })()
@@ -456,12 +460,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                 label={
                                                     priceForInterval
                                                         ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
-                                                            priceForInterval.unit_amount / 100
-                                                        ).toFixed(2)}/${priceForInterval.interval}`
+                                                            formatPrice(priceForInterval.unit_amount / 100
+                                                        ))}/${priceForInterval.interval}`
                                                         : "Unavailable"
                                                 }
                                                 position={{ position: "relative" }}
-                                                size="10px"
+                                                size="13px"
                                                 onClick={() => {
                                                     if (priceForInterval) {
                                                         navigate("/checkout", {
@@ -577,7 +581,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
                                 <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
                                     }`}>
-                                    from {symbol}{amount}/m
+                                    from {symbol}{formatPrice(amount)}/m
                                     {/* {interval === "year" ? "yr" : "m"} */}
                                 </p>
                             </div>

@@ -86,7 +86,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* margin-right: 16px; */
+    margin-right: 16px;
 }
 
 .firstdiv button {
@@ -556,7 +556,7 @@
 @media screen and (min-width: 601px) {
     .subscriptionMain {
         max-width: 500px;
-        margin: auto;
+        margin: 0px 10px;
     }
 
     .firstdiv {
