@@ -2,7 +2,7 @@ import React from 'react';
 import styles from "../HeaderBar/HeaderBar.module.css";
 import { useNavigate } from 'react-router-dom';
 
-const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange, backgroundColor = "#fff", color = '#24252C' }) => {
+const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange,selectedAgent, backgroundColor = "#fff", color = '#24252C' }) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -29,6 +29,7 @@ const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange, ba
 
           {dropdownOptions.length > 0 && (
             <select
+            value={selectedAgent}
               className={styles.dropdown}
               onChange={(e) => onDropdownChange?.(e.target.value)}
             >
