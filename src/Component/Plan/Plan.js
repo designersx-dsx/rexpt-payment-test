@@ -315,7 +315,10 @@ const Planss = () => {
                 </label> : null}
 
             </div>
-
+            <div className={styles.sectionPart}>
+                <h2>Subscriptions Plans </h2>
+                <p>Choose a suitable plan for your agent & business case</p>
+            </div>
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {

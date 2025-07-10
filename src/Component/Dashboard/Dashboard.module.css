@@ -467,9 +467,10 @@
 }
 
 .OptionItem {
-    padding: 7.5px 12px;
+    padding: 5px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
+    font-size: 13.5px;
 }
 
 .OptionItem:last-child {
@@ -613,6 +614,13 @@
         transform: translateY(0px);
     }
 }
+
+
+
+
+
+
+
 
 
 @media (min-width: 380px) and (max-width: 406px) {
