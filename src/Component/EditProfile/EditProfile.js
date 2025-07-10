@@ -5,6 +5,7 @@ import MySubscription from "../MySubscription/MySubscription";
 import BillingInvoices from "../BillingInvoices/BillingInvoices";
 import {
   API_BASE_URL,
+  getEndUserSubscriptions_Billings,
   getUserDetails,
   LoginWithEmailOTP,
   updateEmailSendOtp,
@@ -65,6 +66,7 @@ const EditProfile = () => {
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
   const isOtpFilled = otp.every((digit) => digit !== "");
+  const [subscriptionDetails, setSubscriptionDetails] = useState({});
 
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
@@ -100,6 +102,20 @@ const EditProfile = () => {
       address !== initialAddress
     );
   };
+
+  useEffect(() => {
+    if(!userId) return;
+    const getEndUserSubscriptions = async () => {
+      try {
+        const data = await getEndUserSubscriptions_Billings(userId);
+        // console.log("User subscription Data:", data);
+        setSubscriptionDetails(data)
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    }
+    getEndUserSubscriptions();
+  },[userId]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -274,7 +290,7 @@ const EditProfile = () => {
         phone: formData.phone,
         address: formData.address,
       });
-      console.log(response.user.profilePicture, "response42343243242");
+      // console.log(response.user.profilePicture, "response42343243242");
       setUser({ name: formData?.name, profile: formData?.profilePicture });
 
       setInitialData({ ...formData });
@@ -299,7 +315,7 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
-  // console.log('showDashboardReferral',showDashboardReferral)
+  // console.log('showDashboardReferral',subscriptionDetails)
 
   return (
     <>
@@ -597,10 +613,10 @@ const EditProfile = () => {
                 <Refferal referralCode={referralCode} setShowDashboardReferral={setShowDashboardReferral} showDashboardReferral={showDashboardReferral} userId={userId} />
               </div>
               <div className={styles.mySubscription}>
-                <MySubscription />
+                <MySubscription agents={subscriptionDetails?.agents ||[]}/>
               </div>
               <div className={styles.billingInvoice}>
-                <BillingInvoices />
+                <BillingInvoices invoices={subscriptionDetails?.invoices||[]}/>
               </div>
             </div>
 

@@ -755,9 +755,9 @@ export default function CallSetting() {
             </Typography>
           </AccordionDetails>
         </Accordion>
-      </div>
+      {/* </div> */}
 
-      <div className={styles.CallSettingContainer}>
+      {/* <div className={styles.CallSettingContainer}> */}
         <Accordion className="CallAccordion" expanded={expanded === "panel6"} onChange={handleChange("panel6")}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel6bh-content" id="panel6bh-header">
             <Typography component="span" sx={{ width: "80%" }}>
