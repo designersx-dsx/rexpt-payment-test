@@ -1,16 +1,19 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./CancelPage.module.css";
 
 const CancelPage = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const price = sessionStorage.getItem("priceId")
+  const price = sessionStorage.getItem("priceId");
+  const updatetn = sessionStorage.getItem("updateBtn");
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (token && price) {
-        navigate("/plan"); // 
+      if (updatetn) {
+        navigate("/dashboard"); //
+      } else if (token && price) {
+        navigate("/plan");
       } else {
         navigate("/plans");
       }

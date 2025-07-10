@@ -217,7 +217,7 @@ function Dashboard() {
       sessionStorage.removeItem("businessLocation");
       sessionStorage.removeItem("selectedCustomServices");
       sessionStorage.removeItem("bId");
-      
+
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("UpdationModeStepWise");
       localStorage.removeItem("agentName");
@@ -250,6 +250,7 @@ function Dashboard() {
       sessionStorage.removeItem("selectedServices");
     }
     sessionStorage.removeItem("selectedPlan");
+    sessionStorage.removeItem("updateBtn");
     localStorage.removeItem("allPlans");
   }, []);
   // Navigate on agent card click
@@ -545,6 +546,7 @@ function Dashboard() {
     setRetellWebClient(client);
   }, []);
   const handleDelete = async (agent) => {
+    console.log("agent", agent)
     const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
     try {
@@ -565,17 +567,21 @@ function Dashboard() {
       }
 
       // Try to refund API
-      try {
-        await refundAndCancelSubscriptionAgnetApi(agent_id, mins_left); // Replace with your actual API
-      } catch (notifyError) {
-        throw new Error(`Refund failed: ${notifyError.message}`);
+      if (agent.agentPlan !== "free") {
+        try {
+          await refundAndCancelSubscriptionAgnetApi(agent_id, mins_left); // Replace with your actual API
+        } catch (notifyError) {
+          throw new Error(`Refund failed: ${notifyError.message}`);
+        }
       }
+
       // Try to delete the agent
       try {
         await deleteAgent(agent_id);
       } catch (deleteError) {
         throw new Error(`Delete failed: ${deleteError.message}`);
       }
+
 
       const updatedAgents = localAgents.filter(
         (agent) => agent.agent_id !== agentId
@@ -1094,6 +1100,8 @@ function Dashboard() {
         (ag) => ag.agent_id === agentToDeactivate.agent_id
       );
 
+      console.log("agentData", agentData)
+
       const knowledgeBaseId = agentData?.knowledgeBaseId;
       const businessId = agentData?.businessId;
 
@@ -1109,27 +1117,30 @@ function Dashboard() {
             },
           }
         );
-        try {
-          const pauseRes = await fetch(
-            `${process.env.REACT_APP_API_BASE_URL}/subscription-pause`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                subscriptionId: agentToDeactivate.subscriptionId,
-              }),
-            }
-          );
+        // Subscruption Pause Api
+        if (agentData.agentPlan !== "free") {
+          try {
+            const pauseRes = await fetch(
+              `${process.env.REACT_APP_API_BASE_URL}/subscription-pause`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  subscriptionId: agentToDeactivate.subscriptionId,
+                }),
+              }
+            );
 
-          if (!pauseRes.ok) {
-            const pauseErr = await pauseRes.json();
-            console.error("Subscription pause failed:", pauseErr);
-            throw new Error("Failed to pause subscription");
+            if (!pauseRes.ok) {
+              const pauseErr = await pauseRes.json();
+              console.error("Subscription pause failed:", pauseErr);
+              throw new Error("Failed to pause subscription");
+            }
+          } catch (pauseError) {
+            console.error("Error pausing subscription:", pauseError);
           }
-        } catch (pauseError) {
-          console.error("Error pausing subscription:", pauseError);
         }
       }
       if (isCurrentlyDeactivated && businessId) {
@@ -1239,29 +1250,31 @@ function Dashboard() {
             console.error("Error updating LLM:", error);
           }
           // Resume subscription
-          try {
-            const resumeRes = await fetch(
-              `${process.env.REACT_APP_API_BASE_URL}/subscription-resume`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  subscriptionId: agentToDeactivate.subscriptionId,
-                }),
-              }
-            );
+          if (agentData.agentPlan !== "free") {
+            try {
+              const resumeRes = await fetch(
+                `${process.env.REACT_APP_API_BASE_URL}/subscription-resume`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    subscriptionId: agentToDeactivate.subscriptionId,
+                  }),
+                }
+              );
 
-            if (!resumeRes.ok) {
-              const resumeErr = await resumeRes.json();
-              console.error("Subscription resume failed:", resumeErr);
-              throw new Error("Failed to resume subscription");
-            } else {
-              console.log("Subscription resumed successfully");
+              if (!resumeRes.ok) {
+                const resumeErr = await resumeRes.json();
+                console.error("Subscription resume failed:", resumeErr);
+                throw new Error("Failed to resume subscription");
+              } else {
+                console.log("Subscription resumed successfully");
+              }
+            } catch (resumeError) {
+              console.error("Error resuming subscription:", resumeError);
             }
-          } catch (resumeError) {
-            console.error("Error resuming subscription:", resumeError);
           }
         } else {
           console.warn(
@@ -1308,6 +1321,7 @@ function Dashboard() {
   const handleUpgradeClick = (agent) => {
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
+    sessionStorage.setItem("updateBtn", "update")
 
     navigate("/plan", {
       state: {
@@ -1318,7 +1332,7 @@ function Dashboard() {
     });
   };
 
-  const fetchPrevAgentDEtails = async (agent_id, businessId) => {};
+  const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
   const locationPath = location.pathname;
 
   const getUserReferralCode = async () => {
@@ -1425,18 +1439,18 @@ function Dashboard() {
     if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
   }, []);
 
- function formatE164USNumber(number) {
-  const cleaned = number.replace(/\D/g, ""); 
+  function formatE164USNumber(number) {
+    const cleaned = number.replace(/\D/g, "");
 
-  if (cleaned.length === 11 && cleaned.startsWith("1")) {
-    const country = cleaned[0];
-    const area = cleaned.slice(1, 4);
-    const prefix = cleaned.slice(4, 7);
-    const line = cleaned.slice(7, 11);
-    return `+${country} (${area}) ${prefix}-${line}`;
+    if (cleaned.length === 11 && cleaned.startsWith("1")) {
+      const country = cleaned[0];
+      const area = cleaned.slice(1, 4);
+      const prefix = cleaned.slice(4, 7);
+      const line = cleaned.slice(7, 11);
+      return `+${country} (${area}) ${prefix}-${line}`;
+    }
+    return number;
   }
-  return number;
-}
 
 
   return (
@@ -1537,9 +1551,8 @@ function Dashboard() {
         <section className={styles.agentCard}>
           <div className={styles.agentInfo} onClick={handleTotalCallClick}>
             <h2
-              className={`${styles.agentHeading} ${
-                isSmallFont ? styles.smallFont : ""
-              }`}
+              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
+                }`}
             >
               {totalCalls || 0}
             </h2>
@@ -1550,9 +1563,8 @@ function Dashboard() {
 
           <div className={styles.agentInfo2} onClick={handleCalender}>
             <h2
-              className={`${styles.agentHeading} ${
-                isSmallFont ? styles.smallFont : ""
-              }`}
+              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
+                }`}
             >
               {bookingCount}
             </h2>
@@ -1742,7 +1754,7 @@ function Dashboard() {
                       </div>
                       {agent?.subscription &&
                         agent?.subscription?.plan_name?.toLowerCase() !==
-                          "free" && (
+                        "free" && (
                           <div>
                             <div
                               className={styles.OptionItem}
@@ -1768,8 +1780,8 @@ function Dashboard() {
                   <strong>
                     {formatBusinessName(
                       agent?.business?.businessName ||
-                        agent?.business?.knowledge_base_texts?.name ||
-                        agent?.business?.googleBusinessName
+                      agent?.business?.knowledge_base_texts?.name ||
+                      agent?.business?.googleBusinessName
                     )}
                   </strong>
                 </p>
@@ -1812,12 +1824,12 @@ function Dashboard() {
               </div>
 
               <div className={styles.LangButton}>
-                { assignedNumbers.length > 0 ? (
+                {assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
                     Assigned Number
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
-                     {assignedNumbers.map(formatE164USNumber).join(", ")}
+                      {assignedNumbers.map(formatE164USNumber).join(", ")}
                     </p>
                   </div>
                 ) : (
@@ -2287,7 +2299,7 @@ function Dashboard() {
           >
             <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-            To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
+              To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
 
             </p>
             <button
@@ -2454,7 +2466,7 @@ function Dashboard() {
             {/* <AnimatedButton label = 'Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)}/> */}
             <div
               className={styles.btnTheme}
-              // onClick={async () => shareReferralLink(showDashboardReferral)}
+            // onClick={async () => shareReferralLink(showDashboardReferral)}
             >
               <div className={styles.imageWrapper}>
                 <img src="svg/svg-theme2.svg" alt="" />
