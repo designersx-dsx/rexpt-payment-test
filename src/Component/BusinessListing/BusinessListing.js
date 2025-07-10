@@ -133,7 +133,10 @@ const BusinessListing = forwardRef(
 
         if (!phoneNumberObj || !phoneNumberObj.isValid()) {
           setLoading(false);
-          alert("Please enter a valid phone number.");
+          setPopupType("failed");
+          setPopupMessage("Please enter a valid phone number.");
+          setShowPopup(true);
+
           return;
         }
 
@@ -156,7 +159,10 @@ const BusinessListing = forwardRef(
         const EditingMode = localStorage.getItem("UpdationMode");
         const agentCount = 0;
         if (!businessName || !address || !phoneNumber) {
-          alert("Please fill all required fields.");
+          setPopupType("failed");
+          setPopupMessage("Please fill all required fields.");
+          setShowPopup(true);
+
           return;
         }
         const updatedPlaceDetails = {
@@ -226,15 +232,15 @@ const BusinessListing = forwardRef(
         ];
 
         const rawUrl = aboutBusinessForm.businessUrl?.trim();
-      const mergedUrls = [];
-      if (rawUrl) {
-        mergedUrls.push(rawUrl); // add businessUrl
-      }
+        const mergedUrls = [];
+        if (rawUrl) {
+          mergedUrls.push(rawUrl); // add businessUrl
+        }
 
-      if (aboutBusinessForm?.googleListing) {
-        mergedUrls.push(aboutBusinessForm?.googleListing); // add googleListing
-      }
-      // const mergedUrls = rawUrl ? [rawUrl] : [];
+        if (aboutBusinessForm?.googleListing) {
+          mergedUrls.push(aboutBusinessForm?.googleListing); // add googleListing
+        }
+        // const mergedUrls = rawUrl ? [rawUrl] : [];
 
         const formData = new FormData();
         const formData2 = new FormData();
@@ -460,9 +466,16 @@ const BusinessListing = forwardRef(
                 <input
                   type="text"
                   value={businessName}
-                  onChange={(e) =>
-                    handleInputChange("businessName", e.target.value)
-                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const noNumbersOrEmojis = value
+                      .replace(/[0-9]/g, "") // remove digits
+                      .replace(
+                        /([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF])/g,
+                        ""
+                      );
+                    handleInputChange("businessName", noNumbersOrEmojis);
+                  }}
                   placeholder="Your Business Name"
                   required
                   maxLength={50}
@@ -505,6 +518,7 @@ const BusinessListing = forwardRef(
                   onChange={(e) => handleInputChange("address", e.target.value)}
                   placeholder="Business Address"
                   required
+                  maxLength={200}
                 />
               </div>
 

@@ -395,6 +395,19 @@ export const refundAndCancelSubscriptionAgnetApi = async (agentId, minutesLeft) 
     throw new Error("Failed to refund user for agent");
   }
 }
+export const deleteUser = async (userId) => {
+  try {
+    const res = await api.delete(`/agent/delete-user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting user:", error.response?.data || error.message);
+    throw new Error("Failed to delete user");
+  }
+};
 
 export default api;
