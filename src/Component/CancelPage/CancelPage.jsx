@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./CancelPage.module.css";
 
 const CancelPage = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const price = sessionStorage.getItem("priceId")
+  const location = useLocation()
+  let agentID = location?.state?.agentID
+  console.log("agentID",agentID)
 
   useEffect(() => {
     const timer = setTimeout(() => {
