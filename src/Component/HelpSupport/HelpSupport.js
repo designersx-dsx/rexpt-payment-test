@@ -1,7 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from '../HelpSupport/HelpSupport.module.css'
+import { useNavigate } from 'react-router-dom';
 
 const HelpSupport = () => {
+    const navigate = useNavigate();
+    const handleCardClick = (type) => {
+        if (type === 'agent-setup') {
+            navigate('/agent-setup');
+        }
+    };
+
+    const cursor = {
+        cursor: 'no-drop',
+        opacity: 0.6,
+    };
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -9,7 +21,7 @@ const HelpSupport = () => {
                 <p>Rexpt AI Support Agent</p>
             </div>
 
-            <div className={styles.card}>
+            <div className={styles.card} onClick={() => handleCardClick('agent-setup')}>
                 <img src="/svg/agent-setup.svg" alt="Agent" />
                 <span>AGENT SETUP HELP</span>
                 <span className={styles.arrow}>
@@ -19,8 +31,7 @@ const HelpSupport = () => {
 
                 </span>
             </div>
-
-            <div className={styles.card}>
+            <div className={styles.card} style={cursor}>
                 <img src="/svg/Support-ticket.svg" alt="Agent" />
                 <span>CREATE SUPPORT TICKET</span>
                 <span className={styles.arrow}>
@@ -31,7 +42,7 @@ const HelpSupport = () => {
                 </span>
             </div>
 
-            <div className={styles.card}>
+            <div className={styles.card} style={cursor}>
                 <img src="/svg/document.svg" alt="Agent" />
                 <span>DOCUMENTATION</span>
                 <span className={styles.arrow}>
@@ -42,7 +53,7 @@ const HelpSupport = () => {
                 </span>
             </div>
 
-            <div className={styles.card}>
+            <div className={styles.card} style={cursor}>
                 <img src="/svg/Faq.svg" alt="Agent" />
                 <span>FAQ</span>
                 <span className={styles.arrow}>
