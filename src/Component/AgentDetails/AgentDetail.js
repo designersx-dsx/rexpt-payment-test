@@ -1251,7 +1251,11 @@ const AgentDashboard = () => {
               <div
                 className={styles.managementItem}
                 // onClick={() => setShowModal(true)}
-                onClick={() => navigate("/call-setting")}
+                onClick={() => navigate("/call-setting",{
+              state: {
+                selectedAgentname: `${agentData?.agent?.agentName}-${agentData?.agent?.agentCode}`,
+                fromPage: "dashboard",
+              },})}
               >
                 <div className={styles.SvgDesign}>
                   <svg

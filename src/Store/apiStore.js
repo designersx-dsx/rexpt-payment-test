@@ -394,6 +394,15 @@ export const refundAndCancelSubscriptionAgnetApi = async (agentId, minutesLeft) 
     throw new Error("Failed to refund user for agent");
   }
 }
+export const getEndUserSubscriptions_Billings = async (userId) => {
+  try {
+    const response = await api.get(`/endusers/fetchEndUserSubscriptions_Billings/${userId}`);
+    return response.data
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
 export const deleteUser = async (userId) => {
   try {
     const res = await api.delete(`/agent/delete-user/${userId}`, {

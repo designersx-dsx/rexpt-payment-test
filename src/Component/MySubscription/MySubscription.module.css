@@ -45,6 +45,22 @@
     color: #1AA850;
 }
 
+.activeDot {
+  background-color: #1AA850; /* Green */
+}
+
+.deactivatedDot {
+  background-color: #FF4D4F; /* Red */
+}
+
+.activeStatus {
+  color: #1aa850; /* Green text */
+}
+
+.deactivatedStatus {
+  color: #FF4D4F; /* Red text */
+}
+
 .label1 {
     color: #24252C;
     font-size: 24px;
