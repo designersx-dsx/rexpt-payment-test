@@ -1,53 +1,95 @@
 import React from 'react'
 import styles from '../MySubscription/MySubscription.module.css'
 
-const MySubscription = () => {
+const MySubscription = ({agents}) => {
+    // console.log('agentdsdsdsds', agents)
+      if (!agents || agents.length === 0) {
+    return (
+      <div className={styles.cardWrapper}>
+        <h3 className={styles.heading}>My Subscriptions</h3>
+        <p className={styles.noData}>No subscriptions found.</p>
+      </div>
+    );
+  }
+
+  function formatDate(timestamp) {
+  const date = new Date(timestamp);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = date.toLocaleString('en-US', { month: 'long' });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
+
+
+
     return (
 
         <div className={styles.cardWrapper}>
             <h3 className={styles.heading}>My Subscriptions</h3>
+           {agents?.map((agent) => (
             <div className={styles.MySubscriptionInfo}>
                 <div className={styles.row}>
                     <div className={styles.idDiv}>
-                        <p className={styles.label1}>Agent Id:</p>
-                        <p className={styles.valueBold}>B99213</p>
+                        <p className={styles.label1}>Agent Code:</p>
+                        <p className={styles.valueBold}>{agent.agentCode ? agent.agentCode : "Na"}</p>
                     </div>
-                    <div className={styles.statusDiv}>
+                    {/* <div className={styles.statusDiv}>
                         <div className={styles.Dot}></div>
-                        <div className={styles.status}>Active</div>
+                        <div className={styles.status}>{agent.isDeactivated === 0 ? "Active" : "Deactivated"}</div>
+                    </div> */}
+                    <div className={styles.statusDiv}>
+                    <div
+                        className={`${styles.Dot} ${
+                        agent.isDeactivated === 0 ? styles.activeDot : styles.deactivatedDot
+                        }`}
+                    ></div>
+                    <div
+                        className={`${styles.status} ${
+                        agent.isDeactivated === 0 ? styles.activeStatus : styles.deactivatedStatus
+                        }`}
+                    >
+                        {agent.isDeactivated === 0 ? "Active" : "Inactive"}
                     </div>
-
+                    </div>
 
                 </div>
 
                 <div className={styles.row2}>
                     <span className={styles.label}>Agent Name</span>
-                    <span className={styles.value}>SOFIA</span>
+                    <span className={styles.value}>{agent?.agentName ? agent.agentName : "NA"}</span>
                 </div>
                 <div className={styles.row2}>
                     <span className={styles.label}>Business Name</span>
-                    <span className={styles.value}>ACME Construction Services</span>
+                    <span className={styles.value}>{agent?.business?.businessName ? agent?.business?.businessName : "NA"}</span>
                 </div>
                 <div className={styles.row2}>
                     <span className={styles.label}>Plan Activated</span>
-                    <span className={styles.plan}> STARTER</span>
+                    <span className={styles.plan}> {agent?.latestSubscription?.plan_name ? agent?.latestSubscription?.plan_name : "NA"}</span>
                 </div>
                 <div className={styles.row2}>
                     <span className={styles.label}>Minutes Remaining</span>
-                    <span className={styles.value}>158</span>
+                    <span className={styles.value}>{agent?.mins_left ? Math.floor(agent.mins_left / 60) : "NA"}</span>
                 </div>
                 <div className={styles.row2}>
                     <span className={styles.label}>Initial Purchase Date</span>
-                    <span className={styles.value}>07 Aug 2025</span>
+                    <span className={styles.value}>{agent?.latestSubscription?.current_period_start ? formatDate(agent?.latestSubscription?.current_period_start) : "Na"}</span>
                 </div>
                 <div className={styles.row2}>
                     <span className={styles.label}>Next Billing Date</span>
-                    <span className={styles.valuebilling}>06 Aug 2026</span>
+                    <span className={styles.valuebilling}>{agent?.latestSubscription?.next_renewal_date ? formatDate(agent?.latestSubscription?.next_renewal_date) : "Na"}</span>
                 </div>
 
                 <div className={styles.row2}>
                     <span className={styles.label}>Frequency & Price</span>
-                    <span className={styles.frequencyprice}> US $5,9888/year</span>
+                    
+                {agent?.latestSubscription?.plan_currency && agent?.latestSubscription?.plan_unit_amount && agent?.latestSubscription?.interval &&
+                <span className={styles.frequencyprice}>
+                    {agent?.latestSubscription?.plan_currency?.toUpperCase()} {" "}
+                    {agent?.latestSubscription?.plan_unit_amount}
+                    /{agent?.latestSubscription?.interval.slice(0,1)}
+                </span>
+                }
                 </div>
 
 
@@ -57,6 +99,7 @@ const MySubscription = () => {
 
 
             </div>
+              ))}
         </div>
 
     )

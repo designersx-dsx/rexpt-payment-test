@@ -209,17 +209,37 @@ export const useAgentCreator = ({
         general_tools: [
           {
             type: "extract_dynamic_variable",
-            name: "extract_user_email",
-            description: "Extract the user's email address from the conversation.",
+            name: "extract_user_info",
+            description: "Extract user details such as email, phone number, address, and reason for calling. The assistant should understand spoken numbers, spoken email addresses, and Hindi input. Convert all values into proper English and formatted strings. For example, 'one two at Gmail dot com' → '12@gmail.com', or 'ग्यारह' → 'eleven'.",
             variables: [
               {
                 type: "string",
                 name: "email",
-                description: "The user's email address.",
-                examples: ["john.doe@example.com", "nitish@company.in"]
+                description: "The user's email address. If the email is spoken using words (e.g., 'john dot doe at gmail dot com'), convert it into standard format like 'john.doe@gmail.com'. Ensure it's valid and clean.",
+                examples: ["john.doe@example.com", "nitish@company.in", "12@gmail.com"]
+              },
+              {
+                type: "string",
+                name: "phone_number",
+                description: "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid 10-digit number when possible.",
+                examples: ["+919876543210", "9876543210", "7876121490"]
+              },
+              {
+                type: "string",
+                name: "address",
+                description: "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+                examples: ["123 Main St, Delhi", "42 Wallaby Way, Sydney", "1490 Aandhar Eleven"]
+              },
+              {
+                type: "string",
+                name: "reason",
+                description: "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
+                examples: ["Schedule an appointment", "Ask about services", "Request for accounting help"]
               }
             ]
           }
+
+
         ],
         states: [
           {

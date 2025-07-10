@@ -208,7 +208,7 @@ const Step = () => {
         if (currentRef?.current) {
             const isValid = currentRef?.current?.validate();
             if (!isValid) {
-                console.warn(`Validation failed at step ${currentStep}`);
+               
                 return;
             }
             if (currentRef.current.save) {
@@ -342,7 +342,7 @@ const Step = () => {
                     agentNote,
                     timeZone
                 });
-            console.log(filledPrompt, "filledPrompt")
+        
             // return
             // const isValid = step8BRef.current.validate()
             //creation here
@@ -927,9 +927,6 @@ const Step = () => {
         addCompletedStep(currentStep);
         return true;
     };
-
-    console.log(currentStep, "currentStep")
-
     // function lock
     useEffect(() => {
         fetchAgentCountFromUser()
@@ -991,7 +988,6 @@ const Step = () => {
 
     }
     let freeTrail = location?.state?.freeTrial
-    console.log(freeTrail)
     const isContinueCalled = useRef(false);
     useEffect(() => {
         if (freeTrail && currentStep === 7 && !isContinueCalled.current) {

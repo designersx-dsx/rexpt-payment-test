@@ -499,8 +499,6 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   const selectedBusiness =
     businessServices.find((biz) => biz?.type === businessType) ||
     (businessType === "Other" && businessServices?.find((biz) => biz?.type === "Other Local Business"));
-
-  console.log(selectedBusiness, "selectedBusiness")
   const defaultServices = selectedBusiness?.services || [];
   const allServices = [...defaultServices, ...customServices];
   const flatServices = allServices.flatMap((item) => {
@@ -567,7 +565,6 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       // console.log('dsdsdsdsddsd',response)
       const id = response?.data?.record?.businessId;
       if(!checkIfBusinessIdExist){
-        console.log('dsdsdsdsd',response.data)
         sessionStorage.setItem("AgentCode",response?.data?.agentCode)
       }
       sessionStorage.setItem("bId", id);

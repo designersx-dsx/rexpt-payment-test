@@ -70,11 +70,9 @@
 .saveButton {
   background-color: #6524EB; /* Purple color */
   color: white;
-  padding: 12px 15px;
+  padding: 12px 25px;
   border: none;
   border-radius: 6px;
-  display: flex;
-  align-items: center;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -89,7 +87,7 @@
 .disabledButton {
   background-color: #cccccc; /* Gray when disabled */
   color: #666666;
-  padding: 12px 15px;
+  padding: 12px 25px;
   border: none;
   border-radius: 6px;
   cursor: not-allowed;
@@ -291,8 +289,8 @@
 
 .buttons {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 16px; /* Gap between buttons as requested */
 }
 
 .saveButton {
@@ -314,26 +312,26 @@
 .disabledButton {
   background-color: #6524EB;
   color: #ffffff;
-  padding: 10px 12px;
+  padding: 10px 20px;
   border: none;
   border-radius: 40px;
   font-size: 16px;
   cursor: not-allowed;
   height: 50px;
-   width: 50%;
+   width: 40%;
 }
 
 .closeButton {
   background-color: #d5d5d5;
     color: #24252C;
-  padding: 10px 12px;
+  padding: 10px 20px;
   border: none;
   border-radius: 40px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   height: 50px;
-  width: 50%;
+  width: 40%;
 }
 
 .closeButton:hover {
