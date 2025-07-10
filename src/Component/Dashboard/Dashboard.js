@@ -217,6 +217,7 @@ function Dashboard() {
       sessionStorage.removeItem("businessLocation");
       sessionStorage.removeItem("selectedCustomServices");
       sessionStorage.removeItem("bId");
+      
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("UpdationModeStepWise");
       localStorage.removeItem("agentName");
@@ -248,6 +249,8 @@ function Dashboard() {
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
     }
+    sessionStorage.removeItem("selectedPlan");
+    localStorage.removeItem("allPlans");
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
