@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -40,12 +40,11 @@ function CheckoutForm({
   const stripe = useStripe();
   const elements = useElements();
 
-
   // Step state (1 or 2)
   const [step, setStep] = useState(1);
 
   const navigate = useNavigate();
-const origin = window.location.origin;
+  const origin = window.location.origin;
 
   const location = useLocation();
 
@@ -325,6 +324,8 @@ const origin = window.location.origin;
     "ZW",
   ]);
 
+  const checkPage = sessionStorage.getItem("checkPage");
+
   const COUNTRY_OPTIONS = Array.from(VALID_COUNTRY_CODES)
     .sort()
     .map((code) => ({ value: code, label: code }));
@@ -369,6 +370,11 @@ const origin = window.location.origin;
     // Call next API here and navigate to the dashboard
     await callNextApiAndRedirect();
   };
+  useEffect(() => {
+    if (checkPage === "checkout") {
+      navigate("/cancel-payment");
+    }
+  }, []);
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);
@@ -821,41 +827,46 @@ const origin = window.location.origin;
 
       url = `${origin}/thankyou/update?${queryParams.toString()}`;
     } else {
-      url = `${origin}/thankyou/create`;    }
+      url = `${origin}/thankyou/create`;
+    }
+    if (checkPage !== "checkout") {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/create-checkout-session`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customerId,
+              priceId,
+              promotionCode: promoCodeSend,
+              userId,
+              companyName,
+              gstNumber,
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId,
-          priceId,
-          promotionCode: promoCodeSend,
-          userId,
-          companyName,
-          gstNumber,
+              url: url,
+              cancelUrl: `${origin}/cancel-payment`,
+            }),
+          }
+        );
 
-          url: url,
-          cancelUrl : `${origin}/cancel-payment`
+        const data = await response.json();
 
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.error) {
-        setMessage(`❌ ${data.error}`);
+        if (data.error) {
+          setMessage(`❌ ${data.error}`);
+          setPopupType("failed");
+          setPopupMessage(data.error);
+        } else if (data.checkoutUrl) {
+          // Redirect to Stripe Checkout
+          sessionStorage.setItem("checkPage", "checkout");
+          window.location.href = data.checkoutUrl;
+        }
+      } catch (err) {
+        console.error("Checkout session error:", err);
+        setMessage("❌ Failed to initiate Stripe Checkout.");
         setPopupType("failed");
-        setPopupMessage(data.error);
-      } else if (data.checkoutUrl) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.checkoutUrl;
+        setPopupMessage("Failed to initiate Stripe Checkout.");
       }
-    } catch (err) {
-      console.error("Checkout session error:", err);
-      setMessage("❌ Failed to initiate Stripe Checkout.");
-      setPopupType("failed");
-      setPopupMessage("Failed to initiate Stripe Checkout.");
     }
 
     setLoading(false);
@@ -905,10 +916,10 @@ const origin = window.location.origin;
   return (
     <div className={styles.checkoutForm}>
       {loading && !popupMessage && !message && (
-      <div className={styles.loaderWrapper}>
-        <Loader2 />
-      </div>
-    )}
+        <div className={styles.loaderWrapper}>
+          <Loader2 />
+        </div>
+      )}
       {/* {step === 1 && (
         <div className={styles.checkoutFormMain}>
           <h3>Billing Address & Company Details</h3>

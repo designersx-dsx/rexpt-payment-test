@@ -10,7 +10,9 @@ const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange,sel
 
     if (currentPath.endsWith("/plan") || currentPath === "/plan") {
       navigate("/dashboard");
-    } else {
+    }else if (currentPath.endsWith("/plans") || currentPath === "/plans") {
+      navigate("/steps");} 
+    else {
       navigate(-1);
     }
   };
