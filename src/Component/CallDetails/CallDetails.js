@@ -117,6 +117,7 @@ const CallDetails = () => {
   );
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
+  let lead_type = data[ "lead_type"];
 
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
@@ -251,9 +252,9 @@ const CallDetails = () => {
               </div>
             </div>
             <div className={styles.channel}>
-              <p className={styles.Ptext}>Caller’s Type</p>
+              <p className={styles.Ptext}>Lead Type</p>
               <div>
-                <strong>Customer</strong>
+                <strong>{lead_type || "Unknown"}</strong>
               </div>
             </div>
             <div className={styles.channel}>

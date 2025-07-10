@@ -217,6 +217,7 @@ function Dashboard() {
       sessionStorage.removeItem("businessLocation");
       sessionStorage.removeItem("selectedCustomServices");
       sessionStorage.removeItem("bId");
+      
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("UpdationModeStepWise");
       localStorage.removeItem("agentName");
@@ -248,6 +249,8 @@ function Dashboard() {
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
     }
+    sessionStorage.removeItem("selectedPlan");
+    localStorage.removeItem("allPlans");
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
@@ -1809,9 +1812,7 @@ function Dashboard() {
               </div>
 
               <div className={styles.LangButton}>
-                {agent?.subscriptionId === null ? (
-                  <div className={styles.AssignNumText}></div>
-                ) : assignedNumbers.length > 0 ? (
+                { assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
                     Assigned Number
                     <p className={styles.NumberCaller}>
@@ -2284,10 +2285,10 @@ function Dashboard() {
             className={styles.modalContainer}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>Coming Soon!</h2>
+            <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-              Our exciting plans will be available shortly. You'll be able to
-              select the best one to suit your needs!
+            To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
+
             </p>
             <button
               className={`${styles.modalButton} ${styles.submit}`}

@@ -5,8 +5,13 @@ import "react-calendar/dist/Calendar.css";
 import styles from "./Clender.module.css";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 import decodeToken from "../../lib/decodeToken";
-import { API_BASE_URL, fetchDashboardDetails, getAllAgentCalls } from "../../Store/apiStore";
+import {
+  API_BASE_URL,
+  fetchDashboardDetails,
+  getAllAgentCalls,
+} from "../../Store/apiStore";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function formatDateISO(date) {
   const y = date.getFullYear();
@@ -64,29 +69,27 @@ const AgentAnalysis = () => {
     }
   }, []);
 
- const fetchCallHistory = async () => {
-  try {
-    if (selectedAgentId === "") {
-      const res = await getAllAgentCalls(userId);
-      const allCalls = res.calls || [];
-      setCallHistory(allCalls);
-    } else {
-      const response = await axios.get(
-        `${API_BASE_URL}/agent/getAgentCallHistory/${selectedAgentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const agentCalls = response.data.filteredCalls || [];
-      setCallHistory(agentCalls);
+  const fetchCallHistory = async () => {
+    try {
+      if (selectedAgentId === "") {
+        const res = await getAllAgentCalls(userId);
+        const allCalls = res.calls || [];
+        setCallHistory(allCalls);
+      } else {
+        const response = await axios.get(
+          `${API_BASE_URL}/agent/getAgentCallHistory/${selectedAgentId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const agentCalls = response.data.filteredCalls || [];
+        setCallHistory(agentCalls);
+      }
+    } catch (error) {
+      console.error("Error fetching call history:", error);
+      setCallHistory([]);
     }
-  } catch (error) {
-    console.error("Error fetching call history:", error);
-    setCallHistory([]);
-  }
-};
-
-
+  };
 
   useEffect(() => {
     fetchUserAgents();
@@ -159,6 +162,7 @@ const AgentAnalysis = () => {
       });
     }
   };
+  const navigate = useNavigate();
 
   const tileContent = ({ date, view }) => {
     if (view !== "month") return null;
@@ -168,7 +172,6 @@ const AgentAnalysis = () => {
     const callCount = items.filter((i) => i.type === "call").length;
 
     const formatCount = (count) => (count > 99 ? "99+" : count);
-
 
     return (
       <div className={styles.bookingDotContainer}>
@@ -247,7 +250,16 @@ const AgentAnalysis = () => {
                 : styles.greenBar;
 
               return (
-                <li key={index} className={styles.bookingItem}>
+                <li
+                  key={index}
+                  className={styles.bookingItem}
+                  onClick={() => {
+                    if (isCall && item.call_id) {
+                      navigate(`/call-details/${item.call_id}`);
+                    }
+                  }}
+                  style={{ cursor: isCall ? "pointer" : "default" }}
+                >
                   <div className={styles.timeColumn}>
                     <span className={styles.timeLabel}>
                       {formatTime(item.startTime || item.start_timestamp)}

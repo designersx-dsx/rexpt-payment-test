@@ -5,6 +5,7 @@ import styles from "./AgentAnalysis.module.css";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import axios from "axios";
 import { API_BASE_URL } from "../../../Store/apiStore";
+import { useNavigate } from "react-router-dom";
 
 // Helper function to format date
 function formatDateISO(date) {
@@ -28,14 +29,14 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
   const bookingsRef = useRef(null);
 
   const token = localStorage.getItem("token") || "";
-const today = new Date();
+  const today = new Date();
 
-const dayName = today.toLocaleDateString("en-GB", { weekday: "long" }); // e.g. Wednesday
-const dateString = today.toLocaleDateString("en-GB", {
-  day: "2-digit",
-  month: "long",
-  year: "numeric"
-}); // 09 July 2025
+  const dayName = today.toLocaleDateString("en-GB", { weekday: "long" });
+  const dateString = today.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }); // 09 July 2025
 
   // Fetch Call History
   const fetchCallHistory = async () => {
@@ -65,7 +66,9 @@ const dateString = today.toLocaleDateString("en-GB", {
     setSelectedDate(date);
 
     const dateStr = formatDateISO(date);
-    const callsForDate = callHistory.filter((call) => formatDateISO(new Date(call.start_timestamp)) === dateStr);
+    const callsForDate = callHistory.filter(
+      (call) => formatDateISO(new Date(call.start_timestamp)) === dateStr
+    );
     setCallsForSelectedDate(callsForDate);
 
     if (bookingsRef.current) {
@@ -75,13 +78,16 @@ const dateString = today.toLocaleDateString("en-GB", {
       });
     }
   };
+  const navigate = useNavigate();
 
   // Calendar Tile Content (only shows orange dots for calls)
   const tileContent = ({ date, view }) => {
     if (view !== "month") return null;
 
     const dateStr = formatDateISO(date);
-    const callsForDate = callHistory.filter((call) => formatDateISO(new Date(call.start_timestamp)) === dateStr);
+    const callsForDate = callHistory.filter(
+      (call) => formatDateISO(new Date(call.start_timestamp)) === dateStr
+    );
 
     const callCount = callsForDate.length;
 
@@ -162,25 +168,35 @@ const dateString = today.toLocaleDateString("en-GB", {
           <ul>
             {callsForSelectedDate.map((call, index) => {
               return (
-                <li key={index} className={styles.bookingCard}>
-                  <div className={styles.bookingCard}>
-                    <div className={styles.time}>
-                      {formatTime(call.start_timestamp)}{" "}
-                      {call.end_timestamp && `- ${formatTime(call.end_timestamp)}`}
-                    </div>
+                <li
+                  key={index}
+                  className={styles.bookingCard}
+                  onClick={() => {
+                    if (call.call_id) {
+                      navigate(`/call-details/${call.call_id}`);
+                    }
+                  }}
+                  style={{ cursor: call.call_id ? "pointer" : "default" }}
+                >
+                  <div className={styles.time}>
+                    {formatTime(call.start_timestamp)}{" "}
+                    {call.end_timestamp &&
+                      `- ${formatTime(call.end_timestamp)}`}
+                  </div>
 
-                    <div className={styles.detailColumn}>
-                      <div className={styles.line}>
-                        <span className={styles.titleText}>
-                          <b>Caller:</b>{" "}
-                          {call.custom_analysis_data
-                            ? call.custom_analysis_data["_detailed _call _summery"] || "N/A"
-                            : "N/A"}
-                        </span>
-                      </div>
-                      <div className={styles.timeRange}>
-                        <b>Phone:</b> {call.call_type}
-                      </div>
+                  <div className={styles.detailColumn}>
+                    <div className={styles.line}>
+                      <span className={styles.titleText}>
+                        <b>Caller:</b>{" "}
+                        {call.custom_analysis_data
+                          ? call.custom_analysis_data[
+                              "_detailed _call _summery"
+                            ] || "N/A"
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className={styles.timeRange}>
+                      <b>Phone:</b> {call.call_type}
                     </div>
                   </div>
                 </li>
