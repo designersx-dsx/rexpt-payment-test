@@ -203,6 +203,25 @@ text-transform: uppercase;
   transform: translateX(20px);
 }
 
+.phoneInputWrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.countryCodeInput {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.phoneNumberInput {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 
 
 
