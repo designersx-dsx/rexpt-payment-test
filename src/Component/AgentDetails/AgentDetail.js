@@ -872,7 +872,7 @@ const AgentDashboard = () => {
                   onClick={() => handleOpenBusinessView(agentData)}
                 >
                   <h4>Business Details</h4>
-                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                  <img className={styles.Editsvg} src="/svg/eye-svg.svg" />
 
                 </div>
               </div>
@@ -960,7 +960,7 @@ const AgentDashboard = () => {
                   onClick={() => handleOpenKnowledgeView(agentData)}
                 >
                   <h4>Knowledge Base</h4>
-                  <img className={styles.Editsvg} src="/svg/edit-svg.svg" />
+                  <img className={styles.Editsvg} src="/svg/eye-svg.svg" />
 
                 </div>
               </div>
