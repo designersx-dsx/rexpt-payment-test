@@ -225,8 +225,8 @@ const Planss = () => {
                         };
                     });
 
-                    console.log("product",product)
-                    console.log("matchedData",matchedData)
+                    // console.log("product",product)
+                    // console.log("matchedData",matchedData)
 
 
 
@@ -240,7 +240,7 @@ const Planss = () => {
                         features: product.metadata?.features
                             ? JSON.parse(product.metadata.features)
                             : [
-                                `${matchedData?.metadata?.["minutes-month"] || "0"} minutes / month,` ,
+                                `${matchedData?.metadata?.["minutes-month"] || "0"} minutes / month` ,
                                 "FREE VoIP Number",
                                 "Agent Characterization",
                                 "24/7 Availability",
