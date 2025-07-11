@@ -372,16 +372,21 @@ function CheckoutForm({
     await callNextApiAndRedirect();
   };
   useEffect(() => {
-    const checkPage = sessionStorage.getItem("checkPage");
+    const handlePageShow = (event) => {
+      const checkPage = sessionStorage.getItem("checkPage");
+      const navEntries = performance.getEntriesByType("navigation");
+      const isBack = event.persisted || navEntries[0]?.type === "back_forward";
 
-    const navEntries = window.performance.getEntriesByType("navigation");
-    const isBackNavigation = navEntries[0]?.type === "back_forward";
+      if (checkPage === "checkout" && isBack) {
+        sessionStorage.removeItem("checkPage");
+        // Force hard redirect
+        window.location.href = "/cancel-payment";
+      }
+    };
 
-    if (checkPage === "checkout" && isBackNavigation) {
-      // sessionStorage.removeItem("checkPage"); // clean it up
-      navigate("/cancel-payment");
-    }
-  }, []);
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []); // ✅ No dependency needed
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);
