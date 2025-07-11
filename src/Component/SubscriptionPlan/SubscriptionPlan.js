@@ -98,7 +98,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -130,7 +130,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     const matchedData = product.data?.data?.find(
                         (p) => p.id === product.id
                     );
-                    console.log("matchedDatamatchedData",matchedData)
+                    console.log("matchedDatamatchedData", matchedData)
 
                     const matchingPrices = product.prices.filter(
                         (p) =>
@@ -356,9 +356,11 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                 </h3>
                                                 <p className={styles.mainPrice}>
                                                     <b className={styles.doolor}>
-                                                        {monthlyPrice
-                                                            ? `${currencySymbol}${formatPrice((monthlyPrice.unit_amount / 100))}`
-                                                            : `${currencySymbol}0`}
+                                                        {priceForInterval
+                                                            ? `${getCurrencySymbol(priceForInterval.currency)}${formatPrice(
+                                                                (priceForInterval.unit_amount / 100) / (interval === "year" ? 12 : 1)
+                                                            )}`
+                                                            : `${getCurrencySymbol(userCurrency)}0`}
                                                     </b>
                                                     /month per agent
                                                 </p>
@@ -442,15 +444,15 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
                                             (() => {
                                                 const monthlyTotal = monthlyPrice.unit_amount;
-                                                console.log("monthlyPrice", monthlyPrice)
+                                                // console.log("monthlyPrice", monthlyPrice)
                                                 const yearlyTotal = yearlyPrice.unit_amount / 12;
-                                                console.log("yearlyTotal", yearlyPrice)
+                                                // console.log("yearlyTotal", yearlyPrice)
                                                 const savings = monthlyTotal - yearlyTotal;
                                                 const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
 
                                                 return (
                                                     <div className={styles.discount}>
-                                                        You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100))}/month) compared to monthly billing
+                                                        You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100))}/monthly & {getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100 * 12))}/yearly) compared to monthly billing
                                                     </div>
                                                 );
                                             })()
@@ -462,7 +464,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                     priceForInterval
                                                         ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
                                                             formatPrice(priceForInterval.unit_amount / 100
-                                                        ))}/${priceForInterval.interval}`
+                                                            ))}/${priceForInterval.interval}`
                                                         : "Unavailable"
                                                 }
                                                 position={{ position: "relative" }}

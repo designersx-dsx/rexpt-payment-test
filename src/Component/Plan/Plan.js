@@ -11,6 +11,7 @@ import Loader2 from '../Loader2/Loader2';
 import { listAgents } from '../../Store/apiStore';
 import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import decodeToken from "../../lib/decodeToken";
+import PopUp from '../Popup/Popup';
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Planss = () => {
@@ -32,12 +33,20 @@ const Planss = () => {
     const [userId, setUserId] = useState(userIdFromToken)
     const navigate = useNavigate();
     const location = useLocation();
-    ;
+    const [currentPlanIdx, setCurrentPlanIdx] = useState(null);
+
+    const [popupMessage, setPopupMessage] = useState("");
+    const [popupType, setPopupType] = useState("success");
+    const [renderHTML, setRenderHTML] = useState(false); // NEW
+
+
     let agentID = location?.state?.agentID
 
     let subscriptionID = location?.state?.subscriptionID
     let locationPath = location?.state?.locationPath
-    // console.log(location, "agent",)
+    let agentPlan = location?.state?.planName
+    let interval = location?.state?.interval
+    console.log("interval", interval)
 
     const handleClick = () => {
         setFreeTrial(!freeTrial);
@@ -156,7 +165,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -185,7 +194,7 @@ const Planss = () => {
 
                 // Step 1: Enrich each product WITHOUT assigning color
                 let enrichedPlans = data.map((product) => {
-                    const matchedData = product.data?.data?.find(
+                    const matchedData = product.data?.find(
                         (p) => p.id === product.id
                     );
 
@@ -216,7 +225,10 @@ const Planss = () => {
                         };
                     });
 
-                    
+                    // console.log("product",product)
+                    // console.log("matchedData",matchedData)
+
+
 
                     return {
                         ...product,
@@ -228,7 +240,7 @@ const Planss = () => {
                         features: product.metadata?.features
                             ? JSON.parse(product.metadata.features)
                             : [
-                                `${matchedData?.metadata?.["minutes-month"] || "0"} minutes / month`, ,
+                                `${matchedData?.metadata?.["minutes-month"] || "0"} minutes / month`,
                                 "FREE VoIP Number",
                                 "Agent Characterization",
                                 "24/7 Availability",
@@ -252,6 +264,17 @@ const Planss = () => {
                     return bPrice - aPrice;
                 });
 
+                let currentPlanIndex = -1;
+                const agentPlanName = agentPlan?.toLowerCase()?.trim();
+
+                enrichedPlans.forEach((plan, idx) => {
+                    if (plan.title?.toLowerCase() === agentPlanName) {
+                        currentPlanIndex = enrichedPlans.length - 1 - idx;
+                    }
+                });
+                setCurrentPlanIdx(currentPlanIndex);
+
+
                 // Step 3: Assign reversed colors and circles
                 const total = enrichedPlans.length;
                 enrichedPlans = enrichedPlans.map((plan, index) => {
@@ -263,10 +286,19 @@ const Planss = () => {
                     };
                 });
 
-                // Step 4: Init toggle state
                 const toggleInit = {};
+                // const agentPlanName = agentPlan?.toLowerCase()?.trim();;
+                const currentInterval = interval?.toLowerCase(); // from location.state
+
                 enrichedPlans.forEach((plan) => {
-                    toggleInit[plan.id] = false; // monthly by default
+                    const isCurrentPlan = plan.title?.toLowerCase() === agentPlanName;
+
+                    // Preselect toggle only for the current plan and its interval
+                    if (isCurrentPlan && currentInterval === "year") {
+                        toggleInit[plan.id] = true; // ✅ Set toggle ON for Yearly
+                    } else {
+                        toggleInit[plan.id] = false; // All others Monthly
+                    }
                 });
 
                 const finalPlans = enrichedPlans.reverse()
@@ -347,6 +379,16 @@ const Planss = () => {
             <div className={styles.wrapper}>
                 <Slider ref={sliderRef} {...settings}>
                     {products.map((plan, index) => {
+                        const isSamePlanName = index === currentPlanIdx;
+                        const isToggleYearly = toggleStates[plan.id] === true;
+                        const isOriginalYearly = location?.state?.interval === 'year';
+
+                        // ✅ Only mark as "current" if name & interval match
+                        const isCurrentPlan = isSamePlanName && (
+                            (isOriginalYearly && isToggleYearly) ||
+                            (!isOriginalYearly && !isToggleYearly)
+                        );
+                        const isDowngrade = currentPlanIdx !== null && index < currentPlanIdx;
                         const isYearly = toggleStates[plan.id];
                         const interval = isYearly ? "year" : "month";
                         const priceForInterval = plan.prices.find((p) => p.interval === interval);
@@ -392,9 +434,11 @@ const Planss = () => {
                                             </h3>
                                             <p className={styles.mainPrice}>
                                                 <b className={styles.doolor}>
-                                                    {monthlyPrice
-                                                        ? `${currencySymbol}${formatPrice((monthlyPrice.unit_amount / 100))}`
-                                                        : `${currencySymbol}0`}
+                                                    {priceForInterval
+                                                        ? `${getCurrencySymbol(priceForInterval.currency)}${formatPrice(
+                                                            (priceForInterval.unit_amount / 100) / (interval === "year" ? 12 : 1)
+                                                        )}`
+                                                        : `${getCurrencySymbol(userCurrency)}0`}
                                                 </b>
                                                 /month per agent
                                             </p>
@@ -450,14 +494,41 @@ const Planss = () => {
                                                 checked={toggleStates[plan.id]}
                                                 onChange={(e) => {
                                                     const isYearly = e.target.checked;
-                                                    const newState = {};
-                                                    products.forEach((p) => {
-                                                        newState[p.id] = false; // default to Monthly
+
+                                                    // Prevent current plan from toggling (downgrade)
+                                                    if (
+                                                        index === currentPlanIdx &&
+                                                        location?.state?.interval === 'year' && // interval from location.state
+                                                        !isYearly
+                                                    ) {
+                                                        setPopupType("failed");
+                                                        setPopupMessage(
+                                                            `Switching from a yearly to a monthly plan isn’t something you can do on your own (just yet!). But no worries—our support team is ready to help. <a href="mailto:support@rxpt.us" style="color:purple;">Contact Support</a>!`
+                                                        );
+                                                        setRenderHTML(true); // <-- make sure you pass this prop
+                                                        return
+                                                    }
+
+                                                    setToggleStates((prevState) => {
+                                                        const newState = {};
+
+                                                        products.forEach((p, i) => {
+                                                            // If it's the current plan, preserve its toggle state
+                                                            if (i === currentPlanIdx) {
+                                                                newState[p.id] = prevState[p.id];
+                                                            } else {
+                                                                newState[p.id] = false; // Reset all other plans to Monthly
+                                                            }
+                                                        });
+
+                                                        newState[plan.id] = isYearly;
+
+                                                        return newState;
                                                     });
-                                                    newState[plan.id] = isYearly; // only current one is Yearly if checked
-                                                    setToggleStates(newState);
+
                                                 }}
                                             />
+
                                             <span className={styles.slider}></span>
                                         </label>
                                         <span
@@ -472,15 +543,13 @@ const Planss = () => {
                                     {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
                                         (() => {
                                             const monthlyTotal = monthlyPrice.unit_amount;
-                                            console.log("monthlyPrice", monthlyPrice)
                                             const yearlyTotal = yearlyPrice.unit_amount / 12;
-                                            console.log("yearlyTotal", yearlyPrice)
                                             const savings = monthlyTotal - yearlyTotal;
                                             const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
 
                                             return (
                                                 <div className={styles.discount}>
-                                                    You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100))}/month) compared to monthly billing
+                                                    You save {savingsPercent}% ({getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100))}/monthly & {getCurrencySymbol(yearlyPrice.currency)}{formatPrice((savings / 100 * 12))}/yearly) compared to monthly billing
                                                 </div>
                                             );
                                         })()
@@ -489,18 +558,27 @@ const Planss = () => {
                                     <div className={styles.stickyWrapper}>
                                         <AnimatedButton
                                             label={
-                                                priceForInterval
-                                                    ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
-                                                        formatPrice(priceForInterval.unit_amount / 100
-                                                    ))}/${priceForInterval.interval}`
-                                                    : "Unavailable"
+                                                isCurrentPlan
+                                                    ? "Current Plan"
+                                                    : priceForInterval
+                                                        ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${formatPrice(priceForInterval.unit_amount / 100)}/${priceForInterval.interval}`
+                                                        : "Unavailable"
                                             }
+                                            disabled={isCurrentPlan}
                                             position={{ position: "relative" }}
                                             size="13px"
                                             onClick={() => {
+                                                if (isDowngrade) {
+                                                    setPopupType("failed");
+                                                    setPopupMessage(
+                                                        `To switch to a lower-tier plan, please reach out to our support team. We’ll make it smooth and simple! <a href="mailto:support@rxpt.us" style="color: purple; text-decoration: underline;">Contact Support</a>`
+                                                    );
+                                                    setRenderHTML(true);
+                                                    return;
+                                                }
                                                 if (priceForInterval) {
-                                                    console.log("plan",plan)
-                                                    sessionStorage.setItem("selectedPlan",plan?.name)
+                                                    console.log("plan", plan)
+                                                    sessionStorage.setItem("selectedPlan", plan?.name)
 
                                                     if (agentID) {
                                                         navigate(`/checkout`, { state: { priceId: priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
@@ -669,7 +747,20 @@ const Planss = () => {
                     })}
                 </div>
             </div>
+
               </div>
+
+            {popupMessage && (
+                <PopUp
+                    type={popupType}
+                    message={popupMessage}
+                    renderHTML={true}
+
+                    onClose={() => setPopupMessage("")}
+                //   onConfirm={handleLogoutConfirm}
+                />
+            )}
+
         </div>
     );
 };

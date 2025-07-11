@@ -745,7 +745,7 @@ return (
            {showPopup && (
                     <PopUp
                     type={popupType}
-                    // onClose={handleCloseConfirmation}
+                    onClose={()=>{setShowPopup(false)}}
                     message={popupMessage}
                     // onConfirm={handleConfirmGMBChange}
                     />

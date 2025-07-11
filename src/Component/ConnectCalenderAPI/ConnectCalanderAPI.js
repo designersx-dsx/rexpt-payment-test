@@ -50,7 +50,7 @@ const CalendarConnect = () => {
           body: JSON.stringify({ calApiKey: trimmedKey, userId: userId }),
         }
       );
-
+      sessionStorage.setItem("userCalApiKey", trimmedKey)
       if (!response.ok) {
         const errorData = await response.json();
 
@@ -104,6 +104,7 @@ const CalendarConnect = () => {
             slug: slug,
             length: eventLength,
           }),
+
         }
       );
 
@@ -114,7 +115,7 @@ const CalendarConnect = () => {
 
       const data = await response.json();
       const eventTypeId = data?.event_type?.id;
-
+      setApiSubmitting(true)
       if (!eventTypeId) {
         throw new Error("Event ID not received from Cal.com");
       }
@@ -202,13 +203,13 @@ const CalendarConnect = () => {
   }, []);
   return (
     <div className={styles.calenderMain}>
-    <HeaderBar title="Connect Calendar" />
+      <HeaderBar title="Connect Calendar" />
       <div className={styles.container}>
-    
+
         <p className={styles.TopPara}>
           You can easily{" "}
           <strong>Connect your personal or business Calendar</strong> with your{" "}
-          <a href="#">Rexptin Agent</a> to receive calendar Meetings.
+          <a href="">Rexptin Agent</a> to receive calendar Meetings.
         </p>
 
         <div className={styles.supportSection}>
@@ -294,7 +295,7 @@ const CalendarConnect = () => {
           <div className={styles.offSwitch}>
 
             <a target="_blank"
-              rel="noopener noreferrer" href="https://cal.com/?via=designersx&dub_id=kTPL5nvpvLqoLhE2">
+              rel="noopener noreferrer" href="https://cal.com/?via=rexptin&dub_id=7NCpqAziwR4aWcXl">
               {" "}
               <div className={styles.recommendation}>
                 <img src="/images/CalCOm.png" />

@@ -697,13 +697,11 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     // if (savedShowInput !== null) {
       setShowInput(savedShowInput);
     // }
-  }, []);
+  }, [showInput]);
   useEffect(() => {
     if ((businessDetails?.businessType === "Other")) {
-
       sessionStorage.setItem("showInput", JSON.stringify(true));
     }
-
   }, [businessDetails])
   useEffect(() => {
     const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"))
@@ -716,6 +714,8 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       }, 100);
     }
   }, [customServices])
+
+  console.log("Selected businessType:", businessType);
   return (
     <div className={styles.container} id="servies">
       <div className={styles.searchBox}>

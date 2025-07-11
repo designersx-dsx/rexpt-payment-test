@@ -163,7 +163,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
             />
           </div>
         )} */}
-        {isCropping && (uploadedImage || capturedImage) && (
+        {/* {isCropping && (uploadedImage || capturedImage) && (
           <div className={styles.cropContainer}>
             <Cropper
               image={uploadedImage || capturedImage}
@@ -175,7 +175,7 @@ const UploadProfile = ({ onClose, onUpload }) => {
               onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
             />
           </div>
-        )}
+        )} */}
 
 
 

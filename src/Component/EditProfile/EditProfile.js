@@ -424,7 +424,7 @@ const EditProfile = () => {
                     <hr className={styles.hrLine} />
                   </div>
                 </div>
-                <div className={styles.Part}>
+                {/* <div className={styles.Part}>
                   <img src="svg/line-email.svg" />
                   <div className={styles.infoItem}>
                     <label>Email</label>
@@ -439,7 +439,7 @@ const EditProfile = () => {
                     )}
                     <hr className={styles.hrLine} />
                   </div>
-                </div>
+                </div> */}
 
                 {!emailVerified && formData.email !== initialData?.email && (
                   <>
@@ -605,7 +605,7 @@ const EditProfile = () => {
                       maxLength={10000}
                     />
                     <hr className={styles.hrLine} />
-                    {isUploadModalOpen && (
+                    {/* {isUploadModalOpen && (
                       <UploadProfile
                         onClose={closeUploadModal}
                         onUpload={handleUpload}
@@ -615,7 +615,7 @@ const EditProfile = () => {
                           "Images/editProfile.png"
                         }
                       />
-                    )}
+                    )} */}
                   </div>
 
 
@@ -749,6 +749,17 @@ const EditProfile = () => {
               </div>
             )}
           </div>
+                 {isUploadModalOpen && (
+                      <UploadProfile
+                        onClose={closeUploadModal}
+                        onUpload={handleUpload}
+                        currentProfile={
+                          uploadedImage ||
+                          formData.profilePicture ||
+                          "Images/editProfile.png"
+                        }
+                      />
+                    )}
         </>
       )}
       {showPopup && (

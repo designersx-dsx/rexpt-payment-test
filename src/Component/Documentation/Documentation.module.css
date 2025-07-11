@@ -1,0 +1,145 @@
+/* .container {
+  max-width: 450px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 50px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 18px;
+  color: #24252C;
+  font-weight: 600;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.sectionList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  border: 1px solid #E0E5F2;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  height: 55px;
+  outline: none; 
+
+}
+
+.sectionItem:hover {
+  background-color: #6524EB;
+  color: white;
+}
+
+.sectionItem:hover .sectionText {
+  color: white;
+}
+
+.sectionItem:hover .arrow svg path {
+  fill: white;
+}
+
+.sectionItem:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.sectionText {
+  font-size: 16px;
+  color: #24252C;
+  font-weight: 500;
+  flex-grow: 1;
+}
+
+.arrow {
+  margin-left: auto;
+} */
+
+.container {
+  max-width: 450px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 50px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 18px;
+  color: #24252C;
+  font-weight: 600;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.sectionList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  border: 1px solid #E0E5F2;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+  height: 55px;
+  outline: none; /* remove focus outline */
+}
+
+.sectionItem:hover {
+  background-color: #6524EB;
+  color: white;
+}
+
+.sectionItem:hover .sectionText {
+  color: white;
+}
+
+.sectionItem:hover .arrow svg path {
+  fill: white;
+}
+
+/* 👇 NEW: Selected state */
+.selected {
+  background-color: #6524EB;
+  color: white;
+}
+
+.selected .sectionText {
+  color: white;
+}
+
+.selected .arrow svg path {
+  fill: white;
+}
+
+.sectionText {
+  font-size: 16px;
+  color: #24252C;
+  font-weight: 500;
+  flex-grow: 1;
+}
+
+.arrow {
+  margin-left: auto;
+}

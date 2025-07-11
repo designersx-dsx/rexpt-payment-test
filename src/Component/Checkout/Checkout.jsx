@@ -17,12 +17,12 @@ import { Label } from "recharts";
 import Select from "react-select";
 import Loader2 from "../Loader2/Loader2";
 
-// const stripePromise = loadStripe(
-//   "pk_live_51RYjjKSCQQfKS3WDzVLb6c2Xk6Gdt2NaJ7pF5eWRDk345NQY1TNBOgxy5CUYCWAsWsqU1pJx8Bi56Ue7U5vg2Noe00HMCU3IXV"
-// );
 const stripePromise = loadStripe(
-  "pk_test_51RQodQ4T6s9Z2zBzHe6xifROxlIMVsodSNxf2MnmDX3AwkI44JT3AjDuyQZEoZq9Zha69WiA8ecnXZZ2sw9iY5sP007jJUxE52"
+  "pk_live_51RYjjKSCQQfKS3WDzVLb6c2Xk6Gdt2NaJ7pF5eWRDk345NQY1TNBOgxy5CUYCWAsWsqU1pJx8Bi56Ue7U5vg2Noe00HMCU3IXV"
 );
+// const stripePromise = loadStripe(
+//   "pk_test_51RQodQ4T6s9Z2zBzHe6xifROxlIMVsodSNxf2MnmDX3AwkI44JT3AjDuyQZEoZq9Zha69WiA8ecnXZZ2sw9iY5sP007jJUxE52"
+// );
 
 function CheckoutForm({
   customerId,
@@ -49,6 +49,7 @@ function CheckoutForm({
   const location = useLocation();
 
   const currentLocation = location.pathname;
+  console.log("currentLocation", location);
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -371,10 +372,21 @@ function CheckoutForm({
     await callNextApiAndRedirect();
   };
   useEffect(() => {
-    if (checkPage === "checkout") {
-      navigate("/cancel-payment");
-    }
-  }, [location.pathname]);
+    const handlePageShow = (event) => {
+      const checkPage = sessionStorage.getItem("checkPage");
+      const navEntries = performance.getEntriesByType("navigation");
+      const isBack = event.persisted || navEntries[0]?.type === "back_forward";
+
+      if (checkPage === "checkout" && isBack) {
+        sessionStorage.removeItem("checkPage");
+        // Force hard redirect
+        window.location.href = "/cancel-payment";
+      }
+    };
+
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []); // ✅ No dependency needed
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);

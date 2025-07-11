@@ -11,6 +11,7 @@ import axios from 'axios';
 import getKnowledgeBaseName from '../../utils/getKnowledgeBaseName';
 import { API_BASE_URL } from '../../Store/apiStore';
 import { useDashboardStore } from '../../Store/agentZustandStore';
+import { red } from '@mui/material/colors';
 const EditBusinessDetail = () => {
     const agentnm=sessionStorage.getItem("agentName");
      const [businessName, setBusinessName] = useState("");
@@ -22,6 +23,8 @@ const EditBusinessDetail = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [emailError, setEmailError] = useState('');
+
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
@@ -92,6 +95,14 @@ const EditBusinessDetail = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+   if (document.activeElement && document.activeElement.blur) {
+    document.activeElement.blur();
+  }
+
+  if(emailError){
+      return
+  }
     try {
       setLoading(true);
       const aboutBusinessForm = JSON.parse(
@@ -339,7 +350,7 @@ const EditBusinessDetail = () => {
 
             </div>
 
-            <div className={styles.container}>
+      <div className={styles.container}>
       <div className={styles.inputSection}>
         <label className={styles.label}>Business Name</label>
         <input
@@ -377,8 +388,9 @@ const EditBusinessDetail = () => {
           type="text"
           className={styles.input}
           placeholder="Your Business Location "
-            value={address}
-    onChange={(e) => handleInputChange("address", e.target.value)}
+          maxLength={150}
+          value={address}
+          onChange={(e) => handleInputChange("address", e.target.value)}
          
         />
       </div>
@@ -390,10 +402,20 @@ const EditBusinessDetail = () => {
           className={styles.input}
           placeholder="Business Email Address"
            value={email}
-    onChange={(e) => handleInputChange("email", e.target.value)}
+           onChange={(e) => handleInputChange("email", e.target.value)}
     
-         
+          onBlur={(e) => {
+            const value = e.target.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (value && !emailRegex.test(value)) {
+             setEmailError("Please enter a valid email address.");
+            }else{
+              setEmailError('');
+            }
+          }}
         />
+        {emailError && <p style={{color:'red'}}>{emailError}</p> }
       </div>
 
       <div className={styles.inputSection}>
