@@ -374,7 +374,7 @@ function CheckoutForm({
     if (checkPage === "checkout") {
       navigate("/cancel-payment");
     }
-  }, []);
+  }, [location.pathname]);
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);
