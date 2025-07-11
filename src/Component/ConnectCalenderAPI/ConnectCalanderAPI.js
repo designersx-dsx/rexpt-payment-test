@@ -50,7 +50,7 @@ const CalendarConnect = () => {
           body: JSON.stringify({ calApiKey: trimmedKey, userId: userId }),
         }
       );
-
+      sessionStorage.setItem("userCalApiKey", trimmedKey)
       if (!response.ok) {
         const errorData = await response.json();
 

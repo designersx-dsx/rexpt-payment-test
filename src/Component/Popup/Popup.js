@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import styles from './Popup.module.css'
-const PopUp = ({ type, message, onClose = () => { }, onConfirm = () => { } }) => {
+const PopUp = ({ type, message, renderHTML = false, onClose = () => { }, onConfirm = () => { } }) => {
     const [show, setShow] = useState(false);
 
-  useEffect(() => {
+    useEffect(() => {
         if (message) {
             setShow(true);
             document.body.style.overflow = 'hidden';
@@ -14,7 +14,7 @@ const PopUp = ({ type, message, onClose = () => { }, onConfirm = () => { } }) =>
             document.body.style.overflow = '';
         };
     }, [message]);
-        // ESC key to close popup
+    // ESC key to close popup
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
@@ -51,7 +51,16 @@ const PopUp = ({ type, message, onClose = () => { }, onConfirm = () => { } }) =>
             <div className={`${styles.overlay} ${show ? styles.fadeIn : styles.fadeOut}`}>
                 <div className={`${styles.popup} ${styles[type]} ${show ? styles.scaleIn : styles.scaleOut}`}>
                     <img src={getIconPath()} alt={type} className={`${styles.icon} ${styles.animateIcon}`} onClick={handleClose} />
-                    <p className={styles.message}>{message}</p>
+                    {renderHTML ? (
+                        <p
+                            className={styles.message}
+                            dangerouslySetInnerHTML={{ __html: message }}
+                        />
+                    ) : (
+                        <p className={styles.message}>{message}</p>
+                    )}
+
+
 
                     {type === "confirm" ? (
                         <div className={styles.buttons}>

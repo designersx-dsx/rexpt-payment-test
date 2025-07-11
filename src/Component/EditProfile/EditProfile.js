@@ -605,7 +605,7 @@ const EditProfile = () => {
                       maxLength={10000}
                     />
                     <hr className={styles.hrLine} />
-                    {isUploadModalOpen && (
+                    {/* {isUploadModalOpen && (
                       <UploadProfile
                         onClose={closeUploadModal}
                         onUpload={handleUpload}
@@ -615,7 +615,7 @@ const EditProfile = () => {
                           "Images/editProfile.png"
                         }
                       />
-                    )}
+                    )} */}
                   </div>
 
 
@@ -749,6 +749,17 @@ const EditProfile = () => {
               </div>
             )}
           </div>
+                 {isUploadModalOpen && (
+                      <UploadProfile
+                        onClose={closeUploadModal}
+                        onUpload={handleUpload}
+                        currentProfile={
+                          uploadedImage ||
+                          formData.profilePicture ||
+                          "Images/editProfile.png"
+                        }
+                      />
+                    )}
         </>
       )}
       {showPopup && (
