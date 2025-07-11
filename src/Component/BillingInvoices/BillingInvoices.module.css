@@ -18,7 +18,7 @@
 
 th {
     text-align: left;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 500;
     color: #888888;
     padding-bottom: 12px;
@@ -33,17 +33,17 @@ td {
 }
 
 .dateCell {
-    line-height: 1.4;
+    line-height: 1;
 }
 
 .time {
     font-weight: 700;
     color: #24252c;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .date {
-    font-size: 16px;
+    font-size: 14px;
     color: #24252C;
 }
 
@@ -53,7 +53,7 @@ td {
     padding: 4px 8px;
     border-radius: 4px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     display: inline-block;
 }
 

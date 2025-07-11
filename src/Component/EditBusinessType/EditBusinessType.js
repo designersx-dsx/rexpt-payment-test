@@ -472,7 +472,7 @@ const EditBusinessType = () => {
 
                     </div>
                     <div className={styles.stickyWrapper} onClick={handlesave}>
-                        <AnimatedButton label="Save" isLoading={Loading}/>
+                        <AnimatedButton label="Save" isLoading={Loading}  position={{ position: 'relative'}}/>
                     </div>
                 </div>
                   {showPopup && (
