@@ -323,7 +323,6 @@ function Dashboard() {
       // console.log(res, "res")
       setUserCalApiKey(res?.calApiKey);
       sessionStorage.setItem("userCalApiKey", res?.calApiKey);
-
       let agentsWithCalKeys = res.agents || [];
       const calApiAgents = await fetchCalApiKeys(userId);
       const calApiKeyMap = {};
@@ -547,7 +546,6 @@ function Dashboard() {
     setRetellWebClient(client);
   }, []);
   const handleDelete = async (agent) => {
-    console.log("agent", agent)
     const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
     try {
@@ -1406,7 +1404,6 @@ function Dashboard() {
     }
   };
   const handleConnectCal = (agent) => {
-    console.log(agent, "agent");
     navigate("/connect-calender");
     sessionStorage.setItem("agentDetails", JSON.stringify(agent));
   };
@@ -1809,7 +1806,7 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== "") {
+                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== ""&&userCalApiKey !== "undefined") {
                             handleConnectCalApiAlready(agent);
                           } else {
                             handleConnectCal(agent);
