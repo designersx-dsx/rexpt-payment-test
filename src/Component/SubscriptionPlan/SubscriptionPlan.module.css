@@ -336,6 +336,7 @@
     color: #5F33E1;
     margin-bottom: 10px;
     text-decoration: underline;
+    cursor: pointer;
 }
 
 /* Toggle Switch */
@@ -353,6 +354,7 @@
     position: relative;
     width: 40px;
     height: 20px;
+    cursor: pointer;
 }
 
 .toggleSwitch input {

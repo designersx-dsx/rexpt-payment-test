@@ -10,6 +10,7 @@ import styles from "./checkout.module.css";
 import axios from "axios";
 import useUser from "../../Store/Context/UserContext";
 import decodeToken from "../../lib/decodeToken";
+import Loader2 from "../Loader2/Loader2";
 export default function SubscriptionFlow() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -90,6 +91,13 @@ export default function SubscriptionFlow() {
 
     checkSubscription();
   }, [ customerId, priceId]);
+
+  useEffect(() => {
+    const checkPage = sessionStorage.getItem("checkPage");
+      if (checkPage === "checkout") {
+        navigate("/cancel-payment");
+      }
+    }, [location.pathname]);
 
   // Handlers
   // const sendOtp = async () => {
@@ -212,6 +220,12 @@ export default function SubscriptionFlow() {
   return (
     <div className={styles.container}>
       {/* <h2>Complete Your Payment</h2> */}
+
+      {/* {loading && !popupMessage && !message && ( */}
+              <div className={styles.loaderWrapper}>
+                <Loader2 />
+              </div>
+            {/* )} */}
 
       {/* Email Input with Edit button */}
       <div

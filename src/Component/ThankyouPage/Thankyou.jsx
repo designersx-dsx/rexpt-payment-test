@@ -332,7 +332,6 @@ function Thankyou() {
           <div className={styles.row}>
             <span>Next Billing Date:</span>
             <div className={styles.Right50}>
-              <a href="#">
                 {subscriptionInfo
                   ? new Date(
                       subscriptionInfo.nextRenewalDate
@@ -342,7 +341,6 @@ function Thankyou() {
                       day: "numeric",
                     })
                   : "06 July 2026"}
-              </a>
             </div>
           </div>
           <div className={styles.ButtonTakeME}>

@@ -49,6 +49,7 @@ function CheckoutForm({
   const location = useLocation();
 
   const currentLocation = location.pathname;
+  console.log("currentLocation",location)
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -370,11 +371,11 @@ function CheckoutForm({
     // Call next API here and navigate to the dashboardd
     await callNextApiAndRedirect();
   };
-  useEffect(() => {
-    if (checkPage === "checkout") {
-      navigate("/cancel-payment");
-    }
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   if (checkPage === "checkout") {
+  //     navigate("/cancel-payment");
+  //   }
+  // }, [location.pathname]);
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);
