@@ -708,7 +708,7 @@ setLoading(true);
                 <BillingInvoices invoices={subscriptionDetails?.invoices||[]}/>
               </div>
             </div>
-            {/* <div className={styles.deleteSection}>
+            <div className={styles.deleteSection}>
               <button
                 className={styles.deleteButton}
                 onClick={() => setShowDeleteModal(true)}
@@ -746,7 +746,7 @@ setLoading(true);
                   </div>
                 </div>
               </div>
-            )} */}
+            )}
           </div>
         </>
       )}
