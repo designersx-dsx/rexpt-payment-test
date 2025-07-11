@@ -1089,7 +1089,6 @@ function Dashboard() {
   //       setDeactivateLoading(false);
   //     }
   //   };
-
   const handleDeactivateAgent = async () => {
     try {
       setDeactivateLoading(true);
@@ -1318,7 +1317,6 @@ function Dashboard() {
       setDeactivateLoading(false);
     }
   };
-
   const handleUpgradeClick = (agent) => {
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
@@ -1453,7 +1451,7 @@ function Dashboard() {
     return number;
   }
 
-
+console.log(localAgents,"agent")
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1598,7 +1596,7 @@ function Dashboard() {
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
-
+    
           let assignedNumbers = [];
           if (agent.voip_numbers) {
             try {
@@ -1811,7 +1809,7 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          if (userCalApiKey) {
+                          if (!userCalApiKey===null) {
                             handleConnectCalApiAlready(agent);
                           } else {
                             handleConnectCal(agent);
