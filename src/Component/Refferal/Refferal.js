@@ -108,10 +108,10 @@ const Refferal = ({referralCode,setShowDashboardReferral,showDashboardReferral,u
                 <div className={styles.infoSection}>
                     <div className={styles.Linkdec}>
                         <img src='/svg/earn-icon.svg' alt='earn-icon' />
-                        <p>Share your referral link and <b>earn 10% commission</b> of your friends’ spending.</p>
+                        <p>Share your referral link and <b>earn 5% commission</b> of your friends’ spending.</p>
                     </div>
                       <div className={styles.Linkdec}>
-                        <img src='/svg/commission2.svg' alt='commission-icon' />
+                        <img src='/svg/Gift-icon.svg' alt='commission-icon' />
                         <p>Your friends get an <b>instant 5% discount</b> when they sign up using your link</p>
                     </div>
                     <div className={styles.Linkdec}>
