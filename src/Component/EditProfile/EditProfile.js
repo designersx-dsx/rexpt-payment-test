@@ -426,7 +426,7 @@ setLoading(true);
                     <hr className={styles.hrLine} />
                   </div>
                 </div>
-                <div className={styles.Part}>
+                {/* <div className={styles.Part}>
                   <img src="svg/line-email.svg" />
                   <div className={styles.infoItem}>
                     <label>Email</label>
@@ -441,7 +441,7 @@ setLoading(true);
                     )}
                     <hr className={styles.hrLine} />
                   </div>
-                </div>
+                </div> */}
 
                 {!emailVerified && formData.email !== initialData?.email && (
                   <>
