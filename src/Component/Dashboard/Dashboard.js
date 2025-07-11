@@ -1809,7 +1809,7 @@ console.log(localAgents,"agent")
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          if (!userCalApiKey===null) {
+                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== "") {
                             handleConnectCalApiAlready(agent);
                           } else {
                             handleConnectCal(agent);

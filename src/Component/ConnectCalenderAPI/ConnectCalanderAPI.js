@@ -104,6 +104,7 @@ const CalendarConnect = () => {
             slug: slug,
             length: eventLength,
           }),
+
         }
       );
 
@@ -114,7 +115,7 @@ const CalendarConnect = () => {
 
       const data = await response.json();
       const eventTypeId = data?.event_type?.id;
-
+      setApiSubmitting(true)
       if (!eventTypeId) {
         throw new Error("Event ID not received from Cal.com");
       }
@@ -202,9 +203,9 @@ const CalendarConnect = () => {
   }, []);
   return (
     <div className={styles.calenderMain}>
-    <HeaderBar title="Connect Calendar" />
+      <HeaderBar title="Connect Calendar" />
       <div className={styles.container}>
-    
+
         <p className={styles.TopPara}>
           You can easily{" "}
           <strong>Connect your personal or business Calendar</strong> with your{" "}
