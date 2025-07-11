@@ -371,11 +371,15 @@ function CheckoutForm({
     // Call next API here and navigate to the dashboardd
     await callNextApiAndRedirect();
   };
-  // useEffect(() => {
-  //   if (checkPage === "checkout") {
-  //     navigate("/cancel-payment");
-  //   }
-  // }, [location.pathname]);
+useEffect(() => {
+  const checkPage = sessionStorage.getItem("checkPage");
+
+  // If user returned manually from Stripe, redirect to cancel page
+  if (checkPage === "checkout" && !window.location.href.includes("thankyou") && !window.location.href.includes("cancel-payment")) {
+    // sessionStorage.removeItem("checkPage");
+    navigate("/cancel-payment");
+  }
+}, []);
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);
