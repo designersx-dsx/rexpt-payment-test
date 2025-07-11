@@ -98,7 +98,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -444,9 +444,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         {toggleStates[plan.id] && monthlyPrice && yearlyPrice && (
                                             (() => {
                                                 const monthlyTotal = monthlyPrice.unit_amount;
-                                                console.log("monthlyPrice", monthlyPrice)
+                                                // console.log("monthlyPrice", monthlyPrice)
                                                 const yearlyTotal = yearlyPrice.unit_amount / 12;
-                                                console.log("yearlyTotal", yearlyPrice)
+                                                // console.log("yearlyTotal", yearlyPrice)
                                                 const savings = monthlyTotal - yearlyTotal;
                                                 const savingsPercent = ((savings / monthlyTotal) * 100).toFixed(0);
 

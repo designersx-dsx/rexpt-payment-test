@@ -1329,7 +1329,7 @@ function Dashboard() {
         locationPath: locationPath,
         subscriptionID: agent?.subscriptionId,
         planName: agent?.agentPlan,
-        interval: agent?.subscription.interval
+        interval: agent?.subscription?.interval || null
 
       },
     });

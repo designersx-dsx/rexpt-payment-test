@@ -165,7 +165,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -194,7 +194,7 @@ const Planss = () => {
 
                 // Step 1: Enrich each product WITHOUT assigning color
                 let enrichedPlans = data.map((product) => {
-                    const matchedData = product.data?.data?.find(
+                    const matchedData = product.data?.find(
                         (p) => p.id === product.id
                     );
 
@@ -225,6 +225,9 @@ const Planss = () => {
                         };
                     });
 
+                    console.log("product",product)
+                    console.log("matchedData",matchedData)
+
 
 
                     return {
@@ -237,7 +240,7 @@ const Planss = () => {
                         features: product.metadata?.features
                             ? JSON.parse(product.metadata.features)
                             : [
-                                `${matchedData?.metadata?.["minutes-month"] || "0"} minutes / month`, ,
+                                `${matchedData?.metadata?.["minutes-month"] || "0"} minutes / month,` ,
                                 "FREE VoIP Number",
                                 "Agent Characterization",
                                 "24/7 Availability",
@@ -263,22 +266,13 @@ const Planss = () => {
 
                 let currentPlanIndex = -1;
                 const agentPlanName = agentPlan?.toLowerCase()?.trim();
-                let currentPlanInterval = 'year';
 
                 enrichedPlans.forEach((plan, idx) => {
                     if (plan.title?.toLowerCase() === agentPlanName) {
                         currentPlanIndex = enrichedPlans.length - 1 - idx;
-
-                        const selectedPrice = plan.prices.find(p => p.interval === interval?.toLowerCase());
-                        if (selectedPrice) {
-                            currentPlanInterval = selectedPrice.interval;
-                        }
                     }
                 });
                 setCurrentPlanIdx(currentPlanIndex);
-
-
-
 
 
                 // Step 3: Assign reversed colors and circles
@@ -300,16 +294,8 @@ const Planss = () => {
 
                 const finalPlans = enrichedPlans.reverse()
 
-                finalPlans.forEach((plan) => {
-                    const isCurrent = plan.title?.toLowerCase() === agentPlan?.toLowerCase();
-                    const selectedInterval = interval || null; // from location.state
-                    toggleInit[plan.id] = isCurrent && selectedInterval === 'year';
-                });
-
                 setToggleStates(toggleInit);
-
-                setToggleStates(toggleInit);
-                setProducts(finalPlans);
+                setProducts(finalPlans); // no .reverse()
                 setLoading(false);
 
                 // ✅ Preselect saved plan name (e.g., "Growth")
