@@ -679,7 +679,7 @@ const AgentDashboard = () => {
       return;
     }
 
-    const planName = agent?.subscription?.plan_name || "Frees";
+    const planName = agent?.subscription?.plan_name || "Free";
     if (!agent.subscriptionId) {
       openAssignNumberModal();
     } else {
@@ -775,17 +775,17 @@ const AgentDashboard = () => {
                   <div className={styles.agentAvatarContainer}>
                     <img
                       src={agentData?.agent?.avatar || "images/SofiaAgent.png"}
-                      alt="Sofia"
+                      alt="Agent"
                       className={styles.agentAvatar}
                     />
                     <p className={styles.generalDiv}>
-                      {agentData?.agent?.agentRole?.split(" ")[0] || "General"}{" "}
+                      {agentData?.agent?.agentRole?.split(" ")[0] || ""}{" "}
                     </p>
                   </div>
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
                       <h3 className={styles.agentName}>
-                        {formatName(agentData?.agent?.agentName) || "John Vick"}
+                        {formatName(agentData?.agent?.agentName) || ""}
                         <span
                           className={
                             agentData?.agent?.isDeactivated == 1
@@ -810,7 +810,7 @@ const AgentDashboard = () => {
                       {
                           assignedNumbers?.length > 0 ? (
                             <div className={styles.AssignNumText}>
-                              AI Agent Toll Free<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
+                              Phone Number<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
                             </div>
                           ) : (
                             <div
@@ -1016,7 +1016,7 @@ const AgentDashboard = () => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                    if (userCalApiKey) {
+                    if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== "") {
                       handleConnectCalApiAlready(agentData?.agent);
                     } else {
                       handleConnectCal(agentData?.agent);
@@ -1678,8 +1678,8 @@ const AgentDashboard = () => {
           <AssignNumberModal
             isOpen={isAssignModalOpen}
             agentId={agentDetails?.agentId}
-            onClose={() => setIsAssignModalOpen(false)}
-            onCallApi={handleAssignNumber}
+            onClose={() => {setIsAssignModalOpen(false); setRefresh((prev) => !prev);}}
+            // onCallApi={handleAssignNumber}
           />
             {isAssignNumberModalOpen && (
                   <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>

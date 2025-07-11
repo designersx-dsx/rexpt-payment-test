@@ -49,7 +49,7 @@ function CheckoutForm({
   const location = useLocation();
 
   const currentLocation = location.pathname;
-  console.log("currentLocation",location)
+  console.log("currentLocation", location);
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -371,15 +371,22 @@ function CheckoutForm({
     // Call next API here and navigate to the dashboardd
     await callNextApiAndRedirect();
   };
-useEffect(() => {
-  const checkPage = sessionStorage.getItem("checkPage");
+  useEffect(() => {
+    const handlePageShow = (event) => {
+      const checkPage = sessionStorage.getItem("checkPage");
+      const navEntries = performance.getEntriesByType("navigation");
+      const isBack = event.persisted || navEntries[0]?.type === "back_forward";
 
-  // If user returned manually from Stripe, redirect to cancel page
-  if (checkPage === "checkout" && !window.location.href.includes("thankyou") && !window.location.href.includes("cancel-payment")) {
-    // sessionStorage.removeItem("checkPage");
-    navigate("/cancel-payment");
-  }
-}, []);
+      if (checkPage === "checkout" && isBack) {
+        sessionStorage.removeItem("checkPage");
+        // Force hard redirect
+        window.location.href = "/cancel-payment";
+      }
+    };
+
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []); // ✅ No dependency needed
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);

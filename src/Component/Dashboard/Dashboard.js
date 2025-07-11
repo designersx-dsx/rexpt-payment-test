@@ -1101,7 +1101,6 @@ function Dashboard() {
       );
 
       console.log("agentData", agentData)
-
       const knowledgeBaseId = agentData?.knowledgeBaseId;
       const businessId = agentData?.businessId;
 
@@ -1167,7 +1166,8 @@ function Dashboard() {
         const knowledgeBaseName = await getKnowledgeBaseName(
           businessDetails,
           userId,
-          packageValue
+          packageValue,
+          agentData?.agentCode
         );
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
@@ -1451,7 +1451,7 @@ function Dashboard() {
     return number;
   }
 
-console.log(localAgents,"agent")
+// console.log(localAgents,"agent")
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1825,7 +1825,7 @@ console.log(localAgents,"agent")
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
-                    Assigned Number
+                    Phone Number
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
                       {assignedNumbers.map(formatE164USNumber).join(", ")}
