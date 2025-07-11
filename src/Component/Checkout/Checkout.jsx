@@ -367,14 +367,14 @@ function CheckoutForm({
     setPopupType("success");
     setPopupMessage("Subscription successful!");
     sessionStorage.removeItem("priceId");
-    // Call next API here and navigate to the dashboard
+    // Call next API here and navigate to the dashboardd
     await callNextApiAndRedirect();
   };
   useEffect(() => {
     if (checkPage === "checkout") {
       navigate("/cancel-payment");
     }
-  }, []);
+  }, [location.pathname]);
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);
