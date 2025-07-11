@@ -697,13 +697,11 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
     // if (savedShowInput !== null) {
       setShowInput(savedShowInput);
     // }
-  }, []);
+  }, [showInput]);
   useEffect(() => {
     if ((businessDetails?.businessType === "Other")) {
-
       sessionStorage.setItem("showInput", JSON.stringify(true));
     }
-
   }, [businessDetails])
   useEffect(() => {
     const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"))
