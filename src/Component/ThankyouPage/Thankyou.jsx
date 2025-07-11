@@ -349,9 +349,9 @@ function Thankyou() {
           <div className={styles.row}>
             <span>Invoice:</span>
             <div className={styles.Right50}>
-              {subscriptionInfo.invoice_url ? (
+              {subscriptionInfo?.invoice_url ? (
                 <a
-                  href={subscriptionInfo.invoice_url}
+                  href={subscriptionInfo?.invoice_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   download
