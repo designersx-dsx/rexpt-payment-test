@@ -272,6 +272,9 @@
     width: 50%;
     margin: auto;
   }
+  .backIcon{
+    width: 50%;
+  }
 }
 
 @media (max-width:370px) {

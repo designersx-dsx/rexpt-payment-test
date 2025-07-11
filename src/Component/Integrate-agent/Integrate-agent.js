@@ -336,7 +336,7 @@ const IntegrateAgent = () => {
     localStorage.setItem("widgetSetupData", JSON.stringify(persistData));
   }, [domains, emails, scriptGenerated, generateMode]);
   return (
-    <div>
+    <div className={styles.Mianintegrate}>
       <HeaderBar title="Integrate Agent" />
       <div className={styles.container}>
         <h2>Add Your Website Domain</h2>
@@ -501,84 +501,88 @@ const IntegrateAgent = () => {
           Want the widget on another domain? Enter a different address here.
         </p>
 
-        <div style={{ position: "relative", width: "100%" }}>
-          <input
-            type="text"
-            placeholder="https://example.com"
-            value={newDomain}
-            onChange={(e) => {
-              let val = normalizeUrl(e.target.value.toLowerCase().replace(/\s/g, ""));
-              if (!val.startsWith("https://")) {
-                val = "https://"
-              }
-              setNewDomain(val);
-              setIsVerified(false);
-              setValidatingDomain(true);
-              setIsDomainFormatValid(isValidDomainFormat(val));
+        <div className={styles.LinkDiv}>
+          <div>
 
-              if (validateTimer) clearTimeout(validateTimer);
 
-              const timer = setTimeout(async () => {
-                try {
-                  const res = await validateWebsite(val);
-                  if (res.valid) {
-                    setIsVerified(true);
-                  } else {
-                    setIsVerified(false);
-                  }
-                } catch {
-                  setIsVerified(false);
-                } finally {
-                  setValidatingDomain(false);
+            <input
+              type="text"
+              placeholder="https://example.com"
+              value={newDomain}
+              onChange={(e) => {
+                let val = normalizeUrl(e.target.value.toLowerCase().replace(/\s/g, ""));
+                if (!val.startsWith("https://")) {
+                  val = "https://"
                 }
-              }, 600);
+                setNewDomain(val);
+                setIsVerified(false);
+                setValidatingDomain(true);
+                setIsDomainFormatValid(isValidDomainFormat(val));
 
-              setValidateTimer(timer);
-            }}
-            className={styles.modalInput}
-            style={{
-              paddingRight: "30px",
-              borderColor:
-                newDomain && !isVerified && !validatingDomain ? "red" : undefined,
-            }}
-          />
+                if (validateTimer) clearTimeout(validateTimer);
 
-          {validatingDomain && (
-            <span
-              style={{
-                position: "absolute",
-                right: "10px",
-                top: "44%",
-                transform: "translateY(-50%)",
-                fontSize: "16px",
+                const timer = setTimeout(async () => {
+                  try {
+                    const res = await validateWebsite(val);
+                    if (res.valid) {
+                      setIsVerified(true);
+                    } else {
+                      setIsVerified(false);
+                    }
+                  } catch {
+                    setIsVerified(false);
+                  } finally {
+                    setValidatingDomain(false);
+                  }
+                }, 600);
+
+                setValidateTimer(timer);
               }}
-            >
-              ⏳
-            </span>
-          )}
+              className={styles.modalInput}
+              style={{
+                paddingRight: "30px",
+                borderColor:
+                  newDomain && !isVerified && !validatingDomain ? "red" : undefined,
+              }}
+            />
 
-          {isVerified && !validatingDomain && (
-         <span className={styles.tickIcon}>
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M6 12.5L10 16.5L18 8.5"
-      stroke="white"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-</span>
+            {validatingDomain && (
+              <p
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "60%",
+                  transform: "translateY(-50%)",
+                  fontSize: "16px",
+                }}
+              >
+                ⏳
+              </p>
+            )}
+
+            {isVerified && !validatingDomain && (
+              <span className={styles.tickIcon}>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6 12.5L10 16.5L18 8.5"
+                    stroke="white"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
 
 
 
-          )}
+            )}
+          </div>
         </div>
 
         {!isVerified && newDomain && !validatingDomain && (

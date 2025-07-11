@@ -106,7 +106,7 @@ const EditProfile = () => {
   };
 
   useEffect(() => {
-    if(!userId) return;
+    if (!userId) return;
     const getEndUserSubscriptions = async () => {
       try {
         const data = await getEndUserSubscriptions_Billings(userId);
@@ -117,7 +117,7 @@ const EditProfile = () => {
       }
     }
     getEndUserSubscriptions();
-  },[userId]);
+  }, [userId]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -135,18 +135,16 @@ const EditProfile = () => {
           email: user.email || "",
           phone: user.phone || "",
           address: user.address || "",
-          profilePicture: `${API_BASE_URL?.split("/api")[0]}${
-            user?.profilePicture?.split("public")[1]
-          }`,
+          profilePicture: `${API_BASE_URL?.split("/api")[0]}${user?.profilePicture?.split("public")[1]
+            }`,
         });
         setInitialData({
           name: user.name || "",
           email: user.email || "",
           phone: user.phone || "",
           address: user.address || "",
-          profilePicture: `${API_BASE_URL?.split("/api")[0]}${
-            user?.profilePicture?.split("public")[1]
-          }`,
+          profilePicture: `${API_BASE_URL?.split("/api")[0]}${user?.profilePicture?.split("public")[1]
+            }`,
         });
       } catch (error) {
         console.error(error);
@@ -170,7 +168,7 @@ const EditProfile = () => {
   const handleSendOTP = async () => {
     try {
       setSendOtpLoading(true);
-      await updateEmailSendOtp(formData.email, userId); 
+      await updateEmailSendOtp(formData.email, userId);
       setOtpSent(true);
       setOtpEmail(formData.email);
       setResendTimer(60);
@@ -322,28 +320,28 @@ const EditProfile = () => {
   };
 
   const handleDeleteProfile = async () => {
-  try {
-setLoading(true);
-    await deleteUser(userId);
-    setShowDeleteModal(false);
-    setShowPopup(true);
-    setPopupType("success");
-    setPopupMessage("Your account has been deleted successfully.");
+    try {
+      setLoading(true);
+      await deleteUser(userId);
+      setShowDeleteModal(false);
+      setShowPopup(true);
+      setPopupType("success");
+      setPopupMessage("Your account has been deleted successfully.");
 
-    setTimeout(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-      navigate("/");
-    }, 2000);
-  } catch (error) {
-    console.error(error);
-    setShowPopup(true);
-    setPopupType("failed");
-    setPopupMessage("Failed to delete account. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+      setTimeout(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage("Failed to delete account. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // console.log('showDashboardReferral',showDashboardReferral)
 
@@ -523,10 +521,10 @@ setLoading(true);
                           >
                             {isResendDisabled
                               ? `Resend OTP in ${String(
-                                  Math.floor(resendTimer / 60)
-                                ).padStart(2, "0")}:${String(
-                                  resendTimer % 60
-                                ).padStart(2, "0")}`
+                                Math.floor(resendTimer / 60)
+                              ).padStart(2, "0")}:${String(
+                                resendTimer % 60
+                              ).padStart(2, "0")}`
                               : "Resend OTP"}
                           </button>
                         </div>
@@ -601,11 +599,12 @@ setLoading(true);
                     <label>Home address</label>
                     <textarea
                       name="address"
+                      placeholder="Please enter address"
                       value={formData.address}
                       onChange={handleChange}
                       maxLength={10000}
                     />
-
+                    <hr className={styles.hrLine} />
                     {isUploadModalOpen && (
                       <UploadProfile
                         onClose={closeUploadModal}
@@ -618,6 +617,8 @@ setLoading(true);
                       />
                     )}
                   </div>
+
+
                 </div>
                 <div
                   type="submit"
@@ -626,12 +627,12 @@ setLoading(true);
                       ? formData.email === initialData?.email || emailVerified
                         ? handleSubmit
                         : () => {
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(
-                              "Please verify your new email before saving."
-                            );
-                          }
+                          setShowPopup(true);
+                          setPopupType("failed");
+                          setPopupMessage(
+                            "Please verify your new email before saving."
+                          );
+                        }
                       : undefined
                   }
                   // style={{
@@ -656,25 +657,25 @@ setLoading(true);
                   style={{
                     opacity:
                       isDataChanged() &&
-                      (formData.email === initialData?.email || // email not changed
-                        (formData.email !== initialData?.email &&
-                          emailVerified)) // email changed & verified
+                        (formData.email === initialData?.email || // email not changed
+                          (formData.email !== initialData?.email &&
+                            emailVerified)) // email changed & verified
                         ? 1
                         : 0.5,
                     pointerEvents:
                       isDataChanged() &&
-                      (formData.email === initialData?.email ||
-                        (formData.email !== initialData?.email &&
-                          emailVerified)) &&
-                      !addLoading
+                        (formData.email === initialData?.email ||
+                          (formData.email !== initialData?.email &&
+                            emailVerified)) &&
+                        !addLoading
                         ? "auto"
                         : "none",
                     cursor:
                       isDataChanged() &&
-                      (formData.email === initialData?.email ||
-                        (formData.email !== initialData?.email &&
-                          emailVerified)) &&
-                      !addLoading
+                        (formData.email === initialData?.email ||
+                          (formData.email !== initialData?.email &&
+                            emailVerified)) &&
+                        !addLoading
                         ? "pointer"
                         : "not-allowed",
                   }}
@@ -702,10 +703,10 @@ setLoading(true);
                 />
               </div>
               <div className={styles.mySubscription}>
-                <MySubscription agents={subscriptionDetails?.agents ||[]}/>
+                <MySubscription agents={subscriptionDetails?.agents || []} />
               </div>
               <div className={styles.billingInvoice}>
-                <BillingInvoices invoices={subscriptionDetails?.invoices||[]}/>
+                <BillingInvoices invoices={subscriptionDetails?.invoices || []} />
               </div>
             </div>
             <div className={styles.deleteSection}>
@@ -733,7 +734,7 @@ setLoading(true);
                   <div className={styles.modalButtons}>
                     <button
                       className={styles.deleteConfirmButton}
-                     onClick={handleDeleteProfile}
+                      onClick={handleDeleteProfile}
                     >
                       {addLoading ? <Loader size={18} /> : "Delete Profile"}
                     </button>

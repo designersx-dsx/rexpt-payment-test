@@ -43,6 +43,7 @@
   padding: 16px 20px;
   max-width: 500px;
   background-color: #fff;
+  cursor: pointer;
 
 }
 
@@ -53,6 +54,7 @@
   display: block;
   text-align: left;
   margin-bottom: 4px;
+    cursor: pointer;
 }
 
 .agentInput {

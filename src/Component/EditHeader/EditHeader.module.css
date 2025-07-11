@@ -19,6 +19,9 @@
     font-weight: 500;
     text-transform: capitalize;
 }
+.title img{
+    cursor: pointer;
+}
 
 .title h2 {
     font-size: 22px;
