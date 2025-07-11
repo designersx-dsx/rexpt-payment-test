@@ -13,6 +13,7 @@ import decodeToken from "../../lib/decodeToken";
 import Loader2 from "../Loader2/Loader2";
 export default function SubscriptionFlow() {
   const location = useLocation();
+  console.log("location",location)
   const navigate = useNavigate();
   const { user, setUser } = useUser();
   // const priceId = location.state?.priceId;
@@ -92,12 +93,12 @@ export default function SubscriptionFlow() {
     checkSubscription();
   }, [ customerId, priceId]);
 
-  useEffect(() => {
-    const checkPage = sessionStorage.getItem("checkPage");
-      if (checkPage === "checkout") {
-        navigate("/cancel-payment");
-      }
-    }, [location.pathname]);
+  // const checkPage = sessionStorage.getItem("checkPage");
+  // useEffect(() => {
+  //     if (checkPage === "checkout") {
+  //       navigate("/cancel-payment");
+  //     }
+  //   }, [checkPage]);
 
   // Handlers
   // const sendOtp = async () => {
