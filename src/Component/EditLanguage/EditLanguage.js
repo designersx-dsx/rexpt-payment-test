@@ -62,7 +62,7 @@ function EditLanguage() {
     {showPopup && (
             <PopUp
             type={popupType}
-            onClose={()=>{}}
+            onClose={()=>{setShowPopup(false)}}
             message={popupMessage}
             onConfirm={()=>navigate('/edit-services-offered')}
             />
