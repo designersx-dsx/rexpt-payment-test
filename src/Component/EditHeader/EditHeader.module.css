@@ -14,7 +14,7 @@
     margin-bottom: 10px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
     font-size: 18px;
     font-weight: 500;
     text-transform: capitalize;
@@ -30,6 +30,6 @@
 
 .back {
     font-size: 20px;
-    margin-right: 10px;
+    /* margin-right: 10px; */
     cursor: pointer;
 }

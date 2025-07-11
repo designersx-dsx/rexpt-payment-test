@@ -416,7 +416,7 @@
     padding: 6px 10px;
     width: 100%;
     max-width: fit-content;
-    margin-inline: 10px;
+    margin-inline:auto;
     border-radius: 20px;
     margin-top: 15px;
 }
@@ -449,7 +449,7 @@
 }
 
 .ForSticky {
-    position: sticky;
+    position: fixed;
     bottom: 0px;
     left: 0;
     width: 100%;
@@ -548,14 +548,24 @@
 .inactiveCard {
     filter: blur(1px);
 }
-.extraClass{
+
+.extraClass {
     font-size: 12px;
 }
+
 @media screen and (min-width: 601px) {
-    .subscriptionMain {
+    .MainPlanDiv {
         max-width: 500px;
         margin: auto;
     }
+
+.ForSticky {
+    position: fixed;
+    width: 500px;
+    margin: auto;
+    left: 0;
+    right: 0;
+}
 
     .firstdiv {
         margin-right: unset;

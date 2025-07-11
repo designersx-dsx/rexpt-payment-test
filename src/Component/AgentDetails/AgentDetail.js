@@ -809,6 +809,7 @@ const AgentDashboard = () => {
 
                     <div className={styles.agentDetailsFlex}>
                       {
+
                         assignedNumbers?.length > 0 ? (
                           <div className={styles.AssignNumText}>
                             Phone Number<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
@@ -831,6 +832,7 @@ const AgentDashboard = () => {
                             <img src="/svg/assign-number.svg" />
                           </div>
                         )}
+
 
                       <p className={styles.agentDetails}>
                         Agent Code{" "}

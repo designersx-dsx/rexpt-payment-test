@@ -531,6 +531,9 @@ function CallTransfer() {
 
   return (
     <>
+    <div className={styles.CallTransferMainDiv}>
+
+
       <HeaderBar title="Dynamic Call Transfer" />
       <div className={styles.CallTransferMain}>
         <div className={styles.headrPart}>
@@ -627,6 +630,7 @@ function CallTransfer() {
           </div>
         </div>
       </div>
+          </div>
       {showPopup && (
         <PopUp
           type={popupType}
