@@ -209,7 +209,7 @@ const CalendarConnect = () => {
         <p className={styles.TopPara}>
           You can easily{" "}
           <strong>Connect your personal or business Calendar</strong> with your{" "}
-          <a href="#">Rexptin Agent</a> to receive calendar Meetings.
+          <a href="">Rexptin Agent</a> to receive calendar Meetings.
         </p>
 
         <div className={styles.supportSection}>
@@ -295,7 +295,7 @@ const CalendarConnect = () => {
           <div className={styles.offSwitch}>
 
             <a target="_blank"
-              rel="noopener noreferrer" href="https://cal.com/?via=designersx&dub_id=kTPL5nvpvLqoLhE2">
+              rel="noopener noreferrer" href="refer.cal.com/rexptin">
               {" "}
               <div className={styles.recommendation}>
                 <img src="/images/CalCOm.png" />
