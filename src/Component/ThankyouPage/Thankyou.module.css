@@ -101,6 +101,13 @@
   width: 50%;
   text-align: right;
 }
+.downloadLink {
+  color: purple;
+  text-decoration: underline;
+  font-weight: 500;
+  cursor: pointer;
+}
+
 
 @media screen and (min-width: 600px) {
   .row {
