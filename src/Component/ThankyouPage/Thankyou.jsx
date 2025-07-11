@@ -21,7 +21,7 @@ function Thankyou() {
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
-  console.log("subscriptionInfo", subscriptionInfo);
+  // console.log("subscriptionInfo", subscriptionInfo);
 
   const currentLocation = "/update";
 
@@ -87,7 +87,7 @@ function Thankyou() {
             setSubscriptionInfo({
               planName: plan.planName || "N/A",
               planAmount: plan.price || 0,
-              planMins: plan.minutes || "N/A",
+              planMins: plan.planMins || "N/A",
               interval: plan.interval || "month",
               nextRenewalDate: plan.nextBillingDate || null,
             });
@@ -216,6 +216,7 @@ function Thankyou() {
       });
 
       const data = await res.json();
+      console.log("data", data);
       if (data && !data.error) {
         setSubscriptionInfo(data);
       } else {
@@ -224,6 +225,9 @@ function Thankyou() {
     } catch (error) {
       console.error("Failed to fetch subscription info:", error);
     }
+  };
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("en-IN").format(price);
   };
 
   useEffect(() => {
@@ -305,7 +309,9 @@ function Thankyou() {
               {subscriptionInfo
                 ? `US $${Number(
                     subscriptionInfo.planAmount
-                  ).toLocaleString()} / month`
+                  ).toLocaleString()} / ${
+                    subscriptionInfo.interval === "year" ? "year" : "month"
+                  }`
                 : "US $499 / month"}
             </div>
           </div>
@@ -318,31 +324,47 @@ function Thankyou() {
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? subscriptionInfo.interval === "month"
-                  ? `$${Number(subscriptionInfo.planAmount).toFixed(
-                      2
-                    )} per month`
-                  : `$${(
-                      Number(subscriptionInfo.planAmount) *
-                      12 *
-                      0.95
-                    ).toFixed(2)} for 12 months`
+                  ? `$${formatPrice(subscriptionInfo.planAmount)} per month`
+                  : `$${formatPrice(
+                      subscriptionInfo.planAmount * 12
+                    )} for 12 months`
                 : "$5,688.60 for 12 months"}
             </div>
           </div>
           <div className={styles.row}>
             <span>Next Billing Date:</span>
             <div className={styles.Right50}>
-                {subscriptionInfo
-                  ? new Date(
-                      subscriptionInfo.nextRenewalDate
-                    ).toLocaleDateString("en-US", {
+              {subscriptionInfo
+                ? new Date(subscriptionInfo.nextRenewalDate).toLocaleDateString(
+                    "en-US",
+                    {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
-                    })
-                  : "06 July 2026"}
+                    }
+                  )
+                : "06 July 2026"}
             </div>
           </div>
+          <div className={styles.row}>
+            <span>Invoice:</span>
+            <div className={styles.Right50}>
+              {subscriptionInfo.invoice_url ? (
+                <a
+                  href={subscriptionInfo.invoice_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className={styles.downloadLink} // Optional: add CSS for styling
+                >
+                  Download
+                </a>
+              ) : (
+                "N/A"
+              )}
+            </div>
+          </div>
+
           <div className={styles.ButtonTakeME}>
             <button
               onClick={() => {

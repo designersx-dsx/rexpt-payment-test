@@ -1457,7 +1457,6 @@ function Dashboard() {
     return number;
   }
 
-  console.log(localAgents, "agent")
   return (
     <div>
       <div className={styles.forSticky}>

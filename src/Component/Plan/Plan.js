@@ -578,7 +578,7 @@ const Planss = () => {
                                                     setPopupMessage(
                                                         `To switch to a lower-tier plan, please reach out to our support team. We’ll make it smooth and simple! <a href="mailto:support@rxpt.us" style="color: purple; text-decoration: underline;">Contact Support</a>`
                                                     );
-                                                    setRenderHTML(true); // ✅ Ensure this is enabled if using dangerouslySetInnerHTML
+                                                    setRenderHTML(true); 
                                                     return;
                                                 }
                                                 if (priceForInterval) {
