@@ -37,7 +37,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   const userId = decodeTokenData?.id;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const scrollToBottomRef = useRef(null);
-  
+
   const businessServices = [
     {
       type: "Restaurant",
@@ -562,13 +562,15 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
           customServices: [],
         },
       });
-      // console.log('dsdsdsdsddsd',response)
+
       const id = response?.data?.record?.businessId;
-      if(!checkIfBusinessIdExist){
-        sessionStorage.setItem("AgentCode",response?.data?.agentCode)
+      if (!checkIfBusinessIdExist) {
+        sessionStorage.setItem("AgentCode", response?.data?.agentCode)
       }
-      sessionStorage.setItem("bId", id);
-      sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
+      if (id) {
+        sessionStorage.setItem("bId", id);
+        sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
+      }
       if (onSuccess && !checkIfBusinessIdExist) {
         onSuccess({
           message: "Business details saved successfully"
