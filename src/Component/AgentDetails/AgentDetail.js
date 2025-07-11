@@ -679,7 +679,7 @@ const AgentDashboard = () => {
       return;
     }
 
-    const planName = agent?.subscription?.plan_name || "Frees";
+    const planName = agent?.subscription?.plan_name || "Free";
     if (!agent.subscriptionId) {
       openAssignNumberModal();
     } else {
@@ -775,17 +775,17 @@ const AgentDashboard = () => {
                   <div className={styles.agentAvatarContainer}>
                     <img
                       src={agentData?.agent?.avatar || "images/SofiaAgent.png"}
-                      alt="Sofia"
+                      alt="Agent"
                       className={styles.agentAvatar}
                     />
                     <p className={styles.generalDiv}>
-                      {agentData?.agent?.agentRole?.split(" ")[0] || "General"}{" "}
+                      {agentData?.agent?.agentRole?.split(" ")[0] || ""}{" "}
                     </p>
                   </div>
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
                       <h3 className={styles.agentName}>
-                        {formatName(agentData?.agent?.agentName) || "John Vick"}
+                        {formatName(agentData?.agent?.agentName) || ""}
                         <span
                           className={
                             agentData?.agent?.isDeactivated == 1
