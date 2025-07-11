@@ -287,7 +287,7 @@ const Planss = () => {
                 });
 
                 const toggleInit = {};
-                // const agentPlanName = agentPlan?.toLowerCase()?.trim();
+                // const agentPlanName = agentPlan?.toLowerCase()?.trim();;
                 const currentInterval = interval?.toLowerCase(); // from location.state
 
                 enrichedPlans.forEach((plan) => {
