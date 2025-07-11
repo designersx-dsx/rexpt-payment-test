@@ -716,6 +716,8 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       }, 100);
     }
   }, [customServices])
+
+  console.log("Selected businessType:", businessType);
   return (
     <div className={styles.container} id="servies">
       <div className={styles.searchBox}>
@@ -775,7 +777,7 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
         <div className={styles.headrPart}>
           <input
             type="checkbox"
-            checked={showInput}
+            checked={showInput || businessType === "Other"}
             id="add-more-services"
             onChange={(e) => {
               const checked = e.target.checked;

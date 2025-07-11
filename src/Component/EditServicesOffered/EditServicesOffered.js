@@ -694,7 +694,7 @@ const EditServicesOffered = () => {
         {showPopup && (
             <PopUp
             type={popupType}
-            onClose={()=>{}}
+            onClose={()=>{setShowPopup(false);navigate(-1)}}
             message={popupMessage}
             onConfirm={()=>navigate('/edit-services-offered')}
             />
