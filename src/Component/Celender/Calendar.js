@@ -5,8 +5,13 @@ import "react-calendar/dist/Calendar.css";
 import styles from "./Clender.module.css";
 import Footer2 from "../AgentDetails/Footer/Footer2";
 import decodeToken from "../../lib/decodeToken";
-import { API_BASE_URL, fetchDashboardDetails } from "../../Store/apiStore";
+import {
+  API_BASE_URL,
+  fetchDashboardDetails,
+  getAllAgentCalls,
+} from "../../Store/apiStore";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function formatDateISO(date) {
   const y = date.getFullYear();
@@ -33,6 +38,12 @@ const AgentAnalysis = () => {
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id || "";
+  const [selectedAgentEventId, setSelectedAgentEventId] = useState("");
+
+  useEffect(() => {
+    const foundAgent = agents.find((a) => a.agent_id === selectedAgentId);
+    setSelectedAgentEventId(foundAgent?.eventId || "");
+  }, [selectedAgentId, agents]);
 
   const fetchUserAgents = async () => {
     if (!userId) return;
@@ -60,19 +71,23 @@ const AgentAnalysis = () => {
 
   const fetchCallHistory = async () => {
     try {
-      if (selectedAgentId) {
-        const response = await axios.get(`${API_BASE_URL}/agent/getAgentCallHistory/${selectedAgentId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const filtered = (response.data.filteredCalls || []).filter(
-          (call) => call.call_type === "web_call"
-        );
-        setCallHistory(filtered);
+      if (selectedAgentId === "") {
+        const res = await getAllAgentCalls(userId);
+        const allCalls = res.calls || [];
+        setCallHistory(allCalls);
       } else {
-        setCallHistory([]);
+        const response = await axios.get(
+          `${API_BASE_URL}/agent/getAgentCallHistory/${selectedAgentId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const agentCalls = response.data.filteredCalls || [];
+        setCallHistory(agentCalls);
       }
     } catch (error) {
       console.error("Error fetching call history:", error);
+      setCallHistory([]);
     }
   };
 
@@ -88,47 +103,67 @@ const AgentAnalysis = () => {
     const fetchBookingDates = async () => {
       const bookingsMap = {};
 
-      // 1. Add Calls (from API)
+      // 1. Add Calls
       callHistory.forEach((call) => {
         const callDate = formatDateISO(new Date(call.start_timestamp));
         if (!bookingsMap[callDate]) bookingsMap[callDate] = [];
         bookingsMap[callDate].push({ ...call, type: "call" });
       });
 
-      // 2. Try fetching Cal bookings
+      // 2. Fetch Cal bookings
       if (calApiKey) {
         try {
-          const response = await fetch(`https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(calApiKey)}`);
+          const response = await fetch(
+            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+              calApiKey
+            )}`
+          );
           const bookingsData = await response.json();
 
+          const selectedAgent = agents.find(
+            (a) => String(a.agent_id) === String(selectedAgentId)
+          );
+          const selectedEventId = selectedAgent?.eventId;
+
           bookingsData.bookings?.forEach((booking) => {
-            if (!selectedAgentId || booking.userId === selectedAgentId) {
-              const date = new Date(booking.startTime);
-              const formattedDate = formatDateISO(date);
+            const date = new Date(booking.startTime);
+            const formattedDate = formatDateISO(date);
+
+            const match =
+              selectedEventId &&
+              Number(booking.eventTypeId) === Number(selectedEventId);
+            const shouldInclude = !selectedAgentId || match;
+
+            if (shouldInclude) {
               if (!bookingsMap[formattedDate]) bookingsMap[formattedDate] = [];
               bookingsMap[formattedDate].push({ ...booking, type: "meeting" });
             }
           });
         } catch (error) {
-          console.error("Cal.com API fetch failed, but calls will still display.", error);
+          console.error("Cal.com API fetch failed:", error);
         }
       }
 
-      // 3. Set final merged data
       setBookingDates(bookingsMap);
-      setBookingsForSelectedDate(bookingsMap[formatDateISO(selectedDate)] || []);
+      setBookingsForSelectedDate(
+        bookingsMap[formatDateISO(selectedDate)] || []
+      );
     };
-
     fetchBookingDates();
-  }, [calApiKey, selectedDate, selectedAgentId, callHistory]);
+  }, [calApiKey, selectedDate, selectedAgentId, callHistory, agents]);
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setBookingsForSelectedDate(bookingDates[formatDateISO(date)] || []);
     if (bookingsRef.current) {
-      bookingsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      bookingsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
   };
+  const navigate = useNavigate();
+
   const tileContent = ({ date, view }) => {
     if (view !== "month") return null;
     const dateStr = formatDateISO(date);
@@ -141,10 +176,14 @@ const AgentAnalysis = () => {
     return (
       <div className={styles.bookingDotContainer}>
         {meetingCount > 0 && (
-          <div className={`${styles.dot} ${styles.greenDot}`}>{formatCount(meetingCount)}</div>
+          <div className={`${styles.dot} ${styles.greenDot}`}>
+            {formatCount(meetingCount)}
+          </div>
         )}
         {callCount > 0 && (
-          <div className={`${styles.dot} ${styles.orangeDot}`}>{formatCount(callCount)}</div>
+          <div className={`${styles.dot} ${styles.orangeDot}`}>
+            {formatCount(callCount)}
+          </div>
         )}
       </div>
     );
@@ -154,25 +193,36 @@ const AgentAnalysis = () => {
       <div className={styles.HeaderFlex}>
         <HeaderBar title="Calendar" backgroundColor="#0000" color="#ffff" />
 
-        <div className={styles.DateSecT}>
-          <p>Agent</p>
-          <div className={styles.selectedValue}>
-            <select
-              className={styles.agentSelect1}
-              value={selectedAgentId}
-              onChange={(e) => setSelectedAgentId(e.target.value)}
-            >
-              <option value="">All</option>
-              {agents.map((agent) => (
-                <option key={agent.agent_id} value={agent.agent_id}>
-                  {(agent.agentName.length > 7
-                    ? agent.agentName.slice(0, 12) + "..."
-                    : agent.agentName) }
-                </option>
-              ))}
-            </select>
+ {agents.length === 1 ? (
+          <div className={styles.DateSecT}>
+            <p>Agent</p>
+            <div className={styles.singleAgentName}>
+              {agents[0].agentName.length > 5
+                ? agents[0].agentName.slice(0, 5) + ".."
+                : agents[0].agentName}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className={styles.DateSecT}>
+            <p>Agent</p>
+            <div className={styles.selectedValue}>
+              <select
+                className={styles.agentSelect1}
+                value={selectedAgentId}
+                onChange={(e) => setSelectedAgentId(e.target.value)}
+              >
+                <option value="">All</option>
+                {agents.map((agent) => (
+                  <option key={agent.agent_id} value={agent.agent_id}>
+                    {agent.agentName.length > 5
+                      ? agent.agentName.slice(0, 5) + "..."
+                      : agent.agentName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles.calendarSection}>
@@ -187,7 +237,7 @@ const AgentAnalysis = () => {
             <span>Meetings Booked</span>
           </div>
         </div>
-{/* gg */}
+        {/* gg */}
         <Calendar
           onChange={handleDateClick}
           value={selectedDate}
@@ -211,21 +261,37 @@ const AgentAnalysis = () => {
                 : styles.greenBar;
 
               return (
-                <li key={index} className={styles.bookingItem}>
+                <li
+                  key={index}
+                  className={styles.bookingItem}
+                  onClick={() => {
+                    if (isCall && item.call_id) {
+                      navigate(`/call-details/${item.call_id}`);
+                    }
+                  }}
+                  style={{ cursor: isCall ? "pointer" : "default" }}
+                >
                   <div className={styles.timeColumn}>
                     <span className={styles.timeLabel}>
                       {formatTime(item.startTime || item.start_timestamp)}
                     </span>
                   </div>
-                  <span className={`${styles.verticalBar} ${dotColorClass}`}></span>
+                  <span
+                    className={`${styles.verticalBar} ${dotColorClass}`}
+                  ></span>
                   <div className={styles.detailColumn}>
                     <div className={styles.line}>
                       <span className={styles.titleText}>
-                        <b>{isCall ? "Caller:" : "Title:"}</b> {item.title || item.custom_analysis_data?.["_detailed _call _summery"] || "N/A"}
+                        <b>{isCall ? "Caller:" : "Title:"}</b>{" "}
+                        {item.title ||
+                          item.custom_analysis_data?.[
+                            "_detailed _call _summery"
+                          ] ||
+                          "N/A"}
                       </span>
                     </div>
                     <div className={styles.timeRange}>
-                      <b>Phone:</b> {item.call_type }
+                      <b>Phone:</b> {item.call_type}
                     </div>
                   </div>
                 </li>

@@ -53,11 +53,6 @@
   align-items: center;
   gap: 10px;
 }
-
-.radio {
-  /* display: none; */
-}
-
 .customRadio {
   width: 20px;
   height: 20px;
@@ -112,7 +107,7 @@
 
 .LastP{
   color: #b1b1b1;
-  margin-top: 1rem;
+  margin-block: 1rem;
   font-size: 14px;
   font-weight: 500;
 }

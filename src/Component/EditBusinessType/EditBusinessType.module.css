@@ -88,6 +88,7 @@
     min-height: 70px;
     padding-inline: 10px;
     padding-block: 5px;
+    cursor: pointer;
 }
 
 .option strong {
@@ -215,6 +216,8 @@
     outline: none;
     min-height: 55px;
     width: 100%;
+    cursor: pointer;
+
 }
 
 .stickyWrapper {
@@ -223,6 +226,7 @@
     background: white;
     padding: 10px 0;
     z-index: 10;
+    margin-top: 1rem;
 }
 
 

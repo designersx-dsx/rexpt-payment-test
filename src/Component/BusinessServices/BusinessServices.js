@@ -499,8 +499,6 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   const selectedBusiness =
     businessServices.find((biz) => biz?.type === businessType) ||
     (businessType === "Other" && businessServices?.find((biz) => biz?.type === "Other Local Business"));
-
-  console.log(selectedBusiness, "selectedBusiness")
   const defaultServices = selectedBusiness?.services || [];
   const allServices = [...defaultServices, ...customServices];
   const flatServices = allServices.flatMap((item) => {
@@ -564,14 +562,15 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
           customServices: [],
         },
       });
-      // console.log('dsdsdsdsddsd',response)
+
       const id = response?.data?.record?.businessId;
-      if(!checkIfBusinessIdExist){
-        console.log('dsdsdsdsd',response.data)
-        sessionStorage.setItem("AgentCode",response?.data?.agentCode)
+      if (!checkIfBusinessIdExist) {
+        sessionStorage.setItem("AgentCode", response?.data?.agentCode)
       }
-      sessionStorage.setItem("bId", id);
-      sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
+      if (id) {
+        sessionStorage.setItem("bId", id);
+        sessionStorage.setItem("businessId", JSON.stringify({ businessId: id }));
+      }
       if (onSuccess && !checkIfBusinessIdExist) {
         onSuccess({
           message: "Business details saved successfully"
@@ -695,16 +694,14 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
   }, []);
   useEffect(() => {
     const savedShowInput = sessionStorage.getItem("showInput");
-    if (savedShowInput !== null) {
-      setShowInput(JSON.parse(savedShowInput));
-    }
-  }, []);
+    // if (savedShowInput !== null) {
+      setShowInput(savedShowInput);
+    // }
+  }, [showInput]);
   useEffect(() => {
     if ((businessDetails?.businessType === "Other")) {
-
       sessionStorage.setItem("showInput", JSON.stringify(true));
     }
-
   }, [businessDetails])
   useEffect(() => {
     const businessDetails = JSON.parse(sessionStorage.getItem("businessDetails"))
@@ -717,6 +714,8 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
       }, 100);
     }
   }, [customServices])
+
+  console.log("Selected businessType:", businessType);
   return (
     <div className={styles.container} id="servies">
       <div className={styles.searchBox}>

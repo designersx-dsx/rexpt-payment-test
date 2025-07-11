@@ -10,8 +10,6 @@ function Start() {
   const referral = searchParams.get("referral") || "";
   const selectedPlan = searchParams.get("plan") || "";
   const businessType = searchParams.get("businessType") || "";
-
-  console.log(referral, selectedPlan, businessType)
   const [step, setStep] = useState(0);
   const handleClick = () => {
     setTimeout(() => setStep(1), 150);

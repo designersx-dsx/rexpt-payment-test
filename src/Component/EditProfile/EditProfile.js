@@ -1,8 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "../EditProfile/EditProfile.module.css";
 import Refferal from "../Refferal/Refferal";
+import MySubscription from "../MySubscription/MySubscription";
+import BillingInvoices from "../BillingInvoices/BillingInvoices";
 import {
   API_BASE_URL,
+  getEndUserSubscriptions_Billings,
+  deleteUser,
   getUserDetails,
   LoginWithEmailOTP,
   updateEmailSendOtp,
@@ -18,10 +22,9 @@ import Loader2 from "../Loader2/Loader2";
 
 import Loader from "../Loader/Loader";
 
-
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-
+import axios from "axios";
 
 const EditProfile = () => {
   const fileInputRef = useRef(null);
@@ -37,10 +40,12 @@ const EditProfile = () => {
   const navigate = useNavigate();
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [addLoading, addSetLoading] = useState(false)
-  const [sendOtpLoading, setSendOtpLoading] = useState(false)
-  const [referralCode, setReferralCode] = useState("")
-  const [showDashboardReferral, setShowDashboardReferral] = useState(true)
+  const [addLoading, addSetLoading] = useState(false);
+  const [sendOtpLoading, setSendOtpLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
+  const [showDashboardReferral, setShowDashboardReferral] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -57,12 +62,13 @@ const EditProfile = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
   const [otpSent, setOtpSent] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(true); // default true until email is changed
+  const [emailVerified, setEmailVerified] = useState(true);
   const [otpEmail, setOtpEmail] = useState("");
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
   const isOtpFilled = otp.every((digit) => digit !== "");
+  const [subscriptionDetails, setSubscriptionDetails] = useState({});
 
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
@@ -100,13 +106,30 @@ const EditProfile = () => {
   };
 
   useEffect(() => {
+    if (!userId) return;
+    const getEndUserSubscriptions = async () => {
+      try {
+        const data = await getEndUserSubscriptions_Billings(userId);
+        // console.log("User subscription Data:", data);
+        setSubscriptionDetails(data)
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    }
+    getEndUserSubscriptions();
+  }, [userId]);
+
+  useEffect(() => {
     const fetchUser = async () => {
       try {
         setLoading(true);
         const user = await getUserDetails(userId);
-        setReferralCode(user?.referralCode)
-        setShowDashboardReferral(user?.showreferralfloating)
-        localStorage.setItem('showreferralfloating', user?.showreferralfloating)
+        setReferralCode(user?.referralCode);
+        setShowDashboardReferral(user?.showreferralfloating);
+        localStorage.setItem(
+          "showreferralfloating",
+          user?.showreferralfloating
+        );
         setFormData({
           name: user.name || "",
           email: user.email || "",
@@ -141,13 +164,11 @@ const EditProfile = () => {
       setOtp(["", "", "", "", "", ""]);
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
-
   };
   const handleSendOTP = async () => {
     try {
-      // Call your API here to send OTP to formData.email
-      setSendOtpLoading(true)
-      await updateEmailSendOtp(formData.email, userId); // <-- create this API
+      setSendOtpLoading(true);
+      await updateEmailSendOtp(formData.email, userId);
       setOtpSent(true);
       setOtpEmail(formData.email);
       setResendTimer(60);
@@ -166,24 +187,26 @@ const EditProfile = () => {
         });
       }, 1000);
     } catch (error) {
-
       // alert("Failed to send OTP. Please try again.");
       if (error.status == 409) {
         // setEmailVerified(true);
         setOtpSent(false);
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
+        setPopupMessage(
+          error?.response?.data.error || "Failed to send OTP. Please try again."
+        );
         setOtpSent(true);
       } else {
-
         setOtpSent(false);
         setShowPopup(true);
         setPopupType("failed");
-        setPopupMessage(error?.response?.data.error || "Failed to send OTP. Please try again.");
+        setPopupMessage(
+          error?.response?.data.error || "Failed to send OTP. Please try again."
+        );
       }
     } finally {
-      setSendOtpLoading(false)
+      setSendOtpLoading(false);
     }
   };
   const handleOtpChange = (value, index) => {
@@ -262,8 +285,6 @@ const EditProfile = () => {
     if (!validateForm()) return;
 
     try {
-
-
       addSetLoading(true);
 
       const response = await updateUserDetails(userId, {
@@ -272,7 +293,7 @@ const EditProfile = () => {
         phone: formData.phone,
         address: formData.address,
       });
-      console.log(response.user.profilePicture, "response42343243242");
+      // console.log(response.user.profilePicture, "response42343243242");
       setUser({ name: formData?.name, profile: formData?.profilePicture });
 
       setInitialData({ ...formData });
@@ -297,7 +318,33 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
+
+  const handleDeleteProfile = async () => {
+    try {
+      setLoading(true);
+      await deleteUser(userId);
+      setShowDeleteModal(false);
+      setShowPopup(true);
+      setPopupType("success");
+      setPopupMessage("Your account has been deleted successfully.");
+
+      setTimeout(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage("Failed to delete account. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // console.log('showDashboardReferral',showDashboardReferral)
+
 
   return (
     <>
@@ -306,293 +353,413 @@ const EditProfile = () => {
       ) : (
         <>
           <div className={styles.card}>
-            <div className={styles.backIcon}>
-              <img
-                src="svg/Notification.svg"
-                alt="Back-icon"
-                className={styles.imageIcon}
-                onClick={handleBack}
-              />
-              <p>My Account</p>
-            </div>
-            <div className={styles.profilePic}>
-              <button
-                onClick={openUploadModal}
-                style={{ all: "unset", cursor: "pointer" }}
-              >
-                {formData?.profilePicture ? (
-                  <img
-                    src={uploadedImage || formData.profilePicture}
-                    onError={(e) => {
-                      e.target.src = "/svg/profile-icon.svg";
-                    }}
-                    alt="Profile"
-                  />
-                ) : (
-                  <img
-                    src={"/svg/profile-icon.svg"}
-                    onError={(e) => {
-                      e.target.src = "/svg/profile-icon.svg";
-                    }}
-                    alt="Profile"
-                  />
-                )}
-
-                <span className={styles.editIcon}>
-                  <img src="svg/edit-icon.svg" alt="edit" />
-                </span>
-              </button>
-            </div>
-
-            <div className={styles.infoSection}>
-              <div className={styles.header}>
-                <h3>Personal Info</h3>
-                <span className={styles.editText}><img src='/svg/edit-icon2.svg' className={styles.PurpolIcon} />Edit</span>
+            <div className={styles.profileBack}>
+              <div className={styles.backIcon}>
+                <img
+                  src="svg/Notification.svg"
+                  alt="Back-icon"
+                  className={styles.imageIcon}
+                  onClick={handleBack}
+                />
+                <p>My Account</p>
               </div>
 
-              <div className={styles.Part}>
-                <img src="svg/line-Profile.svg" />
-                <div className={styles.infoItem}>
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    maxLength={100}
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                  {errors.name && <p className={styles.error}>{errors.name}</p>}
-                  <hr className={styles.hrLine} />
-                </div>
-
-
-              </div>
-              <div className={styles.Part}>
-                <img src="svg/line-email.svg" />
-                <div className={styles.infoItem}>
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                  {errors.email && <p className={styles.error}>{errors.email}</p>}
-                  <hr className={styles.hrLine} />
-                </div>
-              </div>
-
-              {!emailVerified && formData.email !== initialData?.email && (
-                <>
-                  {/* Show Send OTP Button */}
-                  {!otpSent && (
-                    <div className={styles.Btn} onClick={() => {
-                      if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-                        setShowPopup(true);
-                        setPopupType("failed");
-                        setPopupMessage("Please enter a valid email before sending OTP.");
-                        return;
-                      }
-                      handleSendOTP();
-                    }}>
-                      <div className={styles.btnTheme}>
-                        <img src="svg/svg-theme.svg" alt="" />
-                        <p>{sendOtpLoading ? <Loader size={18} /> : "Send OTP"}</p>
-                      </div>
-                    </div>
+              <div className={styles.profilePic}>
+                <button
+                  onClick={openUploadModal}
+                  style={{ all: "unset", cursor: "pointer" }}
+                >
+                  {formData?.profilePicture ? (
+                    <img
+                      src={uploadedImage || formData.profilePicture}
+                      onError={(e) => {
+                        e.target.src = "/svg/profile-icon.svg";
+                      }}
+                      alt="Profile"
+                    />
+                  ) : (
+                    <img
+                      src={"/svg/profile-icon.svg"}
+                      onError={(e) => {
+                        e.target.src = "/svg/profile-icon.svg";
+                      }}
+                      alt="Profile"
+                    />
                   )}
 
-                  {/* Show OTP Input UI if OTP sent */}
-                  {otpSent && (
-                    <>
-                      {/* {formData.email && (
+                  <span className={styles.editIcon}>
+                    <img src="svg/edit-icon.svg" alt="edit" />
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.allsectionDiv}>
+              <div className={styles.infoSection}>
+                <div className={styles.header}>
+                  <h3>Personal Info</h3>
+                  <span className={styles.editText}>
+                    <img
+                      src="/svg/edit-icon2.svg"
+                      className={styles.PurpolIcon}
+                    />
+                    Edit
+                  </span>
+                </div>
+
+                <div className={styles.Part}>
+                  <img src="svg/line-Profile.svg" />
+                  <div className={styles.infoItem}>
+                    <label>Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      maxLength={100}
+                      value={formData.name}
+                      onChange={handleChange}
+                    />
+                    {errors.name && (
+                      <p className={styles.error}>{errors.name}</p>
+                    )}
+                    <hr className={styles.hrLine} />
+                  </div>
+                </div>
+                {/* <div className={styles.Part}>
+                  <img src="svg/line-email.svg" />
+                  <div className={styles.infoItem}>
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                    {errors.email && (
+                      <p className={styles.error}>{errors.email}</p>
+                    )}
+                    <hr className={styles.hrLine} />
+                  </div>
+                </div> */}
+
+                {!emailVerified && formData.email !== initialData?.email && (
+                  <>
+                    {/* Show Send OTP Button */}
+                    {!otpSent && (
+                      <div
+                        className={styles.Btn}
+                        onClick={() => {
+                          if (
+                            !formData.email ||
+                            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+                          ) {
+                            setShowPopup(true);
+                            setPopupType("failed");
+                            setPopupMessage(
+                              "Please enter a valid email before sending OTP."
+                            );
+                            return;
+                          }
+                          handleSendOTP();
+                        }}
+                      >
+                        <div className={styles.btnTheme}>
+                          <img src="svg/svg-theme.svg" alt="" />
+                          <p>
+                            {sendOtpLoading ? <Loader size={18} /> : "Send OTP"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Show OTP Input UI if OTP sent */}
+                    {otpSent && (
+                      <>
+                        {/* {formData.email && (
                         <p className={styles.codeText}>
                           Email has been sent to <strong>{formData.email}</strong>
                         </p>
                       )} */}
-                      <p className={styles.codeText}>Enter the code sent to your email</p><br />
-                      <div className={styles.otpContainer}>
-                        {[...Array(6)].map((_, i) => (
-                          <input
-                            key={i}
-                            maxLength="1"
-                            value={otp[i]}
-                            onChange={(e) => handleOtpChange(e.target.value, i)}
-                            className={styles.otpInput}
-                            onKeyDown={(e) => handleKeyDown(e, i)}
-                            ref={(el) => (inputRefs.current[i] = el)}
-                            inputMode="numeric"
-                            type="tel"
-                          />
-                        ))}
-                      </div>
+                        <p className={styles.codeText}>
+                          Enter the code sent to your email
+                        </p>
+                        <br />
+                        <div className={styles.otpContainer}>
+                          {[...Array(6)].map((_, i) => (
+                            <input
+                              key={i}
+                              maxLength="1"
+                              value={otp[i]}
+                              onChange={(e) =>
+                                handleOtpChange(e.target.value, i)
+                              }
+                              className={styles.otpInput}
+                              onKeyDown={(e) => handleKeyDown(e, i)}
+                              ref={(el) => (inputRefs.current[i] = el)}
+                              inputMode="numeric"
+                              type="tel"
+                            />
+                          ))}
+                        </div>
 
-                      {/* Resend OTP */}
-                      <div className={styles.resendContainer}>
-                        <button
-                          type="button"
-                          onClick={handleSendOTP}
-                          disabled={isResendDisabled}
+                        {/* Resend OTP */}
+                        <div className={styles.resendContainer}>
+                          <button
+                            type="button"
+                            onClick={handleSendOTP}
+                            disabled={isResendDisabled}
+                            style={{
+                              cursor: isResendDisabled
+                                ? "not-allowed"
+                                : "pointer",
+                              opacity: isResendDisabled ? 0.5 : 1,
+                              background: "none",
+                              border: "none",
+                              color: "#6524EB",
+                              fontWeight: "bold",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {isResendDisabled
+                              ? `Resend OTP in ${String(
+                                Math.floor(resendTimer / 60)
+                              ).padStart(2, "0")}:${String(
+                                resendTimer % 60
+                              ).padStart(2, "0")}`
+                              : "Resend OTP"}
+                          </button>
+                        </div>
+                        {/* Verify Button */}
+                        <div
+                          className={styles.Btn}
+                          onClick={
+                            isOtpFilled && !isVerifyingOtp
+                              ? handleVerifyOtp
+                              : undefined
+                          }
                           style={{
-                            cursor: isResendDisabled ? "not-allowed" : "pointer",
-                            opacity: isResendDisabled ? 0.5 : 1,
-                            background: "none",
-                            border: "none",
-                            color: "#6524EB",
-                            fontWeight: "bold",
-                            fontSize: "14px",
+                            opacity: isOtpFilled && !isVerifyingOtp ? 1 : 0.5,
+                            pointerEvents:
+                              isOtpFilled && !isVerifyingOtp ? "auto" : "none",
+                            cursor:
+                              isOtpFilled && !isVerifyingOtp
+                                ? "pointer"
+                                : "not-allowed",
                           }}
                         >
-                          {isResendDisabled
-                            ? `Resend OTP in ${String(Math.floor(resendTimer / 60)).padStart(2, "0")}:${String(resendTimer % 60).padStart(2, "0")}`
-                            : "Resend OTP"}
-                        </button>
-                      </div>
-                      {/* Verify Button */}
-                      <div className={styles.Btn} onClick={isOtpFilled && !isVerifyingOtp ? handleVerifyOtp : undefined}
-                        style={{
-                          opacity: isOtpFilled && !isVerifyingOtp ? 1 : 0.5,
-                          pointerEvents: isOtpFilled && !isVerifyingOtp ? "auto" : "none",
-                          cursor: isOtpFilled && !isVerifyingOtp ? "pointer" : "not-allowed",
-                        }}>
-                        <div type="submit">
-                          <div className={styles.btnTheme}>
-                            <img src="svg/svg-theme.svg" alt="" />
-                            <p>{isVerifyingOtp ? <Loader size={17} /> : "Verify Email"}</p>
+                          <div type="submit">
+                            <div className={styles.btnTheme}>
+                              <img src="svg/svg-theme.svg" alt="" />
+                              <p>
+                                {isVerifyingOtp ? (
+                                  <Loader size={17} />
+                                ) : (
+                                  "Verify Email"
+                                )}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-              <div className={styles.Part}>
-                <img src="svg/line-Call.svg" />
-                <div className={styles.infoItem}>
-                  <label>Phone Number</label>
-                  <PhoneInput
-                    country={"in"}
-                    value={formData.phone}
-                    className={styles.phoneInput}
-                    onChange={(val) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        phone: val,
-                      }));
-                      if (errors.phone) {
-                        setErrors((prev) => ({ ...prev, phone: "" }));
-                      }
-                    }}
-                    inputClass={errors.phone ? styles.inputError : ""}
-                    inputProps={{
-                      name: "phone",
-                      required: true,
-                      autoFocus: false,
-                    }}
-                  />
-                  {errors.phone && <p className={styles.error}>{errors.phone}</p>}
-                  <hr className={styles.hrLine} />
-                </div>
-              </div>
-              <div className={styles.Part}>
-                <img src="svg/line-address.svg" />
-                <div className={styles.infoItem}>
-                  <label>Home address</label>
-                  <textarea
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    maxLength={10000}
-                  />
-
-
-                  {isUploadModalOpen && (
-                    <UploadProfile
-                      onClose={closeUploadModal}
-                      onUpload={handleUpload}
-                      currentProfile={
-                        uploadedImage ||
-                        formData.profilePicture ||
-                        "Images/editProfile.png"
-                      }
+                      </>
+                    )}
+                  </>
+                )}
+                <div className={styles.Part}>
+                  <img src="svg/line-Call.svg" />
+                  <div className={styles.infoItem}>
+                    <label>Phone Number</label>
+                    <PhoneInput
+                      country={"in"}
+                      value={formData.phone}
+                      className={styles.phoneInput}
+                      onChange={(val) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: val,
+                        }));
+                        if (errors.phone) {
+                          setErrors((prev) => ({ ...prev, phone: "" }));
+                        }
+                      }}
+                      inputClass={errors.phone ? styles.inputError : ""}
+                      inputProps={{
+                        name: "phone",
+                        required: true,
+                        autoFocus: false,
+                      }}
                     />
-                  )}
-          
+                    {errors.phone && (
+                      <p className={styles.error}>{errors.phone}</p>
+                    )}
+                    <hr className={styles.hrLine} />
+                  </div>
                 </div>
+                <div className={styles.Part}>
+                  <img src="svg/line-address.svg" />
+                  <div className={styles.infoItem}>
+                    <label>Home address</label>
+                    <textarea
+                      name="address"
+                      placeholder="Please enter address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      maxLength={10000}
+                    />
+                    <hr className={styles.hrLine} />
+                    {/* {isUploadModalOpen && (
+                      <UploadProfile
+                        onClose={closeUploadModal}
+                        onUpload={handleUpload}
+                        currentProfile={
+                          uploadedImage ||
+                          formData.profilePicture ||
+                          "Images/editProfile.png"
+                        }
+                      />
+                    )} */}
+                  </div>
 
+
+                </div>
+                <div
+                  type="submit"
+                  onClick={
+                    isDataChanged() && !addLoading
+                      ? formData.email === initialData?.email || emailVerified
+                        ? handleSubmit
+                        : () => {
+                          setShowPopup(true);
+                          setPopupType("failed");
+                          setPopupMessage(
+                            "Please verify your new email before saving."
+                          );
+                        }
+                      : undefined
+                  }
+                  // style={{
+                  //   opacity:
+                  //     isDataChanged() &&
+                  //       (formData.email === initialData?.email || (emailVerified && !otpSent))
+                  //       ? 1
+                  //       : 0.5,
+                  //   pointerEvents:
+                  //     isDataChanged() &&
+                  //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
+                  //       !addLoading
+                  //       ? "auto"
+                  //       : "none",
+                  //   cursor:
+                  //     isDataChanged() &&
+                  //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
+                  //       !addLoading
+                  //       ? "pointer"
+                  //       : "not-allowed",
+                  // }}
+                  style={{
+                    opacity:
+                      isDataChanged() &&
+                        (formData.email === initialData?.email || // email not changed
+                          (formData.email !== initialData?.email &&
+                            emailVerified)) // email changed & verified
+                        ? 1
+                        : 0.5,
+                    pointerEvents:
+                      isDataChanged() &&
+                        (formData.email === initialData?.email ||
+                          (formData.email !== initialData?.email &&
+                            emailVerified)) &&
+                        !addLoading
+                        ? "auto"
+                        : "none",
+                    cursor:
+                      isDataChanged() &&
+                        (formData.email === initialData?.email ||
+                          (formData.email !== initialData?.email &&
+                            emailVerified)) &&
+                        !addLoading
+                        ? "pointer"
+                        : "not-allowed",
+                  }}
+                >
+                  <div className={styles.btnTheme}>
+                    <img src="svg/svg-theme.svg" alt="" />
+                    <p>
+                      {addLoading ? (
+                        <>
+                          Saving... &nbsp; <Loader size={18} />
+                        </>
+                      ) : (
+                        "Save"
+                      )}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div type="submit"
-                onClick={
-                  isDataChanged() && !addLoading
-                    ? formData.email === initialData?.email || emailVerified
-                      ? handleSubmit
-                      : () => {
-                        setShowPopup(true);
-                        setPopupType("failed");
-                        setPopupMessage("Please verify your new email before saving.");
-                      }
-                    : undefined
-                }
-                // style={{
-                //   opacity:
-                //     isDataChanged() &&
-                //       (formData.email === initialData?.email || (emailVerified && !otpSent))
-                //       ? 1
-                //       : 0.5,
-                //   pointerEvents:
-                //     isDataChanged() &&
-                //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
-                //       !addLoading
-                //       ? "auto"
-                //       : "none",
-                //   cursor:
-                //     isDataChanged() &&
-                //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
-                //       !addLoading
-                //       ? "pointer"
-                //       : "not-allowed",
-                // }}
-                style={{
-                  opacity:
-                    isDataChanged() &&
-                      (
-                        formData.email === initialData?.email || // email not changed
-                        (formData.email !== initialData?.email && emailVerified) // email changed & verified
-                      )
-                      ? 1
-                      : 0.5,
-                  pointerEvents:
-                    isDataChanged() &&
-                      (
-                        formData.email === initialData?.email ||
-                        (formData.email !== initialData?.email && emailVerified)
-                      ) && !addLoading
-                      ? "auto"
-                      : "none",
-                  cursor:
-                    isDataChanged() &&
-                      (
-                        formData.email === initialData?.email ||
-                        (formData.email !== initialData?.email && emailVerified)
-                      ) && !addLoading
-                      ? "pointer"
-                      : "not-allowed",
-                }}
-
+              <div className={styles.RefferalMain}>
+                <Refferal
+                  referralCode={referralCode}
+                  setShowDashboardReferral={setShowDashboardReferral}
+                  showDashboardReferral={showDashboardReferral}
+                  userId={userId}
+                />
+              </div>
+              <div className={styles.mySubscription}>
+                <MySubscription agents={subscriptionDetails?.agents || []} />
+              </div>
+              <div className={styles.billingInvoice}>
+                <BillingInvoices invoices={subscriptionDetails?.invoices || []} />
+              </div>
+            </div>
+            <div className={styles.deleteSection}>
+              <button
+                className={styles.deleteButton}
+                onClick={() => setShowDeleteModal(true)}
               >
-                <div className={styles.btnTheme}>
-                  <img src="svg/svg-theme.svg" alt="" />
-                  <p  >{addLoading ? <>Saving... &nbsp; <Loader size={18} /></> : "Save"}</p>
+                <img src="/svg/delete-icon.svg" alt="delete" />
+                Delete Profile
+              </button>
+            </div>
+            {showDeleteModal && (
+              <div className={styles.modalOverlay}>
+                <div className={styles.modalContent}>
+                  <h3>Delete Your Profile?</h3>
+                  <p>
+                    Deleting your profile will permanently remove all your data
+                    including agents, business information, and usage history.{" "}
+                    <br />
+                    <strong>
+                      This action is irreversible and no refunds will be
+                      provided.
+                    </strong>
+                  </p>
+                  <div className={styles.modalButtons}>
+                    <button
+                      className={styles.deleteConfirmButton}
+                      onClick={handleDeleteProfile}
+                    >
+                      {addLoading ? <Loader size={18} /> : "Delete Profile"}
+                    </button>
+                    <button
+                      className={styles.cancelButton}
+                      onClick={() => setShowDeleteModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className={styles.RefferalMain}>
-              <Refferal referralCode={referralCode} setShowDashboardReferral={setShowDashboardReferral} showDashboardReferral={showDashboardReferral} userId={userId} />
-            </div>
-
+            )}
           </div>
-
-
+                 {isUploadModalOpen && (
+                      <UploadProfile
+                        onClose={closeUploadModal}
+                        onUpload={handleUpload}
+                        currentProfile={
+                          uploadedImage ||
+                          formData.profilePicture ||
+                          "Images/editProfile.png"
+                        }
+                      />
+                    )}
         </>
       )}
       {showPopup && (
@@ -603,9 +770,7 @@ const EditProfile = () => {
         />
       )}
     </>
-
-
-  )
+  );
 };
 
 export default EditProfile;

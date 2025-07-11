@@ -3,17 +3,24 @@ import styles from "./AssignNumberModal.module.css";
 import axios from "axios";
 import { updateAgent } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
+import Loader from "../Loader/Loader";
+import { useDashboardStore } from "../../Store/agentZustandStore";
 
 const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
   const [loading, setLoading] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+   const { setHasFetched } =  useDashboardStore();
   if (!isOpen) return null;
   const handleAssignNumber = async () => {
     try {
-      setLoading(true);
-      const agentsData = JSON.parse(localStorage.getItem("agents") || "[]");
+      if (isSubmitting) return; // Prevent multiple clicks
 
+      setLoading(true);
+      setIsSubmitting(true);
+      const agentsData = JSON.parse(localStorage.getItem("agents") || "[]");
 
       if (!agentId) {
         throw new Error("Agent ID not found in localStorage.");
@@ -37,7 +44,7 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
         }
       );
 
-      console.log("Phone number created:", response.data);
+      // console.log("Phone number created:", response.data);
       const phoneNumber = response?.data?.phone_number;
 
       if (!phoneNumber) {
@@ -46,19 +53,22 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
 
       await updateAgent(agentId, { voip_numbers: [phoneNumber] });
       setPopupType("success")
-      setPopupMessage(`Number ${phoneNumber} assigned and saved! 🎉`)
-      onCallApi()
-      setTimeout(() => {
-        onClose()
-      }, 2000);
+      setPopupMessage(`Number ${phoneNumber} assigned and saved!`)
+      // onCallApi()
+      setHasFetched(false);
+      // setTimeout(() => {
+      //   onClose()
+      // }, 2000);
     } catch (error) {
       console.error("Error assigning number:", error.response?.data || error.message);
-      alert("Failed to assign number. Please try again.");
+      setPopupType("failed");
+      setPopupMessage("Failed to assign number. Please try again.");
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
+
     }
   };
-
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
@@ -67,7 +77,7 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
         <h2 className={styles.title}>Assign a New Number</h2>
 
         <p className={styles.warning}>
-          ⚠️ <strong style={{ color: 'red' }}>Warning:</strong> You will not be able to change this number before <strong>30 days</strong>
+         <strong style={{ color: " #5a20d8" }}>Disclaimer:</strong> You will not be able to change this number before <strong>25 days</strong>
         </p>
 
         <p className={styles.subTitle}>You will be able to use this number as below:</p>
@@ -77,14 +87,31 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
           <li>2. Forward calls from your current support number to this Rexpt.in number.</li>
         </ul>
 
-        <button
+        {/* <button
           className={styles.assignButton}
           onClick={handleAssignNumber}
           disabled={loading}
         >
           {loading ? "Assigning..." : "Assign Number"}
-        </button>
-
+        </button> */}
+        <div   style={{
+          pointerEvents: loading || isSubmitting ? "none" : "auto",
+          opacity: loading || isSubmitting ? 0.6 : 1, // Optional: dim UI when disabled
+        }}>
+            <button
+          className={styles.assignButton}
+          onClick={handleAssignNumber}
+          disabled={loading || isSubmitting}
+        >
+          {loading ? (
+            <div className={styles.loaderWrapper}>
+              <span className={styles.loadingText}>Assigning...</span>   <Loader size={17} />
+            </div>
+          ) : (
+            "Assign Number"
+          )}
+        </button>  
+        </div>
         <p className={styles.comingSoon}>
           ✨ <strong>Coming Soon:</strong> We will provide option to choose your custom new support number.
         </p>
@@ -93,7 +120,7 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
         <PopUp
           type={popupType}
           message={popupMessage}
-          onClose={() => setPopupMessage("")}
+          onClose={() => {setPopupMessage("");onClose();setHasFetched(false);}}
 
         />
       )}

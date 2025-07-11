@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -15,6 +15,7 @@ import CountdownPopup from "../CountDownPopup/CountdownPopup";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "recharts";
 import Select from "react-select";
+import Loader2 from "../Loader2/Loader2";
 
 const stripePromise = loadStripe(
   "pk_live_51RYjjKSCQQfKS3WDzVLb6c2Xk6Gdt2NaJ7pF5eWRDk345NQY1TNBOgxy5CUYCWAsWsqU1pJx8Bi56Ue7U5vg2Noe00HMCU3IXV"
@@ -39,16 +40,16 @@ function CheckoutForm({
   const stripe = useStripe();
   const elements = useElements();
 
-
   // Step state (1 or 2)
   const [step, setStep] = useState(1);
 
   const navigate = useNavigate();
-const origin = window.location.origin;
+  const origin = window.location.origin;
 
   const location = useLocation();
 
   const currentLocation = location.pathname;
+  console.log("currentLocation", location);
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -324,6 +325,8 @@ const origin = window.location.origin;
     "ZW",
   ]);
 
+  const checkPage = sessionStorage.getItem("checkPage");
+
   const COUNTRY_OPTIONS = Array.from(VALID_COUNTRY_CODES)
     .sort()
     .map((code) => ({ value: code, label: code }));
@@ -365,9 +368,25 @@ const origin = window.location.origin;
     setPopupType("success");
     setPopupMessage("Subscription successful!");
     sessionStorage.removeItem("priceId");
-    // Call next API here and navigate to the dashboard
+    // Call next API here and navigate to the dashboardd
     await callNextApiAndRedirect();
   };
+  useEffect(() => {
+    const handlePageShow = (event) => {
+      const checkPage = sessionStorage.getItem("checkPage");
+      const navEntries = performance.getEntriesByType("navigation");
+      const isBack = event.persisted || navEntries[0]?.type === "back_forward";
+
+      if (checkPage === "checkout" && isBack) {
+        sessionStorage.removeItem("checkPage");
+        // Force hard redirect
+        window.location.href = "/cancel-payment";
+      }
+    };
+
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []); // ✅ No dependency needed
 
   const callNextApiAndRedirect = async () => {
     console.log("agentID", agentId);
@@ -820,41 +839,46 @@ const origin = window.location.origin;
 
       url = `${origin}/thankyou/update?${queryParams.toString()}`;
     } else {
-      url = `${origin}/thankyou/create`;    }
+      url = `${origin}/thankyou/create`;
+    }
+    if (checkPage !== "checkout") {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/create-checkout-session`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customerId,
+              priceId,
+              promotionCode: promoCodeSend,
+              userId,
+              companyName,
+              gstNumber,
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId,
-          priceId,
-          promotionCode: promoCodeSend,
-          userId,
-          companyName,
-          gstNumber,
+              url: url,
+              cancelUrl: `${origin}/cancel-payment`,
+            }),
+          }
+        );
 
-          url: url,
-          cancelUrl : `${origin}/cancel-payment`
+        const data = await response.json();
 
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.error) {
-        setMessage(`❌ ${data.error}`);
+        if (data.error) {
+          setMessage(`❌ ${data.error}`);
+          setPopupType("failed");
+          setPopupMessage(data.error);
+        } else if (data.checkoutUrl) {
+          // Redirect to Stripe Checkout
+          sessionStorage.setItem("checkPage", "checkout");
+          window.location.href = data.checkoutUrl;
+        }
+      } catch (err) {
+        console.error("Checkout session error:", err);
+        setMessage("❌ Failed to initiate Stripe Checkout.");
         setPopupType("failed");
-        setPopupMessage(data.error);
-      } else if (data.checkoutUrl) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.checkoutUrl;
+        setPopupMessage("Failed to initiate Stripe Checkout.");
       }
-    } catch (err) {
-      console.error("Checkout session error:", err);
-      setMessage("❌ Failed to initiate Stripe Checkout.");
-      setPopupType("failed");
-      setPopupMessage("Failed to initiate Stripe Checkout.");
     }
 
     setLoading(false);
@@ -903,6 +927,11 @@ const origin = window.location.origin;
 
   return (
     <div className={styles.checkoutForm}>
+      {loading && !popupMessage && !message && (
+        <div className={styles.loaderWrapper}>
+          <Loader2 />
+        </div>
+      )}
       {/* {step === 1 && (
         <div className={styles.checkoutFormMain}>
           <h3>Billing Address & Company Details</h3>

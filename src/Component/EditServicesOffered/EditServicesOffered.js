@@ -593,9 +593,9 @@ const EditServicesOffered = () => {
                 <div className={styles.headerWrapper}>
                     <h2 className={styles.heading}>Services Offered</h2>
                     <p className={styles.subheading}>Select the “Services You Offer” based on the Business Category</p>
-                    <div className={styles.tooltipIcon}>
+                    {/* <div className={styles.tooltipIcon}>
                         <img src='/svg/informtion-icon.svg' alt='informtion-icon' />
-                    </div>
+                    </div> */}
                 </div>
                 <div className={styles.section}>
                     <div className={styles.searchBox}>
@@ -622,7 +622,7 @@ const EditServicesOffered = () => {
                                             </div>
                                             <div className={styles.strongDiv}>
                                                 <strong>{item}</strong>
-                                                <p className={styles.subType}>{item}</p>
+                                                {/* <p className={styles.subType}>{item}</p> */}
                                             </div>
                                         </div>
 
@@ -688,13 +688,13 @@ const EditServicesOffered = () => {
                     </div>
                     }
                     <div className={styles.stickyWrapper} onClick={handleContinue}> 
-                        <AnimatedButton label="Save" isLoading={Loading}/>
+                        <AnimatedButton label="Save" isLoading={Loading}  position={{ position: "relative" }}/>
                     </div>
                 </div>
         {showPopup && (
             <PopUp
             type={popupType}
-            onClose={()=>{}}
+            onClose={()=>{setShowPopup(false);navigate(-1)}}
             message={popupMessage}
             onConfirm={()=>navigate('/edit-services-offered')}
             />

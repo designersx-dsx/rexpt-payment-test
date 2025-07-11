@@ -58,6 +58,7 @@ import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
 import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
 import Plan from "./Component/Plans/Plans";
 import Planss from "./Component/Plan/Plan";
+import Documentation from "./Component/Documentation/Documentation";
 
 
 // import Test from "./utils/Test";
@@ -125,8 +126,8 @@ function App() {
                 <Route path="/edit-gender" element={<EditGender />} />
                 <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
 
-                <Route path="/plans" element={<SubscriptionPlan />} />
-                <Route path="/plan" element={<Planss />} />
+                <Route path="/plans" element={ <SecureRoute><SubscriptionPlan /></SecureRoute>} />
+                <Route path="/plan" element={<SecureRoute><Planss /></SecureRoute>} />
 
 
 
@@ -198,7 +199,7 @@ function App() {
                   }
                 />
                 {/* <Route path="/plans" element={<Plans />} /> */}
-                <Route path="/checkout" element={<SubscriptionFlow />} />
+                <Route path="/checkout" element={<SecureRoute><SubscriptionFlow /></SecureRoute>} />
                 <Route
                   path="/calendar"
                   element={
@@ -261,6 +262,7 @@ function App() {
                 <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
 
                 <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
+                <Route path="/documentation" element={<SecureRoute><Documentation/></SecureRoute>} />
 
                 <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
 

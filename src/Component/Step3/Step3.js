@@ -31,32 +31,55 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const EditingMode = localStorage.getItem("UpdationMode") === "ON";
   const [scale, setScale] = useState(1);
 
-  useEffect(() => {
-    const storedGender = sessionStorage.getItem("agentGender") || "Male";
-    const storedAvatarImg = sessionStorage.getItem("avatar");
-    const storedAgentName = sessionStorage.getItem("agentName") || localStorage.getItem("VoiceAgentName") || "";
-    const localVoiceName = sessionStorage.getItem("VoiceAgentName") || "";
-    const genderAvatars = avatars[storedGender] || avatars["Male"];
-    setGender(storedGender);
-    setAvailableAvatars(genderAvatars);
-    if (storedAgentName) {
-      setAgentName(storedAgentName);
-    } else {
-      setAgentName(localVoiceName);
-      sessionStorage.setItem("agentName", localVoiceName)
-    }
+ useEffect(() => {
+  const storedGender = sessionStorage.getItem("agentGender") || "Male";
+  const storedAvatarImg = sessionStorage.getItem("avatar");
+  const storedAgentName =
+    sessionStorage.getItem("agentName") ||
+    localStorage.getItem("VoiceAgentName") ||
+    "";
+  const localVoiceName = sessionStorage.getItem("VoiceAgentName") || "";
 
-    if (storedAvatarImg) {
-      const avatarIndex = genderAvatars.findIndex(av => av.img === storedAvatarImg);
-      if (avatarIndex !== -1) {
-        const matchedAvatar = genderAvatars[avatarIndex];
-        setSelectedAvatar(matchedAvatar);
-        setTimeout(() => {
-          sliderRef.current?.slickGoTo(avatarIndex);
-        }, 0);
-      }
+  const genderAvatars = avatars[storedGender] || avatars["Male"];
+  setGender(storedGender);
+  setAvailableAvatars(genderAvatars);
+
+  // Set agent name
+  if (storedAgentName) {
+    setAgentName(storedAgentName);
+  } else {
+    setAgentName(localVoiceName);
+    sessionStorage.setItem("agentName", localVoiceName);
+  }
+
+  // Avatar selection
+  if (storedAvatarImg) {
+    const avatarIndex = genderAvatars.findIndex(av => av.img === storedAvatarImg);
+    if (avatarIndex !== -1) {
+      const matchedAvatar = genderAvatars[avatarIndex];
+      setSelectedAvatar(matchedAvatar);
+      setTimeout(() => {
+        sliderRef.current?.slickGoTo(avatarIndex);
+      }, 0);
+      return;
     }
-  }, []);
+  }
+
+  // 👇 Preselect first avatar if none is stored
+  const defaultAvatar = genderAvatars[0];
+  if (defaultAvatar) {
+    setSelectedAvatar(defaultAvatar);
+    sessionStorage.setItem("avatar", defaultAvatar.img);
+    sessionStorage.setItem("avtarChecked", JSON.stringify(true));
+    setAvtarChecked?.(true);
+    setTimeout(() => {
+      sliderRef.current?.slickGoTo(0); // Go to first slide
+    }, 0);
+  }
+}, []);
+
+
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;

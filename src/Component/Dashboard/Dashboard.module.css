@@ -312,6 +312,9 @@
 .LangStyle.GrowthPlan {
     background-color: #F4DFE1;
 }
+.LangStyle.CorporatePlan {
+    background-color: #ffeadf;
+}
 
 
 .LangStyle.StarterPlan .PlanPrice {
@@ -326,6 +329,9 @@
     background-color: #FFBEC4;
 }
 
+.LangStyle.CorporatePlan .PlanPrice {
+    background-color: #f8a574;
+}
 
 
 
@@ -454,22 +460,22 @@
 
 .OptionsDropdown {
     position: absolute;
-    top: 100%;
-    /* dropdown icon ke upar */
-    right: 0;
+    top: 0%;
+    right: 100%;
     margin-bottom: 8px;
     background: white;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 60;
+    z-index: 0;
     width: 170px;
 }
 
 .OptionItem {
-    padding: 7.5px 12px;
+    padding: 5px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
+    font-size: 13.5px;
 }
 
 .OptionItem:last-child {
@@ -499,6 +505,7 @@
         transform: translate(50%, 0%);
 
     }
+
     .OptionsDropdown {
         top: -80%;
         right: 40px;
@@ -613,6 +620,13 @@
         transform: translateY(0px);
     }
 }
+
+
+
+
+
+
+
 
 
 @media (min-width: 380px) and (max-width: 406px) {
@@ -1260,6 +1274,44 @@
         opacity: 0;
         transform: translateY(-5px);
     }
+}
+
+.NativeSelectWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.NativeSelect {
+    appearance: none;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 6px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.FilterIcon {
+    position: relative;
+    cursor: pointer;
+}
+
+.DropdownMenu {
+    position: absolute;
+    top: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.OptionItem {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.OptionItem:hover {
+    background-color: #f0f0f0;
 }
 
 /* ajay css end */

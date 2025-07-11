@@ -31,18 +31,35 @@
     font-size: 16px;
 }
 
+.rightpart {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
 .rightpart strong {
     text-align: end;
     display: flex;
     font-weight: 600;
+    color: #24252C;
 }
 
-.About h3{
+.capsul {
+    background-color: #EDE9FC;
+    padding: 4px 15px;
+    border-radius: 20px;
+    margin-bottom: 5px;
+    width: fit-content;
+    font-size: 14px;
+}
+
+.About h3 {
     color: #24252C;
     font-size: 18px;
     font-weight: 600;
 }
-.About p{
+
+.About p {
     color: #4E4E50;
     font-size: 16px;
 }

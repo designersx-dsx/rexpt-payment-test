@@ -266,9 +266,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       updateSessionBusinessDetails("businessType", e.target.value);
          sessionStorage.removeItem("showInput");
     }
-    console.log(e.target.value,"e.target.value")
     updateSessionBusinessDetails("businessType", e.target.value);
-    console.log("businessTypeSubmitted", businessTypeSubmitted);
     if (businessTypeSubmitted) {
       setBusinessTypeError("");
     }
@@ -378,7 +376,6 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
     onStepChange?.(1);
   };
   const handleSaveEdit = (e) => {
-    console.log("helo")
     e.preventDefault();
 
     if (prevBuisnessType != businessType) {
@@ -419,7 +416,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   useImperativeHandle(ref, () => ({
     validate: () => {
       // Validate business type
-      console.log("Hello")
+  
       if (!businessType) {
 
         setBusinessTypeError("Please select a business type.");
@@ -466,7 +463,6 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       } else {
         setErrors((prev) => ({ ...prev, customBuisness: "" }));
       }
-      console.log("I AM CALL ")
 
 
       return true; // No errors

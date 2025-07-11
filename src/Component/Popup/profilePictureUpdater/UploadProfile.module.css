@@ -381,9 +381,11 @@
 }
 
 .applyCropButton {
-  background-color: #4CAF50;
+  background-color: #ebe2ff;
+  color: #000000;
 }
 
 .cancelCropButton {
-  background-color: #f44336;
+  background-color: #929292;
+  color: #ffffff;
 }

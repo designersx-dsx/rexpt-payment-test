@@ -1,37 +1,173 @@
 /* Wrapper & Layout */
+.firstdiv {
+    position: sticky;
+    top: 0px;
+    z-index: 1000;
+    background-color: #ffffff;
+}
+
+/* Pill-shaped container */
+.freeTrialBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background-color: #F9F9F9;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #1a1a1a;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #D8D9DD;
+}
+
+/* Hide actual checkbox */
+.freeTrialBtn input[type="checkbox"] {
+    display: none;
+}
+
+/* Circle beside text */
+.checkCircle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgb(231, 231, 231);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+/* When selected */
+.checked {
+    background-color: #6524EB;
+    border: 2px solid #6524EB;
+}
+
+/* Check icon */
+.checkIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.sectionPart {
+    padding-inline: 20px;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.sectionPart h2 {
+    font-size: 35px;
+    color: #24252C;
+}
+
+.sectionPart p {
+    font-size: 14px;
+    color: #555555;
+}
+
 .wrapper {
     width: 100%;
     max-width: 800px;
     margin: auto;
-    padding: 0px 0px 0px 2rem;
+
     overflow: visible;
     position: relative;
-    height: fit-content;
-    /* height: 80dvh; */
-    margin-block: 0px 2rem;
+
+    margin-block: 0px 1rem;
 }
 
 .slick-list {
     overflow: visible !important;
 }
-.firstdiv{
+
+.firstdiv {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-right: 16px;
 }
-.firstdiv button{
+
+.firstdiv button {
     width: auto;
     padding: 0px 10px;
     height: 35px;
     margin-right: 10px;
-    background-color:#6524eb ;
+    background-color: #6524eb;
     border: none;
     color: #fff;
     font-weight: 600;
     border-radius: 4px;
-    
+
 
 }
+
+/* Free Tail Modal Css Start */
+.Topsection {
+    background-color: #F2F2F2;
+    padding: 16px;
+    border-radius: 12px;
+
+}
+
+.Topsection h1 {
+    text-align: left;
+    color: #6524EB;
+    font-size: 36px;
+    margin-bottom: 0px;
+}
+
+.Topsection p {
+    color: #24252C;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.Topsection text {
+    font-size: 12px;
+    color: #555555;
+}
+
+.boldText {
+    color: #6524EB;
+}
+
+.featureList {
+    padding: 16px;
+
+}
+
+.listdata {}
+
+.liData {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+
+}
+
+.liData p {
+    color: #24252C;
+    font-size: 13px;
+}
+
+.toggleText {
+    color: #5F33E1;
+    cursor: pointer;
+    margin-top: 10px;
+    text-decoration: underline;
+    font-size: 12px;
+    border-bottom: 1px solid gray;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+
+
+
 
 .slick-track {
     display: flex !important;
@@ -40,7 +176,7 @@
 
 .slide {
     width: 100%;
-    padding-right: 30px;
+    /* padding-right: 30px; */
     box-sizing: border-box;
     /* opacity: 0.5; */
     transition: transform 0.3s ease, opacity 0.3s ease;
@@ -53,42 +189,54 @@
 
 /* Card Base */
 .card {
-
     border-radius: 16px;
-
     background: #fff;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); */
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;
+    position: relative;
+    transition: all 0.3s ease;
 }
+
 
 .CardiSection {
     padding: 12px;
 
 }
 
+.activeOverlay {
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 0px 22px 5px, #0e1e2538 0px 2px 16px 0px;
+}
+
 /* Plan-Specific Colors */
 .starter {
+
     border: 1px solid #00B2FF;
     color: #00B2FF;
-
+    margin: 20px 5px 20px 20px
 }
 
 .scaler {
+
     border: 1px solid #3CD856;
     color: #3CD856;
+    margin: 20px 5px 20px 20px
 }
 
 .growth {
+
     border: 1px solid #E83BAC;
     color: #E83BAC;
+    margin: 20px 5px 20px 20px
 }
 
 .corporate {
+
     border: 1px solid #FE5E00;
     color: #FE5E00;
+    margin: 20px 5px 20px 20px
 }
 
 /* Text & Structure */
@@ -188,6 +336,7 @@
     color: #5F33E1;
     margin-bottom: 10px;
     text-decoration: underline;
+    cursor: pointer;
 }
 
 /* Toggle Switch */
@@ -205,6 +354,7 @@
     position: relative;
     width: 40px;
     height: 20px;
+    cursor: pointer;
 }
 
 .toggleSwitch input {
@@ -245,7 +395,8 @@
 }
 
 .active {
-    color: #5F33E1;
+    /* color: #5F33E1; */
+
     font-weight: 600;
 }
 
@@ -255,15 +406,19 @@
 }
 
 /* Pricing Note */
+
 .discount {
     font-size: 12px;
     color: green;
     font-weight: 500;
     text-align: center;
     background-color: #DCFCE7;
-    width: max-content;
-    margin: 10px auto;
-    padding: 3px 6px;
+    padding: 6px 10px;
+    width: 100%;
+    max-width: fit-content;
+    margin-inline:auto;
+    border-radius: 20px;
+    margin-top: 15px;
 }
 
 
@@ -283,35 +438,39 @@
 /* Footer Plan Buttons */
 .footerButtons {
     display: flex;
-
-    /* margin-top: 24px; */
-    gap: 5px;
-    /* position: fixed; */
+    justify-content: space-between;
+    gap: 3px;
     bottom: 0;
     width: 100%;
     background-color: white;
-    padding: 20px 10px;
+    padding-inline: 10px;
+    padding-bottom: 10px;
+    margin-top: 10px;
 }
 
 .ForSticky {
     position: fixed;
-    bottom: 10px;
+    bottom: 0px;
     left: 0;
     width: 100%;
     z-index: 999;
     background: #fff;
     padding: 10px 0;
-    /* box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);  */
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
 
 .footerBtn {
-    font-size: 12px;
-    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
     border-radius: 20px;
-    border: 2px solid;
     background: transparent;
+    border: none;
     cursor: pointer;
     transition: background 0.3s, color 0.3s;
+    box-shadow: unset;
+    margin: unset;
 }
 
 .featuresWrapper {
@@ -362,4 +521,53 @@
     pointer-events: none;
     height: 0;
     margin-bottom: 0;
+}
+
+.navBox {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    gap: 5px;
+}
+
+.monthPrice {
+    font-size: 12px;
+}
+
+.radiobtn {
+    position: absolute;
+    top: 0px !important;
+    right: -5px !important;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.inactiveCard {
+    filter: blur(1px);
+}
+
+.extraClass {
+    font-size: 12px;
+}
+
+@media screen and (min-width: 601px) {
+    .MainPlanDiv {
+        max-width: 500px;
+        margin: auto;
+    }
+
+.ForSticky {
+    position: fixed;
+    width: 500px;
+    margin: auto;
+    left: 0;
+    right: 0;
+}
+
+    .firstdiv {
+        margin-right: unset;
+    }
 }

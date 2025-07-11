@@ -44,7 +44,7 @@
 }
 
 .warning {
-  color: #ff1403;
+  color: #5a20d8;;
   font-size: 16px;
   background: #ffeaea;
   padding: 10px 15px;
@@ -99,6 +99,18 @@
   font-size: 14px;
   color: #999;
   text-align: center;
+}
+
+.loaderWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* space between loader and text */
+}
+
+.loadingText {
+  font-size: 14px;
+  color: #fff; /* or your button text color */
 }
 
 @keyframes fadeIn {

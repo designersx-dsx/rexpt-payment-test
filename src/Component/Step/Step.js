@@ -12,7 +12,7 @@ import StepHeader from "../StepHeader/StepHeader";
 import axios from "axios";
 import Loader from "../Loader/Loader";
 import decodeToken from "../../lib/decodeToken";
-import { createAgent, listAgents, updateAgent, updateAgentWidgetDomain } from "../../Store/apiStore";
+import { API_BASE_URL, createAgent, listAgents, updateAgent, updateAgentWidgetDomain } from "../../Store/apiStore";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
 import { getAgentPrompt } from "../../hooks/useAgentPrompt";
@@ -24,7 +24,7 @@ import BusinessListing from "../BusinessListing/BusinessListing";
 import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
 import getDynamicAgentName from "../../utils/getDynamicAgentName";
-  const businessTypes = [
+const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
     { name: "Deli shop", code: "deli" },
@@ -60,10 +60,10 @@ import getDynamicAgentName from "../../utils/getDynamicAgentName";
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" }
-  ];
+];
 
 const Step = () => {
-    
+
     const timestamp = Date.now();
     const [isRoleTitleChanged, setIsRoleTitleChanged] = useState(false);
     const navigate = useNavigate();
@@ -93,8 +93,18 @@ const Step = () => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
+
+    // Plans
+    const [allPlans, setAllPlans] = useState(() => {
+        const stored = localStorage.getItem("allPlans");
+        return stored ? JSON.parse(stored) : [];
+    });
+    const [selectedPriceId, setSelectedPriceId] = useState(() => {
+        return sessionStorage.getItem("priceId") || "";
+    });
     const location = useLocation()
     const locationPath = location?.state?.locationPath;
+    let value = location?.state?.value
     const step1Ref = useRef(null)
     const step3Ref = useRef(null);
     const step4Ref = useRef(null);
@@ -118,7 +128,10 @@ const Step = () => {
     const Buisness = JSON.parse(sessionStorage.getItem("businessDetails"))
     const businessType = Buisness?.businessType === "Other" ? Buisness?.customBuisness : Buisness?.businessType;
     const totalSlides = 8;
-
+    const removeSpaces = (phone) => {
+        if (!phone) return null;
+        return phone.replace(/\s+/g, "");
+    };
     const role_title =
         sessionStorage.getItem("agentRole") || "General Receptionist";
     const business =
@@ -140,7 +153,11 @@ const Step = () => {
     );
     const businessServiceNames = businessServices?.map(item => item);
     const allServices = [...customServices, ...businessServiceNames];
-    const commaSeparatedServices = allServices?.join(", ")?.replace("Other", "") || "Your Business Services";
+    const commaSeparatedServices = (allServices?.join(", ").replace("Other", "") || "Your Business Services")
+        .split(",")
+        .filter(service => service.trim() !== "")
+        .map(service => `- ${service.trim()}`)
+        .join("\n");
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
@@ -150,7 +167,8 @@ const Step = () => {
     const customServicesSelected = sessionStorage.getItem("businesServices");
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
-    const agentCode=sessionStorage.getItem("AgentCode")
+
+    const agentCode = sessionStorage.getItem("AgentCode")
 
     const [isContiue, seIsContinue] = useState(false)
     const packageMap = {
@@ -190,7 +208,7 @@ const Step = () => {
         if (currentRef?.current) {
             const isValid = currentRef?.current?.validate();
             if (!isValid) {
-                console.warn(`Validation failed at step ${currentStep}`);
+               
                 return;
             }
             if (currentRef.current.save) {
@@ -237,22 +255,24 @@ const Step = () => {
             console.log(error)
         }
     }
-  const sanitize = (str) =>
-    String(str || "")
-      .trim()
-      .replace(/\s+/g, "_");
-      const matchedBusiness = businessTypes.find(
-    (item) => item?.name === business?.businessType
-  );
+    const sanitize = (str) =>
+        String(str || "")
+            .trim()
+            .replace(/\s+/g, "_");
+    const matchedBusiness = businessTypes.find(
+        (item) => item?.name === business?.businessType
+    );
 
     const businessCode = matchedBusiness
-    ? matchedBusiness.code
-    : sanitize(business?.customBuisness || "oth");
+        ? matchedBusiness.code
+        : sanitize(business?.customBuisness || "oth");
 
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
+    const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone)
+
     // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
-    const dynamicAgentName=`${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
+    const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
     // const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
     //  1. Create the function that returns the choices array
     const getLeadTypeChoices = () => {
@@ -270,10 +290,39 @@ const Step = () => {
     }
     //getTimeZone
     const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+    ///extractPromptVariables
+    function extractPromptVariables(template) {
+        const matches = [...template.matchAll(/{{(.*?)}}/g)];
+        const uniqueVars = new Set(matches.map(m => m[1].trim()));
+
+        return Array.from(uniqueVars).map(variable => ({
+            name: variable,
+            status: true
+        }));
+    }
     const handleContinue = async () => {
         if (step8ARef.current) {
             setIsContinueClicked(true);
             const agentNote = sessionStorage.getItem("agentNote");
+            const rawPromptTemplate =
+                getAgentPrompt({
+                    industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                    roleTitle: sessionStorage.getItem("agentRole"),
+                    agentName: "{{AGENT NAME}}",
+                    agentGender: "{{MALE or FEMALE}}",
+                    business: {
+                        businessName: "{{BUSINESS NAME}}",
+                        email: "{{BUSINESS EMAIL ID}}",
+                        aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
+                        address: "{{ CITY}},{{ STATE}}, {{COUNTRY}}"
+                    },
+                    languageSelect: "{{LANGUAGE}}",
+                    businessType: "{{BUSINESSTYPE}}",
+                    aboutBusinessForm: "{{}}",
+                    commaSeparatedServices: "{{SERVICES}}",
+                    agentNote: "{{AGENTNOTE}}",
+                    timeZone: "{{TIMEZONE}}"
+                });
             const filledPrompt =
                 getAgentPrompt({
                     industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
@@ -293,11 +342,11 @@ const Step = () => {
                     agentNote,
                     timeZone
                 });
+        
+            // return
             // const isValid = step8BRef.current.validate()
-
             //creation here
             if (localStorage.getItem("UpdationMode") != "ON") {
-
                 setLoading(true)
                 const agentConfig = {
                     version: 0,
@@ -313,45 +362,119 @@ const Step = () => {
                             description: "End the call with user.",
                         },
 
-
                     ],
 
                     states: [
                         {
                             name: "information_collection",
-                            state_prompt:
-                                "You will follow the steps below to collect information...",
+                            state_prompt: `Greet the user with the begin_message and assist with their query.
+
+                               If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible","waste of time"),
+                               ask them: "I'm sorry to hear that. Could you please tell me about your concern?"
+                               Analyze their response. 
+                               
+                                If the concern contains **spam, irrelevant or abusive content**
+                                (e.g., random questions, profanity, jokes), say:
+                                "I’m here to assist with service-related concerns. Could you please share your issue regarding our service?"
+                                and stay in this state.
+
+                                If the concern is **service-related** or **business** (e.g., staff, delay, poor support),
+                                transition to dissatisfaction_confirmation.
+
+                                If the user asks for an appointment (e.g., "appointment", "book", "schedule"),
+                                transition to appointment_booking.
+
+                                If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
+                                If the user wants to end the call transition to end_call_state`,
+                            edges: [
+
+                                {
+                                    destination_state_name: "dissatisfaction_confirmation",
+                                    description: "User sounds angry or expresses dissatisfaction."
+                                }
+                            ]
+                        },
+
+                        {
+                            name: "appointment_booking",
+                            state_prompt: "## Task\nYou will now help the user book an appointment."
+                        },
+
+                        // 🌟 State: Dissatisfaction Confirmation
+                        {
+                            name: "dissatisfaction_confirmation",
+                            state_prompt: `
+                            Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
+                            Wait for their response.
+
+                            If the user says yes, transition to call_transfer.
+                            If the user says no, transition to end_call_state.
+                            If the response is unclear, repeat the question once.
+                        `,
                             edges: [
                                 {
-                                    destination_state_name: "appointment_booking",
-                                    description: "Transition to book an appointment.",
+                                    destination_state_name: "call_transfer",
+                                    description: "User agreed to speak to team member."
                                 },
+                                {
+                                    destination_state_name: "end_call_state",
+                                    description: "User declined to speak to team member."
+                                }
                             ],
+                            tools: []
+                        },
+
+                        // 🌟 State: Call Transfer
+                        {
+                            name: "call_transfer",
+                            state_prompt: `
+                            Connecting you to a team member now. Please hold.
+                        `,
                             tools: [
                                 {
                                     type: "transfer_call",
-                                    name: "transfer_to_support",
-                                    description: "Transfer to the support team.",
+                                    name: "transfer_to_team",
+                                    description: "Transfer the call to the team member.",
                                     transfer_destination: {
                                         type: "predefined",
-                                        number: "+918054226461", // Replace with actual number
+                                        number: "{{business_Phone}}"
                                     },
-                                },
+                                    transfer_option: {
+                                        type: "cold_transfer",
+                                        public_handoff_option: {
+                                            message: "Please hold while I transfer your call."
+                                        }
+                                    },
+                                    speak_during_execution: true,
+                                    speak_after_execution: true,
+                                    failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
+                                }
                             ],
+                            edges: []
                         },
                         {
-                            name: "appointment_booking",
-                            state_prompt:
-                                "You will follow the steps below to book an appointment...",
-                        },
+                            name: "end_call_state",
+                            state_prompt: `
+                            Politely end the call by saying: "Thank you for calling. Have a great day!"
+                        `,
+                            tools: [
+                                {
+                                    type: "end_call",
+                                    name: "end_call1",
+                                    description: "End the call with the user."
+                                }
+                            ],
+                            edges: []
+                        }
                     ],
                     starting_state: "information_collection",
-
-                    begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
-
+                    // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
                     default_dynamic_variables: {
                         customer_name: "John Doe",
-                        timeZone:timeZone
+                        business_Phone: businessPhone,
+                        business_email: business.email,
+                        timeZone: timeZone
+
                     },
                 };
                 const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
@@ -406,9 +529,11 @@ const Step = () => {
                                 choices: getLeadTypeChoices()
                             }
                         ],
-                        normalize_for_speech: true
+                        normalize_for_speech: true,
+                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                     };
                     // Create Agent Creation
+                    const promptVariablesList = extractPromptVariables(rawPromptTemplate);
                     try {
                         const response = await axios.post(
                             "https://api.retellai.com/create-agent",
@@ -425,7 +550,6 @@ const Step = () => {
                         // Convert string to object
                         const businessIdObj = JSON.parse(businessIdString);
                         // Now access the actual ID
-
                         const agentData = {
                             userId: userId,
                             agent_id: agentId || sessionStorage.getItem("agentId"),
@@ -449,7 +573,11 @@ const Step = () => {
                             backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                             additionalNote: agentNote || "",
                             agentCode,
-                            
+                            knowledgeBaseStatus: true,
+                            dynamicPromptTemplate: filledPrompt,
+                            rawPromptTemplate: rawPromptTemplate,
+
+                            promptVariablesList: JSON.stringify(promptVariablesList)
 
                         }
                         try {
@@ -507,7 +635,7 @@ const Step = () => {
                 setLoading(true)
                 const agentConfig = {
                     general_prompt: filledPrompt,
-                    begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
+                    // begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
 
                 };
                 const llm_id = localStorage.getItem('llmId')
@@ -552,6 +680,8 @@ const Step = () => {
                                 choices: ["positive", "neutral", "negative"]
                             }
                         ],
+                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+
                     };
                     // update Agent Creation
                     const agent_id = localStorage.getItem('agent_id')
@@ -797,9 +927,6 @@ const Step = () => {
         addCompletedStep(currentStep);
         return true;
     };
-
-    console.log(currentStep, "currentStep")
-
     // function lock
     useEffect(() => {
         fetchAgentCountFromUser()
@@ -823,7 +950,7 @@ const Step = () => {
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.freeTrial
-        if (locationPath === "/checkout") {
+        if (locationPath === "/checkout" || value === "chatke") {
             handleContinue()
         }
         else if (locationPath !== "/checkout" && priceId) {
@@ -861,7 +988,6 @@ const Step = () => {
 
     }
     let freeTrail = location?.state?.freeTrial
-    console.log(freeTrail)
     const isContinueCalled = useRef(false);
     useEffect(() => {
         if (freeTrail && currentStep === 7 && !isContinueCalled.current) {
@@ -881,13 +1007,76 @@ const Step = () => {
         }
     }, []);
     const tooltipContentMap = {
-        0: "Please select the category that best describes your business and indicate its size. This information helps us ensure you get the right tools and insights.",
-        1: "Select the services your business offers, or click Add more Services to include any unique offerings. Understanding your services allows us to personalize your dashboard and recommendations.",
-        3: "Add your Google My Business URL and website link. These links help us deeply understand your business and are used to build a smart knowledge base for your voice agent, ensuring it answers questions accurately.",
-        4: "This section shows your main business details: name, address, phone number, email, and a description of your business. These are important for both your customers and our system. Feel free to add or edit any of these fields to ensure all your information is current and correct.",
+        0: <>
+            <strong style={{
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontSize: '1rem',
+                marginBottom: '15px',
+            }}> Tell Us About Your Business</strong>
+            <br></br>
+            <br></br>
+            <p>To ensure you get the most relevant output from your Virtual Receptionist, please tell us a little about your business. This information helps us personalize your experience and recommend features that best fit your specific needs.</p>
+            <br></br>
+            <ul>
+                <li><strong>1. What best describes your Business Category?</strong></li>
+                <p>Example: Retail, Hospitality, Healthcare, Services, Technology</p>
+                <br></br>
+                <li><strong>2. What is your Business Size?</strong></li>
+                <p>Small Business: (2-50 employees)</p>
+                <p>Medium Business: (51-250 employees)</p>
+                <p>Large Business: (250+ employees)</p>
+            </ul>
+        </>,
+        1: <>
+
+            <p> Please select the services your business provides. Knowing your service offerings helps us recommend the best features for your Virtual Receptionist and personalize your experience. Don't see your service? Just click "Add More Services."</p>
+            <br></br>
+            <ul>
+                <li><strong>Example:</strong> For a restaurant, you might select services like "Table Reservations," "Takeout Orders," and "Menu Inquiries."</li>
+            </ul>
+        </>,
+        3: <>
+            <strong
+                style={{
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    marginBottom: '15px',
+                }}> Enhance Your Voice Agent's Knowledge</strong>
+            <br></br>
+            <br></br>
+            <p>Please add your Google My Business URL and website link. These public listings help us deeply understand your business, allowing us to build a smart knowledge base for your Virtual Receptionist, so it can answer customer questions accurately.</p>
+            <br></br>
+            <ul>
+                <li><strong>1. Google My Business URL:</strong> Simply type your business name and select it from the results shown.</li>
+                <li><strong>2. Website:</strong> https://www.yourwebsite.com</li>
+            </ul>
+            <br></br>
+            <p>If you don't have a Google My Business listing or a website, simply click "I do not have Google My Business or Website."</p>
+        </>,
+        4: <>
+            <strong
+                style={{
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    marginBottom: '15px',
+                }}> Review Your Business Information</strong>
+            <br></br>
+            <br></br>
+            <p>This screen provides a centralized view of your essential business details: your Business Name, Address, Phone Number, and Email, along with a space for your Business Description.</p>
+            <br></br>
+            <ol>
+                <li>We've either pre-filled this information directly from your Google My Business listing, or if you don't have one, these fields will be ready for your input.</li>
+                <li>You have the flexibility to add or edit any of these fields as needed.</li>
+                <li>Please ensure these details are current and correct. Accurate information helps your Virtual Receptionist agent provide precise answers and ensures your customers can easily connect with you.</li>
+                <li>Don't worry if you don't have everything ready! Your Business Email and "About your business" description are optional and can be completed at your convenience.</li>
+            </ol>
+        </>,
         5: "This is the main language your agent will use for all its interactions. Choosing the correct language ensures the best communication experience. We Support 25+ Languages.",
         6: "Select the gender you prefer for your AI agent, then listen to the available voice options to pick the one that best represents your business.",
-        7: "Pcik an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
+        7: "Pick an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
     };
     return (
         <div className={styles.container}>
@@ -1329,6 +1518,32 @@ const Step = () => {
                     }
 
                 </div>
+
+                {currentStep === 7 && allPlans.length > 0 && (
+                    <div className={styles.PlansSelectDrop}>
+                        <select
+                            name="plans"
+                            id="plans"
+                            value={selectedPriceId}
+                            onChange={(e) => {
+                                const newPriceId = e.target.value;
+                                setSelectedPriceId(newPriceId);
+                                sessionStorage.setItem("priceId", newPriceId);
+                                const selectedPlan = allPlans.find(plan => plan.priceId === newPriceId);
+                                if (selectedPlan) {
+                                    sessionStorage.setItem("selectedPlan", selectedPlan.title);
+                                }
+                            }}
+
+                        >
+                            {allPlans.map((plan, index) => (
+                                <option key={index} value={plan.priceId}>
+                                    {plan.title}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 {/* //Button */}
                 {currentStep === 7 ? <button className={styles.navBtn} onClick={handleSubmit}>
                     {

@@ -98,7 +98,6 @@ export default function Home() {
       setLoading(false);
     }
   };
-
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
     const seconds = Math.floor((durationMs % 60000) / 1000);
@@ -229,7 +228,7 @@ export default function Home() {
                 <th>Date & Time</th>
                 <th>Duration</th>
                 <th>From</th>
-                <th>Name</th>
+                <th>Lead Type</th>
                 <th>Sentiment</th>
               </tr>
             </thead>
@@ -259,22 +258,15 @@ export default function Home() {
                       navigate(`/call-details/${call.call_id}`);
                     }}
                   >
-                    <td>
-                      <div className={styles.callDateTime}>
-                        <div>
-                          {getDateTimeFromTimestamp(call.end_timestamp).time}
-                        </div>
-                        <div className={styles.callDate}>
-                          {formattedDate(call.end_timestamp)}
-                        </div>
-                      </div>
-                    </td>
-                    <td>{convertMsToMinSec(call.duration_ms)}</td>
-                    <td>
-                      <p className={`${styles.fromNumber} ${getSentimentClass(call.user_sentiment || call?.call_analysis?.user_sentiment)}`}>
-                        {call.call_type}
-                      </p>
-                    </td>
+                   <td> <div className={styles.callDateTime}> 
+                    <div> {call?.end_timestamp ? getDateTimeFromTimestamp(call?.end_timestamp).time : '-'} </div> 
+                    <div className={styles.callDate}> {call?.end_timestamp ? formattedDate(call?.end_timestamp):'-'} </div>
+                     </div> 
+                     </td> 
+                     <td>{call?.duration_ms? convertMsToMinSec(call.duration_ms) : '-'}</td> 
+                     <td> <p className={`${styles.fromNumber} ${getSentimentClass(call.user_sentiment || call?.call_analysis?.user_sentiment)}`}> 
+                      {call?.call_type =='phone_call'? call?.from_number : call?.call_type } </p> 
+                      </td>
 
                     <td>
                       {(() => {

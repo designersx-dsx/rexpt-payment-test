@@ -117,6 +117,7 @@ const CallDetails = () => {
   );
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
+  let lead_type = data[ "lead_type"];
 
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
@@ -218,7 +219,7 @@ const CallDetails = () => {
 
       <section>
         <div className={styles.DataMain}>
-          <div className={styles.dataTitle}>
+          {/* <div className={styles.dataTitle}>
             <h2>Data Collected</h2>
           </div>
           <div className={styles.dataCard}>
@@ -238,7 +239,7 @@ const CallDetails = () => {
               <p>Reason</p>
               <b>-</b>
             </div>
-          </div>
+          </div> */}
           <div className={styles.moredetailsDiv}>
             <div className={styles.dataTitle}>
               <h2>More Details</h2>
@@ -251,9 +252,9 @@ const CallDetails = () => {
               </div>
             </div>
             <div className={styles.channel}>
-              <p className={styles.Ptext}>Caller’s Type</p>
+              <p className={styles.Ptext}>Lead Type</p>
               <div>
-                <strong>Customer</strong>
+                <strong>{lead_type || "Unknown"}</strong>
               </div>
             </div>
             <div className={styles.channel}>

@@ -5,6 +5,8 @@ import SideFilter from "./SideFilter/SideFilter";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useRef } from "react";
+
 function HeaderFilter({
   options,
   selectedSentiment,
@@ -25,6 +27,26 @@ function HeaderFilter({
   const [open, setOpen] = useState(false);
   const [allSentiment, setAllSentiment] = useState("");
   const totalAgentView = localStorage.getItem("filterType");
+  const calendarRef = useRef(null);
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+      setOpen(false);
+    }
+  };
+
+  if (open) {
+    document.addEventListener("mousedown", handleClickOutside);
+  } else {
+    document.removeEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [open]);
+
   const today = new Date();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(today.getDate() - 7);
@@ -187,13 +209,13 @@ function HeaderFilter({
                 {" "}
                 {startDate
                   ? startDate.toLocaleString("default", {
-                    month: "long",
-                    year: "numeric",
-                  })
+                      month: "long",
+                      year: "numeric",
+                    })
                   : (startDate || new Date()).toLocaleString("default", {
-                    month: "long",
-                    year: "numeric",
-                  })}
+                      month: "long",
+                      year: "numeric",
+                    })}
               </p>
               <div className={styles.dateRange}>
                 <h6>
@@ -222,12 +244,15 @@ function HeaderFilter({
               <div className={styles.DatePic}>
                 {open && (
                   <div
-                    style={{
+                  style={{
                       position: "absolute",
                       zIndex: 100,
                       left: "50px",
                       top: "40px",
                     }}
+                    ref={calendarRef}
+                    className={styles.datePickerCalender}
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <DatePicker
                       selectsRange
@@ -236,8 +261,7 @@ function HeaderFilter({
                       onChange={handleChangeDate}
                       inline
                       maxDate={new Date()}
-                      // Do not close the calendar when date is selected
-                      onClickOutside={() => { }}
+                      calendarClassName={styles.customCalendar}
                     />
                     <div className={styles.dateButtons}>
                       <button
@@ -257,7 +281,6 @@ function HeaderFilter({
                 )}
 
                 <svg
-
                   width="26"
                   height="31"
                   viewBox="0 0 26 31"
@@ -286,14 +309,14 @@ function HeaderFilter({
                   {selectedAgentId === "all"
                     ? "All"
                     : (() => {
-                      const agentName =
-                        isAgents.find(
-                          (agent) => agent.agent_id === selectedAgentId
-                        )?.agentName || "";
-                      return agentName.length > 28
-                        ? agentName.slice(0, 28) + "..."
-                        : agentName;
-                    })()}
+                        const agentName =
+                          isAgents.find(
+                            (agent) => agent.agent_id === selectedAgentId
+                          )?.agentName || "";
+                        return agentName.length > 28
+                          ? agentName.slice(0, 28) + "..."
+                          : agentName;
+                      })()}
                 </div>
 
                 <select

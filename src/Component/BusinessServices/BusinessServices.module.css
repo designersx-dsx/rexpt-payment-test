@@ -65,32 +65,24 @@
   padding: 10px;
   border-radius: 10px;
 }
-
+.optionList p {
+  color: #A3AED0;
+}
 .optionList {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  /* max-height: 200px; */
   max-height: 25dvh;
   overflow: auto;
   padding-right: 10px;
 }
 
-
-.optionList p {
-  /* padding: 5px; */
-  /* text-align: center; */
-  color: #A3AED0;
-}
-
-
 .optionList::-webkit-scrollbar {
   width: 4px;
 }
 
-
 .optionList::-webkit-scrollbar-thumb {
-  background-color: #6524EB;
+  background-color: #6524EB ;
   border-radius: 4px;
 }
 
@@ -488,6 +480,7 @@
 .addIcon{
 border: none;
 background-color: transparent;
+cursor: pointer;
 }
 
 

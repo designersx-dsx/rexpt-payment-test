@@ -22,16 +22,16 @@ export const LoginWithEmailOTP = async (email) => {
   return res;
 };
 
-export const verifyEmailOTP = async (email, otp ) => {
+export const verifyEmailOTP = async (email, otp) => {
   const customerRes = await fetch(`${API_BASE_URL}/customer`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-          });
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
 
-          const customerData = await customerRes.json();
-        let customerId =  customerData.customerId;
-  const res = await api.post('/auth/verifyEmailOTP', { email, otp , customerId});
+  const customerData = await customerRes.json();
+  let customerId = customerData.customerId;
+  const res = await api.post('/auth/verifyEmailOTP', { email, otp, customerId });
   return res;
 };
 
@@ -96,8 +96,7 @@ export const listAgents = async () => {
 export const countAgentsbyUserId = async (userId) => {
   try {
     const res = await api.get(`${API_BASE_URL}/agent/listAgents?userId=${userId}`);
-    console.log('res',res)
-    return res.data.length  || 0;
+    return res.data.length || 0;
   } catch (error) {
     console.error("Error fetching agent count:", error);
     return 0;
@@ -160,7 +159,7 @@ export const deleteAgent = async (agentId) => {
     });
     await axios.delete(`https://api.retellai.com/delete-agent/${agentId}`, {
       headers: {
-        Authorization:`Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+        Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
       },
     });
 
@@ -345,7 +344,7 @@ export const updateEmailSendOtp = async (email, userId) => {
 
 export const updateShowReferralFloatingStatus = async (userId, status) => {
   try {
-    const response = await api.patch(`/endusers/updateShowReferralFloatingStatus?userId=${userId}`,{status});
+    const response = await api.patch(`/endusers/updateShowReferralFloatingStatus?userId=${userId}`, { status });
     return response.data
   } catch (error) {
     console.error("Error updating user details:", error);
@@ -363,6 +362,73 @@ export const getUserReferralCodeForDashboard = async (userId) => {
   }
 };
 
+export const updateAgentEventId = async (agentId, eventId) => {
+  try {
+    const res = await api.patch(`agent/${agentId}/event-id`, {
+      eventId
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error updating agent eventId:", error.response?.data || error.message);
+    throw new Error("Failed to update eventId for agent");
+  }
+};
 
+export const refundAndCancelSubscriptionAgnetApi = async (agentId, minutesLeft) => {
+
+  try {
+    const res = await axios.post(`${API_BASE_URL}/refund`, {
+      agentId, minutesLeft
+    }, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    return res.data
+  } catch (error) {
+    console.error("Error refunding user", error.response?.data || error.message);
+    throw new Error("Failed to refund user for agent");
+  }
+}
+export const getEndUserSubscriptions_Billings = async (userId) => {
+  try {
+    const response = await api.get(`/endusers/fetchEndUserSubscriptions_Billings/${userId}`);
+    return response.data
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    throw new Error("Failed to update user details");
+  }
+};
+export const deleteUser = async (userId) => {
+  try {
+    const res = await api.delete(`/agent/delete-user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting user:", error.response?.data || error.message);
+    throw new Error("Failed to delete user");
+  }
+};
+export const saveAgentSchedule = async (scheduleData) => {
+  try {
+    const res = await api.post('/agent/schedule-agent', scheduleData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error saving agent schedule:", error.response?.data || error.message);
+    throw new Error("Failed to save agent schedule");
+  }
+};
 
 export default api;

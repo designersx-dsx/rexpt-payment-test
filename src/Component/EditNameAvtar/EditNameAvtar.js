@@ -75,7 +75,7 @@ function EditNameAvtar() {
             {showPopup && (
             <PopUp
             type={popupType}
-            onClose={()=>{}}
+            onClose={() => setShowPopup(false)}
             message={popupMessage}
             onConfirm={()=>{}}
             />

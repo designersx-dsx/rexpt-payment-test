@@ -2,9 +2,13 @@
    margin: 0;
    font-family: "Inter", sans-serif;
    user-select: none;
-   /* display: none;    */
+/* overflow: auto;
+  overscroll-behavior: none; */
  }
-
+html {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
  
  * {
    margin: 0;
@@ -18,7 +22,7 @@
    margin: auto;
    justify-content: center;
    display: flex;
-   height: 100vh;
+   height: 100dvh;
    max-width: 700px;
    width: 100%;
 
@@ -197,7 +201,7 @@
 
  .react-tel-input .country-list {
    width: 95% !important;
-   max-height: 100% !important;
+   max-height: 95% !important;
    border-radius: 10px !important;
    padding-inline: 10px;
    padding-block: 10px 0px;
@@ -222,7 +226,7 @@
    top: 0 !important;
    left: 0 !important;
    width: 100vw !important;
-   height: 100vh !important;
+   height: 100dvh !important;
    background-color: white !important;
    z-index: 9999 !important;
    overflow-y: auto !important;
@@ -238,7 +242,7 @@
 
  @media screen and (min-width: 601px) {
    .react-tel-input .country-list {
-     width: 48% !important;
+     /* width: 48% !important; */
    }
  }
 

@@ -50,23 +50,13 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
-
   const [urlVerificationInProgress, setUrlVerificationInProgress] =
     useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("");
-  const location = useLocation();
-  const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
-  const businessId1 = sessionBusinessiD?.businessId;
-  const businessId =
-    location.state?.businessId ||
-    sessionBusinessiD ||
-    sessionBusinessiD?.businessId;
-  const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
+  const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));;
   const EditingMode = localStorage.getItem("UpdationMode");
-  const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
   const [placeInfoText, setPlaceInfoText] = useState("");
   const setHasFetched = true;
-
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
     setLoading,
@@ -101,7 +91,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       }
     });
   };
-
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
@@ -110,7 +99,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       }
     }, 300);
   }, []);
-
   useEffect(() => {
     if (EditingMode === "ON" && !noBusinessWebsite) {
       handleBlur();
@@ -127,6 +115,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
     service.getDetails({ placeId }, (result, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
 
@@ -158,6 +147,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         console.error("Place details fetch failed:", status);
       }
       setLoading(false);
+      console.log('result',result)
     });
   };
 

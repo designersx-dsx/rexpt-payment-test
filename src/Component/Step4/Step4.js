@@ -24,17 +24,22 @@ const Step4 = forwardRef(
     const [selectedRole, setSelectedRole] = useState("");
 
     useEffect(() => {
-      const storedAgentRole = sessionStorage.getItem("agentRole");
-      const storedNote = sessionStorage.getItem("agentNote");
+  const storedAgentRole = sessionStorage.getItem("agentRole");
+  const storedNote = sessionStorage.getItem("agentNote");
 
+  if (storedAgentRole) {
+    setSelectedRole(storedAgentRole);
+  } else {
+    setSelectedRole("General Receptionist");
+    sessionStorage.setItem("agentRole", "General Receptionist");
+    detectRoleTypeChange?.("General Receptionist");
+  }
 
-      if (storedAgentRole) {
-        setSelectedRole(storedAgentRole);
-      }
-      if (storedNote) {
-        setAgentNote(storedNote);
-      }
-    }, []);
+  if (storedNote) {
+    setAgentNote(storedNote);
+  }
+}, []);
+
 
     // Persist on change
     useEffect(() => {

@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import { useDashboardStore } from "../../Store/agentZustandStore";
+import { updateAgentEventId } from "../../Store/apiStore";
 
 const CalendarConnect = () => {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -49,7 +50,7 @@ const CalendarConnect = () => {
           body: JSON.stringify({ calApiKey: trimmedKey, userId: userId }),
         }
       );
-
+      sessionStorage.setItem("userCalApiKey", trimmedKey)
       if (!response.ok) {
         const errorData = await response.json();
 
@@ -103,6 +104,7 @@ const CalendarConnect = () => {
             slug: slug,
             length: eventLength,
           }),
+
         }
       );
 
@@ -113,6 +115,17 @@ const CalendarConnect = () => {
 
       const data = await response.json();
       const eventTypeId = data?.event_type?.id;
+      setApiSubmitting(true)
+      if (!eventTypeId) {
+        throw new Error("Event ID not received from Cal.com");
+      }
+      try {
+        await updateAgentEventId(agentId, eventTypeId);
+        console.log(" Event ID saved to agent.");
+      } catch (err) {
+        console.error("Failed to update agent with event ID:", err);
+      }
+
       const retellPayload = {
         general_tools: [
           {
@@ -172,7 +185,6 @@ const CalendarConnect = () => {
   };
 
   const [expanded, setExpanded] = useState("panel1");
-
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -185,22 +197,19 @@ const CalendarConnect = () => {
 
     if (agentDetails?.calApiKey && typeof agentDetails?.calApiKey === "string") {
       setApiKey(agentDetails?.calApiKey);
-      setInitialApiKey(agentDetails?.calApiKey); // ← Save for comparison
+      setInitialApiKey(agentDetails?.calApiKey);
       setEnabled(true);
     }
   }, []);
-
-
-
-
   return (
-    <div>
+    <div className={styles.calenderMain}>
       <HeaderBar title="Connect Calendar" />
       <div className={styles.container}>
+
         <p className={styles.TopPara}>
           You can easily{" "}
           <strong>Connect your personal or business Calendar</strong> with your{" "}
-          <a href="#">Rexptin Agent</a> to receive calendar Meetings.
+          <a href="">Rexptin Agent</a> to receive calendar Meetings.
         </p>
 
         <div className={styles.supportSection}>
@@ -286,7 +295,7 @@ const CalendarConnect = () => {
           <div className={styles.offSwitch}>
 
             <a target="_blank"
-              rel="noopener noreferrer" href="https://cal.com/?via=designersx&dub_id=kTPL5nvpvLqoLhE2">
+              rel="noopener noreferrer" href="https://cal.com/?via=rexptin&dub_id=7NCpqAziwR4aWcXl">
               {" "}
               <div className={styles.recommendation}>
                 <img src="/images/CalCOm.png" />
