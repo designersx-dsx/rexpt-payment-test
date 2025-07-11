@@ -1,18 +1,21 @@
-.Maindiv{
-   padding-inline: 20px;
-}.container {
+.Maindiv {
+  padding-inline: 20px;
+}
+
+.container {
   max-width: 500px;
   margin: auto;
   padding: 20px;
-   background-color: #fff;
-       margin: 0 auto 40px ;
+  background-color: #fff;
+  margin: 0 auto 40px;
 }
 
 .inputSection {
   margin-bottom: 10px;
   border: 1px solid #E0E5F2;
   padding: 15px;
-border-radius: 12px;
+  border-radius: 12px;
+  cursor: pointer;
 
 
 }
@@ -33,6 +36,8 @@ border-radius: 12px;
   color: #A3AED0;
   margin-bottom: 5px;
   outline: none;
+  cursor: pointer;
+
 }
 
 .textarea {
@@ -47,9 +52,9 @@ border-radius: 12px;
 
 
 .stickyWrapper {
-    position: sticky;
-    bottom: 0px;
-    background: white;
-    padding: 10px 0;
-    z-index: 10;
+  position: sticky;
+  bottom: 0px;
+  background: white;
+  padding: 10px 0;
+  z-index: 10;
 }

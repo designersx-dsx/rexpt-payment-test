@@ -87,6 +87,7 @@
     min-height: 70px;
     padding-inline: 10px;
     padding-block: 5px;
+    cursor: pointer;
 }
 
 .option strong {
