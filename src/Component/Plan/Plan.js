@@ -198,6 +198,8 @@ const Planss = () => {
                         (p) => p.id === product.id
                     );
 
+                    console.log("product",product)
+
                     const matchingPrices = product.prices.filter(
                         (p) =>
                             p.currency.toLowerCase() === userCurrency.toLowerCase() ||
