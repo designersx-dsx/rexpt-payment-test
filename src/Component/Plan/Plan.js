@@ -240,7 +240,7 @@ const Planss = () => {
                         features: product.metadata?.features
                             ? JSON.parse(product.metadata.features)
                             : [
-                                `${matchedData?.metadata?.["minutes-month"] || "0"} minutes / month` ,
+                                `${matchedData?.metadata?.["minutes-month"] || "0"} minutes / month`,
                                 "FREE VoIP Number",
                                 "Agent Characterization",
                                 "24/7 Availability",
@@ -286,10 +286,19 @@ const Planss = () => {
                     };
                 });
 
-                // Step 4: Init toggle state
                 const toggleInit = {};
+                // const agentPlanName = agentPlan?.toLowerCase()?.trim();;
+                const currentInterval = interval?.toLowerCase(); // from location.state
+
                 enrichedPlans.forEach((plan) => {
-                    toggleInit[plan.id] = false; // monthly by default
+                    const isCurrentPlan = plan.title?.toLowerCase() === agentPlanName;
+
+                    // Preselect toggle only for the current plan and its interval
+                    if (isCurrentPlan && currentInterval === "year") {
+                        toggleInit[plan.id] = true; // ✅ Set toggle ON for Yearly
+                    } else {
+                        toggleInit[plan.id] = false; // All others Monthly
+                    }
                 });
 
                 const finalPlans = enrichedPlans.reverse()
@@ -564,7 +573,7 @@ const Planss = () => {
                                                     setPopupMessage(
                                                         `To switch to a lower-tier plan, please reach out to our support team. We’ll make it smooth and simple! <a href="mailto:support@rxpt.us" style="color: purple; text-decoration: underline;">Contact Support</a>`
                                                     );
-                                                    setRenderHTML(true); 
+                                                    setRenderHTML(true);
                                                     return;
                                                 }
                                                 if (priceForInterval) {
