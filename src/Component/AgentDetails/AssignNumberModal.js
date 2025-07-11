@@ -46,14 +46,15 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi }) => {
 
       await updateAgent(agentId, { voip_numbers: [phoneNumber] });
       setPopupType("success")
-      setPopupMessage(`Number ${phoneNumber} assigned and saved! 🎉`)
+      setPopupMessage(`Number ${phoneNumber} assigned and saved!`)
       onCallApi()
       setTimeout(() => {
         onClose()
       }, 2000);
     } catch (error) {
       console.error("Error assigning number:", error.response?.data || error.message);
-      alert("Failed to assign number. Please try again.");
+      setPopupType("error");
+      setPopupMessage("Failed to assign number. Please try again.");
     } finally {
       setLoading(false);
     }

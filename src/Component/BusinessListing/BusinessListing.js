@@ -518,7 +518,7 @@ const BusinessListing = forwardRef(
                   onChange={(e) => handleInputChange("address", e.target.value)}
                   placeholder="Business Address"
                   required
-                  maxLength={200}
+                  maxLength={100}
                 />
               </div>
 
@@ -541,6 +541,7 @@ const BusinessListing = forwardRef(
                     handleInputChange("aboutBussiness", e.target.value)
                   }
                   placeholder="Describe"
+                  maxLength={200}
                 />
               </div>
 
