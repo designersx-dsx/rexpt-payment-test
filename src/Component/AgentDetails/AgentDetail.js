@@ -810,7 +810,7 @@ const AgentDashboard = () => {
                       {
                           assignedNumbers?.length > 0 ? (
                             <div className={styles.AssignNumText}>
-                              AI Agent Toll Free<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
+                              Phone Number<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
                             </div>
                           ) : (
                             <div
@@ -1016,7 +1016,7 @@ const AgentDashboard = () => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                    if (userCalApiKey) {
+                    if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== "") {
                       handleConnectCalApiAlready(agentData?.agent);
                     } else {
                       handleConnectCal(agentData?.agent);
@@ -1678,8 +1678,8 @@ const AgentDashboard = () => {
           <AssignNumberModal
             isOpen={isAssignModalOpen}
             agentId={agentDetails?.agentId}
-            onClose={() => setIsAssignModalOpen(false)}
-            onCallApi={handleAssignNumber}
+            onClose={() => {setIsAssignModalOpen(false); setRefresh((prev) => !prev);}}
+            // onCallApi={handleAssignNumber}
           />
             {isAssignNumberModalOpen && (
                   <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>

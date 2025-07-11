@@ -101,6 +101,18 @@
   text-align: center;
 }
 
+.loaderWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* space between loader and text */
+}
+
+.loadingText {
+  font-size: 14px;
+  color: #fff; /* or your button text color */
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
