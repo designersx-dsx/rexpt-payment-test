@@ -1318,15 +1318,21 @@ function Dashboard() {
     }
   };
   const handleUpgradeClick = (agent) => {
+    console.log("agent", agent)
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
     sessionStorage.setItem("updateBtn", "update")
+    sessionStorage.setItem("selectedPlan", agent?.agentPlan)
 
     navigate("/plan", {
+
       state: {
         agentID: agent?.agent_id,
         locationPath: locationPath,
         subscriptionID: agent?.subscriptionId,
+        planName: agent?.agentPlan,
+        interval: agent?.subscription.interval
+
       },
     });
   };
@@ -1451,7 +1457,7 @@ function Dashboard() {
     return number;
   }
 
-console.log(localAgents,"agent")
+  console.log(localAgents, "agent")
   return (
     <div>
       <div className={styles.forSticky}>
@@ -1596,7 +1602,7 @@ console.log(localAgents,"agent")
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
-    
+
           let assignedNumbers = [];
           if (agent.voip_numbers) {
             try {
