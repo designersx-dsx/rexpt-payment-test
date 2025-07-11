@@ -395,7 +395,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
-  gap: 8px;
+  gap: 5px;
 }
 
 .agentDetailsFlex p:last-child {
@@ -707,7 +707,7 @@
   position: relative;
   background-color: #fff;
   padding: 3px;
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .managementItem::before {
@@ -817,11 +817,13 @@
 
 .AssignNumText {
   text-align: left;
+  font-size: 12px;
+  display: grid;
 }
 
 .AssignNumText p {
-  font-size: 1.1rem;
-  font-weight: 400;
+  font-size: 14px;
+  font-weight: 800;
   text-align: left !important;
 }
 
@@ -889,16 +891,17 @@
   }
 
   .agentDetailsFlex p:last-child strong {
-    font-size: 25px;
+    font-size: 22px;
   }
-  .agentDetails{
+
+  .agentDetails {
     font-size: 12px;
   }
 }
 
 @media (max-width: 360px) {
   .agentDetailsFlex p:last-child strong {
-    font-size: 25px;
+    font-size: 22px;
   }
 
   .agentDetailsFlex {
@@ -906,7 +909,7 @@
   }
 
   .AssignNumText {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .AssignNum {
@@ -920,6 +923,23 @@
 
   .Yellow .statDetail {
     font-size: 35px !important;
+  }
+
+  .AssignNumText p {
+    font-size: 13px;
+  }
+   .agentDetailsFlex p:last-child strong {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 345px) {
+  .AssignNumText p {
+    font-size: 11px;
+  }
+
+  .agentDetailsFlex p:last-child strong {
+    font-size: 18px;
   }
 }
 

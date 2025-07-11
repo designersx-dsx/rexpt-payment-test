@@ -275,7 +275,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     };
 
     return (
-        <div>
+        <div className={styles.MainPlanDiv}>
             <div className={styles.firstdiv}>
                 <HeaderBar title="Upgrade Plan" />
                 <label className={styles.freeTrialBtn} onChange={handleClick}>

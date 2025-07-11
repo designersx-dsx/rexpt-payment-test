@@ -1825,7 +1825,7 @@ console.log(localAgents,"agent")
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
-                    Assigned Number
+                    Phone Number
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
                       {assignedNumbers.map(formatE164USNumber).join(", ")}

@@ -810,7 +810,7 @@ const AgentDashboard = () => {
                       {
                           assignedNumbers?.length > 0 ? (
                             <div className={styles.AssignNumText}>
-                              AI Agent Toll Free<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
+                              Phone Number<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
                             </div>
                           ) : (
                             <div

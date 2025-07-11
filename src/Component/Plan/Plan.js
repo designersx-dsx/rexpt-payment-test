@@ -617,6 +617,9 @@ const Planss = () => {
                 </div>
 
             </FreeTrialModal>
+            <div className={styles.MianFooteer}>
+                
+          
             <div className={styles.ForSticky}>
                 <div className={styles.footerButtons}>
 
@@ -666,6 +669,7 @@ const Planss = () => {
                     })}
                 </div>
             </div>
+              </div>
         </div>
     );
 };

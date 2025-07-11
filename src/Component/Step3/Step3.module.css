@@ -66,6 +66,7 @@
   flex: 1;
 
 }
+
 .agentInput::placeholder {
   color: #a1a1a1;
   font-weight: 400;
@@ -82,8 +83,9 @@
   position: absolute;
   right: 10px;
 }
-.editBtn img{
-  width:30px;
+
+.editBtn img {
+  width: 30px;
 }
 
 
@@ -104,10 +106,12 @@
   width: 80%;
   text-align: center;
   text-transform: capitalize;
+  padding-right: 8px;
 }
 
 .agentInput::placeholder {
   color: #a0aec0;
+  font-size: 24px;
 }
 
 .slide {

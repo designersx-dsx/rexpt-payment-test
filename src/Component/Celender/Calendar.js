@@ -197,8 +197,8 @@ const AgentAnalysis = () => {
           <div className={styles.DateSecT}>
             <p>Agent</p>
             <div className={styles.singleAgentName}>
-              {agents[0].agentName.length > 12
-                ? agents[0].agentName.slice(0, 12) + "..."
+              {agents[0].agentName.length > 5
+                ? agents[0].agentName.slice(0, 5) + ".."
                 : agents[0].agentName}
             </div>
           </div>
@@ -214,8 +214,8 @@ const AgentAnalysis = () => {
                 <option value="">All</option>
                 {agents.map((agent) => (
                   <option key={agent.agent_id} value={agent.agent_id}>
-                    {agent.agentName.length > 12
-                      ? agent.agentName.slice(0, 12) + "..."
+                    {agent.agentName.length > 5
+                      ? agent.agentName.slice(0, 5) + "..."
                       : agent.agentName}
                   </option>
                 ))}
