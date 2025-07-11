@@ -73,7 +73,7 @@ border-radius: 12px;
   font-size: 14px;
   color: #333;
   gap: 8px;
-  cursor: pointer;
+  /* cursor: pointer; */
   position: relative;
   padding: 0 20px;
 }
