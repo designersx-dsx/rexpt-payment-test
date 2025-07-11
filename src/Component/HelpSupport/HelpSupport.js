@@ -8,6 +8,9 @@ const HelpSupport = () => {
         if (type === 'agent-setup') {
             navigate('/agent-setup');
         }
+        if (type === 'documentation') {
+            navigate('/documentation');
+        }
     };
 
     const cursor = {
@@ -31,7 +34,7 @@ const HelpSupport = () => {
 
                 </span>
             </div>
-            <div className={styles.card} style={cursor}>
+            {/* <div className={styles.card} style={cursor}>
                 <img src="/svg/Support-ticket.svg" alt="Agent" />
                 <span>CREATE SUPPORT TICKET</span>
                 <span className={styles.arrow}>
@@ -40,9 +43,8 @@ const HelpSupport = () => {
                     </svg>
 
                 </span>
-            </div>
-
-            <div className={styles.card} style={cursor}>
+            </div> */}
+            <div className={styles.card} onClick={() => handleCardClick('documentation')}>
                 <img src="/svg/document.svg" alt="Agent" />
                 <span>DOCUMENTATION</span>
                 <span className={styles.arrow}>
@@ -53,7 +55,7 @@ const HelpSupport = () => {
                 </span>
             </div>
 
-            <div className={styles.card} style={cursor}>
+            <div className={styles.card} onClick={()=>window.open('https://www.rexpt.in/FAQ', '_blank')}>
                 <img src="/svg/Faq.svg" alt="Agent" />
                 <span>FAQ</span>
                 <span className={styles.arrow}>
