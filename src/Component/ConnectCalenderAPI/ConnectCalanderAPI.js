@@ -295,7 +295,7 @@ const CalendarConnect = () => {
           <div className={styles.offSwitch}>
 
             <a target="_blank"
-              rel="noopener noreferrer" href="refer.cal.com/rexptin">
+              rel="noopener noreferrer" href="https://cal.com/?via=rexptin&dub_id=7NCpqAziwR4aWcXl">
               {" "}
               <div className={styles.recommendation}>
                 <img src="/images/CalCOm.png" />
