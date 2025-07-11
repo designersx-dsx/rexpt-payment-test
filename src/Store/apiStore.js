@@ -417,5 +417,18 @@ export const deleteUser = async (userId) => {
     throw new Error("Failed to delete user");
   }
 };
+export const saveAgentSchedule = async (scheduleData) => {
+  try {
+    const res = await api.post('/agent/schedule-agent', scheduleData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error saving agent schedule:", error.response?.data || error.message);
+    throw new Error("Failed to save agent schedule");
+  }
+};
 
 export default api;

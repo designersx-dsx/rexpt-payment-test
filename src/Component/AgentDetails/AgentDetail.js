@@ -1310,7 +1310,7 @@ const AgentDashboard = () => {
                 <p className={styles.managementText}>Call Setting</p>
               </div>
 
-              <div
+              {/* <div
                 className={styles.managementItem}
                 onClick={() => setShowModal(true)}
               >
@@ -1329,7 +1329,7 @@ const AgentDashboard = () => {
                   </svg>
                 </div>
                 <p className={styles.managementText}>Upgrade</p>
-              </div>
+              </div> */}
 
               {/* <div
                 className={styles.managementItem}
