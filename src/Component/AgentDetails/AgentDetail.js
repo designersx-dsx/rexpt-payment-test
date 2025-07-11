@@ -115,22 +115,19 @@ const AgentDashboard = () => {
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
+  const [agentCalApiKey, setAgentCalApiKey] = useState("")
+  function formatE164USNumber(number) {
+    const cleaned = number.replace(/\D/g, "");
 
-
-   function formatE164USNumber(number) {
-  const cleaned = number.replace(/\D/g, ""); 
-
-  if (cleaned.length === 11 && cleaned.startsWith("1")) {
-    const country = cleaned[0];
-    const area = cleaned.slice(1, 4);
-    const prefix = cleaned.slice(4, 7);
-    const line = cleaned.slice(7, 11);
-    return `+${country} (${area}) ${prefix}-${line}`;
+    if (cleaned.length === 11 && cleaned.startsWith("1")) {
+      const country = cleaned[0];
+      const area = cleaned.slice(1, 4);
+      const prefix = cleaned.slice(4, 7);
+      const line = cleaned.slice(7, 11);
+      return `+${country} (${area}) ${prefix}-${line}`;
+    }
+    return number;
   }
-  return number;
-}
-
-
   useEffect(() => {
     const fetchMeetingCount = async () => {
       if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
@@ -230,6 +227,7 @@ const AgentDashboard = () => {
       setHasFetched(false);
       setShowCalKeyInfo(true);
       setShowEventInputs(true);
+      // sessionStorage.setItem("userCalApiKey", userCalApiKey.trim())
       setTimeout(() => {
         setIsApiKeySubmitted(true);
       }, 0);
@@ -402,8 +400,12 @@ const AgentDashboard = () => {
     client.on("call_ended", () => setIsCallActive(false));
     setRetellWebClient(client);
     sessionStorage.removeItem("selectedfilterOption");
-    const calApiKey = agentData?.calApiKey;
-    sessionStorage.setItem("userCalApiKey", calApiKey);
+    const calApiKey = agentData?.agent?.calApiKey;
+    setAgentCalApiKey(calApiKey)
+    // if (!calApiKey) {
+    //   sessionStorage.setItem("userCalApiKey", calApiKey);
+    // }
+
   }, []);
 
   // Start call handler
@@ -476,16 +478,16 @@ const AgentDashboard = () => {
         if (isCallInProgress && callId) {
           // const DBresponse = await EndWebCallUpdateAgentMinutesLeft(payload);
         }
-        
+
         // console.log("Call end response", response);
       } catch (err) {
         console.error("Error ending call:", err);
       } finally {
         setTimeout(() => {
-        setHasFetched(false);
-        setRefresh((prev) => !prev);
+          setHasFetched(false);
+          setRefresh((prev) => !prev);
         }, 2000);
-       
+
         setIsCallInProgress(false);
         isEndingRef.current = false;
       }
@@ -652,7 +654,6 @@ const AgentDashboard = () => {
     return name;
   }
   const handleConnectCal = (agent) => {
-    console.log(agent, "agent");
     navigate("/connect-calender");
     sessionStorage.setItem("agentDetails", JSON.stringify(agent));
   };
@@ -671,15 +672,15 @@ const AgentDashboard = () => {
       setPopupMessage3("");
     }
   };
-  
-    const handleAssignNumberClick = (agent, e) => {
+
+  const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
       return;
     }
 
-    const planName = agent?.subscription?.plan_name || "Frees";
+    const planName = agent?.subscription?.plan_name || "Free";
     if (!agent.subscriptionId) {
       openAssignNumberModal();
     } else {
@@ -775,17 +776,17 @@ const AgentDashboard = () => {
                   <div className={styles.agentAvatarContainer}>
                     <img
                       src={agentData?.agent?.avatar || "images/SofiaAgent.png"}
-                      alt="Sofia"
+                      alt="Agent"
                       className={styles.agentAvatar}
                     />
                     <p className={styles.generalDiv}>
-                      {agentData?.agent?.agentRole?.split(" ")[0] || "General"}{" "}
+                      {agentData?.agent?.agentRole?.split(" ")[0] || ""}{" "}
                     </p>
                   </div>
                   <div className={styles.FullLine}>
                     <div className={styles.foractive}>
                       <h3 className={styles.agentName}>
-                        {formatName(agentData?.agent?.agentName) || "John Vick"}
+                        {formatName(agentData?.agent?.agentName) || ""}
                         <span
                           className={
                             agentData?.agent?.isDeactivated == 1
@@ -808,28 +809,28 @@ const AgentDashboard = () => {
 
                     <div className={styles.agentDetailsFlex}>
                       {
-                          assignedNumbers?.length > 0 ? (
-                            <div className={styles.AssignNumText}>
-                              AI Agent Toll Free<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
-                            </div>
-                          ) : (
-                            <div
-                              className={styles.AssignNum}
-                              onClick={(e) => {
-                                if (agentStatus === true) {
-                                  handleInactiveAgentAlert();
-                                } else {
-                                  // setIsAssignModalOpen(true)
-                                  // setIsAssignNumberModalOpen(true);
-                                 handleAssignNumberClick(agentData?.agent, e);
+                        assignedNumbers?.length > 0 ? (
+                          <div className={styles.AssignNumText}>
+                            Phone Number<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
+                          </div>
+                        ) : (
+                          <div
+                            className={styles.AssignNum}
+                            onClick={(e) => {
+                              if (agentStatus === true) {
+                                handleInactiveAgentAlert();
+                              } else {
+                                // setIsAssignModalOpen(true)
+                                // setIsAssignNumberModalOpen(true);
+                                handleAssignNumberClick(agentData?.agent, e);
 
-                                }
-                              }}
-                            
-                            >
-                              <img src="/svg/assign-number.svg" />
-                            </div>
-                          )}
+                              }
+                            }}
+
+                          >
+                            <img src="/svg/assign-number.svg" />
+                          </div>
+                        )}
 
                       <p className={styles.agentDetails}>
                         Agent Code{" "}
@@ -848,8 +849,8 @@ const AgentDashboard = () => {
                 <h2>
                   {formatBusinessName(
                     agentData?.business?.businessName ||
-                      agentData?.knowledge_base_texts?.name ||
-                      agentData?.business?.googleBusinessName
+                    agentData?.knowledge_base_texts?.name ||
+                    agentData?.business?.googleBusinessName
                   )}
                 </h2>
 
@@ -1016,11 +1017,21 @@ const AgentDashboard = () => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                    if (userCalApiKey) {
-                      handleConnectCalApiAlready(agentData?.agent);
-                    } else {
+                    if ((userCalApiKey == "undefined" || userCalApiKey == "null" || !userCalApiKey) &&
+                      (agentCalApiKey == "undefined" || agentCalApiKey == "null" || !agentCalApiKey)) {
                       handleConnectCal(agentData?.agent);
                     }
+                    else if (userCalApiKey && agentCalApiKey) {
+                      handleConnectCal(agentData?.agent);
+                    }
+                    else if (userCalApiKey && !agentCalApiKey) {
+                      handleConnectCalApiAlready(agentData?.agent);
+                    }
+                    else {
+                      handleConnectCal(agentData?.agent);
+                    }
+                 
+
                   }
                 }}
               >
@@ -1159,7 +1170,7 @@ const AgentDashboard = () => {
                     handleCallTransfer();
                   }
                 }}
-                // onClick={handleCallTransfer}
+              // onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1213,13 +1224,13 @@ const AgentDashboard = () => {
                     });
                   }
                 }}
-                // onClick={async () => {
-                //   await fetchPrevAgentDEtails(
-                //     agentData?.agent?.agent_id,
-                //     agentData?.agent?.businessId
-                //   );
-                //   setModalOpen(true);
-                // }}
+              // onClick={async () => {
+              //   await fetchPrevAgentDEtails(
+              //     agentData?.agent?.agent_id,
+              //     agentData?.agent?.businessId
+              //   );
+              //   setModalOpen(true);
+              // }}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1251,11 +1262,12 @@ const AgentDashboard = () => {
               <div
                 className={styles.managementItem}
                 // onClick={() => setShowModal(true)}
-                onClick={() => navigate("/call-setting",{
-              state: {
-                selectedAgentname: `${agentData?.agent?.agentName}-${agentData?.agent?.agentCode}`,
-                fromPage: "dashboard",
-              },})}
+                onClick={() => navigate("/call-setting", {
+                  state: {
+                    selectedAgentname: `${agentData?.agent?.agentName}-${agentData?.agent?.agentCode}`,
+                    fromPage: "dashboard",
+                  },
+                })}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1367,7 +1379,7 @@ const AgentDashboard = () => {
 
                 <span className={styles.statDetail}>
                   {agentData?.avgCallTime?.minutes ||
-                  agentData?.avgCallTime?.seconds ? (
+                    agentData?.avgCallTime?.seconds ? (
                     <>
                       {agentData?.avgCallTime?.minutes}
                       <span className={styles.MinFont}>m</span>
@@ -1678,31 +1690,31 @@ const AgentDashboard = () => {
           <AssignNumberModal
             isOpen={isAssignModalOpen}
             agentId={agentDetails?.agentId}
-            onClose={() => setIsAssignModalOpen(false)}
-            onCallApi={handleAssignNumber}
+            onClose={() => { setIsAssignModalOpen(false); setRefresh((prev) => !prev); }}
+          // onCallApi={handleAssignNumber}
           />
-            {isAssignNumberModalOpen && (
-                  <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
-                    <div
-                      className={styles.modalContainer}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <h2>Upgrade Required!</h2>
-                      <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-                      To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
-          
-                      </p>
-                      <button
-                        className={`${styles.modalButton} ${styles.submit}`}
-                        onClick={closeAssignNumberModal}
-                        style={{ width: "100%" }}
-                      >
-                        Got it!
-                      </button>
-                    </div>
-                  </div>
-                )}
-          
+          {isAssignNumberModalOpen && (
+            <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
+              <div
+                className={styles.modalContainer}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2>Upgrade Required!</h2>
+                <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
+                  To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
+
+                </p>
+                <button
+                  className={`${styles.modalButton} ${styles.submit}`}
+                  onClick={closeAssignNumberModal}
+                  style={{ width: "100%" }}
+                >
+                  Got it!
+                </button>
+              </div>
+            </div>
+          )}
+
           {isAssignNumberModal && (
             <CommingSoon
               show={isAssignNumberModal}
@@ -1847,9 +1859,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(

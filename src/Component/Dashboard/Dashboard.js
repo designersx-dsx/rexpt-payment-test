@@ -323,7 +323,6 @@ function Dashboard() {
       // console.log(res, "res")
       setUserCalApiKey(res?.calApiKey);
       sessionStorage.setItem("userCalApiKey", res?.calApiKey);
-
       let agentsWithCalKeys = res.agents || [];
       const calApiAgents = await fetchCalApiKeys(userId);
       const calApiKeyMap = {};
@@ -547,7 +546,6 @@ function Dashboard() {
     setRetellWebClient(client);
   }, []);
   const handleDelete = async (agent) => {
-    console.log("agent", agent)
     const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
     try {
@@ -1101,7 +1099,6 @@ function Dashboard() {
       );
 
       console.log("agentData", agentData)
-
       const knowledgeBaseId = agentData?.knowledgeBaseId;
       const businessId = agentData?.businessId;
 
@@ -1167,7 +1164,8 @@ function Dashboard() {
         const knowledgeBaseName = await getKnowledgeBaseName(
           businessDetails,
           userId,
-          packageValue
+          packageValue,
+          agentData?.agentCode
         );
         const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
@@ -1412,7 +1410,6 @@ function Dashboard() {
     }
   };
   const handleConnectCal = (agent) => {
-    console.log(agent, "agent");
     navigate("/connect-calender");
     sessionStorage.setItem("agentDetails", JSON.stringify(agent));
   };
@@ -1456,6 +1453,7 @@ function Dashboard() {
     }
     return number;
   }
+
 
   return (
     <div>
@@ -1814,7 +1812,7 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== "") {
+                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== ""&&userCalApiKey !== "undefined") {
                             handleConnectCalApiAlready(agent);
                           } else {
                             handleConnectCal(agent);
@@ -1830,7 +1828,7 @@ function Dashboard() {
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
                   <div className={styles.AssignNumText}>
-                    Assigned Number
+                    Phone Number
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
                       {assignedNumbers.map(formatE164USNumber).join(", ")}
