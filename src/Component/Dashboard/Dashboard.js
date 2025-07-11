@@ -1426,7 +1426,7 @@ function Dashboard() {
     setAgentDetailsForCal(agent);
     setPopupType3("confirm");
     setPopupMessage3(
-      "Your Cal API key is already added. Do you want to continue with this key and automatically create a Cal event?"
+      "Your Cal API key is already connected with Rexpt. We're now automatically syncing your Cal Events with this agent for seamless scheduling."
     );
   };
   const handleClosePopUp3 = async () => {
@@ -2529,7 +2529,7 @@ function Dashboard() {
         message={popupMessage3}
         onClose={() => {
           if (!isConfirmedRef.current) {
-            handleConnectCal(agentDetailsForCal);
+            // handleConnectCal(agentDetailsForCal);
           }
           isConfirmedRef.current = false;
           setPopupMessage3("");
