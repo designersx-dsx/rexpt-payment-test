@@ -12,6 +12,9 @@ function Thankyou() {
   const [popupMessage, setPopupMessage] = useState("");
   const [message, setMessage] = useState("");
 
+  const [invoiceLink, setInvoiceLink] = useState("");
+
+
   // Get query params
   const getQueryParam = (name) =>
     new URLSearchParams(location.search).get(name);
@@ -22,6 +25,7 @@ function Thankyou() {
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   // console.log("subscriptionInfo", subscriptionInfo);
+  const [currencySymbol, setCurrencySymbol] = useState("");
 
   const currentLocation = "/update";
 
@@ -228,6 +232,22 @@ function Thankyou() {
 
       if (data && !data.error) {
         setSubscriptionInfo(data);
+        // Extract currency symbol
+        const currencyMap = {
+          USD: "$",
+          INR: "₹",
+          EUR: "€",
+          GBP: "£",
+          AUD: "A$",
+          CAD: "C$",
+        };
+        const upperCurrency = data.currency?.toUpperCase() || "USD";
+        const symbol = currencyMap[upperCurrency] || "$";
+        setCurrencySymbol(`${upperCurrency} ${symbol}`);
+        // Save invoice link
+  if (data.invoiceUrl) {
+    setInvoiceLink(data.invoiceUrl);
+  }
       } else {
         console.warn("No subscription found, falling back to static info.");
       }
@@ -328,12 +348,9 @@ function Thankyou() {
             <span>Frequency & Price:</span>
             <div className={styles.Right50}>
               {subscriptionInfo
-                ? `${formatCurrency(
-                    subscriptionInfo?.planAmount,
-                    subscriptionInfo?.currency
-                  )} / ${
-                    subscriptionInfo?.interval === "year" ? "year" : "month"
-                  }`
+                ? `${currencySymbol}${formatPrice(
+                    subscriptionInfo.planAmount
+                  )} / ${subscriptionInfo.interval}`
                 : "US $499 / month"}
             </div>
           </div>
@@ -346,11 +363,9 @@ function Thankyou() {
             <div className={styles.Right50}>
               {subscriptionInfo ? (
                 <>
-                  {formatCurrency(
-                    subscriptionInfo.planAmount,
-                    subscriptionInfo.currency
-                  )}{" "}
-                  on{" "}
+                  {`${currencySymbol}${formatPrice(
+                    subscriptionInfo.planAmount
+                  )} on `}
                   {new Date(
                     subscriptionInfo.currentPeriodStart
                   ).toLocaleDateString("en-US", {
@@ -380,24 +395,25 @@ function Thankyou() {
                 : "06 July 2026"}
             </div>
           </div>
-          <div className={styles.row}>
-            <span>Invoice:</span>
-            <div className={styles.Right50}>
-              {subscriptionInfo ? (
-                <a
-                  href={subscriptionInfo?.invoiceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  className={styles.downloadLink} // Optional: add CSS for styling
-                >
-                  Download
-                </a>
-              ) : (
-                "N/A"
-              )}
-            </div>
-          </div>
+          {invoiceLink && (
+  <div className={styles.row}>
+    <span>Invoice Link:</span>
+    <div className={styles.Right50} >
+      <a
+        href={invoiceLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.downloadButton}
+        style={{color:"purple",textDecoration:"none",cursor:"pointer"}}
+        download
+      >
+        Download 
+      </a>
+    </div>
+  </div>
+)}
+
+
 
           <div className={styles.ButtonTakeME}>
             <button
