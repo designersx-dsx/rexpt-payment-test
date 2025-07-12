@@ -9,6 +9,8 @@ import HeaderBar from "../HeaderBar/HeaderBar";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader";
 import Loader2 from '../Loader2/Loader2';
+import { listAgents } from '../../Store/apiStore';
+import decodeToken from '../../lib/decodeToken';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
@@ -26,6 +28,14 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState("");
     const [userCurrency, setUserCurrency] = useState("usd");
+    const token = localStorage.getItem("token") || "";
+    const decodeTokenData = decodeToken(token);
+    const userIdFromToken = decodeTokenData?.id || "";
+    const [userId, setUserId] = useState(userIdFromToken)
+
+    const [agentCount, setAgentCount] = useState()
+    console.log("agentCount",agentCount)
+
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -131,7 +141,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         (p) => p.id === product.id
                     );
 
-                    console.log("product",product)
+                    console.log("product", product)
 
                     const matchingPrices = product.prices.filter(
                         (p) =>
@@ -249,6 +259,25 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
     }, [userCurrency]);
 
+    const fetchAgentCountFromUser = async () => {
+        try {
+
+            const response = await listAgents()
+            const filterAgents = await response.filter(res => res.userId === userId)
+            setAgentCount(filterAgents.length)
+            console.log(userId, "userid", filterAgents.length)
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchAgentCountFromUser()
+        // localStorage.removeItem("allPlans")
+        // sessionStorage.removeItem("checkPage")
+    }, [])
+
 
     if (loading)
         return (
@@ -284,7 +313,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         <div className={styles.MainPlanDiv}>
             <div className={styles.firstdiv}>
                 <HeaderBar title="Upgrade Plan" />
-                <label className={styles.freeTrialBtn} onChange={handleClick}>
+                {agentCount == 0 ?<label className={styles.freeTrialBtn} onChange={handleClick}>
                     FREE TRIAL
                     <input
                         type="checkbox"
@@ -308,6 +337,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         )}
                     </span>
                 </label>
+                   :null }
             </div>
             <div>
                 <div className={styles.sectionPart}>
@@ -477,6 +507,43 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                                 size="13px"
                                                 onClick={() => {
                                                     if (priceForInterval) {
+                                                        const today = new Date();
+                                                        const nextBillingDate = new Date(today);
+
+                                                        if (priceForInterval.interval === "month") {
+                                                            nextBillingDate.setMonth(today.getMonth() + 1);
+                                                        } else {
+                                                            nextBillingDate.setFullYear(today.getFullYear() + 1);
+                                                        }
+
+                                                        // Extract minutes if found in first feature (e.g., "120 minutes / month")
+                                                        const firstFeature = plan.features[0] || "";
+                                                        const planMinsMatch = firstFeature.match(/(\d+)\s*minutes/i);
+                                                        const planMins = planMinsMatch ? parseInt(planMinsMatch[1], 10) : 0;
+
+                                                        const currentInterval = toggleStates[plan.id] ? "year" : "month";
+
+
+
+                                                        const selectedPlanData = {
+                                                            priceId: priceForInterval.id,
+                                                            agentId: agentID,
+                                                            price: (priceForInterval.unit_amount / 100).toFixed(2),
+                                                            interval: priceForInterval.interval,
+                                                            currency: priceForInterval.currency,
+                                                            billingTodayAmount:
+                                                                priceForInterval.interval === "month"
+                                                                    ? (priceForInterval.unit_amount / 100).toFixed(2)
+                                                                    : ((priceForInterval.unit_amount / 100) * 12 * 0.95).toFixed(2),
+                                                            billingDate: today.toISOString(),
+                                                            nextBillingDate: nextBillingDate.toISOString(),
+                                                            planName: plan.title,
+                                                            planMins: planMins
+                                                        };
+
+                                                        // ✅ Save to localStorage
+                                                        localStorage.setItem("selectedPlanData", JSON.stringify(selectedPlanData));
+
                                                         navigate("/checkout", {
                                                             state: {
                                                                 priceId: priceForInterval.id,

@@ -839,7 +839,9 @@ function CheckoutForm({
 
       url = `${origin}/thankyou/update?${queryParams.toString()}`;
     } else {
-      url = `${origin}/thankyou/create`;
+      const queryParams = new URLSearchParams();
+      if (userId) queryParams.append("userId", userId);
+      url = `${origin}/thankyou/create?${queryParams.toString()}`;
     }
     if (checkPage !== "checkout") {
       try {

@@ -224,6 +224,7 @@ const AgentDashboard = () => {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update API key");
       }
+      await getAgentDetailsAndBookings();
       setHasFetched(false);
       setShowCalKeyInfo(true);
       setShowEventInputs(true);
@@ -242,6 +243,7 @@ const AgentDashboard = () => {
   const createCalEvent = async () => {
     const agent = agentDetailsForCal;
     await handleApiKeySubmit();
+    setRefresh(true)
     try {
       // Call Cal API to create an event
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
@@ -300,8 +302,6 @@ const AgentDashboard = () => {
       } else {
         // console.log("Updated successfully!");
       }
-
-      // Success
       setPopupType("success");
       setPopupMessage("Your Cal event has been created successfully!");
       setHasFetched(false);
@@ -320,17 +320,15 @@ const AgentDashboard = () => {
   };
   const getAgentDetailsAndBookings = async () => {
     if (!agentDetails?.agentId) return;
-
     const cached = getAgentById(agentDetails.agentId);
     if (cached) {
       setCurrentAgentId(agentDetails.agentId);
       setLoading(false);
     }
-
     try {
       const response = await fetchAgentDetailById(agentDetails);
       const agentInfo = response?.data;
-      // console.log('agentInfo',agentInfo)
+      setAgentCalApiKey(agentInfo?.agent?.calApiKey)
       let numbersArray = [];
 
       const voipNumbersStr = agentInfo?.agent?.voip_numbers;
@@ -368,7 +366,7 @@ const AgentDashboard = () => {
   };
   useEffect(() => {
     getAgentDetailsAndBookings();
-  }, [agentDetails, refresh]);
+  }, []);
   const handleAssignNumber = () => {
     getAgentDetailsAndBookings();
   };
@@ -402,9 +400,6 @@ const AgentDashboard = () => {
     sessionStorage.removeItem("selectedfilterOption");
     const calApiKey = agentData?.agent?.calApiKey;
     setAgentCalApiKey(calApiKey)
-    // if (!calApiKey) {
-    //   sessionStorage.setItem("userCalApiKey", calApiKey);
-    // }
 
   }, []);
 
@@ -1019,7 +1014,10 @@ const AgentDashboard = () => {
                   if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                    if ((userCalApiKey == "undefined" || userCalApiKey == "null" || !userCalApiKey) &&
+                    if (agentCalApiKey) {
+                      handleConnectCal(agentData?.agent);
+                    }
+                    else if ((userCalApiKey == "undefined" || userCalApiKey == "null" || !userCalApiKey) &&
                       (agentCalApiKey == "undefined" || agentCalApiKey == "null" || !agentCalApiKey)) {
                       handleConnectCal(agentData?.agent);
                     }
@@ -1032,7 +1030,7 @@ const AgentDashboard = () => {
                     else {
                       handleConnectCal(agentData?.agent);
                     }
-                 
+
 
                   }
                 }}
