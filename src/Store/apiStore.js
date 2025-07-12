@@ -249,8 +249,6 @@ export const updateUserDetails = async (userId, updateData) => {
     throw new Error("Failed to update user details");
   }
 };
-
-
 export const getUserAgentLimitStatus = async (userId) => {
   try {
     const res = await api.get(`/endusers/user-agent-limit-status?userId=${userId}`, {
@@ -430,5 +428,16 @@ export const saveAgentSchedule = async (scheduleData) => {
     throw new Error("Failed to save agent schedule");
   }
 };
+export const getAgentScheduleByUserId = async (userId) => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching agent schedule:", error.response?.data || error.message);
+    throw new Error("Failed to fetch agent schedule");
+  }
+};
+
+
 
 export default api;
