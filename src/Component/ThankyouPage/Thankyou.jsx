@@ -89,7 +89,10 @@ function Thankyou() {
               planAmount: plan.price || 0,
               planMins: plan.planMins || "N/A",
               interval: plan.interval || "month",
+              currentPeriodStart:
+                plan.currentPeriodStart || new Date().toISOString(),
               nextRenewalDate: plan.nextBillingDate || null,
+              invoiceUrl: plan.invoiceUrl || null,
             });
           } catch (err) {
             console.warn(
@@ -121,13 +124,16 @@ function Thankyou() {
               price.interval === "month"
                 ? new Date(today.setMonth(today.getMonth() + 1))
                 : new Date(today.setFullYear(today.getFullYear() + 1));
-            setSubscriptionInfo({
+            setSubscriptionInfo((prev) => ({
+              ...prev,
               planName: plan.name,
               planAmount: (price.unit_amount / 100).toFixed(2),
               interval: price.interval,
               planMins: price.metadata || plan.metadata?.minutes || "N/A",
-              nextRenewalDate: nextDate.toISOString(), // set this if available
-            });
+              nextRenewalDate: nextDate.toISOString(),
+              currentPeriodStart:
+                plan.currentPeriodStart || new Date().toISOString(),
+            }));
             break;
           }
         }
@@ -206,17 +212,20 @@ function Thankyou() {
   };
 
   const fetchSubscriptionInfo = async () => {
-    if (!agentId) return;
+    if (!agentId && !userId) return; // Ensure at least one ID exists
 
     try {
       const res = await fetch(`${API_BASE_URL}/subscription-details`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agentId }),
+        body: JSON.stringify(
+          agentId ? { agentId } : { userId } // Send only one key based on availability
+        ),
       });
 
       const data = await res.json();
-      console.log("data", data);
+      console.log("Subscription Info:", data);
+
       if (data && !data.error) {
         setSubscriptionInfo(data);
       } else {
@@ -226,6 +235,7 @@ function Thankyou() {
       console.error("Failed to fetch subscription info:", error);
     }
   };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN").format(price);
   };
@@ -233,6 +243,7 @@ function Thankyou() {
   useEffect(() => {
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
+    const shouldRunCreateFlow = key === "create" && userId;
 
     const run = async () => {
       if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
@@ -240,22 +251,32 @@ function Thankyou() {
         setTimeout(async () => {
           await fetchSubscriptionInfo();
         }, 1500); // fetch updated subscription data
-      } else {
-        // const fallback = setTimeout(() => {
-        //   if (key === "create") {
-        //     localStorage.removeItem("selectedPlanData");
-        //     navigate("/steps", {
-        //       state: { locationPath: "/checkout" },
-        //     });
-        //   }
-        //   // Removed the "else if (key === 'update')" dashboard navigation
-        // }, 3000);
-        // return () => clearTimeout(fallback);
+      } else if (shouldRunCreateFlow) {
+        setTimeout(async () => {
+          await fetchSubscriptionInfo();
+        }, 1500); // or 1500ms, your call
       }
     };
 
     run();
   }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+  const formatCurrency = (amount, currency) => {
+    const upperCurrency = currency?.toUpperCase() || "USD";
+
+    const symbolMap = {
+      USD: "$",
+      INR: "₹",
+      EUR: "€",
+      GBP: "£",
+      AUD: "A$",
+      CAD: "C$",
+      // Add more if needed
+    };
+
+    const symbol = symbolMap[upperCurrency] || "";
+
+    return `${upperCurrency} ${symbol}${Number(amount).toLocaleString()}`;
+  };
 
   return (
     // <div className={styles.container}>
@@ -307,30 +328,43 @@ function Thankyou() {
             <span>Frequency & Price:</span>
             <div className={styles.Right50}>
               {subscriptionInfo
-                ? `US $${Number(
-                    subscriptionInfo.planAmount
-                  ).toLocaleString()} / ${
-                    subscriptionInfo.interval === "year" ? "year" : "month"
+                ? `${formatCurrency(
+                    subscriptionInfo?.planAmount,
+                    subscriptionInfo?.currency
+                  )} / ${
+                    subscriptionInfo?.interval === "year" ? "year" : "month"
                   }`
                 : "US $499 / month"}
             </div>
           </div>
-          <div className={styles.row}>
+          {/* <div className={styles.row}>
             <span>Discount Applied:</span>
             <div className={styles.Right50}>N/A</div>
-          </div>
+          </div> */}
           <div className={styles.row}>
             <span>Billed Today:</span>
             <div className={styles.Right50}>
-              {subscriptionInfo
-                ? subscriptionInfo.interval === "month"
-                  ? `$${formatPrice(subscriptionInfo.planAmount)} per month`
-                  : `$${formatPrice(
-                      subscriptionInfo.planAmount * 12
-                    )} for 12 months`
-                : "$5,688.60 for 12 months"}
+              {subscriptionInfo ? (
+                <>
+                  {formatCurrency(
+                    subscriptionInfo.planAmount,
+                    subscriptionInfo.currency
+                  )}{" "}
+                  on{" "}
+                  {new Date(
+                    subscriptionInfo.currentPeriodStart
+                  ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </>
+              ) : (
+                "$5,688.60 on July 12, 2025"
+              )}
             </div>
           </div>
+
           <div className={styles.row}>
             <span>Next Billing Date:</span>
             <div className={styles.Right50}>
@@ -349,9 +383,9 @@ function Thankyou() {
           <div className={styles.row}>
             <span>Invoice:</span>
             <div className={styles.Right50}>
-              {subscriptionInfo?.invoice_url ? (
+              {subscriptionInfo ? (
                 <a
-                  href={subscriptionInfo?.invoice_url}
+                  href={subscriptionInfo?.invoiceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   download
