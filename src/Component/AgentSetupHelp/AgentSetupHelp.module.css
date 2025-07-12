@@ -202,3 +202,33 @@
     z-index: 2;
 }
 
+/* .scheduleInfo {
+  background-color: #f2f2f2;
+  padding: 16px;
+  margin-top: 24px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+.scheduleInfo h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+.scheduleInfo p {
+  margin: 4px 0;
+  font-size: 14px;
+} */
+.disabledContainer {
+  opacity: 0.6;
+  pointer-events: none;
+}.warning {
+  color: #5a20d8;;
+  font-size: 16px;
+  background: #ffeaea;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  margin: 20px 20px;
+}
+.scheduleInfo{  margin: 20px 20px;}

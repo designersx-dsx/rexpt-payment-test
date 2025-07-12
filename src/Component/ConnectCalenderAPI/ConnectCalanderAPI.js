@@ -34,7 +34,7 @@ const CalendarConnect = () => {
   const [popup, setPopup] = useState({ type: "", message: "" });
   const [apiSubmitting, setApiSubmitting] = useState(false);
   const [agentsDetails, setAgentsDetails] = useState([])
-  console.log(agentsDetails, "agentsDetails")
+
   //getTimeZone
   const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
   const handleSubmit = async (e) => {
@@ -121,7 +121,7 @@ const CalendarConnect = () => {
       }
       try {
         await updateAgentEventId(agentId, eventTypeId);
-        console.log(" Event ID saved to agent.");
+        // console.log(" Event ID saved to agent.");
       } catch (err) {
         console.error("Failed to update agent with event ID:", err);
       }

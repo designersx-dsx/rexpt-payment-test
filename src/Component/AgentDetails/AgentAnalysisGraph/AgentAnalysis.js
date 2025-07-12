@@ -52,7 +52,7 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
       const agentCalls = response.data.filteredCalls || [];
       setCallHistory(agentCalls);
     } catch (error) {
-      console.error("Error fetching call history:", error);
+      // console.error("Error fetching call history:", error);
       setCallHistory([]);
     }
   };
