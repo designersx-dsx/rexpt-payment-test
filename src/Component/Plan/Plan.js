@@ -159,7 +159,7 @@ const Planss = () => {
                 }
             } catch (error) {
                 console.error("Error determining location-based currency:", error);
-                setUserCurrency("usd"); // fallback
+                setUserCurrency("usd"); // fallback;
             }
         };
 
