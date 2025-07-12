@@ -749,17 +749,17 @@ const EditProfile = () => {
               </div>
             )}
           </div>
-                 {isUploadModalOpen && (
-                      <UploadProfile
-                        onClose={closeUploadModal}
-                        onUpload={handleUpload}
-                        currentProfile={
-                          uploadedImage ||
-                          formData.profilePicture ||
-                          "Images/editProfile.png"
-                        }
-                      />
-                    )}
+          {isUploadModalOpen && (
+            <UploadProfile
+              onClose={closeUploadModal}
+              onUpload={handleUpload}
+              currentProfile={
+                uploadedImage ||
+                formData.profilePicture ||
+                "Images/editProfile.png"
+              }
+            />
+          )}
         </>
       )}
       {showPopup && (

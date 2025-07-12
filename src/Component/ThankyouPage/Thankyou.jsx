@@ -14,7 +14,6 @@ function Thankyou() {
 
   const [invoiceLink, setInvoiceLink] = useState("");
 
-
   // Get query params
   const getQueryParam = (name) =>
     new URLSearchParams(location.search).get(name);
@@ -231,7 +230,11 @@ function Thankyou() {
       console.log("Subscription Info:", data);
 
       if (data && !data.error) {
-        setSubscriptionInfo(data);
+        const { planAmount, ...rest } = data; // ignore planAmount
+setSubscriptionInfo((prev) => ({
+  ...prev,
+  ...rest, // keep existing planAmount
+}));
         // Extract currency symbol
         const currencyMap = {
           USD: "$",
@@ -245,9 +248,9 @@ function Thankyou() {
         const symbol = currencyMap[upperCurrency] || "$";
         setCurrencySymbol(`${upperCurrency} ${symbol}`);
         // Save invoice link
-  if (data.invoiceUrl) {
-    setInvoiceLink(data.invoiceUrl);
-  }
+        if (data.invoiceUrl) {
+          setInvoiceLink(data.invoiceUrl);
+        }
       } else {
         console.warn("No subscription found, falling back to static info.");
       }
@@ -396,24 +399,26 @@ function Thankyou() {
             </div>
           </div>
           {invoiceLink && (
-  <div className={styles.row}>
-    <span>Invoice Link:</span>
-    <div className={styles.Right50} >
-      <a
-        href={invoiceLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.downloadButton}
-        style={{color:"purple",textDecoration:"none",cursor:"pointer"}}
-        download
-      >
-        Download 
-      </a>
-    </div>
-  </div>
-)}
-
-
+            <div className={styles.row}>
+              <span>Invoice Link:</span>
+              <div className={styles.Right50}>
+                <a
+                  href={invoiceLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.downloadButton}
+                  style={{
+                    color: "purple",
+                    textDecoration: "none",
+                    cursor: "pointer",
+                  }}
+                  download
+                >
+                  Download
+                </a>
+              </div>
+            </div>
+          )}
 
           <div className={styles.ButtonTakeME}>
             <button

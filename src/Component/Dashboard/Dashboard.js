@@ -1812,7 +1812,7 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== ""&&userCalApiKey !== "undefined") {
+                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== "" && userCalApiKey !== "undefined") {
                             handleConnectCalApiAlready(agent);
                           } else {
                             handleConnectCal(agent);
@@ -2409,7 +2409,7 @@ function Dashboard() {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className={styles.Refferalinfo}>
           <div className={styles.headerPart}>
-            <h3>Earn 10% Referral Commission</h3>
+            <h3>Earn 5% Commission & Give 5% Discount!</h3>
           </div>
           <div className={styles.card}>
             {/* <label className={styles.checkboxLabel}>
@@ -2446,9 +2446,13 @@ function Dashboard() {
               <div className={styles.Linkdec}>
                 <img src="/svg/earn-icon.svg" alt="earn-icon" />
                 <p>
-                  Share your referral link and <b>earn 10% commission</b> of
+                  Share your referral link and <b>earn 5% commission</b> of
                   your friends’ spending.
                 </p>
+              </div>
+              <div className={styles.Linkdec}>
+                <img src='/svg/Gift-icon.svg' alt='commission-icon' />
+                <p>Your friends get an <b>instant 5% discount</b> when they sign up using your link</p>
               </div>
               <div className={styles.Linkdec}>
                 <img src="/svg/commission-icon.svg" alt="commission-icon" />
