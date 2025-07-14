@@ -7,8 +7,11 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { API_BASE_URL } from "../../Store/apiStore";
+import { useRef } from "react";
 
-function Thankyou({ onsubmit }) {
+function Thankyou({ onSubmit }) {
+  const hasRunRef = useRef(false);
+
   const navigate = useNavigate();
   const { id: paramMode } = useParams();
   const [searchParams] = useSearchParams();
@@ -274,11 +277,15 @@ function Thankyou({ onsubmit }) {
   };
 
   useEffect(() => {
+    if (hasRunRef.current) return;
+      hasRunRef.current = true;
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
     const shouldRunCreateFlow = key === "create" && userId;
 
     const run = async () => {
+      
+
       if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
         await callNextApiAndRedirect(); // handles update + cancellation
         setTimeout(async () => {
@@ -286,14 +293,15 @@ function Thankyou({ onsubmit }) {
         }, 1500); // fetch updated subscription data
       } else if (shouldRunCreateFlow) {
         setTimeout(async () => {
+          console.log("Run1");
           await fetchSubscriptionInfo();
-          onsubmit();
+          onSubmit();
         }, 1500); // or 1500ms, your call
       }
     };
 
     run();
-  }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+  }, [key, subscriptionId, agentId, userId, subsid]);
   const formatCurrency = (amount, currency) => {
     const upperCurrency = currency?.toUpperCase() || "USD";
 
@@ -443,16 +451,17 @@ function Thankyou({ onsubmit }) {
                 } else {
                   localStorage.removeItem("selectedPlanData");
                   localStorage.removeItem("allPlans");
-                  navigate("/steps", {
-                    state: { locationPath: "/checkout" },
-                  });
+                  // navigate("/steps", {
+                  //   state: { locationPath: "/checkout" },
+                  // });
+                  navigate("/dashboard", { replace: true });
                 }
               }}
               className={styles.dashboardBtn}
               // disabled={key === "create" ? true : false}
             >
               {key === "create"
-                ? "Finish Your Agent Creation"
+                ? "Take me to Dashboard"
                 : "Take me to Dashboard"}
             </button>
           </div>

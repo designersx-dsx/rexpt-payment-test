@@ -308,73 +308,73 @@ const Step = () => {
         }));
     }
     const handleContinue = async () => {
-        if (step8ARef.current) {
-            setIsContinueClicked(true);
-            const agentNote = sessionStorage.getItem("agentNote");
-            const rawPromptTemplate =
-                getAgentPrompt({
-                    industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
-                    roleTitle: sessionStorage.getItem("agentRole"),
-                    agentName: "{{AGENT NAME}}",
-                    agentGender: "{{MALE or FEMALE}}",
-                    business: {
-                        businessName: "{{BUSINESS NAME}}",
-                        email: "{{BUSINESS EMAIL ID}}",
-                        aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
-                        address: "{{ CITY}},{{ STATE}}, {{COUNTRY}}"
+        // if (step8ARef.current) {
+        setIsContinueClicked(true);
+        const agentNote = sessionStorage.getItem("agentNote");
+        const rawPromptTemplate =
+            getAgentPrompt({
+                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                roleTitle: sessionStorage.getItem("agentRole"),
+                agentName: "{{AGENT NAME}}",
+                agentGender: "{{MALE or FEMALE}}",
+                business: {
+                    businessName: "{{BUSINESS NAME}}",
+                    email: "{{BUSINESS EMAIL ID}}",
+                    aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
+                    address: "{{ CITY}},{{ STATE}}, {{COUNTRY}}"
+                },
+                languageSelect: "{{LANGUAGE}}",
+                businessType: "{{BUSINESSTYPE}}",
+                aboutBusinessForm: "{{}}",
+                commaSeparatedServices: "{{SERVICES}}",
+                agentNote: "{{AGENTNOTE}}",
+                timeZone: "{{TIMEZONE}}"
+            });
+        const filledPrompt =
+            getAgentPrompt({
+                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                roleTitle: sessionStorage.getItem("agentRole"),
+                agentName: agentName?.split(" ")[0],
+                agentGender: agentGender,
+                business: {
+                    businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom,
+                    email: getBusinessNameFromGoogleListing?.email || "",
+                    aboutBusiness: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness,
+                    address: getBusinessNameFromGoogleListing?.address || ""
+                },
+                languageSelect: languageSelect,
+                businessType,
+                aboutBusinessForm,
+                commaSeparatedServices,
+                agentNote,
+                timeZone
+            });
+
+        // return
+        // const isValid = step8BRef.current.validate()
+        //creation here
+        if (localStorage.getItem("UpdationMode") != "ON") {
+            setLoading(true)
+            const agentConfig = {
+                version: 0,
+                model: "gemini-2.0-flash",
+                model_temperature: 0,
+                model_high_priority: true,
+                tool_call_strict_mode: true,
+                general_prompt: filledPrompt,
+                general_tools: [
+                    {
+                        type: "end_call",
+                        name: "end_call",
+                        description: "End the call with user.",
                     },
-                    languageSelect: "{{LANGUAGE}}",
-                    businessType: "{{BUSINESSTYPE}}",
-                    aboutBusinessForm: "{{}}",
-                    commaSeparatedServices: "{{SERVICES}}",
-                    agentNote: "{{AGENTNOTE}}",
-                    timeZone: "{{TIMEZONE}}"
-                });
-            const filledPrompt =
-                getAgentPrompt({
-                    industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
-                    roleTitle: sessionStorage.getItem("agentRole"),
-                    agentName: agentName?.split(" ")[0],
-                    agentGender: agentGender,
-                    business: {
-                        businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom,
-                        email: getBusinessNameFromGoogleListing?.email || "",
-                        aboutBusiness: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness,
-                        address: getBusinessNameFromGoogleListing?.address || ""
-                    },
-                    languageSelect: languageSelect,
-                    businessType,
-                    aboutBusinessForm,
-                    commaSeparatedServices,
-                    agentNote,
-                    timeZone
-                });
 
-            // return
-            // const isValid = step8BRef.current.validate()
-            //creation here
-            if (localStorage.getItem("UpdationMode") != "ON") {
-                setLoading(true)
-                const agentConfig = {
-                    version: 0,
-                    model: "gemini-2.0-flash",
-                    model_temperature: 0,
-                    model_high_priority: true,
-                    tool_call_strict_mode: true,
-                    general_prompt: filledPrompt,
-                    general_tools: [
-                        {
-                            type: "end_call",
-                            name: "end_call",
-                            description: "End the call with user.",
-                        },
+                ],
 
-                    ],
-
-                    states: [
-                        {
-                            name: "information_collection",
-                            state_prompt: `Greet the user with the begin_message and assist with their query.
+                states: [
+                    {
+                        name: "information_collection",
+                        state_prompt: `Greet the user with the begin_message and assist with their query.
 
                                If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible","waste of time"),
                                ask them: "I'm sorry to hear that. Could you please tell me about your concern?"
@@ -393,24 +393,24 @@ const Step = () => {
 
                                 If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
                                 If the user wants to end the call transition to end_call_state`,
-                            edges: [
+                        edges: [
 
-                                {
-                                    destination_state_name: "dissatisfaction_confirmation",
-                                    description: "User sounds angry or expresses dissatisfaction."
-                                }
-                            ]
-                        },
+                            {
+                                destination_state_name: "dissatisfaction_confirmation",
+                                description: "User sounds angry or expresses dissatisfaction."
+                            }
+                        ]
+                    },
 
-                        {
-                            name: "appointment_booking",
-                            state_prompt: "## Task\nYou will now help the user book an appointment."
-                        },
+                    {
+                        name: "appointment_booking",
+                        state_prompt: "## Task\nYou will now help the user book an appointment."
+                    },
 
-                        // 🌟 State: Dissatisfaction Confirmation
-                        {
-                            name: "dissatisfaction_confirmation",
-                            state_prompt: `
+                    // 🌟 State: Dissatisfaction Confirmation
+                    {
+                        name: "dissatisfaction_confirmation",
+                        state_prompt: `
                             Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
                             Wait for their response.
 
@@ -418,398 +418,226 @@ const Step = () => {
                             If the user says no, transition to end_call_state.
                             If the response is unclear, repeat the question once.
                         `,
-                            edges: [
-                                {
-                                    destination_state_name: "call_transfer",
-                                    description: "User agreed to speak to team member."
-                                },
-                                {
-                                    destination_state_name: "end_call_state",
-                                    description: "User declined to speak to team member."
-                                }
-                            ],
-                            tools: []
-                        },
+                        edges: [
+                            {
+                                destination_state_name: "call_transfer",
+                                description: "User agreed to speak to team member."
+                            },
+                            {
+                                destination_state_name: "end_call_state",
+                                description: "User declined to speak to team member."
+                            }
+                        ],
+                        tools: []
+                    },
 
-                        // 🌟 State: Call Transfer
-                        {
-                            name: "call_transfer",
-                            state_prompt: `
+                    // 🌟 State: Call Transfer
+                    {
+                        name: "call_transfer",
+                        state_prompt: `
                             Connecting you to a team member now. Please hold.
                         `,
-                            tools: [
-                                {
-                                    type: "transfer_call",
-                                    name: "transfer_to_team",
-                                    description: "Transfer the call to the team member.",
-                                    transfer_destination: {
-                                        type: "predefined",
-                                        number: "{{business_Phone}}"
-                                    },
-                                    transfer_option: {
-                                        type: "cold_transfer",
-                                        public_handoff_option: {
-                                            message: "Please hold while I transfer your call."
-                                        }
-                                    },
-                                    speak_during_execution: true,
-                                    speak_after_execution: true,
-                                    failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
-                                }
-                            ],
-                            edges: []
-                        },
-                        {
-                            name: "end_call_state",
-                            state_prompt: `
+                        tools: [
+                            {
+                                type: "transfer_call",
+                                name: "transfer_to_team",
+                                description: "Transfer the call to the team member.",
+                                transfer_destination: {
+                                    type: "predefined",
+                                    number: "{{business_Phone}}"
+                                },
+                                transfer_option: {
+                                    type: "cold_transfer",
+                                    public_handoff_option: {
+                                        message: "Please hold while I transfer your call."
+                                    }
+                                },
+                                speak_during_execution: true,
+                                speak_after_execution: true,
+                                failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
+                            }
+                        ],
+                        edges: []
+                    },
+                    {
+                        name: "end_call_state",
+                        state_prompt: `
                             Politely end the call by saying: "Thank you for calling. Have a great day!"
                         `,
-                            tools: [
-                                {
-                                    type: "end_call",
-                                    name: "end_call1",
-                                    description: "End the call with the user."
-                                }
-                            ],
-                            edges: []
+                        tools: [
+                            {
+                                type: "end_call",
+                                name: "end_call1",
+                                description: "End the call with the user."
+                            }
+                        ],
+                        edges: []
+                    }
+                ],
+                starting_state: "information_collection",
+                // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
+                default_dynamic_variables: {
+                    customer_name: "John Doe",
+                    business_Phone: businessPhone,
+                    business_email: business.email,
+                    timeZone: timeZone
+
+                },
+            };
+            const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+            if (knowledgeBaseId) {
+                agentConfig.knowledge_base_ids = [knowledgeBaseId];
+            }
+            //Create LLm 
+            try {
+                const llmResponse = await axios.post(
+                    "https://api.retellai.com/create-retell-llm",
+                    agentConfig,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                sessionStorage.setItem("llmId", llmResponse.data.llm_id);
+                const llmId = llmResponse.data.llm_id;
+
+                const response_engine = {
+                    type: "retell-llm",
+                    llm_id: llmId,
+                };
+                const finalAgentData = {
+                    response_engine,
+                    voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                    language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                    agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
+                    language: "multi",
+                    post_call_analysis_model: "gpt-4o-mini",
+                    responsiveness: 1,
+                    enable_backchannel: true,
+                    interruption_sensitivity: 0.91,
+                    backchannel_frequency: 0.7,
+                    backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
+                    post_call_analysis_data: [
+                        {
+                            type: "string",
+                            name: "Detailed Call Summery",
+                            description: "The name of the customer.",
+                            examples: [
+                                "John Doe",
+                                "Jane Smith"
+                            ]
+                        },
+                        {
+                            type: "enum",
+                            name: "lead_type",
+                            description: "Feedback given by the customer about the call.",
+                            choices: getLeadTypeChoices()
                         }
                     ],
-                    starting_state: "information_collection",
-                    // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
-                    default_dynamic_variables: {
-                        customer_name: "John Doe",
-                        business_Phone: businessPhone,
-                        business_email: business.email,
-                        timeZone: timeZone
-
-                    },
+                    normalize_for_speech: true,
+                    webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                 };
-                const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
-                if (knowledgeBaseId) {
-                    agentConfig.knowledge_base_ids = [knowledgeBaseId];
-                }
-                //Create LLm 
+                // Create Agent Creation
+                const promptVariablesList = extractPromptVariables(rawPromptTemplate);
                 try {
-                    const llmResponse = await axios.post(
-                        "https://api.retellai.com/create-retell-llm",
-                        agentConfig,
+                    const response = await axios.post(
+                        "https://api.retellai.com/create-agent",
+                        finalAgentData,
                         {
                             headers: {
                                 Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                                "Content-Type": "application/json",
                             },
                         }
                     );
-                    sessionStorage.setItem("llmId", llmResponse.data.llm_id);
-                    const llmId = llmResponse.data.llm_id;
-
-                    const response_engine = {
-                        type: "retell-llm",
-                        llm_id: llmId,
-                    };
-                    const finalAgentData = {
-                        response_engine,
-                        voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                        agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                        language: "multi",
-                        post_call_analysis_model: "gpt-4o-mini",
+                    const agentId = response.data.agent_id;
+                    // Get businessId from sessionStorage
+                    const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
+                    // Convert string to object
+                    const businessIdObj = JSON.parse(businessIdString);
+                    // Now access the actual ID
+                    const agentData = {
+                        userId: userId,
+                        agent_id: agentId || sessionStorage.getItem("agentId"),
+                        knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+                        llmId: sessionStorage.getItem("llmId"),
+                        avatar: sessionStorage.getItem("avatar") || "",
+                        agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                        agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
+                        agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
+                        agentName: sessionStorage.getItem('agentName') || "",
+                        agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
+                        agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
+                        agentGender: sessionStorage.getItem('agentGender') || "female",
+                        agentPlan: "free" || "Plus",
+                        agentStatus: true,
+                        businessId: businessIdObj.businessId,
                         responsiveness: 1,
                         enable_backchannel: true,
-                        interruption_sensitivity: 0.91,
+                        interruption_sensitivity: 0.7,
                         backchannel_frequency: 0.7,
                         backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
-                        post_call_analysis_data: [
-                            {
-                                type: "string",
-                                name: "Detailed Call Summery",
-                                description: "The name of the customer.",
-                                examples: [
-                                    "John Doe",
-                                    "Jane Smith"
-                                ]
-                            },
-                            {
-                                type: "enum",
-                                name: "lead_type",
-                                description: "Feedback given by the customer about the call.",
-                                choices: getLeadTypeChoices()
-                            }
-                        ],
-                        normalize_for_speech: true,
-                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-                    };
-                    // Create Agent Creation
-                    const promptVariablesList = extractPromptVariables(rawPromptTemplate);
-                    try {
-                        const response = await axios.post(
-                            "https://api.retellai.com/create-agent",
-                            finalAgentData,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                                },
-                            }
-                        );
-                        const agentId = response.data.agent_id;
-                        // Get businessId from sessionStorage
-                        const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
-                        // Convert string to object
-                        const businessIdObj = JSON.parse(businessIdString);
-                        // Now access the actual ID
-                        const agentData = {
-                            userId: userId,
-                            agent_id: agentId || sessionStorage.getItem("agentId"),
-                            knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
-                            llmId: sessionStorage.getItem("llmId"),
-                            avatar: sessionStorage.getItem("avatar") || "",
-                            agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                            agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
-                            agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
-                            agentName: sessionStorage.getItem('agentName') || "",
-                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
-                            agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
-                            agentGender: sessionStorage.getItem('agentGender') || "female",
-                            agentPlan: "free" || "Plus",
-                            agentStatus: true,
-                            businessId: businessIdObj.businessId,
-                            responsiveness: 1,
-                            enable_backchannel: true,
-                            interruption_sensitivity: 0.7,
-                            backchannel_frequency: 0.7,
-                            backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
-                            additionalNote: agentNote || "",
-                            agentCode,
-                            knowledgeBaseStatus: true,
-                            dynamicPromptTemplate: filledPrompt,
-                            rawPromptTemplate: rawPromptTemplate,
+                        additionalNote: agentNote || "",
+                        agentCode,
+                        knowledgeBaseStatus: true,
+                        dynamicPromptTemplate: filledPrompt,
+                        rawPromptTemplate: rawPromptTemplate,
 
-                            promptVariablesList: JSON.stringify(promptVariablesList)
+                        promptVariablesList: JSON.stringify(promptVariablesList)
 
-                        }
-                        try {
-                            const response = await createAgent(agentData);
-                            if (response.status === 200 || response.status === 201) {
-                                sessionStorage.setItem("agentId", response.data.agent_id);
-                                sessionStorage.setItem("agentStatus", true);
-                                sessionStorage.removeItem("avatar")
-                                setPopupType("success");
-                                await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
-                                setPopupMessage("Agent created successfully!");
-                                setShowPopup(true);
-                                setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
-                                setHasFetched(false)
-                                setLoading(false)
-                                sessionStorage.clear()
-
-                            }
-                        } catch (error) {
-                            // console.log(error,error.status)
-                            if (error?.status == 400) {
-                                // console.log('errorinside',error)
-                                setPopupType("failed");
-                                setPopupMessage(error?.response?.data?.message);
-                                setShowPopup(true);
-                                setLoading(false)
-                            } else {
-                                console.error("Agent creation failed:", error);
-                                setPopupType("failed");
-                                setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
-                                setShowPopup(true);
-                                setLoading(false)
-                            }
-
-
-                        }
-                    } catch (err) {
-                        console.error("Upload failed:", err);
-                        setPopupType("failed");
-                        setPopupMessage("Agent creation failed.");
-                        setShowPopup(true);
-                        setLoading(false)
                     }
-                } catch (error) {
-                    console.error("LLM creation failed:", error);
+                    try {
+                        const response = await createAgent(agentData);
+                        if (response.status === 200 || response.status === 201) {
+                            sessionStorage.setItem("agentId", response.data.agent_id);
+                            sessionStorage.setItem("agentStatus", true);
+                            sessionStorage.removeItem("avatar")
+                            setPopupType("success");
+                            await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
+                            setPopupMessage("Agent created successfully!");
+                            setShowPopup(true);
+                            // setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                            setHasFetched(false)
+                            setLoading(false)
+                            sessionStorage.clear()
+
+                        }
+                    } catch (error) {
+                        // console.log(error,error.status)
+                        if (error?.status == 400) {
+                            // console.log('errorinside',error)
+                            setPopupType("failed");
+                            setPopupMessage(error?.response?.data?.message);
+                            setShowPopup(true);
+                            setLoading(false)
+                        } else {
+                            console.error("Agent creation failed:", error);
+                            setPopupType("failed");
+                            setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
+                            setShowPopup(true);
+                            setLoading(false)
+                        }
+
+
+                    }
+                } catch (err) {
+                    console.error("Upload failed:", err);
                     setPopupType("failed");
-                    setPopupMessage("LLM creation failed. Please try again.");
+                    setPopupMessage("Agent creation failed.");
                     setShowPopup(true);
                     setLoading(false)
                 }
+            } catch (error) {
+                console.error("LLM creation failed:", error);
+                setPopupType("failed");
+                setPopupMessage("LLM creation failed. Please try again.");
+                setShowPopup(true);
                 setLoading(false)
             }
-            //updation Agent here
-            if (localStorage.getItem("UpdationMode") == "ON") {
-                setLoading(true)
-                const agentConfig = {
-                    general_prompt: filledPrompt,
-                    // begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
-
-                };
-                const llm_id = localStorage.getItem('llmId')
-
-                //Create LLm 
-                try {
-                    const llmResponse = await axios.patch(
-                        `https://api.retellai.com/update-retell-llm/${llm_id} `,
-                        agentConfig,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                                "Content-Type": "application/json",
-                            },
-                        }
-                    );
-
-                    sessionStorage.setItem("llmId", llmResponse.data.llm_id);
-                    const llmId = llmResponse.data.llm_id;
-
-                    const finalAgentData = {
-                        voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                        agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                        normalize_for_speech: true,
-                        post_call_analysis_model: "gpt-4o-mini",
-                        post_call_analysis_data: [
-                            {
-                                type: "string",
-                                name: "Detailed Call Summery",
-                                description: "The name of the customer.",
-                                examples: [
-                                    "John Doe",
-                                    "Jane Smith"
-                                ]
-                            },
-                            {
-                                type: "enum",
-                                name: "lead_type",
-                                description: "Feedback given by the customer about the call.",
-                                choices: ["positive", "neutral", "negative"]
-                            }
-                        ],
-                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-
-                    };
-                    // update Agent Creation
-                    const agent_id = localStorage.getItem('agent_id')
-                    try {
-                        const response = await axios.patch(
-                            `https://api.retellai.com/update-agent/${agent_id}`,
-                            finalAgentData,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                                },
-                            }
-                        );
-
-                        const agentId = response.data.agent_id;
-                        // Get businessId from sessionStorage
-                        const businessIdString = sessionStorage.getItem("businessId");
-
-                        // Convert string to object
-                        const businessIdObj = JSON.parse(businessIdString);
-
-                        // Now access the actual ID
-                        const agentData = {
-                            userId: userId,
-                            agent_id: agentId || sessionStorage.getItem("agentId"),
-                            knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
-                            llmId: sessionStorage.getItem("llmId"),
-                            avatar: sessionStorage.getItem("avatar") || "",
-                            agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                            agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
-                            agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
-                            agentName: sessionStorage.getItem('agentName') || "",
-                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
-                            agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
-                            agentGender: sessionStorage.getItem('agentGender') || "female",
-                            agentStatus: true,
-                            businessId: businessIdObj.businessId,
-                            additionalNote: agentNote || "",
-                            agentCode
-                        }
-                        try {
-                            const response = await updateAgent(agentId, agentData);
-                            if (response.status === 200 || response.status === 201) {
-                                setPopupType("success");
-                                setPopupMessage("Agent Updated successfully!");
-                                setShowPopup(true);
-                                setTimeout(() => {
-                                    if (stepEditingMode) {
-                                        navigate("/agent-detail", {
-                                            state: {
-                                                agentId: agentId || sessionStorage.getItem("agentId"),
-                                                bussinesId: businessIdObj.businessId || sessionStorage.getItem('businessId'),
-                                            },
-                                        })
-                                    } else {
-
-                                        setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
-                                        setLoading(false)
-                                        sessionStorage.clear()
-                                        localStorage.removeItem('UpdationMode')
-                                        localStorage.removeItem('agentName')
-                                        localStorage.removeItem('agentGender')
-                                        localStorage.removeItem('agentLanguageCode')
-                                        localStorage.removeItem('agentLanguage')
-                                        localStorage.removeItem('llmId')
-                                        localStorage.removeItem('agent_id')
-                                        localStorage.removeItem('knowledgeBaseId')
-                                        localStorage.removeItem('agentRole')
-                                        localStorage.removeItem('agentVoice')
-                                        localStorage.removeItem('agentVoiceAccent')
-                                        localStorage.removeItem('avatar')
-
-                                        setHasFetched(false)
-                                    }
-
-                                }, 1000)
-
-
-
-                            }
-
-                        } catch (error) {
-                            // console.log(error,error.status)
-                            if (error?.status == 400) {
-                                // console.log('errorinside',error)
-                                setPopupType("failed");
-                                setPopupMessage(error?.response?.data?.message);
-                                setShowPopup(true);
-                                setLoading(false)
-                            } else {
-                                console.error("Agent Updation failed:", error);
-                                setPopupType("failed");
-                                setPopupMessage("Agent Updation failed while saving data in Database. Please try again.");
-                                setShowPopup(true);
-                                setLoading(false)
-                            }
-
-
-                        }
-
-
-                    } catch (err) {
-                        console.error("Upload failed:", err);
-                        setPopupType("failed");
-                        setPopupMessage("Agent creation failed.");
-                        setShowPopup(true);
-                        setLoading(false)
-                    }
-                } catch (error) {
-                    console.error("LLM updation failed:", error);
-                    setPopupType("failed");
-                    setPopupMessage("LLM updation failed. Please try again.");
-                    setShowPopup(true);
-                    setLoading(false)
-                }
-
-
-
-                setLoading(false)
-            }
+            setLoading(false)
         }
+        // }
     };
     const handleValidationError = ({ type, message }) => {
         setPopupType(type);
@@ -871,8 +699,6 @@ const Step = () => {
             icon: "default-icon.svg",
         };
     };
-
-
     useEffect(() => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
             setShowPopup(true);
@@ -953,13 +779,12 @@ const Step = () => {
         sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
     }, [completedSteps]);
 
-
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.freeTrial
         if (locationPath === "/checkout" || value === "chatke") {
             console.log("run1")
-            handleContinue()
+            // handleContinue()
 
         }
         else if (locationPath !== "/checkout" && priceId) {
@@ -1005,8 +830,7 @@ const Step = () => {
         }
         else if (locationPath === "/checkout" && currentStep === 7 && !isContinueCalled.current) {
             console.log("run2")
-            handleContinue();
-
+            // handleContinue();
             isContinueCalled.current = true;
         }
     }, [freeTrail, currentStep, locationPath]);
@@ -1089,12 +913,11 @@ const Step = () => {
         6: "Select the gender you prefer for your AI agent, then listen to the available voice options to pick the one that best represents your business.",
         7: "Pick an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
     };
-
-    const handleThankyouPage = ()=>{
-        console.log("this hitt")
+    const hanldeAgentCreation = async () => {
+        handleContinue();
     }
     return (
-        <>{shouldShowThankYou ? <Thankyou onsubmit={handleThankyouPage} /> :
+        <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} /> :
             <div className={styles.container}>
                 <StepHeader title={step?.title}
                     subTitle={step?.subTitle}
