@@ -8,11 +8,11 @@ import {
 } from "react-router-dom";
 import { API_BASE_URL } from "../../Store/apiStore";
 
-function Thankyou() {
+function Thankyou({ onSubmit }) {
   const navigate = useNavigate();
-  const { id: paramMode } = useParams(); 
+  const { id: paramMode } = useParams();
   const [searchParams] = useSearchParams();
-  const queryMode = searchParams.get("mode"); 
+  const queryMode = searchParams.get("mode");
 
   // Prefer query param if available, else fallback to URL param
   const key = queryMode || paramMode;
@@ -285,8 +285,10 @@ function Thankyou() {
           await fetchSubscriptionInfo();
         }, 1500); // fetch updated subscription data
       } else if (shouldRunCreateFlow) {
+        console.log("")
         setTimeout(async () => {
           await fetchSubscriptionInfo();
+          onSubmit()
         }, 1500); // or 1500ms, your call
       }
     };
@@ -362,8 +364,8 @@ function Thankyou() {
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? `${currencySymbol}${formatPrice(
-                    subscriptionInfo.planAmount
-                  )} / ${subscriptionInfo.interval}`
+                  subscriptionInfo.planAmount
+                )} / ${subscriptionInfo.interval}`
                 : "US $499 / month"}
             </div>
           </div>
@@ -398,13 +400,13 @@ function Thankyou() {
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? new Date(subscriptionInfo.nextRenewalDate).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )
                 : "06 July 2026"}
             </div>
           </div>
@@ -442,16 +444,17 @@ function Thankyou() {
                 } else {
                   localStorage.removeItem("selectedPlanData");
                   localStorage.removeItem("allPlans");
-                  navigate("/steps", {
-                    state: { locationPath: "/checkout" },
-                  });
+                  // navigate("/steps", {
+                  //   state: { locationPath: "/checkout" },
+                  // });
+                  navigate("/dashboard", { replace: true })
                 }
               }}
               className={styles.dashboardBtn}
-              // disabled={key === "create" ? true : false}
+            // disabled={key === "create" ? true : false}
             >
               {key === "create"
-                ? "Finish Your Agent Creation"
+                ? "Take me to Dashboard"
                 : "Take me to Dashboard"}
             </button>
           </div>
