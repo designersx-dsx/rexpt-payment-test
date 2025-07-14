@@ -8,11 +8,11 @@ import {
 } from "react-router-dom";
 import { API_BASE_URL } from "../../Store/apiStore";
 
-function Thankyou() {
+function Thankyou({ onsubmit }) {
   const navigate = useNavigate();
-  const { id: paramMode } = useParams(); 
+  const { id: paramMode } = useParams();
   const [searchParams] = useSearchParams();
-  const queryMode = searchParams.get("mode"); 
+  const queryMode = searchParams.get("mode");
 
   // Prefer query param if available, else fallback to URL param
   const key = queryMode || paramMode;
@@ -287,6 +287,7 @@ function Thankyou() {
       } else if (shouldRunCreateFlow) {
         setTimeout(async () => {
           await fetchSubscriptionInfo();
+          onsubmit();
         }, 1500); // or 1500ms, your call
       }
     };

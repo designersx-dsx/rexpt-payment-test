@@ -1089,8 +1089,12 @@ const Step = () => {
         6: "Select the gender you prefer for your AI agent, then listen to the available voice options to pick the one that best represents your business.",
         7: "Pick an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
     };
+
+    const handleThankyouPage = ()=>{
+        console.log("this hitt")
+    }
     return (
-        <>{shouldShowThankYou ? <Thankyou /> :
+        <>{shouldShowThankYou ? <Thankyou onsubmit={handleThankyouPage} /> :
             <div className={styles.container}>
                 <StepHeader title={step?.title}
                     subTitle={step?.subTitle}
