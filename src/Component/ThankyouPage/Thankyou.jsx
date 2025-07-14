@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Thankyou.module.css";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { API_BASE_URL } from "../../Store/apiStore";
 
 function Thankyou() {
   const navigate = useNavigate();
-  const { id: key } = useParams(); // 'create' or 'update'
+  const { id: paramMode } = useParams(); 
+  const [searchParams] = useSearchParams();
+  const queryMode = searchParams.get("mode"); 
+
+  // Prefer query param if available, else fallback to URL param
+  const key = queryMode || paramMode;
   const location = useLocation();
 
   const [popupType, setPopupType] = useState(null);
@@ -231,10 +241,10 @@ function Thankyou() {
 
       if (data && !data.error) {
         const { planAmount, ...rest } = data; // ignore planAmount
-setSubscriptionInfo((prev) => ({
-  ...prev,
-  ...rest, // keep existing planAmount
-}));
+        setSubscriptionInfo((prev) => ({
+          ...prev,
+          ...rest, // keep existing planAmount
+        }));
         // Extract currency symbol
         const currencyMap = {
           USD: "$",

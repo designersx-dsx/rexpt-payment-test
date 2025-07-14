@@ -832,16 +832,21 @@ function CheckoutForm({
     let url = "";
     if (subscriptionId || locationPath === "/update") {
       const queryParams = new URLSearchParams();
+      
 
       if (subscriptionId) queryParams.append("subscriptionId", subscriptionId);
       if (agentId) queryParams.append("agentId", agentId);
       if (userId) queryParams.append("userId", userId);
+      
 
       url = `${origin}/thankyou/update?${queryParams.toString()}`;
     } else {
       const queryParams = new URLSearchParams();
+      queryParams.append("mode", "create");
       if (userId) queryParams.append("userId", userId);
-      url = `${origin}/thankyou/create?${queryParams.toString()}`;
+
+      // url = `${origin}/thankyou/create?${queryParams.toString()}`;
+      url = `${origin}/steps?${queryParams.toString()}`;
     }
     if (checkPage !== "checkout") {
       try {
