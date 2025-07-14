@@ -382,6 +382,10 @@ const BusinessListing = forwardRef(
     useImperativeHandle(ref, () => ({
       validate: () => {
         let hasError = false;
+        const phoneNumberObj = parsePhoneNumberFromString(
+        phoneNumber,
+        selectedCountry
+      );
 
         if (!businessName.trim()) {
           hasError = true;
@@ -414,7 +418,15 @@ const BusinessListing = forwardRef(
             type: "failed",
             message: "Please enter a valid phone number.",
           });
-        } else if (
+        } 
+        else if (!phoneNumberObj || !phoneNumberObj.isValid()) {
+          hasError = true;
+          onValidationError?.({
+            type: "failed",
+            message: "Please enter a valid phone number.",
+          });
+        } 
+        else if (
           containsSpecialChars(phoneNumber) ||
           containsEmoji(phoneNumber)
         ) {

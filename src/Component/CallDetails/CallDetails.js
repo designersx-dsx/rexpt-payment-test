@@ -116,7 +116,7 @@ const CallDetails = () => {
     }
   );
   let data = callData.call_analysis?.custom_analysis_data;
-  let name = data["_detailed _call _summery"];
+  let name = callData?.collected_dynamic_variables?.username || data["_detailed _call _summery"];
   let lead_type = data[ "lead_type"];
 
   const convertMsToMinSec = (durationMs) => {
@@ -219,27 +219,27 @@ const CallDetails = () => {
 
       <section>
         <div className={styles.DataMain}>
-          {/* <div className={styles.dataTitle}>
+          <div className={styles.dataTitle}>
             <h2>Data Collected</h2>
           </div>
           <div className={styles.dataCard}>
             <div className={styles.PhoneNumber}>
               <p>Phone number</p>
-              <b>-</b>
+              <b>{callData.collected_dynamic_variables.phone_number ? callData.collected_dynamic_variables.phone_number : '-'}</b>
             </div>
             <div className={styles.EmailAddress}>
               <p>Email address</p>
-              <b>-</b>
+              <b>{callData.collected_dynamic_variables.email ? callData.collected_dynamic_variables.email : '-'}</b>
             </div>
             <div className={styles.Address}>
               <p>Address (if collected)</p>
-              <b>-</b>
+              <b>{callData.collected_dynamic_variables.address ? callData.collected_dynamic_variables.address : '-'}</b>
             </div>
             <div className={styles.Reason}>
               <p>Reason</p>
-              <b>-</b>
+              <b>{callData.collected_dynamic_variables.reason ? callData.collected_dynamic_variables.reason : '-'}</b>
             </div>
-          </div> */}
+          </div>
           <div className={styles.moredetailsDiv}>
             <div className={styles.dataTitle}>
               <h2>More Details</h2>
