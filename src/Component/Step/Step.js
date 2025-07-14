@@ -180,7 +180,7 @@ const Step = () => {
     const shouldShowThankYou = mode === "create" || mode === "update";
 
     const agentCode = sessionStorage.getItem("AgentCode")
-
+    let freeTrail = location?.state?.freeTrial
     const [isContiue, seIsContinue] = useState(false)
     const packageMap = {
         "Free": 1,
@@ -630,7 +630,10 @@ const Step = () => {
                             await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
                             setPopupMessage("Agent created successfully!");
                             setShowPopup(true);
-                            // setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                            if (freeTrail) {
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                            }
+
                             setHasFetched(false)
                             setLoading(false)
                             // sessionStorage.clear()
@@ -854,7 +857,7 @@ const Step = () => {
         }
 
     }
-    let freeTrail = location?.state?.freeTrial
+
     const isContinueCalled = useRef(false);
     useEffect(() => {
         if (freeTrail && currentStep === 7 && !isContinueCalled.current) {
