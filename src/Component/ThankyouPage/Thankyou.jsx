@@ -1,11 +1,25 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Thankyou.module.css";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { API_BASE_URL } from "../../Store/apiStore";
+import { useRef } from "react";
+import Loader2 from "../Loader2/Loader2";
 
-function Thankyou() {
+function Thankyou({ onSubmit }) {
+  const hasRunRef = useRef(false);
+
   const navigate = useNavigate();
-  const { id: key } = useParams(); // 'create' or 'update'
+  const { id: paramMode } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryMode = searchParams.get("mode");
+
+  // Prefer query param if available, else fallback to URL param
+  const key = queryMode || paramMode;
   const location = useLocation();
 
   const [popupType, setPopupType] = useState(null);
@@ -13,7 +27,7 @@ function Thankyou() {
   const [message, setMessage] = useState("");
 
   const [invoiceLink, setInvoiceLink] = useState("");
-
+  const [loading, setLoading] = useState(true)
   // Get query params
   const getQueryParam = (name) =>
     new URLSearchParams(location.search).get(name);
@@ -35,6 +49,7 @@ function Thankyou() {
   useEffect(() => {
     const storedDashboard = sessionStorage.getItem("dashboard-session-storage");
     const storedBusinessDetails = sessionStorage.getItem("businessDetails");
+    console.log("storedBusinessDetails", storedBusinessDetails)
     const storedPlaceDetails = sessionStorage.getItem("placeDetailsExtract");
 
     try {
@@ -231,10 +246,10 @@ function Thankyou() {
 
       if (data && !data.error) {
         const { planAmount, ...rest } = data; // ignore planAmount
-setSubscriptionInfo((prev) => ({
-  ...prev,
-  ...rest, // keep existing planAmount
-}));
+        setSubscriptionInfo((prev) => ({
+          ...prev,
+          ...rest, // keep existing planAmount
+        }));
         // Extract currency symbol
         const currencyMap = {
           USD: "$",
@@ -264,25 +279,43 @@ setSubscriptionInfo((prev) => ({
   };
 
   useEffect(() => {
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
+    const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
+
+    localStorage.setItem("hasHandledThankYou", "true");
+
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
     const shouldRunCreateFlow = key === "create" && userId;
 
     const run = async () => {
-      if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
-        await callNextApiAndRedirect(); // handles update + cancellation
-        setTimeout(async () => {
-          await fetchSubscriptionInfo();
-        }, 1500); // fetch updated subscription data
-      } else if (shouldRunCreateFlow) {
-        setTimeout(async () => {
-          await fetchSubscriptionInfo();
-        }, 1500); // or 1500ms, your call
+      try {
+        setLoading(true)
+        if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
+          await callNextApiAndRedirect(); // handles update + cancellation
+          setTimeout(async () => {
+            await fetchSubscriptionInfo();
+          }, 1500); // fetch updated subscription data
+        } else if (shouldRunCreateFlow) {
+          setTimeout(async () => {
+            await fetchSubscriptionInfo();
+            if (hasHandledThankYou) return;
+            onSubmit();
+          }, 1500); // or 1500ms, your call
+        }
+      } catch (error) {
+        console.log(error)
+      } 
+      finally {
+        setLoading(false)
       }
+
     };
 
     run();
-  }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+  }, [key, subscriptionId, agentId, userId, subsid]);
   const formatCurrency = (amount, currency) => {
     const upperCurrency = currency?.toUpperCase() || "USD";
 
@@ -324,7 +357,7 @@ setSubscriptionInfo((prev) => ({
           </p>
         </div>
 
-        <div className={styles.infoBox}>
+        {loading ? <Loader2 /> : <div className={styles.infoBox}>
           <p>Below is some Quick Info for your Reference:</p>
           <div className={styles.row}>
             <span>Business Name:</span>{" "}
@@ -352,8 +385,8 @@ setSubscriptionInfo((prev) => ({
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? `${currencySymbol}${formatPrice(
-                    subscriptionInfo.planAmount
-                  )} / ${subscriptionInfo.interval}`
+                  subscriptionInfo.planAmount
+                )} / ${subscriptionInfo.interval}`
                 : "US $499 / month"}
             </div>
           </div>
@@ -388,13 +421,13 @@ setSubscriptionInfo((prev) => ({
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? new Date(subscriptionInfo.nextRenewalDate).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )
                 : "06 July 2026"}
             </div>
           </div>
@@ -432,20 +465,21 @@ setSubscriptionInfo((prev) => ({
                 } else {
                   localStorage.removeItem("selectedPlanData");
                   localStorage.removeItem("allPlans");
-                  navigate("/steps", {
-                    state: { locationPath: "/checkout" },
-                  });
+                  // navigate("/steps", {
+                  //   state: { locationPath: "/checkout" },
+                  // });
+                  navigate("/dashboard", { replace: true });
                 }
               }}
               className={styles.dashboardBtn}
-              // disabled={key === "create" ? true : false}
+            // disabled={key === "create" ? true : false}
             >
               {key === "create"
-                ? "Finish Your Agent Creation"
+                ? "Take me to Dashboard"
                 : "Take me to Dashboard"}
             </button>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

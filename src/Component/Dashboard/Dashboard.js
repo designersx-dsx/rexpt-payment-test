@@ -253,6 +253,9 @@ function Dashboard() {
     sessionStorage.removeItem("updateBtn");
     localStorage.removeItem("allPlans");
     sessionStorage.removeItem("checkPage")
+    localStorage.removeItem("hasHandledThankYou");
+    localStorage.removeItem("checkPage2")
+    sessionStorage.clear()
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {

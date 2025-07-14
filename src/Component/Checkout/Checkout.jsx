@@ -814,7 +814,14 @@ function CheckoutForm({
   //   };
 
   // with Checkout
-
+  // with Checkout
+  useEffect(() => {
+    const value = localStorage.getItem("checkPage2");
+    if (value === "checkout2") {
+      localStorage.removeItem("checkPage2"); // optional: clear after use
+      navigate("/dashboard", { replace: true });
+    }
+  }, []);
   const handleSubmit = async () => {
     console.log("run");
     setLoading(true);
@@ -832,16 +839,22 @@ function CheckoutForm({
     let url = "";
     if (subscriptionId || locationPath === "/update") {
       const queryParams = new URLSearchParams();
+      
 
       if (subscriptionId) queryParams.append("subscriptionId", subscriptionId);
       if (agentId) queryParams.append("agentId", agentId);
       if (userId) queryParams.append("userId", userId);
+      
 
       url = `${origin}/thankyou/update?${queryParams.toString()}`;
     } else {
       const queryParams = new URLSearchParams();
+      queryParams.append("mode", "create");
       if (userId) queryParams.append("userId", userId);
-      url = `${origin}/thankyou/create?${queryParams.toString()}`;
+
+      // url = `${origin}/thankyou/create?${queryParams.toString()}`;
+      url = `${origin}/steps?${queryParams.toString()}`;
+
     }
     if (checkPage !== "checkout") {
       try {
@@ -873,6 +886,8 @@ function CheckoutForm({
         } else if (data.checkoutUrl) {
           // Redirect to Stripe Checkout
           sessionStorage.setItem("checkPage", "checkout");
+          localStorage.setItem("checkPage2", "checkout2");
+
           window.location.href = data.checkoutUrl;
         }
       } catch (err) {

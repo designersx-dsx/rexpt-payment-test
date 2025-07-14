@@ -4,7 +4,7 @@ import styles from "./Step.module.css";
 import Step2 from "../Step2/Step2";
 import Step3 from "../Step3/Step3";
 import Step4 from "../Step4/Step4";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import PopUp from "../Popup/Popup";
@@ -24,6 +24,7 @@ import BusinessListing from "../BusinessListing/BusinessListing";
 import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
 import getDynamicAgentName from "../../utils/getDynamicAgentName";
+import Thankyou from "../ThankyouPage/Thankyou";
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -61,7 +62,6 @@ const businessTypes = [
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" }
 ];
-
 const Step = () => {
 
     const timestamp = Date.now();
@@ -158,6 +158,11 @@ const Step = () => {
         .filter(service => service.trim() !== "")
         .map(service => `- ${service.trim()}`)
         .join("\n");
+    const servicesArray = commaSeparatedServices
+        .split("\n")
+        .map(line => line.replace(/^-\s*/, "").trim())
+        .filter(line => line !== "")
+        .map(service => ({ service }));
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
@@ -167,6 +172,12 @@ const Step = () => {
     const customServicesSelected = sessionStorage.getItem("businesServices");
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
+    const [showThankuPage, setShowThankuPage] = useState(false)
+    console.log(showThankuPage)
+
+    const [searchParams] = useSearchParams();
+    const mode = searchParams.get("mode");
+    const shouldShowThankYou = mode === "create" || mode === "update";
 
     const agentCode = sessionStorage.getItem("AgentCode")
 
@@ -208,7 +219,7 @@ const Step = () => {
         if (currentRef?.current) {
             const isValid = currentRef?.current?.validate();
             if (!isValid) {
-               
+
                 return;
             }
             if (currentRef.current.save) {
@@ -291,83 +302,114 @@ const Step = () => {
     //getTimeZone
     const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
     ///extractPromptVariables
-    function extractPromptVariables(template) {
+    function extractPromptVariables(template, dataObject) {
         const matches = [...template.matchAll(/{{(.*?)}}/g)];
         const uniqueVars = new Set(matches.map(m => m[1].trim()));
 
+        // Flatten dataObject to a key-value map
+        const flatData = {};
+
+        function flatten(obj) {
+            for (const key in obj) {
+                const val = obj[key];
+                if (typeof val === "object" && val !== null && 'key' in val && 'value' in val) {
+                    flatData[val.key.trim()] = val.value;
+                } else if (typeof val === "object" && val !== null) {
+                    flatten(val); // Recursively flatten nested objects
+                }
+            }
+        }
+
+        flatten(dataObject);
+
         return Array.from(uniqueVars).map(variable => ({
             name: variable,
+            value: flatData[variable] ?? null,
             status: true
         }));
     }
     const handleContinue = async () => {
-        if (step8ARef.current) {
-            setIsContinueClicked(true);
-            const agentNote = sessionStorage.getItem("agentNote");
-            const rawPromptTemplate =
-                getAgentPrompt({
-                    industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
-                    roleTitle: sessionStorage.getItem("agentRole"),
-                    agentName: "{{AGENT NAME}}",
-                    agentGender: "{{MALE or FEMALE}}",
-                    business: {
-                        businessName: "{{BUSINESS NAME}}",
-                        email: "{{BUSINESS EMAIL ID}}",
-                        aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
-                        address: "{{ CITY}},{{ STATE}}, {{COUNTRY}}"
+        // if (step8ARef.current) {
+        setIsContinueClicked(true);
+        const agentNote = sessionStorage.getItem("agentNote");
+        const rawPromptTemplate =
+            getAgentPrompt({
+                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                roleTitle: sessionStorage.getItem("agentRole"),
+                agentName: "{{AGENT NAME}}",
+                agentGender: "{{AGENT GENDER}}",
+                business: {
+                    businessName: "{{BUSINESS NAME}}",
+                    email: "{{BUSINESS EMAIL ID}}",
+                    aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
+                    address: "{{{BUSINESS ADDRESS}}"
+                },
+                languageSelect: "{{LANGUAGE}}",
+                businessType: "{{BUSINESSTYPE}}",
+                aboutBusinessForm: "{{}}",
+                commaSeparatedServices: "{{SERVICES}}",
+                agentNote: "{{AGENTNOTE}}",
+                timeZone: "{{TIMEZONE}}"
+            });
+        const filledPrompt =
+            getAgentPrompt({
+                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                roleTitle: sessionStorage.getItem("agentRole"),
+                agentName: agentName?.split(" ")[0],
+                agentGender: agentGender,
+                business: {
+                    businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom,
+                    email: getBusinessNameFromGoogleListing?.email || "",
+                    aboutBusiness: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness,
+                    address: getBusinessNameFromGoogleListing?.address || ""
+                },
+                languageSelect: languageSelect,
+                businessType,
+                aboutBusinessForm,
+                commaSeparatedServices,
+                agentNote,
+                timeZone
+            });
+        const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
+            industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
+            roleTitle: sessionStorage.getItem("agentRole"),
+            agentName: { key: "AGENT NAME", value: agentName?.split(" ")[0] },
+            agentGender: { key: "AGENT GENDER", value: agentGender },
+            business: {
+                businessName: { key: "BUSINESS NAME", value: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom },
+                email: { key: "BUSINESS EMAIL ID", value: getBusinessNameFromGoogleListing?.email || "" },
+                aboutBusiness: { key: "MORE ABOUT YOUR BUSINESS", value: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness },
+                address: { key: "BUSINESS ADDRESS", value: getBusinessNameFromGoogleListing?.address || "" }
+            },
+            languageSelect: { key: "LANGUAGE", value: languageSelect || "" },
+            businessType: { key: "BUSINESSTYPE", value: businessType || "" },
+            commaSeparatedServices: { key: "SERVICES", value: servicesArray || "" },
+            timeZone: { key: "TIMEZONE", value: timeZone || "" }
+        });
+        // const isValid = step8BRef.current.validate()
+        //creation here
+        if (localStorage.getItem("UpdationMode") != "ON") {
+            setLoading(true)
+            const agentConfig = {
+                version: 0,
+                model: "gemini-2.0-flash",
+                model_temperature: 0,
+                model_high_priority: true,
+                tool_call_strict_mode: true,
+                general_prompt: filledPrompt,
+                general_tools: [
+                    {
+                        type: "end_call",
+                        name: "end_call",
+                        description: "End the call with user.",
                     },
-                    languageSelect: "{{LANGUAGE}}",
-                    businessType: "{{BUSINESSTYPE}}",
-                    aboutBusinessForm: "{{}}",
-                    commaSeparatedServices: "{{SERVICES}}",
-                    agentNote: "{{AGENTNOTE}}",
-                    timeZone: "{{TIMEZONE}}"
-                });
-            const filledPrompt =
-                getAgentPrompt({
-                    industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
-                    roleTitle: sessionStorage.getItem("agentRole"),
-                    agentName: agentName?.split(" ")[0],
-                    agentGender: agentGender,
-                    business: {
-                        businessName: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom,
-                        email: getBusinessNameFromGoogleListing?.email || "",
-                        aboutBusiness: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness,
-                        address: getBusinessNameFromGoogleListing?.address || ""
-                    },
-                    languageSelect: languageSelect,
-                    businessType,
-                    aboutBusinessForm,
-                    commaSeparatedServices,
-                    agentNote,
-                    timeZone
-                });
-        
-            // return
-            // const isValid = step8BRef.current.validate()
-            //creation here
-            if (localStorage.getItem("UpdationMode") != "ON") {
-                setLoading(true)
-                const agentConfig = {
-                    version: 0,
-                    model: "gemini-2.0-flash",
-                    model_temperature: 0,
-                    model_high_priority: true,
-                    tool_call_strict_mode: true,
-                    general_prompt: filledPrompt,
-                    general_tools: [
-                        {
-                            type: "end_call",
-                            name: "end_call",
-                            description: "End the call with user.",
-                        },
 
-                    ],
+                ],
 
-                    states: [
-                        {
-                            name: "information_collection",
-                            state_prompt: `Greet the user with the begin_message and assist with their query.
+                states: [
+                    {
+                        name: "information_collection",
+                        state_prompt: `Greet the user with the begin_message and assist with their query.
 
                                If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible","waste of time"),
                                ask them: "I'm sorry to hear that. Could you please tell me about your concern?"
@@ -386,24 +428,24 @@ const Step = () => {
 
                                 If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
                                 If the user wants to end the call transition to end_call_state`,
-                            edges: [
+                        edges: [
 
-                                {
-                                    destination_state_name: "dissatisfaction_confirmation",
-                                    description: "User sounds angry or expresses dissatisfaction."
-                                }
-                            ]
-                        },
+                            {
+                                destination_state_name: "dissatisfaction_confirmation",
+                                description: "User sounds angry or expresses dissatisfaction."
+                            }
+                        ]
+                    },
 
-                        {
-                            name: "appointment_booking",
-                            state_prompt: "## Task\nYou will now help the user book an appointment."
-                        },
+                    {
+                        name: "appointment_booking",
+                        state_prompt: "## Task\nYou will now help the user book an appointment."
+                    },
 
-                        // 🌟 State: Dissatisfaction Confirmation
-                        {
-                            name: "dissatisfaction_confirmation",
-                            state_prompt: `
+                    // 🌟 State: Dissatisfaction Confirmation
+                    {
+                        name: "dissatisfaction_confirmation",
+                        state_prompt: `
                             Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
                             Wait for their response.
 
@@ -411,398 +453,224 @@ const Step = () => {
                             If the user says no, transition to end_call_state.
                             If the response is unclear, repeat the question once.
                         `,
-                            edges: [
-                                {
-                                    destination_state_name: "call_transfer",
-                                    description: "User agreed to speak to team member."
-                                },
-                                {
-                                    destination_state_name: "end_call_state",
-                                    description: "User declined to speak to team member."
-                                }
-                            ],
-                            tools: []
-                        },
+                        edges: [
+                            {
+                                destination_state_name: "call_transfer",
+                                description: "User agreed to speak to team member."
+                            },
+                            {
+                                destination_state_name: "end_call_state",
+                                description: "User declined to speak to team member."
+                            }
+                        ],
+                        tools: []
+                    },
 
-                        // 🌟 State: Call Transfer
-                        {
-                            name: "call_transfer",
-                            state_prompt: `
+                    // 🌟 State: Call Transfer
+                    {
+                        name: "call_transfer",
+                        state_prompt: `
                             Connecting you to a team member now. Please hold.
                         `,
-                            tools: [
-                                {
-                                    type: "transfer_call",
-                                    name: "transfer_to_team",
-                                    description: "Transfer the call to the team member.",
-                                    transfer_destination: {
-                                        type: "predefined",
-                                        number: "{{business_Phone}}"
-                                    },
-                                    transfer_option: {
-                                        type: "cold_transfer",
-                                        public_handoff_option: {
-                                            message: "Please hold while I transfer your call."
-                                        }
-                                    },
-                                    speak_during_execution: true,
-                                    speak_after_execution: true,
-                                    failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
-                                }
-                            ],
-                            edges: []
-                        },
-                        {
-                            name: "end_call_state",
-                            state_prompt: `
+                        tools: [
+                            {
+                                type: "transfer_call",
+                                name: "transfer_to_team",
+                                description: "Transfer the call to the team member.",
+                                transfer_destination: {
+                                    type: "predefined",
+                                    number: "{{business_Phone}}"
+                                },
+                                transfer_option: {
+                                    type: "cold_transfer",
+                                    public_handoff_option: {
+                                        message: "Please hold while I transfer your call."
+                                    }
+                                },
+                                speak_during_execution: true,
+                                speak_after_execution: true,
+                                failure_message: "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
+                            }
+                        ],
+                        edges: []
+                    },
+                    {
+                        name: "end_call_state",
+                        state_prompt: `
                             Politely end the call by saying: "Thank you for calling. Have a great day!"
                         `,
-                            tools: [
-                                {
-                                    type: "end_call",
-                                    name: "end_call1",
-                                    description: "End the call with the user."
-                                }
-                            ],
-                            edges: []
+                        tools: [
+                            {
+                                type: "end_call",
+                                name: "end_call1",
+                                description: "End the call with the user."
+                            }
+                        ],
+                        edges: []
+                    }
+                ],
+                starting_state: "information_collection",
+                // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
+                default_dynamic_variables: {
+                    customer_name: "John Doe",
+                    business_Phone: businessPhone,
+                    business_email: business.email,
+                    timeZone: timeZone
+
+                },
+            };
+            const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
+            if (knowledgeBaseId) {
+                agentConfig.knowledge_base_ids = [knowledgeBaseId];
+            }
+            //Create LLm 
+            try {
+                const llmResponse = await axios.post(
+                    "https://api.retellai.com/create-retell-llm",
+                    agentConfig,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                sessionStorage.setItem("llmId", llmResponse.data.llm_id);
+                const llmId = llmResponse.data.llm_id;
+
+                const response_engine = {
+                    type: "retell-llm",
+                    llm_id: llmId,
+                };
+                const finalAgentData = {
+                    response_engine,
+                    voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                    language: sessionStorage.getItem("agentLanguageCode") || "en-US",
+                    agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
+                    language: "multi",
+                    post_call_analysis_model: "gpt-4o-mini",
+                    responsiveness: 1,
+                    enable_backchannel: true,
+                    interruption_sensitivity: 0.91,
+                    backchannel_frequency: 0.7,
+                    backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
+                    post_call_analysis_data: [
+                        {
+                            type: "string",
+                            name: "Detailed Call Summery",
+                            description: "The name of the customer.",
+                            examples: [
+                                "John Doe",
+                                "Jane Smith"
+                            ]
+                        },
+                        {
+                            type: "enum",
+                            name: "lead_type",
+                            description: "Feedback given by the customer about the call.",
+                            choices: getLeadTypeChoices()
                         }
                     ],
-                    starting_state: "information_collection",
-                    // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
-                    default_dynamic_variables: {
-                        customer_name: "John Doe",
-                        business_Phone: businessPhone,
-                        business_email: business.email,
-                        timeZone: timeZone
-
-                    },
+                    normalize_for_speech: true,
+                    webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                 };
-                const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
-                if (knowledgeBaseId) {
-                    agentConfig.knowledge_base_ids = [knowledgeBaseId];
-                }
-                //Create LLm 
+                // Create Agent Creation
                 try {
-                    const llmResponse = await axios.post(
-                        "https://api.retellai.com/create-retell-llm",
-                        agentConfig,
+                    const response = await axios.post(
+                        "https://api.retellai.com/create-agent",
+                        finalAgentData,
                         {
                             headers: {
                                 Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                                "Content-Type": "application/json",
                             },
                         }
                     );
-                    sessionStorage.setItem("llmId", llmResponse.data.llm_id);
-                    const llmId = llmResponse.data.llm_id;
-
-                    const response_engine = {
-                        type: "retell-llm",
-                        llm_id: llmId,
-                    };
-                    const finalAgentData = {
-                        response_engine,
-                        voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                        agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                        language: "multi",
-                        post_call_analysis_model: "gpt-4o-mini",
+                    const agentId = response.data.agent_id;
+                    // Get businessId from sessionStorage
+                    const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
+                    // Convert string to object
+                    const businessIdObj = JSON.parse(businessIdString);
+                    // Now access the actual ID
+                    const agentData = {
+                        userId: userId,
+                        agent_id: agentId || sessionStorage.getItem("agentId"),
+                        knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
+                        llmId: sessionStorage.getItem("llmId"),
+                        avatar: sessionStorage.getItem("avatar") || "",
+                        agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
+                        agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
+                        agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
+                        agentName: sessionStorage.getItem('agentName') || "",
+                        agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
+                        agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
+                        agentGender: sessionStorage.getItem('agentGender') || "female",
+                        agentPlan: "free" || "Plus",
+                        agentStatus: true,
+                        businessId: businessIdObj.businessId,
                         responsiveness: 1,
                         enable_backchannel: true,
-                        interruption_sensitivity: 0.91,
+                        interruption_sensitivity: 0.7,
                         backchannel_frequency: 0.7,
                         backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
-                        post_call_analysis_data: [
-                            {
-                                type: "string",
-                                name: "Detailed Call Summery",
-                                description: "The name of the customer.",
-                                examples: [
-                                    "John Doe",
-                                    "Jane Smith"
-                                ]
-                            },
-                            {
-                                type: "enum",
-                                name: "lead_type",
-                                description: "Feedback given by the customer about the call.",
-                                choices: getLeadTypeChoices()
-                            }
-                        ],
-                        normalize_for_speech: true,
-                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-                    };
-                    // Create Agent Creation
-                    const promptVariablesList = extractPromptVariables(rawPromptTemplate);
-                    try {
-                        const response = await axios.post(
-                            "https://api.retellai.com/create-agent",
-                            finalAgentData,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                                },
-                            }
-                        );
-                        const agentId = response.data.agent_id;
-                        // Get businessId from sessionStorage
-                        const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
-                        // Convert string to object
-                        const businessIdObj = JSON.parse(businessIdString);
-                        // Now access the actual ID
-                        const agentData = {
-                            userId: userId,
-                            agent_id: agentId || sessionStorage.getItem("agentId"),
-                            knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
-                            llmId: sessionStorage.getItem("llmId"),
-                            avatar: sessionStorage.getItem("avatar") || "",
-                            agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                            agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
-                            agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
-                            agentName: sessionStorage.getItem('agentName') || "",
-                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
-                            agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
-                            agentGender: sessionStorage.getItem('agentGender') || "female",
-                            agentPlan: "free" || "Plus",
-                            agentStatus: true,
-                            businessId: businessIdObj.businessId,
-                            responsiveness: 1,
-                            enable_backchannel: true,
-                            interruption_sensitivity: 0.7,
-                            backchannel_frequency: 0.7,
-                            backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
-                            additionalNote: agentNote || "",
-                            agentCode,
-                            knowledgeBaseStatus: true,
-                            dynamicPromptTemplate: filledPrompt,
-                            rawPromptTemplate: rawPromptTemplate,
+                        additionalNote: agentNote || "",
+                        agentCode,
+                        knowledgeBaseStatus: true,
+                        dynamicPromptTemplate: filledPrompt,
+                        rawPromptTemplate: rawPromptTemplate,
+                        promptVariablesList: JSON.stringify(promptVariablesList)
 
-                            promptVariablesList: JSON.stringify(promptVariablesList)
-
-                        }
-                        try {
-                            const response = await createAgent(agentData);
-                            if (response.status === 200 || response.status === 201) {
-                                sessionStorage.setItem("agentId", response.data.agent_id);
-                                sessionStorage.setItem("agentStatus", true);
-                                sessionStorage.removeItem("avatar")
-                                setPopupType("success");
-                                await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
-                                setPopupMessage("Agent created successfully!");
-                                setShowPopup(true);
-                                setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
-                                setHasFetched(false)
-                                setLoading(false)
-                                sessionStorage.clear()
-
-                            }
-                        } catch (error) {
-                            // console.log(error,error.status)
-                            if (error?.status == 400) {
-                                // console.log('errorinside',error)
-                                setPopupType("failed");
-                                setPopupMessage(error?.response?.data?.message);
-                                setShowPopup(true);
-                                setLoading(false)
-                            } else {
-                                console.error("Agent creation failed:", error);
-                                setPopupType("failed");
-                                setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
-                                setShowPopup(true);
-                                setLoading(false)
-                            }
-
-
-                        }
-                    } catch (err) {
-                        console.error("Upload failed:", err);
-                        setPopupType("failed");
-                        setPopupMessage("Agent creation failed.");
-                        setShowPopup(true);
-                        setLoading(false)
                     }
-                } catch (error) {
-                    console.error("LLM creation failed:", error);
+                    try {
+                        const response = await createAgent(agentData);
+                        if (response.status === 200 || response.status === 201) {
+                            sessionStorage.setItem("agentId", response.data.agent_id);
+                            sessionStorage.setItem("agentStatus", true);
+                            sessionStorage.removeItem("avatar")
+                            setPopupType("success");
+                            await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
+                            setPopupMessage("Agent created successfully!");
+                            setShowPopup(true);
+                            // setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                            setHasFetched(false)
+                            setLoading(false)
+                            // sessionStorage.clear()
+
+                        }
+                    } catch (error) {
+                        // console.log(error,error.status)
+                        if (error?.status == 400) {
+                            // console.log('errorinside',error)
+                            setPopupType("failed");
+                            setPopupMessage(error?.response?.data?.message);
+                            setShowPopup(true);
+                            setLoading(false)
+                        } else {
+                            console.error("Agent creation failed:", error);
+                            setPopupType("failed");
+                            setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
+                            setShowPopup(true);
+                            setLoading(false)
+                        }
+
+
+                    }
+                } catch (err) {
+                    console.error("Upload failed:", err);
                     setPopupType("failed");
-                    setPopupMessage("LLM creation failed. Please try again.");
+                    setPopupMessage("Agent creation failed.");
                     setShowPopup(true);
                     setLoading(false)
                 }
+            } catch (error) {
+                console.error("LLM creation failed:", error);
+                setPopupType("failed");
+                setPopupMessage("LLM creation failed. Please try again.");
+                setShowPopup(true);
                 setLoading(false)
             }
-            //updation Agent here
-            if (localStorage.getItem("UpdationMode") == "ON") {
-                setLoading(true)
-                const agentConfig = {
-                    general_prompt: filledPrompt,
-                    // begin_message: `Hey I am a virtual assistant ${agentName}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}.`,
-
-                };
-                const llm_id = localStorage.getItem('llmId')
-
-                //Create LLm 
-                try {
-                    const llmResponse = await axios.patch(
-                        `https://api.retellai.com/update-retell-llm/${llm_id} `,
-                        agentConfig,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                                "Content-Type": "application/json",
-                            },
-                        }
-                    );
-
-                    sessionStorage.setItem("llmId", llmResponse.data.llm_id);
-                    const llmId = llmResponse.data.llm_id;
-
-                    const finalAgentData = {
-                        voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                        agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                        language: sessionStorage.getItem("agentLanguageCode") || "en-US",
-                        normalize_for_speech: true,
-                        post_call_analysis_model: "gpt-4o-mini",
-                        post_call_analysis_data: [
-                            {
-                                type: "string",
-                                name: "Detailed Call Summery",
-                                description: "The name of the customer.",
-                                examples: [
-                                    "John Doe",
-                                    "Jane Smith"
-                                ]
-                            },
-                            {
-                                type: "enum",
-                                name: "lead_type",
-                                description: "Feedback given by the customer about the call.",
-                                choices: ["positive", "neutral", "negative"]
-                            }
-                        ],
-                        webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-
-                    };
-                    // update Agent Creation
-                    const agent_id = localStorage.getItem('agent_id')
-                    try {
-                        const response = await axios.patch(
-                            `https://api.retellai.com/update-agent/${agent_id}`,
-                            finalAgentData,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-                                },
-                            }
-                        );
-
-                        const agentId = response.data.agent_id;
-                        // Get businessId from sessionStorage
-                        const businessIdString = sessionStorage.getItem("businessId");
-
-                        // Convert string to object
-                        const businessIdObj = JSON.parse(businessIdString);
-
-                        // Now access the actual ID
-                        const agentData = {
-                            userId: userId,
-                            agent_id: agentId || sessionStorage.getItem("agentId"),
-                            knowledgeBaseId: sessionStorage.getItem("knowledgeBaseId"),
-                            llmId: sessionStorage.getItem("llmId"),
-                            avatar: sessionStorage.getItem("avatar") || "",
-                            agentVoice: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
-                            agentAccent: sessionStorage.getItem("agentVoiceAccent") || "American",
-                            agentRole: sessionStorage.getItem('agentRole') || "Genral Receptionist",
-                            agentName: sessionStorage.getItem('agentName') || "",
-                            agentLanguageCode: sessionStorage.getItem('agentLanguageCode') || "en-US",
-                            agentLanguage: sessionStorage.getItem('agentLanguage') || "English (US)",
-                            agentGender: sessionStorage.getItem('agentGender') || "female",
-                            agentStatus: true,
-                            businessId: businessIdObj.businessId,
-                            additionalNote: agentNote || "",
-                            agentCode
-                        }
-                        try {
-                            const response = await updateAgent(agentId, agentData);
-                            if (response.status === 200 || response.status === 201) {
-                                setPopupType("success");
-                                setPopupMessage("Agent Updated successfully!");
-                                setShowPopup(true);
-                                setTimeout(() => {
-                                    if (stepEditingMode) {
-                                        navigate("/agent-detail", {
-                                            state: {
-                                                agentId: agentId || sessionStorage.getItem("agentId"),
-                                                bussinesId: businessIdObj.businessId || sessionStorage.getItem('businessId'),
-                                            },
-                                        })
-                                    } else {
-
-                                        setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
-                                        setLoading(false)
-                                        sessionStorage.clear()
-                                        localStorage.removeItem('UpdationMode')
-                                        localStorage.removeItem('agentName')
-                                        localStorage.removeItem('agentGender')
-                                        localStorage.removeItem('agentLanguageCode')
-                                        localStorage.removeItem('agentLanguage')
-                                        localStorage.removeItem('llmId')
-                                        localStorage.removeItem('agent_id')
-                                        localStorage.removeItem('knowledgeBaseId')
-                                        localStorage.removeItem('agentRole')
-                                        localStorage.removeItem('agentVoice')
-                                        localStorage.removeItem('agentVoiceAccent')
-                                        localStorage.removeItem('avatar')
-
-                                        setHasFetched(false)
-                                    }
-
-                                }, 1000)
-
-
-
-                            }
-
-                        } catch (error) {
-                            // console.log(error,error.status)
-                            if (error?.status == 400) {
-                                // console.log('errorinside',error)
-                                setPopupType("failed");
-                                setPopupMessage(error?.response?.data?.message);
-                                setShowPopup(true);
-                                setLoading(false)
-                            } else {
-                                console.error("Agent Updation failed:", error);
-                                setPopupType("failed");
-                                setPopupMessage("Agent Updation failed while saving data in Database. Please try again.");
-                                setShowPopup(true);
-                                setLoading(false)
-                            }
-
-
-                        }
-
-
-                    } catch (err) {
-                        console.error("Upload failed:", err);
-                        setPopupType("failed");
-                        setPopupMessage("Agent creation failed.");
-                        setShowPopup(true);
-                        setLoading(false)
-                    }
-                } catch (error) {
-                    console.error("LLM updation failed:", error);
-                    setPopupType("failed");
-                    setPopupMessage("LLM updation failed. Please try again.");
-                    setShowPopup(true);
-                    setLoading(false)
-                }
-
-
-
-                setLoading(false)
-            }
+            setLoading(false)
         }
+        // }
     };
     const handleValidationError = ({ type, message }) => {
         setPopupType(type);
@@ -864,8 +732,6 @@ const Step = () => {
             icon: "default-icon.svg",
         };
     };
-
-
     useEffect(() => {
         if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
             setShowPopup(true);
@@ -946,12 +812,13 @@ const Step = () => {
         sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
     }, [completedSteps]);
 
-
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.freeTrial
         if (locationPath === "/checkout" || value === "chatke") {
-            handleContinue()
+            console.log("run1")
+            // handleContinue()
+
         }
         else if (locationPath !== "/checkout" && priceId) {
             if (currentStep === 7) {
@@ -995,7 +862,8 @@ const Step = () => {
             isContinueCalled.current = true;
         }
         else if (locationPath === "/checkout" && currentStep === 7 && !isContinueCalled.current) {
-            handleContinue();
+            console.log("run2")
+            // handleContinue();
             isContinueCalled.current = true;
         }
     }, [freeTrail, currentStep, locationPath]);
@@ -1078,58 +946,26 @@ const Step = () => {
         6: "Select the gender you prefer for your AI agent, then listen to the available voice options to pick the one that best represents your business.",
         7: "Pick an avatar for your agent, feel free to edit their name, and then decide their core function by selecting an agent type – either a helpful General Receptionist or an efficient Inbound Lead Qualifier."
     };
+    const hanldeAgentCreation = async () => {
+        handleContinue();
+    }
     return (
-        <div className={styles.container}>
-            <StepHeader title={step?.title}
-                subTitle={step?.subTitle}
-                // icon={step.icon} 
-                tooltip={<Tooltip content={tooltipContentMap[currentStep]} />}
-            />
-            <Slider ref={sliderRef} {...settings}>
-                {/* business-details */}  {/* Step 1 */}
-                {currentStep === 0 && <div>
-                    <BusinessDetails
-                        ref={step1Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 0}
-                        onSuccess={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-
-                        onFailed={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
-                        onStepChange={(step) => {
-                            setCurrentStep(step);
-                            setVisibleStep(step);
-                            sliderRef.current?.slickGoTo(step);
-                        }}
-                    />
-                </div>}
-                {currentStep === 1 &&
-                    <div>
-                        <BusinessServices
-                            ref={step3Ref}
+        <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} /> :
+            <div className={styles.container}>
+                <StepHeader title={step?.title}
+                    subTitle={step?.subTitle}
+                    // icon={step.icon} 
+                    tooltip={<Tooltip content={tooltipContentMap[currentStep]} />}
+                />
+                <Slider ref={sliderRef} {...settings}>
+                    {/* business-details */}  {/* Step 1 */}
+                    {currentStep === 0 && <div>
+                        <BusinessDetails
+                            ref={step1Ref}
                             onNext={handleNext}
                             onBack={handleBack}
                             onValidationError={handleValidationError}
-                            // isActive={currentStep === 1}
+                            isActive={currentStep === 0}
                             onSuccess={(data) => {
 
                                 setShowPopup(true);
@@ -1158,191 +994,16 @@ const Step = () => {
                             }}
                         />
                     </div>}
-                {currentStep === 3 && <div>
-                    <AboutBusiness
-                        ref={step4Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 3}
-                        onSuccess={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        onFailed={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
-                        onStepChange={(step) => {
-                            setCurrentStep(step);
-                            setVisibleStep(step);
-                            sliderRef.current?.slickGoTo(step);
-                        }}
-                    />
-                </div>}
-                {currentStep === 4 && <div>
-                    <BusinessListing
-                        ref={step5Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 4}
-                        onSuccess={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-
-                        onFailed={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
-                        onStepChange={(step) => {
-                            setCurrentStep(step);
-                            setVisibleStep(step);
-                            sliderRef.current?.slickGoTo(step);
-                        }}
-                    />
-                </div>}
-                {currentStep === 5 && <div>
-                    <Step1
-                        ref={step6Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 5}
-                        onSuccess={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-
-                        onFailed={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
-                        onStepChange={(step) => {
-                            setCurrentStep(step);
-                            setVisibleStep(step);
-                            sliderRef.current?.slickGoTo(step);
-                        }}
-                    />
-                </div>}
-                {currentStep === 6 && <div>
-                    <Step2
-                        ref={step7Ref}
-                        onNext={handleNext}
-                        onBack={handleBack}
-                        onValidationError={handleValidationError}
-                        isActive={currentStep === 6}
-                        onSuccess={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("success");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-
-                        onFailed={(data) => {
-
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(data.message);
-                            setTimeout(() => {
-                                setShowPopup(false);
-                            }, 2000);
-                        }}
-                        loading={loading}
-                        setLoading={setLoading}
-                        onStepChange={(step) => {
-                            setCurrentStep(step);
-                            setVisibleStep(step);
-                            sliderRef.current?.slickGoTo(step);
-                        }}
-                    />
-                </div>}
-                {currentStep === 7 &&
-
-                    <div>
-
-                        <Step3
-                            ref={step8ARef}
-                            onNext={handleNext}
-                            onBack={handleBack}
-                            onValidationError={handleValidationError}
-                            isActive={currentStep === 7}
-                            onSuccess={(data) => {
-
-                                setShowPopup(true);
-                                setPopupType("success");
-                                setPopupMessage(data.message);
-                                setTimeout(() => {
-                                    setShowPopup(false);
-                                }, 2000);
-                            }}
-
-                            onFailed={(data) => {
-
-                                setShowPopup(true);
-                                setPopupType("failed");
-                                setPopupMessage(data.message);
-                                setTimeout(() => {
-                                    setShowPopup(false);
-                                }, 2000);
-                            }}
-                            loading={loading}
-                            setLoading={setLoading}
-                            onStepChange={(step) => {
-                                setCurrentStep(step);
-                                setVisibleStep(step);
-                                sliderRef.current?.slickGoTo(step);
-                            }}
-                            setAvtarChecked={setAvtarChecked}
-                        />
-                        {avtarChecked &&
-                            <Step4
-                                ref={step8BRef}
+                    {currentStep === 1 &&
+                        <div>
+                            <BusinessServices
+                                ref={step3Ref}
                                 onNext={handleNext}
                                 onBack={handleBack}
                                 onValidationError={handleValidationError}
-                                isActive={currentStep === 7}
+                                // isActive={currentStep === 1}
                                 onSuccess={(data) => {
+
                                     setShowPopup(true);
                                     setPopupType("success");
                                     setPopupMessage(data.message);
@@ -1362,208 +1023,341 @@ const Step = () => {
                                 }}
                                 loading={loading}
                                 setLoading={setLoading}
-                                onStepChange={(step) => setCurrentStep(step)}
-                                detectRoleTypeChange={detectRoleTypeChange}
-                            />}
+                                onStepChange={(step) => {
+                                    setCurrentStep(step);
+                                    setVisibleStep(step);
+                                    sliderRef.current?.slickGoTo(step);
+                                }}
+                            />
+                        </div>}
+                    {currentStep === 3 && <div>
+                        <AboutBusiness
+                            ref={step4Ref}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            isActive={currentStep === 3}
+                            onSuccess={(data) => {
 
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            onFailed={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+                        />
                     </div>}
-            </Slider>
-            {/* === Footer Fixed Pagination === */}
-            {/* <div className={styles.footerFixed}>
-                <div className={styles.stepsIndicator}>
-                    {
-                        [...Array(totalSlides)].reduce((acc, _, idx) => {
-                            if (idx === 2) return acc;
-                            const isClickable = idx <= currentStep || completedSteps.includes(idx);
+                    {currentStep === 4 && <div>
+                        <BusinessListing
+                            ref={step5Ref}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            isActive={currentStep === 4}
+                            onSuccess={(data) => {
 
-                            acc.push(
-                                <button
-                                    key={idx}
-                                    disabled={!isClickable}
-                                    className={`${styles.stepNumber} ${currentStep === idx ? styles.activeStepNumber : ''}`}
-                                    onClick={async () => {
-                                        if (!isClickable || isContinueClicked) return;
-
-
-                                        const validations = {
-                                            0: step1Ref,
-                                            1: step3Ref,
-                                            3: step4Ref,
-                                            4: step5Ref,
-                                            5: step6Ref,
-                                            6: step7Ref,
-                                            7: [step8ARef, step8BRef],
-
-                                        };
-
-                                        if (idx > currentStep) {
-                                            for (let i = currentStep; i < idx; i++) {
-                                                if (completedSteps.includes(i)) continue;
-                                                const ref = validations[i];
-                                                if (ref?.current?.validate) {
-                                                    const isValid = await ref.current.validate();
-                                                    if (!isValid) return;
-
-                                                    if (ref?.current?.save) {
-                                                        await ref.current.save();
-                                                    }
-
-                                                    addCompletedStep(i);
-                                                }
-                                            }
-                                        }
-
-
-
-                                        setCurrentStep(idx);
-                                        setVisibleStep(idx);
-                                        sliderRef.current?.slickGoTo(idx);
-                                    }}
-
-                                >
-                                    {acc.length + 1}
-                                </button>
-                            );
-
-                            return acc;
-                        }, [])
-                    }
-
-                </div>
-
-                {currentStep === 8 ? <button className={styles.navBtn} onClick={handleContinue}>
-                    {
-                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
-                    }
-                </button> : <button className={styles.navBtn} onClick={handleNext}>
-                    {
-                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
-                    }
-                </button>
-                }
-
-
-
-            </div> */}
-
-            {/* Nitish code */}
-            <div className={styles.footerFixed}>
-                <div className={styles.stepsIndicator}>
-                    {
-                        [...Array(totalSlides)].reduce((acc, _, idx) => {
-                            if (idx === 2) return acc;
-
-                            const isClickable = idx <= currentStep || completedSteps.includes(idx);
-                            const isCompleted = completedSteps.includes(idx);
-                            const isCurrent = currentStep === idx;
-                            const isUpcoming = !isCompleted && !isCurrent;
-
-                            let stepClass = styles.stepNumber;
-                            if (isCompleted && !isCurrent) stepClass += ` ${styles.completedStep}`;
-                            if (isCurrent) stepClass += ` ${styles.activeStepNumber}`;
-                            if (isUpcoming) stepClass += ` ${styles.upcomingStep}`;
-
-                            acc.push(
-                                <button
-                                    key={idx}
-                                    disabled={!isClickable}
-                                    className={stepClass}
-                                    onClick={async () => {
-                                        if (!isClickable || isContinueClicked) return;
-
-                                        const validations = {
-                                            0: step1Ref,
-                                            1: step3Ref,
-                                            3: step4Ref,
-                                            4: step5Ref,
-                                            5: step6Ref,
-                                            6: step7Ref,
-                                            7: [step8ARef, step8BRef],
-                                        };
-
-                                        if (idx > currentStep) {
-                                            for (let i = currentStep; i < idx; i++) {
-                                                if (completedSteps.includes(i)) continue;
-
-                                                const ref = validations[i];
-                                                if (ref?.current?.validate) {
-                                                    const isValid = await ref.current.validate();
-                                                    if (!isValid) return;
-
-                                                    if (ref?.current?.save) {
-                                                        await ref.current.save();
-                                                    }
-
-                                                    addCompletedStep(i);
-                                                }
-                                            }
-                                        }
-
-                                        setCurrentStep(idx);
-                                        setVisibleStep(idx);
-                                        sliderRef.current?.slickGoTo(idx);
-                                    }}
-                                >
-                                    {isCompleted && !isCurrent ? (
-                                        <span />
-                                    ) : (
-                                        acc.length + 1
-                                    )}
-                                </button>
-                            );
-
-                            return acc;
-                        }, [])
-
-                    }
-
-                </div>
-
-                {currentStep === 7 && allPlans.length > 0 && (
-                    <div className={styles.PlansSelectDrop}>
-                        <select
-                            name="plans"
-                            id="plans"
-                            value={selectedPriceId}
-                            onChange={(e) => {
-                                const newPriceId = e.target.value;
-                                setSelectedPriceId(newPriceId);
-                                sessionStorage.setItem("priceId", newPriceId);
-                                const selectedPlan = allPlans.find(plan => plan.priceId === newPriceId);
-                                if (selectedPlan) {
-                                    sessionStorage.setItem("selectedPlan", selectedPlan.title);
-                                }
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
                             }}
 
-                        >
-                            {allPlans.map((plan, index) => (
-                                <option key={index} value={plan.priceId}>
-                                    {plan.title}
-                                </option>
-                            ))}
-                        </select>
+                            onFailed={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+                        />
+                    </div>}
+                    {currentStep === 5 && <div>
+                        <Step1
+                            ref={step6Ref}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            isActive={currentStep === 5}
+                            onSuccess={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+
+                            onFailed={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+                        />
+                    </div>}
+                    {currentStep === 6 && <div>
+                        <Step2
+                            ref={step7Ref}
+                            onNext={handleNext}
+                            onBack={handleBack}
+                            onValidationError={handleValidationError}
+                            isActive={currentStep === 6}
+                            onSuccess={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("success");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+
+                            onFailed={(data) => {
+
+                                setShowPopup(true);
+                                setPopupType("failed");
+                                setPopupMessage(data.message);
+                                setTimeout(() => {
+                                    setShowPopup(false);
+                                }, 2000);
+                            }}
+                            loading={loading}
+                            setLoading={setLoading}
+                            onStepChange={(step) => {
+                                setCurrentStep(step);
+                                setVisibleStep(step);
+                                sliderRef.current?.slickGoTo(step);
+                            }}
+                        />
+                    </div>}
+                    {currentStep === 7 &&
+
+                        <div>
+
+                            <Step3
+                                ref={step8ARef}
+                                onNext={handleNext}
+                                onBack={handleBack}
+                                onValidationError={handleValidationError}
+                                isActive={currentStep === 7}
+                                onSuccess={(data) => {
+
+                                    setShowPopup(true);
+                                    setPopupType("success");
+                                    setPopupMessage(data.message);
+                                    setTimeout(() => {
+                                        setShowPopup(false);
+                                    }, 2000);
+                                }}
+
+                                onFailed={(data) => {
+
+                                    setShowPopup(true);
+                                    setPopupType("failed");
+                                    setPopupMessage(data.message);
+                                    setTimeout(() => {
+                                        setShowPopup(false);
+                                    }, 2000);
+                                }}
+                                loading={loading}
+                                setLoading={setLoading}
+                                onStepChange={(step) => {
+                                    setCurrentStep(step);
+                                    setVisibleStep(step);
+                                    sliderRef.current?.slickGoTo(step);
+                                }}
+                                setAvtarChecked={setAvtarChecked}
+                            />
+                            {avtarChecked &&
+                                <Step4
+                                    ref={step8BRef}
+                                    onNext={handleNext}
+                                    onBack={handleBack}
+                                    onValidationError={handleValidationError}
+                                    isActive={currentStep === 7}
+                                    onSuccess={(data) => {
+                                        setShowPopup(true);
+                                        setPopupType("success");
+                                        setPopupMessage(data.message);
+                                        setTimeout(() => {
+                                            setShowPopup(false);
+                                        }, 2000);
+                                    }}
+
+                                    onFailed={(data) => {
+
+                                        setShowPopup(true);
+                                        setPopupType("failed");
+                                        setPopupMessage(data.message);
+                                        setTimeout(() => {
+                                            setShowPopup(false);
+                                        }, 2000);
+                                    }}
+                                    loading={loading}
+                                    setLoading={setLoading}
+                                    onStepChange={(step) => setCurrentStep(step)}
+                                    detectRoleTypeChange={detectRoleTypeChange}
+                                />}
+
+                        </div>}
+                </Slider>
+                {/* Nitish code */}
+                <div className={styles.footerFixed}>
+                    <div className={styles.stepsIndicator}>
+                        {
+                            [...Array(totalSlides)].reduce((acc, _, idx) => {
+                                if (idx === 2) return acc;
+
+                                const isClickable = idx <= currentStep || completedSteps.includes(idx);
+                                const isCompleted = completedSteps.includes(idx);
+                                const isCurrent = currentStep === idx;
+                                const isUpcoming = !isCompleted && !isCurrent;
+
+                                let stepClass = styles.stepNumber;
+                                if (isCompleted && !isCurrent) stepClass += ` ${styles.completedStep}`;
+                                if (isCurrent) stepClass += ` ${styles.activeStepNumber}`;
+                                if (isUpcoming) stepClass += ` ${styles.upcomingStep}`;
+
+                                acc.push(
+                                    <button
+                                        key={idx}
+                                        disabled={!isClickable}
+                                        className={stepClass}
+                                        onClick={async () => {
+                                            if (!isClickable || isContinueClicked) return;
+
+                                            const validations = {
+                                                0: step1Ref,
+                                                1: step3Ref,
+                                                3: step4Ref,
+                                                4: step5Ref,
+                                                5: step6Ref,
+                                                6: step7Ref,
+                                                7: [step8ARef, step8BRef],
+                                            };
+
+                                            if (idx > currentStep) {
+                                                for (let i = currentStep; i < idx; i++) {
+                                                    if (completedSteps.includes(i)) continue;
+
+                                                    const ref = validations[i];
+                                                    if (ref?.current?.validate) {
+                                                        const isValid = await ref.current.validate();
+                                                        if (!isValid) return;
+
+                                                        if (ref?.current?.save) {
+                                                            await ref.current.save();
+                                                        }
+
+                                                        addCompletedStep(i);
+                                                    }
+                                                }
+                                            }
+
+                                            setCurrentStep(idx);
+                                            setVisibleStep(idx);
+                                            sliderRef.current?.slickGoTo(idx);
+                                        }}
+                                    >
+                                        {isCompleted && !isCurrent ? (
+                                            <span />
+                                        ) : (
+                                            acc.length + 1
+                                        )}
+                                    </button>
+                                );
+
+                                return acc;
+                            }, [])
+
+                        }
+
                     </div>
+
+                    {currentStep === 7 && allPlans.length > 0 && (
+                        <div className={styles.PlansSelectDrop}>
+                            <select
+                                name="plans"
+                                id="plans"
+                                value={selectedPriceId}
+                                onChange={(e) => {
+                                    const newPriceId = e.target.value;
+                                    setSelectedPriceId(newPriceId);
+                                    sessionStorage.setItem("priceId", newPriceId);
+                                    const selectedPlan = allPlans.find(plan => plan.priceId === newPriceId);
+                                    if (selectedPlan) {
+                                        sessionStorage.setItem("selectedPlan", selectedPlan.title);
+                                    }
+                                }}
+
+                            >
+                                {allPlans.map((plan, index) => (
+                                    <option key={index} value={plan.priceId}>
+                                        {plan.title}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+                    {/* //Button */}
+                    {currentStep === 7 ? <button className={styles.navBtn} onClick={handleSubmit}>
+                        {
+                            loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                        }
+                    </button> : <button className={styles.navBtn} onClick={handleNext}>
+                        {
+                            loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
+                        }
+                    </button>
+                    }
+                </div>
+                {showPopup && (
+                    <PopUp
+                        type={popupType}
+                        onClose={() => handleClosePopup()}
+                        message={popupMessage}
+                    />
                 )}
-                {/* //Button */}
-                {currentStep === 7 ? <button className={styles.navBtn} onClick={handleSubmit}>
-                    {
-                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
-                    }
-                </button> : <button className={styles.navBtn} onClick={handleNext}>
-                    {
-                        loading ? <><Loader size={20} /></> : <img src="svg/arrow.svg" alt="arrow" className={styles.arrowIcon} />
-                    }
-                </button>
-                }
-            </div>
-            {showPopup && (
-                <PopUp
-                    type={popupType}
-                    onClose={() => handleClosePopup()}
-                    message={popupMessage}
-                />
-            )}
-        </div>
+            </div>}</>
     );
 };
 
