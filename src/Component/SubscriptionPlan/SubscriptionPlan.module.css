@@ -215,28 +215,28 @@
 
     border: 1px solid #00B2FF;
     color: #00B2FF;
-    margin: 20px 5px 20px 20px
+    margin: 20px 5px 8rem 20px;
 }
 
 .scaler {
 
     border: 1px solid #3CD856;
     color: #3CD856;
-    margin: 20px 5px 20px 20px
+    margin: 20px 5px 8rem 20px;
 }
 
 .growth {
 
     border: 1px solid #E83BAC;
     color: #E83BAC;
-    margin: 20px 5px 20px 20px
+    margin: 20px 5px 8rem 20px;
 }
 
 .corporate {
 
     border: 1px solid #FE5E00;
     color: #FE5E00;
-    margin: 20px 5px 20px 20px
+    margin: 20px 5px 8rem 20px;
 }
 
 /* Text & Structure */
@@ -416,7 +416,7 @@
     padding: 6px 10px;
     width: 100%;
     max-width: fit-content;
-    margin-inline:auto;
+    margin-inline: auto;
     border-radius: 20px;
     margin-top: 15px;
 }
@@ -559,13 +559,13 @@
         margin: auto;
     }
 
-.ForSticky {
-    position: fixed;
-    width: 500px;
-    margin: auto;
-    left: 0;
-    right: 0;
-}
+    .ForSticky {
+        position: fixed;
+        width: 500px;
+        margin: auto;
+        left: 0;
+        right: 0;
+    }
 
     .firstdiv {
         margin-right: unset;

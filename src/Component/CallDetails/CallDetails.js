@@ -53,9 +53,8 @@ const CallDetails = () => {
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes < 10 ? "0" : ""}${minutes}:${
-      seconds < 10 ? "0" : ""
-    }${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""
+      }${seconds}`;
   };
 
   useEffect(() => {
@@ -117,7 +116,7 @@ const CallDetails = () => {
   );
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data["_detailed _call _summery"];
-  let lead_type = data[ "lead_type"];
+  let lead_type = data["lead_type"];
 
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
@@ -179,13 +178,12 @@ const CallDetails = () => {
               <h2>{name || "Unknown"}</h2>
             </div>
             <div
-              className={`${styles.status} ${
-                callData.call_analysis?.user_sentiment === "Positive"
+              className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
                   ? styles.green
                   : callData.call_analysis?.user_sentiment === "Neutral"
-                  ? styles.yellow
-                  : styles.red
-              }`}
+                    ? styles.yellow
+                    : styles.red
+                }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
             </div>
@@ -201,9 +199,9 @@ const CallDetails = () => {
               <strong>
                 {callData?.agent_id
                   ? formatName(
-                      agents.find((a) => a.agent_id === callData.agent_id)
-                        ?.agentName
-                    ) || "Unknown Agent"
+                    agents.find((a) => a.agent_id === callData.agent_id)
+                      ?.agentName
+                  ) || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>
@@ -354,9 +352,9 @@ const CallDetails = () => {
                     <span className={styles.time}>
                       {callData?.agent_id
                         ? formatName(
-                            agents.find((a) => a.agent_id === callData.agent_id)
-                              ?.agentName
-                          ) || "Unknown Agent"
+                          agents.find((a) => a.agent_id === callData.agent_id)
+                            ?.agentName
+                        ) || "Unknown Agent"
                         : "Loading..."}
                     </span>
                   </div>
@@ -407,17 +405,18 @@ const CallDetails = () => {
                             <div className={styles.bubbleLeft}>
                               {entry.content}
                             </div>
+                            <span className={styles.time}>
+                              {callData?.agent_id
+                                ? formatName(
+                                  agents.find(
+                                    (a) => a.agent_id === callData.agent_id
+                                  )?.agentName
+                                ) || "Unknown Agent"
+                                : "Loading..."}
+                            </span>
                           </div>
                         </div>
-                        <span className={styles.time}>
-                          {callData?.agent_id
-                            ? formatName(
-                                agents.find(
-                                  (a) => a.agent_id === callData.agent_id
-                                )?.agentName
-                              ) || "Unknown Agent"
-                            : "Loading..."}
-                        </span>
+
                       </>
                     ) : (
                       <>
