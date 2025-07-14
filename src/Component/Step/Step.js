@@ -307,7 +307,15 @@ const Step = () => {
             status: true
         }));
     }
+
+
+
+
+
     const handleContinue = async () => {
+       
+
+       
         // if (step8ARef.current) {
         setIsContinueClicked(true);
         const agentNote = sessionStorage.getItem("agentNote");
@@ -321,7 +329,7 @@ const Step = () => {
                     businessName: "{{BUSINESS NAME}}",
                     email: "{{BUSINESS EMAIL ID}}",
                     aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
-                    address: "{{ CITY}},{{ STATE}}, {{COUNTRY}}"
+                    address: "{{{BUSINESS ADDRESS}}"
                 },
                 languageSelect: "{{LANGUAGE}}",
                 businessType: "{{BUSINESSTYPE}}",
@@ -349,7 +357,9 @@ const Step = () => {
                 agentNote,
                 timeZone
             });
-
+             const promptVariablesList = extractPromptVariables(rawPromptTemplate, filledPrompt);
+         console.log(promptVariablesList, "promptVariablesListpromptVariablesList")
+ return
         // return
         // const isValid = step8BRef.current.validate()
         //creation here
@@ -540,6 +550,8 @@ const Step = () => {
                     webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                 };
                 // Create Agent Creation
+
+               
                 const promptVariablesList = extractPromptVariables(rawPromptTemplate);
                 try {
                     const response = await axios.post(
