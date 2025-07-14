@@ -100,6 +100,7 @@
 .Right50 {
   width: 50%;
   text-align: right;
+  word-break: break-word;
 }
 .downloadLink {
   color: purple;
