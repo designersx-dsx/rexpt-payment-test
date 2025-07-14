@@ -68,6 +68,13 @@
 .optionList p {
   color: #A3AED0;
 }
+
+.notitem{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+    color: #A3AED0;
+}
 .optionList {
   display: flex;
   flex-direction: column;
