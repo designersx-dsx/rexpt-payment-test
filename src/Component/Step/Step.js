@@ -359,7 +359,7 @@ const Step = () => {
             });
              const promptVariablesList = extractPromptVariables(rawPromptTemplate, filledPrompt);
          console.log(promptVariablesList, "promptVariablesListpromptVariablesList")
- return
+//  return
         // return
         // const isValid = step8BRef.current.validate()
         //creation here

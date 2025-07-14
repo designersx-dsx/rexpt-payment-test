@@ -33,8 +33,10 @@ const AgentAnalysis = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [bookingsForSelectedDate, setBookingsForSelectedDate] = useState([]);
   const [selectedAgentId, setSelectedAgentId] = useState("");
-  // const [callHistory, setCallHistory] = useState([]);
+  const [apiCallHistory, setapiCallHistory] = useState([]);
   const bookingsRef = useRef(null);
+  const [hydrated, setHydrated] = useState(false);
+
 
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
@@ -46,6 +48,20 @@ const AgentAnalysis = () => {
     hasFetched,
     setCallHistoryData,
   } = useCallHistoryStore.getState();
+
+  useEffect(() => {
+  const unsub = useCallHistoryStore.persist.onFinishHydration(() => {
+    console.log("✅ Zustand store hydrated from IndexedDB");
+        setHydrated(true);
+
+    fetchCallHistory();
+  });
+
+  return () => {
+    // Cleanup subscription when component unmounts
+    unsub();
+  };
+}, []);
 
   useEffect(() => {
     const foundAgent = agents.find((a) => a.agent_id === selectedAgentId);
@@ -69,6 +85,8 @@ const AgentAnalysis = () => {
         const parsed = JSON.parse(sessionData);
         const agents = parsed?.state?.agents || [];
         setAgents(agents);
+        console.log("✅ Loaded agents from session storage:", agents);
+        const foundAgent = agents.find((a) => a.agent_id === selectedAgentId);
         const foundKey = agents.find((a) => a.calApiKey)?.calApiKey;
         if (foundKey) setCalApiKey(foundKey);
       } catch (e) {
@@ -81,13 +99,14 @@ const AgentAnalysis = () => {
     try {
       if (hasFetched ) {
       console.log("✅ Using persisted call history");
-      // return;
+      return;
     }
       if (selectedAgentId === "") {
         const res = await getAllAgentCalls(userId);
         const allCalls = res.calls || [];
         // setCallHistory(allCalls);
         setCallHistoryData(allCalls);
+        setapiCallHistory(allCalls);
       } else {
         const response = await axios.get(
           `${API_BASE_URL}/agent/getAgentCallHistory/${selectedAgentId}`,
@@ -97,12 +116,14 @@ const AgentAnalysis = () => {
         );
         const agentCalls = response.data.filteredCalls || [];
         setCallHistoryData(agentCalls);
+        setapiCallHistory(agentCalls);
         // setCallHistory(agentCalls);
       }
     } catch (error) {
       console.error("Error fetching call history:", error);
       // setCallHistory([]);
       setCallHistoryData([]);
+      setapiCallHistory([]);
     }
   };
 
@@ -112,15 +133,16 @@ const AgentAnalysis = () => {
 
   useEffect(() => {
     fetchCallHistory();
-  }, [selectedAgentId]);
+  }, [selectedAgentId,agents]);
 
   useEffect(() => {
     const fetchBookingDates = async () => {
+      console.log("Fetching booking dates...");
         const filteredCalls = selectedAgentId
     ? callHistory.filter(
         (call) => String(call.agent_id) === String(selectedAgentId)
       )
-    : callHistory;
+    : callHistory ||apiCallHistory;
       const bookingsMap = {};
 
       // 1. Add Calls
@@ -171,7 +193,7 @@ const AgentAnalysis = () => {
       );
     };
     fetchBookingDates();
-  }, [calApiKey, selectedDate, selectedAgentId, callHistory, agents]);
+  }, [calApiKey, selectedDate, selectedAgentId, callHistory, agents,hydrated]);
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
