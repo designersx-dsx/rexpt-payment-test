@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { API_BASE_URL } from "../../Store/apiStore";
 import { useRef } from "react";
+import Loader2 from "../Loader2/Loader2";
 
 function Thankyou({ onSubmit }) {
   const hasRunRef = useRef(false);
@@ -26,7 +27,7 @@ function Thankyou({ onSubmit }) {
   const [message, setMessage] = useState("");
 
   const [invoiceLink, setInvoiceLink] = useState("");
-
+  const [loading, setLoading] = useState(true)
   // Get query params
   const getQueryParam = (name) =>
     new URLSearchParams(location.search).get(name);
@@ -48,6 +49,7 @@ function Thankyou({ onSubmit }) {
   useEffect(() => {
     const storedDashboard = sessionStorage.getItem("dashboard-session-storage");
     const storedBusinessDetails = sessionStorage.getItem("businessDetails");
+    console.log("storedBusinessDetails", storedBusinessDetails)
     const storedPlaceDetails = sessionStorage.getItem("placeDetailsExtract");
 
     try {
@@ -278,26 +280,38 @@ function Thankyou({ onSubmit }) {
 
   useEffect(() => {
     if (hasRunRef.current) return;
-      hasRunRef.current = true;
+    hasRunRef.current = true;
+
+    const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
+
+    localStorage.setItem("hasHandledThankYou", "true");
+
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
     const shouldRunCreateFlow = key === "create" && userId;
 
     const run = async () => {
-      
-
-      if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
-        await callNextApiAndRedirect(); // handles update + cancellation
-        setTimeout(async () => {
-          await fetchSubscriptionInfo();
-        }, 1500); // fetch updated subscription data
-      } else if (shouldRunCreateFlow) {
-        setTimeout(async () => {
-          console.log("Run1");
-          await fetchSubscriptionInfo();
-          onSubmit();
-        }, 1500); // or 1500ms, your call
+      try {
+        setLoading(true)
+        if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
+          await callNextApiAndRedirect(); // handles update + cancellation
+          setTimeout(async () => {
+            await fetchSubscriptionInfo();
+          }, 1500); // fetch updated subscription data
+        } else if (shouldRunCreateFlow) {
+          setTimeout(async () => {
+            await fetchSubscriptionInfo();
+            if (hasHandledThankYou) return;
+            onSubmit();
+          }, 1500); // or 1500ms, your call
+        }
+      } catch (error) {
+        console.log(error)
+      } 
+      finally {
+        setLoading(false)
       }
+
     };
 
     run();
@@ -343,7 +357,7 @@ function Thankyou({ onSubmit }) {
           </p>
         </div>
 
-        <div className={styles.infoBox}>
+        {loading ? <Loader2 /> : <div className={styles.infoBox}>
           <p>Below is some Quick Info for your Reference:</p>
           <div className={styles.row}>
             <span>Business Name:</span>{" "}
@@ -371,8 +385,8 @@ function Thankyou({ onSubmit }) {
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? `${currencySymbol}${formatPrice(
-                    subscriptionInfo.planAmount
-                  )} / ${subscriptionInfo.interval}`
+                  subscriptionInfo.planAmount
+                )} / ${subscriptionInfo.interval}`
                 : "US $499 / month"}
             </div>
           </div>
@@ -407,13 +421,13 @@ function Thankyou({ onSubmit }) {
             <div className={styles.Right50}>
               {subscriptionInfo
                 ? new Date(subscriptionInfo.nextRenewalDate).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )
                 : "06 July 2026"}
             </div>
           </div>
@@ -458,14 +472,14 @@ function Thankyou({ onSubmit }) {
                 }
               }}
               className={styles.dashboardBtn}
-              // disabled={key === "create" ? true : false}
+            // disabled={key === "create" ? true : false}
             >
               {key === "create"
                 ? "Take me to Dashboard"
                 : "Take me to Dashboard"}
             </button>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

@@ -814,7 +814,14 @@ function CheckoutForm({
   //   };
 
   // with Checkout
-
+  // with Checkout
+  useEffect(() => {
+    const value = localStorage.getItem("checkPage2");
+    if (value === "checkout2") {
+      localStorage.removeItem("checkPage2"); // optional: clear after use
+      navigate("/dashboard", { replace: true });
+    }
+  }, []);
   const handleSubmit = async () => {
     console.log("run");
     setLoading(true);
@@ -847,6 +854,7 @@ function CheckoutForm({
 
       // url = `${origin}/thankyou/create?${queryParams.toString()}`;
       url = `${origin}/steps?${queryParams.toString()}`;
+
     }
     if (checkPage !== "checkout") {
       try {
@@ -878,6 +886,8 @@ function CheckoutForm({
         } else if (data.checkoutUrl) {
           // Redirect to Stripe Checkout
           sessionStorage.setItem("checkPage", "checkout");
+          localStorage.setItem("checkPage2", "checkout2");
+
           window.location.href = data.checkoutUrl;
         }
       } catch (err) {
