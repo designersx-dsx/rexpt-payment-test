@@ -255,7 +255,8 @@ function Dashboard() {
     sessionStorage.removeItem("checkPage")
     localStorage.removeItem("hasHandledThankYou");
     localStorage.removeItem("checkPage2")
-    sessionStorage.clear()
+    
+
   }, []);
   // Navigate on agent card click
   const handleCardClick = (agent) => {
@@ -1319,7 +1320,7 @@ function Dashboard() {
     }
   };
   const handleUpgradeClick = (agent) => {
-    console.log("agent", agent)
+    // console.log("agent", agent)
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
     sessionStorage.setItem("updateBtn", "update")

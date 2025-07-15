@@ -688,20 +688,20 @@ const AgentDashboard = () => {
     console.log("agent", agent)
     // setagentId(agent?.agent_id);
     // setsubscriptionId(agent?.subscriptionId);
-    // sessionStorage.setItem("updateBtn", "update")
-    // sessionStorage.setItem("selectedPlan", agent?.agentPlan)
+    sessionStorage.setItem("updateBtn", "update")
+    sessionStorage.setItem("selectedPlan", agent?.agent?.agentPlan)
 
-    // navigate("/plan", {
+    navigate("/plan", {
 
-    //   state: {
-    //     agentID: agent?.agent_id,
-    //     locationPath: locationPath,
-    //     subscriptionID: agent?.subscriptionId,
-    //     planName: agent?.agentPlan,
-    //     interval: agent?.subscription?.interval || null
+      state: {
+        agentID: agent?.agent.agent_id,
+        locationPath: "/dashboard",
+        subscriptionID: agent?.agent.subscriptionId,
+        planName: agent?.agent.agentPlan,
+        interval: agent?.subscription?.interval || null
 
-    //   },
-    // });
+      },
+    });
   };
   return (
     <div>
@@ -1333,8 +1333,8 @@ const AgentDashboard = () => {
 
               <div
                 className={styles.managementItem}
-                onClick={() => setShowModal(true)}
-                // onClick={()=>handleUpgradeClick(agentData?.agent)}
+                // onClick={() => setShowModal(true)}
+                onClick={()=>handleUpgradeClick(agentData)}
               >
                 <div className={styles.SvgDesign}>
                   <svg
