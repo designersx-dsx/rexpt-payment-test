@@ -154,6 +154,7 @@ function Dashboard() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
   const handleAssignNumberClick = (agent, e) => {
+    setAgentDetails(agent);
     e.stopPropagation();
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
@@ -344,10 +345,6 @@ function Dashboard() {
       sessionStorage.removeItem("priceId");
       sessionStorage.removeItem("price");
 
-
-
-
-
     }
 
     // sessionStorage.clear()
@@ -356,12 +353,10 @@ function Dashboard() {
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
-
     sessionStorage.setItem("SelectAgentId", agent?.agent_id);
     sessionStorage.setItem("SelectAgentBusinessId", agent?.businessId);
-
     navigate("/agent-detail", {
-      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
+      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId},
     });
   };
   useEffect(() => {
@@ -1829,35 +1824,35 @@ function Dashboard() {
                         Upgrade
                       </div>
                       {(() => {
-  const subscriptionStart = agent?.subscription?.current_period_start;
-  const planName = agent?.agentPlan?.toLowerCase(); // normalize casing
+                        const subscriptionStart = agent?.subscription?.current_period_start;
+                        const planName = agent?.agentPlan?.toLowerCase(); // normalize casing
 
-  const isFreePlan = planName === "free";
-  const subscriptionAgeInDays = subscriptionStart
-    ? dayjs().diff(dayjs(subscriptionStart), "day")
-    : Infinity;
+                        const isFreePlan = planName === "free";
+                        const subscriptionAgeInDays = subscriptionStart
+                          ? dayjs().diff(dayjs(subscriptionStart), "day")
+                          : Infinity;
 
-  const isEligibleToDelete = isFreePlan || subscriptionAgeInDays <= 2;
+                        const isEligibleToDelete = isFreePlan || subscriptionAgeInDays <= 2;
 
-  if (isEligibleToDelete) {
-    return (
-      <div key={agent.agent_id}>
-        <div
-          className={styles.OptionItem}
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            setAgentToDelete(agent);
-            setShowDeleteConfirm(true);
-          }}
-        >
-          Delete Agent
-        </div>
-      </div>
-    );
-  }
+                        if (isEligibleToDelete) {
+                          return (
+                            <div key={agent.agent_id}>
+                              <div
+                                className={styles.OptionItem}
+                                onMouseDown={(e) => {
+                                  e.stopPropagation();
+                                  setAgentToDelete(agent);
+                                  setShowDeleteConfirm(true);
+                                }}
+                              >
+                                Delete Agent
+                              </div>
+                            </div>
+                          );
+                        }
 
-  return null;
-})()}
+                        return null;
+                      })()}
 
                       <div
                         className={styles.OptionItem}
@@ -2638,6 +2633,7 @@ function Dashboard() {
         <AssignNumberModal
           isOpen={isAssignModalOpen}
           agentId={selectedAgentForAssign.agent_id}
+          agentDetails={agentDetails}
           onClose={() => {
             setIsAssignModalOpen(false);
             setSelectedAgentForAssign(null);
@@ -2645,7 +2641,6 @@ function Dashboard() {
         />
       )}
       {/* nitish */}
-
       {popupMessage && (
         <Popup
           type={popupType}
