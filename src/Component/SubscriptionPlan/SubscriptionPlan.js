@@ -34,7 +34,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const [userId, setUserId] = useState(userIdFromToken)
 
     const [agentCount, setAgentCount] = useState()
-    console.log("agentCount",agentCount)
+    console.log("agentCount", agentCount)
 
 
     const navigate = useNavigate();
@@ -313,7 +313,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         <div className={styles.MainPlanDiv}>
             <div className={styles.firstdiv}>
                 <HeaderBar title="Upgrade Plan" />
-                {agentCount == 0 ?<label className={styles.freeTrialBtn} onChange={handleClick}>
+                {agentCount == 0 ? <label className={styles.freeTrialBtn} onChange={handleClick}>
                     FREE TRIAL
                     <input
                         type="checkbox"
@@ -337,7 +337,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         )}
                     </span>
                 </label>
-                   :null }
+                    : null}
             </div>
             <div>
                 <div className={styles.sectionPart}>
