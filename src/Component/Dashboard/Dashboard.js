@@ -1414,7 +1414,7 @@ function Dashboard() {
     }
   };
   const handleUpgradeClick = (agent) => {
-    // console.log("agent", agent)
+    console.log("agent", agent)
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
     sessionStorage.setItem("updateBtn", "update")
@@ -1828,18 +1828,37 @@ function Dashboard() {
                       >
                         Upgrade
                       </div>
-                      <div key={agent.agent_id}>
-                        <div
-                          className={styles.OptionItem}
-                          onMouseDown={(e) => {
-                            e.stopPropagation();
-                            setAgentToDelete(agent);
-                            setShowDeleteConfirm(true);
-                          }}
-                        >
-                          Delete Agent
-                        </div>
-                      </div>
+                      {(() => {
+  const subscriptionStart = agent?.subscription?.current_period_start;
+  const planName = agent?.agentPlan?.toLowerCase(); // normalize casing
+
+  const isFreePlan = planName === "free";
+  const subscriptionAgeInDays = subscriptionStart
+    ? dayjs().diff(dayjs(subscriptionStart), "day")
+    : Infinity;
+
+  const isEligibleToDelete = isFreePlan || subscriptionAgeInDays <= 2;
+
+  if (isEligibleToDelete) {
+    return (
+      <div key={agent.agent_id}>
+        <div
+          className={styles.OptionItem}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            setAgentToDelete(agent);
+            setShowDeleteConfirm(true);
+          }}
+        >
+          Delete Agent
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+})()}
+
                       <div
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
@@ -2179,80 +2198,99 @@ function Dashboard() {
             </div>
           </div>
         )}
-        {showDeleteConfirm && agentToDelete && (
-          <div
-            className={styles.modalBackdrop}
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-            <div
-              className={styles.modalContainer}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2>Are you sure?</h2>
-              <p>
-                Do you want to delete agent{" "}
-                <strong>{agentToDelete.agentName}</strong>?
-              </p>
-              <div className={styles.modalButtons}>
-                <button
-                  className={`${styles.modalButton} ${styles.cancel}`}
-                  onClick={() => setShowDeleteConfirm(false)}
+        {showDeleteConfirm &&
+          agentToDelete &&
+          (() => {
+            const totalMins = Number(agentToDelete?.subscription?.plan_mins) || 0;
+            const minsLeft = agentToDelete?.mins_left || 0;
+            const planMins = totalMins;
+
+            const usedPercentage =
+              planMins > 0 ? ((planMins - minsLeft) / planMins) * 100 : 100;
+
+
+            const currentPeriodStart = agentToDelete?.subscription?.current_period_start;
+            const currentPeriodEnd = agentToDelete?.subscription?.current_period_end;
+
+            const subscriptionAgeDays = currentPeriodStart
+              ? dayjs().diff(dayjs(currentPeriodStart), "day")
+              : Infinity;
+
+            const isRefundEligible =
+              usedPercentage < 5 && subscriptionAgeDays <= 2;
+
+            return (
+              <div
+                className={styles.modalBackdrop}
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                <div
+                  className={styles.modalContainer}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  No
-                </button>
-                {deleteloading ? (
-                  <button
-                    className={`${styles.modalButton} ${styles.submit}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    Deleting <Loader size={18} />
-                  </button>
-                ) : (
-                  <button
-                    className={`${styles.modalButton} ${styles.submit}`}
-                    onClick={async () => {
-                      try {
-                        await handleDelete(agentToDelete);
-                        setShowDeleteConfirm(false);
-                        setAgentToDelete(null);
-                      } catch (error) {
-                        setPopupMessage(
-                          `Failed to delete agent: ${error.message}`
-                        );
-                        setPopupType("failed");
-                        setShowDeleteConfirm(false);
-                      }
-                    }}
-                  >
-                    Yes
-                  </button>
-                )}
-                {/* <button
-                  className={`${styles.modalButton} ${styles.submit}`}
-                  onClick={async () => {
-                    try {
-                      await handleDelete(agentToDelete.agent_id);
-                      setShowDeleteConfirm(false);
-                      setAgentToDelete(null);
-                    } catch (error) {
-                      setPopupMessage(
-                        `Failed to delete agent: ${error.message}`
-                      );
-                      setPopupType("failed");
-                      setShowDeleteConfirm(false);
-                    }
-                  }}
-                >
-                  Yes
-                </button> */}
+                  <h2>Are you sure?</h2>
+                  <p>
+                    Do you want to delete agent <strong>{agentToDelete.agentName}</strong>?
+                  </p>
+
+                  {agentToDelete?.subscription && (
+                    <p style={{ marginTop: "12px" }}>
+                      {isRefundEligible ? (
+                        <>
+                          Since this agent's subscription is within 2 days and less than 5% of minutes are used, a refund (minus 3% Stripe fee) will be issued to the original payment method within 5–7 business days.
+                        </>
+                      ) : (
+                        <>
+                          This subscription is either older than 2 days or more than 5% of the minutes are used. No refund will be provided per our policy.
+                        </>
+                      )}
+                    </p>
+                  )}
+
+                  <div className={styles.modalButtons}>
+                    <button
+                      className={`${styles.modalButton} ${styles.cancel}`}
+                      onClick={() => setShowDeleteConfirm(false)}
+                    >
+                      No
+                    </button>
+                    {deleteloading ? (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Deleting <Loader size={18} />
+                      </button>
+                    ) : (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        onClick={async () => {
+                          try {
+                            await handleDelete(agentToDelete);
+                            setShowDeleteConfirm(false);
+                            setAgentToDelete(null);
+                          } catch (error) {
+                            setPopupMessage(
+                              `Failed to delete agent: ${error.message}`
+                            );
+                            setPopupType("failed");
+                            setShowDeleteConfirm(false);
+                          }
+                        }}
+                      >
+                        Yes
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            );
+          })()}
+
 
         {showCancelConfirm &&
           agentToCancel &&
