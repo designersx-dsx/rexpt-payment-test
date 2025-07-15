@@ -7,8 +7,12 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { API_BASE_URL } from "../../Store/apiStore";
+import { useRef } from "react";
+import Loader2 from "../Loader2/Loader2";
 
 function Thankyou({ onSubmit }) {
+  const hasRunRef = useRef(false);
+
   const navigate = useNavigate();
   const { id: paramMode } = useParams();
   const [searchParams] = useSearchParams();
@@ -23,7 +27,7 @@ function Thankyou({ onSubmit }) {
   const [message, setMessage] = useState("");
 
   const [invoiceLink, setInvoiceLink] = useState("");
-
+  const [loading, setLoading] = useState(true)
   // Get query params
   const getQueryParam = (name) =>
     new URLSearchParams(location.search).get(name);
@@ -45,6 +49,7 @@ function Thankyou({ onSubmit }) {
   useEffect(() => {
     const storedDashboard = sessionStorage.getItem("dashboard-session-storage");
     const storedBusinessDetails = sessionStorage.getItem("businessDetails");
+    console.log("storedBusinessDetails", storedBusinessDetails)
     const storedPlaceDetails = sessionStorage.getItem("placeDetailsExtract");
 
     try {
@@ -274,27 +279,43 @@ function Thankyou({ onSubmit }) {
   };
 
   useEffect(() => {
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
+    const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
+
+    localStorage.setItem("hasHandledThankYou", "true");
+
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
     const shouldRunCreateFlow = key === "create" && userId;
 
     const run = async () => {
-      if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
-        await callNextApiAndRedirect(); // handles update + cancellation
-        setTimeout(async () => {
-          await fetchSubscriptionInfo();
-        }, 1500); // fetch updated subscription data
-      } else if (shouldRunCreateFlow) {
-        console.log("")
-        setTimeout(async () => {
-          await fetchSubscriptionInfo();
-          onSubmit()
-        }, 1500); // or 1500ms, your call
+      try {
+        setLoading(true)
+        if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
+          await callNextApiAndRedirect(); // handles update + cancellation
+          setTimeout(async () => {
+            await fetchSubscriptionInfo();
+          }, 1500); // fetch updated subscription data
+        } else if (shouldRunCreateFlow) {
+          setTimeout(async () => {
+            await fetchSubscriptionInfo();
+            if (hasHandledThankYou) return;
+            onSubmit();
+          }, 1500); // or 1500ms, your call
+        }
+      } catch (error) {
+        console.log(error)
+      } 
+      finally {
+        setLoading(false)
       }
+
     };
 
     run();
-  }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+  }, [key, subscriptionId, agentId, userId, subsid]);
   const formatCurrency = (amount, currency) => {
     const upperCurrency = currency?.toUpperCase() || "USD";
 
@@ -336,7 +357,7 @@ function Thankyou({ onSubmit }) {
           </p>
         </div>
 
-        <div className={styles.infoBox}>
+        {loading ? <Loader2 /> : <div className={styles.infoBox}>
           <p>Below is some Quick Info for your Reference:</p>
           <div className={styles.row}>
             <span>Business Name:</span>{" "}
@@ -447,7 +468,7 @@ function Thankyou({ onSubmit }) {
                   // navigate("/steps", {
                   //   state: { locationPath: "/checkout" },
                   // });
-                  navigate("/dashboard", { replace: true })
+                  navigate("/dashboard", { replace: true });
                 }
               }}
               className={styles.dashboardBtn}
@@ -458,7 +479,7 @@ function Thankyou({ onSubmit }) {
                 : "Take me to Dashboard"}
             </button>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

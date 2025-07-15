@@ -85,7 +85,6 @@ const AgentAnalysis = () => {
         const parsed = JSON.parse(sessionData);
         const agents = parsed?.state?.agents || [];
         setAgents(agents);
-        console.log("✅ Loaded agents from session storage:", agents);
         const foundAgent = agents.find((a) => a.agent_id === selectedAgentId);
         const foundKey = agents.find((a) => a.calApiKey)?.calApiKey;
         if (foundKey) setCalApiKey(foundKey);
@@ -327,7 +326,7 @@ const AgentAnalysis = () => {
                     <div className={styles.line}>
                       <span className={styles.titleText}>
                         <b>{isCall ? "Caller:" : "Title:"}</b>{" "}
-                        {item.title ||
+                        {item.title ||item.custom_analysis_data?.name ||  
                           item.custom_analysis_data?.[
                             "_detailed _call _summery"
                           ] ||
@@ -335,7 +334,8 @@ const AgentAnalysis = () => {
                       </span>
                     </div>
                     <div className={styles.timeRange}>
-                      <b>Phone:</b> {item.call_type}
+                      <b>Phone:</b>  {item?.call_type =='phone_call'? item?.from_number : item?.call_type }
+                      {/* {item.call_type} */}
                     </div>
                   </div>
                 </li>

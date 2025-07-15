@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
 import Loader2 from "../Loader2/Loader2";
 import DetailModal from "../DetailModal/DetailModal";
+import { useDashboardStore } from "../../Store/agentZustandStore";
 
 
 const CallDetails = () => {
@@ -18,8 +19,9 @@ const CallDetails = () => {
   const agentData = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
+    const { agents,} = useDashboardStore();
   const { callId } = useParams();
-  const agents = agentData?.state?.agents || [];
+  // const agents = agentData?.state?.agents || [];
   const navigate = useNavigate();
   const [audioProgress, setAudioProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -53,9 +55,8 @@ const CallDetails = () => {
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes < 10 ? "0" : ""}${minutes}:${
-      seconds < 10 ? "0" : ""
-    }${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""
+      }${seconds}`;
   };
 
   useEffect(() => {
@@ -116,7 +117,7 @@ const CallDetails = () => {
     }
   );
   let data = callData.call_analysis?.custom_analysis_data;
-  let name = callData?.collected_dynamic_variables?.username || data["_detailed _call _summery"];
+  let name = data?.name || data["_detailed _call _summery"];
   let lead_type = data[ "lead_type"];
 
   const convertMsToMinSec = (durationMs) => {
@@ -141,7 +142,7 @@ const CallDetails = () => {
       return name;
     }
   }
-  const currentAgent = agents.find((a) => a.agent_id === callData?.agent_id);;
+  const currentAgent = agents.find((a) => a.agent_id === callData?.agent_id);
   return (
     <div className={styles.CallDetailsMain}>
       <div className={styles.forSticky}>
@@ -179,13 +180,12 @@ const CallDetails = () => {
               <h2>{name || "Unknown"}</h2>
             </div>
             <div
-              className={`${styles.status} ${
-                callData.call_analysis?.user_sentiment === "Positive"
+              className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
                   ? styles.green
                   : callData.call_analysis?.user_sentiment === "Neutral"
-                  ? styles.yellow
-                  : styles.red
-              }`}
+                    ? styles.yellow
+                    : styles.red
+                }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
             </div>
@@ -201,9 +201,9 @@ const CallDetails = () => {
               <strong>
                 {callData?.agent_id
                   ? formatName(
-                      agents.find((a) => a.agent_id === callData.agent_id)
-                        ?.agentName
-                    ) || "Unknown Agent"
+                    agents.find((a) => a.agent_id === callData.agent_id)
+                      ?.agentName
+                  ) || "Unknown Agent"
                   : "Loading..."}
               </strong>
             </div>
@@ -225,19 +225,19 @@ const CallDetails = () => {
           <div className={styles.dataCard}>
             <div className={styles.PhoneNumber}>
               <p>Phone number</p>
-              <b>{callData.collected_dynamic_variables.phone_number ? callData.collected_dynamic_variables.phone_number : '-'}</b>
+              <b>{data.phone_number ? data.phone_number : '-'}</b>
             </div>
             <div className={styles.EmailAddress}>
               <p>Email address</p>
-              <b>{callData.collected_dynamic_variables.email ? callData.collected_dynamic_variables.email : '-'}</b>
+              <b>{data?.email ? data?.email : '-'}</b>
             </div>
             <div className={styles.Address}>
               <p>Address (if collected)</p>
-              <b>{callData.collected_dynamic_variables.address ? callData.collected_dynamic_variables.address : '-'}</b>
+              <b>{data?.address ? data?.address : '-'}</b>
             </div>
             <div className={styles.Reason}>
               <p>Reason</p>
-              <b>{callData.collected_dynamic_variables.reason ? callData.collected_dynamic_variables.reason : '-'}</b>
+              <b>{data?.reason ? data?.reason : '-'}</b>
             </div>
           </div>
           <div className={styles.moredetailsDiv}>
@@ -354,9 +354,9 @@ const CallDetails = () => {
                     <span className={styles.time}>
                       {callData?.agent_id
                         ? formatName(
-                            agents.find((a) => a.agent_id === callData.agent_id)
-                              ?.agentName
-                          ) || "Unknown Agent"
+                          agents.find((a) => a.agent_id === callData.agent_id)
+                            ?.agentName
+                        ) || "Unknown Agent"
                         : "Loading..."}
                     </span>
                   </div>
@@ -407,17 +407,18 @@ const CallDetails = () => {
                             <div className={styles.bubbleLeft}>
                               {entry.content}
                             </div>
+                            <span className={styles.time}>
+                              {callData?.agent_id
+                                ? formatName(
+                                  agents.find(
+                                    (a) => a.agent_id === callData.agent_id
+                                  )?.agentName
+                                ) || "Unknown Agent"
+                                : "Loading..."}
+                            </span>
                           </div>
                         </div>
-                        <span className={styles.time}>
-                          {callData?.agent_id
-                            ? formatName(
-                                agents.find(
-                                  (a) => a.agent_id === callData.agent_id
-                                )?.agentName
-                              ) || "Unknown Agent"
-                            : "Loading..."}
-                        </span>
+
                       </>
                     ) : (
                       <>

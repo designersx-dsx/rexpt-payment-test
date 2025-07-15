@@ -62,7 +62,6 @@ const businessTypes = [
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" }
 ];
-
 const Step = () => {
 
     const timestamp = Date.now();
@@ -159,6 +158,11 @@ const Step = () => {
         .filter(service => service.trim() !== "")
         .map(service => `- ${service.trim()}`)
         .join("\n");
+    const servicesArray = commaSeparatedServices
+        .split("\n")
+        .map(line => line.replace(/^-\s*/, "").trim())
+        .filter(line => line !== "")
+        .map(service => ({ service }));
     const agentGender = (sessionStorage.getItem("agentGender"))
     const aboutBusinessForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || "Your Business Services";
     const agentName = sessionStorage.getItem("agentName") || "";
@@ -298,24 +302,33 @@ const Step = () => {
     //getTimeZone
     const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
     ///extractPromptVariables
-    function extractPromptVariables(template) {
+    function extractPromptVariables(template, dataObject) {
         const matches = [...template.matchAll(/{{(.*?)}}/g)];
         const uniqueVars = new Set(matches.map(m => m[1].trim()));
 
+        // Flatten dataObject to a key-value map
+        const flatData = {};
+
+        function flatten(obj) {
+            for (const key in obj) {
+                const val = obj[key];
+                if (typeof val === "object" && val !== null && 'key' in val && 'value' in val) {
+                    flatData[val.key.trim()] = val.value;
+                } else if (typeof val === "object" && val !== null) {
+                    flatten(val); // Recursively flatten nested objects
+                }
+            }
+        }
+
+        flatten(dataObject);
+
         return Array.from(uniqueVars).map(variable => ({
             name: variable,
+            value: flatData[variable] ?? null,
             status: true
         }));
     }
-
-
-
-
-
     const handleContinue = async () => {
-       
-
-       
         // if (step8ARef.current) {
         setIsContinueClicked(true);
         const agentNote = sessionStorage.getItem("agentNote");
@@ -324,7 +337,7 @@ const Step = () => {
                 industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
                 roleTitle: sessionStorage.getItem("agentRole"),
                 agentName: "{{AGENT NAME}}",
-                agentGender: "{{MALE or FEMALE}}",
+                agentGender: "{{AGENT GENDER}}",
                 business: {
                     businessName: "{{BUSINESS NAME}}",
                     email: "{{BUSINESS EMAIL ID}}",
@@ -357,10 +370,22 @@ const Step = () => {
                 agentNote,
                 timeZone
             });
-             const promptVariablesList = extractPromptVariables(rawPromptTemplate, filledPrompt);
-         console.log(promptVariablesList, "promptVariablesListpromptVariablesList")
-//  return
-        // return
+        const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
+            industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
+            roleTitle: sessionStorage.getItem("agentRole"),
+            agentName: { key: "AGENT NAME", value: agentName?.split(" ")[0] },
+            agentGender: { key: "AGENT GENDER", value: agentGender },
+            business: {
+                businessName: { key: "BUSINESS NAME", value: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom },
+                email: { key: "BUSINESS EMAIL ID", value: getBusinessNameFromGoogleListing?.email || "" },
+                aboutBusiness: { key: "MORE ABOUT YOUR BUSINESS", value: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness },
+                address: { key: "BUSINESS ADDRESS", value: getBusinessNameFromGoogleListing?.address || "" }
+            },
+            languageSelect: { key: "LANGUAGE", value: languageSelect || "" },
+            businessType: { key: "BUSINESSTYPE", value: businessType || "" },
+            commaSeparatedServices: { key: "SERVICES", value: servicesArray || "" },
+            timeZone: { key: "TIMEZONE", value: timeZone || "" }
+        });
         // const isValid = step8BRef.current.validate()
         //creation here
         if (localStorage.getItem("UpdationMode") != "ON") {
@@ -378,6 +403,38 @@ const Step = () => {
                         name: "end_call",
                         description: "End the call with user.",
                     },
+                      {
+            "type": "extract_dynamic_variable",
+            "name": "extract_user_details",
+            "description": "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
+            "variables": [
+                {
+                    "type": "string",
+                    "name": "email",
+                    "description": "Extract the user's email address from the conversation"
+                },
+                {
+                    "type": "number",
+                    "name": "phone",
+                    "description": "Extract the user's phone number from the conversation"
+                },
+                {
+                    "type": "string",
+                    "name": "address",
+                    "description": "Extract the user's address from the conversation"
+                },
+                {
+                    "type": "string",
+                    "name": "reason",
+                    "description": "Extract the user's reason for calling from the conversation"
+                },
+                {
+                    "type": "string",
+                    "name": "name",
+                    "description": "Extract the user's name from the conversation\""
+                },
+            ]
+                    }
 
                 ],
 
@@ -550,9 +607,6 @@ const Step = () => {
                     webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                 };
                 // Create Agent Creation
-
-               
-                const promptVariablesList = extractPromptVariables(rawPromptTemplate);
                 try {
                     const response = await axios.post(
                         "https://api.retellai.com/create-agent",
@@ -595,7 +649,6 @@ const Step = () => {
                         knowledgeBaseStatus: true,
                         dynamicPromptTemplate: filledPrompt,
                         rawPromptTemplate: rawPromptTemplate,
-
                         promptVariablesList: JSON.stringify(promptVariablesList)
 
                     }
@@ -612,7 +665,7 @@ const Step = () => {
                             // setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
                             setHasFetched(false)
                             setLoading(false)
-                            sessionStorage.clear()
+                            // sessionStorage.clear()
 
                         }
                     } catch (error) {

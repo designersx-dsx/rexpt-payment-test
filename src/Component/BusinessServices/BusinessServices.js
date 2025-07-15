@@ -761,10 +761,13 @@ const BusinessServices = forwardRef(({ onNext, onBack, onValidationError, onSucc
               </label>
             ))
           ) : (
-            <p>No item found</p>
+           <></>
           )}
           <div ref={scrollToBottomRef} style={{ height: 1 }} />
         </div>
+        {filteredServices.length ==0 &&
+           <p className={styles.notitem}>No item found</p>
+        }
       </div>
       {serviceError && (
         <p style={{ color: "red", marginTop: "5px" }}>{serviceError}</p>
