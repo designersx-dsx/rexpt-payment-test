@@ -403,6 +403,38 @@ const Step = () => {
                         name: "end_call",
                         description: "End the call with user.",
                     },
+                      {
+            "type": "extract_dynamic_variable",
+            "name": "extract_user_details",
+            "description": "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
+            "variables": [
+                {
+                    "type": "string",
+                    "name": "email",
+                    "description": "Extract the user's email address from the conversation"
+                },
+                {
+                    "type": "number",
+                    "name": "phone",
+                    "description": "Extract the user's phone number from the conversation"
+                },
+                {
+                    "type": "string",
+                    "name": "address",
+                    "description": "Extract the user's address from the conversation"
+                },
+                {
+                    "type": "string",
+                    "name": "reason",
+                    "description": "Extract the user's reason for calling from the conversation"
+                },
+                {
+                    "type": "string",
+                    "name": "name",
+                    "description": "Extract the user's name from the conversation\""
+                },
+            ]
+                    }
 
                 ],
 
