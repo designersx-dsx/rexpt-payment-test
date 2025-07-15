@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
 import Loader2 from "../Loader2/Loader2";
 import DetailModal from "../DetailModal/DetailModal";
+import { useDashboardStore } from "../../Store/agentZustandStore";
 
 
 const CallDetails = () => {
@@ -18,8 +19,9 @@ const CallDetails = () => {
   const agentData = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
+    const { agents,} = useDashboardStore();
   const { callId } = useParams();
-  const agents = agentData?.state?.agents || [];
+  // const agents = agentData?.state?.agents || [];
   const navigate = useNavigate();
   const [audioProgress, setAudioProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -115,8 +117,8 @@ const CallDetails = () => {
     }
   );
   let data = callData.call_analysis?.custom_analysis_data;
-  let name = data["_detailed _call _summery"];
-  let lead_type = data["lead_type"];
+  let name = data?.name || data["_detailed _call _summery"];
+  let lead_type = data[ "lead_type"];
 
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
@@ -140,7 +142,7 @@ const CallDetails = () => {
       return name;
     }
   }
-  const currentAgent = agents.find((a) => a.agent_id === callData?.agent_id);;
+  const currentAgent = agents.find((a) => a.agent_id === callData?.agent_id);
   return (
     <div className={styles.CallDetailsMain}>
       <div className={styles.forSticky}>
@@ -217,27 +219,27 @@ const CallDetails = () => {
 
       <section>
         <div className={styles.DataMain}>
-          {/* <div className={styles.dataTitle}>
+          <div className={styles.dataTitle}>
             <h2>Data Collected</h2>
           </div>
           <div className={styles.dataCard}>
             <div className={styles.PhoneNumber}>
               <p>Phone number</p>
-              <b>-</b>
+              <b>{data.phone_number ? data.phone_number : '-'}</b>
             </div>
             <div className={styles.EmailAddress}>
               <p>Email address</p>
-              <b>-</b>
+              <b>{data?.email ? data?.email : '-'}</b>
             </div>
             <div className={styles.Address}>
               <p>Address (if collected)</p>
-              <b>-</b>
+              <b>{data?.address ? data?.address : '-'}</b>
             </div>
             <div className={styles.Reason}>
               <p>Reason</p>
-              <b>-</b>
+              <b>{data?.reason ? data?.reason : '-'}</b>
             </div>
-          </div> */}
+          </div>
           <div className={styles.moredetailsDiv}>
             <div className={styles.dataTitle}>
               <h2>More Details</h2>
