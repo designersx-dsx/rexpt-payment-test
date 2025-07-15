@@ -60,6 +60,7 @@ import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
 import Plan from "./Component/Plans/Plans";
 import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
+import RedirectHandler from "./utils/RedirectHandler ";
 
 
 // import Test from "./utils/Test";
@@ -279,6 +280,12 @@ function App() {
                 <Route path="/test-other" element={<Test />} />
                 <Route path="/thankyou/:id" element={<Thankyou />} />
                 <Route path="/cancel-payment" element={<CancelPage />} />
+                <Route path="/*" element={<RedirectHandler />} />
+
+
+
+
+
                 <Route path="/delete-account" element={<Delete />} />
               </Routes>
             </div>

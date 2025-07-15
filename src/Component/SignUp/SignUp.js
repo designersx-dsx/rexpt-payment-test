@@ -32,6 +32,7 @@ const SignUp = () => {
   const [resendEndTime, setResendEndTime] = useState(null);
   const tempReferral = sessionStorage.getItem("referredBy") || "";
   const tempLandingSelectedPlan = sessionStorage.getItem("selectedPlan") || "";
+  const tempReferredByName = sessionStorage.getItem("referredByName") || "";
   const [customerId, setCustomerId] = useState()
   useEffect(() => {
     if (!resendEndTime) return;
@@ -107,6 +108,7 @@ const SignUp = () => {
         sessionStorage.clear();
         sessionStorage.setItem("referredBy", tempReferral);
         sessionStorage.setItem("selectedPlan", tempLandingSelectedPlan);
+        sessionStorage.setItem("referredByName", tempReferredByName);
         localStorage.setItem("showreferralfloating", response?.data?.user?.showreferralfloating)
         setPopupType("success");
         setShowPopup(true);

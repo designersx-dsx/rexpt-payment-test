@@ -31,6 +31,7 @@ const Details = () => {
   const { user, setUser } = useUser();
   const [country, setCountry] = useState("in");
   const referralCode = sessionStorage.getItem("referredBy") || "";
+  const referredByName = sessionStorage.getItem("referredByName") || "";
 
   const phoneInputRef = useRef(null);
 
@@ -102,6 +103,7 @@ const Details = () => {
           name: name.trim(),
           phone,
           referredBy: referralCode || "",
+          referredByName: referredByName || "",
           referredOn: localDateTime,
           userType: 0,
         }
