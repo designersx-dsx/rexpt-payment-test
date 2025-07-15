@@ -42,6 +42,7 @@
     color: #24252C;
     font-size: 18px;
     font-weight: 600;
+    text-transform: capitalize;
 }
 .About p{
     color: #4E4E50;

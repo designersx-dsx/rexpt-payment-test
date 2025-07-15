@@ -893,7 +893,7 @@ const AgentDashboard = () => {
                           filteredUrls[filteredUrls?.length - 1]?.url || "NA"
                         );
                       } else {
-                        return <div>NA</div>;
+                        return <div>Not Available</div>;
                       }
                     })()}
                   </span>
