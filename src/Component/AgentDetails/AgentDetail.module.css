@@ -207,6 +207,7 @@
   font-size: 22px;
   font-weight: 600;
   color: #fff;
+  text-transform: capitalize;
 }
 
 .profileSection .greeting {

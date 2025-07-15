@@ -3,7 +3,6 @@ import styles from "../Card2/Card2.module.css";
 
 const Card2 = ({ agentKnowledge }) => {
   const [agentDetails, setAgentDetails] = useState("");
-  console.log(agentDetails)
   useEffect(() => {
   setAgentDetails(agentKnowledge)
   }, [agentKnowledge]);

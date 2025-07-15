@@ -21,6 +21,7 @@ import SecureRoute from "./Pages/SecureRoute";
 import Dashboard from "./Component/Dashboard/Dashboard";
 import RexAgent from "./Component/RexAgent/RexAgent";
 import Plans from "./Component/Plans/Plans";
+import Delete from "./Component/Delete/Delete";
 import SubscriptionFlow from "./Component/Checkout/SubscriptionFlow";
 import Calendar from "./Component/Celender/Calendar";
 import BusinessServices from "./Component/BusinessServices/BusinessServices";
@@ -278,10 +279,7 @@ function App() {
                 <Route path="/test-other" element={<Test />} />
                 <Route path="/thankyou/:id" element={<Thankyou />} />
                 <Route path="/cancel-payment" element={<CancelPage />} />
-
-
-
-
+                <Route path="/delete-account" element={<Delete />} />
               </Routes>
             </div>
           </BrowserRouter>
