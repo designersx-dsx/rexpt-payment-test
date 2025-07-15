@@ -257,7 +257,7 @@ function Dashboard() {
     localStorage.removeItem("checkPage2")
     sessionStorage.clear()
   }, []);
-  // Navigate on agent card click
+  // Navigate on agent card clickk
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -1319,7 +1319,7 @@ function Dashboard() {
     }
   };
   const handleUpgradeClick = (agent) => {
-    console.log("agent", agent)
+    // console.log("agent", agent)
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
     sessionStorage.setItem("updateBtn", "update")
