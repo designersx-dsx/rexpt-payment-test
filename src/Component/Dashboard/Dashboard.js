@@ -255,10 +255,9 @@ function Dashboard() {
     sessionStorage.removeItem("checkPage")
     localStorage.removeItem("hasHandledThankYou");
     localStorage.removeItem("checkPage2")
-    
-
+    sessionStorage.clear()
   }, []);
-  // Navigate on agent card click
+  // Navigate on agent card clickk
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
