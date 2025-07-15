@@ -173,7 +173,7 @@ const Step = () => {
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
     const [showThankuPage, setShowThankuPage] = useState(false)
-    console.log(showThankuPage)
+    
 
     const [searchParams] = useSearchParams();
     const mode = searchParams.get("mode");
@@ -851,7 +851,6 @@ const Step = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.freeTrial
         if (locationPath === "/checkout" || value === "chatke") {
-            console.log("run1")
             // handleContinue()
 
         }
@@ -865,7 +864,7 @@ const Step = () => {
 
         }
         else if (locationPath !== "/checkout" && !priceId) {
-            console.log("hy")
+           
             if (currentStep === 7) {
                 const isStep3Valid = step8ARef.current?.validate?.();
                 const isStep4Valid = step8BRef.current?.validate?.();
@@ -897,7 +896,7 @@ const Step = () => {
             isContinueCalled.current = true;
         }
         else if (locationPath === "/checkout" && currentStep === 7 && !isContinueCalled.current) {
-            console.log("run2")
+            
             // handleContinue();
             isContinueCalled.current = true;
         }
