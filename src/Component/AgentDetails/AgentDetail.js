@@ -1333,8 +1333,8 @@ const AgentDashboard = () => {
 
               <div
                 className={styles.managementItem}
-                // onClick={() => setShowModal(true)}
-                onClick={()=>handleUpgradeClick(agentData?.agent)}
+                onClick={() => setShowModal(true)}
+                // onClick={()=>handleUpgradeClick(agentData?.agent)}
               >
                 <div className={styles.SvgDesign}>
                   <svg
