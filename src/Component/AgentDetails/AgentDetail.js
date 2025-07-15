@@ -683,6 +683,26 @@ const AgentDashboard = () => {
       setIsAssignModalOpen(true);
     }
   };
+
+  const handleUpgradeClick = (agent) => {
+    console.log("agent", agent)
+    // setagentId(agent?.agent_id);
+    // setsubscriptionId(agent?.subscriptionId);
+    // sessionStorage.setItem("updateBtn", "update")
+    // sessionStorage.setItem("selectedPlan", agent?.agentPlan)
+
+    // navigate("/plan", {
+
+    //   state: {
+    //     agentID: agent?.agent_id,
+    //     locationPath: locationPath,
+    //     subscriptionID: agent?.subscriptionId,
+    //     planName: agent?.agentPlan,
+    //     interval: agent?.subscription?.interval || null
+
+    //   },
+    // });
+  };
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -764,6 +784,7 @@ const AgentDashboard = () => {
 
             <section>
               <div className={styles.agentCard}>
+                
                 <h3 className={`${styles.PlanTitle}  `}>
                   {agentData?.agent?.agentPlan}
                 </h3>
@@ -1310,9 +1331,10 @@ const AgentDashboard = () => {
                 <p className={styles.managementText}>Call Setting</p>
               </div>
 
-              {/* <div
+              <div
                 className={styles.managementItem}
-                onClick={() => setShowModal(true)}
+                // onClick={() => setShowModal(true)}
+                onClick={()=>handleUpgradeClick(agentData?.agent)}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1329,7 +1351,7 @@ const AgentDashboard = () => {
                   </svg>
                 </div>
                 <p className={styles.managementText}>Upgrade</p>
-              </div> */}
+              </div>
 
               {/* <div
                 className={styles.managementItem}
