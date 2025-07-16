@@ -356,7 +356,7 @@ function Dashboard() {
     sessionStorage.setItem("SelectAgentId", agent?.agent_id);
     sessionStorage.setItem("SelectAgentBusinessId", agent?.businessId);
     navigate("/agent-detail", {
-      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId},
+      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
     });
   };
   useEffect(() => {

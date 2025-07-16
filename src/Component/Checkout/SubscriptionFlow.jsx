@@ -13,7 +13,7 @@ import decodeToken from "../../lib/decodeToken";
 import Loader2 from "../Loader2/Loader2";
 export default function SubscriptionFlow() {
   const location = useLocation();
-  console.log("location",location)
+  // console.log("location",location)
   const navigate = useNavigate();
   const { user, setUser } = useUser();
   // const priceId = location.state?.priceId;

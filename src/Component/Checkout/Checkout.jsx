@@ -49,7 +49,7 @@ function CheckoutForm({
   const location = useLocation();
 
   const currentLocation = location.pathname;
-  console.log("currentLocation", location);
+  // console.log("currentLocation", location);
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -72,6 +72,8 @@ function CheckoutForm({
   const [message, setMessage] = useState("");
   const [popupType, setPopupType] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
+
+  const [promoCodeSend, setpromoCodeSend] = useState("");
 
   const VALID_COUNTRY_CODES = new Set([
     "AF",
@@ -815,13 +817,13 @@ function CheckoutForm({
 
   // with Checkout
   // with Checkout
-  useEffect(() => {
-    const value = localStorage.getItem("checkPage2");
-    if (value === "checkout2") {
-      localStorage.removeItem("checkPage2"); // optional: clear after use
-      navigate("/dashboard", { replace: true });
-    }
-  }, []);
+  // useEffect(() => {
+  //   const value = localStorage.getItem("checkPage2");
+  //   if (value === "checkout2") {
+  //     localStorage.removeItem("checkPage2"); // optional: clear after use
+  //     navigate("/dashboard", { replace: true });
+  //   }
+  // }, []);
   const handleSubmit = async () => {
     console.log("run");
     setLoading(true);
@@ -839,12 +841,10 @@ function CheckoutForm({
     let url = "";
     if (subscriptionId || locationPath === "/update") {
       const queryParams = new URLSearchParams();
-      
 
       if (subscriptionId) queryParams.append("subscriptionId", subscriptionId);
       if (agentId) queryParams.append("agentId", agentId);
       if (userId) queryParams.append("userId", userId);
-      
 
       url = `${origin}/thankyou/update?${queryParams.toString()}`;
     } else {
@@ -854,7 +854,6 @@ function CheckoutForm({
 
       // url = `${origin}/thankyou/create?${queryParams.toString()}`;
       url = `${origin}/steps?${queryParams.toString()}`;
-
     }
     if (checkPage !== "checkout") {
       try {
@@ -901,14 +900,40 @@ function CheckoutForm({
     setLoading(false);
   };
 
+  // useEffect(() => {
+  //   if (!customerId) return;
+
+  //   const agentData = sessionStorage.getItem("dashboard-session-storage");
+  //   let parsedAgents = [];
+
+  //   try {
+  //     parsedAgents = JSON.parse(agentData)?.state?.agents || [];
+  //   } catch (e) {
+  //     console.warn(
+  //       "No agent data found or failed to parse. Assuming eligible for promo."
+  //     );
+  //   }
+
+  //   const noAgents = parsedAgents.length === 0;
+  //   const allFree = parsedAgents.every(
+  //     (agent) => agent.agentPlan?.toLowerCase() === "free"
+  //   );
+
+  //   // Set promoCodeSend conditionally
+  //   if (noAgents || allFree) {
+  //     setpromoCodeSend("promo_1RlPgh4T6s9Z2zBz0zPXwvXa");
+  //   } else {
+  //     setpromoCodeSend("");
+  //   }
+  // }, [customerId]);
+
   useEffect(() => {
     if (customerId) {
       handleSubmit();
     }
-  }, [customerId]);
+  }, [customerId]); // replace with promoCodeSend
 
   const [promoCode, setPromoCode] = useState("");
-  const [promoCodeSend, setpromoCodeSend] = useState("");
 
   const [promoError, setPromoError] = useState("");
   const [discount, setDiscount] = useState(null);
