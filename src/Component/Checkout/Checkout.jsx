@@ -49,7 +49,7 @@ function CheckoutForm({
   const location = useLocation();
 
   const currentLocation = location.pathname;
-  // console.log("currentLocation", location);
+  console.log("currentLocation", location);
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -73,7 +73,7 @@ function CheckoutForm({
   const [popupType, setPopupType] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
 
-  const [promoCodeSend, setpromoCodeSend] = useState("");
+  const [referralChecked, setReferralChecked] = useState(false);
 
   const VALID_COUNTRY_CODES = new Set([
     "AF",
@@ -328,6 +328,34 @@ function CheckoutForm({
   ]);
 
   const checkPage = sessionStorage.getItem("checkPage");
+
+  useEffect(() => {
+    const fetchReferralCoupon = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/reffered-coupan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.eligible) {
+          setpromoCodeSend(data.promotionCodeID); // ✅ Automatically used in handleSubmit
+        }
+      } catch (err) {
+        console.error("Error checking referred coupon:", err.message);
+      } finally {
+        setReferralChecked(true); // ✅ flag completion
+      }
+    };
+
+    if (customerId && userId) {
+      fetchReferralCoupon();
+    }
+  }, [customerId, userId]);
 
   const COUNTRY_OPTIONS = Array.from(VALID_COUNTRY_CODES)
     .sort()
@@ -825,7 +853,6 @@ function CheckoutForm({
   //   }
   // }, []);
   const handleSubmit = async () => {
-    console.log("run");
     setLoading(true);
     setMessage("");
     setErrors({});
@@ -900,40 +927,14 @@ function CheckoutForm({
     setLoading(false);
   };
 
-  // useEffect(() => {
-  //   if (!customerId) return;
-
-  //   const agentData = sessionStorage.getItem("dashboard-session-storage");
-  //   let parsedAgents = [];
-
-  //   try {
-  //     parsedAgents = JSON.parse(agentData)?.state?.agents || [];
-  //   } catch (e) {
-  //     console.warn(
-  //       "No agent data found or failed to parse. Assuming eligible for promo."
-  //     );
-  //   }
-
-  //   const noAgents = parsedAgents.length === 0;
-  //   const allFree = parsedAgents.every(
-  //     (agent) => agent.agentPlan?.toLowerCase() === "free"
-  //   );
-
-  //   // Set promoCodeSend conditionally
-  //   if (noAgents || allFree) {
-  //     setpromoCodeSend("promo_1RlPgh4T6s9Z2zBz0zPXwvXa");
-  //   } else {
-  //     setpromoCodeSend("");
-  //   }
-  // }, [customerId]);
-
   useEffect(() => {
-    if (customerId) {
+    if (customerId && referralChecked) {
       handleSubmit();
     }
-  }, [customerId]); // replace with promoCodeSend
+  }, [customerId, referralChecked]);
 
   const [promoCode, setPromoCode] = useState("");
+  const [promoCodeSend, setpromoCodeSend] = useState("");
 
   const [promoError, setPromoError] = useState("");
   const [discount, setDiscount] = useState(null);
