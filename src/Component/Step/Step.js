@@ -173,7 +173,7 @@ const Step = () => {
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
     const [showThankuPage, setShowThankuPage] = useState(false)
-    
+
 
     const [searchParams] = useSearchParams();
     const mode = searchParams.get("mode");
@@ -403,37 +403,37 @@ const Step = () => {
                         name: "end_call",
                         description: "End the call with user.",
                     },
-                      {
-            "type": "extract_dynamic_variable",
-            "name": "extract_user_details",
-            "description": "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
-            "variables": [
-                {
-                    "type": "string",
-                    "name": "email",
-                    "description": "Extract the user's email address from the conversation"
-                },
-                {
-                    "type": "number",
-                    "name": "phone",
-                    "description": "Extract the user's phone number from the conversation"
-                },
-                {
-                    "type": "string",
-                    "name": "address",
-                    "description": "Extract the user's address from the conversation"
-                },
-                {
-                    "type": "string",
-                    "name": "reason",
-                    "description": "Extract the user's reason for calling from the conversation"
-                },
-                {
-                    "type": "string",
-                    "name": "name",
-                    "description": "Extract the user's name from the conversation\""
-                },
-            ]
+                    {
+                        "type": "extract_dynamic_variable",
+                        "name": "extract_user_details",
+                        "description": "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
+                        "variables": [
+                            {
+                                "type": "string",
+                                "name": "email",
+                                "description": "Extract the user's email address from the conversation"
+                            },
+                            {
+                                "type": "number",
+                                "name": "phone",
+                                "description": "Extract the user's phone number from the conversation"
+                            },
+                            {
+                                "type": "string",
+                                "name": "address",
+                                "description": "Extract the user's address from the conversation"
+                            },
+                            {
+                                "type": "string",
+                                "name": "reason",
+                                "description": "Extract the user's reason for calling from the conversation"
+                            },
+                            {
+                                "type": "string",
+                                "name": "name",
+                                "description": "Extract the user's name from the conversation\""
+                            },
+                        ]
                     }
 
                 ],
@@ -588,20 +588,58 @@ const Step = () => {
                     backchannel_words: ["Got it", "Yeah", "Uh-huh", "Understand", "Ok", "hmmm"],
                     post_call_analysis_data: [
                         {
-                            type: "string",
-                            name: "Detailed Call Summery",
-                            description: "The name of the customer.",
-                            examples: [
-                                "John Doe",
-                                "Jane Smith"
-                            ]
-                        },
-                        {
                             type: "enum",
                             name: "lead_type",
                             description: "Feedback given by the customer about the call.",
-                            choices: getLeadTypeChoices()
-                        }
+                            choices: getLeadTypeChoices(),
+                        },
+                        {
+                            type: "string",
+                            name: "name",
+                            description: "Extract the user's name from the conversation",
+                            examples: [
+                                "Ajay Sood",
+                                "John Wick",
+                                "Adam Zampa",
+                                "Jane Doe",
+                                "Nitish Kumar",
+                                "Ravi Shukla",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "email",
+                            description: "Extract the user's email from the conversation",
+                            examples: [
+                                "john.doe@example.com",
+                                "nitish@company.in",
+                                "12@gmail.com",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "reason",
+                            description:
+                                "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
+                            examples: [
+                                "Schedule an appointment",
+                                "Ask about services",
+                                "Request for accounting help",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "address",
+                            description: "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+                            examples: ["123 Main St, Delhi", "42 Wallaby Way, Sydney", "1490 Aandhar Eleven"],
+                        },
+                        {
+                            type: "number",
+                            name: "phone_number",
+                            description:
+                                "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
+
+                        },
                     ],
                     normalize_for_speech: true,
                     webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
@@ -864,7 +902,7 @@ const Step = () => {
 
         }
         else if (locationPath !== "/checkout" && !priceId) {
-           
+
             if (currentStep === 7) {
                 const isStep3Valid = step8ARef.current?.validate?.();
                 const isStep4Valid = step8BRef.current?.validate?.();
@@ -896,7 +934,7 @@ const Step = () => {
             isContinueCalled.current = true;
         }
         else if (locationPath === "/checkout" && currentStep === 7 && !isContinueCalled.current) {
-            
+
             // handleContinue();
             isContinueCalled.current = true;
         }
