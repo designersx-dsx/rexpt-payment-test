@@ -2634,6 +2634,7 @@ function Dashboard() {
           isOpen={isAssignModalOpen}
           agentId={selectedAgentForAssign.agent_id}
           agentDetails={agentDetails}
+           onAgentDetailsPage={false}
           onClose={() => {
             setIsAssignModalOpen(false);
             setSelectedAgentForAssign(null);

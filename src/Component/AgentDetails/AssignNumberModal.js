@@ -5,34 +5,13 @@ import { updateAgent } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 import { useDashboardStore } from "../../Store/agentZustandStore";
-
-const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi, agentDetails,onAssignNumber }) => {
+const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi, agentDetails, onAssignNumber, onAgentDetailsPage }) => {
   const [loading, setLoading] = useState(false);
   const [areaCode, setAreaCode] = useState()
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const { setHasFetched } = useDashboardStore();
-  function extractAreaCodeFromParsedPhone(phoneNumber) {
-    try {
-      if (!phoneNumber) return null;
-
-      // Clean and extract area code using regex
-      const match = phoneNumber.match(
-        /(?:\+1[-\s.]?)?\(?(\d{3})\)?[-\s.]?\d{3}[-\s.]?\d{4}/
-      );
-
-      if (match && match[1]) {
-        return match[1]; // ← this is your area code
-      }
-
-      return null;
-    } catch (error) {
-      console.error("Error extracting area code:", error);
-      return null;
-    }
-  }
   const handleAssignNumber = async () => {
     try {
       if (isSubmitting) return; // Prevent multiple clicks
@@ -66,7 +45,9 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi, agentDetails,o
       await updateAgent(agentId, { voip_numbers: [phoneNumber] });
       setPopupType("success")
       setPopupMessage(`Number ${phoneNumber} assigned and saved!`)
-      onAssignNumber()
+      if (onAgentDetailsPage) {
+        onAssignNumber()
+      }
       setHasFetched(false);
     } catch (error) {
       console.log(error)
@@ -82,10 +63,7 @@ const AssignNumberModal = ({ isOpen, onClose, agentId, onCallApi, agentDetails,o
   useEffect(() => {
     try {
       const businessDetails = agentDetails?.business || agentDetails
-      const phoneData = JSON.parse(businessDetails?.knowledge_base_texts)
-      const phoneNumber = phoneData?.phone
-      const extractedCode = extractAreaCodeFromParsedPhone(phoneNumber);
-      setAreaCode(extractedCode);
+      setAreaCode(businessDetails.area_code);
     } catch (err) {
       console.error("Failed to parse phone JSON:", err);
     }

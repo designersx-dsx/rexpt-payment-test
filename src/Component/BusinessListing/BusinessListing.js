@@ -17,7 +17,6 @@ import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
 import decodeToken from "../../lib/decodeToken";
-
 const BusinessListing = forwardRef(
   (
     {
@@ -28,6 +27,7 @@ const BusinessListing = forwardRef(
       onFailed,
       setLoading,
       onStepChange,
+      loading
     },
     ref
   ) => {
@@ -47,6 +47,11 @@ const BusinessListing = forwardRef(
     const navigate = useNavigate();
     const EditingMode1 = localStorage.getItem("UpdationMode");
     const [selectedCountry, setSelectedCountry] = useState("us");
+    const [street_number, setStreet_number] = useState("")
+    const [city, setCity] = useState("")
+    const [state, setState] = useState("")
+    const [country, setCountry] = useState("")
+    const [postal_code, setPostal_code] = useState("")
     const setHasFetched = true;
     const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "BusinessListing",
@@ -124,6 +129,8 @@ const BusinessListing = forwardRef(
         .replace(/_/g, " ");
 
     const handleSubmit = async (e) => {
+      if (e) e.preventDefault()
+      if (loading) return
       try {
         setLoading(true);
         const phoneNumberObj = parsePhoneNumberFromString(
@@ -194,7 +201,28 @@ const BusinessListing = forwardRef(
           packageValue,
           agentCode
         );
+        //extractAddressFields
+        function extractAddressFields(addressComponents) {
+          const getComponent = (primaryType, fallbackType = null) =>
+            addressComponents.find((comp) =>
+              comp.types.includes(primaryType) || (fallbackType && comp.types.includes(fallbackType))
+            )?.long_name || "";
 
+          return {
+            city: getComponent("locality", "sublocality_level_1"),
+            state: getComponent("administrative_area_level_1"),
+            country: getComponent("country"),
+            postal_code: getComponent("postal_code"),
+            street_number: getComponent("street_number"),
+          };
+        }
+        const addressFields = extractAddressFields(placeDetails?.address_components || []);
+        setCity(addressFields.city)
+        setState(addressFields.state)
+        setCountry(addressFields.country)
+        setPostal_code(addressFields.postal_code)
+        setStreet_number(addressFields.street_number)
+        //Get Details From GMB
         const businessData = {
           businessName: businessName || placeDetails?.businessName || "",
           address: placeDetails?.address || address,
@@ -211,6 +239,11 @@ const BusinessListing = forwardRef(
             : "",
           email: email,
           aboutBussiness: aboutBussiness,
+          city: addressFields?.city,
+          state: addressFields?.state,
+          country: addressFields?.country,
+          postal_code: addressFields?.postal_code,
+          street_number: addressFields?.street_number,
         };
         const placeDetailsForKBT = JSON.parse(
           sessionStorage.getItem("placeDetailsExtract") || "{}"
@@ -218,8 +251,7 @@ const BusinessListing = forwardRef(
         const readableDetails = Object?.entries(placeDetailsForKBT)
           .map(
             ([key, value]) =>
-              `${formatLabel(key)}: ${
-                Array.isArray(value) ? value.join(", ") : value || "N/A"
+              `${formatLabel(key)}: ${Array.isArray(value) ? value.join(", ") : value || "N/A"
               }`
           )
           .join("\n");
@@ -251,10 +283,7 @@ const BusinessListing = forwardRef(
         }
         formData.append("knowledge_base_name", knowledgeBaseName);
         formData.append("enable_auto_refresh", "true");
-        formData.append(
-          "knowledge_base_texts",
-          JSON.stringify(knowledgeBaseText)
-        );
+        formData.append("knowledge_base_texts", JSON.stringify(knowledgeBaseText));
         formData2.append("knowledge_base_texts", JSON.stringify(businessData));
         //Crate Knowledge Base
         formData2.append("googleUrl", aboutBusinessForm.googleListing);
@@ -265,18 +294,16 @@ const BusinessListing = forwardRef(
         formData2.append("googleBusinessName", displayBusinessName || "");
         formData2.append("address1", businessData.address);
         formData2.append("businessEmail", email);
-        formData2.append(
-          "businessName",
-          placeDetails?.businessName || businessName
-        );
+        formData2.append("city", businessData?.city || city);
+        formData2.append("state", businessData?.state || state);
+        formData2.append("country", businessData?.country || country);
+        formData2.append("postal_code", businessData?.postal_code || postal_code);
+        formData2.append("street_number", businessData?.street_number || street_number);
+        formData2.append("businessName", placeDetails?.businessName || businessName);
         formData2.append("phoneNumber", phoneNumber);
         formData2.append("isGoogleListing", aboutBusinessForm.noGoogleListing);
         formData2.append("isWebsiteUrl", aboutBusinessForm.noBusinessWebsite);
-
-        formData3.append(
-          "knowledge_base_texts",
-          JSON.stringify(knowledgeBaseText)
-        );
+        formData3.append("knowledge_base_texts", JSON.stringify(knowledgeBaseText));
         let knowledge_Base_ID = knowledgeBaseId;
 
         if (
@@ -301,6 +328,8 @@ const BusinessListing = forwardRef(
             response?.data?.knowledge_base_id
           );
         } else {
+
+
           const response = await axios.post(
             "https://api.retellai.com/create-knowledge-base",
             formData,
@@ -316,7 +345,7 @@ const BusinessListing = forwardRef(
           );
           formData2.append("knowledge_base_name", knowledgeBaseName);
 
-          knowledge_Base_ID = response.data.knowledge_base_id;
+          knowledge_Base_ID = response?.data?.knowledge_base_id;
           sessionStorage.setItem("knowledgeBaseId", knowledge_Base_ID);
         }
 
@@ -377,15 +406,14 @@ const BusinessListing = forwardRef(
         setLoading(false);
       }
     };
-    const EditingMode = localStorage.getItem("UpdationMode");
     //Using Error Handling
     useImperativeHandle(ref, () => ({
       validate: () => {
         let hasError = false;
         const phoneNumberObj = parsePhoneNumberFromString(
-        phoneNumber,
-        selectedCountry
-      );
+          phoneNumber,
+          selectedCountry
+        );
 
         if (!businessName.trim()) {
           hasError = true;
@@ -418,14 +446,14 @@ const BusinessListing = forwardRef(
             type: "failed",
             message: "Please enter a valid phone number.",
           });
-        } 
+        }
         else if (!phoneNumberObj || !phoneNumberObj.isValid()) {
           hasError = true;
           onValidationError?.({
             type: "failed",
             message: "Please enter a valid phone number.",
           });
-        } 
+        }
         else if (
           containsSpecialChars(phoneNumber) ||
           containsEmoji(phoneNumber)
@@ -461,13 +489,68 @@ const BusinessListing = forwardRef(
         handleSubmit();
       },
     }));
+    //initAddressAutocomplete
+    const initAddressAutocomplete = () => {
+      const autocomplete = new window.google.maps.places.Autocomplete(
+        document.getElementById("google-address-autocomplete"),
+        //Fetch Only location
+        //google-address-autocomplete
+        {
+          types: ["geocode"],
+          fields: ["address_components", "formatted_address", "geometry", "url"],
+        }
+        // {
+        //   types: ["establishment"],
+        //   fields: ["place_id", "name", "url"],
+        // }
+      );
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.formatted_address) {
+          const addressComponents = place.address_components || [];
+          setAddress(place.formatted_address);
+          extractAndStoreAddressComponents(place.address_components);
+          // Update sessionStorage
+          const currentDetails = JSON.parse(
+            sessionStorage.getItem("placeDetailsExtract") || "{}"
+          );
+          const updatedDetails = {
+            ...currentDetails,
+            address: place.formatted_address,
+            address_components: addressComponents,
+          };
+          sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedDetails));
+        }
+      });
+    };
+    //extractAndStoreAddressComponents
+    const extractAndStoreAddressComponents = (components) => {
+      const getComponent = (type) =>
+        components.find((c) => c.types.includes(type))?.long_name || "";
 
+      const addressDetails = {
+        street_number: getComponent("street_number"),
+        route: getComponent("route"),
+        city: getComponent("locality") || getComponent("sublocality_level_1"),
+        state: getComponent("administrative_area_level_1"),
+        country: getComponent("country"),
+        postal_code: getComponent("postal_code"),
+      };
+    };
+    //initAddressAutocomplete
+    useEffect(() => {
+      const interval = setInterval(() => {
+        if (window.google?.maps?.places) {
+          const input = document.getElementById("google-address-autocomplete");
+          if (input) {
+            initAddressAutocomplete();
+            clearInterval(interval);
+          }
+        }
+      }, 300);
+    }, []);
     return (
       <div className={styles.container}>
-        {/* <div className={styles.header}>
-        <h1>{EditingMode ? 'Edit: Your Business Listing' : 'Your Business Listing'}</h1>
-      </div> */}
-
         <form className={styles.formContainer} onSubmit={handleSubmit}>
           <div className={styles.form}>
             <div className={styles.labReq}>
@@ -524,13 +607,23 @@ const BusinessListing = forwardRef(
                 <label>
                   Address <span className={styles.requiredStar1}>*</span>
                 </label>
-                <input
+                {/* <input
                   type="text"
                   value={address}
                   onChange={(e) => handleInputChange("address", e.target.value)}
                   placeholder="Business Address"
                   required
                   maxLength={100}
+                /> */}
+                <input
+                  id="google-address-autocomplete"
+                  type="text"
+                  value={address}
+                  onChange={(e) => handleInputChange("address", e.target.value)}
+                  placeholder="Business Address"
+                  required
+                  maxLength={300}
+
                 />
               </div>
 
