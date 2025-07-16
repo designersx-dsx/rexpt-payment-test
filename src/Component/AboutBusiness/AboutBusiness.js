@@ -105,19 +105,19 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     }
   }, [EditingMode, noBusinessWebsite]);
 
- 
+
 
   const fetchPlaceDetails = (placeId) => {
     setLoading(true);
     const service = new window.google.maps.places.PlacesService(
       document.createElement("div")
     );
-
     service.getDetails({ placeId }, (result, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        
+
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
+        console.log({result})
 
         const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
         // Extract important fields from result
@@ -132,6 +132,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
           hours: result.opening_hours?.weekday_text || [],
           businessStatus: result.business_status || "",
           categories: result.types || [],
+          address_components:result.address_components||[]
         };
         const updatedForm = {
           ...form1,
@@ -147,7 +148,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         console.error("Place details fetch failed:", status);
       }
       setLoading(false);
-      console.log('result',result)
     });
   };
 
@@ -172,6 +172,9 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       place.address_components.find((c) =>
         c.types.includes("administrative_area_level_1")
       )?.long_name,
+      place.address_components.find((c) =>
+        c.types.includes("postal_code")
+      )?.long_name
     ]
       .filter(Boolean)
       .join(" ");
@@ -254,7 +257,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         setNoBusinessWebsite(savedData.noBusinessWebsite);
       }
 
-    } 
+    }
   }, []);
 
   useEffect(() => {
@@ -625,7 +628,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                   </label>
                 </div>
               </div>
-  
+
             </div>
           </form>
         </div>

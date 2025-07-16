@@ -1,11 +1,25 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Thankyou.module.css";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { API_BASE_URL } from "../../Store/apiStore";
+import { useRef } from "react";
+import Loader2 from "../Loader2/Loader2";
 
-function Thankyou() {
+function Thankyou({ onSubmit }) {
+  const hasRunRef = useRef(false);
+
   const navigate = useNavigate();
-  const { id: key } = useParams(); // 'create' or 'update'
+  const { id: paramMode } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryMode = searchParams.get("mode");
+
+  // Prefer query param if available, else fallback to URL paramm
+  const key = queryMode || paramMode;
   const location = useLocation();
 
   const [popupType, setPopupType] = useState(null);
@@ -13,7 +27,7 @@ function Thankyou() {
   const [message, setMessage] = useState("");
 
   const [invoiceLink, setInvoiceLink] = useState("");
-
+  const [loading, setLoading] = useState(true);
   // Get query params
   const getQueryParam = (name) =>
     new URLSearchParams(location.search).get(name);
@@ -110,43 +124,43 @@ function Thankyou() {
     }
   }, [agentId, key]);
 
-  useEffect(() => {
-    const priceIdFromSession = sessionStorage.getItem("priceId");
-    if (!priceIdFromSession) return;
+  // useEffect(() => {
+  //   const priceIdFromSession = sessionStorage.getItem("priceId");
+  //   if (!priceIdFromSession) return;
 
-    const fetchPlanFromAPI = async () => {
-      try {
-        const res = await fetch("http://localhost:2512/api/products");
-        const products = await res.json();
+  //   const fetchPlanFromAPI = async () => {
+  //     try {
+  //       const res = await fetch("http://localhost:2512/api/products");
+  //       const products = await res.json();
 
-        for (const plan of products) {
-          const price = plan.prices.find((p) => p.id === priceIdFromSession);
-          if (price) {
-            const today = new Date();
-            const nextDate =
-              price.interval === "month"
-                ? new Date(today.setMonth(today.getMonth() + 1))
-                : new Date(today.setFullYear(today.getFullYear() + 1));
-            setSubscriptionInfo((prev) => ({
-              ...prev,
-              planName: plan.name,
-              planAmount: (price.unit_amount / 100).toFixed(2),
-              interval: price.interval,
-              planMins: price.metadata || plan.metadata?.minutes || "N/A",
-              nextRenewalDate: nextDate.toISOString(),
-              currentPeriodStart:
-                plan.currentPeriodStart || new Date().toISOString(),
-            }));
-            break;
-          }
-        }
-      } catch (err) {
-        console.error("Error loading plan from API:", err);
-      }
-    };
+  //       for (const plan of products) {
+  //         const price = plan.prices.find((p) => p.id === priceIdFromSession);
+  //         if (price) {
+  //           const today = new Date();
+  //           const nextDate =
+  //             price.interval === "month"
+  //               ? new Date(today.setMonth(today.getMonth() + 1))
+  //               : new Date(today.setFullYear(today.getFullYear() + 1));
+  //           setSubscriptionInfo((prev) => ({
+  //             ...prev,
+  //             planName: plan.name,
+  //             planAmount: (price.unit_amount / 100).toFixed(2),
+  //             interval: price.interval,
+  //             planMins: price.metadata || plan.metadata?.minutes || "N/A",
+  //             nextRenewalDate: nextDate.toISOString(),
+  //             currentPeriodStart:
+  //               plan.currentPeriodStart || new Date().toISOString(),
+  //           }));
+  //           break;
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.error("Error loading plan from API:", err);
+  //     }
+  //   };
 
-    fetchPlanFromAPI();
-  }, []);
+  //   fetchPlanFromAPI();
+  // }, []);
 
   const cancelOldSubscription = async () => {
     try {
@@ -230,11 +244,12 @@ function Thankyou() {
       console.log("Subscription Info:", data);
 
       if (data && !data.error) {
-        const { planAmount, ...rest } = data; // ignore planAmount
-setSubscriptionInfo((prev) => ({
-  ...prev,
-  ...rest, // keep existing planAmount
-}));
+        // const { planAmount, ...rest } = data; // ignore planAmount
+        // setSubscriptionInfo((prev) => ({
+        //   ...prev,
+        //   ...rest, // keep existing planAmount
+        // }));
+        setSubscriptionInfo(data);
         // Extract currency symbol
         const currencyMap = {
           USD: "$",
@@ -264,25 +279,40 @@ setSubscriptionInfo((prev) => ({
   };
 
   useEffect(() => {
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
+    const hasHandledThankYou = localStorage.getItem("hasHandledThankYou");
+
+    localStorage.setItem("hasHandledThankYou", "true");
+
     const shouldRunUpdateAgent = key === "update" && agentId && userId;
     const shouldRunWithStripeFlow = subscriptionId && agentId && userId;
     const shouldRunCreateFlow = key === "create" && userId;
 
     const run = async () => {
-      if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
-        await callNextApiAndRedirect(); // handles update + cancellation
-        setTimeout(async () => {
+      try {
+        setLoading(true);
+        if (shouldRunWithStripeFlow || shouldRunUpdateAgent) {
+          await callNextApiAndRedirect(); // handles update + cancellation
+          await new Promise((resolve) => setTimeout(resolve, 1500));
           await fetchSubscriptionInfo();
-        }, 1500); // fetch updated subscription data
-      } else if (shouldRunCreateFlow) {
-        setTimeout(async () => {
+        } else if (shouldRunCreateFlow) {
+          await new Promise((resolve) => setTimeout(resolve, 1500));
           await fetchSubscriptionInfo();
-        }, 1500); // or 1500ms, your call
+          if (!hasHandledThankYou) {
+            onSubmit();
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false); // 🔁 Now it happens *after* data fetch
       }
     };
 
     run();
-  }, [navigate, key, subscriptionId, agentId, userId, subsid]);
+  }, [key, subscriptionId, agentId, userId, subsid]);
   const formatCurrency = (amount, currency) => {
     const upperCurrency = currency?.toUpperCase() || "USD";
 
@@ -324,128 +354,132 @@ setSubscriptionInfo((prev) => ({
           </p>
         </div>
 
-        <div className={styles.infoBox}>
-          <p>Below is some Quick Info for your Reference:</p>
-          <div className={styles.row}>
-            <span>Business Name:</span>{" "}
-            <div className={styles.Right50}>
-              {businessName || "ACME Construction Services"}
+        {loading ? (
+          <Loader2 />
+        ) : (
+          <div className={styles.infoBox}>
+            <p>Below is some Quick Info for your Reference:</p>
+            <div className={styles.row}>
+              <span>Business Name:</span>{" "}
+              <div className={styles.Right50}>
+                {businessName || "ACME Construction Services"}
+              </div>
             </div>
-          </div>
-          <div className={styles.row}>
-            <span>Agent Name & ID:</span>
-            <div className={styles.Right50}>
-              {agentName && agentCode
-                ? `${agentName} (${agentCode})`
-                : "Oliver (HS23D4)"}
+            <div className={styles.row}>
+              <span>Agent Name & ID:</span>
+              <div className={styles.Right50}>
+                {agentName && agentCode
+                  ? `${agentName} (${agentCode})`
+                  : "Oliver (HS23D4)"}
+              </div>
             </div>
-          </div>
-          <div className={styles.row}>
-            <span>Plan Activated:</span>
-            <div className={styles.Right50}>
-              {subscriptionInfo?.planName || "Growth"} -{" "}
-              {subscriptionInfo?.planMins || "1500"} minutes
+            <div className={styles.row}>
+              <span>Plan Activated:</span>
+              <div className={styles.Right50}>
+                {subscriptionInfo?.planName || "Growth"} -{" "}
+                {subscriptionInfo?.planMins || "1500"} minutes
+              </div>
             </div>
-          </div>
-          <div className={styles.row}>
-            <span>Frequency & Price:</span>
-            <div className={styles.Right50}>
-              {subscriptionInfo
-                ? `${currencySymbol}${formatPrice(
-                    subscriptionInfo.planAmount
-                  )} / ${subscriptionInfo.interval}`
-                : "US $499 / month"}
+            <div className={styles.row}>
+              <span>Frequency & Price:</span>
+              <div className={styles.Right50}>
+                {subscriptionInfo
+                  ? `${currencySymbol}${formatPrice(
+                      subscriptionInfo.planAmount
+                    )} / ${subscriptionInfo.interval}`
+                  : "US $499 / month"}
+              </div>
             </div>
-          </div>
-          {/* <div className={styles.row}>
+            {/* <div className={styles.row}>
             <span>Discount Applied:</span>
             <div className={styles.Right50}>N/A</div>
           </div> */}
-          <div className={styles.row}>
-            <span>Billed Today:</span>
-            <div className={styles.Right50}>
-              {subscriptionInfo ? (
-                <>
-                  {`${currencySymbol}${formatPrice(
-                    subscriptionInfo.planAmount
-                  )} on `}
-                  {new Date(
-                    subscriptionInfo.currentPeriodStart
-                  ).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </>
-              ) : (
-                "$5,688.60 on July 12, 2025"
-              )}
-            </div>
-          </div>
-
-          <div className={styles.row}>
-            <span>Next Billing Date:</span>
-            <div className={styles.Right50}>
-              {subscriptionInfo
-                ? new Date(subscriptionInfo.nextRenewalDate).toLocaleDateString(
-                    "en-US",
-                    {
+            <div className={styles.row}>
+              <span>Billed Today:</span>
+              <div className={styles.Right50}>
+                {subscriptionInfo ? (
+                  <>
+                    {`${currencySymbol}${formatPrice(
+                      subscriptionInfo.planAmount
+                    )} on `}
+                    {new Date(
+                      subscriptionInfo.currentPeriodStart
+                    ).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
-                    }
-                  )
-                : "06 July 2026"}
-            </div>
-          </div>
-          {invoiceLink && (
-            <div className={styles.row}>
-              <span>Invoice Link:</span>
-              <div className={styles.Right50}>
-                <a
-                  href={invoiceLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.downloadButton}
-                  style={{
-                    color: "purple",
-                    textDecoration: "none",
-                    cursor: "pointer",
-                  }}
-                  download
-                >
-                  Download
-                </a>
+                    })}
+                  </>
+                ) : (
+                  "$5,688.60 on July 12, 2025"
+                )}
               </div>
             </div>
-          )}
 
-          <div className={styles.ButtonTakeME}>
-            <button
-              onClick={() => {
-                if (key !== "create") {
-                  localStorage.removeItem("selectedPlanData");
-                  localStorage.removeItem("allPlans");
-                  navigate("/dashboard", {
-                    state: { currentLocation },
-                  });
-                } else {
-                  localStorage.removeItem("selectedPlanData");
-                  localStorage.removeItem("allPlans");
-                  navigate("/steps", {
-                    state: { locationPath: "/checkout" },
-                  });
-                }
-              }}
-              className={styles.dashboardBtn}
-              // disabled={key === "create" ? true : false}
-            >
-              {key === "create"
-                ? "Finish Your Agent Creation"
-                : "Take me to Dashboard"}
-            </button>
+            <div className={styles.row}>
+              <span>Next Billing Date:</span>
+              <div className={styles.Right50}>
+                {subscriptionInfo
+                  ? new Date(
+                      subscriptionInfo.nextRenewalDate
+                    ).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : "06 July 2026"}
+              </div>
+            </div>
+            {invoiceLink && (
+              <div className={styles.row}>
+                <span>Invoice Link:</span>
+                <div className={styles.Right50}>
+                  <a
+                    href={invoiceLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.downloadButton}
+                    style={{
+                      color: "purple",
+                      textDecoration: "none",
+                      cursor: "pointer",
+                    }}
+                    download
+                  >
+                    Download
+                  </a>
+                </div>
+              </div>
+            )}
+
+            <div className={styles.ButtonTakeME}>
+              <button
+                onClick={() => {
+                  if (key !== "create") {
+                    localStorage.removeItem("selectedPlanData");
+                    localStorage.removeItem("allPlans");
+                    navigate("/dashboard", {
+                      state: { currentLocation },
+                    });
+                  } else {
+                    localStorage.removeItem("selectedPlanData");
+                    localStorage.removeItem("allPlans");
+                    // navigate("/steps", {
+                    //   state: { locationPath: "/checkout" },
+                    // });
+                    navigate("/dashboard", { replace: true });
+                  }
+                }}
+                className={styles.dashboardBtn}
+                // disabled={key === "create" ? true : false}
+              >
+                {key === "create"
+                  ? "Take me to Dashboard"
+                  : "Take me to Dashboard"}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

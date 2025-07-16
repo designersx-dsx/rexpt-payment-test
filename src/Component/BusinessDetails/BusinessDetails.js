@@ -48,9 +48,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   const [customBuisness, setcustomBuisness] = useState("");
   const [prevBuisnessType, setprevBuisnessType] = useState("");
   const { isLimitExceeded, CheckingUserLimit } = useCheckAgentCreationLimit(userId);
-
   const location = useLocation();
-
   const businessTypes = [
     {
       type: "Real Estate Broker",
@@ -486,7 +484,6 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
     }
   }, [CheckingUserLimit, isLimitExceeded]);
-
   return (
     <div className={styles.container}>
       {/* <h1 className={styles.title}>{EditingMode ? ' Edit: Business Details' : 'Business Details'}</h1> */}

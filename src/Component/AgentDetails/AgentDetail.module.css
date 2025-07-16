@@ -207,6 +207,7 @@
   font-size: 22px;
   font-weight: 600;
   color: #fff;
+  text-transform: capitalize;
 }
 
 .profileSection .greeting {
@@ -470,13 +471,14 @@
   word-break: break-word;
   border-top: 1px solid #e0e5f2;
   padding-top: 10px;
+  cursor: pointer;
 }
 
 .card1 h4 {
   font-size: 16px;
   font-weight: 600;
   color: #24252c;
-  cursor: pointer;
+
 
 }
 
@@ -928,7 +930,8 @@
   .AssignNumText p {
     font-size: 13px;
   }
-   .agentDetailsFlex p:last-child strong {
+
+  .agentDetailsFlex p:last-child strong {
     font-size: 20px;
   }
 }

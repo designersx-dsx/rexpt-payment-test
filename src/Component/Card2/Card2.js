@@ -3,7 +3,6 @@ import styles from "../Card2/Card2.module.css";
 
 const Card2 = ({ agentKnowledge }) => {
   const [agentDetails, setAgentDetails] = useState("");
-  console.log(agentDetails)
   useEffect(() => {
   setAgentDetails(agentKnowledge)
   }, [agentKnowledge]);
@@ -35,14 +34,14 @@ const Card2 = ({ agentKnowledge }) => {
         <div className={styles.details}>
           <p className={styles.Ptext}>Google My Business</p>
           <div className={styles.rightpart}>
-            <strong>{formatBusinessName(parsedKnowledge?.name || agentDetails.business?.googleBusinessName||agentDetails?.business?.businessName)||"NA"}</strong>
+            <strong>{formatBusinessName(parsedKnowledge?.name || agentDetails.business?.googleBusinessName||agentDetails?.business?.businessName)||"Not Available"}</strong>
           </div>
         </div>
 
         <div className={styles.details}>
           <p className={styles.Ptext}>Phone Number</p>
           <div className={styles.rightpart}>
-            <strong>{parsedKnowledge?.phone || "NA"}</strong>
+            <strong>{parsedKnowledge?.phone || "Not Available"}</strong>
           </div>
         </div>
 
@@ -50,7 +49,7 @@ const Card2 = ({ agentKnowledge }) => {
           <p className={styles.Ptext}>Address </p>
           <div className={styles.rightpart}>
             <strong>
-              {parsedKnowledge?.address1 || parsedKnowledge?.address || "NA"}
+              {parsedKnowledge?.address1 || parsedKnowledge?.address || "Not Available"}
             </strong>
           </div>
         </div>
@@ -58,7 +57,7 @@ const Card2 = ({ agentKnowledge }) => {
         <div className={styles.details}>
           <p className={styles.Ptext}>Email</p>
           <div className={styles.rightpart}>
-            <strong>{parsedKnowledge?.email || "NA"}</strong>
+            <strong>{parsedKnowledge?.email || "Not Available"}</strong>
           </div>
         </div>
 

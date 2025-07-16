@@ -24,17 +24,23 @@
     padding-bottom: 10px;
     border-bottom: 1px solid #E0E0E0;
     margin-block: 1rem;
+    width: 100%;
 }
 
 .Ptext {
     color: #4E4E50;
     font-size: 16px;
+    width: 40%;
 }
 
 .rightpart {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: end;
+    justify-content: end;
+    /* width: 60%; */
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .rightpart strong {
@@ -48,7 +54,7 @@
     background-color: #EDE9FC;
     padding: 4px 15px;
     border-radius: 20px;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
     width: fit-content;
     font-size: 14px;
 }

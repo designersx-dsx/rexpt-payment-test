@@ -154,6 +154,7 @@ function Dashboard() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
   const handleAssignNumberClick = (agent, e) => {
+    setAgentDetails(agent);
     e.stopPropagation();
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
@@ -249,21 +250,113 @@ function Dashboard() {
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
     }
-    sessionStorage.removeItem("selectedPlan");
-    sessionStorage.removeItem("updateBtn");
-    localStorage.removeItem("allPlans");
-    sessionStorage.removeItem("checkPage")
+    else {
+      localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("displayBusinessName");
+      localStorage.removeItem("agentName");
+      localStorage.removeItem("agentGender");
+      localStorage.removeItem("agentLanguageCode");
+      localStorage.removeItem("agentLanguage");
+      localStorage.removeItem("llmId");
+      localStorage.removeItem("agent_id");
+      localStorage.removeItem("knowledgeBaseId");
+      localStorage.removeItem("agentRole");
+      localStorage.removeItem("agentVoice");
+      localStorage.removeItem("agentVoiceAccent");
+      localStorage.removeItem("avatar");
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("knowledge_base_id");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("selectedAgentAvatar");
+      localStorage.removeItem("webUrl");
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("webUrl");
+      localStorage.removeItem("aboutBusiness");
+      localStorage.removeItem("additionalInstruction");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("knowledge_base_id");
+      localStorage.removeItem("bId");
+      sessionStorage.removeItem("UpdationMode");
+      sessionStorage.removeItem("agentName");
+      sessionStorage.removeItem("agentGender");
+      sessionStorage.removeItem("agentLanguageCode");
+      sessionStorage.removeItem("agentLanguage");
+      sessionStorage.removeItem("llmId");
+      sessionStorage.removeItem("agent_id");
+      sessionStorage.removeItem("knowledgeBaseId");
+      sessionStorage.removeItem("googleListing");
+      sessionStorage.removeItem("displayBusinessName");
+      sessionStorage.removeItem("aboutBusinessForm");
+      sessionStorage.removeItem("agentRole");
+      sessionStorage.removeItem("agentVoice");
+      sessionStorage.removeItem("agentVoiceAccent");
+      sessionStorage.removeItem("avatar");
+      sessionStorage.removeItem("businessDetails");
+      sessionStorage.removeItem("businessId");
+      sessionStorage.removeItem("businesServices");
+      sessionStorage.removeItem("businessLocation");
+      sessionStorage.removeItem("selectedCustomServices");
+      sessionStorage.removeItem("bId");
+      sessionStorage.removeItem("completedSteps");
+      sessionStorage.removeItem("currentStep");
+      sessionStorage.removeItem("avtarChecked");
+      sessionStorage.removeItem("selectedLang");
+      sessionStorage.removeItem("agentStatus");
+      localStorage.removeItem("UpdationMode");
+      localStorage.removeItem("UpdationModeStepWise");
+      localStorage.removeItem("agentName");
+      localStorage.removeItem("agentGender");
+      localStorage.removeItem("agentLanguageCode");
+      localStorage.removeItem("agentLanguage");
+
+      localStorage.removeItem("llmId");
+      localStorage.removeItem("agent_id");
+      localStorage.removeItem("knowledgeBaseId");
+      localStorage.removeItem("agentRole");
+      localStorage.removeItem("agentVoice");
+      localStorage.removeItem("agentVoiceAccent");
+      localStorage.removeItem("avatar");
+      localStorage.removeItem("googleUrl");
+      localStorage.removeItem("webUrl");
+      localStorage.removeItem("aboutBusiness");
+      localStorage.removeItem("additionalInstruction");
+      localStorage.removeItem("knowledge_base_name");
+      localStorage.removeItem("knowledge_base_id");
+      sessionStorage.removeItem("selectedfilterOption");
+      sessionStorage.removeItem("placeDetailsExtract");
+      sessionStorage.removeItem("agentNote");
+      sessionStorage.removeItem("prevBuisnessType");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("prevAgentGender");
+      sessionStorage.removeItem("UpdationModeStepWise");
+      sessionStorage.removeItem("customServices");
+      sessionStorage.removeItem("agentCode");
+      sessionStorage.removeItem("businessUrl");
+      sessionStorage.removeItem("selectedServices");
+      sessionStorage.removeItem("selectedPlan");
+      sessionStorage.removeItem("updateBtn");
+      localStorage.removeItem("allPlans");
+      sessionStorage.removeItem("checkPage")
+      localStorage.removeItem("hasHandledThankYou");
+      localStorage.removeItem("checkPage2")
+      sessionStorage.removeItem("VoiceAgentName");
+      sessionStorage.removeItem("selectedLangCode");
+      sessionStorage.removeItem("AgentCode");
+      sessionStorage.removeItem("priceId");
+      sessionStorage.removeItem("price");
+
+    }
+
+    // sessionStorage.clear()
   }, []);
-  // Navigate on agent card click
+  // Navigate on agent card clickk
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
-
     sessionStorage.setItem("SelectAgentId", agent?.agent_id);
     sessionStorage.setItem("SelectAgentBusinessId", agent?.businessId);
-
     navigate("/agent-detail", {
-      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
+      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId},
     });
   };
   useEffect(() => {
@@ -1730,18 +1823,37 @@ function Dashboard() {
                       >
                         Upgrade
                       </div>
-                      <div key={agent.agent_id}>
-                        <div
-                          className={styles.OptionItem}
-                          onMouseDown={(e) => {
-                            e.stopPropagation();
-                            setAgentToDelete(agent);
-                            setShowDeleteConfirm(true);
-                          }}
-                        >
-                          Delete Agent
-                        </div>
-                      </div>
+                      {(() => {
+                        const subscriptionStart = agent?.subscription?.current_period_start;
+                        const planName = agent?.agentPlan?.toLowerCase(); // normalize casing
+
+                        const isFreePlan = planName === "free";
+                        const subscriptionAgeInDays = subscriptionStart
+                          ? dayjs().diff(dayjs(subscriptionStart), "day")
+                          : Infinity;
+
+                        const isEligibleToDelete = isFreePlan || subscriptionAgeInDays <= 2;
+
+                        if (isEligibleToDelete) {
+                          return (
+                            <div key={agent.agent_id}>
+                              <div
+                                className={styles.OptionItem}
+                                onMouseDown={(e) => {
+                                  e.stopPropagation();
+                                  setAgentToDelete(agent);
+                                  setShowDeleteConfirm(true);
+                                }}
+                              >
+                                Delete Agent
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        return null;
+                      })()}
+
                       <div
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
@@ -2081,80 +2193,99 @@ function Dashboard() {
             </div>
           </div>
         )}
-        {showDeleteConfirm && agentToDelete && (
-          <div
-            className={styles.modalBackdrop}
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-            <div
-              className={styles.modalContainer}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2>Are you sure?</h2>
-              <p>
-                Do you want to delete agent{" "}
-                <strong>{agentToDelete.agentName}</strong>?
-              </p>
-              <div className={styles.modalButtons}>
-                <button
-                  className={`${styles.modalButton} ${styles.cancel}`}
-                  onClick={() => setShowDeleteConfirm(false)}
+        {showDeleteConfirm &&
+          agentToDelete &&
+          (() => {
+            const totalMins = Number(agentToDelete?.subscription?.plan_mins) || 0;
+            const minsLeft = agentToDelete?.mins_left || 0;
+            const planMins = totalMins;
+
+            const usedPercentage =
+              planMins > 0 ? ((planMins - minsLeft) / planMins) * 100 : 100;
+
+
+            const currentPeriodStart = agentToDelete?.subscription?.current_period_start;
+            const currentPeriodEnd = agentToDelete?.subscription?.current_period_end;
+
+            const subscriptionAgeDays = currentPeriodStart
+              ? dayjs().diff(dayjs(currentPeriodStart), "day")
+              : Infinity;
+
+            const isRefundEligible =
+              usedPercentage < 5 && subscriptionAgeDays <= 2;
+
+            return (
+              <div
+                className={styles.modalBackdrop}
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                <div
+                  className={styles.modalContainer}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  No
-                </button>
-                {deleteloading ? (
-                  <button
-                    className={`${styles.modalButton} ${styles.submit}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    Deleting <Loader size={18} />
-                  </button>
-                ) : (
-                  <button
-                    className={`${styles.modalButton} ${styles.submit}`}
-                    onClick={async () => {
-                      try {
-                        await handleDelete(agentToDelete);
-                        setShowDeleteConfirm(false);
-                        setAgentToDelete(null);
-                      } catch (error) {
-                        setPopupMessage(
-                          `Failed to delete agent: ${error.message}`
-                        );
-                        setPopupType("failed");
-                        setShowDeleteConfirm(false);
-                      }
-                    }}
-                  >
-                    Yes
-                  </button>
-                )}
-                {/* <button
-                  className={`${styles.modalButton} ${styles.submit}`}
-                  onClick={async () => {
-                    try {
-                      await handleDelete(agentToDelete.agent_id);
-                      setShowDeleteConfirm(false);
-                      setAgentToDelete(null);
-                    } catch (error) {
-                      setPopupMessage(
-                        `Failed to delete agent: ${error.message}`
-                      );
-                      setPopupType("failed");
-                      setShowDeleteConfirm(false);
-                    }
-                  }}
-                >
-                  Yes
-                </button> */}
+                  <h2>Are you sure?</h2>
+                  <p>
+                    Do you want to delete agent <strong>{agentToDelete.agentName}</strong>?
+                  </p>
+
+                  {agentToDelete?.subscription && (
+                    <p style={{ marginTop: "12px" }}>
+                      {isRefundEligible ? (
+                        <>
+                          Since this agent's subscription is within 2 days and less than 5% of minutes are used, a refund (minus 3% Stripe fee) will be issued to the original payment method within 5–7 business days.
+                        </>
+                      ) : (
+                        <>
+                          This subscription is either older than 2 days or more than 5% of the minutes are used. No refund will be provided per our policy.
+                        </>
+                      )}
+                    </p>
+                  )}
+
+                  <div className={styles.modalButtons}>
+                    <button
+                      className={`${styles.modalButton} ${styles.cancel}`}
+                      onClick={() => setShowDeleteConfirm(false)}
+                    >
+                      No
+                    </button>
+                    {deleteloading ? (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Deleting <Loader size={18} />
+                      </button>
+                    ) : (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        onClick={async () => {
+                          try {
+                            await handleDelete(agentToDelete);
+                            setShowDeleteConfirm(false);
+                            setAgentToDelete(null);
+                          } catch (error) {
+                            setPopupMessage(
+                              `Failed to delete agent: ${error.message}`
+                            );
+                            setPopupType("failed");
+                            setShowDeleteConfirm(false);
+                          }
+                        }}
+                      >
+                        Yes
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            );
+          })()}
+
 
         {showCancelConfirm &&
           agentToCancel &&
@@ -2502,6 +2633,8 @@ function Dashboard() {
         <AssignNumberModal
           isOpen={isAssignModalOpen}
           agentId={selectedAgentForAssign.agent_id}
+          agentDetails={agentDetails}
+           onAgentDetailsPage={false}
           onClose={() => {
             setIsAssignModalOpen(false);
             setSelectedAgentForAssign(null);
@@ -2509,7 +2642,6 @@ function Dashboard() {
         />
       )}
       {/* nitish */}
-
       {popupMessage && (
         <Popup
           type={popupType}
