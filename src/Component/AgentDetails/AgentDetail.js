@@ -1716,6 +1716,7 @@ const AgentDashboard = () => {
             agentId={agentDetails?.agentId}
             agentDetails={businessDetails}
             onAssignNumber={handleAssignNumberUpdated}
+            onAgentDetailsPage={true}
             onClose={() => { setIsAssignModalOpen(false); setRefresh((prev) => !prev); }}
 
           />

@@ -112,7 +112,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     const service = new window.google.maps.places.PlacesService(
       document.createElement("div")
     );
-
     service.getDetails({ placeId }, (result, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
 
@@ -133,6 +132,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
           hours: result.opening_hours?.weekday_text || [],
           businessStatus: result.business_status || "",
           categories: result.types || [],
+          address_components:result.address_components||[]
         };
         const updatedForm = {
           ...form1,

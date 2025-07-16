@@ -100,6 +100,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 } else {
                     throw new Error("Invalid IP data");
                 }
+                
             } catch (error) {
                 console.error("Error determining location-based currency:", error);
                 setUserCurrency("usd"); // fallback

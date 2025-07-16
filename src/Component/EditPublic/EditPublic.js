@@ -3,7 +3,7 @@ import styles from '../EditPublic/EditPublic.module.css';
 import EditHeader from '../EditHeader/EditHeader';
 import SectionHeader from '../SectionHeader/SectionHeader';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
-import { useNavigate ,useLocation} from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { validateWebsite } from '../../Store/apiStore';
 import Loader from '../Loader/Loader';
 import decodeToken from '../../lib/decodeToken';
@@ -16,18 +16,18 @@ const HTTPS_PREFIX = 'https://';
 const PREFIX_LEN = HTTPS_PREFIX?.length;
 
 const EditPublic = () => {
-      const agentnm=sessionStorage.getItem("agentName");
-        const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
+  const agentnm = sessionStorage.getItem("agentName");
+  const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
   const EditingMode = localStorage.getItem("UpdationMode");
-    const token = localStorage.getItem("token") || "";
+  const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const navigate = useNavigate();
-  const location = useLocation();  
+  const location = useLocation();
   const [placeDetails, setPlaceDetails] = useState(null);
   const [originalForm, setOriginalForm] = useState(null);
   const [currentForm, setcurrentForm] = useState(null);
-  
+
 
   const [loading, setLoading] = useState(true);
   const [googleListing, setGoogleListing] = useState("");
@@ -37,224 +37,24 @@ const EditPublic = () => {
   const [noBusinessWebsite, setNoBusinessWebsite] = useState(false);
   const [businessUrlError, setBusinessUrlError] = useState("");
   const [isVerified, setIsVerified] = useState(false);
-  const [urlVerificationInProgress, setUrlVerificationInProgress] =    useState(false);
-   const [showPopup, setShowPopup] = useState(false);
-      const [popupType, setPopupType] = useState(null);
-      const tempPlaceRef = useRef(null);
-      const [popupMessage, setPopupMessage] = useState("");
-          const { setHasFetched } =    useDashboardStore();   
-        // const setHasFetched=true;
-      const { handleCreateAgent } = useAgentCreator({
-      stepValidator: () => "EditBusinessType",
-      setLoading,
-      setPopupMessage,
-      setPopupType,
-      setShowPopup,
-      navigate,
-      setHasFetched,
-    });
+  const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState(null);
+  const tempPlaceRef = useRef(null);
+  const [popupMessage, setPopupMessage] = useState("");
+  const { setHasFetched } = useDashboardStore();
+  // const setHasFetched=true;
+  const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "EditBusinessType",
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+  });
 
   const agentName = sessionStorage.getItem("agentName") || "Agent";
-
-//      const fetchPlaceDetails = (placeId) => {
-//     // setLoading(true);
-//     const service = new window.google.maps.places.PlacesService(
-//       document.createElement("div")
-//     );
-
-//     service.getDetails({ placeId }, (result, status) => {
-//       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-      
-//         generateGoogleListingUrl(result);
-
-//         const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
-//         // Extract important fields from result
-//         const businessData = {
-//           businessName: result.name || "",
-//           address: result.formatted_address || "",
-//           phone: result.formatted_phone_number || "",
-//           internationalPhone: result.international_phone_number || "",
-//           website: result.website || "",
-//           rating: result.rating || "",
-//           totalRatings: result.user_ratings_total || "",
-//           hours: result.opening_hours?.weekday_text || [],
-//           businessStatus: result.business_status || "",
-//           categories: result.types || [],
-//         };
-//         const updatedForm = {
-//           ...form1,
-//           ...businessData,
-//         };
-//         sessionStorage.setItem(
-//           "placeDetailsExtract",
-//           JSON.stringify(updatedForm)
-//         );
-     
-//       } else {
-//         console.error("Place details fetch failed:", status);
-//       }
-//       // setLoading(false);
-//     });
-//   };
-//     const generateGoogleListingUrl = (place) => {
-//     const address = [
-//       place.address_components.find((c) => c.types.includes("street_number"))
-//         ?.long_name,
-//       place.address_components.find((c) => c.types.includes("route"))
-//         ?.long_name,
-//       place.address_components.find((c) => c.types.includes("premise"))
-//         ?.long_name,
-//       place.address_components.find((c) => c.types.includes("subpremise"))
-//         ?.long_name,
-//       place.address_components.find((c) =>
-//         c.types.includes("sublocality_level_1")
-//       )?.long_name,
-//       place.address_components.find((c) => c.types.includes("locality"))
-//         ?.long_name,
-//       place.address_components.find((c) =>
-//         c.types.includes("administrative_area_level_2")
-//       )?.long_name,
-//       place.address_components.find((c) =>
-//         c.types.includes("administrative_area_level_1")
-//       )?.long_name,
-//     ]
-//       .filter(Boolean)
-//       .join(" ");
-
-//     const googleLink = `https://www.google.com/search?q=${encodeURIComponent(
-//       place.name + " " + address
-//     )}`;
-//     setGoogleListing(googleLink);
-//   };
-//   const initAutocomplete = () => {
-//     const input = document.getElementById("google-autocomplete");
-//     if (!input) return;
-
-//     const autocomplete = new window.google.maps.places.Autocomplete(input, {
-//       types: ["establishment"],
-//       fields: ["place_id", "name", "url"],
-//     });
-
-//     autocomplete.addListener("place_changed", () => {
-//       const place = autocomplete.getPlace();
-//       if (place.place_id) {
-//         // setGoogleListing(place.url);
-//         // setDisplayBusinessName(place.name);
-//         tempPlaceRef.current = place;
-//         setPopupType("confirm");
-//         setPopupMessage("You have changed your Google My Business listing. Do you want to apply these changes in buisness details?");
-//         setShowPopup(true);
-
-//         // sessionStorage.setItem("googleListing", place.url);
-//         // sessionStorage.setItem("displayBusinessName", place.name);
-//         // // sessionStorage.setItem("googlePlaceDetails", JSON.stringify(place));
-//         //  fetchPlaceDetails(place.place_id);
-//       }
-//     });
-//   };
-//   useEffect(() => {
-//   const savedForm = JSON.parse(sessionStorage.getItem("aboutBusinessForm")) || {};
-//   const savedForm1 = JSON.parse(sessionStorage.getItem("businessDetails")) || {};
-//     console.log(savedForm)
-//   // Set initial state from sessionStorage
-//   setGoogleListing(savedForm.googleListing || "");
-//   setDisplayBusinessName(sessionStorage.getItem('displayBusinessName') || "");
-//   setBusinessUrl(savedForm.businessUrl || HTTPS_PREFIX);
-//   setNoGoogleListing(savedForm.isGoogleListing === 0);
-//   setNoBusinessWebsite(savedForm.isWebsiteUrl === 0);
-
-//   if (savedForm.isWebsiteUrl === 0) {
-//     setIsVerified(true);
-//   }
-
-//   // Wait for Google API to load
-//   const interval = setInterval(() => {
-//     if (window.google?.maps?.places) {
-//       initAutocomplete();
-//       clearInterval(interval);
-//       setLoading(false); // Hide loader when ready
-//     }
-//   }, 300);
-
-//   return () => clearInterval(interval);
-// }, []);
-
-//   const handleUrlChange = (e) => {
-//     let value = e.target.value;
-//     value = value.replace(/https?:\/\//gi, "");
-//     value = value.replace(/\s+/g, "");
-//     setBusinessUrl(HTTPS_PREFIX + value);
-//     if (businessUrlError) setBusinessUrlError("");
-//   };
-
-//   const handleUrlBlur = () => {
-//     const urlPattern = /^https:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/.*)?$/;
-//     if (!noBusinessWebsite && businessUrl && !urlPattern.test(businessUrl)) {
-//       setBusinessUrlError(
-//         "Please enter a valid URL starting with https:// and a valid domain."
-//       );
-//       setIsVerified(false);
-//     } else {
-//       setBusinessUrlError("");
-//       setIsVerified(true); // Assume verified for now
-//     }
-//   };
-
-//   const handleSave = () => {
-//     if (
-//       (!googleListing && !noGoogleListing) ||
-//       (!businessUrl && !noBusinessWebsite && !isVerified)
-//     ) {
-//       alert("Please fill in all required fields or check the boxes.");
-//       return;
-//     }
-
-//     const updatedForm = {
-//       googleListing,
-//       displayBusinessName,
-//       businessUrl,
-//       isGoogleListing: noGoogleListing ? 0 : 1,
-//       isWebsiteUrl: noBusinessWebsite ? 0 : 1,
-//     };
-
-//     sessionStorage.setItem("aboutBusinessForm", JSON.stringify(updatedForm));
-//     alert("Changes saved!");
-//     navigate(-1); // Go back to previous page
-//   };
-
-//   const handleCloseConfirmation=()=>{
-//     const place=tempPlaceRef.current;
-//     if(place){
-//      setGoogleListing(place.url);
-//     setDisplayBusinessName(place.name);
-
-//     sessionStorage.setItem("googleListing", place.url);
-//     sessionStorage.setItem("displayBusinessName", place.name);
-//     tempPlaceRef.current = null;
-
-//     }
-//   }
-// const handleConfirmGMBChange = () => {
-//   const place = tempPlaceRef.current;
-
-//   if (place) {
-//     setGoogleListing(place.url);
-//     setDisplayBusinessName(place.name);
-
-//     sessionStorage.setItem("googleListing", place.url);
-//     sessionStorage.setItem("displayBusinessName", place.name);
-
-//     fetchPlaceDetails(place.place_id); // Fetch details AFTER user confirms
-    
-//     tempPlaceRef.current = null;
-//     setTimeout(()=>{
-//           navigate('/edit-business-detail')
-
-//     },700)
-//   }
-
-//   setShowPopup(false);
-// };
   const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
       document.getElementById("google-autocomplete"),
@@ -277,6 +77,20 @@ const EditPublic = () => {
       }
     });
   };
+  function extractAddressFields(addressComponents) {
+    const getComponent = (primaryType, fallbackType = null) =>
+      addressComponents.find((comp) =>
+        comp.types.includes(primaryType) || (fallbackType && comp.types.includes(fallbackType))
+      )?.long_name || "";
+
+    return {
+      city: getComponent("locality", "sublocality_level_1"),
+      state: getComponent("administrative_area_level_1"),
+      country: getComponent("country"),
+      postal_code: getComponent("postal_code"),
+      street_number: getComponent("street_number"),
+    };
+  }
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
@@ -304,8 +118,8 @@ const EditPublic = () => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
-
         const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+        const addressFields = extractAddressFields(result?.address_components || []);
         // Extract important fields from result
         const businessData = {
           businessName: result.name || "",
@@ -318,6 +132,12 @@ const EditPublic = () => {
           hours: result.opening_hours?.weekday_text || [],
           businessStatus: result.business_status || "",
           categories: result.types || [],
+          street_number:addressFields.street_number||"",
+          city:addressFields.city,
+          state:addressFields.state,
+          country:addressFields.country,
+          postal_code:addressFields.postal_code
+
         };
         const updatedForm = {
           ...form1,
@@ -401,10 +221,10 @@ const EditPublic = () => {
     v = v.replace(/\s+/g, "").toLowerCase();
     const final = HTTPS_PREFIX + v;
     setBusinessUrl(final);
-      setcurrentForm(prev => ({
-    ...prev,
-    businessUrl: final
-  }));
+    setcurrentForm(prev => ({
+      ...prev,
+      businessUrl: final
+    }));
     setNoBusinessWebsite(false)
     if (businessUrlError) {
       setBusinessUrlError("");
@@ -422,19 +242,19 @@ const EditPublic = () => {
       const savedData = JSON.parse(
         sessionStorage.getItem("aboutBusinessForm") || "{}"
       );
-        setOriginalForm({
+      setOriginalForm({
         googleListing: savedData.googleListing || "",
         businessUrl: savedData.businessUrl || "",
-        isWebsiteUrl:savedData.isWebsiteUrl,
-        isGoogleListing:savedData.isGoogleListing,
+        isWebsiteUrl: savedData.isWebsiteUrl,
+        isGoogleListing: savedData.isGoogleListing,
 
       });
-        setcurrentForm({
+      setcurrentForm({
         googleListing: savedData.googleListing || "",
         businessUrl: savedData.businessUrl || "",
-        isWebsiteUrl:savedData.isWebsiteUrl,
-        isGoogleListing:savedData.isGoogleListing,
- 
+        isWebsiteUrl: savedData.isWebsiteUrl,
+        isGoogleListing: savedData.isGoogleListing,
+
       });
 
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
@@ -502,7 +322,7 @@ const EditPublic = () => {
     }
   }, [googleListing, businessUrl]);
 
-    useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
         const input = document.getElementById("google-autocomplete");
@@ -515,7 +335,7 @@ const EditPublic = () => {
   }, []);
 
 
- const handleContinue = (e) => {
+  const handleContinue = (e) => {
     e.preventDefault();
 
     const isWebsiteValid = businessUrl && isVerified;
@@ -550,10 +370,10 @@ const EditPublic = () => {
     );
     navigate("/edit-business-detail");
   };
-const isFormChanged = JSON.stringify(originalForm) !== JSON.stringify(currentForm);
-return (
+  const isFormChanged = JSON.stringify(originalForm) !== JSON.stringify(currentForm);
+  return (
     <>
-            <EditHeader title='Edit Agent ' agentName={agentnm} />
+      <EditHeader title='Edit Agent ' agentName={agentnm} />
       <div className={styles.Maindiv}>
         <SectionHeader
           heading="Public Listing"
@@ -564,7 +384,7 @@ return (
       <div className={styles.container}>
         <div className={styles.inputSection}>
           <label className={styles.label}>Google My Business</label>
-       <input
+          <input
             type="text"
             id="google-autocomplete"
             className={styles.input}
@@ -572,7 +392,7 @@ return (
             value={displayBusinessName}
             onChange={(e) => {
               setDisplayBusinessName(e.target.value);
-                setcurrentForm(prev => ({
+              setcurrentForm(prev => ({
                 ...prev,
                 displayBusinessName: e.target.value
               }));
@@ -581,7 +401,7 @@ return (
           />
         </div>
         <label className={styles.checkboxContainer}>
-            {/* <input
+          {/* <input
             type="checkbox"
             checked={noGoogleListing}
             onChange={(e) => {
@@ -608,8 +428,9 @@ return (
               const checked = e.target.checked;
               setNoGoogleListing(checked);
               setcurrentForm(prev => ({
-              ...prev,
-              isGoogleListing: checked ? 1 : 0,}))
+                ...prev,
+                isGoogleListing: checked ? 1 : 0,
+              }))
 
               const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
               form.isGoogleListing = checked ? 0 : 1;
@@ -639,7 +460,7 @@ return (
 
               sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
             }}
-/>
+          />
 
           <span className={styles.customCheckbox}></span>
           I do not have Google My Business Listing
@@ -650,7 +471,7 @@ return (
         <div className={styles.inputSection}>
           <label className={styles.label}>Website (URL)</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                 {/* <input
+            {/* <input
               type="text"
               className={styles.input}
               placeholder="https://example.com"
@@ -659,40 +480,40 @@ return (
               onBlur={handleUrlBlur}
               disabled={noBusinessWebsite}
             /> */}
-             <input               className={styles.input}
+            <input className={styles.input}
 
-                        id="https://your-website-url"
-                        type="url"
-                        placeholder="https://your website url"
-                        value={businessUrl}
-                        inputMode="url"
-                        autoComplete="url"
-                        onBlur={handleBlur}
-                        list="url-suggestions"
-                        style={{ width: "100%" }}
-                        onKeyDown={(e) => {
-                          const { key, target } = e;
-                          if (key !== "Backspace" && key !== "Delete") return;
-                          const { selectionStart, selectionEnd, value } =
-                            target;
-                          const fullSelection =
-                            selectionStart === 0 &&
-                            selectionEnd === value?.length;
+              id="https://your-website-url"
+              type="url"
+              placeholder="https://your website url"
+              value={businessUrl}
+              inputMode="url"
+              autoComplete="url"
+              onBlur={handleBlur}
+              list="url-suggestions"
+              style={{ width: "100%" }}
+              onKeyDown={(e) => {
+                const { key, target } = e;
+                if (key !== "Backspace" && key !== "Delete") return;
+                const { selectionStart, selectionEnd, value } =
+                  target;
+                const fullSelection =
+                  selectionStart === 0 &&
+                  selectionEnd === value?.length;
 
-                          if (fullSelection) {
-                            e.preventDefault();
-                            setBusinessUrl(HTTPS_PREFIX);
-                            // Put caret after the prefix
-                            requestAnimationFrame(() =>
-                              target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
-                            );
-                            return;
-                          }
-                          if (selectionStart <= PREFIX_LEN) e.preventDefault();
-                        }}
-                        disabled={noBusinessWebsite}
-                        onInput={handleInputChange}
-                      />
+                if (fullSelection) {
+                  e.preventDefault();
+                  setBusinessUrl(HTTPS_PREFIX);
+                  // Put caret after the prefix
+                  requestAnimationFrame(() =>
+                    target.setSelectionRange(PREFIX_LEN, PREFIX_LEN)
+                  );
+                  return;
+                }
+                if (selectionStart <= PREFIX_LEN) e.preventDefault();
+              }}
+              disabled={noBusinessWebsite}
+              onInput={handleInputChange}
+            />
             {urlVerificationInProgress ? (
               <Loader size={20} />
             ) : !noBusinessWebsite && businessUrl?.length > HTTPS_PREFIX?.length ? (
@@ -715,18 +536,20 @@ return (
             onChange={(e) => {
               const checked = e.target.checked;
               setNoBusinessWebsite(checked);
-               setcurrentForm(prev => ({
-              ...prev,
-              isWebsiteUrl: checked ? 0 : 1,}))
+              setcurrentForm(prev => ({
+                ...prev,
+                isWebsiteUrl: checked ? 0 : 1,
+              }))
               const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
               form.isWebsiteUrl = checked ? 0 : 1;
               if (checked) {
                 setBusinessUrl('');
                 setBusinessUrlError("");
-                 setNoBusinessWebsite(checked);
-               setcurrentForm(prev => ({
-              ...prev,
-              businessUrl:""}))
+                setNoBusinessWebsite(checked);
+                setcurrentForm(prev => ({
+                  ...prev,
+                  businessUrl: ""
+                }))
               }
               sessionStorage.setItem("aboutBusinessForm", JSON.stringify(form));
 
@@ -736,20 +559,20 @@ return (
           I do not have a business website
         </label>
 
-        <div className={styles.stickyWrapper} onClick={handleContinue}   style={{
-    pointerEvents: isFormChanged ? "auto" : "none",
-    opacity: isFormChanged ? 1 : 0.5, // Optional visual effect
-  }}>
-          <AnimatedButton label="Save" disabled={!isFormChanged}  />
+        <div className={styles.stickyWrapper} onClick={handleContinue} style={{
+          pointerEvents: isFormChanged ? "auto" : "none",
+          opacity: isFormChanged ? 1 : 0.5, // Optional visual effect
+        }}>
+          <AnimatedButton label="Save" disabled={!isFormChanged} />
         </div>
-           {showPopup && (
-                    <PopUp
-                    type={popupType}
-                    onClose={()=>{setShowPopup(false)}}
-                    message={popupMessage}
-                    // onConfirm={handleConfirmGMBChange}
-                    />
-                )}
+        {showPopup && (
+          <PopUp
+            type={popupType}
+            onClose={() => { setShowPopup(false) }}
+            message={popupMessage}
+          // onConfirm={handleConfirmGMBChange}
+          />
+        )}
       </div>
     </>
   );
