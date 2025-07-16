@@ -21,6 +21,7 @@ import SecureRoute from "./Pages/SecureRoute";
 import Dashboard from "./Component/Dashboard/Dashboard";
 import RexAgent from "./Component/RexAgent/RexAgent";
 import Plans from "./Component/Plans/Plans";
+import Delete from "./Component/Delete/Delete";
 import SubscriptionFlow from "./Component/Checkout/SubscriptionFlow";
 import Calendar from "./Component/Celender/Calendar";
 import BusinessServices from "./Component/BusinessServices/BusinessServices";
@@ -59,6 +60,7 @@ import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
 import Plan from "./Component/Plans/Plans";
 import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
+import RedirectHandler from "./utils/RedirectHandler ";
 
 
 // import Test from "./utils/Test";
@@ -278,10 +280,13 @@ function App() {
                 <Route path="/test-other" element={<Test />} />
                 <Route path="/thankyou/:id" element={<Thankyou />} />
                 <Route path="/cancel-payment" element={<CancelPage />} />
+                <Route path="/*" element={<RedirectHandler />} />
 
 
 
 
+
+                <Route path="/delete-account" element={<Delete />} />
               </Routes>
             </div>
           </BrowserRouter>

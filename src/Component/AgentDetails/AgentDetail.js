@@ -44,6 +44,7 @@ const AgentDashboard = () => {
     bussinesId:
       location?.state?.bussinesId ||
       sessionStorage.getItem("SelectAgentBusinessId"),
+    agentDetails: location?.state?.agentDetails,
   });
   const isConfirmedRef = useRef(false);
   const [isConfirming, setIsConfirming] = useState(false);
@@ -116,6 +117,7 @@ const AgentDashboard = () => {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
   const [agentCalApiKey, setAgentCalApiKey] = useState("")
+
   function formatE164USNumber(number) {
     const cleaned = number.replace(/\D/g, "");
 
@@ -367,7 +369,7 @@ const AgentDashboard = () => {
   useEffect(() => {
     getAgentDetailsAndBookings();
   }, []);
-  const handleAssignNumber = () => {
+  const handleAssignNumberUpdated = () => {
     getAgentDetailsAndBookings();
   };
   const handleLogout = () => {
@@ -667,8 +669,8 @@ const AgentDashboard = () => {
       setPopupMessage3("");
     }
   };
+  const handleAssignNumberClick = (agent, e, business) => {
 
-  const handleAssignNumberClick = (agent, e) => {
     e.stopPropagation();
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
@@ -682,10 +684,10 @@ const AgentDashboard = () => {
       setSelectedAgentForAssign(agent);
       setIsAssignModalOpen(true);
     }
-  };
+    setBusinessDetails(business)
 
+  };
   const handleUpgradeClick = (agent) => {
-    console.log("agent", agent)
     // setagentId(agent?.agent_id);
     // setsubscriptionId(agent?.subscriptionId);
     sessionStorage.setItem("updateBtn", "update")
@@ -784,7 +786,7 @@ const AgentDashboard = () => {
 
             <section>
               <div className={styles.agentCard}>
-                
+
                 <h3 className={`${styles.PlanTitle}  `}>
                   {agentData?.agent?.agentPlan}
                 </h3>
@@ -839,7 +841,7 @@ const AgentDashboard = () => {
                               } else {
                                 // setIsAssignModalOpen(true)
                                 // setIsAssignNumberModalOpen(true);
-                                handleAssignNumberClick(agentData?.agent, e);
+                                handleAssignNumberClick(agentData?.agent, e, agentData?.business);
 
                               }
                             }}
@@ -914,7 +916,7 @@ const AgentDashboard = () => {
                           filteredUrls[filteredUrls?.length - 1]?.url || "NA"
                         );
                       } else {
-                        return <div>NA</div>;
+                        return <div>Not Available</div>;
                       }
                     })()}
                   </span>
@@ -1334,7 +1336,7 @@ const AgentDashboard = () => {
               <div
                 className={styles.managementItem}
                 // onClick={() => setShowModal(true)}
-                onClick={()=>handleUpgradeClick(agentData)}
+                onClick={() => handleUpgradeClick(agentData)}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1712,8 +1714,10 @@ const AgentDashboard = () => {
           <AssignNumberModal
             isOpen={isAssignModalOpen}
             agentId={agentDetails?.agentId}
+            agentDetails={businessDetails}
+            onAssignNumber={handleAssignNumberUpdated}
             onClose={() => { setIsAssignModalOpen(false); setRefresh((prev) => !prev); }}
-          // onCallApi={handleAssignNumber}
+
           />
           {isAssignNumberModalOpen && (
             <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
