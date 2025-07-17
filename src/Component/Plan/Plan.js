@@ -46,7 +46,7 @@ const Planss = () => {
     let locationPath = location?.state?.locationPath
     let agentPlan = location?.state?.planName
     let interval = location?.state?.interval
-    console.log("interval", interval)
+    // console.log("interval", interval)
 
     const handleClick = () => {
         setFreeTrial(!freeTrial);
@@ -132,7 +132,7 @@ const Planss = () => {
             const response = await listAgents()
             const filterAgents = await response.filter(res => res.userId === userId)
             setAgentCount(filterAgents.length)
-            console.log(userId, "userid", filterAgents.length)
+            // console.log(userId, "userid", filterAgents.length)
 
         } catch (error) {
             console.log(error)
@@ -165,7 +165,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -198,7 +198,7 @@ const Planss = () => {
                         (p) => p.id === product.id
                     );
 
-                    console.log("product",product)
+                    // console.log("product",product)
 
                     const matchingPrices = product.prices.filter(
                         (p) =>
@@ -579,7 +579,7 @@ const Planss = () => {
                                                     return;
                                                 }
                                                 if (priceForInterval) {
-                                                    console.log("plan", plan)
+                                                    // console.log("plan", plan)
                                                     sessionStorage.setItem("selectedPlan", plan?.name)
 
                                                     if (agentID) {

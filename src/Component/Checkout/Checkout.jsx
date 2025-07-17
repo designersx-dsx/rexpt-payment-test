@@ -49,7 +49,7 @@ function CheckoutForm({
   const location = useLocation();
 
   const currentLocation = location.pathname;
-  console.log("currentLocation", location);
+  // console.log("currentLocation", location);
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -332,7 +332,7 @@ function CheckoutForm({
   useEffect(() => {
     const fetchReferralCoupon = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/reffered-coupan`, {
+        const response = await fetch(`${API_BASE_URL}/first-purchase-coupan`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -419,8 +419,8 @@ function CheckoutForm({
   }, []); // ✅ No dependency needed
 
   const callNextApiAndRedirect = async () => {
-    console.log("agentID", agentId);
-    console.log("userId", userId);
+    // console.log("agentID", agentId);
+    // console.log("userId", userId);
     try {
       const res = await fetch(`${API_BASE_URL}/agent/updateFreeAgent`, {
         method: "POST",
@@ -455,6 +455,15 @@ function CheckoutForm({
       setPopupMessage("Error completing subscription.");
     }
   };
+
+  // with Checkout
+  useEffect(() => {
+    const value = localStorage.getItem("hasHandledThankYou"); // hasHandledThankYou
+    if (value === "true") {
+      localStorage.removeItem("checkPage2"); // optional: clear after use
+      navigate("/dashboard", { replace: true });
+    }
+  }, []);
 
   // Handle subscription payment
   // const handleSubmit = async () => {
@@ -844,14 +853,7 @@ function CheckoutForm({
   //   };
 
   // with Checkout
-  // with Checkout
-  // useEffect(() => {
-  //   const value = localStorage.getItem("checkPage2");
-  //   if (value === "checkout2") {
-  //     localStorage.removeItem("checkPage2"); // optional: clear after use
-  //     navigate("/dashboard", { replace: true });
-  //   }
-  // }, []);
+  
   const handleSubmit = async () => {
     setLoading(true);
     setMessage("");
