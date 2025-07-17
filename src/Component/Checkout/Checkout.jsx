@@ -49,7 +49,7 @@ function CheckoutForm({
   const location = useLocation();
 
   const currentLocation = location.pathname;
-  console.log("currentLocation", location);
+  // console.log("currentLocation", location);
 
   // Billing & company state
   const [companyName, setCompanyName] = useState("");
@@ -72,6 +72,8 @@ function CheckoutForm({
   const [message, setMessage] = useState("");
   const [popupType, setPopupType] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
+
+  const [referralChecked, setReferralChecked] = useState(false);
 
   const VALID_COUNTRY_CODES = new Set([
     "AF",
@@ -327,6 +329,34 @@ function CheckoutForm({
 
   const checkPage = sessionStorage.getItem("checkPage");
 
+  useEffect(() => {
+    const fetchReferralCoupon = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/first-purchase-coupan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.eligible) {
+          setpromoCodeSend(data.promotionCodeID); // ✅ Automatically used in handleSubmit
+        }
+      } catch (err) {
+        console.error("Error checking referred coupon:", err.message);
+      } finally {
+        setReferralChecked(true); // ✅ flag completion
+      }
+    };
+
+    if (customerId && userId) {
+      fetchReferralCoupon();
+    }
+  }, [customerId, userId]);
+
   const COUNTRY_OPTIONS = Array.from(VALID_COUNTRY_CODES)
     .sort()
     .map((code) => ({ value: code, label: code }));
@@ -389,8 +419,8 @@ function CheckoutForm({
   }, []); // ✅ No dependency needed
 
   const callNextApiAndRedirect = async () => {
-    console.log("agentID", agentId);
-    console.log("userId", userId);
+    // console.log("agentID", agentId);
+    // console.log("userId", userId);
     try {
       const res = await fetch(`${API_BASE_URL}/agent/updateFreeAgent`, {
         method: "POST",
@@ -425,6 +455,15 @@ function CheckoutForm({
       setPopupMessage("Error completing subscription.");
     }
   };
+
+  // with Checkout
+  useEffect(() => {
+    const value = localStorage.getItem("hasHandledThankYou"); // hasHandledThankYou
+    if (value === "true") {
+      localStorage.removeItem("checkPage2"); // optional: clear after use
+      navigate("/dashboard", { replace: true });
+    }
+  }, []);
 
   // Handle subscription payment
   // const handleSubmit = async () => {
@@ -814,16 +853,8 @@ function CheckoutForm({
   //   };
 
   // with Checkout
-  // with Checkout
-  useEffect(() => {
-    const value = localStorage.getItem("checkPage2");
-    if (value === "checkout2") {
-      localStorage.removeItem("checkPage2"); // optional: clear after use
-      navigate("/dashboard", { replace: true });
-    }
-  }, []);
+  
   const handleSubmit = async () => {
-    console.log("run");
     setLoading(true);
     setMessage("");
     setErrors({});
@@ -839,12 +870,10 @@ function CheckoutForm({
     let url = "";
     if (subscriptionId || locationPath === "/update") {
       const queryParams = new URLSearchParams();
-      
 
       if (subscriptionId) queryParams.append("subscriptionId", subscriptionId);
       if (agentId) queryParams.append("agentId", agentId);
       if (userId) queryParams.append("userId", userId);
-      
 
       url = `${origin}/thankyou/update?${queryParams.toString()}`;
     } else {
@@ -854,7 +883,6 @@ function CheckoutForm({
 
       // url = `${origin}/thankyou/create?${queryParams.toString()}`;
       url = `${origin}/steps?${queryParams.toString()}`;
-
     }
     if (checkPage !== "checkout") {
       try {
@@ -902,10 +930,10 @@ function CheckoutForm({
   };
 
   useEffect(() => {
-    if (customerId) {
+    if (customerId && referralChecked) {
       handleSubmit();
     }
-  }, [customerId]);
+  }, [customerId, referralChecked]);
 
   const [promoCode, setPromoCode] = useState("");
   const [promoCodeSend, setpromoCodeSend] = useState("");

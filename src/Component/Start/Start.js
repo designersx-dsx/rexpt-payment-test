@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "../Start/Start.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
+import axios from "axios";
 
 function Start() {
   const navigate = useNavigate();
@@ -23,28 +24,69 @@ function Start() {
   };
   console.log(referral, selectedPlan)
   useEffect(() => {
-    let updated = false;
-    if (referral) {
-      sessionStorage.setItem("referredBy", referral);
-      searchParams.delete("referral");
-      updated = true;
-    }
-    if (selectedPlan) {
-      sessionStorage.setItem("selectedPlan", selectedPlan);
-      searchParams.delete("plan");
-      updated = true;
-    }
-    if (businessType) {
-      sessionStorage.setItem("businessType", businessType);
-      searchParams.delete("businessType");
-      updated = true;
-    }
+    const handleReferral = async () => {
+      const currentDomain = window.location.hostname;
+      const isFromReferrerLink = currentDomain === "refer.rxpt.us";
 
-    if (updated) {
-      // Update URL without query params
-      navigate(location.pathname, { replace: true });
-    }
-  }, [referral, selectedPlan, location.pathname, navigate]);
+      if (referral && isFromReferrerLink) {
+        try {
+          const res = await axios.get(
+            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}`
+          );
+
+          if (res?.data?.valid) {
+            sessionStorage.setItem("referredBy", referral);
+            window.location.href = `https://app.rexpt.in?referral=${referral}`;
+            navigate("/signup", { replace: true });
+          }
+          else {
+            window.location.href = `https://app.rexpt.in/`;
+            sessionStorage.removeItem("referredBy");
+          }
+        } catch (error) {
+          console.error("Failed to validate referral:", error);
+        }
+      }
+
+      let updated = false;
+      if (referral) {
+        try {
+          const res = await axios.get(
+            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}`
+          );
+          if (res?.data?.valid) {
+          sessionStorage.setItem("referredBy", referral);
+          searchParams.delete("referral");
+          navigate("/signup", { replace: true });
+          updated = true;
+           }else {
+            console.log("Invalid referral code:", referral);
+            sessionStorage.removeItem("referredBy");
+           }
+
+        } catch (error) {
+          console.error("Failed to validate referral:", error);
+          sessionStorage.removeItem("referredBy");
+        }
+        }
+        if (selectedPlan) {
+          sessionStorage.setItem("selectedPlan", selectedPlan);
+          searchParams.delete("plan");
+          updated = true;
+        }
+        if (businessType) {
+          sessionStorage.setItem("businessType", businessType);
+          searchParams.delete("businessType");
+          updated = true;
+        }
+
+        if (updated) {
+          navigate(location.pathname, { replace: true });
+        }
+      };
+
+      handleReferral();
+    }, [referral, selectedPlan, businessType, location.pathname, location.search, navigate]);
 
   useEffect(() => {
     const setVH = () => {

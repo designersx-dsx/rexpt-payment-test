@@ -34,7 +34,6 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const [userId, setUserId] = useState(userIdFromToken)
 
     const [agentCount, setAgentCount] = useState()
-    console.log("agentCount", agentCount)
 
 
     const navigate = useNavigate();
@@ -96,7 +95,6 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 if (data.success && data.country_code) {
                     const currency = mapCountryToCurrency(data.country_code);
                     setUserCurrency(currency);
-                    console.log(data)
                 } else {
                     throw new Error("Invalid IP data");
                 }
@@ -142,7 +140,6 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         (p) => p.id === product.id
                     );
 
-                    console.log("product", product)
 
                     const matchingPrices = product.prices.filter(
                         (p) =>
@@ -266,7 +263,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
             const response = await listAgents()
             const filterAgents = await response.filter(res => res.userId === userId)
             setAgentCount(filterAgents.length)
-            console.log(userId, "userid", filterAgents.length)
+            // console.log(userId, "userid", filterAgents.length)
 
         } catch (error) {
             console.log(error)

@@ -13,7 +13,7 @@ import decodeToken from "../../lib/decodeToken";
 import Loader2 from "../Loader2/Loader2";
 export default function SubscriptionFlow() {
   const location = useLocation();
-  console.log("location",location)
+  // console.log("location",location)
   const navigate = useNavigate();
   const { user, setUser } = useUser();
   // const priceId = location.state?.priceId;
@@ -50,7 +50,7 @@ export default function SubscriptionFlow() {
     setUserId(result.id);
     setCustomerId(result.customerId)
     if (result?.email) setEmail(result.email);
-    console.log(result)
+    // console.log(result)
   }, []);
 
   useEffect(() => {
@@ -215,7 +215,7 @@ export default function SubscriptionFlow() {
 
   const handlePaymentConfirm = () => {
     setPaymentConfirmed(true);
-    console.log("Payment was confirmed");
+    // console.log("Payment was confirmed");
   };
   // Render
   return (
@@ -223,9 +223,9 @@ export default function SubscriptionFlow() {
       {/* <h2>Complete Your Payment</h2> */}
 
       {/* {loading && !popupMessage && !message && ( */}
-              <div className={styles.loaderWrapper}>
+              {/* <div className={styles.loaderWrapper}>
                 <Loader2 />
-              </div>
+              </div> */}
             {/* )} */}
 
       {/* Email Input with Edit button */}

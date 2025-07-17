@@ -262,7 +262,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
     if (e.target.value !== "Other") {
       setcustomBuisness(""); // Clear textbox if not "Other"
       updateSessionBusinessDetails("businessType", e.target.value);
-         sessionStorage.removeItem("showInput");
+      sessionStorage.removeItem("showInput");
     }
     updateSessionBusinessDetails("businessType", e.target.value);
     if (businessTypeSubmitted) {
@@ -279,8 +279,8 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       if (stored && stored !== "undefined" && stored !== "null") {
         existing = JSON.parse(stored);
         // selectedServices
-         sessionStorage.removeItem("selectedServices");
-          sessionStorage.removeItem("businesServices");
+        sessionStorage.removeItem("selectedServices");
+        sessionStorage.removeItem("businesServices");
       }
     } catch (e) {
       console.error("Error parsing sessionStorage businessDetails:", e);
@@ -414,7 +414,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
   useImperativeHandle(ref, () => ({
     validate: () => {
       // Validate business type
-  
+
       if (!businessType) {
 
         setBusinessTypeError("Please select a business type.");
@@ -428,15 +428,15 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       }
 
 
-  // useEffect(() => {
-  //   if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
-  //     setShowPopup(true);
-  //     setPopupType('failed');
-  //     setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
-  //   }
-  // }, [CheckingUserLimit, isLimitExceeded]);
+      // useEffect(() => {
+      //   if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
+      //     setShowPopup(true);
+      //     setPopupType('failed');
+      //     setPopupMessage("Agent creation limit exceeded. Please upgrade your plan!");
+      //   }
+      // }, [CheckingUserLimit, isLimitExceeded]);
 
-  // if (CheckingUserLimit) return 
+      // if (CheckingUserLimit) return 
 
       // Validate business size
       if (!businessSize) {
@@ -502,33 +502,35 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       <div className={styles.ListDiv}>
         <div className={styles.optionList}>
           {filteredBusinessTypes.length > 0 ? (
-            filteredBusinessTypes.map((item, index) => (
-              <label className={styles.option} key={index}>
-                <div className={styles.forflex}>
-                  <div className={styles.icon}>
-                    <img
-                      src={item.icon}
-                      alt={`${item.type} icon`}
-                      className={styles.iconImg}
+            [...filteredBusinessTypes]
+              .sort((a, b) => a.type.localeCompare(b.type))
+              .map((item, index) => (
+                <label className={styles.option} key={index}>
+                  <div className={styles.forflex}>
+                    <div className={styles.icon}>
+                      <img
+                        src={item.icon}
+                        alt={`${item.type} icon`}
+                        className={styles.iconImg}
+                      />
+                    </div>
+                    <div className={styles.strongDiv}>
+                      <strong>{item.type}</strong>
+                      <p className={styles.subType}>{item.subtype}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <input
+                      type="radio"
+                      name="businessType"
+                      value={item.type}
+                      checked={businessType === item.type}
+                      onChange={handleBusinessTypeChange}
                     />
                   </div>
-                  <div className={styles.strongDiv}>
-                    <strong>{item.type}</strong>
-                    <p className={styles.subType}>{item.subtype}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <input
-                    type="radio"
-                    name="businessType"
-                    value={item.type}
-                    checked={businessType === item.type}
-                    onChange={handleBusinessTypeChange}
-                  />
-                </div>
-              </label>
-            ))
+                </label>
+              ))
           ) : (
             <p className={styles.noItemFound}>No item found</p>
           )}
