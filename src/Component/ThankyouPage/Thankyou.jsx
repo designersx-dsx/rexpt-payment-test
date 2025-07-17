@@ -186,7 +186,7 @@ function Thankyou({ onSubmit }) {
   };
 
   const callNextApiAndRedirect = async () => {
-    console.log("Calling updateFreeAgent API with:", { userId, agentId });
+    // console.log("Calling updateFreeAgent API with:", { userId, agentId });
 
     try {
       const res = await fetch(
@@ -241,7 +241,7 @@ function Thankyou({ onSubmit }) {
       });
 
       const data = await res.json();
-      console.log("Subscription Info:", data);
+      // console.log("Subscription Info:", data);
 
       if (data && !data.error) {
         // const { planAmount, ...rest } = data; // ignore planAmount
@@ -385,7 +385,7 @@ function Thankyou({ onSubmit }) {
               <div className={styles.Right50}>
                 {subscriptionInfo
                   ? `${currencySymbol}${formatPrice(
-                      subscriptionInfo.planAmount
+                      subscriptionInfo?.metadata?.original_plan_amount
                     )} / ${subscriptionInfo.interval}`
                   : "US $499 / month"}
               </div>

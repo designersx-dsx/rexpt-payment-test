@@ -358,7 +358,7 @@ function Dashboard() {
     sessionStorage.setItem("SelectAgentId", agent?.agent_id);
     sessionStorage.setItem("SelectAgentBusinessId", agent?.businessId);
     navigate("/agent-detail", {
-      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId},
+      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
     });
   };
   useEffect(() => {
@@ -1193,7 +1193,6 @@ function Dashboard() {
         (ag) => ag.agent_id === agentToDeactivate.agent_id
       );
 
-      console.log("agentData", agentData)
       const knowledgeBaseId = agentData?.knowledgeBaseId;
       const businessId = agentData?.businessId;
 
@@ -1411,7 +1410,6 @@ function Dashboard() {
     }
   };
   const handleUpgradeClick = (agent) => {
-    console.log("agent", agent)
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
     sessionStorage.setItem("updateBtn", "update")
@@ -2516,7 +2514,7 @@ function Dashboard() {
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
       {/* Floating Button */}
-      {showreferralfloating == "true" && (
+      {/* {showreferralfloating == "true" && (
         <div
           className={styles.floating}
           onClick={async () => {
@@ -2536,19 +2534,15 @@ function Dashboard() {
             </p>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      {/* <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className={styles.Refferalinfo}>
           <div className={styles.headerPart}>
             <h3>Earn 5% Commission & Give 5% Discount!</h3>
           </div>
           <div className={styles.card}>
-            {/* <label className={styles.checkboxLabel}>
-              Show Referral link on Dashboard
-              <input type="checkbox" className={styles.customCheckbox} />
-            </label> */}
 
             <div className={styles.linkSection}>
               <p className={styles.label}>Referral Link</p>
@@ -2602,10 +2596,8 @@ function Dashboard() {
                 </p>
               </div>
             </div>
-            {/* <AnimatedButton label = 'Share Referral Link' onClick={async () => shareReferralLink(showDashboardReferral)}/> */}
             <div
               className={styles.btnTheme}
-            // onClick={async () => shareReferralLink(showDashboardReferral)}
             >
               <div className={styles.imageWrapper}>
                 <img src="svg/svg-theme2.svg" alt="" />
@@ -2617,7 +2609,7 @@ function Dashboard() {
             </div>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
 
       {/* <Footer /> */}
       <Footer2 />
