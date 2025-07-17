@@ -118,7 +118,7 @@ const AgentDashboard = () => {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
   const [agentCalApiKey, setAgentCalApiKey] = useState("")
- const isRefreshing = useContext(RefreshContext);
+  const isRefreshing = useContext(RefreshContext);
   function formatE164USNumber(number) {
     const cleaned = number.replace(/\D/g, "");
 
@@ -706,10 +706,15 @@ const AgentDashboard = () => {
       },
     });
   };
+  useEffect(() => {
+    if (isRefreshing) {
+      getAgentDetailsAndBookings();
+    }
+  }, [isRefreshing])
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
-       isRefreshing ?"":<Loader2 />
+        <Loader2 />
       ) : (
         <>
           <div className={styles.Forsticky}>

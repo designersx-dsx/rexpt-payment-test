@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./AgentSetupHelp.module.css";
 import EditHeader from "../EditHeader/EditHeader";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
@@ -6,6 +6,7 @@ import decodeToken from "../../lib/decodeToken";
 import { getAgentScheduleByUserId, saveAgentSchedule } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
+import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 function generateTimeSlots(start = "09:00", end = "18:30", interval = 30) {
   const slots = [];
   let [startHour, startMin] = start.split(":").map(Number);
@@ -38,10 +39,6 @@ function generateTimeSlots(start = "09:00", end = "18:30", interval = 30) {
 
   return slots;
 }
-
-
-
-
 const timeSlots = generateTimeSlots();
 // function getNext7Days(startDate = new Date(), skipFromDate = null) {
 //   const days = [];
@@ -144,6 +141,7 @@ export default function AppointmentScheduler() {
   const [loading, setLoading] = useState(false);
   const [existingSchedule, setExistingSchedule] = useState(null);
   const [formDisabled, setFormDisabled] = useState(false);
+  const isRefreshing = useContext(RefreshContext);
   const fetchData = async () => {
     try {
       const res = await getAgentScheduleByUserId(userIdFromToken);
@@ -178,6 +176,11 @@ export default function AppointmentScheduler() {
       }
     }
   }, []);
+  useEffect(() => {
+    if (isRefreshing) {
+      fetchData();
+    }
+  }, [])
 
 
   useEffect(() => {
@@ -260,7 +263,7 @@ export default function AppointmentScheduler() {
       <EditHeader title="Agent Setup" />
       {formDisabled && (
         <p className={styles.warning}>
-           <strong style={{ color: "#5a20d8" }}>Disclaimer:</strong> You have already booked a slot. You cannot schedule another until this one is completed. To know your ticket status, kindly <a href="mailto:support@rxpt.us"  target="_blank" rel="noopener noreferrer" style={{ color: "purple", fontWeight: 600 }}>Contact Support</a>.
+          <strong style={{ color: "#5a20d8" }}>Disclaimer:</strong> You have already booked a slot. You cannot schedule another until this one is completed. To know your ticket status, kindly <a href="mailto:support@rxpt.us" target="_blank" rel="noopener noreferrer" style={{ color: "purple", fontWeight: 600 }}>Contact Support</a>.
         </p>
       )}
 

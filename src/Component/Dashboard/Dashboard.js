@@ -44,7 +44,7 @@ import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
-      const isRefreshing = useContext(RefreshContext);
+  const isRefreshing = useContext(RefreshContext);
   const navigate = useNavigate();
   const { user } = useUser();
   // Retell Web Client states
@@ -863,6 +863,7 @@ function Dashboard() {
     sessionStorage.setItem("naviateFrom", "dashboard");
     sessionStorage.setItem("SelectAgentBusinessId", ag?.businessId);
     sessionStorage.setItem("SelectAgentId", ag?.agent_id);
+    sessionStorage.setItem("plan", ag?.agentPlan);
     navigate("/edit-agent", {
       state: {
         agentId: ag?.agent_id,
@@ -1546,8 +1547,6 @@ function Dashboard() {
     }
     return number;
   }
-
-
   return (
     <div>
       <div className={styles.forSticky}>
@@ -2628,7 +2627,7 @@ function Dashboard() {
           isOpen={isAssignModalOpen}
           agentId={selectedAgentForAssign.agent_id}
           agentDetails={agentDetails}
-           onAgentDetailsPage={false}
+          onAgentDetailsPage={false}
           onClose={() => {
             setIsAssignModalOpen(false);
             setSelectedAgentForAssign(null);

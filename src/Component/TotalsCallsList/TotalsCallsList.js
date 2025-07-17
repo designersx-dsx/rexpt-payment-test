@@ -1,5 +1,5 @@
 // pages/index.js
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styles from "./TotalsCallsList.module.css";
 import HeaderFilter from "../HeaderFilter/HeaderFilter";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { API_BASE_URL, getAllAgentCalls } from "../../Store/apiStore";
 import Loader from "../Loader/Loader";
 import Loader2 from "../Loader2/Loader2";
 import { useNavigate } from "react-router-dom";
+import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 
 const options = [
   { id: 1, label: "All", imageUrl: "svg/ThreOpbtn.svg" },
@@ -16,10 +17,10 @@ const options = [
 ];
 
 const callsPerPage = 6;
-
 export default function Home() {
   const totalAgentView = localStorage.getItem("filterType");
   const sessionAgentId = sessionStorage.getItem("agentId") || "";
+  const isRefreshing = useContext(RefreshContext);
   const [agentId, setAgentId] = useState(
     totalAgentView === "all" ? "all" : sessionAgentId || ""
   );
@@ -190,7 +191,15 @@ export default function Home() {
         return "";
     }
   };
-
+  useEffect(() => {
+    if (isRefreshing) {
+      if (agentId === "all") {
+        fetchAllAgentCalls();
+      } else {
+        fetchCallHistory();
+      }
+    }
+  }, [isRefreshing]);
 
   return (
     <div className={styles.container}>
@@ -258,15 +267,15 @@ export default function Home() {
                       navigate(`/call-details/${call.call_id}`);
                     }}
                   >
-                   <td> <div className={styles.callDateTime}> 
-                    <div> {call?.end_timestamp ? getDateTimeFromTimestamp(call?.end_timestamp).time : '-'} </div> 
-                    <div className={styles.callDate}> {call?.end_timestamp ? formattedDate(call?.end_timestamp):'-'} </div>
-                     </div> 
-                     </td> 
-                     <td>{call?.duration_ms? convertMsToMinSec(call.duration_ms) : '-'}</td> 
-                     <td> <p className={`${styles.fromNumber} ${getSentimentClass(call.user_sentiment || call?.call_analysis?.user_sentiment)}`}> 
-                      {call?.call_type =='phone_call'? call?.from_number : call?.call_type } </p> 
-                      </td>
+                    <td> <div className={styles.callDateTime}>
+                      <div> {call?.end_timestamp ? getDateTimeFromTimestamp(call?.end_timestamp).time : '-'} </div>
+                      <div className={styles.callDate}> {call?.end_timestamp ? formattedDate(call?.end_timestamp) : '-'} </div>
+                    </div>
+                    </td>
+                    <td>{call?.duration_ms ? convertMsToMinSec(call.duration_ms) : '-'}</td>
+                    <td> <p className={`${styles.fromNumber} ${getSentimentClass(call.user_sentiment || call?.call_analysis?.user_sentiment)}`}>
+                      {call?.call_type == 'phone_call' ? call?.from_number : call?.call_type} </p>
+                    </td>
 
                     <td>
                       {(() => {

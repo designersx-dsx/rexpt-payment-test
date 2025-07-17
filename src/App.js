@@ -82,7 +82,7 @@ function App() {
           </p>
         </div>
         <div className="ForMobile">
-          {/* <PreventPullToRefresh setRefreshKey={setRefreshKey}> */}
+          <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             <BrowserRouter>
               <div className="App" key={refreshKey}>
                 {/* <RoutePersistence /> */}
@@ -288,7 +288,7 @@ function App() {
                 </Routes>
               </div>
             </BrowserRouter>
-          {/* </PreventPullToRefresh> */}
+          </PreventPullToRefresh>
         </div>
       </div>
 
