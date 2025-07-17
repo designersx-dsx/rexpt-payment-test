@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
 import Footer from "../AgentDetails/Footer/Footer";
 import Plan from "../Plan/Plan";
@@ -39,10 +39,12 @@ import Modal3 from "../Modal3/Modal3";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 
 import axios from "axios";
+import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
+      const isRefreshing = useContext(RefreshContext);
   const navigate = useNavigate();
   const { user } = useUser();
   // Retell Web Client states
