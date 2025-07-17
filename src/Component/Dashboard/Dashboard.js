@@ -358,7 +358,7 @@ function Dashboard() {
     sessionStorage.setItem("SelectAgentId", agent?.agent_id);
     sessionStorage.setItem("SelectAgentBusinessId", agent?.businessId);
     navigate("/agent-detail", {
-      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId},
+      state: { agentId: agent?.agent_id, bussinesId: agent?.businessId },
     });
   };
   useEffect(() => {
@@ -1193,7 +1193,6 @@ function Dashboard() {
         (ag) => ag.agent_id === agentToDeactivate.agent_id
       );
 
-      console.log("agentData", agentData)
       const knowledgeBaseId = agentData?.knowledgeBaseId;
       const businessId = agentData?.businessId;
 
@@ -1411,7 +1410,6 @@ function Dashboard() {
     }
   };
   const handleUpgradeClick = (agent) => {
-    console.log("agent", agent)
     setagentId(agent?.agent_id);
     setsubscriptionId(agent?.subscriptionId);
     sessionStorage.setItem("updateBtn", "update")
