@@ -328,6 +328,38 @@ function CheckoutForm({
   ]);
 
   const checkPage = sessionStorage.getItem("checkPage");
+  const [UserCurrency, setUserCurrency] = useState("usd");
+
+  useEffect(() => {
+    const getLocationCurrency = async () => {
+      try {
+        const response = await fetch("https://ipwho.is/");
+        const data = await response.json();
+
+        if (data.success && data.country_code) {
+          const currency = mapCountryToCurrency(data.country_code);
+          setUserCurrency(currency);
+        } else {
+          throw new Error("Invalid IP data");
+        }
+      } catch (error) {
+        console.error("Error determining location-based currency:", error);
+        setUserCurrency("usd"); // fallback;
+      }
+    };
+    const mapCountryToCurrency = (countryCode) => {
+      const countryCurrencyMap = {
+        IN: "inr",
+        US: "usd",
+        CA: "cad",
+        AU: "aud",
+        GB: "gbp",
+      };
+      return countryCurrencyMap[countryCode] || "usd";
+    };
+
+    getLocationCurrency();
+  }, []);
 
   useEffect(() => {
     const fetchReferralCoupon = async () => {
@@ -337,7 +369,7 @@ function CheckoutForm({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId,priceId }),
+          body: JSON.stringify({ userId, priceId }),
         });
 
         const data = await response.json();
@@ -853,7 +885,7 @@ function CheckoutForm({
   //   };
 
   // with Checkout
-  
+
   const handleSubmit = async () => {
     setLoading(true);
     setMessage("");
@@ -894,7 +926,8 @@ function CheckoutForm({
             body: JSON.stringify({
               customerId,
               priceId,
-              promotionCode: promoCodeSend,
+              promotionCode: UserCurrency === "usd" ? promoCodeSend : undefined,
+
               userId,
               companyName,
               gstNumber,
