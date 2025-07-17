@@ -614,18 +614,20 @@ const getFromStorage = (key, fallback = "") =>
 
 export const useAgentCreator = ({
   stepValidator = () => true,
-  setLoading = () => {},
-  setPopupMessage = () => {},
-  setPopupType = () => {},
-  setShowPopup = () => {},
-  navigate = () => {},
-  setHasFetched = () => {},
+  setLoading = () => { },
+  setPopupMessage = () => { },
+  setPopupType = () => { },
+  setShowPopup = () => { },
+  navigate = () => { },
+  setHasFetched = () => { },
 }) => {
   const token = localStorage.getItem("token") || "";
   const sessionBusinessiD = sessionStorage.getItem("bId");
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
+
+
   // const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
   // const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
   const [agentCount, setAgentCount] = useState(0);
@@ -708,6 +710,8 @@ export const useAgentCreator = ({
 
     const agentGender = sessionStorage.getItem("agentGender");
     const languageSelect = sessionStorage?.getItem("agentLanguage");
+    const plan = sessionStorage.getItem("plan")
+    const languageAccToPlan = (plan === "Starter" || plan === "Free") ? languageSelect : "multi";
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
     const sanitize = (str) =>
@@ -729,7 +733,7 @@ export const useAgentCreator = ({
 
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(
       getBusinessNameFromGoogleListing?.businessName ||
-        getBusinessNameFormCustom
+      getBusinessNameFormCustom
     )}_${sanitize(role_title)}_${packageValue}#${agentCount}`;
 
     const CustomservicesArray =
@@ -777,6 +781,7 @@ export const useAgentCreator = ({
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+      languageAccToPlan
     });
 
     const getLeadTypeChoices = () => {
@@ -1130,17 +1135,17 @@ export const useAgentCreator = ({
                 ],
               },
               {
-              type: "string",
-              name: "address",
-              description: "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
-              examples: ["123 Main St, Delhi", "42 Wallaby Way, Sydney", "1490 Aandhar Eleven"],
+                type: "string",
+                name: "address",
+                description: "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+                examples: ["123 Main St, Delhi", "42 Wallaby Way, Sydney", "1490 Aandhar Eleven"],
               },
               {
                 type: "number",
                 name: "phone_number",
                 description:
                   "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
-                
+
               },
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,

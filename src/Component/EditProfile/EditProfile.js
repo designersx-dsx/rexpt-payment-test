@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import styles from "../EditProfile/EditProfile.module.css";
 import Refferal from "../Refferal/Refferal";
 import MySubscription from "../MySubscription/MySubscription";
@@ -25,6 +25,7 @@ import Loader from "../Loader/Loader";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import axios from "axios";
+import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 
 const EditProfile = () => {
   const fileInputRef = useRef(null);
@@ -69,7 +70,7 @@ const EditProfile = () => {
   const [resendTimer, setResendTimer] = useState(60);
   const isOtpFilled = otp.every((digit) => digit !== "");
   const [subscriptionDetails, setSubscriptionDetails] = useState({});
-
+  const isRefreshing = useContext(RefreshContext);
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
   };
@@ -104,58 +105,64 @@ const EditProfile = () => {
       address !== initialAddress
     );
   };
-
-  useEffect(() => {
-    if (!userId) return;
-    const getEndUserSubscriptions = async () => {
-      try {
-        const data = await getEndUserSubscriptions_Billings(userId);
-        // console.log("User subscription Data:", data);
-        setSubscriptionDetails(data)
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
+  const getEndUserSubscriptions = async () => {
+    try {
+      const data = await getEndUserSubscriptions_Billings(userId);
+      // console.log("User subscription Data:", data);
+      setSubscriptionDetails(data)
+    } catch (error) {
+      console.error("Error fetching user details:", error);
     }
-    getEndUserSubscriptions();
-  }, [userId]);
+  }
 
+  const fetchUser = async () => {
+    try {
+      if (!isRefreshing) { setLoading(true); }
+      const user = await getUserDetails(userId);
+      setReferralCode(user?.referralCode);
+      setShowDashboardReferral(user?.showreferralfloating);
+      localStorage.setItem(
+        "showreferralfloating",
+        user?.showreferralfloating
+      );
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        profilePicture: `${API_BASE_URL?.split("/api")[0]}${user?.profilePicture?.split("public")[1]
+          }`,
+      });
+      setInitialData({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        profilePicture: `${API_BASE_URL?.split("/api")[0]}${user?.profilePicture?.split("public")[1]
+          }`,
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Failed to load user details.");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setLoading(true);
-        const user = await getUserDetails(userId);
-        setReferralCode(user?.referralCode);
-        setShowDashboardReferral(user?.showreferralfloating);
-        localStorage.setItem(
-          "showreferralfloating",
-          user?.showreferralfloating
-        );
-        setFormData({
-          name: user.name || "",
-          email: user.email || "",
-          phone: user.phone || "",
-          address: user.address || "",
-          profilePicture: `${API_BASE_URL?.split("/api")[0]}${user?.profilePicture?.split("public")[1]
-            }`,
-        });
-        setInitialData({
-          name: user.name || "",
-          email: user.email || "",
-          phone: user.phone || "",
-          address: user.address || "",
-          profilePicture: `${API_BASE_URL?.split("/api")[0]}${user?.profilePicture?.split("public")[1]
-            }`,
-        });
-      } catch (error) {
-        console.error(error);
-        alert("Failed to load user details.");
-      } finally {
-        setLoading(false);
-      }
-    };
+
 
     fetchUser();
   }, []);
+  useEffect(() => {
+    if (!userId) return;
+    getEndUserSubscriptions();
+  }, [userId]);
+  useEffect(() => {
+    if (isRefreshing) {
+      getEndUserSubscriptions();
+      fetchUser();
+    }
+  }, [isRefreshing])
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "email" && value !== initialData?.email) {

@@ -171,10 +171,9 @@ const Step = () => {
     const services = selectedServices ? JSON.parse(selectedServices).businessType : [];
     const customServicesSelected = sessionStorage.getItem("businesServices");
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
+    const plan = sessionStorage.getItem("selectedPlan")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
     const [showThankuPage, setShowThankuPage] = useState(false)
-
-
     const [searchParams] = useSearchParams();
     const mode = searchParams.get("mode");
     const shouldShowThankYou = mode === "create" || mode === "update";
@@ -328,6 +327,7 @@ const Step = () => {
             status: true
         }));
     }
+    const languageAccToPlan = (plan === "Starter" || plan === "Free") ? languageSelect : "multi";
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
@@ -368,7 +368,8 @@ const Step = () => {
                 aboutBusinessForm,
                 commaSeparatedServices,
                 agentNote,
-                timeZone
+                timeZone,
+                languageAccToPlan
             });
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
@@ -437,7 +438,6 @@ const Step = () => {
                     }
 
                 ],
-
                 states: [
                     {
                         name: "information_collection",
@@ -641,6 +641,7 @@ const Step = () => {
 
                         },
                     ],
+                    end_call_after_silence_ms: 30000,
                     normalize_for_speech: true,
                     webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                 };

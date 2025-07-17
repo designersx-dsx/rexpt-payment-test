@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Calendar from "react-calendar";
 import HeaderBar from "../HeaderBar/HeaderBar";
 import "react-calendar/dist/Calendar.css";
@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useCallHistoryStore } from "../../Store/useCallHistoryStore ";
+import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 
 function formatDateISO(date) {
   const y = date.getFullYear();
@@ -36,13 +37,13 @@ const AgentAnalysis = () => {
   const [apiCallHistory, setapiCallHistory] = useState([]);
   const bookingsRef = useRef(null);
   const [hydrated, setHydrated] = useState(false);
-
+  const isRefreshing = useContext(RefreshContext);
 
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id || "";
   const [selectedAgentEventId, setSelectedAgentEventId] = useState("");
-    const {
+  const {
     callHistory,
     totalCalls,
     hasFetched,
@@ -50,18 +51,17 @@ const AgentAnalysis = () => {
   } = useCallHistoryStore.getState();
 
   useEffect(() => {
-  const unsub = useCallHistoryStore.persist.onFinishHydration(() => {
-    console.log("✅ Zustand store hydrated from IndexedDB");
-        setHydrated(true);
+    const unsub = useCallHistoryStore.persist.onFinishHydration(() => {
+      setHydrated(true);
 
-    fetchCallHistory();
-  });
+      fetchCallHistory();
+    });
 
-  return () => {
-    // Cleanup subscription when component unmounts
-    unsub();
-  };
-}, []);
+    return () => {
+      // Cleanup subscription when component unmounts
+      unsub();
+    };
+  }, []);
 
   useEffect(() => {
     const foundAgent = agents.find((a) => a.agent_id === selectedAgentId);
@@ -96,10 +96,9 @@ const AgentAnalysis = () => {
 
   const fetchCallHistory = async () => {
     try {
-      if (hasFetched ) {
-      console.log("✅ Using persisted call history");
-      return;
-    }
+      if (hasFetched) {
+        return;
+      }
       if (selectedAgentId === "") {
         const res = await getAllAgentCalls(userId);
         const allCalls = res.calls || [];
@@ -132,67 +131,67 @@ const AgentAnalysis = () => {
 
   useEffect(() => {
     fetchCallHistory();
-  }, [selectedAgentId,agents]);
-
-  useEffect(() => {
-    const fetchBookingDates = async () => {
-      console.log("Fetching booking dates...");
-        const filteredCalls = selectedAgentId
-    ? callHistory.filter(
+  }, [selectedAgentId, agents]);
+  const fetchBookingDates = async () => {
+    console.log("Fetching booking dates...");
+    const filteredCalls = selectedAgentId
+      ? callHistory.filter(
         (call) => String(call.agent_id) === String(selectedAgentId)
       )
-    : callHistory ||apiCallHistory;
-      const bookingsMap = {};
+      : callHistory || apiCallHistory;
+    const bookingsMap = {};
 
-      // 1. Add Calls
-      // callHistory.forEach((call) => {
-      filteredCalls.forEach((call) => {
-        const callDate = formatDateISO(new Date(call.start_timestamp));
-        if (!bookingsMap[callDate]) bookingsMap[callDate] = [];
-        bookingsMap[callDate].push({ ...call, type: "call" });
-      });
+    // 1. Add Calls
+    // callHistory.forEach((call) => {
+    filteredCalls.forEach((call) => {
+      const callDate = formatDateISO(new Date(call.start_timestamp));
+      if (!bookingsMap[callDate]) bookingsMap[callDate] = [];
+      bookingsMap[callDate].push({ ...call, type: "call" });
+    });
 
-      // 2. Fetch Cal bookings
-      if (calApiKey) {
-        try {
-          const response = await fetch(
-            `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
-              calApiKey
-            )}`
-          );
-          const bookingsData = await response.json();
+    // 2. Fetch Cal bookings
+    if (calApiKey) {
+      try {
+        const response = await fetch(
+          `https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(
+            calApiKey
+          )}`
+        );
+        const bookingsData = await response.json();
 
-          const selectedAgent = agents.find(
-            (a) => String(a.agent_id) === String(selectedAgentId)
-          );
-          const selectedEventId = selectedAgent?.eventId;
+        const selectedAgent = agents.find(
+          (a) => String(a.agent_id) === String(selectedAgentId)
+        );
+        const selectedEventId = selectedAgent?.eventId;
 
-          bookingsData.bookings?.forEach((booking) => {
-            const date = new Date(booking.startTime);
-            const formattedDate = formatDateISO(date);
+        bookingsData.bookings?.forEach((booking) => {
+          const date = new Date(booking.startTime);
+          const formattedDate = formatDateISO(date);
 
-            const match =
-              selectedEventId &&
-              Number(booking.eventTypeId) === Number(selectedEventId);
-            const shouldInclude = !selectedAgentId || match;
+          const match =
+            selectedEventId &&
+            Number(booking.eventTypeId) === Number(selectedEventId);
+          const shouldInclude = !selectedAgentId || match;
 
-            if (shouldInclude) {
-              if (!bookingsMap[formattedDate]) bookingsMap[formattedDate] = [];
-              bookingsMap[formattedDate].push({ ...booking, type: "meeting" });
-            }
-          });
-        } catch (error) {
-          console.error("Cal.com API fetch failed:", error);
-        }
+          if (shouldInclude) {
+            if (!bookingsMap[formattedDate]) bookingsMap[formattedDate] = [];
+            bookingsMap[formattedDate].push({ ...booking, type: "meeting" });
+          }
+        });
+      } catch (error) {
+        console.error("Cal.com API fetch failed:", error);
       }
+    }
 
-      setBookingDates(bookingsMap);
-      setBookingsForSelectedDate(
-        bookingsMap[formatDateISO(selectedDate)] || []
-      );
-    };
+    setBookingDates(bookingsMap);
+    setBookingsForSelectedDate(
+      bookingsMap[formatDateISO(selectedDate)] || []
+    );
+  };
+  useEffect(() => {
+
     fetchBookingDates();
-  }, [calApiKey, selectedDate, selectedAgentId, callHistory, agents,hydrated]);
+  }, [calApiKey, selectedDate, selectedAgentId, callHistory, agents, hydrated]);
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
@@ -229,14 +228,21 @@ const AgentAnalysis = () => {
       </div>
     );
   };
-  console.log("bookingsForSelectedDate", selectedAgentId);
+  useEffect(() => {
+    if (isRefreshing) {
+      // Reset hasFetched to allow re-fetching
+      useCallHistoryStore.setState({ hasFetched: false });
+      fetchCallHistory();    
+      fetchBookingDates();  
+    }
+  }, [isRefreshing]);
 
   return (
     <div className={styles.container}>
       <div className={styles.HeaderFlex}>
         <HeaderBar title="Calendar" backgroundColor="#0000" color="#ffff" />
 
- {agents.length === 1 ? (
+        {agents.length === 1 ? (
           <div className={styles.DateSecT}>
             <p>Agent</p>
             <div className={styles.singleAgentName}>
@@ -300,8 +306,8 @@ const AgentAnalysis = () => {
               const dotColorClass = isMeeting
                 ? styles.greenBar
                 : isCall
-                ? styles.orangeBar
-                : styles.greenBar;
+                  ? styles.orangeBar
+                  : styles.greenBar;
 
               return (
                 <li
@@ -326,15 +332,15 @@ const AgentAnalysis = () => {
                     <div className={styles.line}>
                       <span className={styles.titleText}>
                         <b>{isCall ? "Caller:" : "Title:"}</b>{" "}
-                        {item.title ||item.custom_analysis_data?.name ||  
+                        {item.title || item.custom_analysis_data?.name ||
                           item.custom_analysis_data?.[
-                            "_detailed _call _summery"
+                          "_detailed _call _summery"
                           ] ||
                           "N/A"}
                       </span>
                     </div>
                     <div className={styles.timeRange}>
-                      <b>Phone:</b>  {item?.call_type =='phone_call'? item?.from_number : item?.call_type }
+                      <b>Phone:</b>  {item?.call_type == 'phone_call' ? item?.from_number : item?.call_type}
                       {/* {item.call_type} */}
                     </div>
                   </div>
