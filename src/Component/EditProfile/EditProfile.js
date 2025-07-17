@@ -695,13 +695,14 @@ const EditProfile = () => {
                 </div>
               </div>
               <div className={styles.RefferalMain}>
-                <Refferal
+                {/* <Refferal
                   referralCode={referralCode}
                   setShowDashboardReferral={setShowDashboardReferral}
                   showDashboardReferral={showDashboardReferral}
                   userId={userId}
-                />
+                /> */}
               </div>
+              <br></br>
               <div className={styles.mySubscription}>
                 <MySubscription agents={subscriptionDetails?.agents || []} />
               </div>
