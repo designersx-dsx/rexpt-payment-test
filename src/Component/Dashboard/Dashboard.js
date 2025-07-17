@@ -44,7 +44,9 @@ import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
-  const isRefreshing = useContext(RefreshContext);
+
+      const isRefreshing = useContext(RefreshContext);
+
   const navigate = useNavigate();
   const { user } = useUser();
   // Retell Web Client states

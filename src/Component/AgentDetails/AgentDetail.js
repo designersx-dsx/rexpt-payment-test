@@ -118,7 +118,9 @@ const AgentDashboard = () => {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
   const [agentCalApiKey, setAgentCalApiKey] = useState("")
+
   const isRefreshing = useContext(RefreshContext);
+
   function formatE164USNumber(number) {
     const cleaned = number.replace(/\D/g, "");
 
@@ -714,7 +716,7 @@ const AgentDashboard = () => {
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
-        <Loader2 />
+       isRefreshing ?"":<Loader2 />
       ) : (
         <>
           <div className={styles.Forsticky}>

@@ -49,6 +49,7 @@
   font-size: 24px;
   transition: transform 0.2s ease;
 }
+
 .loader-icon {
   font-size: 24px;
   transition: transform 0.2s ease;
@@ -60,6 +61,7 @@
   align-items: center;
   justify-content: center;
 }
+
 
 .spinning {
   animation: spin 1s linear infinite;
