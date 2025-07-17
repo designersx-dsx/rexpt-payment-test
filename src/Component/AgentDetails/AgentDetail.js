@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import styles from "./AgentDetail.module.css";
 import AgentAnalysis from "./AgentAnalysisGraph/AgentAnalysis";
 import {
@@ -30,6 +30,7 @@ import WidgetScript from "../Widgets/WidgetScript";
 import PopUp from "../Popup/Popup";
 import Modal3 from "../Modal3/Modal3";
 import { clearSessionAfterEdit } from "../../utils/helperFunctions";
+import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -117,7 +118,7 @@ const AgentDashboard = () => {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
   const [agentCalApiKey, setAgentCalApiKey] = useState("")
-
+ const isRefreshing = useContext(RefreshContext);
   function formatE164USNumber(number) {
     const cleaned = number.replace(/\D/g, "");
 
@@ -708,7 +709,7 @@ const AgentDashboard = () => {
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
-        <Loader2 />
+       isRefreshing ?"":<Loader2 />
       ) : (
         <>
           <div className={styles.Forsticky}>
