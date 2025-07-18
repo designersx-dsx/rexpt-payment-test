@@ -327,7 +327,8 @@ const Step = () => {
             status: true
         }));
     }
-    const languageAccToPlan = (plan === "Starter" || plan === "Free") ? languageSelect : "multi";
+    const languageAccToPlan =
+        ["Scaler", "Growth", "Corporate"].includes(plan) ? "multi" : sessionStorage.getItem("agentLanguageCode");
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
@@ -369,8 +370,11 @@ const Step = () => {
                 commaSeparatedServices,
                 agentNote,
                 timeZone,
-                languageAccToPlan
+                languageAccToPlan,
+                plan: plan
             });
+            console.log(filledPrompt)
+         
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
             roleTitle: sessionStorage.getItem("agentRole"),
@@ -579,7 +583,7 @@ const Step = () => {
                     voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
                     language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                     agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                    language: "multi",
+                    language: languageAccToPlan,
                     post_call_analysis_model: "gpt-4o-mini",
                     responsiveness: 1,
                     enable_backchannel: true,
