@@ -325,32 +325,8 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
+const nevigate = useNavigate();
 
-  const handleDeleteProfile = async () => {
-    try {
-      setLoading(true);
-      await deleteUser(userId);
-      setShowDeleteModal(false);
-      setShowPopup(true);
-      setPopupType("success");
-      setPopupMessage("Your account has been deleted successfully.");
-
-      setTimeout(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-        navigate("/");
-      }, 2000);
-    } catch (error) {
-      console.error(error);
-      setShowPopup(true);
-      setPopupType("failed");
-      setPopupMessage("Failed to delete account. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // console.log('showDashboardReferral',showDashboardReferral)
 
 
   return (
@@ -720,13 +696,13 @@ const EditProfile = () => {
             <div className={styles.deleteSection}>
               <button
                 className={styles.deleteButton}
-                onClick={() => setShowDeleteModal(true)}
+                onClick={() => nevigate("/delete-account")}
               >
                 <img src="/svg/delete-icon.svg" alt="delete" />
                 Delete Profile
               </button>
             </div>
-            {showDeleteModal && (
+            {/* {showDeleteModal && (
               <div className={styles.modalOverlay}>
                 <div className={styles.modalContent}>
                   <h3>Delete Your Profile?</h3>
@@ -755,7 +731,7 @@ const EditProfile = () => {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
           {isUploadModalOpen && (
             <UploadProfile

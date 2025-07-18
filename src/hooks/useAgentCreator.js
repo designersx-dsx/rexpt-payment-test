@@ -711,7 +711,8 @@ export const useAgentCreator = ({
     const agentGender = sessionStorage.getItem("agentGender");
     const languageSelect = sessionStorage?.getItem("agentLanguage");
     const plan = sessionStorage.getItem("plan")
-    const languageAccToPlan = (plan === "Starter" || plan === "Free") ? languageSelect : "multi";
+       const languageAccToPlan =
+        ["Scaler", "Growth", "Corporate"].includes(plan) ? "multi" :  sessionStorage.getItem("agentLanguageCode");
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
     const sanitize = (str) =>
@@ -781,7 +782,8 @@ export const useAgentCreator = ({
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
-      languageAccToPlan
+      languageAccToPlan,
+      plan
     });
 
     const getLeadTypeChoices = () => {
@@ -1079,7 +1081,7 @@ export const useAgentCreator = ({
             voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
             language: sessionStorage.getItem("agentLanguageCode") || "en-US",
             agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-            language: "multi",
+            language: languageAccToPlan,
             post_call_analysis_model: "gpt-4o-mini",
             responsiveness: 1,
             enable_backchannel: true,

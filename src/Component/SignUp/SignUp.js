@@ -33,7 +33,9 @@ const SignUp = () => {
   const tempReferral = sessionStorage.getItem("referredBy") || "";
   const tempLandingSelectedPlan = sessionStorage.getItem("selectedPlan") || "";
   const tempReferredByName = sessionStorage.getItem("referredByName") || "";
-  const [customerId, setCustomerId] = useState()
+  const [customerId, setCustomerId] = useState();
+  const [renderHtml, setRenderHtml] = useState(false);
+
   useEffect(() => {
     if (!resendEndTime) return;
 
@@ -84,71 +86,74 @@ const SignUp = () => {
     const emailValidationMsg = validateEmail(email);
     setEmailError(emailValidationMsg);
 
-    if (emailValidationMsg) {
-      return;
-    }
+    if (emailValidationMsg) return;
 
     const fullOtp = otp.join("");
     if (fullOtp.length !== 6) {
       setShowPopup(true);
       setPopupType("failed");
       setPopupMessage("Please enter a valid 6-digit OTP.");
+      setRenderHtml(false);
       return;
     }
 
     setIsVerifyingOtp(true);
-    try {
 
+    try {
       const response = await verifyEmailOTP(email, fullOtp, customerId);
-      // console.log('response',response)
 
       if (response?.status === 200) {
-
         localStorage.setItem("token", response?.data.token);
         sessionStorage.clear();
         sessionStorage.setItem("referredBy", tempReferral);
         sessionStorage.setItem("selectedPlan", tempLandingSelectedPlan);
         sessionStorage.setItem("referredByName", tempReferredByName);
-        localStorage.setItem("showreferralfloating", response?.data?.user?.showreferralfloating)
+        localStorage.setItem(
+          "showreferralfloating",
+          response?.data?.user?.showreferralfloating
+        );
+
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");
-        if (verifiedUser) {
-          localStorage.setItem("onboardComplete", "true");
-          setUser({
-            name: response?.data?.user?.name || "",
-            profile:
-              `${API_BASE_URL?.split("/api")[0]}${response?.data?.user?.profile?.split("public")[1]
-              }` || "images/camera-icon.avif",
-            subscriptionDetails: {},
-          });
-          navigate("/dashboard", { replace: true });
-        } else {
-          setUser({
-            name: response?.data?.user?.email || "",
-            profile:
-              `${API_BASE_URL}${response?.data?.user?.profile?.split("public")[1]
-              }` || "images/camera-icon.avif",
-            subscriptionDetails: {},
-          });
-          localStorage.setItem("onboardComplete", "false");
-          navigate("/details", { replace: true });
-        }
+        setRenderHtml(false);
+
+        const userData = {
+          name: response?.data?.user?.name || "",
+          profile:
+            `${API_BASE_URL?.split("/api")[0]}${
+              response?.data?.user?.profile?.split("public")[1]
+            }` || "images/camera-icon.avif",
+          subscriptionDetails: {},
+        };
+
+        setUser(userData);
+        localStorage.setItem(
+          "onboardComplete",
+          verifiedUser ? "true" : "false"
+        );
+        navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });
       } else {
         setPopupType("failed");
         setShowPopup(true);
         setPopupMessage(
           "Failed to verify One Time Password. Please try again."
         );
+        setRenderHtml(false);
       }
     } catch (error) {
+      const msg = error?.response?.data?.error || "Internal Server Error";
+      const isHtmlMessage = msg.includes("<a");
+
       setPopupType("failed");
       setShowPopup(true);
-      setPopupMessage(error?.response?.data.error || "Internal Server Error");
+      setPopupMessage(msg);
+      setRenderHtml(isHtmlMessage);
     } finally {
       setIsVerifyingOtp(false);
     }
   };
+
   const handleSendOTP = async () => {
     setEmailTouched(true);
     setEmailSubmitted(true);
@@ -203,7 +208,6 @@ const SignUp = () => {
     }
   };
 
-
   const handleOtpChange = (value, index) => {
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -234,26 +238,6 @@ const SignUp = () => {
 
   const [step, setStep] = useState(0);
   const [ready, setReady] = useState(false); // NEW add
-
-  // useEffect(() => {
-  //   const played = sessionStorage.getItem("loginAnimationPlayed");
-
-  //   if (!played) {
-  //     const delays = [150, 250, 350, 450, 550];
-
-  //     const timers = delays.map((delay, index) =>
-  //       setTimeout(() => setStep(index + 1), delay)
-  //     );
-
-  //     setTimeout(() => {
-  //       sessionStorage.setItem("loginAnimationPlayed", "true");
-  //     }, 700);
-
-  //     return () => timers.forEach(clearTimeout);
-  //   } else {
-  //     setStep(5);
-  //   }
-  // }, []);
 
   useEffect(() => {
     const played = sessionStorage.getItem("loginAnimationPlayed");
@@ -314,7 +298,6 @@ const SignUp = () => {
   }, [otpSent]);
 
   return (
-
     <>
       {ready && (
         <div className={styles.signUpContainer}>
@@ -335,7 +318,9 @@ const SignUp = () => {
                   <img src="images/Mask.png" alt="Mask.png" />
                 </div>
                 <div
-                  className={`${styles.logimg} ${step >= 1 ? styles.animate1 : ""}`}
+                  className={`${styles.logimg} ${
+                    step >= 1 ? styles.animate1 : ""
+                  }`}
                 >
                   <img
                     className={styles.logo}
@@ -344,14 +329,16 @@ const SignUp = () => {
                   />
                 </div>
                 <div
-                  className={`${styles.Maincontent} ${step >= 2 ? styles.animate2 : ""
-                    }`}
+                  className={`${styles.Maincontent} ${
+                    step >= 2 ? styles.animate2 : ""
+                  }`}
                 >
                   <div className={styles.welcomeTitle}>
                     <h1>Log In to your Account</h1>
                     <p>
-                      If it does not exist, We will create a<b> New FREE Account</b>{" "}
-                      for you. Make sure the email ID provided is correct.
+                      If it does not exist, We will create a
+                      <b> New FREE Account</b> for you. Make sure the email ID
+                      provided is correct.
                     </p>
                   </div>
                 </div>
@@ -360,14 +347,16 @@ const SignUp = () => {
                   {!otpSent && (
                     <>
                       <div
-                        className={`${styles.labReq} ${step >= 3 ? styles.animate3 : ""
-                          }`}
+                        className={`${styles.labReq} ${
+                          step >= 3 ? styles.animate3 : ""
+                        }`}
                       >
                         <div className={styles.Dblock}>
                           <input
                             type="email"
-                            className={`${styles.emailInput} ${emailError ? styles.inputError : ""
-                              }`}
+                            className={`${styles.emailInput} ${
+                              emailError ? styles.inputError : ""
+                            }`}
                             placeholder="Johnvick@gmail.com"
                             value={email}
                             onChange={handleEmailChange}
@@ -380,28 +369,18 @@ const SignUp = () => {
                       </div>
                       <br />
                       <div
-                        className={`${styles.btnTheme} ${step >= 4 ? styles.animate4 : ""
-                          }`}
+                        className={`${styles.btnTheme} ${
+                          step >= 4 ? styles.animate4 : ""
+                        }`}
                         onClick={handleSendOTP}
-                      ><AnimatedButton
+                      >
+                        <AnimatedButton
                           isLoading={isVerifyingOtp}
                           label="Send One Time Password"
                           // onClick={handleSendOTP}
-                          position={{ position: 'relative' }}
+                          position={{ position: "relative" }}
                         />
-                        {/* <img src="svg/svg-theme2.svg" alt="" />
-                  <p>
-                    {" "}
-                    {isVerifyingOtp ? (
-                      <>
-                        <Loader size={17} />
-                      </>
-                    ) : (
-                      "Send One Time Password"
-                    )}
-                  </p> */}
                       </div>
-
                     </>
                   )}
 
@@ -430,7 +409,10 @@ const SignUp = () => {
                             ref={(el) => (inputRefs.current[i] = el)}
                             onInput={(e) => {
                               const target = e.target;
-                              target.value = target.value.replace(/[^0-9]/g, "");
+                              target.value = target.value.replace(
+                                /[^0-9]/g,
+                                ""
+                              );
                             }}
                             inputMode="numeric"
                             type="tel"
@@ -445,7 +427,9 @@ const SignUp = () => {
                           onClick={handleSendOTP}
                           disabled={isResendDisabled}
                           style={{
-                            cursor: isResendDisabled ? "not-allowed" : "pointer",
+                            cursor: isResendDisabled
+                              ? "not-allowed"
+                              : "pointer",
                             opacity: isResendDisabled ? 0.5 : 1,
                             background: "none",
                             border: "none",
@@ -456,11 +440,10 @@ const SignUp = () => {
                         >
                           {isResendDisabled && resendTimer > 0
                             ? `Resend One Time Password in ${String(
-                              Math.floor(resendTimer / 60)
-                            ).padStart(2, "0")}:${String(resendTimer % 60).padStart(
-                              2,
-                              "0"
-                            )}`
+                                Math.floor(resendTimer / 60)
+                              ).padStart(2, "0")}:${String(
+                                resendTimer % 60
+                              ).padStart(2, "0")}`
                             : "Resend One Time Password"}
                         </button>
                       </div>
@@ -483,8 +466,7 @@ const SignUp = () => {
                             <AnimatedButton
                               isLoading={isVerifyingOtp}
                               label="Continue"
-
-                              position={{ position: 'relative' }}
+                              position={{ position: "relative" }}
                             />
                           </div>
                         </div>
@@ -492,8 +474,9 @@ const SignUp = () => {
                     </>
                   )}
                   <div
-                    className={`${styles.Maincontent2} ${step >= 5 ? styles.animate5 : ""
-                      }`}
+                    className={`${styles.Maincontent2} ${
+                      step >= 5 ? styles.animate5 : ""
+                    }`}
                   >
                     <div className={styles.divider}>
                       <hr className={styles.line} />
@@ -505,16 +488,24 @@ const SignUp = () => {
                       <img src="svg/Coming-Soon.svg" />
                     </div>
                     <p className={styles.PrivaceTerms}>
-                      By providing your email address & creating an account, you agree to the Rexptin&nbsp;
-                      <a href="https://www.rexpt.in/Terms-Condition" target="_blank" rel="noopener noreferrer">
+                      By providing your email address & creating an account, you
+                      agree to the Rexptin&nbsp;
+                      <a
+                        href="https://www.rexpt.in/Terms-Condition"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         Terms & Conditions
                       </a>
                       &nbsp;and&nbsp;
-                      <a href="https://www.rexpt.in/Privacy-Policy" target="_blank" rel="noopener noreferrer">
+                      <a
+                        href="https://www.rexpt.in/Privacy-Policy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         Privacy Policy
                       </a>
                     </p>
-
                   </div>
                 </div>
 
@@ -523,6 +514,7 @@ const SignUp = () => {
                     type={popupType}
                     onClose={() => setShowPopup(false)}
                     message={popupMessage}
+                    renderHTML={true}
                   />
                 )}
               </div>
@@ -531,7 +523,6 @@ const SignUp = () => {
         </div>
       )}
     </>
-
   );
 };
 
