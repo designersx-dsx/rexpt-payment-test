@@ -188,9 +188,9 @@ function Thankyou2() {
         </p>
       </div>
 
-      {/* {loading ? (
+      {loading ? (
         <Loader2 />
-      ) : ( */}
+      ) : (
       <div className={styles.infoBox}>
         <p>Below is some Quick Info for your Reference:</p>
 
@@ -263,7 +263,7 @@ function Thankyou2() {
           </button>
         </div>
       </div>
-      {/* )} */}
+       )} 
     </div>
   );
 }
