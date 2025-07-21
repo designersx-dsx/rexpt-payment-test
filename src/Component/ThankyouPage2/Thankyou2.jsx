@@ -8,6 +8,7 @@ import {
   verifyOrCreateUser,
 } from "../../Store/apiStore";
 import axios from "axios";
+import useUser from "../../Store/Context/UserContext";
 
 function Thankyou2() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function Thankyou2() {
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
+  const { user, setUser } = useUser();
 
   useEffect(() => {
     if (!sessionId) return;
@@ -130,19 +132,37 @@ function Thankyou2() {
       }
 
       const response = await verifyOrCreateUser(email, fullOtp, customerId);
+      console.log("response", response);
 
       const data = await response;
 
-      if (response.status === 200) {
-        localStorage.setItem("token", data.data?.token);
+      if (data?.res?.status === 200) {
+        localStorage.setItem("token", data.res?.data?.token);
         localStorage.setItem("onboardComplete", false);
         localStorage.setItem("paymentDone", true);
         localStorage.setItem("subcriptionIdUrl", subcriptionId);
 
         sessionStorage.clear();
+        if (data?.res1) {
+          const verifyStatus = data?.res1.data.verifiedStatus;
+          if (verifyStatus === true) {
+            const userData = {
+              name: data.res?.data?.user?.name || "",
+              profile:
+                `${API_BASE_URL?.split("/api")[0]}${
+                  data.res?.data?.profile?.split("public")[1]
+                }` || "images/camera-icon.avif",
+              subscriptionDetails: {},
+            };
+
+            setUser(userData);
+            localStorage.setItem("onboardComplete", "true");
+          }
+          navigate(verifyStatus ? "/steps" : "/details", { replace: true });
+        }
 
         // Navigate to Agent Creation page
-        navigate("/details"); // or any valid path
+        // navigate("/details"); // or any valid path
       } else {
         console.error("Verification failed:", data.data?.error);
         alert(data.error);

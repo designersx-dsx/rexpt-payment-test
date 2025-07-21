@@ -48,7 +48,7 @@ export const verifyOrCreateUser = async (email, otp) => {
   const customerData = await customerRes.json();
   let customerId = customerData.customerId;
   const res = await api.post('/auth/verifyEmailOTP', { email, otp, customerId });
-  return res;
+  return { res1, res };
 };
 
 export const getRetellVoices = async () => {
