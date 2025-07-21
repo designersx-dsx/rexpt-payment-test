@@ -1,7 +1,7 @@
 .devHeadbar {
     position: relative;
-     max-width: 500px;
-     margin: auto;
+    max-width: 500px;
+    margin: auto;
 }
 
 .dropdownWrapper {
@@ -10,7 +10,7 @@
     top: 0;
     right: 0;
     padding: 20px;
-   
+
 }
 
 .dropdown {
@@ -231,8 +231,8 @@
 }
 
 .phoneItem input[type="radio"]:checked+.customRadio {
-    border-color: #935eff;
-    background-color: #935eff;
+    border-color: #6524EB;
+    background-color: #6524EB;
 }
 
 .phoneItem input[type="radio"]:checked+.customRadio::after {
@@ -252,6 +252,77 @@
     font-size: 15px;
     color: #999;
 }
+
+
+
+.modalContent {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 12px;
+}
+
+.modalTitle {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #24252C;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #EFEFEF;
+}
+
+.assignText {
+    font-size: 16px;
+    color: #24252C;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.phoneNumber {
+    font-weight: 700;
+    color: #24252C;
+    text-decoration: underline;
+}
+
+.infoRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    justify-content: flex-start;
+}
+
+.infoRow img {
+    width: 16px;
+    height: 16px;
+}
+
+.disclaimerBox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: linear-gradient(180deg, #FFEFE3, #FFFBFB);
+    border: 1px solid #f1bfa4;
+    border-radius: 8px;
+    color: #24252C;
+    font-size: 11px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+
+
+.assignBtn {
+    margin-block: 1rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 8px;
+    background: #ffffff00;
+    width: 100%;
+}
+
 
 @media screen and (min-width: 601px) {
     .AssignNumberMain {
