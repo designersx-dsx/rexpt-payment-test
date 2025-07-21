@@ -50,7 +50,8 @@ import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
 import BusinessListing from "./Component/BusinessListing/BusinessListing";
 import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
-import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI"
+import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI";
+import AssignNumber from "./Component/AssignNumber/AssignNumber";
 
 import Thankyou from "./Component/ThankyouPage/Thankyou";
 import CancelPage from "./Component/CancelPage/CancelPage";
@@ -131,6 +132,7 @@ function App() {
 
                   <Route path="/plans" element={<SecureRoute><SubscriptionPlan /></SecureRoute>} />
                   <Route path="/plan" element={<SecureRoute><Planss /></SecureRoute>} />
+                  <Route path="/assign-number" element={<AssignNumber />} />
 
 
 
