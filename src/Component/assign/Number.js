@@ -11,7 +11,6 @@ const Number = () => {
     const [locality, setLocality] = useState("");
     const [administrative_area, setAdministrative_area] = useState("");
     const [availableNumbers, setAvailableNumbers] = useState([]);
-
     const stateInputRef = useRef(null);
     const cityInputRef = useRef(null);
 
@@ -21,12 +20,15 @@ const Number = () => {
         const country = businessDetails?.country_code || "";
         const state = businessDetails?.state_code || "";
         const city = businessDetails?.city || "";
-
+        console.log("hy")
+        console.log(country)
+        console.log(city)
+        console.log(state)
         setCountry_code(country);
-        setLocality(state);
-        setAdministrative_area(city);
-
-        if (country && state && city) {
+        setLocality(city);
+        setAdministrative_area(state);
+        console.log(country_code, locality, administrative_area, "country_code, locality, administrative_area")
+        if (country_code || locality || administrative_area) {
             fetchAvailablePhoneNumberByCountry(country_code, locality, administrative_area)
                 .then((res) => {
                     setAvailableNumbers(res.data);
@@ -37,7 +39,6 @@ const Number = () => {
                 });
         }
     }, [location]);
-
     // Init Autocomplete on state and city inputs
     useEffect(() => {
         const interval = setInterval(() => {
@@ -51,36 +52,38 @@ const Number = () => {
         }, 300);
     }, []);
 
- const initAddressAutocomplete = (inputElement, setStateCode, setStateName, setCountryCode) => {
-    const autocomplete = new window.google.maps.places.Autocomplete(inputElement, {
-        types: ["(regions)"],
-        fields: ["address_components", "formatted_address"],
-    });
-
-    autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        const components = place.address_components || [];
-
-        let stateCode = "";
-        let stateName = "";
-        let countryCode = "";
-
-        components.forEach(component => {
-            if (component.types.includes("administrative_area_level_1")) {
-                stateCode = component.short_name;   // e.g., "OH"
-                stateName = component.long_name;    // e.g., "Ohio"
-            }
-
-            if (component.types.includes("country")) {
-                countryCode = component.short_name; // e.g., "US"
-            }
+    const initAddressAutocomplete = (inputElement, setStateCode, setStateName, setCountryCode) => {
+        const autocomplete = new window.google.maps.places.Autocomplete(inputElement, {
+            types: ["(regions)"],
+            fields: ["address_components", "formatted_address"],
         });
 
-        if (setStateCode) setStateCode(stateCode);     // OH
-        if (setStateName) setStateName(stateName);     // Ohio → this becomes your locality
-        if (setCountryCode) setCountryCode(countryCode); // US
-    });
-};
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            const components = place.address_components || [];
+
+            let stateCode = "";
+            let stateName = "";
+            let countryCode = "";
+
+            components.forEach(component => {
+                if (component.types.includes("administrative_area_level_1")) {
+                    stateCode = component.short_name;
+                    stateName = component.long_name;
+                }
+
+                if (component.types.includes("country")) {
+                    countryCode = component.short_name;
+                }
+            });
+
+            if (setStateCode) setAdministrative_area(stateCode);
+            // if (setStateName) setStateName(stateName);
+            if (setCountryCode) setCountry_code(countryCode);
+        });
+    };
+
+
 
 
 
@@ -103,6 +106,18 @@ const Number = () => {
             return () => clearTimeout(delayDebounce);
         }
     }, [locality, administrative_area, country_code]);
+    const handleRefresh = () => {
+    
+        // console.log(randomNumericPrefix, "randomNumericPrefix")
+        fetchAvailablePhoneNumberByCountry(country_code, locality, administrative_area)
+            .then((res) => {
+                setAvailableNumbers(res.data);
+            })
+            .catch((error) => {
+                console.error("Refresh failed:", error);
+            });
+    }
+
 
     return (
         <div className="container">
@@ -143,15 +158,8 @@ const Number = () => {
                 />
                 <button
                     className="refresh-btn"
-                    onClick={() => {
-                        fetchAvailablePhoneNumberByCountry(country_code, locality, administrative_area)
-                            .then((res) => {
-                                setAvailableNumbers(res.data);
-                            })
-                            .catch((error) => {
-                                console.error("Refresh failed:", error);
-                            });
-                    }}
+                    onClick={handleRefresh}
+
                 >
                     Refresh
                 </button>

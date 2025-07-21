@@ -129,13 +129,9 @@ function App() {
                   <Route path="/edit-language" element={<EditLanguage />} />
                   <Route path="/edit-gender" element={<EditGender />} />
                   <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
-
                   <Route path="/plans" element={<SecureRoute><SubscriptionPlan /></SecureRoute>} />
                   <Route path="/plan" element={<SecureRoute><Planss /></SecureRoute>} />
-                  <Route path="/assign-number" element={<AssignNumber />} />
-
-
-
+                  <Route path="/assign-number" element={<SecureRoute><AssignNumber /></SecureRoute>} />
                   <Route
                     path="/details"
                     element={
