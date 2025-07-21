@@ -436,7 +436,22 @@ export const getAgentScheduleByUserId = async (userId) => {
     console.error("Error fetching agent schedule:", error.response?.data || error.message);
     throw new Error("Failed to fetch agent schedule");
   }
-};
+}
+export const fetchAvailablePhoneNumberByCountry = async (country_code, locality, administrative_area) => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
+      params: {
+        country_code: country_code,
+        locality: locality,
+        administrative_area: administrative_area
+      }
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching agent schedule:", error.response?.data || error.message);
+    throw new Error("Failed to fetch agent schedule");
+  }
+}
 
 
 
