@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
 import styles from '../AssignNumber/AssignNumber.module.css'
 import HeaderBar from '../HeaderBar/HeaderBar'
-
+import Modal2 from '../Modal2/Modal2'
+import AnimatedButton from '../AnimatedButton/AnimatedButton'
 const AssignNumber = () => {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState("us");
     const [selectedNumber, setSelectedNumber] = useState(null);
     const [isRotating, setIsRotating] = useState(false);
+    const [modalNumber, setModalNumber] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const languages = [
         { code: "us", label: "English", flag: "/svg/US-svg.svg" },
@@ -46,34 +49,39 @@ const AssignNumber = () => {
             setIsRotating(false); // Reset after animation
         }, 1000); // Match animation duration
     };
+    const handleNumberClick = (num) => {
+        setSelectedNumber(num);
+        setModalNumber(num);
+        setIsModalOpen(true);
+    };
     return (
         <div className={styles.AssignNumberMain}>
             <div className={styles.devHeadbar}>
                 <HeaderBar title="Assign Number" />
                 <div className={styles.dropdownWrapper}>
-                <div className={styles.dropdown} onClick={() => setOpen(!open)}>
-                    <img
-                        src={selectedLang.flag}
-                        alt={selectedLang.label}
-                        className={styles.flagIcon}
-                    />
-                    <span className={styles.arrow}><img src='/svg/down-arrow.svg' /></span>
+                    <div className={styles.dropdown} onClick={() => setOpen(!open)}>
+                        <img
+                            src={selectedLang.flag}
+                            alt={selectedLang.label}
+                            className={styles.flagIcon}
+                        />
+                        <span className={styles.arrow}><img src='/svg/down-arrow.svg' /></span>
+                    </div>
+                    {open && (
+                        <ul className={styles.dropdownMenu}>
+                            {languages.map((lang) => (
+                                <li key={lang.code} onClick={() => handleSelect(lang.code)}>
+                                    <img src={lang.flag} alt={lang.label} className={styles.flagIcon} />
+                                    <span>{lang.label}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
-                {open && (
-                    <ul className={styles.dropdownMenu}>
-                        {languages.map((lang) => (
-                            <li key={lang.code} onClick={() => handleSelect(lang.code)}>
-                                <img src={lang.flag} alt={lang.label} className={styles.flagIcon} />
-                                <span>{lang.label}</span>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
             </div>
 
 
-            
+
             <div>
                 <div className={styles.container}>
                     <div className={styles.filters}>
@@ -102,7 +110,11 @@ const AssignNumber = () => {
                     <div className={styles.numberList}>
                         {filteredNumbers.length > 0 ? (
                             filteredNumbers.map((num) => (
-                                <label key={num} className={styles.phoneItem}>
+                                <label
+                                    key={num}
+                                    className={styles.phoneItem}
+                                    onClick={() => handleNumberClick(num)}
+                                >
                                     <input
                                         type="radio"
                                         name="agentNumber"
@@ -118,6 +130,37 @@ const AssignNumber = () => {
                             <div className={styles.noData}>No data found</div>
                         )}
                     </div>
+
+                    <Modal2 isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                        <div className={styles.modalContent}>
+                            <h2 className={styles.modalTitle}>Confirm Phone Number</h2>
+
+                            <p className={styles.assignText}>
+                                You have chosen to <br />
+                                assign <span className={styles.phoneNumber}>{selectedNumber}</span> to your:
+                            </p>
+
+                            <div className={styles.infoRow}>
+                                <img src="/svg/green-check.svg" alt="check" />
+                                <span><strong>Agent Name:</strong> Sofia</span>
+                            </div>
+
+                            <div className={styles.infoRow}>
+                                <img src="/svg/green-check.svg" alt="check" />
+                                <span><strong>Business:</strong> Apollo Fitness Solutions</span>
+                            </div>
+
+                            <div className={styles.disclaimerBox}>
+                                <img src="/svg/warning-svg.svg" alt="warning" />
+                                <span>
+                                    <strong>Disclaimer:</strong> You will not be able to change this phone number in current billing cycle.
+                                </span>
+                            </div>
+
+                            <div className={styles.assignBtn}> <AnimatedButton label="Assign Number" position={{ position: "relative" }} /></div>
+                        </div>
+                    </Modal2>
+
                 </div>
             </div>
 
