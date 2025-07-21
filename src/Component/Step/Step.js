@@ -94,6 +94,12 @@ const Step = () => {
         return saved ? JSON.parse(saved) : [];
     });
 
+    const checkPaymentDone = localStorage.getItem("paymentDone")
+    const subsID = localStorage.getItem("subcriptionIdUrl")
+    console.log("subsID", subsID)
+    const [AgentId, setAgentId] = useState()
+    console.log("agentIDDD", AgentId)
+
     // Plans
     const [allPlans, setAllPlans] = useState(() => {
         const stored = localStorage.getItem("allPlans");
@@ -329,6 +335,40 @@ const Step = () => {
     }
     const languageAccToPlan =
         ["Scaler", "Growth", "Corporate"].includes(plan) ? "multi" : sessionStorage.getItem("agentLanguageCode");
+
+    const callNextApiAndRedirect = async (agentId) => {
+        console.log("Calling updateFreeAgent API with:", { userId, agentId });
+
+        try {
+            const res = await fetch(
+                `${API_BASE_URL}/agent/updateFreeAgent`,
+
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ userId, agentId, subsID }),
+                }
+            );
+
+            const data = await res.json();
+
+            if (data.success) {
+                setPopupType("success");
+                setPopupMessage("Agent upgraded successfully!");
+
+            } else {
+                setPopupType("failed");
+                setPopupMessage("Error completing subscription.");
+            }
+        } catch (error) {
+            console.error("❌ API call failed:", error);
+            setPopupType("failed");
+            setPopupMessage("Error completing subscription.");
+        }
+    };
+
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
@@ -373,8 +413,8 @@ const Step = () => {
                 languageAccToPlan,
                 plan: plan
             });
-            console.log(filledPrompt)
-         
+        console.log(filledPrompt)
+
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
             roleTitle: sessionStorage.getItem("agentRole"),
@@ -661,6 +701,7 @@ const Step = () => {
                         }
                     );
                     const agentId = response.data.agent_id;
+                    setAgentId(agentId)
                     // Get businessId from sessionStorage
                     const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
                     // Convert string to object
@@ -703,9 +744,15 @@ const Step = () => {
                             sessionStorage.removeItem("avatar")
                             setPopupType("success");
                             await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
+                            if (checkPaymentDone === "true") {
+                                await callNextApiAndRedirect(agentId)
+                            }
                             setPopupMessage("Agent created successfully!");
                             setShowPopup(true);
                             if (freeTrail) {
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                            }
+                            if (checkPaymentDone === "true") {
                                 setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
                             }
 
@@ -896,6 +943,12 @@ const Step = () => {
         if (locationPath === "/checkout" || value === "chatke") {
             // handleContinue()
 
+        }
+        else if (checkPaymentDone === "true") {
+
+            // callNextApiAndRedirect()
+            handleContinue()
+            console.log("RUNNNNNNN")
         }
         else if (locationPath !== "/checkout" && priceId) {
             if (currentStep === 7) {

@@ -62,6 +62,7 @@ import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
 import RedirectHandler from "./utils/RedirectHandler ";
 import PreventPullToRefresh from "./Component/PreventPullToRefresh/PreventPullToRefresh";
+import Thankyou2 from "./Component/ThankyouPage2/Thankyou2";
 
 // import Test from "./utils/Test";
 function App() {
@@ -282,6 +283,7 @@ function App() {
                   <Route path="/cancel-payment" element={<CancelPage />} />
                   <Route path="/*" element={<RedirectHandler />} />
 
+                  <Route path="/thankyou2" element={<Thankyou2 />} />
 
 
 
