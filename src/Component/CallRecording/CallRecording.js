@@ -1,12 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import styles from '../EditAgentNew/EditAgentNew.module.css'
-import EditHeader from '../EditHeader/EditHeader';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { getUserAgentMergedDataForAgentUpdate } from '../../Store/apiStore';
-import Loader from '../Loader/Loader';
-import Loader2 from '../Loader2/Loader2';
+import React, { useEffect, useState } from "react";
+import HeaderBar from "../HeaderBar/HeaderBar";
+import styles from "./CallRecording.module.css";
+import { API_BASE_URL, getUserAgentMergedDataForAgentUpdate, updateAgent } from "../../Store/apiStore";
+import Switch from "@mui/material/Switch";
+import CircularProgress from "@mui/material/CircularProgress";
+import axios from "axios";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAgentCreator } from "../../hooks/useAgentCreator";
+import { useDashboardStore } from "../../Store/agentZustandStore";
 
-const EditAgentNew = () => {
+const CallRecording = () => {
+  const [callRecording, setCallRecording] = useState(true);
+  console.log("CallRecording component rendered",callRecording);
+  const [loading, setLoading] = useState(false);
+  const [Id, setAgentId] = useState(null);
+  const [openDisclaimer, setOpenDisclaimer] = useState(false);
+  const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { agentId, businessId } = location.state || {};
@@ -14,57 +28,14 @@ const EditAgentNew = () => {
   const [editBusinessId, setBusinessId] = useState(sessionStorage.getItem('SelectAgentBusinessId') || null);
   const [agentName, setAgentName] = useState(sessionStorage.getItem("agentName") || "")
   const agentnm = sessionStorage.getItem("agentName");
-  const [loading, setLoading] = useState(true);
+  const [popupType, setPopupType] = useState(null);
+    const [popupMessage, setPopupMessage] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
+      const { setHasFetched } = useDashboardStore();
   // console.log('agentnm',agentnm,agentId, businessId)
   useEffect(() => {
     setAgentName(agentnm)
   }, [agentnm])
-  const steps = [
-    {
-      number: 1,
-      title: 'Business Type',
-      desc: 'Edit: Business List, Business Size.',
-      active: true,
-      link: '/edit-business-type'
-    },
-    {
-      number: 2,
-      title: 'Services Offered',
-      desc: 'Edit: Business Services & More.',
-      link: '/edit-services-offered'
-    },
-    {
-      number: 3,
-      title: 'Public Listing',
-      desc: 'Edit: Google listing, Website URL.',
-      link: '/edit-public-listing'
-    },
-    {
-      number: 4,
-      title: 'Business Details',
-      desc: 'Edit: Name, Email, Phone Nu...',
-      link: '/edit-business-detail'
-    },
-    {
-      number: 5,
-      title: 'Agent Language',
-      desc: 'Edit: Language.',
-      link: '/edit-language'
-    },
-    {
-      number: 6,
-      title: 'Agent Gender',
-      desc: 'Edit: Gender, Voice.',
-      link: '/edit-gender'
-    },
-    {
-      number: 7,
-      title: 'Name & Avatar',
-      desc: 'Edit: Name, Avtar, Type.',
-      link: '/edit-name-avtar'
-    },
-  ];
-
   const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     try {
       const response = await getUserAgentMergedDataForAgentUpdate(
@@ -209,40 +180,150 @@ const EditAgentNew = () => {
     }
   }, [editAgentId, editBusinessId])
 
+  useEffect(() => {
+    const storedAgentId = sessionStorage.getItem("SelectAgentId");
+    setAgentId(storedAgentId);
+    if (storedAgentId) {
+      loadAgentStatus(storedAgentId);
+    }
+  }, []);
+  const { handleCreateAgent } = useAgentCreator({
+    stepValidator: () => "CallRecording",
+    setLoading,
+    setPopupMessage,
+    setPopupType,
+    setShowPopup,
+    navigate,
+    setHasFetched,
+  });
+  const loadAgentStatus = async (id) => {
+  try {
+    setLoading(true);
+    const res = await axios.get(`${API_BASE_URL}/agent/getAgent/${id}`);
+    setCallRecording(res.data.callRecording);
+    sessionStorage.setItem("callRecording", res.data.callRecording);
+  } catch (error) {
+    console.error("Failed to fetch agent details", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
+
+  const handleToggle = () => {
+    if (callRecording) {
+      setOpenDisclaimer(true);
+    } else {
+      updateRecordingStatus(true);
+    }
+  };
+
+  const updateRecordingStatus = async (newValue) => {
+  try {
+    setLoading(true);
+    await updateAgent(agentId, { callRecording: newValue });
+    setCallRecording(newValue);
+    sessionStorage.setItem("callRecording", newValue);
+    handleCreateAgent()
+  } catch (error) {
+    console.error("Failed to update call recording", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleConfirmDisclaimer = () => {
+    if (disclaimerChecked) {
+      setOpenDisclaimer(false);
+      setDisclaimerChecked(false);
+      updateRecordingStatus(false);
+    }
+  };
 
   return (
-    <div>
-      {
-        loading ?
-          <Loader2 />
-          :
-          <>
-            <EditHeader title='Agent name' agentName={agentName} />
-            <div className={styles.wrapper}>
-              <div className={styles.stepsContainer}>
-                {steps.map((step, index) => (
-                  <div key={index} className={styles.card} onClick={() => navigate(step.link)}>
-                    <span className={styles.stepNumber}>{step.number}</span>
-                    <div className={styles.content}>
-                      <h4>{step.title}</h4>
-                      <p>{step.desc}</p>
-                    </div>
-                    <div className={styles.icon}>
-                      <img src="/svg/edit-svg2.svg" alt="Edit" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-      }
+    <div className={styles.callRecordingContainer}>
+      <HeaderBar
+        title="Call Recording"
+        backgroundColor="#6524EB"
+        color="#fff"
+      />
+
+      <div className={styles.toggleWrapper}>
+        <label className={styles.toggleLabel}>
+          Call Recording Deceleration:
+          {loading ? (
+            <CircularProgress size={20} style={{ marginLeft: 10 }} />
+          ) : (
+            <Switch
+              checked={callRecording}
+              onChange={handleToggle}
+              color="primary"
+              style={{ marginLeft: 10 }}
+            />
+          )}
+        </label>
+      </div>
+
+      {/* Disclaimer Modal */}
+      <Modal open={openDisclaimer} onClose={() => setOpenDisclaimer(false)}>
+        <Box className={styles.modalBox}>
+          <Typography variant="h6" gutterBottom>
+            Disclaimer
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Turning off call recording may impact compliance with applicable
+            laws, regulations, or internal policies. By disabling this feature,
+            you acknowledge that you are solely responsible for ensuring proper
+            use and transparency.
+            <br />
+            <br />
+            <strong>Note:</strong> In the event of any misuse, abuse, or illegal
+            activity, you understand and agree that you are solely liable. The
+            service provider is not responsible for any consequences resulting
+            from such actions.
+          </Typography>
+
+          <div style={{ display: "flex", alignItems: "center", marginTop: 10 }}>
+            <Checkbox
+              checked={disclaimerChecked}
+              onChange={(e) => setDisclaimerChecked(e.target.checked)}
+            />
+            <Typography variant="body2">
+              I have read and understood the implications of turning off call
+              recording.
+            </Typography>
+          </div>
+          <div
+            style={{
+              marginTop: 20,
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Button
+              variant="outlined"
+              onClick={() => setOpenDisclaimer(false)}
+              style={{ marginRight: 10 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!disclaimerChecked}
+              onClick={handleConfirmDisclaimer}
+            >
+              Confirm
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default EditAgentNew
-
+export default CallRecording;
 const safeParse = (value, fallback = null) => {
   try {
     if (typeof value === "string") {

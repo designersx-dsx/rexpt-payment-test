@@ -10,19 +10,18 @@ const getFromStorage = (key, fallback = "") =>
 
 export const useAgentCreator = ({
   stepValidator = () => true,
-  setLoading = () => { },
-  setPopupMessage = () => { },
-  setPopupType = () => { },
-  setShowPopup = () => { },
-  navigate = () => { },
-  setHasFetched = () => { },
+  setLoading = () => {},
+  setPopupMessage = () => {},
+  setPopupType = () => {},
+  setShowPopup = () => {},
+  navigate = () => {},
+  setHasFetched = () => {},
 }) => {
   const token = localStorage.getItem("token") || "";
   const sessionBusinessiD = sessionStorage.getItem("bId");
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
-
 
   // const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
   // const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
@@ -103,19 +102,21 @@ export const useAgentCreator = ({
     const aboutBusinessForm =
       JSON.parse(sessionStorage.getItem("aboutBusinessForm")) ||
       "Your Business Services";
+    const CallRecording = sessionStorage.getItem("callRecording") === "true";
 
     const agentGender = sessionStorage.getItem("agentGender");
     const languageSelect = sessionStorage?.getItem("agentLanguage");
-    const plan = sessionStorage.getItem("plan")
-       const languageAccToPlan =
-        ["Scaler", "Growth", "Corporate"].includes(plan) ? "multi" :  sessionStorage.getItem("agentLanguageCode");
+    const plan = sessionStorage.getItem("plan");
+    const languageAccToPlan = ["Scaler", "Growth", "Corporate"].includes(plan)
+      ? "multi"
+      : sessionStorage.getItem("agentLanguageCode");
     const agentName = sessionStorage.getItem("agentName") || "";
     const packageName = sessionStorage.getItem("package") || "Free";
     const sanitize = (str) =>
       String(str || "")
         .trim()
         .replace(/\s+/g, "_");
-    const packageValue = packageMap[packageName] || 1; // default to 1 (Free) if not found
+    const packageValue = packageMap[packageName] || 1;
     const businessServices = SelectedServices?.selectedService || [];
     const customServices =
       cleanedCustomServices?.map((item) =>
@@ -130,7 +131,7 @@ export const useAgentCreator = ({
 
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(
       getBusinessNameFromGoogleListing?.businessName ||
-      getBusinessNameFormCustom
+        getBusinessNameFormCustom
     )}_${sanitize(role_title)}_${packageValue}#${agentCount}`;
 
     const CustomservicesArray =
@@ -140,7 +141,7 @@ export const useAgentCreator = ({
       industryKey:
         business?.businessType == "Other"
           ? business?.customBuisness
-          : business?.businessType, // ← dynamic from businessType
+          : business?.businessType,
       roleTitle: sessionStorage.getItem("agentRole"),
       agentName: "{{AGENT NAME}}",
       agentGender: "{{MALE or FEMALE}}",
@@ -159,8 +160,8 @@ export const useAgentCreator = ({
     });
 
     const filledPrompt = getAgentPrompt({
-      industryKey: business?.businessType, // ← dynamic from businessType
-      roleTitle: role_title, // ← dynamic from sessionStorage or UI
+      industryKey: business?.businessType,
+      roleTitle: role_title,
       agentName: agentName,
       agentGender: agentGender,
       business: {
@@ -179,8 +180,11 @@ export const useAgentCreator = ({
       commaSeparatedServices,
       agentNote,
       languageAccToPlan,
-      plan
+      plan,
+      CallRecording,
     });
+    console.log("CallRecording flag:", CallRecording);
+    console.log("Prompt start:", filledPrompt.slice(0, 300));
 
     const getLeadTypeChoices = () => {
       const fixedChoices = [
@@ -190,7 +194,7 @@ export const useAgentCreator = ({
       ];
       const allServices = [...customServices, ...businessServiceNames];
       const cleanedServices = allServices
-        .map((service) => service?.trim()) // remove extra whitespace
+        .map((service) => service?.trim())
         .filter((service) => service && service?.toLowerCase() !== "other")
         .map((service) => {
           const normalized = service?.replace(/\s+/g, " ")?.trim();
@@ -201,9 +205,6 @@ export const useAgentCreator = ({
       );
       return combinedChoices;
     };
-
-    // console.log('prompt1',filledPrompt)
-    // return
 
     //updation here
     if (isValid && localStorage.getItem("UpdationMode") == "ON") {
@@ -222,7 +223,6 @@ export const useAgentCreator = ({
         const buisenessServices = JSON.parse(
           sessionStorage.getItem("businesServices")
         );
-        // const customServices = JSON.parse(sessionStorage.getItem('selectedCustomServices')) || [];
         const rawCustomServices =
           JSON.parse(sessionStorage.getItem("selectedCustomServices")) || [];
         const cleanedCustomServices = rawCustomServices
@@ -265,54 +265,6 @@ export const useAgentCreator = ({
         model_high_priority: true,
         tool_call_strict_mode: true,
         general_prompt: filledPrompt,
-        // general_tools: [
-        //   // {
-        //   //   type: "extract_dynamic_variable",
-        //   //   name: "extract_user_info",
-        //   //   description: "Extract user details such as email, phone number, address, and reason for calling. The assistant should understand spoken numbers, spoken email addresses, and Hindi input. Convert all values into proper English and formatted strings. For example, 'one two at Gmail dot com' → '12@gmail.com', or 'ग्यारह' → 'eleven'.",
-        //   //   variables: [
-        //   //     {
-        //   //       type: "string",
-        //   //       name: "email",
-        //   //       description: "The user's email address. If the email is spoken using words (e.g., 'john dot doe at gmail dot com'), convert it into standard format like 'john.doe@gmail.com'. Ensure it's valid and clean.",
-        //   //       examples: ["john.doe@example.com", "nitish@company.in", "12@gmail.com"],
-        //   //       required: true,
-        //   //     },
-        //   //     {
-        //   //       type: "string",
-        //   //       name: "phone_number",
-        //   //       description: "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid 10-digit number when possible.",
-        //   //       examples: ["+919876543210", "9876543210", "7876121490"],
-        //   //       required: true
-        //   //     },
-        //   //     {
-        //   //       type: "string",
-        //   //       name: "address",
-        //   //       description: "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
-        //   //       examples: ["123 Main St, Delhi", "42 Wallaby Way, Sydney", "1490 Aandhar Eleven"],
-        //   //       required: false
-        //   //     },
-        //   //     {
-        //   //       type: "string",
-        //   //       name: "reason",
-        //   //       description: "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
-        //   //       examples: ["Schedule an appointment", "Ask about services", "Request for accounting help"],
-        //   //       required: false
-        //   //     },
-        //   //        {
-        //   //           "type": "string",
-        //   //           "name": "name",
-        //   //           "description": "Extract the user's name from the conversation",
-        //   //            examples: ["Ajay Sood", "John Wick", "Adam Zampa","Jane Doe","Nitish Kumar", "Ravi Shukla"],
-        //   //            required: true
-
-        //   //       },
-        //   //   ],
-        //   //   debug: true // Hypothetical debug flag to log inputs/outputs
-
-        //   // }
-
-        // ],
         general_tools: [],
         states: [
           {
@@ -535,15 +487,19 @@ export const useAgentCreator = ({
               {
                 type: "string",
                 name: "address",
-                description: "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
-                examples: ["123 Main St, Delhi", "42 Wallaby Way, Sydney", "1490 Aandhar Eleven"],
+                description:
+                  "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+                examples: [
+                  "123 Main St, Delhi",
+                  "42 Wallaby Way, Sydney",
+                  "1490 Aandhar Eleven",
+                ],
               },
               {
                 type: "number",
                 name: "phone_number",
                 description:
                   "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
-
               },
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
@@ -642,9 +598,14 @@ export const useAgentCreator = ({
         // console.log('isValidjsdjajdja',isValid)
         setPopupMessage(`${screenLabels[isValid]} Updated Succesfully`);
         setShowPopup(true);
-        setTimeout(() => {
-          navigate("/edit-agent", { replace: true });
-        }, 1000);
+        if (CallRecording === false) {
+        } else if (CallRecording === true) {
+        } else {
+          setTimeout(() => {
+            navigate("/edit-agent", { replace: true });
+          }, 1000);
+        }
+
         setHasFetched(false);
       } catch (error) {
         console.error("LLM updation failed:", error);

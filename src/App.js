@@ -67,6 +67,7 @@ import PreventPullToRefresh from "./Component/PreventPullToRefresh/PreventPullTo
 import Thankyou2 from "./Component/ThankyouPage2/Thankyou2";
 
 import Number from "./Component/assign/Number";
+import CallRecording from "./Component/CallRecording/CallRecording";
 
 
 // import Test from "./utils/Test";
@@ -278,6 +279,7 @@ function App() {
                   <Route path="/documentation" element={<SecureRoute><Documentation /></SecureRoute>} />
 
                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
+                  <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
 
 
                   <Route path="/test-other" element={<Test />} />
