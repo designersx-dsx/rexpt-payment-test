@@ -413,7 +413,7 @@ const Step = () => {
                 languageAccToPlan,
                 plan: plan
             });
-        console.log(filledPrompt)
+     
 
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
