@@ -52,6 +52,10 @@ const BusinessListing = forwardRef(
     const [state, setState] = useState("")
     const [country, setCountry] = useState("")
     const [postal_code, setPostal_code] = useState("")
+    const [country_code, setCountry_code] = useState("")
+    const [state_code, setState_code] = useState("")
+
+
     const setHasFetched = true;
     const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "BusinessListing",
@@ -203,25 +207,33 @@ const BusinessListing = forwardRef(
         );
         //extractAddressFields
         function extractAddressFields(addressComponents) {
-          const getComponent = (primaryType, fallbackType = null) =>
-            addressComponents.find((comp) =>
-              comp.types.includes(primaryType) || (fallbackType && comp.types.includes(fallbackType))
-            )?.long_name || "";
+          const getComponent = (primaryType, fallbackType = null, useShort = false) => {
+            const comp = addressComponents.find((c) =>
+              c.types.includes(primaryType) || (fallbackType && c.types.includes(fallbackType))
+            );
+            return comp ? (useShort ? comp.short_name : comp.long_name) : "";
+          };
 
           return {
             city: getComponent("locality", "sublocality_level_1"),
             state: getComponent("administrative_area_level_1"),
+            state_code: getComponent("administrative_area_level_1", null, true), // Short name (e.g. TX)
             country: getComponent("country"),
+            country_code: getComponent("country", null, true), // Short name (e.g. US)
             postal_code: getComponent("postal_code"),
             street_number: getComponent("street_number"),
+            route: getComponent("route")
           };
         }
         const addressFields = extractAddressFields(placeDetails?.address_components || []);
+        console.log(addressFields, "addressFields")
         setCity(addressFields.city)
         setState(addressFields.state)
         setCountry(addressFields.country)
         setPostal_code(addressFields.postal_code)
         setStreet_number(addressFields.street_number)
+        setCountry_code(addressFields.country_code)
+        setState_code(addressFields.state_code)
         //Get Details From GMB
         const businessData = {
           businessName: businessName || placeDetails?.businessName || "",
@@ -244,6 +256,10 @@ const BusinessListing = forwardRef(
           country: addressFields?.country,
           postal_code: addressFields?.postal_code,
           street_number: addressFields?.street_number,
+          country_code: addressFields?.country_code,
+          state_code: addressFields?.state_code
+          // setCountry_code()
+          // setCountry_code()
         };
         const placeDetailsForKBT = JSON.parse(
           sessionStorage.getItem("placeDetailsExtract") || "{}"
@@ -296,6 +312,8 @@ const BusinessListing = forwardRef(
         formData2.append("businessEmail", email);
         formData2.append("city", businessData?.city || city);
         formData2.append("state", businessData?.state || state);
+        formData2.append("state_code", businessData?.state_code||state_code);
+        formData2.append("country_code", businessData?.country_code||country_code);
         formData2.append("country", businessData?.country || country);
         formData2.append("postal_code", businessData?.postal_code || postal_code);
         formData2.append("street_number", businessData?.street_number || street_number);
@@ -506,10 +524,12 @@ const BusinessListing = forwardRef(
       );
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
+        console.log(place, "place")
         if (place.formatted_address) {
           const addressComponents = place.address_components || [];
           setAddress(place.formatted_address);
           extractAndStoreAddressComponents(place.address_components);
+
           // Update sessionStorage
           const currentDetails = JSON.parse(
             sessionStorage.getItem("placeDetailsExtract") || "{}"
@@ -527,7 +547,6 @@ const BusinessListing = forwardRef(
     const extractAndStoreAddressComponents = (components) => {
       const getComponent = (type) =>
         components.find((c) => c.types.includes(type))?.long_name || "";
-
       const addressDetails = {
         street_number: getComponent("street_number"),
         route: getComponent("route"),
@@ -536,6 +555,7 @@ const BusinessListing = forwardRef(
         country: getComponent("country"),
         postal_code: getComponent("postal_code"),
       };
+      console.log(addressDetails)
     };
     //initAddressAutocomplete
     useEffect(() => {

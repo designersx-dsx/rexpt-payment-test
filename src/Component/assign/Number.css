@@ -1,0 +1,102 @@
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header h2 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.country-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.country-flag {
+  font-size: 24px;
+}
+
+.dropdown-btn {
+  font-size: 14px;
+  background-color: #e5e7eb;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filters input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.refresh-btn {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #6b21a8;
+  background-color: white;
+  cursor: pointer;
+}
+
+.refresh-btn:hover {
+  background-color: #f3e8ff;
+}
+
+.phone-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.phone-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.phone-item:hover {
+  background-color: #f9fafb;
+}
+
+.phone-item input[type="radio"] {
+  accent-color: #6b21a8;
+}

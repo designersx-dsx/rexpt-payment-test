@@ -169,8 +169,11 @@ function Dashboard() {
     if (planName.toLowerCase() === "free") {
       openAssignNumberModal();
     } else {
-      setSelectedAgentForAssign(agent);
-      setIsAssignModalOpen(true);
+      // setSelectedAgentForAssign(agent);
+      // setIsAssignModalOpen(true);
+      navigate("/assign-number",{
+      state: { agent: agent },
+    })
     }
   };
 
