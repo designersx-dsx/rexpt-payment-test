@@ -78,17 +78,20 @@ const EditPublic = () => {
     });
   };
   function extractAddressFields(addressComponents) {
-    const getComponent = (primaryType, fallbackType = null) =>
-      addressComponents.find((comp) =>
-        comp.types.includes(primaryType) || (fallbackType && comp.types.includes(fallbackType))
-      )?.long_name || "";
-
+    const getComponent = (primaryType, fallbackType = null, useShort = false) => {
+      const comp = addressComponents.find((c) =>
+        c.types.includes(primaryType) || (fallbackType && c.types.includes(fallbackType))
+      );
+      return comp ? (useShort ? comp.short_name : comp.long_name) : "";
+    };
     return {
       city: getComponent("locality", "sublocality_level_1"),
       state: getComponent("administrative_area_level_1"),
       country: getComponent("country"),
       postal_code: getComponent("postal_code"),
       street_number: getComponent("street_number"),
+      state_code: getComponent("administrative_area_level_1", null, true),
+      country_code: getComponent("country", null, true),
     };
   }
   useEffect(() => {
@@ -113,7 +116,6 @@ const EditPublic = () => {
     const service = new window.google.maps.places.PlacesService(
       document.createElement("div")
     );
-
     service.getDetails({ placeId }, (result, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
         setPlaceDetails(result);
@@ -132,11 +134,13 @@ const EditPublic = () => {
           hours: result.opening_hours?.weekday_text || [],
           businessStatus: result.business_status || "",
           categories: result.types || [],
-          street_number:addressFields.street_number||"",
-          city:addressFields.city,
-          state:addressFields.state,
-          country:addressFields.country,
-          postal_code:addressFields.postal_code
+          street_number: addressFields.street_number || "",
+          city: addressFields.city,
+          state: addressFields.state,
+          country: addressFields.country,
+          postal_code: addressFields.postal_code,
+          state_code: addressFields.state_code,
+          country_code: addressFields.country_code,
 
         };
         const updatedForm = {

@@ -19,7 +19,7 @@
 .custom-refresh-wrapper {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  height: 100vh;
+  height: 100dvh;
   position: relative;
 }
 

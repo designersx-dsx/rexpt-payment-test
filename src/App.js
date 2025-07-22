@@ -50,7 +50,8 @@ import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
 import BusinessListing from "./Component/BusinessListing/BusinessListing";
 import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
-import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI"
+import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI";
+import AssignNumber from "./Component/AssignNumber/AssignNumber";
 
 import Thankyou from "./Component/ThankyouPage/Thankyou";
 import CancelPage from "./Component/CancelPage/CancelPage";
@@ -62,7 +63,11 @@ import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
 import RedirectHandler from "./utils/RedirectHandler ";
 import PreventPullToRefresh from "./Component/PreventPullToRefresh/PreventPullToRefresh";
+
 import Thankyou2 from "./Component/ThankyouPage2/Thankyou2";
+
+import Number from "./Component/assign/Number";
+
 
 // import Test from "./utils/Test";
 function App() {
@@ -128,12 +133,9 @@ function App() {
                   <Route path="/edit-language" element={<EditLanguage />} />
                   <Route path="/edit-gender" element={<EditGender />} />
                   <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
-
                   <Route path="/plans" element={<SecureRoute><SubscriptionPlan /></SecureRoute>} />
                   <Route path="/plan" element={<SecureRoute><Planss /></SecureRoute>} />
-
-
-
+                  <Route path="/assign-number" element={<SecureRoute><AssignNumber /></SecureRoute>} />
                   <Route
                     path="/details"
                     element={
@@ -283,10 +285,14 @@ function App() {
                   <Route path="/cancel-payment" element={<CancelPage />} />
                   <Route path="/*" element={<RedirectHandler />} />
 
+
                   <Route path="/thankyou2" element={<Thankyou2 />} />
 
 
 
+
+
+                  <Route path="/number" element={< Number />} />
 
                   <Route path="/delete-account" element={<Delete />} />
                 </Routes>
