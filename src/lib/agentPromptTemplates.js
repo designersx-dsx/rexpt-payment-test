@@ -15,7 +15,6 @@ function getFreeAndStarterPlanContent(languageAccToPlan, languageSelect) {
 `;
   return message.trim();
 }
-
 export const agentPromptTemplates = {
   //Real Estate Broker
   "Real Estate Broker": {
