@@ -117,7 +117,7 @@ const AgentDashboard = () => {
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
-  const [agentCalApiKey, setAgentCalApiKey] = useState("")
+  const [agentCalApiKey, setAgentCalApiKey] = useState("");
 
   const isRefreshing = useContext(RefreshContext);
 
@@ -136,7 +136,6 @@ const AgentDashboard = () => {
   useEffect(() => {
     const fetchMeetingCount = async () => {
       if (!agentData?.agent?.calApiKey || !agentData?.agent?.eventId) return;
-
 
       try {
         const res = await fetch(
@@ -248,7 +247,7 @@ const AgentDashboard = () => {
   const createCalEvent = async () => {
     const agent = agentDetailsForCal;
     await handleApiKeySubmit();
-    setRefresh(true)
+    setRefresh(true);
     try {
       // Call Cal API to create an event
       const url = `https://api.cal.com/v1/event-types?apiKey=${encodeURIComponent(
@@ -333,7 +332,7 @@ const AgentDashboard = () => {
     try {
       const response = await fetchAgentDetailById(agentDetails);
       const agentInfo = response?.data;
-      setAgentCalApiKey(agentInfo?.agent?.calApiKey)
+      setAgentCalApiKey(agentInfo?.agent?.calApiKey);
       let numbersArray = [];
 
       const voipNumbersStr = agentInfo?.agent?.voip_numbers;
@@ -404,8 +403,7 @@ const AgentDashboard = () => {
     setRetellWebClient(client);
     sessionStorage.removeItem("selectedfilterOption");
     const calApiKey = agentData?.agent?.calApiKey;
-    setAgentCalApiKey(calApiKey)
-
+    setAgentCalApiKey(calApiKey);
   }, []);
 
   // Start call handler
@@ -673,7 +671,6 @@ const AgentDashboard = () => {
     }
   };
   const handleAssignNumberClick = (agent, e, business) => {
-
     e.stopPropagation();
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
@@ -684,32 +681,28 @@ const AgentDashboard = () => {
     if (!agent.subscriptionId) {
       openAssignNumberModal();
     } else {
-   
       // setSelectedAgentForAssign(agent);
       // setIsAssignModalOpen(true);
-     const agent=  sessionStorage.getItem("multiAgentCache")
-          navigate("/assign-number",{
-      state: { agent: agent,business:business },
-    })
+      const agent = sessionStorage.getItem("multiAgentCache");
+      navigate("/assign-number", {
+        state: { agent: agent, business: business },
+      });
     }
-    setBusinessDetails(business)
-
+    setBusinessDetails(business);
   };
   const handleUpgradeClick = (agent) => {
     // setagentId(agent?.agent_id);
     // setsubscriptionId(agent?.subscriptionId);
-    sessionStorage.setItem("updateBtn", "update")
-    sessionStorage.setItem("selectedPlan", agent?.agent?.agentPlan)
+    sessionStorage.setItem("updateBtn", "update");
+    sessionStorage.setItem("selectedPlan", agent?.agent?.agentPlan);
 
     navigate("/plan", {
-
       state: {
         agentID: agent?.agent.agent_id,
         locationPath: "/dashboard",
         subscriptionID: agent?.agent.subscriptionId,
         planName: agent?.agent.agentPlan,
-        interval: agent?.subscription?.interval || null
-
+        interval: agent?.subscription?.interval || null,
       },
     });
   };
@@ -717,11 +710,15 @@ const AgentDashboard = () => {
     if (isRefreshing) {
       getAgentDetailsAndBookings();
     }
-  }, [isRefreshing])
+  }, [isRefreshing]);
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
-       isRefreshing ?"":<Loader2 />
+        isRefreshing ? (
+          ""
+        ) : (
+          <Loader2 />
+        )
       ) : (
         <>
           <div className={styles.Forsticky}>
@@ -799,7 +796,6 @@ const AgentDashboard = () => {
 
             <section>
               <div className={styles.agentCard}>
-
                 <h3 className={`${styles.PlanTitle}  `}>
                   {agentData?.agent?.agentPlan}
                 </h3>
@@ -839,31 +835,35 @@ const AgentDashboard = () => {
                     <hr className={styles.agentLine}></hr>
 
                     <div className={styles.agentDetailsFlex}>
-                      {
-
-                        assignedNumbers?.length > 0 ? (
-                          <div className={styles.AssignNumText}>
-                            Phone Number<p>{assignedNumbers?.map(formatE164USNumber).join(", ")}</p>
-                          </div>
-                        ) : (
-                          <div
-                            className={styles.AssignNum}
-                            onClick={(e) => {
-                              if (agentStatus === true) {
-                                handleInactiveAgentAlert();
-                              } else {
-                                // setIsAssignModalOpen(true)
-                                // setIsAssignNumberModalOpen(true);
-                                handleAssignNumberClick(agentData?.agent, e, agentData?.business);
-
-                              }
-                            }}
-
-                          >
-                            <img src="/svg/assign-number.svg" />
-                          </div>
-                        )}
-
+                      {assignedNumbers?.length > 0 ? (
+                        <div className={styles.AssignNumText}>
+                          Phone Number
+                          <p>
+                            {assignedNumbers
+                              ?.map(formatE164USNumber)
+                              .join(", ")}
+                          </p>
+                        </div>
+                      ) : (
+                        <div
+                          className={styles.AssignNum}
+                          onClick={(e) => {
+                            if (agentStatus === true) {
+                              handleInactiveAgentAlert();
+                            } else {
+                              // setIsAssignModalOpen(true)
+                              // setIsAssignNumberModalOpen(true);
+                              handleAssignNumberClick(
+                                agentData?.agent,
+                                e,
+                                agentData?.business
+                              );
+                            }
+                          }}
+                        >
+                          <img src="/svg/assign-number.svg" />
+                        </div>
+                      )}
 
                       <p className={styles.agentDetails}>
                         Agent Code{" "}
@@ -882,8 +882,8 @@ const AgentDashboard = () => {
                 <h2>
                   {formatBusinessName(
                     agentData?.business?.businessName ||
-                    agentData?.knowledge_base_texts?.name ||
-                    agentData?.business?.googleBusinessName
+                      agentData?.knowledge_base_texts?.name ||
+                      agentData?.business?.googleBusinessName
                   )}
                 </h2>
 
@@ -907,7 +907,6 @@ const AgentDashboard = () => {
                 >
                   <h4>Business Details</h4>
                   <img className={styles.Editsvg} src="/svg/eye-svg.svg" />
-
                 </div>
               </div>
 
@@ -995,7 +994,6 @@ const AgentDashboard = () => {
                 >
                   <h4>Knowledge Base</h4>
                   <img className={styles.Editsvg} src="/svg/eye-svg.svg" />
-
                 </div>
               </div>
             </div>
@@ -1052,22 +1050,22 @@ const AgentDashboard = () => {
                   } else {
                     if (agentCalApiKey) {
                       handleConnectCal(agentData?.agent);
-                    }
-                    else if ((userCalApiKey == "undefined" || userCalApiKey == "null" || !userCalApiKey) &&
-                      (agentCalApiKey == "undefined" || agentCalApiKey == "null" || !agentCalApiKey)) {
+                    } else if (
+                      (userCalApiKey == "undefined" ||
+                        userCalApiKey == "null" ||
+                        !userCalApiKey) &&
+                      (agentCalApiKey == "undefined" ||
+                        agentCalApiKey == "null" ||
+                        !agentCalApiKey)
+                    ) {
                       handleConnectCal(agentData?.agent);
-                    }
-                    else if (userCalApiKey && agentCalApiKey) {
+                    } else if (userCalApiKey && agentCalApiKey) {
                       handleConnectCal(agentData?.agent);
-                    }
-                    else if (userCalApiKey && !agentCalApiKey) {
+                    } else if (userCalApiKey && !agentCalApiKey) {
                       handleConnectCalApiAlready(agentData?.agent);
-                    }
-                    else {
+                    } else {
                       handleConnectCal(agentData?.agent);
                     }
-
-
                   }
                 }}
               >
@@ -1206,7 +1204,7 @@ const AgentDashboard = () => {
                     handleCallTransfer();
                   }
                 }}
-              // onClick={handleCallTransfer}
+                // onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1260,13 +1258,13 @@ const AgentDashboard = () => {
                     });
                   }
                 }}
-              // onClick={async () => {
-              //   await fetchPrevAgentDEtails(
-              //     agentData?.agent?.agent_id,
-              //     agentData?.agent?.businessId
-              //   );
-              //   setModalOpen(true);
-              // }}
+                // onClick={async () => {
+                //   await fetchPrevAgentDEtails(
+                //     agentData?.agent?.agent_id,
+                //     agentData?.agent?.businessId
+                //   );
+                //   setModalOpen(true);
+                // }}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1298,12 +1296,14 @@ const AgentDashboard = () => {
               <div
                 className={styles.managementItem}
                 // onClick={() => setShowModal(true)}
-                onClick={() => navigate("/call-setting", {
-                  state: {
-                    selectedAgentname: `${agentData?.agent?.agentName}-${agentData?.agent?.agentCode}`,
-                    fromPage: "dashboard",
-                  },
-                })}
+                onClick={() =>
+                  navigate("/call-setting", {
+                    state: {
+                      selectedAgentname: `${agentData?.agent?.agentName}-${agentData?.agent?.agentCode}`,
+                      fromPage: "dashboard",
+                    },
+                  })
+                }
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1367,7 +1367,33 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Upgrade</p>
               </div>
-
+              <div
+                className={styles.managementItem}
+                onClick={() =>
+                  navigate("/call-recording", {
+                    state: {
+                      agentId: agentData?.agent?.agent_id,
+                      businessId: agentData?.agent?.businessId,
+                    },
+                  })
+                }
+              >
+                <div className={styles.SvgDesign}>
+                  <svg
+                    width="19"
+                    height="19"
+                    viewBox="0 0 19 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9.50093 8.65722C11.9787 8.65722 14.0127 10.5339 14.2304 12.9286V13.7058H4.77122V12.9286C4.98902 10.5338 7.02327 8.65722 9.50093 8.65722ZM11.7627 5.80843C11.7627 4.57634 10.7465 3.57124 9.50093 3.57124C8.25533 3.57124 7.2392 4.57634 7.2392 5.80843C7.2392 7.04052 8.25533 8.04562 9.50093 8.04562C10.7465 8.04562 11.7627 7.04052 11.7627 5.80843ZM12.264 0.508766C10.0229 -0.165144 7.63425 0.00578332 5.53367 0.960128L5.55077 0.914725C5.68217 0.562182 5.50217 0.17404 5.14666 0.0422889C4.79205 -0.0876866 4.39785 0.0921426 4.26556 0.442008L3.57974 2.26701C3.50684 2.46109 3.52754 2.67742 3.63554 2.85457C3.74444 3.03173 3.92804 3.15014 4.13595 3.17596L6.02777 3.40919C6.40307 3.45638 6.74598 3.19286 6.79278 2.82164C6.83418 2.4958 6.63257 2.19313 6.32748 2.09342C8.069 1.36342 10.0248 1.25125 11.8634 1.80409C16.1519 3.09585 18.581 7.59694 17.2769 11.8389C16.9718 12.8306 16.4876 13.7396 15.836 14.5391C15.5984 14.8302 15.6452 15.2584 15.9404 15.4917C16.0673 15.5932 16.2185 15.643 16.3697 15.643C16.5695 15.643 16.7684 15.554 16.9043 15.3902C17.6657 14.4527 18.2318 13.3925 18.5882 12.2326C20.112 7.27568 17.2752 2.01589 12.264 0.508766ZM14.8622 15.8245L12.9704 15.5895C12.5951 15.5415 12.2522 15.8059 12.2054 16.1771C12.164 16.5029 12.3656 16.8056 12.6707 16.9053C10.9292 17.6353 8.97343 17.7475 7.13481 17.1946C2.84631 15.9056 0.418094 11.4045 1.72218 7.15982C2.02728 6.16808 2.51149 5.25916 3.16309 4.45963C3.39979 4.16853 3.3539 3.74299 3.05869 3.50706C2.7635 3.27205 2.33239 3.31922 2.09568 3.61033C1.33426 4.54598 0.768162 5.60626 0.411751 6.76633C-1.11197 11.7232 1.72576 16.9828 6.73701 18.4899C8.97805 19.1638 11.3677 18.9929 13.4673 18.0385L13.4502 18.0839C13.3188 18.4365 13.4988 18.8273 13.8534 18.9564C13.9326 18.984 14.0127 19 14.0919 19C14.37 19 14.632 18.8291 14.7346 18.5575L15.4204 16.7325C15.4933 16.5385 15.4726 16.3221 15.3637 16.145C15.2548 15.9678 15.0712 15.8494 14.8633 15.8254L14.8622 15.8245Z"
+                      fill="#6524EB"
+                    />
+                  </svg>
+                </div>
+                <p className={styles.managementText}>Call Recording</p>
+              </div>
               {/* <div
                 className={styles.managementItem}
                 onClick={() => setShowModal(true)}
@@ -1416,7 +1442,7 @@ const AgentDashboard = () => {
 
                 <span className={styles.statDetail}>
                   {agentData?.avgCallTime?.minutes ||
-                    agentData?.avgCallTime?.seconds ? (
+                  agentData?.avgCallTime?.seconds ? (
                     <>
                       {agentData?.avgCallTime?.minutes}
                       <span className={styles.MinFont}>m</span>
@@ -1730,19 +1756,30 @@ const AgentDashboard = () => {
             agentDetails={businessDetails}
             onAssignNumber={handleAssignNumberUpdated}
             onAgentDetailsPage={true}
-            onClose={() => { setIsAssignModalOpen(false); setRefresh((prev) => !prev); }}
-
+            onClose={() => {
+              setIsAssignModalOpen(false);
+              setRefresh((prev) => !prev);
+            }}
           />
           {isAssignNumberModalOpen && (
-            <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
+            <div
+              className={styles.modalBackdrop}
+              onClick={closeAssignNumberModal}
+            >
               <div
                 className={styles.modalContainer}
                 onClick={(e) => e.stopPropagation()}
               >
                 <h2>Upgrade Required!</h2>
-                <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-                  To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
-
+                <p
+                  style={{
+                    fontSize: "1.1rem",
+                    color: "#444",
+                    margin: "16px 0",
+                  }}
+                >
+                  To get an agent number, you need to upgrade your plan. Unlock
+                  access to premium features by choosing a higher plan.
                 </p>
                 <button
                   className={`${styles.modalButton} ${styles.submit}`}
@@ -1899,9 +1936,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-        .map((item) => item?.service?.trim())
-        .filter(Boolean)
-        .map((service) => ({ service }))
+          .map((item) => item?.service?.trim())
+          .filter(Boolean)
+          .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(
