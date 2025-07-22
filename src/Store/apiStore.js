@@ -35,6 +35,22 @@ export const verifyEmailOTP = async (email, otp) => {
   return res;
 };
 
+export const verifyOrCreateUser = async (email, otp) => {
+
+   const res1 = await api.post('/auth/LoginWithEmailOTP', { email });
+
+  const customerRes = await fetch(`${API_BASE_URL}/customer`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  const customerData = await customerRes.json();
+  let customerId = customerData.customerId;
+  const res = await api.post('/auth/verifyEmailOTP', { email, otp, customerId });
+  return { res1, res };
+};
+
 export const getRetellVoices = async () => {
   const res = await axios.get('https://api.retellai.com/list-voices', {
     headers: {

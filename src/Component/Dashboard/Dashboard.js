@@ -346,6 +346,8 @@ function Dashboard() {
       sessionStorage.removeItem("checkPage")
       localStorage.removeItem("hasHandledThankYou");
       localStorage.removeItem("checkPage2")
+      localStorage.removeItem("paymentDone")
+      localStorage.removeItem("subcriptionIdUrl")
       sessionStorage.removeItem("VoiceAgentName");
       sessionStorage.removeItem("selectedLangCode");
       sessionStorage.removeItem("AgentCode");
