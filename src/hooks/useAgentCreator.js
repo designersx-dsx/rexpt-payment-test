@@ -630,7 +630,6 @@ export const useAgentCreator = ({
 
   return { handleCreateAgent };
 };
-
 const cleanServiceArray = () => {
   try {
     let raw;

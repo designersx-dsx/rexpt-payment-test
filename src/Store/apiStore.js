@@ -86,6 +86,14 @@ export const fetchAgentDetailById = async (data) => {
   })
   return res.data;
 }
+export const getAgentById = async (id) => {
+  const res = await api.get(`/agent/getAgentById/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return res.data;
+}
 
 export const EndWebCallUpdateAgentMinutesLeft = async (data) => {
   const res = await api.patch(`/agent/updateAgentMinutesLeft`, data, {
@@ -466,8 +474,8 @@ export const fetchAvailablePhoneNumberByCountry = async (country_code, locality,
     });
     return res.data;
   } catch (error) {
-    console.error("Error fetching agent schedule:", error.response?.data || error.message);
-    throw new Error("Failed to fetch agent schedule");
+   return error.response?.data 
+   
   }
 }
 export const createNumberOrder = async (phoneNumbers,agent_id) => {

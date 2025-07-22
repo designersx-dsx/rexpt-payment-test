@@ -15,6 +15,7 @@ function getFreeAndStarterPlanContent(languageAccToPlan, languageSelect) {
 `;
   return message.trim();
 }
+
 function ifcallrecordingstatustrue() {
   const message = `
 -  **After greeting and stating your name, the business name, and the business location/address, immediately state:
@@ -22,6 +23,7 @@ function ifcallrecordingstatustrue() {
 `;
   return message.trim();
 }
+
 export const agentPromptTemplates = {
   //Real Estate Broker
   "Real Estate Broker": {

@@ -209,12 +209,15 @@ const EditBusinessDetail = () => {
         };
       }
       const addressFields = extractAddressFields(placeDetails?.address_components || []);
-      console.log(addressFields, "addressFields54543")
       setCity(addressFields.city)
       setState(addressFields.state)
       setCountry(addressFields.country)
       setPostal_code(addressFields.postal_code)
       setStreet_number(addressFields.street_number)
+      setCountry_code(addressFields.country_code)
+      setCountry_code(addressFields.state_code)
+      setState_code(addressFields.street_number)
+
       const rawUrl = aboutBusinessForm.businessUrl?.trim();
       const mergedUrls = [];
       if (rawUrl) {
