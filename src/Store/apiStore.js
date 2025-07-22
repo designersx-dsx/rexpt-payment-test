@@ -437,13 +437,15 @@ export const getAgentScheduleByUserId = async (userId) => {
     throw new Error("Failed to fetch agent schedule");
   }
 }
-export const fetchAvailablePhoneNumberByCountry = async (country_code, locality, administrative_area) => {
+export const fetchAvailablePhoneNumberByCountry = async (country_code, locality, administrative_area, startsWith, endsWith) => {
   try {
     const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
       params: {
         country_code: country_code,
         locality: locality,
-        administrative_area: administrative_area
+        administrative_area: administrative_area,
+        starts_with: startsWith,
+        ends_with: endsWith
       }
     });
     return res.data;
@@ -452,7 +454,14 @@ export const fetchAvailablePhoneNumberByCountry = async (country_code, locality,
     throw new Error("Failed to fetch agent schedule");
   }
 }
-
+export const createNumberOrder = async (phoneNumbers,agent_id) => {
+  try {
+    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id})
+    return res.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 
 export default api;

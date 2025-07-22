@@ -171,7 +171,7 @@ function Dashboard() {
     } else {
       // setSelectedAgentForAssign(agent);
       // setIsAssignModalOpen(true);
-      navigate("/number",{
+      navigate("/assign-number",{
       state: { agent: agent },
     })
     }
