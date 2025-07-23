@@ -1,0 +1,205 @@
+/* Header Section */
+.headersection {
+  padding: 20px;
+  background-color: #6524EB;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Toggle Wrapper */
+.toggleWrapper {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.toggleLabel {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.toggleLabel:hover {
+  color: #6524EB;
+}
+
+.MuiSwitch-root {
+  height: 34px;
+  width: 60px;
+}
+
+.MuiSwitch-thumb {
+  background-color: #ffffff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+}
+
+.MuiSwitch-track {
+  background-color: #bbb;
+  border-radius: 20px;  
+}
+
+/* Modal Styles */
+.modalBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.modalBox h6 {
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.modalBox p {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.modalBox strong {
+  font-weight: 600;
+  color: #6524EB;
+}
+
+.modalBox .MuiCheckbox-root {
+  margin-right: 10px;
+}
+
+.modalBox .MuiButton-root {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.modalBox .MuiButton-outlined {
+  border-color: #6524EB;
+  color: #6524EB;
+  transition: all 0.3s ease;
+}
+
+.modalBox .MuiButton-contained {
+  background-color: #6524EB;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(101, 36, 235, 0.2);
+  transition: all 0.3s ease;
+}
+
+.modalBox .MuiButton-outlined:hover,
+.modalBox .MuiButton-contained:hover {
+  background-color: #fff;
+  color: #6524EB;
+  box-shadow: 0 6px 15px rgba(101, 36, 235, 0.2);
+}
+
+.modalBox .MuiButton-outlined:disabled {
+  border-color: #ddd;
+  color: #ddd;
+}
+
+.modalBox .MuiButton-contained:disabled {
+  background-color: #ddd;
+  color: #fff;
+}
+
+/* Circular Progress (for loading states) */
+.callRecordingContainer .MuiCircularProgress-root {
+  margin-left: 10px;
+}
+
+/* Media Queries for Responsiveness */
+@media screen and (max-width: 768px) {
+  .modalBox {
+    width: 90%;
+    padding: 20px;
+  }
+  
+  .toggleWrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toggleLabel {
+    font-size: 16px;
+  }
+}
+
+/* Toggle Switch Container */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px; /* Increased size for better usability */
+  height: 34px;
+}
+
+/* Hide default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider Track */
+.switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: 0.4s;
+}
+
+/* Slider Circle */
+.switch .slider:before {
+  position: absolute;
+  content: "";
+  height: 26px; /* Larger size for the thumb */
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+/* Checked Style */
+.switch input:checked+.slider {
+  background-color: #693bff; /* More vibrant active color */
+}
+
+.switch input:checked+.slider:before {
+  transform: translateX(26px); /* Shift the circle further */
+}
+  

@@ -44,7 +44,9 @@ import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
+
       const isRefreshing = useContext(RefreshContext);
+
   const navigate = useNavigate();
   const { user } = useUser();
   // Retell Web Client states
@@ -167,8 +169,11 @@ function Dashboard() {
     if (planName.toLowerCase() === "free") {
       openAssignNumberModal();
     } else {
-      setSelectedAgentForAssign(agent);
-      setIsAssignModalOpen(true);
+      // setSelectedAgentForAssign(agent);
+      // setIsAssignModalOpen(true);
+      navigate("/assign-number",{
+      state: { agent: agent },
+    })
     }
   };
 
@@ -341,6 +346,8 @@ function Dashboard() {
       sessionStorage.removeItem("checkPage")
       localStorage.removeItem("hasHandledThankYou");
       localStorage.removeItem("checkPage2")
+      localStorage.removeItem("paymentDone")
+      localStorage.removeItem("subcriptionIdUrl")
       sessionStorage.removeItem("VoiceAgentName");
       sessionStorage.removeItem("selectedLangCode");
       sessionStorage.removeItem("AgentCode");
@@ -863,6 +870,7 @@ function Dashboard() {
     sessionStorage.setItem("naviateFrom", "dashboard");
     sessionStorage.setItem("SelectAgentBusinessId", ag?.businessId);
     sessionStorage.setItem("SelectAgentId", ag?.agent_id);
+    sessionStorage.setItem("plan", ag?.agentPlan);
     navigate("/edit-agent", {
       state: {
         agentId: ag?.agent_id,
@@ -1546,8 +1554,6 @@ function Dashboard() {
     }
     return number;
   }
-
-
   return (
     <div>
       <div className={styles.forSticky}>
@@ -2628,7 +2634,7 @@ function Dashboard() {
           isOpen={isAssignModalOpen}
           agentId={selectedAgentForAssign.agent_id}
           agentDetails={agentDetails}
-           onAgentDetailsPage={false}
+          onAgentDetailsPage={false}
           onClose={() => {
             setIsAssignModalOpen(false);
             setSelectedAgentForAssign(null);

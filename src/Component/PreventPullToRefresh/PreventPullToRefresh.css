@@ -19,7 +19,7 @@
 .custom-refresh-wrapper {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  height: 100vh;
+  height: 100dvh;
   position: relative;
 }
 
@@ -49,6 +49,19 @@
   font-size: 24px;
   transition: transform 0.2s ease;
 }
+
+.loader-icon {
+  font-size: 24px;
+  transition: transform 0.2s ease;
+  width: 48px;
+  height: 48px;
+  background-color: white; /* or any background color */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .spinning {
   animation: spin 1s linear infinite;

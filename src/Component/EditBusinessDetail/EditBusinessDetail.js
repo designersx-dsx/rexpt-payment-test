@@ -30,7 +30,8 @@ const EditBusinessDetail = () => {
   const [state, setState] = useState("")
   const [country, setCountry] = useState("")
   const [postal_code, setPostal_code] = useState("")
-  console.log(city, street_number, state, country, postal_code, "HELLO____")
+  const [country_code, setCountry_code] = useState("")
+  const [state_code, setState_code] = useState("")
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
@@ -203,6 +204,8 @@ const EditBusinessDetail = () => {
           country: getComponent("country"),
           postal_code: getComponent("postal_code"),
           street_number: getComponent("street_number"),
+          state_code: getComponent("administrative_area_level_1", null, true),
+          country_code: getComponent("country", null, true),
         };
       }
       const addressFields = extractAddressFields(placeDetails?.address_components || []);
@@ -211,6 +214,10 @@ const EditBusinessDetail = () => {
       setCountry(addressFields.country)
       setPostal_code(addressFields.postal_code)
       setStreet_number(addressFields.street_number)
+      setCountry_code(addressFields.country_code)
+      setCountry_code(addressFields.state_code)
+      setState_code(addressFields.street_number)
+
       const rawUrl = aboutBusinessForm.businessUrl?.trim();
       const mergedUrls = [];
       if (rawUrl) {
@@ -359,44 +366,49 @@ const EditBusinessDetail = () => {
       if (place.formatted_address) {
         const addressComponents = place.address_components || [];
         setAddress(place.formatted_address);
-          extractAndStoreAddressComponents(place);
+        extractAndStoreAddressComponents(place);
       }
     });
   };
   //extractAndStoreAddressComponents
- const extractAndStoreAddressComponents = (place) => {
-  if (!place || !place.address_components) {
-    console.error("Invalid place object:", place);
-    return;
-  }
+  const extractAndStoreAddressComponents = (place) => {
+    if (!place || !place.address_components) {
+      console.error("Invalid place object:", place);
+      return;
+    }
 
-  const components = place.address_components;
+    const components = place.address_components;
+    const getComponent = (primaryType, fallbackType = null, useShort = false) => {
+      const comp = components.find((c) =>
+        c.types.includes(primaryType) || (fallbackType && c.types.includes(fallbackType))
+      );
+      return comp ? (useShort ? comp.short_name : comp.long_name) : "";
+    };
 
-  const getComponent = (type) =>
-    components.find((c) => c.types.includes(type))?.long_name || "";
+    const addressDetails = {
+      street_number: getComponent("street_number"),
+      route: getComponent("route"),
+      city: getComponent("locality") || getComponent("sublocality_level_1"),
+      state: getComponent("administrative_area_level_1"),
+      country: getComponent("country"),
+      postal_code: getComponent("postal_code"),
+      country_code: getComponent("country", null, true),
+      state_code: getComponent("administrative_area_level_1", null, true),
+      full_address: place.formatted_address || "",
+    };
+    // Save to sessionStorage
+    const currentDetails = JSON.parse(
+      sessionStorage.getItem("placeDetailsExtract") || "{}"
+    );
 
-  const addressDetails = {
-    street_number: getComponent("street_number"),
-    route: getComponent("route"),
-    city: getComponent("locality") || getComponent("sublocality_level_1"),
-    state: getComponent("administrative_area_level_1"),
-    country: getComponent("country"),
-    postal_code: getComponent("postal_code"),
-    full_address: place.formatted_address || "",
+    const updatedDetails = {
+      ...currentDetails,
+      ...addressDetails,
+      address_components: components,
+    };
+
+    sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedDetails));
   };
-  // Save to sessionStorage
-  const currentDetails = JSON.parse(
-    sessionStorage.getItem("placeDetailsExtract") || "{}"
-  );
-
-  const updatedDetails = {
-    ...currentDetails,
-    ...addressDetails,
-    address_components: components,
-  };
-
-  sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedDetails));
-};
   //initAddressAutocomplete
   useEffect(() => {
     const interval = setInterval(() => {

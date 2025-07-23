@@ -181,6 +181,11 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       subtype: "Professional Cleaning Solutions",
       icon: "svg/Cleaning Janitorial Service.svg",
     },
+    {
+      type: "Tour Guides",
+      subtype: "Local Experience Experts",  
+      icon: "svg/Tour-Guides.svg",
+    },
     // {
     //   type: "Marketing Agency",
     //   subtype: "Your Journey Begins Here",

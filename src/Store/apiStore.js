@@ -35,6 +35,22 @@ export const verifyEmailOTP = async (email, otp) => {
   return res;
 };
 
+export const verifyOrCreateUser = async (email, otp) => {
+
+   const res1 = await api.post('/auth/LoginWithEmailOTP', { email });
+
+  const customerRes = await fetch(`${API_BASE_URL}/customer`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  const customerData = await customerRes.json();
+  let customerId = customerData.customerId;
+  const res = await api.post('/auth/verifyEmailOTP', { email, otp, customerId });
+  return { res1, res };
+};
+
 export const getRetellVoices = async () => {
   const res = await axios.get('https://api.retellai.com/list-voices', {
     headers: {
@@ -64,6 +80,14 @@ export const fetchDashboardDetails = async (userId) => {
 
 export const fetchAgentDetailById = async (data) => {
   const res = await api.post('/agent/fetchAgentDetailsById', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return res.data;
+}
+export const getAgentById = async (id) => {
+  const res = await api.get(`/agent/getAgentById/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -436,8 +460,32 @@ export const getAgentScheduleByUserId = async (userId) => {
     console.error("Error fetching agent schedule:", error.response?.data || error.message);
     throw new Error("Failed to fetch agent schedule");
   }
-};
-
+}
+export const fetchAvailablePhoneNumberByCountry = async (country_code, locality, administrative_area, startsWith, endsWith) => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
+      params: {
+        country_code: country_code,
+        locality: locality,
+        administrative_area: administrative_area,
+        starts_with: startsWith,
+        ends_with: endsWith
+      }
+    });
+    return res.data;
+  } catch (error) {
+   return error.response?.data 
+   
+  }
+}
+export const createNumberOrder = async (phoneNumbers,agent_id) => {
+  try {
+    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id})
+    return res.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 
 export default api;

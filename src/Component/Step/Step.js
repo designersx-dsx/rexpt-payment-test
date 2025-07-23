@@ -94,6 +94,12 @@ const Step = () => {
         return saved ? JSON.parse(saved) : [];
     });
 
+    const checkPaymentDone = localStorage.getItem("paymentDone")
+    const subsID = localStorage.getItem("subcriptionIdUrl")
+    console.log("subsID", subsID)
+    const [AgentId, setAgentId] = useState()
+    console.log("agentIDDD", AgentId)
+
     // Plans
     const [allPlans, setAllPlans] = useState(() => {
         const stored = localStorage.getItem("allPlans");
@@ -171,10 +177,9 @@ const Step = () => {
     const services = selectedServices ? JSON.parse(selectedServices).businessType : [];
     const customServicesSelected = sessionStorage.getItem("businesServices");
     const checkCustomServicesSelected = customServicesSelected?.includes("Other")
+    const plan = sessionStorage.getItem("selectedPlan")
     const [shouldShowAboutBusinessNext, setShouldShowAboutBusinessNext] = useState(false);
     const [showThankuPage, setShowThankuPage] = useState(false)
-
-
     const [searchParams] = useSearchParams();
     const mode = searchParams.get("mode");
     const shouldShowThankYou = mode === "create" || mode === "update";
@@ -223,7 +228,7 @@ const Step = () => {
                 return;
             }
             if (currentRef.current.save) {
-                await currentRef.current.save(); // 👈 Calls handleContinue only on Next
+                await currentRef.current.save(); 
             }
             // Add this step to completed steps
             addCompletedStep(currentStep);
@@ -281,11 +286,7 @@ const Step = () => {
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone)
-
-    // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
-    // const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
-    //  1. Create the function that returns the choices array
     const getLeadTypeChoices = () => {
         const fixedChoices = ["Spam Caller", "Irrelvant Call", "Angry Old Customer"];
         const allServices = [...customServices, ...businessServiceNames];
@@ -328,6 +329,42 @@ const Step = () => {
             status: true
         }));
     }
+    const languageAccToPlan =
+        ["Scaler", "Growth", "Corporate"].includes(plan) ? "multi" : sessionStorage.getItem("agentLanguageCode");
+
+    const callNextApiAndRedirect = async (agentId) => {
+        console.log("Calling updateFreeAgent API with:", { userId, agentId });
+
+        try {
+            const res = await fetch(
+                `${API_BASE_URL}/agent/updateFreeAgent`,
+
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ userId, agentId, subsID }),
+                }
+            );
+
+            const data = await res.json();
+
+            if (data.success) {
+                setPopupType("success");
+                setPopupMessage("Agent upgraded successfully!");
+
+            } else {
+                setPopupType("failed");
+                setPopupMessage("Error completing subscription.");
+            }
+        } catch (error) {
+            console.error("❌ API call failed:", error);
+            setPopupType("failed");
+            setPopupMessage("Error completing subscription.");
+        }
+    };
+
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
@@ -368,8 +405,12 @@ const Step = () => {
                 aboutBusinessForm,
                 commaSeparatedServices,
                 agentNote,
-                timeZone
+                timeZone,
+                languageAccToPlan,
+                plan: plan
             });
+     
+
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
             roleTitle: sessionStorage.getItem("agentRole"),
@@ -437,7 +478,6 @@ const Step = () => {
                     }
 
                 ],
-
                 states: [
                     {
                         name: "information_collection",
@@ -579,7 +619,7 @@ const Step = () => {
                     voice_id: sessionStorage.getItem("agentVoice") || "11labs-Adrian",
                     language: sessionStorage.getItem("agentLanguageCode") || "en-US",
                     agent_name: dynamicAgentName || sessionStorage.getItem("agentName"),
-                    language: "multi",
+                    language: languageAccToPlan,
                     post_call_analysis_model: "gpt-4o-mini",
                     responsiveness: 1,
                     enable_backchannel: true,
@@ -641,6 +681,7 @@ const Step = () => {
 
                         },
                     ],
+                    end_call_after_silence_ms: 30000,
                     normalize_for_speech: true,
                     webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
                 };
@@ -656,6 +697,7 @@ const Step = () => {
                         }
                     );
                     const agentId = response.data.agent_id;
+                    setAgentId(agentId)
                     // Get businessId from sessionStorage
                     const businessIdString = sessionStorage.getItem("businessId") || '{"businessId":1}';
                     // Convert string to object
@@ -685,8 +727,64 @@ const Step = () => {
                         additionalNote: agentNote || "",
                         agentCode,
                         knowledgeBaseStatus: true,
+                        end_call_after_silence_ms: 30000,
                         dynamicPromptTemplate: filledPrompt,
                         rawPromptTemplate: rawPromptTemplate,
+                         post_call_analysis_data: [
+                        {
+                            type: "enum",
+                            name: "lead_type",
+                            description: "Feedback given by the customer about the call.",
+                            choices: getLeadTypeChoices(),
+                        },
+                        {
+                            type: "string",
+                            name: "name",
+                            description: "Extract the user's name from the conversation",
+                            examples: [
+                                "Ajay Sood",
+                                "John Wick",
+                                "Adam Zampa",
+                                "Jane Doe",
+                                "Nitish Kumar",
+                                "Ravi Shukla",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "email",
+                            description: "Extract the user's email from the conversation",
+                            examples: [
+                                "john.doe@example.com",
+                                "nitish@company.in",
+                                "12@gmail.com",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "reason",
+                            description:
+                                "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
+                            examples: [
+                                "Schedule an appointment",
+                                "Ask about services",
+                                "Request for accounting help",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "address",
+                            description: "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+                            examples: ["123 Main St, Delhi", "42 Wallaby Way, Sydney", "1490 Aandhar Eleven"],
+                        },
+                        {
+                            type: "number",
+                            name: "phone_number",
+                            description:
+                                "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
+
+                        },
+                    ],
                         promptVariablesList: JSON.stringify(promptVariablesList)
 
                     }
@@ -698,9 +796,15 @@ const Step = () => {
                             sessionStorage.removeItem("avatar")
                             setPopupType("success");
                             await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
+                            // if (checkPaymentDone === "true") {
+                            //     await callNextApiAndRedirect(agentId)
+                            // }
                             setPopupMessage("Agent created successfully!");
                             setShowPopup(true);
                             if (freeTrail) {
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                            }
+                            if (checkPaymentDone === "true") {
                                 setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
                             }
 
@@ -891,6 +995,12 @@ const Step = () => {
         if (locationPath === "/checkout" || value === "chatke") {
             // handleContinue()
 
+        }
+        else if (checkPaymentDone === "true") {
+
+            // callNextApiAndRedirect()
+            handleContinue()
+            console.log("RUNNNNNNN")
         }
         else if (locationPath !== "/checkout" && priceId) {
             if (currentStep === 7) {
