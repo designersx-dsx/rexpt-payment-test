@@ -68,6 +68,9 @@ import Thankyou2 from "./Component/ThankyouPage2/Thankyou2";
 
 import Number from "./Component/assign/Number";
 import CallRecording from "./Component/CallRecording/CallRecording";
+import RaiseTickets from "./Component/Tickets/RaiseTickets";
+import CreateTicketModal from "./Component/Tickets/CreateTicketModal";
+import CreateTicket from "./Component/Tickets/CreateTicket";
 
 
 // import Test from "./utils/Test";
@@ -277,6 +280,8 @@ function App() {
 
                   <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
                   <Route path="/documentation" element={<SecureRoute><Documentation /></SecureRoute>} />
+                  <Route path="/raise-tickets" element={<SecureRoute><RaiseTickets/></SecureRoute>} />  
+                  <Route path="/create-ticket" element={<SecureRoute><CreateTicket/></SecureRoute>} />  
 
                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
                   <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
