@@ -796,9 +796,9 @@ const Step = () => {
                             sessionStorage.removeItem("avatar")
                             setPopupType("success");
                             await updateAgentWidgetDomain(agentId, aboutBusinessForm?.businessUrl);
-                            if (checkPaymentDone === "true") {
-                                await callNextApiAndRedirect(agentId)
-                            }
+                            // if (checkPaymentDone === "true") {
+                            //     await callNextApiAndRedirect(agentId)
+                            // }
                             setPopupMessage("Agent created successfully!");
                             setShowPopup(true);
                             if (freeTrail) {

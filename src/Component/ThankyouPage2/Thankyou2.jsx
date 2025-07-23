@@ -21,6 +21,10 @@ function Thankyou2() {
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
+
+  const [isSubscriptionDetailsLoading, setIsSubscriptionDetailsLoading] =
+    useState(true); // Subscription details loading state
+
   const { user, setUser } = useUser();
 
   useEffect(() => {
@@ -72,6 +76,11 @@ function Thankyou2() {
         }
       } catch (err) {
         console.error("Failed to fetch subscription details:", err);
+      } finally {
+        setIsSubscriptionDetailsLoading(false); // Subscription details are done loading
+        if (!isSubscriptionDetailsLoading && !loading) {
+          setLoading(false); // If both session and subscription data are loaded, set loading to false
+        }
       }
     };
 
@@ -99,7 +108,6 @@ function Thankyou2() {
     return ` ${formattedCurrency} ${symbol}${(amount / 100).toLocaleString()}`;
   };
 
-
   const formatDate = (timestamp) => {
     if (!timestamp) return "N/A";
     return new Date(timestamp * 1000).toLocaleDateString("en-US", {
@@ -123,14 +131,13 @@ function Thankyou2() {
   const plan = subscription?.items?.data?.[0]?.plan;
   const price = plan?.amount;
   const currency = plan?.currency;
-  console.log("dsadsad", currency)
+  console.log("aaaa", currency);
   const invoiceLink = sessionData?.invoice
     ? `https://dashboard.stripe.com/test/invoices/${sessionData.invoice}`
     : null;
 
   const handleClick = async () => {
     try {
-
       // Disable the button and show loading
       setIsButtonDisabled(true);
       setIsLoadingRequest(true); // Start loading
@@ -150,19 +157,50 @@ function Thankyou2() {
       const data = await response;
 
       if (data?.res?.status === 200) {
+
+        const userId = data?.res?.data?.user?.id;
         localStorage.setItem("token", data.res?.data?.token);
         localStorage.setItem("onboardComplete", false);
         localStorage.setItem("paymentDone", true);
         localStorage.setItem("subcriptionIdUrl", subcriptionId);
 
         sessionStorage.clear();
+
+        const attachUserResponse = await fetch(
+          `${API_BASE_URL}/pay-as-you-go-userID-attach`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              subscriptionId: subcriptionId,
+              userId: userId, // Assuming the customerId is the userId for this purpose
+            }),
+          }
+        );
+        const attachUserData = await attachUserResponse.json();
+
+        if (attachUserData.success) {
+          console.log(
+            `userId successfully attached to Subscription ${subcriptionId}`
+          );
+        } else {
+          console.error(
+            "Failed to attach userId to subscription:",
+            attachUserData.message
+          );
+          alert("Failed to attach userId to subscription.");
+        }
+
         if (data?.res1) {
           const verifyStatus = data?.res1.data.verifiedStatus;
           if (verifyStatus === true) {
             const userData = {
               name: data.res?.data?.user?.name || "",
               profile:
-                `${API_BASE_URL?.split("/api")[0]}${data.res?.data?.profile?.split("public")[1]
+                `${API_BASE_URL?.split("/api")[0]}${
+                  data.res?.data?.profile?.split("public")[1]
                 }` || "images/camera-icon.avif",
               subscriptionDetails: {},
             };
@@ -179,17 +217,20 @@ function Thankyou2() {
         console.error("Verification failed:", data.data?.error);
         alert(data.error);
       }
-
     } catch (err) {
       console.error("Error during OTP verification:", err);
       alert("Something went wrong while verifying.");
-    }
-    finally {
+    } finally {
       // Re-enable the button and hide loading
       setIsButtonDisabled(false);
       setIsLoadingRequest(false); // End loading
     }
   };
+
+  // If the page is still loading, show a loader
+  if (loading || isSubscriptionDetailsLoading) {
+    return <Loader2 />; // Or any custom loading component you want to show
+  }
 
   return (
     <div className={styles.container}>
@@ -235,13 +276,16 @@ function Thankyou2() {
           <div className={styles.row}>
             <span>Price & Frequency:</span>
             <div className={styles.Right50}>
-              {formatCurrency(price, currency)} / {plan?.interval || "N/A"}
+              {formatCurrency(price, setSubscriptionDetails?.currency)} /{" "}
+              {plan?.interval || "N/A"}
             </div>
           </div>
 
           <div className={styles.row}>
             <span>Status:</span>
-            <div className={styles.Right50}>{subscription?.status || "N/A"}</div>
+            <div className={styles.Right50}>
+              {subscription?.status || "N/A"}
+            </div>
           </div>
 
           <div className={styles.row}>
