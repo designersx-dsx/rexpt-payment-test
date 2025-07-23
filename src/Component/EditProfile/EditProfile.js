@@ -70,6 +70,7 @@ const EditProfile = () => {
   const [resendTimer, setResendTimer] = useState(60);
   const isOtpFilled = otp.every((digit) => digit !== "");
   const [subscriptionDetails, setSubscriptionDetails] = useState({});
+  console.log("subscriptionDetails",subscriptionDetails)
   const isRefreshing = useContext(RefreshContext);
   const openUploadModal = () => {
     setIsUploadModalOpen(true);

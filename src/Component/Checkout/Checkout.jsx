@@ -37,6 +37,7 @@ function CheckoutForm({
   subscriptionId,
   // onPaymentConfirm
 }) {
+  console.log("userIduserId",userId)
   const stripe = useStripe();
   const elements = useElements();
 
