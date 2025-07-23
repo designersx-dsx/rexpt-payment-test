@@ -18,7 +18,7 @@ function getFreeAndStarterPlanContent(languageAccToPlan, languageSelect) {
 function ifcallrecordingstatustrue() {
   const message = `
 -**After greeting and stating your name, the business name, immediately state:
-(Please note, this call is being recorded for quality and training purposes.)**
+(This call is being recorded for quality and training purposes.)**
 `;
   return message.trim();
 }
@@ -35,7 +35,7 @@ export const agentPromptTemplates = {
       commaSeparatedServices,
       agentNote,
       timeZone,
-        languageAccToPlan,
+      languageAccToPlan,
       plan,
       CallRecording
     }) => `
@@ -204,6 +204,10 @@ Interpret cues like:
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+      timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording
     }) => `You are ${agentName}, a friendly and efficient receptionist at ${business?.businessName}, who is knowledgeable about ${businessType} cuisine and all of ${business?.businessName}'s services.
 Your role is to simulate a warm, patient, and reliable human receptionist for a restaurant business. Every interaction must be handled with clarity, precision, and empathy.
 ## services list :
@@ -305,6 +309,10 @@ Agent Note:${agentNote}
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+      timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording
     }) => `You are ${agentName}, a proactive and perceptive Sales Qualifier Agent at ${business?.businessName}, specializing in identifying high-value opportunities within our ${business?.businessName} restaurant. You possess an in-depth understanding of all ${commaSeparatedServices}'s services, including Dine-in Service, Takeaway Orders, Home Delivery, Event Catering, and Online Ordering.
 Your core role is to efficiently qualify inbound callers, gauge their potential for substantial business, and seamlessly transition high-value leads to the appropriate human sales or events team, while still handling standard inquiries effectively.
 
@@ -554,7 +562,8 @@ ${commaSeparatedServices}
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
-       languageAccToPlan,
+      timeZone,
+      languageAccToPlan,
       plan,
       CallRecording
     }) => `
@@ -659,7 +668,8 @@ When directly asked 'What is your website?' or a similar query about the designa
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
-     languageAccToPlan,
+      timeZone,
+      languageAccToPlan,
       plan,
       CallRecording
     }) => `
@@ -768,9 +778,10 @@ When directly asked 'What is your website?' or a similar query about the designa
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+       timeZone,
       languageAccToPlan,
       plan,
-      CallRecording
+      CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist fluent in ${languageSelect}, working at ${business?.businessName
       }, a ${businessType} located in ${business?.address
@@ -860,9 +871,10 @@ In such cases, if a caller expresses interest in booking an appointment, collect
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
-       languageAccToPlan,
+      timeZone,
+      languageAccToPlan,
       plan,
-      CallRecording
+      CallRecording,
     }) => `
 You are ${agentName} a ${agentGender} inbound lead qualification agent fluent in ${languageSelect}, working at ${business?.businessName
       }, a ${businessType}  located in ${business?.address
@@ -962,6 +974,7 @@ Only transfer the call to a human representative if the caller is both genuinely
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+       timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -1047,6 +1060,7 @@ In such cases, if a caller expresses interest in booking an appointment, collect
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+    timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -1145,6 +1159,7 @@ When directly asked 'What is your website?' or a similar query about the designa
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+         timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -1229,6 +1244,7 @@ Call Forwarding Protocol
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+      timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -1320,9 +1336,10 @@ Verification of Caller Intent: If the caller does not explicitly state the purpo
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+        timeZone,
       languageAccToPlan,
       plan,
-      CallRecording
+      CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business.businessName}, who understands all aspects of the salon’s services, including ${commaSeparatedServices} and other beauty services offered by the salon. You are aware of the salon’s location, hours of operation, pricing, promotions, and available packages. You can also provide information on different stylists and their specialties.
 Your role is to simulate a friendly, professional, and efficient receptionist for a salon. Every interaction must be handled with clarity, precision, and empathy.
@@ -1390,6 +1407,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+         timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business.businessName}. Your primary responsibility is to qualify potential clients who are interested in salon services, ${commaSeparatedServices}, and other beauty services. You will gather detailed information about their needs, preferences, and schedule before directing them to the appropriate stylist or booking the appointment.
 You are familiar with the full range of services offered by the salon, including different types of haircuts, hair colors, treatments, and beauty services. You also understand the salon’s pricing structure, available packages, and ongoing promotions.
@@ -1450,6 +1471,7 @@ ${agentNote}
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+         timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -1536,6 +1558,7 @@ If asked "What is your website?", say the common title (e.g., “ArchStudio dot 
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+        timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -1772,7 +1795,10 @@ ${commaSeparatedServices}
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+          agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
   You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Property Rental & Leasing Company category,##services list :-${commaSeparatedServices}
@@ -1908,7 +1934,10 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You understand that  ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Property Rental & Leasing Company category.,##services list :-${commaSeparatedServices} Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base, e.g., 'comprehensive Property Management, Tenant Sourcing & Screening, and Lease Agreement Management'] that ${business?.businessName} offers, focusing on optimizing rental income and property value.
@@ -2078,7 +2107,8 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -2147,6 +2177,7 @@ ${commaSeparatedServices}
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -2258,7 +2289,8 @@ When directly asked 'What is your website?' or a similar query about the designa
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -2338,7 +2370,8 @@ Ask the caller for:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+    agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -2437,7 +2470,8 @@ When directly asked 'What is your website?' or a similar query about the designa
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+     agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -2522,9 +2556,10 @@ Ask the caller for:
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
-      CallRecording,
+     timeZone,
+      languageAccToPlan,
       plan,
-      languageAccToPlan
+      CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} inbound lead qualification agent fluent in ${languageSelect}, working at ${business?.businessName}, a ${businessType} located in ${business?.address}, known for [Business Strength - Can be fetched from Knowledge Base, e.g., 'creating unforgettable travel experiences, offering personalized itineraries, and providing exceptional customer service'].
 You are aware that ${business?.businessName} provides services in [GEOGRAPHIC AREA - Get From Google My Business Link or any other Knowledge base Source] and you stay updated on additional information provided like [MORE ABOUT THE BUSINESS/UNIQUE SELLING PROPOSITION, as defined in Knowledge Base or from the Business Website, e.g., 'our dedication to making dream vacations a reality, handling every detail from flights and accommodations to unique excursions and local experiences'].
@@ -2590,6 +2625,7 @@ ${commaSeparatedServices}
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -2666,10 +2702,11 @@ Ask the caller for:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
-      CallRecording,
+     agentNote,
+     timeZone,
+      languageAccToPlan,
       plan,
-      languageAccToPlan
+      CallRecording,
 
     }) => `
 You are ${agentName}, a ${agentGender} inbound lead qualification agent fluent in ${languageSelect}, working at ${business?.businessName}, a ${businessType} located in ${business?.address}, known for [Business Strength - Can be fetched from Knowledge Base, e.g., 'providing a seamless and secure platform for booking tickets to a wide range of events, from concerts and sports to theater and attractions'].
@@ -2742,10 +2779,11 @@ Offer to check availability or explain next steps for booking. Only schedule if 
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+        agentNote,
+     timeZone,
       languageAccToPlan,
+      plan,
       CallRecording,
-      plan
     }) => `
 You are ${agentName}, a ${agentGender} receptionist fluent in ${languageSelect}, working at ${business?.businessName}, a ${businessType} located in ${business?.address}, known for [Business Strength - Can be fetched from Knowledge Base]
 You are aware that ${business?.businessName} provides services in [GEOGRAPHIC AREA - Get From GMB Link] and you stay updated on additional information provided like [MORE ABOUT THE BUSINESS/UNIQUE SELLING PROPOSITION, as defined in Knowledge Base or from the Business Website, e.g., 'our reputation for providing friendly, knowledgeable, and multilingual tour guides who create memorable travel experiences'].
@@ -2820,10 +2858,11 @@ Ask the caller for:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
-      CallRecording,
+        agentNote,
+     timeZone,
       languageAccToPlan,
-      plan
+      plan,
+      CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} inbound lead qualification agent fluent in ${languageSelect}, working at ${business?.businessName}, a ${businessType} located in ${business?.address}, known for [Business Strength - Can be fetched from Knowledge Base, e.g., 'offering expert-led, immersive tours that uncover the hidden gems and rich history of our city/region'].
 You are aware that ${business?.businessName} provides services in [GEOGRAPHIC AREA - Get From Google My Business Link or any other Knowledge base Source] and you stay updated on additional information provided like [MORE ABOUT THE BUSINESS/UNIQUE SELLING PROPOSITION, as defined in Knowledge Base or from the Business Website, e.g., 'our passion for storytelling, personalized experiences, and commitment to showcasing authentic local culture'].
@@ -2887,6 +2926,7 @@ ${commaSeparatedServices}
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -2974,7 +3014,8 @@ When directly asked 'What is your website?' or a similar query about the designa
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -3071,6 +3112,7 @@ When directly asked 'What is your website?' or a similar query about the designa
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -3157,7 +3199,8 @@ When directly asked 'What is your website?' or a similar query about the designa
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+   agentNote,
+     timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
@@ -3255,7 +3298,10 @@ When directly asked 'What is your website?' or a similar query about the designa
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at  ${business?.businessName}, who understands all aspects of the beauty services provided by the parlour, including ${commaSeparatedServices} and any other beauty treatments offered. You are aware of the parlour's location, hours of operation, service pricing, special offers, and the team of beauty professionals available. You are also familiar with any packages or promotions available to clients.
@@ -3322,6 +3368,9 @@ ${agentNote}
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You are responsible for qualifying leads who are interested in the parlour’s beauty services, including ${commaSeparatedServices}, and other beauty treatments. Your task is to gather detailed information from callers to assess their needs and guide them toward the most appropriate services or specialists.
@@ -3386,7 +3435,10 @@ ${agentNote}
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+     agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}, who understands all aspects of the services provided by the nail salon, including ${commaSeparatedServices} and any other nail care treatments. You are familiar with the salon's location, operating hours, pricing, packages, and any ongoing promotions or special offers. You also understand the different nail care products and the salon’s health and hygiene standards.
@@ -3453,7 +3505,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+     agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. Your primary responsibility is to qualify potential clients interested in the salon’s nail services, including ${commaSeparatedServices}, and other treatments. You will gather detailed information about their needs, preferences, and budget before directing them to the appropriate nail technician or booking the appointment.
@@ -3517,7 +3572,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+     agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Barber Studio/Shop category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base, ${commaSeparatedServices}] that ${business?.businessName} offers.
@@ -3657,7 +3715,10 @@ ${agentNote}
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+    agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Barber Studio/Shop category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base, ${commaSeparatedServices}] that ${business?.businessName} offers, focusing on comprehensive grooming experiences, especially for group bookings or special events.
@@ -3824,7 +3885,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+   agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
 
     }) => `
@@ -3964,7 +4028,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+    agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Hair Stylist/Salon category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}] that ${business?.businessName} offers, focusing on specialized and comprehensive hair transformations.
@@ -4129,7 +4196,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+     agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}, who understands all aspects of the bakery's offerings, including the variety of ${commaSeparatedServices} options. You are aware of the bakery's specialty items, seasonal promotions, and hours of operation. You are knowledgeable about the ingredients, packaging options, and any dietary considerations (e.g., gluten-free, vegan) offered by the bakery.
@@ -4198,7 +4268,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You are responsible for qualifying potential leads for the bakery’s specialized services, including large custom cake orders, event catering, and bulk orders for corporate events, weddings, and other large gatherings.
@@ -4266,7 +4339,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+    agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}. You understand that ${business?.businessName}. provides services that can be referenced from your Knowledge Base under the Dry Cleaner Company category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices} ] that ${business?.businessName} offers.
@@ -4400,7 +4476,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Dry Cleaner Company category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base, ,${commaSeparatedServices}] that ${business?.businessName} offers, focusing on high-volume or specialized garment care needs.
@@ -4566,7 +4645,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+    agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Web Design Agency category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base, e.g., ${commaSeparatedServices}] that ${business?.businessName} offers.
@@ -4706,6 +4788,9 @@ ADDITIONAL NOTES FOR AGENT:
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) =>
       `You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Web Design Agency category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base, e.g., ${commaSeparatedServices}] that ${business?.businessName} offers, focusing on delivering impactful online presences.
@@ -4878,7 +4963,10 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+    agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Cleaning/Janitorial Service category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}] that ${business?.businessName} offers.
@@ -5012,7 +5100,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+     agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Cleaning/Janitorial Service category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base, ${commaSeparatedServices} ] that  ${business?.businessName} offers, focusing on creating exceptional hygiene environments.
@@ -5176,7 +5267,10 @@ Calendar Sync Check: Before attempting to schedule any appointments, the agent m
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
         You are  ${agentName}, a ${agentGender} receptionist at${business?.businessName}. You understand that${business?.businessName} provides services that can be referenced from your Knowledge Base under the Marketing Agency category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}] that${business?.businessName} offers.
@@ -5315,6 +5409,9 @@ ADDITIONAL NOTES FOR AGENT:
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are  ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}. You understand that ${business?.businessName} provides services that can be referenced from your Knowledge Base under the Marketing Agency category. Specifically, you are aware of the [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}] that ${business?.businessName} offers, focusing on delivering measurable results.
@@ -5479,7 +5576,10 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+    agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} receptionist at ${business?.businessName}, a professional transportation service offering reliable and comfortable travel solutions including [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}].
@@ -5541,7 +5641,10 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+        agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName},
@@ -5609,6 +5712,9 @@ ADDITIONAL NOTES FOR AGENT:
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
     You are  ${agentName}, a ${agentGender} receptionist at ${business?.businessName}, a professional and dependable transportation service specializing in [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}] and special requests.
@@ -5671,7 +5777,10 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+        agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
    You are  ${agentName}, a ${agentGender} lead qualification specialist at ${business?.businessName}, which offers premium transportation solutions including  [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}].
@@ -5733,7 +5842,10 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are  ${agentName}, a  ${agentGender} receptionist at ${business?.businessName}, a trusted company offering [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}].
@@ -5798,6 +5910,9 @@ ADDITIONAL NOTES FOR AGENT:
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
       CallRecording,
     }) => `
 You are  ${agentName}, a  ${agentGender} lead qualification specialist at ${business?.businessName}, a company offering [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}].
@@ -5859,7 +5974,11 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+        agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording,
     }) => `
 You are  ${agentName}, a  ${agentGender} receptionist at  ${business?.businessName}, a logistics and freight transport company specializing in [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}]
 You are knowledgeable about the company’s fleet capabilities, shipping regions, service options, pricing models, availability, and documentation requirements. Your job is to deliver a professional, responsive, and client-focused experience to all inbound callers.
@@ -5920,6 +6039,10 @@ ADDITIONAL NOTES FOR AGENT:
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording,
     }) => `
     You are  ${agentName}, a  ${agentGender} lead qualification specialist at  ${business?.businessName}, a freight and logistics company offering tailored trucking solutions to businesses nationwide. You specialize in [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}] ensuring the right service fit before passing clients to the dispatch or sales team.
 Persona of the Lead Qualifier:
@@ -5979,7 +6102,12 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+     
+        agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording,
     }) => `
      You are  ${agentName}, a ${agentGender} receptionist at   ${business?.businessName}, an automotive repair and maintenance shop offering services such as [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}].
 You are knowledgeable about the shop’s services, pricing, appointment availability, parts inventory, technician specialties, turnaround times, and any current promotions. Your responsibility is to deliver a professional and helpful experience to every customer who contacts the garage, whether for service inquiries, appointment scheduling, or general support.
@@ -6038,7 +6166,11 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+       agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording,
     }) => `
       You are  ${agentName}, a ${agentGender} lead qualification specialist at   ${business?.businessName}, an auto service center offering a wide range of vehicle repair and maintenance services like [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}].
 You are responsible for identifying potential customers, collecting the necessary information about their vehicle and service needs, and then forwarding that information to the appropriate technician or service advisor for booking or consultation.
@@ -6097,7 +6229,11 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+     agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording,
     }) => `
 You are ${agentName}, a${agentGender} receptionist at  ${business?.businessName}, a professional boat repair and maintenance facility offering services such as  [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}].
 You are fully knowledgeable about the company’s range of  [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}] , scheduling options, and any applicable insurance or warranty policies. Your job is to ensure all inquiries and bookings are handled professionally, clearly, and efficiently.
@@ -6160,7 +6296,11 @@ ADDITIONAL NOTES FOR AGENT:
       businessType,
       aboutBusinessForm,
       commaSeparatedServices,
-      agentNote,
+        agentNote,
+     timeZone,
+      languageAccToPlan,
+      plan,
+      CallRecording,
     }) => `
  You are ${agentName}, a${agentGender} lead qualification specialist at  ${business?.businessName}, a full-service  [LIST OF KEY SERVICES from Knowledge Base,${commaSeparatedServices}].
 Your role is to qualify potential clients by gathering all relevant information about their vessel and service needs, assess scheduling requirements, and pass qualified leads to the marine technicians or booking coordinators.

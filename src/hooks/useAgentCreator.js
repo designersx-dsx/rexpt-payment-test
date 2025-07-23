@@ -10,12 +10,12 @@ const getFromStorage = (key, fallback = "") =>
 
 export const useAgentCreator = ({
   stepValidator = () => true,
-  setLoading = () => {},
-  setPopupMessage = () => {},
-  setPopupType = () => {},
-  setShowPopup = () => {},
-  navigate = () => {},
-  setHasFetched = () => {},
+  setLoading = () => { },
+  setPopupMessage = () => { },
+  setPopupType = () => { },
+  setShowPopup = () => { },
+  navigate = () => { },
+  setHasFetched = () => { },
 }) => {
   const token = localStorage.getItem("token") || "";
   const sessionBusinessiD = sessionStorage.getItem("bId");
@@ -57,6 +57,8 @@ export const useAgentCreator = ({
       status: true,
     }));
   }
+  //getTimeZone
+  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
   const handleCreateAgent = useCallback(async () => {
     const isValid = stepValidator();
     if (!isValid) return;
@@ -103,7 +105,6 @@ export const useAgentCreator = ({
       JSON.parse(sessionStorage.getItem("aboutBusinessForm")) ||
       "Your Business Services";
     const CallRecording = sessionStorage.getItem("callRecording") === "true";
-
     const agentGender = sessionStorage.getItem("agentGender");
     const languageSelect = sessionStorage?.getItem("agentLanguage");
     const plan = sessionStorage.getItem("plan");
@@ -131,7 +132,7 @@ export const useAgentCreator = ({
 
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(
       getBusinessNameFromGoogleListing?.businessName ||
-        getBusinessNameFormCustom
+      getBusinessNameFormCustom
     )}_${sanitize(role_title)}_${packageValue}#${agentCount}`;
 
     const CustomservicesArray =
@@ -179,6 +180,7 @@ export const useAgentCreator = ({
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
+      timeZone,
       languageAccToPlan,
       plan,
       CallRecording,
