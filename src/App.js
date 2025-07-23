@@ -40,10 +40,7 @@ import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetai
 import EditLanguage from "./Component/EditLanguage/EditLanguage"
 import EditGender from "./Component/EditGender/EditGender"
 import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar"
-
 //... Edit Screen End ....//
-
-
 import { useEffect, useState } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
@@ -52,10 +49,8 @@ import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
 import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI";
 import AssignNumber from "./Component/AssignNumber/AssignNumber";
-
 import Thankyou from "./Component/ThankyouPage/Thankyou";
 import CancelPage from "./Component/CancelPage/CancelPage";
-
 import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
 import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
 import Plan from "./Component/Plans/Plans";
@@ -63,16 +58,12 @@ import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
 import RedirectHandler from "./utils/RedirectHandler ";
 import PreventPullToRefresh from "./Component/PreventPullToRefresh/PreventPullToRefresh";
-
 import Thankyou2 from "./Component/ThankyouPage2/Thankyou2";
-
 import Number from "./Component/assign/Number";
 import CallRecording from "./Component/CallRecording/CallRecording";
 import RaiseTickets from "./Component/Tickets/RaiseTickets";
 import CreateTicketModal from "./Component/Tickets/CreateTicketModal";
 import CreateTicket from "./Component/Tickets/CreateTicket";
-
-
 // import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -176,8 +167,6 @@ function App() {
                       </SecureRoute>
                     }
                   />
-
-
                   <Route
                     path="/dashboard"
                     element={
@@ -186,8 +175,6 @@ function App() {
                       </SecureRoute>
                     }
                   />
-
-
                   <Route
                     path="/business-services"
                     element={
@@ -196,8 +183,6 @@ function App() {
                       </SecureRoute>
                     }
                   />
-
-
                   {/* <Route path="/home" element={<Home />} /> */}
                   <Route
                     path="/ai-assistant"
@@ -269,38 +254,22 @@ function App() {
                   <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
                   <Route path="/test-other" element={<Test />} />
-
-
-
-
                   <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
                   <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
                   <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
                   <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
-
                   <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
                   <Route path="/documentation" element={<SecureRoute><Documentation /></SecureRoute>} />
                   <Route path="/raise-tickets" element={<SecureRoute><RaiseTickets/></SecureRoute>} />  
                   <Route path="/create-ticket" element={<SecureRoute><CreateTicket/></SecureRoute>} />  
-
                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
                   <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
-
-
                   <Route path="/test-other" element={<Test />} />
                   <Route path="/thankyou/:id" element={<Thankyou />} />
                   <Route path="/cancel-payment" element={<CancelPage />} />
                   <Route path="/*" element={<RedirectHandler />} />
-
-
                   <Route path="/thankyou2" element={<Thankyou2 />} />
-
-
-
-
-
                   <Route path="/number" element={< Number />} />
-
                   <Route path="/delete-account" element={<Delete />} />
                 </Routes>
               </div>
@@ -314,5 +283,4 @@ function App() {
     </>
   );
 }
-
 export default App; 
