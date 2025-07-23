@@ -1,0 +1,313 @@
+/* RaiseTickets.module.css */
+/* 
+.container {
+  padding: 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ticketCard {
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusOpen {
+  background-color: #bfdbfe;
+  color: #1e3a8a;
+}
+
+.statusInProgress {
+  background-color: #fef08a;
+  color: #78350f;
+}
+
+.statusResolved {
+  background-color: #bbf7d0;
+  color: #065f46;
+}
+
+.statusReopened {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+.statusDefault {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.paginationInfo {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.paginationControls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.paginationPage {
+  padding: 0.25rem 0.75rem;
+  background-color: #f3f4f6;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+} */
+/* RaiseTickets.module.css */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 50px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 18px;
+  color: #24252C;
+  font-weight: 600;
+}
+
+.raiseBtn {
+  padding: 10px 20px;
+  background-color: #6524EB;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.raiseBtn:hover {
+  background-color: #5a20d8;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center; /* Align items vertically */
+}
+
+.input,
+.select,
+.clearBtn {
+  width: 100%;
+  height: 45px; /* Consistent height */
+  border: 1px solid #E0E5F2;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px; /* Consistent font size */
+  background: #fff;
+  display: flex; /* Use flexbox for vertical centering */
+  align-items: center; /* Center text vertically */
+}
+
+.input,
+.select {
+  padding: 0 15px; /* Consistent padding for inputs/selects */
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: url("/public/svg/SofiaArrow.svg") no-repeat right 12px center;
+  background-size: 10px; /* Smaller arrow */
+}
+
+.clearBtn {
+  padding: 0 20px; /* Slightly more padding for button */
+  background-color: #6524EB;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  justify-content: center; /* Center text horizontally */
+}
+
+.clearBtn:hover {
+  background-color: #5a20d8;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #E0E5F2;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #24252C;
+}
+
+.table th,
+.table td {
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 1px solid #E0E5F2;
+}
+
+.table th {
+  font-weight: 600;
+  color: #24252C;
+}
+
+.attachmentBtn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #E0E5F2;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  color: #24252C;
+}
+
+.attachmentBtn:hover {
+  background-color: #f5f5f5;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusOpen {
+  background-color: #bfdbfe;
+  color: #1e3a8a;
+}
+
+.statusProgress {
+  background-color: #fef08a;
+  color: #78350f;
+}
+
+.statusResolved {
+  background-color: #bbf7d0;
+  color: #065f46;
+}
+
+.statusReopened {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+.statusDefault {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pageInfo {
+  font-size: 14px;
+  color: #24252C;
+  font-weight: 500;
+}
+
+.paginationControls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pageCount {
+  font-size: 14px;
+  color: #24252C;
+  font-weight: 500;
+}
+
+.paginationControls button {
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #E0E5F2;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginationControls button:hover:not(:disabled) {
+  background-color: #6524EB;
+  color: white;
+  border-color: transparent;
+}
+
+.paginationControls button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  height: 4px;
+  background-color: #fbfbfb;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background-color: #6524EB;
+  border-radius: 4px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background: transparent;
+}

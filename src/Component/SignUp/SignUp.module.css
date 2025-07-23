@@ -5,7 +5,13 @@
     position: absolute;
 }
 
-
+.SpamMessage{
+    font-size: 12px;
+    background: #fff2f2;
+    padding: 4px;
+    border: 0.5px solid #FFB747;
+    border-radius: 5px;
+}
 
 .labReq {
     position: relative;
