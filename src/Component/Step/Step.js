@@ -228,7 +228,7 @@ const Step = () => {
                 return;
             }
             if (currentRef.current.save) {
-                await currentRef.current.save(); // 👈 Calls handleContinue only on Next
+                await currentRef.current.save(); 
             }
             // Add this step to completed steps
             addCompletedStep(currentStep);
@@ -286,11 +286,7 @@ const Step = () => {
     const getBusinessNameFormCustom = sessionStorage.getItem("displayBusinessName");
     const getBusinessNameFromGoogleListing = JSON.parse(sessionStorage.getItem("placeDetailsExtract"))
     const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone)
-
-    // const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_");
     const dynamicAgentName = `${businessCode}_${userId}_${agentCode}_#${agentCount + 1}`
-    // const dynamicAgentName = `${sanitize(businessType)}_${sanitize(getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom)}_${sanitize(role_title)}_${packageValue}#${agentCount}`
-    //  1. Create the function that returns the choices array
     const getLeadTypeChoices = () => {
         const fixedChoices = ["Spam Caller", "Irrelvant Call", "Angry Old Customer"];
         const allServices = [...customServices, ...businessServiceNames];
@@ -731,8 +727,64 @@ const Step = () => {
                         additionalNote: agentNote || "",
                         agentCode,
                         knowledgeBaseStatus: true,
+                        end_call_after_silence_ms: 30000,
                         dynamicPromptTemplate: filledPrompt,
                         rawPromptTemplate: rawPromptTemplate,
+                         post_call_analysis_data: [
+                        {
+                            type: "enum",
+                            name: "lead_type",
+                            description: "Feedback given by the customer about the call.",
+                            choices: getLeadTypeChoices(),
+                        },
+                        {
+                            type: "string",
+                            name: "name",
+                            description: "Extract the user's name from the conversation",
+                            examples: [
+                                "Ajay Sood",
+                                "John Wick",
+                                "Adam Zampa",
+                                "Jane Doe",
+                                "Nitish Kumar",
+                                "Ravi Shukla",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "email",
+                            description: "Extract the user's email from the conversation",
+                            examples: [
+                                "john.doe@example.com",
+                                "nitish@company.in",
+                                "12@gmail.com",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "reason",
+                            description:
+                                "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
+                            examples: [
+                                "Schedule an appointment",
+                                "Ask about services",
+                                "Request for accounting help",
+                            ],
+                        },
+                        {
+                            type: "string",
+                            name: "address",
+                            description: "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+                            examples: ["123 Main St, Delhi", "42 Wallaby Way, Sydney", "1490 Aandhar Eleven"],
+                        },
+                        {
+                            type: "number",
+                            name: "phone_number",
+                            description:
+                                "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
+
+                        },
+                    ],
                         promptVariablesList: JSON.stringify(promptVariablesList)
 
                     }
