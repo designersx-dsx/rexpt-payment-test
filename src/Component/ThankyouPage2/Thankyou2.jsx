@@ -15,6 +15,8 @@ function Thankyou2() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [sessionData, setSessionData] = useState(null);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Button disable state
+  const [isLoadingRequest, setIsLoadingRequest] = useState(false); // API request loading state
 
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
@@ -78,6 +80,10 @@ function Thankyou2() {
 
   const formatCurrency = (amount, currency) => {
     if (!amount || !currency) return "N/A";
+
+    // Convert the currency code to uppercase
+    const formattedCurrency = currency.toUpperCase();
+
     const currencySymbols = {
       USD: "$",
       INR: "₹",
@@ -86,11 +92,13 @@ function Thankyou2() {
       AUD: "A$",
       CAD: "C$",
     };
-    const symbol = currencySymbols[currency.toUpperCase()] || "";
-    return `${currency.toUpperCase()} ${symbol}${(
-      amount / 100
-    ).toLocaleString()}`;
+
+    // Get the currency symbol based on the formatted currency code
+    const symbol = currencySymbols[formattedCurrency] || "";
+
+    return ` ${formattedCurrency} ${symbol}${(amount / 100).toLocaleString()}`;
   };
+
 
   const formatDate = (timestamp) => {
     if (!timestamp) return "N/A";
@@ -115,12 +123,17 @@ function Thankyou2() {
   const plan = subscription?.items?.data?.[0]?.plan;
   const price = plan?.amount;
   const currency = plan?.currency;
+  console.log("dsadsad", currency)
   const invoiceLink = sessionData?.invoice
     ? `https://dashboard.stripe.com/test/invoices/${sessionData.invoice}`
     : null;
 
   const handleClick = async () => {
     try {
+
+      // Disable the button and show loading
+      setIsButtonDisabled(true);
+      setIsLoadingRequest(true); // Start loading
       // These values should ideally come from the session or URL
       const email = sessionData?.customer_details?.email;
       const customerId = sessionData?.customer?.id;
@@ -149,8 +162,7 @@ function Thankyou2() {
             const userData = {
               name: data.res?.data?.user?.name || "",
               profile:
-                `${API_BASE_URL?.split("/api")[0]}${
-                  data.res?.data?.profile?.split("public")[1]
+                `${API_BASE_URL?.split("/api")[0]}${data.res?.data?.profile?.split("public")[1]
                 }` || "images/camera-icon.avif",
               subscriptionDetails: {},
             };
@@ -167,9 +179,15 @@ function Thankyou2() {
         console.error("Verification failed:", data.data?.error);
         alert(data.error);
       }
+
     } catch (err) {
       console.error("Error during OTP verification:", err);
       alert("Something went wrong while verifying.");
+    }
+    finally {
+      // Re-enable the button and hide loading
+      setIsButtonDisabled(false);
+      setIsLoadingRequest(false); // End loading
     }
   };
 
@@ -191,79 +209,83 @@ function Thankyou2() {
       {loading ? (
         <Loader2 />
       ) : (
-      <div className={styles.infoBox}>
-        <p>Below is some Quick Info for your Reference:</p>
+        <div className={styles.infoBox}>
+          <p>Below is some Quick Info for your Reference:</p>
 
-        <div className={styles.row}>
-          <span>Name:</span>
-          <div className={styles.Right50}>{customer?.name || "N/A"}</div>
-        </div>
+          <div className={styles.row}>
+            <span>Name:</span>
+            <div className={styles.Right50}>{customer?.name || "N/A"}</div>
+          </div>
 
-        <div className={styles.row}>
-          <span>Email:</span>
-          <div className={styles.Right50}>{customer?.email || "N/A"}</div>
-        </div>
+          <div className={styles.row}>
+            <span>Email:</span>
+            <div className={styles.Right50}>{customer?.email || "N/A"}</div>
+          </div>
 
-        {/* <div className={styles.row}>
+          {/* <div className={styles.row}>
           <span>Subscription ID:</span>
           <div className={styles.Right50}>{subscription?.id || "N/A"}</div>
         </div> */}
 
-        {/* <div className={styles.row}>
+          {/* <div className={styles.row}>
           <span>Plan ID:</span>
           <div className={styles.Right50}>{plan?.id || "N/A"}</div>
         </div> */}
 
-        <div className={styles.row}>
-          <span>Price & Frequency:</span>
-          <div className={styles.Right50}>
-            {formatCurrency(price, currency)} / {plan?.interval || "N/A"}
-          </div>
-        </div>
-
-        <div className={styles.row}>
-          <span>Status:</span>
-          <div className={styles.Right50}>{subscription?.status || "N/A"}</div>
-        </div>
-
-        <div className={styles.row}>
-          <span>Start Date:</span>
-          <div className={styles.Right50}>
-            {formatDate(subscription?.start_date)}
-          </div>
-        </div>
-
-        <div className={styles.row}>
-          <span>Next Billing:</span>
-          <div className={styles.Right50}>
-            {formatISODate(setSubscriptionDetails?.nextRenewalDate)}
-          </div>
-        </div>
-
-        {setSubscriptionDetails?.invoiceUrl && (
           <div className={styles.row}>
-            <span>Invoice:</span>
+            <span>Price & Frequency:</span>
             <div className={styles.Right50}>
-              <a
-                href={setSubscriptionDetails?.invoiceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.downloadButton}
-                style={{ color: "purple", textDecoration: "none" }}
-              >
-                Download
-              </a>
+              {formatCurrency(price, currency)} / {plan?.interval || "N/A"}
             </div>
           </div>
-        )}
 
-        <div className={styles.ButtonTakeME}>
-          <button onClick={handleClick} className={styles.dashboardBtn}>
-            Take me to Agent Creation
-          </button>
+          <div className={styles.row}>
+            <span>Status:</span>
+            <div className={styles.Right50}>{subscription?.status || "N/A"}</div>
+          </div>
+
+          <div className={styles.row}>
+            <span>Start Date:</span>
+            <div className={styles.Right50}>
+              {formatDate(subscription?.start_date)}
+            </div>
+          </div>
+
+          <div className={styles.row}>
+            <span>Next Billing:</span>
+            <div className={styles.Right50}>
+              {formatISODate(setSubscriptionDetails?.nextRenewalDate)}
+            </div>
+          </div>
+
+          {setSubscriptionDetails?.invoiceUrl && (
+            <div className={styles.row}>
+              <span>Invoice:</span>
+              <div className={styles.Right50}>
+                <a
+                  href={setSubscriptionDetails?.invoiceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.downloadButton}
+                  style={{ color: "purple", textDecoration: "none" }}
+                >
+                  Download
+                </a>
+              </div>
+            </div>
+          )}
+
+          <div className={styles.ButtonTakeME}>
+            <button
+              onClick={handleClick}
+              className={styles.dashboardBtn}
+              disabled={isButtonDisabled} // Disable button when loading
+            >
+              {isLoadingRequest ? "Processing..." : "Take me to Agent Creation"}
+            </button>
+          </div>
         </div>
-      </div>
-       )} 
+      )}
     </div>
   );
 }
