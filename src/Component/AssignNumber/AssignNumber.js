@@ -8,10 +8,13 @@ import { createNumberOrder, fetchAgentDetailById, fetchAvailablePhoneNumberByCou
 import Loader2 from '../Loader2/Loader2';
 import axios from 'axios';
 import PopUp from '../Popup/Popup';
+import { useDashboardStore } from '../../Store/agentZustandStore';
 const AssignNumber = () => {
     const location = useLocation();
     const stateInputRef = useRef(null);
     const cityInputRef = useRef(null);
+      const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
+        useDashboardStore();
     const [stateNameFull, setStateNameFull] = useState('');
     const [open, setOpen] = useState(false);
     const [selectedLangCode, setSelectedLangCode] = useState('us');
@@ -454,6 +457,7 @@ const AssignNumber = () => {
             setPopupMessage("Number assigned successfully")
             setLoading(false)
             fetchAgentDetailsById()
+            setHasFetched(false)
 
         } catch (error) {
             console.log(error)
