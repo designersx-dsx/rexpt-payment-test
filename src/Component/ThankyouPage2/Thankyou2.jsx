@@ -21,6 +21,7 @@ function Thankyou2() {
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
+  console.log("setSubscriptionDetails", setSubscriptionDetails);
 
   const [isSubscriptionDetailsLoading, setIsSubscriptionDetailsLoading] =
     useState(true); // Subscription details loading state
@@ -44,6 +45,7 @@ function Thankyou2() {
         if (data.success && data.session) {
           setsubcriptionId(data.session?.subscription?.id);
           setSessionData(data.session);
+          fetchSubscriptionDetails();
         }
       } catch (err) {
         console.error("Failed to fetch session info:", err);
@@ -53,39 +55,32 @@ function Thankyou2() {
     };
 
     fetchSessionDetails();
-  }, [sessionId]);
+  }, [sessionId, subcriptionId]);
+  const fetchSubscriptionDetails = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/subscription-details-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription_id: subcriptionId }),
+      });
 
-  useEffect(() => {
-    if (!subcriptionId) return;
+      const data = await res.json();
+      console.log("dataa", data);
 
-    const fetchSubscriptionDetails = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/subscription-details-url`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ subscription_id: subcriptionId }),
-        });
-
-        const data = await res.json();
-        console.log("dataa", data);
-
-        if (!data?.error) {
-          setsetSubscriptionDetails(data);
-        } else {
-          console.warn("No additional subscription data found.");
-        }
-      } catch (err) {
-        console.error("Failed to fetch subscription details:", err);
-      } finally {
-        setIsSubscriptionDetailsLoading(false); // Subscription details are done loading
-        if (!isSubscriptionDetailsLoading && !loading) {
-          setLoading(false); // If both session and subscription data are loaded, set loading to false
-        }
+      if (!data?.error) {
+        setsetSubscriptionDetails(data);
+      } else {
+        console.warn("No additional subscription data found.");
       }
-    };
-
-    fetchSubscriptionDetails();
-  }, [subcriptionId]);
+    } catch (err) {
+      console.error("Failed to fetch subscription details:", err);
+    } finally {
+      setIsSubscriptionDetailsLoading(false); // Subscription details are done loading
+      if (!isSubscriptionDetailsLoading && !loading) {
+        setLoading(false); // If both session and subscription data are loaded, set loading to false
+      }
+    }
+  };
 
   const formatCurrency = (amount, currency) => {
     if (!amount || !currency) return "N/A";
@@ -105,7 +100,7 @@ function Thankyou2() {
     // Get the currency symbol based on the formatted currency code
     const symbol = currencySymbols[formattedCurrency] || "";
 
-    return ` ${formattedCurrency} ${symbol}${(amount / 100).toLocaleString()}`;
+    return ` ${formattedCurrency} ${symbol}${amount.toLocaleString()}`;
   };
 
   const formatDate = (timestamp) => {
@@ -157,7 +152,6 @@ function Thankyou2() {
       const data = await response;
 
       if (data?.res?.status === 200) {
-
         const userId = data?.res?.data?.user?.id;
         localStorage.setItem("token", data.res?.data?.token);
         localStorage.setItem("onboardComplete", false);
@@ -247,7 +241,7 @@ function Thankyou2() {
         </p>
       </div>
 
-      {loading ? (
+      {loading || isSubscriptionDetailsLoading ? (
         <Loader2 />
       ) : (
         <div className={styles.infoBox}>
@@ -276,8 +270,11 @@ function Thankyou2() {
           <div className={styles.row}>
             <span>Price & Frequency:</span>
             <div className={styles.Right50}>
-              {formatCurrency(price, setSubscriptionDetails?.currency)} /{" "}
-              {plan?.interval || "N/A"}
+              {formatCurrency(
+                setSubscriptionDetails?.metadata?.original_plan_amount,
+                setSubscriptionDetails?.currency
+              )}{" "}
+              / {plan?.interval || "N/A"}
             </div>
           </div>
 
