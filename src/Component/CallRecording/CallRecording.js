@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "./CallRecording.module.css";
-import { API_BASE_URL, getUserAgentMergedDataForAgentUpdate, updateAgent } from "../../Store/apiStore";
+import {
+  API_BASE_URL,
+  getUserAgentMergedDataForAgentUpdate,
+  updateAgent,
+} from "../../Store/apiStore";
 import Switch from "@mui/material/Switch";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
@@ -14,28 +18,34 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 
-const CallRecording = () => {
+const CallRecording = ({ agentId, businessId }) => {
   const [callRecording, setCallRecording] = useState(true);
-  console.log("CallRecording component rendered",callRecording);
   const [loading, setLoading] = useState(false);
   const [Id, setAgentId] = useState(null);
   const [openDisclaimer, setOpenDisclaimer] = useState(false);
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { agentId, businessId } = location.state || {};
-  const [editAgentId, setEditAgentID] = useState(sessionStorage.getItem('SelectAgentId') || null);
-  const [editBusinessId, setBusinessId] = useState(sessionStorage.getItem('SelectAgentBusinessId') || null);
-  const [agentName, setAgentName] = useState(sessionStorage.getItem("agentName") || "")
+  // const { agentId, businessId } = location.state || {};
+  const [editAgentId, setEditAgentID] = useState(
+    sessionStorage.getItem("SelectAgentId") || null
+  );
+  const [editBusinessId, setBusinessId] = useState(
+    sessionStorage.getItem("SelectAgentBusinessId") || null
+  );
+  const [agentName, setAgentName] = useState(
+    sessionStorage.getItem("agentName") || ""
+  );
   const agentnm = sessionStorage.getItem("agentName");
   const [popupType, setPopupType] = useState(null);
-    const [popupMessage, setPopupMessage] = useState("");
-    const [showPopup, setShowPopup] = useState(false);
-      const { setHasFetched } = useDashboardStore();
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const { setHasFetched } = useDashboardStore();
   // console.log('agentnm',agentnm,agentId, businessId)
+
   useEffect(() => {
-    setAgentName(agentnm)
-  }, [agentnm])
+    setAgentName(agentnm);
+  }, [agentnm]);
   const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     try {
       const response = await getUserAgentMergedDataForAgentUpdate(
@@ -90,7 +100,7 @@ const CallRecording = () => {
           aboutBusiness: business.aboutBusiness,
           note: business.additionalInstruction,
           isGoogleListing: business.isGoogleListing,
-          isWebsiteUrl: business.isWebsiteUrl
+          isWebsiteUrl: business.isWebsiteUrl,
         })
       );
 
@@ -101,7 +111,10 @@ const CallRecording = () => {
       sessionStorage.setItem("businessDetails", agent.business);
       sessionStorage.setItem("businessId", agent.businessId);
       sessionStorage.setItem("bId", agent.businessId);
-      sessionStorage.setItem("displayBusinessName", business.googleBusinessName);
+      sessionStorage.setItem(
+        "displayBusinessName",
+        business.googleBusinessName
+      );
 
       sessionStorage.setItem("agentRole", agent.agentRole);
       sessionStorage.setItem("agentVoice", agent.agentVoice);
@@ -141,11 +154,10 @@ const CallRecording = () => {
 
       const cleanedCustomServices = Array.isArray(rawCustomServices)
         ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+            .map((item) => item?.service?.trim())
+            .filter(Boolean)
+            .map((service) => ({ service }))
         : [];
-
 
       sessionStorage.setItem(
         "selectedCustomServices",
@@ -159,7 +171,10 @@ const CallRecording = () => {
         try {
           raw_knowledge_base_texts = JSON.parse(raw_knowledge_base_texts);
         } catch (err) {
-          console.error("Failed to parse customServices:", raw_knowledge_base_texts);
+          console.error(
+            "Failed to parse customServices:",
+            raw_knowledge_base_texts
+          );
           raw_knowledge_base_texts = [];
         }
       }
@@ -171,14 +186,19 @@ const CallRecording = () => {
       sessionStorage.setItem("agentNote", agent?.additionalNote);
     } catch (error) {
       console.log("An Error Occured while fetching Agent Data for ", error);
-    } finally { setLoading(false) }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     if ((agentId || editAgentId) && (businessId || editBusinessId)) {
-      fetchPrevAgentDEtails(agentId || editAgentId, businessId || editBusinessId);
+      fetchPrevAgentDEtails(
+        agentId || editAgentId,
+        businessId || editBusinessId
+      );
     }
-  }, [editAgentId, editBusinessId])
+  }, [editAgentId, editBusinessId]);
 
   useEffect(() => {
     const storedAgentId = sessionStorage.getItem("SelectAgentId");
@@ -197,18 +217,17 @@ const CallRecording = () => {
     setHasFetched,
   });
   const loadAgentStatus = async (id) => {
-  try {
-    setLoading(true);
-    const res = await axios.get(`${API_BASE_URL}/agent/getAgent/${id}`);
-    setCallRecording(res.data.callRecording);
-    sessionStorage.setItem("callRecording", res.data.callRecording);
-  } catch (error) {
-    console.error("Failed to fetch agent details", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    try {
+      setLoading(true);
+      const res = await axios.get(`${API_BASE_URL}/agent/getAgent/${id}`);
+      setCallRecording(res.data.callRecording);
+      sessionStorage.setItem("callRecording", res.data.callRecording);
+    } catch (error) {
+      console.error("Failed to fetch agent details", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleToggle = () => {
     if (callRecording) {
@@ -219,19 +238,18 @@ const CallRecording = () => {
   };
 
   const updateRecordingStatus = async (newValue) => {
-  try {
-    setLoading(true);
-    await updateAgent(agentId, { callRecording: newValue });
-    setCallRecording(newValue);
-    sessionStorage.setItem("callRecording", newValue);
-    handleCreateAgent()
-  } catch (error) {
-    console.error("Failed to update call recording", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    try {
+      setLoading(true);
+      await updateAgent(agentId, { callRecording: newValue });
+      setCallRecording(newValue);
+      sessionStorage.setItem("callRecording", newValue);
+      handleCreateAgent();
+    } catch (error) {
+      console.error("Failed to update call recording", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleConfirmDisclaimer = () => {
     if (disclaimerChecked) {
@@ -240,27 +258,32 @@ const CallRecording = () => {
       updateRecordingStatus(false);
     }
   };
+  useEffect(() => {
+    if (agentId) {
+      loadAgentStatus(agentId);
+    }
+  }, [agentId]);
 
   return (
     <div className={styles.callRecordingContainer}>
-      <HeaderBar
-        title="Call Recording"
-        backgroundColor="#6524EB"
-        color="#fff"
-      />
-
       <div className={styles.toggleWrapper}>
         <label className={styles.toggleLabel}>
-          Call Recording Deceleration:
+          "Would you like your agent to announce the 'Call Recording
+          Declaration'?"
           {loading ? (
             <CircularProgress size={20} style={{ marginLeft: 10 }} />
           ) : (
-            <Switch
-              checked={callRecording}
-              onChange={handleToggle}
-              color="primary"
-              style={{ marginLeft: 10 }}
-            />
+            <>
+              <label className={styles.switch}></label>
+              <Switch
+                type="checkbox"
+                checked={callRecording} 
+                onChange={handleToggle}
+                color="primary"
+                style={{ marginLeft: 10 }}
+              />
+              <span className={styles.slider}></span>
+            </>
           )}
         </label>
       </div>
