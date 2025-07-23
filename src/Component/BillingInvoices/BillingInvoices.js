@@ -1,27 +1,29 @@
 import React from 'react'
 import styles from '../BillingInvoices/BillingInvoices.module.css'
 
-const BillingInvoices = ({invoices}) => {
-//     const data = [
-//   {
-//     id: 1,
-//     time: '12:06pm',
-//     date: '28 May 2025',
-//     amount: '$119',
-//   },
-//   {
-//     id: 2,
-//     time: '11:06 am',
-//     date: '05 Apr 2025',
-//     amount: '$299',
-//   },
-//   {
-//     id: 3,
-//     time: '01:15 pm',
-//     date: '01 May 2025',
-//     amount: '$119',
-//   },
-// ];
+const BillingInvoices = ({ invoices }) => {
+  //     const data = [
+  //   {
+  //     id: 1,
+  //     time: '12:06pm',
+  //     date: '28 May 2025',
+  //     amount: '$119',
+  //   },
+  //   {
+  //     id: 2,
+  //     time: '11:06 am',
+  //     date: '05 Apr 2025',
+  //     amount: '$299',
+  //   },
+  //   {
+  //     id: 3,
+  //     time: '01:15 pm',
+  //     date: '01 May 2025',
+  //     amount: '$119',
+  //   },
+  // ];
+
+  console.log("invoices", invoices)
 
   if (!invoices || invoices.length === 0) {
     return (
@@ -33,22 +35,22 @@ const BillingInvoices = ({invoices}) => {
   }
 
   function formatDate(timestamp) {
-  const date = new Date(timestamp);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = date.toLocaleString('en-US', { month: 'long' });
-  const year = date.getFullYear();
-  return `${day} ${month} ${year}`;
-}
+    const date = new Date(timestamp);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
 
   const data = invoices
-  .filter((invoice) => invoice.status !== "canceled")
-  .map((invoice) => ({
-    id: invoice.id,
-    time: new Date(invoice.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    date: new Date(invoice.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' }),
-    amount: `${invoice?.plan_currency?.toUpperCase()} ${invoice?.plan_unit_amount}`,
-    invoice_url: invoice.invoice_url, 
-  }));
+    .filter((invoice) => invoice.status !== "canceled")
+    .map((invoice) => ({
+      id: invoice.id,
+      time: new Date(invoice.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date(invoice.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' }),
+      amount: `${invoice?.plan_currency?.toUpperCase()} ${invoice?.plan_unit_amount}`,
+      invoice_url: invoice.invoice_url,
+    }));
 
   // const handleDownload = async (url, fileName) => {
   //   try {
@@ -74,8 +76,8 @@ const BillingInvoices = ({invoices}) => {
   // };
 
   //  console.log('invoices', data)
-return (
-     <div className={styles.container}>
+  return (
+    <div className={styles.container}>
       <h3 className={styles.title}>Billing & Invoices</h3>
       <table className={styles.table}>
         <thead>
@@ -109,10 +111,10 @@ return (
                     rel="noopener noreferrer"
                     className={styles.actionIcon}
                   >
-                  <img src='/svg/download-invoice.svg' alt='download-invoice'
-                  // onClick={() => handleDownload(invoice.invoice_url, `invoice-${invoice.id}.pdf`)}
-                  />
-                  {/* <img
+                    <img src='/svg/download-invoice.svg' alt='download-invoice'
+                    // onClick={() => handleDownload(invoice.invoice_url, `invoice-${invoice.id}.pdf`)}
+                    />
+                    {/* <img
                     src='/svg/download-invoice.svg'
                     alt='download-invoice'
                     onClick={() => handleDownload(invoice.invoice_url, `invoice-${invoice.id}.pdf`)}
