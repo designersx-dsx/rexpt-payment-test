@@ -144,7 +144,7 @@
   font-size: 18px;
   font-weight: 600;
   color: #24252C;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
 }
 
 .CallSettingContainer {
