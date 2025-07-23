@@ -11,6 +11,9 @@ const HelpSupport = () => {
         if (type === 'documentation') {
             navigate('/documentation');
         }
+        if(type === 'raise-tickets') {
+            navigate('/raise-tickets');
+        }
     };
 
     const cursor = {
@@ -34,7 +37,7 @@ const HelpSupport = () => {
 
                 </span>
             </div>
-            {/* <div className={styles.card} style={cursor}>
+            <div className={styles.card} onClick={() => handleCardClick('raise-tickets')}>
                 <img src="/svg/Support-ticket.svg" alt="Agent" />
                 <span>CREATE SUPPORT TICKET</span>
                 <span className={styles.arrow}>
@@ -43,7 +46,7 @@ const HelpSupport = () => {
                     </svg>
 
                 </span>
-            </div> */}
+            </div>
             <div className={styles.card} onClick={() => handleCardClick('documentation')}>
                 <img src="/svg/document.svg" alt="Agent" />
                 <span>DOCUMENTATION</span>
