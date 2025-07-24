@@ -9,7 +9,6 @@
 
 /* Toggle Wrapper */
 .toggleWrapper {
-  margin-top: 30px;
   display: flex;
   align-items: center;
   gap: 15px;
@@ -22,6 +21,13 @@
   color: #333;
   font-weight: 500;
   transition: all 0.3s ease;
+}
+
+.Ptag {
+  width: 80%;
+  font-size: 18px;
+  font-weight: 600;
+  color: #24252C;
 }
 
 .toggleLabel:hover {
@@ -42,7 +48,7 @@
 
 .MuiSwitch-track {
   background-color: #bbb;
-  border-radius: 20px;  
+  border-radius: 20px;
 }
 
 /* Modal Styles */
@@ -66,6 +72,7 @@
     opacity: 0;
     transform: translate(-50%, -60%);
   }
+
   100% {
     opacity: 1;
     transform: translate(-50%, -50%);
@@ -142,7 +149,7 @@
     width: 90%;
     padding: 20px;
   }
-  
+
   .toggleWrapper {
     flex-direction: column;
     align-items: flex-start;
@@ -155,10 +162,11 @@
 
 /* Toggle Switch Container */
 .switch {
-  position: relative;
+  position: absolute;
   display: inline-block;
-  width: 60px; /* Increased size for better usability */
+  width: 60px;
   height: 34px;
+  right: 0;
 }
 
 /* Hide default checkbox */
@@ -185,7 +193,8 @@
 .switch .slider:before {
   position: absolute;
   content: "";
-  height: 26px; /* Larger size for the thumb */
+  height: 26px;
+  /* Larger size for the thumb */
   width: 26px;
   left: 4px;
   bottom: 4px;
@@ -196,10 +205,11 @@
 
 /* Checked Style */
 .switch input:checked+.slider {
-  background-color: #693bff; /* More vibrant active color */
+  background-color: #693bff;
+  /* More vibrant active color */
 }
 
 .switch input:checked+.slider:before {
-  transform: translateX(26px); /* Shift the circle further */
+  transform: translateX(26px);
+  /* Shift the circle further */
 }
-  

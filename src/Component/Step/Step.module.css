@@ -4,6 +4,7 @@
   overflow: auto;
   max-height: 90dvh;
   scrollbar-width: thin;
+  position: relative;
   /* scrollbar-color: rgb(255, 255, 255) transparent; */
 }
 
