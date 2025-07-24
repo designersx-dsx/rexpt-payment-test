@@ -371,7 +371,7 @@ const Step = () => {
         const agentNote = sessionStorage.getItem("agentNote");
         const rawPromptTemplate =
             getAgentPrompt({
-                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,  
+                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
                 roleTitle: sessionStorage.getItem("agentRole"),
                 agentName: "{{AGENT NAME}}",
                 agentGender: "{{AGENT GENDER}}",
@@ -408,7 +408,7 @@ const Step = () => {
                 timeZone,
                 languageAccToPlan,
                 plan: plan,
-                
+
             });
 
 
