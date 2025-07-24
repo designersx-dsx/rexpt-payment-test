@@ -20,6 +20,7 @@ function Thankyou2() {
 
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
+  console.log("subcriptionId", subcriptionId);
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
   console.log("setSubscriptionDetails", setSubscriptionDetails);
 
@@ -42,10 +43,11 @@ function Thankyou2() {
         });
         const data = await res.json();
 
-        if (data.success && data.session) {
+        // if (data.success && data.session) {
           setsubcriptionId(data.session?.subscription?.id);
+          console.log("data.session",data.session?.subscription?.id)
           setSessionData(data.session);
-        }
+        // }
       } catch (err) {
         console.error("Failed to fetch session info:", err);
       } finally {
@@ -72,6 +74,7 @@ function Thankyou2() {
 
         if (!data?.error) {
           setsetSubscriptionDetails(data);
+          setIsSubscriptionDetailsLoading(false);
         } else {
           console.warn("No additional subscription data found.");
         }
@@ -86,7 +89,7 @@ function Thankyou2() {
     };
 
     fetchSubscriptionDetails();
-  }, [subcriptionId,sessionId]);
+  }, [subcriptionId, sessionId]);
 
   const formatCurrency = (amount, currency) => {
     if (!amount || !currency) return "N/A";
@@ -228,7 +231,10 @@ function Thankyou2() {
   }
 
   return (
-    <div className={styles.container}>
+
+    <>
+
+    {subcriptionId ?  <div className={styles.container}>
       <div className={styles.Logo}>
         <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
       </div>
@@ -339,12 +345,17 @@ function Thankyou2() {
               className={styles.dashboardBtn}
               disabled={isButtonDisabled} // Disable button when loading
             >
-              {isLoadingRequest ? "Redirecting..." : "Take me to Agent Creation"}
+              {isLoadingRequest
+                ? "Redirecting..."
+                : "Take me to Agent Creation"}
             </button>
           </div>
         </div>
       )}
-    </div>
+    </div>: <Loader2/>}
+   
+    </>
+    
   );
 }
 
