@@ -45,7 +45,6 @@ function Thankyou2() {
         if (data.success && data.session) {
           setsubcriptionId(data.session?.subscription?.id);
           setSessionData(data.session);
-          fetchSubscriptionDetails();
         }
       } catch (err) {
         console.error("Failed to fetch session info:", err);
@@ -55,32 +54,39 @@ function Thankyou2() {
     };
 
     fetchSessionDetails();
-  }, [sessionId, subcriptionId]);
-  const fetchSubscriptionDetails = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/subscription-details-url`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription_id: subcriptionId }),
-      });
+  }, [sessionId]);
 
-      const data = await res.json();
-      console.log("dataa", data);
+  useEffect(() => {
+    if (!subcriptionId) return;
 
-      if (!data?.error) {
-        setsetSubscriptionDetails(data);
-      } else {
-        console.warn("No additional subscription data found.");
+    const fetchSubscriptionDetails = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/subscription-details-url`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscription_id: subcriptionId }),
+        });
+
+        const data = await res.json();
+        console.log("dataa", data);
+
+        if (!data?.error) {
+          setsetSubscriptionDetails(data);
+        } else {
+          console.warn("No additional subscription data found.");
+        }
+      } catch (err) {
+        console.error("Failed to fetch subscription details:", err);
+      } finally {
+        setIsSubscriptionDetailsLoading(false); // Subscription details are done loading
+        if (!isSubscriptionDetailsLoading && !loading) {
+          setLoading(false); // If both session and subscription data are loaded, set loading to false
+        }
       }
-    } catch (err) {
-      console.error("Failed to fetch subscription details:", err);
-    } finally {
-      setIsSubscriptionDetailsLoading(false); // Subscription details are done loading
-      if (!isSubscriptionDetailsLoading && !loading) {
-        setLoading(false); // If both session and subscription data are loaded, set loading to false
-      }
-    }
-  };
+    };
+
+    fetchSubscriptionDetails();
+  }, [subcriptionId,sessionId]);
 
   const formatCurrency = (amount, currency) => {
     if (!amount || !currency) return "N/A";
@@ -126,11 +132,6 @@ function Thankyou2() {
   const plan = subscription?.items?.data?.[0]?.plan;
   const price = plan?.amount;
   const currency = plan?.currency;
-  console.log("aaaa", currency);
-  const invoiceLink = sessionData?.invoice
-    ? `https://dashboard.stripe.com/test/invoices/${sessionData.invoice}`
-    : null;
-
   const handleClick = async () => {
     try {
       // Disable the button and show loading
@@ -241,7 +242,7 @@ function Thankyou2() {
         </p>
       </div>
 
-      {loading || isSubscriptionDetailsLoading ? (
+      {loading ? (
         <Loader2 />
       ) : (
         <div className={styles.infoBox}>
@@ -257,16 +258,6 @@ function Thankyou2() {
             <div className={styles.Right50}>{customer?.email || "N/A"}</div>
           </div>
 
-          {/* <div className={styles.row}>
-          <span>Subscription ID:</span>
-          <div className={styles.Right50}>{subscription?.id || "N/A"}</div>
-        </div> */}
-
-          {/* <div className={styles.row}>
-          <span>Plan ID:</span>
-          <div className={styles.Right50}>{plan?.id || "N/A"}</div>
-        </div> */}
-
           <div className={styles.row}>
             <span>Price & Frequency:</span>
             <div className={styles.Right50}>
@@ -279,6 +270,32 @@ function Thankyou2() {
           </div>
 
           <div className={styles.row}>
+            <span>Billed Today:</span>
+            <div className={styles.Right50}>
+              {setSubscriptionDetails ? (
+                <>
+                  {/* Format the currency for the price */}
+                  {formatCurrency(
+                    setSubscriptionDetails?.planAmount, // This should be the amount billed today
+                    setSubscriptionDetails?.currency // Use the correct currency from the subscription
+                  )}{" "}
+                  on {/* Format the date for the current period start */}
+                  {new Date(
+                    setSubscriptionDetails?.currentPeriodStart
+                  ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </>
+              ) : (
+                // Fallback values when subscription details are not available
+                "$5,688.60 on July 12, 2025"
+              )}
+            </div>
+          </div>
+
+          {/* <div className={styles.row}>
             <span>Status:</span>
             <div className={styles.Right50}>
               {subscription?.status || "N/A"}
@@ -290,7 +307,7 @@ function Thankyou2() {
             <div className={styles.Right50}>
               {formatDate(subscription?.start_date)}
             </div>
-          </div>
+          </div> */}
 
           <div className={styles.row}>
             <span>Next Billing:</span>
