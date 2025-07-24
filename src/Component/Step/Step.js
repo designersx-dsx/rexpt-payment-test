@@ -364,14 +364,34 @@ const Step = () => {
             setPopupMessage("Error completing subscription.");
         }
     };
-
+    const currentState = getBusinessNameFromGoogleListing?.state || "";
+    const statesRequiringCallRecording = [
+        "Washington",
+        "Vermont",
+        "Pennsylvania",
+        "Oregon",
+        "New Hampshire",
+        "Nevada",
+        "Montana",
+        "Michigan",
+        "Massachusetts",
+        "Maryland",
+        "Illinois",
+        "Florida",
+        "Delaware",
+        "Connecticut",
+        "California",
+    ];
+    const callRecording = statesRequiringCallRecording.includes(currentState)
+        ? true
+        : false;
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
         const agentNote = sessionStorage.getItem("agentNote");
         const rawPromptTemplate =
             getAgentPrompt({
-                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,  
+                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
                 roleTitle: sessionStorage.getItem("agentRole"),
                 agentName: "{{AGENT NAME}}",
                 agentGender: "{{AGENT GENDER}}",
@@ -408,7 +428,8 @@ const Step = () => {
                 timeZone,
                 languageAccToPlan,
                 plan: plan,
-                
+                CallRecording:callRecording
+
             });
 
 
@@ -785,7 +806,8 @@ const Step = () => {
 
                             },
                         ],
-                        promptVariablesList: JSON.stringify(promptVariablesList)
+                        promptVariablesList: JSON.stringify(promptVariablesList),
+                        CallRecording:callRecording
 
                     }
                     try {

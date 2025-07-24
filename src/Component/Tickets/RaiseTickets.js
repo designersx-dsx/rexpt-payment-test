@@ -88,7 +88,7 @@ console.log('selectedAttachments',selectedAttachments)
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}></h2>
-        <button className={styles.raiseBtn} onClick={() => navigate('/create-ticket')}>Raise New Ticket</button>
+        <button className={styles.raiseBtn} onClick={() => navigate('/create-ticket')}>CREATE <span>New Ticket</span></button>
       </div>
 
       <div className={styles.filters}>
@@ -98,7 +98,7 @@ console.log('selectedAttachments',selectedAttachments)
           onChange={(e) => setSearchText(e.target.value)}
           className={styles.input}
         />
-
+<div className={styles.filtersgroup}>
         <select value={status} onChange={(e) => setStatus(e.target.value)} className={styles.select}>
           <option value="">Status</option>
           <option value="Open">Open</option>
@@ -114,11 +114,12 @@ console.log('selectedAttachments',selectedAttachments)
           <option value="Medium">Medium</option>
           <option value="High">High</option>
         </select>
-
+</div>
         <button className={styles.raiseBtn} onClick={() => { setPriority(""); setStatus(""); setCurrentPage(1); }}>Clear Filter</button>
       </div>
 
       <div className={styles.tableWrapper}>
+         <div className={styles.tableOverFlow}>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -161,7 +162,7 @@ console.log('selectedAttachments',selectedAttachments)
             ))}
           </tbody>
         </table>
-
+        </div>
         <div className={styles.pagination}>
           <span className={styles.pageInfo}>
             Showing {indexOfFirstTicket + 1} to {Math.min(indexOfLastTicket, tickets.length)} of {tickets.length} tickets
