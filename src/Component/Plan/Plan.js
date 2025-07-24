@@ -39,6 +39,8 @@ const Planss = () => {
     const [popupType, setPopupType] = useState("success");
     const [renderHTML, setRenderHTML] = useState(false); // NEW
 
+    const [currencyLoaded, setCurrencyLoaded] = useState(false);
+
 
     let agentID = location?.state?.agentID
 
@@ -161,6 +163,9 @@ const Planss = () => {
                 console.error("Error determining location-based currency:", error);
                 setUserCurrency("usd"); // fallback;
             }
+            finally {
+                setCurrencyLoaded(true);  // ✅ Mark as done regardless of success/failure
+            }
         };
 
         const mapCountryToCurrency = (countryCode) => {
@@ -178,7 +183,8 @@ const Planss = () => {
     }, []);
 
     useEffect(() => {
-        if (!userCurrency) return;
+        if (!userCurrency || !currencyLoaded) return;
+        setLoading(true);
 
         fetch(`${API_BASE}/products`)
             .then((res) => res.json())
@@ -329,7 +335,7 @@ const Planss = () => {
                 setError("Failed to load plans.");
                 setLoading(false);
             });
-    }, [userCurrency]);
+    }, [userCurrency, currencyLoaded]);
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('en-IN').format(price);
@@ -560,13 +566,15 @@ const Planss = () => {
                                     <div className={styles.stickyWrapper}>
                                         <AnimatedButton
                                             label={
-                                                isCurrentPlan
-                                                    ? "Current Plan"
-                                                    : priceForInterval
-                                                        ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${formatPrice(priceForInterval.unit_amount / 100)}/${priceForInterval.interval}`
-                                                        : "Unavailable"
+                                                userCurrency === "inr"
+                                                    ? "Coming Soon.." :
+                                                    isCurrentPlan
+                                                        ? "Current Plan"
+                                                        : priceForInterval
+                                                            ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${formatPrice(priceForInterval.unit_amount / 100)}/${priceForInterval.interval}`
+                                                            : "Unavailable"
                                             }
-                                            disabled={isCurrentPlan}
+                                            disabled={isCurrentPlan || userCurrency === "inr"}
                                             position={{ position: "relative" }}
                                             size="13px"
                                             onClick={() => {
@@ -698,59 +706,59 @@ const Planss = () => {
 
             </FreeTrialModal>
             <div className={styles.MianFooteer}>
-                
-          
-            <div className={styles.ForSticky}>
-                <div className={styles.footerButtons}>
 
-                    {products.map((plan, index) => {
-                        const isYearly = toggleStates[plan.id];
-                        // const interval = isYearly ? "year" : "month";
-                        const interval = "year"
-                        const selectedPrice = plan.prices.find(p => p.interval === interval);
-                        const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
-                        const amount = selectedPrice ? (selectedPrice.unit_amount / 100 / 12).toFixed(0) : "0";
 
-                        return (
-                            <div
-                                key={plan.id}
-                                className={styles.navBox}
-                                onClick={() => {
-                                    setActiveIndex(index);
-                                    sliderRef.current.slickGoTo(index);
-                                }}
-                            >
-                                <input
-                                    type="radio"
-                                    name="plan"
-                                    checked={activeIndex === index}
-                                    onChange={() => setActiveIndex(index)}
-                                    className={styles.radiobtn}
-                                />
-                                {plan.title === "Starter" ? <img src="/svg/starter-icon.svg" /> : null}
-                                {plan.title === "Scaler" ? <img src="/svg/scaler-icon.svg" /> : null}
-                                {plan.title === "Growth" ? <img src="/svg/growth-icon.svg" /> : null}
-                                {plan.title === "Corporate" ? <img src="/svg/corporate-icon.svg" /> : null}
+                <div className={styles.ForSticky}>
+                    <div className={styles.footerButtons}>
 
-                                <button
-                                    className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""
-                                        }`}
+                        {products.map((plan, index) => {
+                            const isYearly = toggleStates[plan.id];
+                            // const interval = isYearly ? "year" : "month";
+                            const interval = "year"
+                            const selectedPrice = plan.prices.find(p => p.interval === interval);
+                            const symbol = getCurrencySymbol(selectedPrice?.currency || userCurrency);
+                            const amount = selectedPrice ? (selectedPrice.unit_amount / 100 / 12).toFixed(0) : "0";
+
+                            return (
+                                <div
+                                    key={plan.id}
+                                    className={styles.navBox}
+                                    onClick={() => {
+                                        setActiveIndex(index);
+                                        sliderRef.current.slickGoTo(index);
+                                    }}
                                 >
-                                    {plan.title}
-                                </button>
-                                {/* monthPrice */}
-                                <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
-                                    }`}>
-                                    from {symbol}{formatPrice(amount)}/m
-                                    {/* {interval === "year" ? "yr" : "m"} */}
-                                </p>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
+                                    <input
+                                        type="radio"
+                                        name="plan"
+                                        checked={activeIndex === index}
+                                        onChange={() => setActiveIndex(index)}
+                                        className={styles.radiobtn}
+                                    />
+                                    {plan.title === "Starter" ? <img src="/svg/starter-icon.svg" /> : null}
+                                    {plan.title === "Scaler" ? <img src="/svg/scaler-icon.svg" /> : null}
+                                    {plan.title === "Growth" ? <img src="/svg/growth-icon.svg" /> : null}
+                                    {plan.title === "Corporate" ? <img src="/svg/corporate-icon.svg" /> : null}
 
-              </div>
+                                    <button
+                                        className={`${styles.footerBtn} ${styles[plan.color]} ${index === activeIndex ? styles.active : ""
+                                            }`}
+                                    >
+                                        {plan.title}
+                                    </button>
+                                    {/* monthPrice */}
+                                    <p className={`${styles.footerBtn} $ ${styles[plan.color]}  ${styles.extraClass} ${index === activeIndex ? styles.active : ""
+                                        }`}>
+                                        from {symbol}{formatPrice(amount)}/m
+                                        {/* {interval === "year" ? "yr" : "m"} */}
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+            </div>
 
             {popupMessage && (
                 <PopUp
