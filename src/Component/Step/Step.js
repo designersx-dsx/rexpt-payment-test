@@ -364,7 +364,27 @@ const Step = () => {
             setPopupMessage("Error completing subscription.");
         }
     };
-
+    const currentState = getBusinessNameFromGoogleListing?.state || "";
+    const statesRequiringCallRecording = [
+        "Washington",
+        "Vermont",
+        "Pennsylvania",
+        "Oregon",
+        "New Hampshire",
+        "Nevada",
+        "Montana",
+        "Michigan",
+        "Massachusetts",
+        "Maryland",
+        "Illinois",
+        "Florida",
+        "Delaware",
+        "Connecticut",
+        "California",
+    ];
+    const callRecording = statesRequiringCallRecording.includes(currentState)
+        ? true
+        : false;
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
@@ -408,6 +428,7 @@ const Step = () => {
                 timeZone,
                 languageAccToPlan,
                 plan: plan,
+                CallRecording:callRecording
 
             });
 
@@ -785,7 +806,8 @@ const Step = () => {
 
                             },
                         ],
-                        promptVariablesList: JSON.stringify(promptVariablesList)
+                        promptVariablesList: JSON.stringify(promptVariablesList),
+                        CallRecording:callRecording
 
                     }
                     try {
