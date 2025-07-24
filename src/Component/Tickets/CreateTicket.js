@@ -161,6 +161,9 @@ const navigate=useNavigate();
       setLoading(false);
     }
   };
+  const handlecancel=()=>{
+    navigate("/raise-tickets")
+  }
 
   return (
     <>
@@ -288,7 +291,7 @@ const navigate=useNavigate();
           <button
             type="button"
             className={styles.cancelBtn}
-            onClick={onSuccess}
+            onClick={handlecancel}
             disabled={loading}
           >
             Cancel

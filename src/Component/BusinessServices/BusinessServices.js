@@ -516,6 +516,25 @@ const BusinessServices = forwardRef(
           "Other",
         ],
       },
+      {
+        type: "Deli Shop",
+        subtype: "Fresh Meats & Gourmet Foods",
+        icon: "svg/Deli Shop.svg",
+        services: [
+          "Fresh Cut Meats",
+          "Artisanal Cheeses",
+          "Gourmet Sandwiches",
+          "Prepared Salads & Sides",
+          "Imported & Local Delicacies",
+          "Cured Meats & Cold Cuts",
+          "Ready-to-Eat Meals",
+          "Bakery Items",
+          "Specialty Beverages",
+          "Custom Deli Platters",
+          "Other"
+        ]
+      }
+
     ];
     const [searchTerm, setSearchTerm] = useState("");
     // const selectedBusiness = businessServices?.find(
@@ -582,9 +601,8 @@ const BusinessServices = forwardRef(
       try {
         setLoading(true);
         const API_URL = checkIfBusinessIdExist
-          ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${
-              decodeToken(localStorage.getItem("token")).id
-            }?businessId=${sessionStorage.getItem("bId")}`
+          ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id
+          }?businessId=${sessionStorage.getItem("bId")}`
           : `${API_BASE_URL}/businessDetails/create`;
         const response = await axios({
           method: checkIfBusinessIdExist ? "PATCH" : "POST",
