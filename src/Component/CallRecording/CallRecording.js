@@ -340,8 +340,8 @@ const CallRecording = ({ agentId, businessId }) => {
               variant="outlined"
               onClick={() => setOpenDisclaimer(false)}
               sx={{
-                borderColor: '#999',
-                color: '#24252C',
+                borderColor: '#999',     
+                color: '#24252C',           
               }}
             >
               Cancel
