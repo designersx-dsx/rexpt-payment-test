@@ -339,7 +339,7 @@ function Thankyou2() {
               className={styles.dashboardBtn}
               disabled={isButtonDisabled} // Disable button when loading
             >
-              {isLoadingRequest ? "Processing..." : "Take me to Agent Creation"}
+              {isLoadingRequest ? "Redirecting..." : "Take me to Agent Creation"}
             </button>
           </div>
         </div>
