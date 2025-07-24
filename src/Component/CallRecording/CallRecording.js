@@ -277,7 +277,7 @@ const CallRecording = ({ agentId, businessId }) => {
               <label className={styles.switch}></label>
               <Switch
                 type="checkbox"
-                checked={callRecording} 
+                checked={callRecording}
                 onChange={handleToggle}
                 color="primary"
                 style={{ marginLeft: 10 }}
@@ -295,16 +295,16 @@ const CallRecording = ({ agentId, businessId }) => {
             Disclaimer
           </Typography>
           <Typography variant="body1" gutterBottom>
-            Turning off call recording may impact compliance with applicable
-            laws, regulations, or internal policies. By disabling this feature,
-            you acknowledge that you are solely responsible for ensuring proper
-            use and transparency.
-            <br />
-            <br />
-            <strong>Note:</strong> In the event of any misuse, abuse, or illegal
-            activity, you understand and agree that you are solely liable. The
-            service provider is not responsible for any consequences resulting
-            from such actions.
+            As per your state's law, A declaration to the caller about call
+            recording is required for caller's consent. Turning off, This
+            declaration may impact compliance with applicable laws, regulations,
+            or internal policies.
+            <br>
+            </br> 
+            By disabling this feature, you acknowledge
+            that you are solely responsible for ensuring the other means of
+            declaration including but not limited to written notice, written
+            consent or announcement to your callers.
           </Typography>
 
           <div style={{ display: "flex", alignItems: "center", marginTop: 10 }}>
