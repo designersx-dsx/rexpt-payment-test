@@ -23,7 +23,6 @@ const BillingInvoices = ({ invoices }) => {
   //   },
   // ];
 
-  console.log("invoices", invoices)
 
   if (!invoices || invoices.length === 0) {
     return (
