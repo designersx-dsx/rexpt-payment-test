@@ -186,11 +186,16 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       subtype: "Local Experience Experts",  
       icon: "svg/Tour-Guides.svg",
     },
-    // {
-    //   type: "Marketing Agency",
-    //   subtype: "Your Journey Begins Here",
-    //   icon: "svg/Marketing Agency.svg",
-    // },
+    {
+      type: "Deli Shop",
+      subtype: "Fresh Meats & Gourmet Foods",
+      icon: "svg/Deli shop.svg"
+    },
+    {
+      type: "Marketing Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Marketing Agency.svg",
+    },
 
 
     {
