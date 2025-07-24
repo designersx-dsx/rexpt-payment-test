@@ -213,3 +213,17 @@
   transform: translateX(26px);
   /* Shift the circle further */
 }
+
+
+.BtnDiv {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.confirm {}
+
+.customBtn:active {
+  background-color: #3a1aa7 !important;
+}
