@@ -154,9 +154,9 @@ const CallRecording = ({ agentId, businessId }) => {
 
       const cleanedCustomServices = Array.isArray(rawCustomServices)
         ? rawCustomServices
-            .map((item) => item?.service?.trim())
-            .filter(Boolean)
-            .map((service) => ({ service }))
+          .map((item) => item?.service?.trim())
+          .filter(Boolean)
+          .map((service) => ({ service }))
         : [];
 
       sessionStorage.setItem(
@@ -268,21 +268,30 @@ const CallRecording = ({ agentId, businessId }) => {
     <div className={styles.callRecordingContainer}>
       <div className={styles.toggleWrapper}>
         <label className={styles.toggleLabel}>
-          "Would you like your agent to announce the 'Call Recording
-          Declaration'?"
+         <p className={styles.Ptag}> "Would you like your agent to announce the 'Call Recording
+          Declaration'?"</p>
           {loading ? (
             <CircularProgress size={20} style={{ marginLeft: 10 }} />
           ) : (
             <>
-              <label className={styles.switch}></label>
-              <Switch
+
+              {/* <Switch
                 type="checkbox"
                 checked={callRecording}
                 onChange={handleToggle}
                 color="primary"
                 style={{ marginLeft: 10 }}
-              />
-              <span className={styles.slider}></span>
+              /> */}
+              <label className={styles.switch}>
+                <input
+                  type="checkbox"
+                  checked={callRecording}
+                  onChange={handleToggle}
+
+                />
+                <span className={styles.slider}></span>
+              </label>
+
             </>
           )}
         </label>
