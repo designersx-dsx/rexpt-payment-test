@@ -86,12 +86,12 @@ const Details = () => {
     setPhoneSubmitted(true);
 
     const nError = validateName(name);
-    const pError = validatePhone(phone);
+    // const pError = validatePhone(phone);
 
     setNameError(nError);
-    setPhoneError(pError);
+    // setPhoneError(pError);
 
-    if (nError || pError) return;
+    if (nError ) return;
 
     setLoading(true);
 
@@ -259,18 +259,18 @@ const Details = () => {
                   value={phone}
                   onChange={(val, countryData) => {
                     setPhone(val);
-                    if (phoneSubmitted) {
-                      setPhoneError(validatePhone(val));
-                    } else {
-                      setPhoneError("");
-                    }
+                    // if (phoneSubmitted) {
+                    //   setPhoneError(validatePhone(val));
+                    // } else {
+                    //   setPhoneError("");
+                    // }
                   }}
                   onClickFlag={handleFlagClick}
                   inputClass={`${styles.input} ${phoneError ? styles.inputError : ""
                     }`}
                 />
               </div>
-              {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
+              {/* {phoneError && <p className={styles.inlineError}>{phoneError}</p>} */}
             </div>
           </div>
 

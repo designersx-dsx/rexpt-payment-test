@@ -13,7 +13,7 @@ const AssignNumber = () => {
     const location = useLocation();
     const stateInputRef = useRef(null);
     const cityInputRef = useRef(null);
-      const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
+    const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
         useDashboardStore();
     const [stateNameFull, setStateNameFull] = useState('');
     const [open, setOpen] = useState(false);
@@ -53,260 +53,7 @@ const AssignNumber = () => {
             flag: "/images/fr-CA.png",
             percentage: "—",
             stats: "—",
-        },
-        // {
-        //     name: "English (UK)",
-        //     locale: "en-GB",
-        //     countryCode: "GB",
-        //     countryName: "United Kingdom",
-        //     flag: "/images/en-GB.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "English (Australia)",
-        //     locale: "en-AU",
-        //     countryCode: "AU",
-        //     countryName: "Australia",
-        //     flag: "/images/en-AU.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "English (New Zealand)",
-        //     locale: "en-NZ",
-        //     countryCode: "NZ",
-        //     countryName: "New Zealand",
-        //     flag: "/images/en-NZ.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "German",
-        //     locale: "de-DE",
-        //     countryCode: "DE",
-        //     countryName: "Germany",
-        //     flag: "/images/de-DE.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Dutch",
-        //     locale: "nl-NL",
-        //     countryCode: "NL",
-        //     countryName: "Netherlands",
-        //     flag: "/images/nl-NL.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Danish",
-        //     locale: "da-DK",
-        //     countryCode: "DK",
-        //     countryName: "Denmark",
-        //     flag: "/images/da-DK.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Finnish",
-        //     locale: "fi-FI",
-        //     countryCode: "FI",
-        //     countryName: "Finland",
-        //     flag: "/images/fi-FI.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Norwegian",
-        //     locale: "no-NO",
-        //     countryCode: "NO",
-        //     countryName: "Norway",
-        //     flag: "/images/no-NO.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Swedish",
-        //     locale: "sv-SE",
-        //     countryCode: "SE",
-        //     countryName: "Sweden",
-        //     flag: "/images/sv-SE.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Spanish (Spain)",
-        //     locale: "es-ES",
-        //     countryCode: "ES",
-        //     countryName: "Spain",
-        //     flag: "/images/es-ES.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "French (France)",
-        //     locale: "fr-FR",
-        //     countryCode: "FR",
-        //     countryName: "France",
-        //     flag: "/images/fr-FR.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-
-        // {
-        //     name: "Italian",
-        //     locale: "it-IT",
-        //     countryCode: "IT",
-        //     countryName: "Italy",
-        //     flag: "/images/it-IT.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Portuguese (Portugal)",
-        //     locale: "pt-PT",
-        //     countryCode: "PT",
-        //     countryName: "Portugal",
-        //     flag: "/images/pt-PT.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Portuguese (Brazil)",
-        //     locale: "pt-BR",
-        //     countryCode: "BR",
-        //     countryName: "Brazil",
-        //     flag: "/images/pt-BR.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Catalan",
-        //     locale: "ca-ES",
-        //     countryCode: "ES",
-        //     countryName: "Spain",
-        //     flag: "/images/ca-ES.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Romanian",
-        //     locale: "ro-RO",
-        //     countryCode: "RO",
-        //     countryName: "Romania",
-        //     flag: "/images/ro-RO.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Polish",
-        //     locale: "pl-PL",
-        //     countryCode: "PL",
-        //     countryName: "Poland",
-        //     flag: "/images/pl-PL.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Russian",
-        //     locale: "ru-RU",
-        //     countryCode: "RU",
-        //     countryName: "Russia",
-        //     flag: "/images/ru-RU.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Bulgarian",
-        //     locale: "bg-BG",
-        //     countryCode: "BG",
-        //     countryName: "Bulgaria",
-        //     flag: "/images/bg-BG.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Slovak",
-        //     locale: "sk-SK",
-        //     countryCode: "SK",
-        //     countryName: "Slovakia",
-        //     flag: "/images/sk-SK.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Greek",
-        //     locale: "el-GR",
-        //     countryCode: "GR",
-        //     countryName: "Greece",
-        //     flag: "/images/el-GR.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Hungarian",
-        //     locale: "hu-HU",
-        //     countryCode: "HU",
-        //     countryName: "Hungary",
-        //     flag: "/images/hu-HU.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Japanese",
-        //     locale: "ja-JP",
-        //     countryCode: "JP",
-        //     countryName: "Japan",
-        //     flag: "/images/ja-JP.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Korean",
-        //     locale: "ko-KR",
-        //     countryCode: "KR",
-        //     countryName: "South Korea",
-        //     flag: "/images/ko-KR.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Chinese (Mandarin)",
-        //     locale: "zh-CN",
-        //     countryCode: "CN",
-        //     countryName: "China",
-        //     flag: "/images/zh-CN.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Vietnamese",
-        //     locale: "vi-VN",
-        //     countryCode: "VN",
-        //     countryName: "Vietnam",
-        //     flag: "/images/vi-VN.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Indonesian",
-        //     locale: "id-ID",
-        //     countryCode: "ID",
-        //     countryName: "Indonesia",
-        //     flag: "/images/id-ID.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
-        // {
-        //     name: "Turkish",
-        //     locale: "tr-TR",
-        //     countryCode: "TR",
-        //     countryName: "Turkey",
-        //     flag: "/images/tr-TR.png",
-        //     percentage: "—",
-        //     stats: "—",
-        // },
+        }
     ];
     useEffect(() => {
         const fetchCountryCode = async () => {
@@ -315,7 +62,7 @@ const AssignNumber = () => {
                 const data = res?.data;
                 if (data && data.country_code) {
                     //   setIpData(data);
-                    console.log(data, "HEL")
+                   
                     //   setCountryCode(data.country_code.toLowerCase());
                 }
             } catch (err) {
@@ -324,7 +71,7 @@ const AssignNumber = () => {
         };
         fetchCountryCode();
     }, []);
-    const selectedLang = languages.find((l) => l.countryCode === countryCode);
+    const selectedLang = languages.find((l) => l.countryCode === countryCode) || "";
     const initAutocomplete = (el, setValue, types) => {
         if (!window.google?.maps?.places) return;
         const ac = new window.google.maps.places.Autocomplete(el, {
@@ -371,10 +118,10 @@ const AssignNumber = () => {
             if (requestVersion.current !== currentVersion) return;
             if (res?.success && res?.data?.length > 0) {
                 setAvailableNumbers(res.data);
-                console.log(" Got numbers using city+state+country");
+                
             } else {
                 // Fallback: Country + State (without city)
-                console.log(" No data with city. Trying state only...");
+              
                 const fallbackRes = await fetchAvailablePhoneNumberByCountry(countryCode, "", stateCode);
 
                 if (fallbackRes?.success && fallbackRes?.data?.length > 0) {
@@ -385,13 +132,20 @@ const AssignNumber = () => {
                     setAvailableNumbers(fallbackRes.data);
                     console.log(" Got numbers using state+country only");
                 } else {
-
                     if (!popupShownRef.current) {
-                        setShowPopup(true);
-                        setPopupType("failed");
-                        setPopupMessage(
-                            "No numbers found for the selected state. Please select another state or try different location."
-                        );
+                        if (countryCode === "IN") {
+                            setShowPopup(true);
+                            setPopupType("failed");
+                            setPopupMessage(
+                                "No numbers found for the selected country. Please select another country or try different location."
+                            );
+                        } else {
+                            setShowPopup(true);
+                            setPopupType("failed");
+                            setPopupMessage(
+                                "No numbers found for the selected state. Please select another state or try different location."
+                            );
+                        }
                         popupShownRef.current = true;
                     }
                     setAvailableNumbers([]);
@@ -450,7 +204,6 @@ const AssignNumber = () => {
         try {
             setLoading(true)
             const response = await createNumberOrder(selectedNumber, agent_id)
-            console.log(response)
             await updateAgent(agent_id, { voip_numbers: [selectedNumber] });
             setShowPopup(true)
             setPopupType("success")
@@ -494,9 +247,9 @@ const AssignNumber = () => {
                 <HeaderBar title="Assign Number" />
                 <div className={styles.dropdownWrapper}>
                     <div className={styles.dropdown} onClick={() => setOpen(!open)}>
-                        <img src={`https://flagcdn.com/w80/${selectedLang.locale
+                        <img src={`https://flagcdn.com/w80/${selectedLang?.locale
                             ?.split("-")[1]
-                            ?.toLowerCase()}.png`} alt={selectedLang.label} className={styles.flagIcon} />
+                            ?.toLowerCase()}.png`} alt={selectedLang?.label} className={styles.flagIcon} />
                         <span className={styles.arrow}>
                             <img src="/svg/down-arrow.svg" alt="▼" />
                         </span>
