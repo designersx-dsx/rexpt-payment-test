@@ -371,7 +371,7 @@ const Step = () => {
         const agentNote = sessionStorage.getItem("agentNote");
         const rawPromptTemplate =
             getAgentPrompt({
-                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,  
                 roleTitle: sessionStorage.getItem("agentRole"),
                 agentName: "{{AGENT NAME}}",
                 agentGender: "{{AGENT GENDER}}",
@@ -407,7 +407,8 @@ const Step = () => {
                 agentNote,
                 timeZone,
                 languageAccToPlan,
-                plan: plan
+                plan: plan,
+                
             });
      
 
@@ -582,7 +583,6 @@ const Step = () => {
                     }
                 ],
                 starting_state: "information_collection",
-                // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
                 default_dynamic_variables: {
                     customer_name: "John Doe",
                     business_Phone: businessPhone,
@@ -847,7 +847,6 @@ const Step = () => {
             }
             setLoading(false)
         }
-        // }
     };
     const handleValidationError = ({ type, message }) => {
         setPopupType(type);
