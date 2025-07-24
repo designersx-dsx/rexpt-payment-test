@@ -268,8 +268,8 @@ const CallRecording = ({ agentId, businessId }) => {
     <div className={styles.callRecordingContainer}>
       <div className={styles.toggleWrapper}>
         <label className={styles.toggleLabel}>
-         <p className={styles.Ptag}> "Would you like your agent to announce the 'Call Recording
-          Declaration'?"</p>
+          <p className={styles.Ptag}> "Would you like your agent to announce the 'Call Recording
+            Declaration'?"</p>
           {loading ? (
             <CircularProgress size={20} style={{ marginLeft: 10 }} />
           ) : (
@@ -309,7 +309,7 @@ const CallRecording = ({ agentId, businessId }) => {
             declaration may impact compliance with applicable laws, regulations,
             or internal policies.
             <br>
-            </br> 
+            </br>
             By disabling this feature, you acknowledge
             that you are solely responsible for ensuring the other means of
             declaration including but not limited to written notice, written
@@ -320,31 +320,40 @@ const CallRecording = ({ agentId, businessId }) => {
             <Checkbox
               checked={disclaimerChecked}
               onChange={(e) => setDisclaimerChecked(e.target.checked)}
+              sx={{
+                '&.Mui-checked': {
+                  color: '#5F33E1',
+                }
+              }}
             />
             <Typography variant="body2">
               I have read and understood the implications of turning off call
               recording.
             </Typography>
           </div>
-          <div
+          <div className={styles.BtnDiv}
             style={{
-              marginTop: 20,
-              display: "flex",
-              justifyContent: "flex-end",
+
             }}
           >
             <Button
               variant="outlined"
               onClick={() => setOpenDisclaimer(false)}
-              style={{ marginRight: 10 }}
+              sx={{
+                borderColor: '#999',     
+                color: '#24252C',           
+              }}
             >
               Cancel
             </Button>
             <Button
               variant="contained"
-              color="primary"
               disabled={!disclaimerChecked}
-              onClick={handleConfirmDisclaimer}
+              onClick={() => console.log("Confirmed")}
+              sx={{
+                backgroundColor: disclaimerChecked ? '#5F33E1' : undefined,
+                color: disclaimerChecked ? '#fff' : undefined
+              }}
             >
               Confirm
             </Button>

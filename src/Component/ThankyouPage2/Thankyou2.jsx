@@ -20,9 +20,7 @@ function Thankyou2() {
 
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
-  console.log("subcriptionId", subcriptionId);
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
-  console.log("setSubscriptionDetails", setSubscriptionDetails);
 
   const [isSubscriptionDetailsLoading, setIsSubscriptionDetailsLoading] =
     useState(true); // Subscription details loading state
@@ -45,7 +43,6 @@ function Thankyou2() {
 
         // if (data.success && data.session) {
           setsubcriptionId(data.session?.subscription?.id);
-          console.log("data.session",data.session?.subscription?.id)
           setSessionData(data.session);
         // }
       } catch (err) {
@@ -70,7 +67,6 @@ function Thankyou2() {
         });
 
         const data = await res.json();
-        console.log("dataa", data);
 
         if (!data?.error) {
           setsetSubscriptionDetails(data);

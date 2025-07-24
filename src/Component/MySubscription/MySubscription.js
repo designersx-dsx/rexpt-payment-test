@@ -2,7 +2,6 @@ import React from 'react'
 import styles from '../MySubscription/MySubscription.module.css'
 
 const MySubscription = ({ agents }) => {
-    console.log('agentdsdsdsds', agents)
     if (!agents || agents.length === 0) {
         return (
             <div className={styles.cardWrapper}>
