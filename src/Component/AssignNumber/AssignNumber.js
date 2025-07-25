@@ -13,8 +13,7 @@ const AssignNumber = () => {
     const location = useLocation();
     const stateInputRef = useRef(null);
     const cityInputRef = useRef(null);
-    const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
-        useDashboardStore();
+    const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =useDashboardStore();
     const [stateNameFull, setStateNameFull] = useState('');
     const [open, setOpen] = useState(false);
     const [selectedLangCode, setSelectedLangCode] = useState('us');
@@ -62,7 +61,7 @@ const AssignNumber = () => {
                 const data = res?.data;
                 if (data && data.country_code) {
                     //   setIpData(data);
-                   
+
                     //   setCountryCode(data.country_code.toLowerCase());
                 }
             } catch (err) {
@@ -118,38 +117,31 @@ const AssignNumber = () => {
             if (requestVersion.current !== currentVersion) return;
             if (res?.success && res?.data?.length > 0) {
                 setAvailableNumbers(res.data);
-                
+
             } else {
                 // Fallback: Country + State (without city)
-              
                 const fallbackRes = await fetchAvailablePhoneNumberByCountry(countryCode, "", stateCode);
 
                 if (fallbackRes?.success && fallbackRes?.data?.length > 0) {
                     setTimeout(() => {
                         setCityName("")
-
                     }, 3000);
                     setAvailableNumbers(fallbackRes.data);
-                    console.log(" Got numbers using state+country only");
-                } else {
+                   
+                }
+
+                else {
                     if (!popupShownRef.current) {
-                        if (countryCode === "IN") {
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(
-                                "No numbers found for the selected country. Please select another country or try different location."
-                            );
-                        } else {
-                            setShowPopup(true);
-                            setPopupType("failed");
-                            setPopupMessage(
-                                "No numbers found for the selected state. Please select another state or try different location."
-                            );
-                        }
+                        setShowPopup(true);
+                        setPopupType("failed");
+                        setPopupMessage(
+                            "No numbers found for the selected location. Please try a different country or state."
+                        );
                         popupShownRef.current = true;
                     }
                     setAvailableNumbers([]);
                 }
+
             }
         } catch (err) {
             console.error(" Error while fetching:", err);
@@ -186,7 +178,7 @@ const AssignNumber = () => {
                     setAvailableNumbers(fallbackRes.data);
                 } else {
                     setAvailableNumbers([]);
-                    console.log(" No numbers found even with fallback.");
+                    // console.log(" No numbers found even with fallback.");
                 }
             }
         } catch (error) {
@@ -228,6 +220,14 @@ const AssignNumber = () => {
         }, 600); // Wait 600ms after the user stops typing
     }, [cityName, stateNameFull]);
     useEffect(() => {
+        const selectedLangCountryCodes = languages.map((lang) => lang.countryCode);
+        const isCountryValid = selectedLangCountryCodes.includes(countryCode);
+        if (!isCountryValid) {
+          setCountryCode("US");
+          setStateCode("");
+          setCityName("");
+          setStateNameFull("")
+        }
         popupShownRef.current = false;
     }, [stateCode])
     const fetchAgentDetailsById = async () => {
@@ -371,7 +371,7 @@ const AssignNumber = () => {
                         <div className={styles.infoRow}>
                             <img src="/svg/green-check.svg" alt="check" />
                             <span>
-                                <strong>Business:</strong>{location.state?.agent?.business?.businessName}
+                                <strong>Business:</strong>{location.state?.agent?.business?.businessName||location.state?.business?.businessName}
                             </span>
                         </div>
                         <div className={styles.disclaimerBox}>
