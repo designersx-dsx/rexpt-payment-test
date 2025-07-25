@@ -96,9 +96,7 @@ const Step = () => {
 
     const checkPaymentDone = localStorage.getItem("paymentDone")
     const subsID = localStorage.getItem("subcriptionIdUrl")
-    console.log("subsID", subsID)
     const [AgentId, setAgentId] = useState()
-    console.log("agentIDDD", AgentId)
 
     // Plans
     const [allPlans, setAllPlans] = useState(() => {
