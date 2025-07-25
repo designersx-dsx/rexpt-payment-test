@@ -19,7 +19,7 @@ import { useAgentCreator } from "../../hooks/useAgentCreator";
 import { useDashboardStore } from "../../Store/agentZustandStore";
 
 const CallRecording = ({ agentId, businessId }) => {
-  const [callRecording, setCallRecording] = useState(true);
+  const [callRecording, setCallRecording] = useState(sessionStorage.getItem('callRecording'));
   const [loading, setLoading] = useState(false);
   const [Id, setAgentId] = useState(null);
   const [openDisclaimer, setOpenDisclaimer] = useState(false);
@@ -221,7 +221,7 @@ const CallRecording = ({ agentId, businessId }) => {
       setLoading(true);
       const res = await axios.get(`${API_BASE_URL}/agent/getAgent/${id}`);
       setCallRecording(res.data.CallRecording);
-      sessionStorage.setItem("callRecording", res.data.CallRecording);
+      sessionStorage.setItem("callRecording", res.data.CallRecording==1?true:false);
     } catch (error) {
       console.error("Failed to fetch agent details", error);
     } finally {
@@ -240,7 +240,9 @@ const CallRecording = ({ agentId, businessId }) => {
   const updateRecordingStatus = async (newValue) => {
     try {
       setLoading(true);
-      await updateAgent(agentId, { CallRecording: newValue });
+      sessionStorage.setItem("naviateFrom","callRecording")
+
+      await updateAgent(agentId, { CallRecording: newValue==1?true:false });
       setCallRecording(newValue);
       sessionStorage.setItem("callRecording", newValue);
       handleCreateAgent();
