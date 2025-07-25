@@ -27,7 +27,7 @@ const BusinessListing = forwardRef(
       onFailed,
       setLoading,
       onStepChange,
-      loading
+      loading,
     },
     ref
   ) => {
@@ -47,14 +47,13 @@ const BusinessListing = forwardRef(
     const navigate = useNavigate();
     const EditingMode1 = localStorage.getItem("UpdationMode");
     const [selectedCountry, setSelectedCountry] = useState("us");
-    const [street_number, setStreet_number] = useState("")
-    const [city, setCity] = useState("")
-    const [state, setState] = useState("")
-    const [country, setCountry] = useState("")
-    const [postal_code, setPostal_code] = useState("")
-    const [country_code, setCountry_code] = useState("")
-    const [state_code, setState_code] = useState("")
-
+    const [street_number, setStreet_number] = useState("");
+    const [city, setCity] = useState("");
+    const [state, setState] = useState("");
+    const [country, setCountry] = useState("");
+    const [postal_code, setPostal_code] = useState("");
+    const [country_code, setCountry_code] = useState("");
+    const [state_code, setState_code] = useState("");
 
     const setHasFetched = true;
     const { handleCreateAgent } = useAgentCreator({
@@ -133,8 +132,8 @@ const BusinessListing = forwardRef(
         .replace(/_/g, " ");
 
     const handleSubmit = async (e) => {
-      if (e) e.preventDefault()
-      if (loading) return
+      if (e) e.preventDefault();
+      if (loading) return;
       try {
         setLoading(true);
         const phoneNumberObj = parsePhoneNumberFromString(
@@ -176,20 +175,6 @@ const BusinessListing = forwardRef(
 
           return;
         }
-        const updatedPlaceDetails = {
-          ...placeDetails,
-          businessName: businessName || placeDetails?.businessName,
-          phone: phoneNumber,
-          address: address,
-          email: email,
-          aboutBussiness: aboutBussiness,
-          // name: businessName || placeDetails?.businessName || "",
-        };
-        sessionStorage.setItem(
-          "placeDetailsExtract",
-          JSON.stringify(updatedPlaceDetails)
-        );
-
         const packageMap = {
           Free: 1,
           Starter: 2,
@@ -206,10 +191,16 @@ const BusinessListing = forwardRef(
           agentCode
         );
         //extractAddressFields
-        function extractAddressFields(addressComponents) {
-          const getComponent = (primaryType, fallbackType = null, useShort = false) => {
-            const comp = addressComponents.find((c) =>
-              c.types.includes(primaryType) || (fallbackType && c.types.includes(fallbackType))
+        const extractAddressFields = (addressComponents) => {
+          const getComponent = (
+            primaryType,
+            fallbackType = null,
+            useShort = false
+          ) => {
+            const comp = addressComponents.find(
+              (c) =>
+                c.types.includes(primaryType) ||
+                (fallbackType && c.types.includes(fallbackType))
             );
             return comp ? (useShort ? comp.short_name : comp.long_name) : "";
           };
@@ -217,23 +208,51 @@ const BusinessListing = forwardRef(
           return {
             city: getComponent("locality", "sublocality_level_1"),
             state: getComponent("administrative_area_level_1"),
-            state_code: getComponent("administrative_area_level_1", null, true), // Short name (e.g. TX)
+            state_code: getComponent("administrative_area_level_1", null, true),
             country: getComponent("country"),
-            country_code: getComponent("country", null, true), // Short name (e.g. US)
+            country_code: getComponent("country", null, true),
             postal_code: getComponent("postal_code"),
             street_number: getComponent("street_number"),
-            route: getComponent("route")
+            route: getComponent("route"),
           };
-        }
-        const addressFields = extractAddressFields(placeDetails?.address_components || []);
-        console.log(addressFields, "addressFields")
-        setCity(addressFields.city)
-        setState(addressFields.state)
-        setCountry(addressFields.country)
-        setPostal_code(addressFields.postal_code)
-        setStreet_number(addressFields.street_number)
-        setCountry_code(addressFields.country_code)
-        setState_code(addressFields.state_code)
+        };
+
+        // After extracting address fields, set them in the state and session storage
+        const addressFields = extractAddressFields(
+          placeDetails?.address_components || []
+        );
+        console.log(addressFields, "addressFields");
+
+        // Update the state
+        setCity(addressFields.city);
+        setState(addressFields.state); // Ensure the state is updated here
+        setCountry(addressFields.country);
+        setPostal_code(addressFields.postal_code);
+        setStreet_number(addressFields.street_number);
+        setCountry_code(addressFields.country_code);
+        setState_code(addressFields.state_code);
+
+        const updatedPlaceDetails = {
+          ...placeDetails,
+          businessName: businessName || placeDetails?.businessName,
+          phone: phoneNumber,
+          address: address,
+          email: email,
+          aboutBussiness: aboutBussiness,
+          city: addressFields.city,
+          state: addressFields.state, 
+          country: addressFields.country,
+          postal_code: addressFields.postal_code,
+          street_number: addressFields.street_number,
+          country_code: addressFields.country_code,
+          state_code: addressFields.state_code, 
+        };
+
+        sessionStorage.setItem(
+          "placeDetailsExtract",
+          JSON.stringify(updatedPlaceDetails)
+        );
+
         //Get Details From GMB
         const businessData = {
           businessName: businessName || placeDetails?.businessName || "",
@@ -257,7 +276,7 @@ const BusinessListing = forwardRef(
           postal_code: addressFields?.postal_code,
           street_number: addressFields?.street_number,
           country_code: addressFields?.country_code,
-          state_code: addressFields?.state_code
+          state_code: addressFields?.state_code,
           // setCountry_code()
           // setCountry_code()
         };
@@ -267,7 +286,8 @@ const BusinessListing = forwardRef(
         const readableDetails = Object?.entries(placeDetailsForKBT)
           .map(
             ([key, value]) =>
-              `${formatLabel(key)}: ${Array.isArray(value) ? value.join(", ") : value || "N/A"
+              `${formatLabel(key)}: ${
+                Array.isArray(value) ? value.join(", ") : value || "N/A"
               }`
           )
           .join("\n");
@@ -299,7 +319,10 @@ const BusinessListing = forwardRef(
         }
         formData.append("knowledge_base_name", knowledgeBaseName);
         formData.append("enable_auto_refresh", "true");
-        formData.append("knowledge_base_texts", JSON.stringify(knowledgeBaseText));
+        formData.append(
+          "knowledge_base_texts",
+          JSON.stringify(knowledgeBaseText)
+        );
         formData2.append("knowledge_base_texts", JSON.stringify(businessData));
         //Crate Knowledge Base
         formData2.append("googleUrl", aboutBusinessForm.googleListing);
@@ -312,16 +335,31 @@ const BusinessListing = forwardRef(
         formData2.append("businessEmail", email);
         formData2.append("city", businessData?.city || city);
         formData2.append("state", businessData?.state || state);
-        formData2.append("state_code", businessData?.state_code||state_code);
-        formData2.append("country_code", businessData?.country_code||country_code);
+        formData2.append("state_code", businessData?.state_code || state_code);
+        formData2.append(
+          "country_code",
+          businessData?.country_code || country_code
+        );
         formData2.append("country", businessData?.country || country);
-        formData2.append("postal_code", businessData?.postal_code || postal_code);
-        formData2.append("street_number", businessData?.street_number || street_number);
-        formData2.append("businessName", placeDetails?.businessName || businessName);
+        formData2.append(
+          "postal_code",
+          businessData?.postal_code || postal_code
+        );
+        formData2.append(
+          "street_number",
+          businessData?.street_number || street_number
+        );
+        formData2.append(
+          "businessName",
+          placeDetails?.businessName || businessName
+        );
         formData2.append("phoneNumber", phoneNumber);
         formData2.append("isGoogleListing", aboutBusinessForm.noGoogleListing);
         formData2.append("isWebsiteUrl", aboutBusinessForm.noBusinessWebsite);
-        formData3.append("knowledge_base_texts", JSON.stringify(knowledgeBaseText));
+        formData3.append(
+          "knowledge_base_texts",
+          JSON.stringify(knowledgeBaseText)
+        );
         let knowledge_Base_ID = knowledgeBaseId;
 
         if (
@@ -346,8 +384,6 @@ const BusinessListing = forwardRef(
             response?.data?.knowledge_base_id
           );
         } else {
-
-
           const response = await axios.post(
             "https://api.retellai.com/create-knowledge-base",
             formData,
@@ -464,15 +500,13 @@ const BusinessListing = forwardRef(
             type: "failed",
             message: "Please enter a valid phone number.",
           });
-        }
-        else if (!phoneNumberObj || !phoneNumberObj.isValid()) {
+        } else if (!phoneNumberObj || !phoneNumberObj.isValid()) {
           hasError = true;
           onValidationError?.({
             type: "failed",
             message: "Please enter a valid phone number.",
           });
-        }
-        else if (
+        } else if (
           containsSpecialChars(phoneNumber) ||
           containsEmoji(phoneNumber)
         ) {
@@ -515,7 +549,12 @@ const BusinessListing = forwardRef(
         //google-address-autocomplete
         {
           types: ["geocode"],
-          fields: ["address_components", "formatted_address", "geometry", "url"],
+          fields: [
+            "address_components",
+            "formatted_address",
+            "geometry",
+            "url",
+          ],
         }
         // {
         //   types: ["establishment"],
@@ -524,7 +563,7 @@ const BusinessListing = forwardRef(
       );
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
-        console.log(place, "place")
+        console.log(place, "place");
         if (place.formatted_address) {
           const addressComponents = place.address_components || [];
           setAddress(place.formatted_address);
@@ -539,7 +578,10 @@ const BusinessListing = forwardRef(
             address: place.formatted_address,
             address_components: addressComponents,
           };
-          sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedDetails));
+          sessionStorage.setItem(
+            "placeDetailsExtract",
+            JSON.stringify(updatedDetails)
+          );
         }
       });
     };
@@ -555,7 +597,7 @@ const BusinessListing = forwardRef(
         country: getComponent("country"),
         postal_code: getComponent("postal_code"),
       };
-      console.log(addressDetails)
+      console.log(addressDetails);
     };
     //initAddressAutocomplete
     useEffect(() => {
@@ -643,7 +685,6 @@ const BusinessListing = forwardRef(
                   placeholder="Business Address"
                   required
                   maxLength={300}
-
                 />
               </div>
 

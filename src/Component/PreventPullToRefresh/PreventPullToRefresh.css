@@ -1,26 +1,8 @@
-/* .custom-refresh-wrapper {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  height: 100vh;
-  position: relative;
-}
-
-.refresh-indicator {
-  text-align: center;
-  color: #333;
-  font-weight: bold;
-  font-size: 16px;
- 
-}
-
-.content {
-  min-height: 100%;
-} */
 .custom-refresh-wrapper {
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
   height: 100dvh;
-  position: relative;
 }
 
 .refresh-indicator {
@@ -28,7 +10,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 9999;
+  z-index: 1;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -55,7 +37,7 @@
   transition: transform 0.2s ease;
   width: 48px;
   height: 48px;
-  background-color: white; /* or any background color */
+  background-color: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -73,7 +55,7 @@
 }
 
 .content {
-  padding-top: 0px; /* No padding to push content down */
+  padding-top: 0px;
   min-height: 100%;
 }
 
@@ -81,6 +63,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

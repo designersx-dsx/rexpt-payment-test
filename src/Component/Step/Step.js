@@ -362,14 +362,34 @@ const Step = () => {
             setPopupMessage("Error completing subscription.");
         }
     };
-
+    const currentState = getBusinessNameFromGoogleListing?.state || "";
+    const statesRequiringCallRecording = [
+        "Washington",
+        "Vermont",
+        "Pennsylvania",
+        "Oregon",
+        "New Hampshire",
+        "Nevada",
+        "Montana",
+        "Michigan",
+        "Massachusetts",
+        "Maryland",
+        "Illinois",
+        "Florida",
+        "Delaware",
+        "Connecticut",
+        "California",
+    ];
+    const callRecording = statesRequiringCallRecording.includes(currentState)
+        ? true
+        : false;
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
         const agentNote = sessionStorage.getItem("agentNote");
         const rawPromptTemplate =
             getAgentPrompt({
-                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
+                industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
                 roleTitle: sessionStorage.getItem("agentRole"),
                 agentName: "{{AGENT NAME}}",
                 agentGender: "{{AGENT GENDER}}",
@@ -405,7 +425,9 @@ const Step = () => {
                 agentNote,
                 timeZone,
                 languageAccToPlan,
-                plan: plan
+                plan: plan,
+                CallRecording:callRecording
+
             });
 
 
@@ -580,7 +602,6 @@ const Step = () => {
                     }
                 ],
                 starting_state: "information_collection",
-                // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may i help you`,
                 default_dynamic_variables: {
                     customer_name: "John Doe",
                     business_Phone: businessPhone,
@@ -783,7 +804,8 @@ const Step = () => {
 
                             },
                         ],
-                        promptVariablesList: JSON.stringify(promptVariablesList)
+                        promptVariablesList: JSON.stringify(promptVariablesList),
+                        CallRecording:callRecording
 
                     }
                     try {
@@ -850,7 +872,6 @@ const Step = () => {
             }
             setLoading(false)
         }
-        // }
     };
     const handleValidationError = ({ type, message }) => {
         setPopupType(type);

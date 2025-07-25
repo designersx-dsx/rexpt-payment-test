@@ -220,8 +220,8 @@ const CallRecording = ({ agentId, businessId }) => {
     try {
       setLoading(true);
       const res = await axios.get(`${API_BASE_URL}/agent/getAgent/${id}`);
-      setCallRecording(res.data.callRecording);
-      sessionStorage.setItem("callRecording", res.data.callRecording);
+      setCallRecording(res.data.CallRecording);
+      sessionStorage.setItem("callRecording", res.data.CallRecording);
     } catch (error) {
       console.error("Failed to fetch agent details", error);
     } finally {
@@ -240,7 +240,7 @@ const CallRecording = ({ agentId, businessId }) => {
   const updateRecordingStatus = async (newValue) => {
     try {
       setLoading(true);
-      await updateAgent(agentId, { callRecording: newValue });
+      await updateAgent(agentId, { CallRecording: newValue });
       setCallRecording(newValue);
       sessionStorage.setItem("callRecording", newValue);
       handleCreateAgent();
@@ -268,22 +268,23 @@ const CallRecording = ({ agentId, businessId }) => {
     <div className={styles.callRecordingContainer}>
       <div className={styles.toggleWrapper}>
         <label className={styles.toggleLabel}>
-          "Would you like your agent to announce the 'Call Recording
-          Declaration'?"
+          <p className={styles.Ptag}>
+            {" "}
+            "Would you like your agent to announce the 'Call Recording
+            Declaration'?"
+          </p>
           {loading ? (
             <CircularProgress size={20} style={{ marginLeft: 10 }} />
           ) : (
-            <>
-              <label className={styles.switch}></label>
-              <Switch
+            <label className={styles.switch}>
+              <input
                 type="checkbox"
-                checked={callRecording} 
+                checked={callRecording}
                 onChange={handleToggle}
-                color="primary"
-                style={{ marginLeft: 10 }}
+                disabled={loading}
               />
               <span className={styles.slider}></span>
-            </>
+            </label>
           )}
         </label>
       </div>
@@ -295,16 +296,15 @@ const CallRecording = ({ agentId, businessId }) => {
             Disclaimer
           </Typography>
           <Typography variant="body1" gutterBottom>
-            Turning off call recording may impact compliance with applicable
-            laws, regulations, or internal policies. By disabling this feature,
-            you acknowledge that you are solely responsible for ensuring proper
-            use and transparency.
-            <br />
-            <br />
-            <strong>Note:</strong> In the event of any misuse, abuse, or illegal
-            activity, you understand and agree that you are solely liable. The
-            service provider is not responsible for any consequences resulting
-            from such actions.
+            As per your state's law, A declaration to the caller about call
+            recording is required for caller's consent. Turning off, This
+            declaration may impact compliance with applicable laws, regulations,
+            or internal policies.
+            <br></br>
+            By disabling this feature, you acknowledge that you are solely
+            responsible for ensuring the other means of declaration including
+            but not limited to written notice, written consent or announcement
+            to your callers.
           </Typography>
 
           <div style={{ display: "flex", alignItems: "center", marginTop: 10 }}>
