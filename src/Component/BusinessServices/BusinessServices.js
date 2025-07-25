@@ -207,7 +207,7 @@ const BusinessServices = forwardRef(
         ],
       },
       {
-        type: "Cleaning/Janitorial Service",
+        type: "Cleaning and Janitorial Services",
         subtype: "Building Construction & Repair",
         icon: "images/other.png",
         services: [
@@ -280,19 +280,6 @@ const BusinessServices = forwardRef(
           "Payroll Services",
           "Financial Auditing",
           "Business Financial Reports",
-          "Other",
-        ],
-      },
-      {
-        type: "Car Repair & Garage",
-        subtype: "Vehicle Maintenance & Repair",
-        icon: "images/other.png",
-        services: [
-          "Oil & Filter Change",
-          "Brake Repairs",
-          "Engine Diagnostics",
-          "Tire Replacement",
-          "Battery Service",
           "Other",
         ],
       },
@@ -533,7 +520,78 @@ const BusinessServices = forwardRef(
           "Custom Deli Platters",
           "Other"
         ]
+      },
+      {
+        type: "Dry Cleaners",
+        subtype: "Garment Cleaning & Care",
+        icon: "svg/Dry Cleaner.svg",
+        services: [
+          "Regular Garment Dry Cleaning",
+          "Suit & Blazer Cleaning",
+          "Wedding Dress Cleaning",
+          "Delicate Fabric Care (Silk, Wool, etc.)",
+          "Stain Removal Services",
+          "Curtains & Drapes Cleaning",
+          "Carpet & Rug Cleaning",
+          "Blankets & Quilts Cleaning",
+          "Steam Ironing & Pressing",
+          "Leather & Suede Cleaning",
+          "Pickup & Delivery Service",
+          "Express / Same-Day Cleaning",
+          "Eco-Friendly Cleaning",
+          "Other"
+        ]
+      },
+      {
+        type: "Car Repair & Garage",
+        subtype: "Quality Repairs, Every Time",
+        icon: "svg/Car Repair & Garage.svg",
+        services: [
+          "General Car Servicing",
+          "Engine Diagnostics & Repair",
+          "Brake Inspection & Repair",
+          "Oil Change & Filter Replacement",
+          "Battery Check & Replacement",
+          "AC Repair & Gas Refill",
+          "Suspension & Steering Repair",
+          "Wheel Alignment & Balancing",
+          "Tire Rotation & Replacement",
+          "Clutch & Transmission Services",
+          "Car Washing & Detailing",
+          "Bodywork & Painting",
+          "Accidental Repair Services",
+          "Windshield & Glass Repair",
+          "Pickup & Drop-off Service",
+          "24/7 Emergency Roadside Assistance",
+          "Pre-Purchase Car Inspection",
+          "Insurance Claim Assistance",
+          "Other"
+        ]
+      },
+      {
+        type: "Boat Repair",
+        subtype: "Marine Care & Repair Experts",
+        icon: "svg/Boat Repair & Maintenance.svg",
+        services: [
+          "Engine Diagnostics & Repairs",
+          "Hull Cleaning & Polishing",
+          "Fiberglass & Gelcoat Repair",
+          "Electrical System Inspection",
+          "Boat Painting & Detailing",
+          "Propeller & Shaft Repair",
+          "Bilge Pump Service",
+          "Navigation System Maintenance",
+          "Fuel System Inspection",
+          "Winterizing & De-winterizing",
+          "Trailer Repair & Maintenance",
+          "Custom Modifications",
+          "On-Site Repair Services",
+          "Other"
+        ]
       }
+,      
+      
+      
 
     ];
     const [searchTerm, setSearchTerm] = useState("");
