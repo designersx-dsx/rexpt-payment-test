@@ -109,7 +109,7 @@ const EditAgentNew = () => {
       );
       localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
       localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
-     sessionStorage.setItem("callRecording",true)
+     sessionStorage.setItem("callRecording",agent.CallRecording==1?true:false)
       //need to clear above
 
       sessionStorage.setItem(

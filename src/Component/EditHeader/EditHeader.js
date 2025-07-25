@@ -13,7 +13,11 @@ const EditHeader = ({ title, agentName, }) => {
       } else {
         navigate('/agent-detail');
       }
-    } else {
+    } else if(location.pathname =='/raise-tickets')
+      {
+        navigate('/dashboard');
+      }
+      else{
       navigate(-1);
     }
   };

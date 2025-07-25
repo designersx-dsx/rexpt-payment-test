@@ -681,9 +681,9 @@ const AgentDashboard = () => {
     if (!agent.subscriptionId) {
       openAssignNumberModal();
     } else {
+ 
       // setSelectedAgentForAssign(agent);
       // setIsAssignModalOpen(true);
-      const agent = sessionStorage.getItem("multiAgentCache");
       navigate("/assign-number", {
         state: { agent: agent, business: business },
       });
