@@ -42,8 +42,8 @@ function Thankyou2() {
         const data = await res.json();
 
         // if (data.success && data.session) {
-          setsubcriptionId(data.session?.subscription?.id);
-          setSessionData(data.session);
+        setsubcriptionId(data.session?.subscription?.id);
+        setSessionData(data.session);
         // }
       } catch (err) {
         console.error("Failed to fetch session info:", err);
@@ -227,77 +227,76 @@ function Thankyou2() {
   }
 
   return (
-
     <>
-
-    {subcriptionId ?  <div className={styles.container}>
-      <div className={styles.Logo}>
-        <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
-      </div>
-
-      <div className={styles.ThankyouMsg}>
-        <div className={styles.title}>Thanks!</div>
-        <div className={styles.subtitle}>for your Purchase</div>
-        <p className={styles.description}>
-          Your payment was successful. We’ve sent you a confirmation email with
-          all the details you need.
-        </p>
-      </div>
-
-      {loading ? (
-        <Loader2 />
-      ) : (
-        <div className={styles.infoBox}>
-          <p>Below is some Quick Info for your Reference:</p>
-
-          <div className={styles.row}>
-            <span>Name:</span>
-            <div className={styles.Right50}>{customer?.name || "N/A"}</div>
+      {subcriptionId ? (
+        <div className={styles.container}>
+          <div className={styles.Logo}>
+            <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
           </div>
 
-          <div className={styles.row}>
-            <span>Email:</span>
-            <div className={styles.Right50}>{customer?.email || "N/A"}</div>
+          <div className={styles.ThankyouMsg}>
+            <div className={styles.title}>Thanks!</div>
+            <div className={styles.subtitle}>for your Purchase</div>
+            <p className={styles.description}>
+              Your payment was successful. We’ve sent you a confirmation email
+              with all the details you need.
+            </p>
           </div>
 
-          <div className={styles.row}>
-            <span>Price & Frequency:</span>
-            <div className={styles.Right50}>
-              {formatCurrency(
-                setSubscriptionDetails?.metadata?.original_plan_amount,
-                setSubscriptionDetails?.currency
-              )}{" "}
-              / {plan?.interval || "N/A"}
-            </div>
-          </div>
+          {loading ? (
+            <Loader2 />
+          ) : (
+            <div className={styles.infoBox}>
+              <p>Below is some Quick Info for your Reference:</p>
 
-          <div className={styles.row}>
-            <span>Billed Today:</span>
-            <div className={styles.Right50}>
-              {setSubscriptionDetails ? (
-                <>
-                  {/* Format the currency for the price */}
+              <div className={styles.row}>
+                <span>Name:</span>
+                <div className={styles.Right50}>{customer?.name || "N/A"}</div>
+              </div>
+
+              <div className={styles.row}>
+                <span>Email:</span>
+                <div className={styles.Right50}>{customer?.email || "N/A"}</div>
+              </div>
+
+              <div className={styles.row}>
+                <span>Price & Frequency:</span>
+                <div className={styles.Right50}>
                   {formatCurrency(
-                    setSubscriptionDetails?.planAmount, // This should be the amount billed today
-                    setSubscriptionDetails?.currency // Use the correct currency from the subscription
+                    setSubscriptionDetails?.metadata?.original_plan_amount,
+                    setSubscriptionDetails?.currency
                   )}{" "}
-                  on {/* Format the date for the current period start */}
-                  {new Date(
-                    setSubscriptionDetails?.currentPeriodStart
-                  ).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </>
-              ) : (
-                // Fallback values when subscription details are not available
-                "$5,688.60 on July 12, 2025"
-              )}
-            </div>
-          </div>
+                  / {plan?.interval || "N/A"}
+                </div>
+              </div>
 
-          {/* <div className={styles.row}>
+              <div className={styles.row}>
+                <span>Billed Today:</span>
+                <div className={styles.Right50}>
+                  {setSubscriptionDetails ? (
+                    <>
+                      {/* Format the currency for the price */}
+                      {formatCurrency(
+                        setSubscriptionDetails?.planAmount, // This should be the amount billed today
+                        setSubscriptionDetails?.currency // Use the correct currency from the subscription
+                      )}{" "}
+                      on {/* Format the date for the current period start */}
+                      {new Date(
+                        setSubscriptionDetails?.currentPeriodStart
+                      ).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </>
+                  ) : (
+                    // Fallback values when subscription details are not available
+                    "$5,688.60 on July 12, 2025"
+                  )}
+                </div>
+              </div>
+
+              {/* <div className={styles.row}>
             <span>Status:</span>
             <div className={styles.Right50}>
               {subscription?.status || "N/A"}
@@ -311,47 +310,48 @@ function Thankyou2() {
             </div>
           </div> */}
 
-          <div className={styles.row}>
-            <span>Next Billing:</span>
-            <div className={styles.Right50}>
-              {formatISODate(setSubscriptionDetails?.nextRenewalDate)}
-            </div>
-          </div>
+              <div className={styles.row}>
+                <span>Next Billing:</span>
+                <div className={styles.Right50}>
+                  {formatISODate(setSubscriptionDetails?.nextRenewalDate)}
+                </div>
+              </div>
 
-          {setSubscriptionDetails?.invoiceUrl && (
-            <div className={styles.row}>
-              <span>Invoice:</span>
-              <div className={styles.Right50}>
-                <a
-                  href={setSubscriptionDetails?.invoiceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.downloadButton}
-                  style={{ color: "purple", textDecoration: "none" }}
+              {setSubscriptionDetails?.invoiceUrl && (
+                <div className={styles.row}>
+                  <span>Invoice:</span>
+                  <div className={styles.Right50}>
+                    <a
+                      href={setSubscriptionDetails?.invoiceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.downloadButton}
+                      style={{ color: "purple", textDecoration: "none" }}
+                    >
+                      Download
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.ButtonTakeME}>
+                <button
+                  onClick={handleClick}
+                  className={styles.dashboardBtn}
+                  disabled={isButtonDisabled} // Disable button when loading
                 >
-                  Download
-                </a>
+                  {isLoadingRequest
+                    ? "Redirecting..."
+                    : "Take me to Agent Creation"}
+                </button>
               </div>
             </div>
           )}
-
-          <div className={styles.ButtonTakeME}>
-            <button
-              onClick={handleClick}
-              className={styles.dashboardBtn}
-              disabled={isButtonDisabled} // Disable button when loading
-            >
-              {isLoadingRequest
-                ? "Redirecting..."
-                : "Take me to Agent Creation"}
-            </button>
-          </div>
         </div>
+      ) : (
+        <Loader2 />
       )}
-    </div>: <Loader2/>}
-   
     </>
-    
   );
 }
 
