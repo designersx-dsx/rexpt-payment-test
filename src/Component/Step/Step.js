@@ -96,10 +96,7 @@ const Step = () => {
 
     const checkPaymentDone = localStorage.getItem("paymentDone")
     const subsID = localStorage.getItem("subcriptionIdUrl")
-    console.log("subsID", subsID)
     const [AgentId, setAgentId] = useState()
-    console.log("agentIDDD", AgentId)
-
     // Plans
     const [allPlans, setAllPlans] = useState(() => {
         const stored = localStorage.getItem("allPlans");
@@ -432,7 +429,6 @@ const Step = () => {
                 CallRecording:callRecording
 
             });
-      
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
             roleTitle: sessionStorage.getItem("agentRole"),
@@ -1019,10 +1015,9 @@ const Step = () => {
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.value
-        console.log("freeTrail", freeTrail)
         if (freeTrail === "chatke") {
             handleContinue()
-            console.log('dd')
+           
 
         }
         else if (checkPaymentDone === "true") {

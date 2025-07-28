@@ -208,12 +208,30 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
 
     },
     {
-      type: " Car & Bus Services",
+      type: "Car & Bus Services",
       subtype: "Quality Repairs, Every Time",
-      icon: "svg/Car Repair & Garage.svg",
-     
+      icon: "svg/Car & Bus Services.svg",
+
     },
-   
+    {
+      type: "Taxi, Cab & Limo Booking",
+      subtype: "Reliable Rides, Anytime, Anywhere",
+      icon: "svg/Taxi.svg",
+
+    },
+    {
+      type: "Movers and Packers",
+      subtype: "Safe & Hassle-Free Relocation Services",
+      icon: "svg/Movers and Packers.svg",
+
+    },
+    {
+      type: "Trucking Company",
+      subtype: "Efficient Freight & Logistics Solutions",
+      icon: "svg/Trucking Company.svg",
+
+    }
+,
 
     {
       type: "Other",

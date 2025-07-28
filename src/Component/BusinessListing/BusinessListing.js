@@ -221,7 +221,7 @@ const BusinessListing = forwardRef(
         const addressFields = extractAddressFields(
           placeDetails?.address_components || []
         );
-        console.log(addressFields, "addressFields");
+      
 
         // Update the state
         setCity(addressFields.city);
@@ -563,7 +563,7 @@ const BusinessListing = forwardRef(
       );
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
-        console.log(place, "place");
+        
         if (place.formatted_address) {
           const addressComponents = place.address_components || [];
           setAddress(place.formatted_address);
@@ -597,7 +597,7 @@ const BusinessListing = forwardRef(
         country: getComponent("country"),
         postal_code: getComponent("postal_code"),
       };
-      console.log(addressDetails);
+     
     };
     //initAddressAutocomplete
     useEffect(() => {
