@@ -17,8 +17,8 @@ function getFreeAndStarterPlanContent(languageAccToPlan, languageSelect) {
 }
 function ifcallrecordingstatustrue(languageSelect) {
   const message = `
--**After greeting and stating your name, the business name, immediately state in ${languageSelect}:
-(This call is being recorded for quality and training purposes.)**
+-**After greeting and stating your name and the business name, immediately state ONLY in ${languageSelect}:
+"This call is being recorded for quality and training purposes."**
 `;
   return message.trim();
 }
