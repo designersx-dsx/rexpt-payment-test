@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./Thankyou2.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader2 from "../Loader2/Loader2";
-import {
-  API_BASE_URL,
-  verifyEmailOTP,
-  verifyOrCreateUser,
-} from "../../Store/apiStore";
+import {API_BASE_URL,verifyEmailOTP,verifyOrCreateUser} from "../../Store/apiStore";
 import axios from "axios";
 import useUser from "../../Store/Context/UserContext";
 
@@ -17,11 +13,12 @@ function Thankyou2() {
   const [sessionData, setSessionData] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Button disable state
   const [isLoadingRequest, setIsLoadingRequest] = useState(false); // API request loading state
-
+const [emails , setEmail] = useState()
+ const [hasUserCreated, setHasUserCreated] = useState(false); 
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
-
+const [data , setData] = useState()
   const [isSubscriptionDetailsLoading, setIsSubscriptionDetailsLoading] =
     useState(true); // Subscription details loading state
 
@@ -42,8 +39,8 @@ function Thankyou2() {
         const data = await res.json();
 
         // if (data.success && data.session) {
-          setsubcriptionId(data.session?.subscription?.id);
-          setSessionData(data.session);
+        setsubcriptionId(data.session?.subscription?.id);
+        setSessionData(data.session);
         // }
       } catch (err) {
         console.error("Failed to fetch session info:", err);
@@ -131,6 +128,76 @@ function Thankyou2() {
   const plan = subscription?.items?.data?.[0]?.plan;
   const price = plan?.amount;
   const currency = plan?.currency;
+  const createUser = async () => {
+    try {
+      // Retrieve email and customerId from session data
+      const email = sessionData?.customer_details?.email;
+      setEmail(email); // Storing the email in state if necessary
+
+      const customerId = sessionData?.customer?.id;
+      const fullOtp = "notRequired"; // since you're skipping OTP
+
+      // Make the API call to verify or create the user
+      const response = await verifyOrCreateUser(email, fullOtp, customerId);
+      console.log("response", response);
+
+      const data = await response;
+      setData(data); // Store the data in state if necessary
+
+      // Check if the response status is 200 (success)
+      if (data?.res?.status === 200) {
+        const userId = data?.res?.data?.user?.id;
+
+        // Store necessary data in localStorage
+        localStorage.setItem("token", data.res?.data?.token);
+        localStorage.setItem("onboardComplete", false);
+        localStorage.setItem("paymentDone", true);
+        localStorage.setItem("subcriptionIdUrl", subcriptionId);
+
+        sessionStorage.clear(); // Clear sessionStorage once the user is created
+
+        // Attach the user to the subscription
+        const attachUserResponse = await fetch(
+          `${API_BASE_URL}/pay-as-you-go-userID-attach`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              subscriptionId: subcriptionId,
+              userId: userId, // Assuming customerId is the userId here
+            }),
+          }
+        );
+        const attachUserData = await attachUserResponse.json();
+
+        if (attachUserData.success) {
+          console.log(`userId successfully attached to Subscription ${subcriptionId}`);
+        } else {
+          console.error("Failed to attach userId to subscription:", attachUserData.message);
+          // alert("Failed to attach userId to subscription.");
+        }
+
+        // Mark the user as created to prevent future API calls
+        setHasUserCreated(true);
+      } else {
+        console.error("Verification failed:", data.data?.error);
+        // alert(data.error); // Show the error message if verification failed
+      }
+    } catch (err) {
+      // Catch and log any error that occurs during the process
+      console.error("Error during user creation:", err);
+      // alert("Something went wrong while creating the user. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    // Only call createUser if sessionData is available and user creation hasn't been done already
+    if (sessionData && !hasUserCreated) {
+      createUser();
+    }
+  }, [sessionData, hasUserCreated]);
   const handleClick = async () => {
     try {
       // Disable the button and show loading
@@ -145,49 +212,7 @@ function Thankyou2() {
         console.warn("Missing required info to verify.");
         return;
       }
-
-      const response = await verifyOrCreateUser(email, fullOtp, customerId);
-      console.log("response", response);
-
-      const data = await response;
-
-      if (data?.res?.status === 200) {
-        const userId = data?.res?.data?.user?.id;
-        localStorage.setItem("token", data.res?.data?.token);
-        localStorage.setItem("onboardComplete", false);
-        localStorage.setItem("paymentDone", true);
-        localStorage.setItem("subcriptionIdUrl", subcriptionId);
-
-        sessionStorage.clear();
-
-        const attachUserResponse = await fetch(
-          `${API_BASE_URL}/pay-as-you-go-userID-attach`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              subscriptionId: subcriptionId,
-              userId: userId, // Assuming the customerId is the userId for this purpose
-            }),
-          }
-        );
-        const attachUserData = await attachUserResponse.json();
-
-        if (attachUserData.success) {
-          console.log(
-            `userId successfully attached to Subscription ${subcriptionId}`
-          );
-        } else {
-          console.error(
-            "Failed to attach userId to subscription:",
-            attachUserData.message
-          );
-          alert("Failed to attach userId to subscription.");
-        }
-
-        if (data?.res1) {
+ if (data?.res1) {
           const verifyStatus = data?.res1.data.verifiedStatus;
           if (verifyStatus === true) {
             const userData = {
@@ -204,16 +229,12 @@ function Thankyou2() {
           }
           navigate(verifyStatus ? "/steps" : "/details", { replace: true });
         }
+      
 
-        // Navigate to Agent Creation page
-        // navigate("/details"); // or any valid path
-      } else {
-        console.error("Verification failed:", data.data?.error);
-        alert(data.error);
-      }
+     
     } catch (err) {
       console.error("Error during OTP verification:", err);
-      alert("Something went wrong while verifying.");
+      // alert("Something went wrong while verifying.");
     } finally {
       // Re-enable the button and hide loading
       setIsButtonDisabled(false);
@@ -227,77 +248,76 @@ function Thankyou2() {
   }
 
   return (
-
     <>
-
-    {subcriptionId ?  <div className={styles.container}>
-      <div className={styles.Logo}>
-        <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
-      </div>
-
-      <div className={styles.ThankyouMsg}>
-        <div className={styles.title}>Thanks!</div>
-        <div className={styles.subtitle}>for your Purchase</div>
-        <p className={styles.description}>
-          Your payment was successful. We’ve sent you a confirmation email with
-          all the details you need.
-        </p>
-      </div>
-
-      {loading ? (
-        <Loader2 />
-      ) : (
-        <div className={styles.infoBox}>
-          <p>Below is some Quick Info for your Reference:</p>
-
-          <div className={styles.row}>
-            <span>Name:</span>
-            <div className={styles.Right50}>{customer?.name || "N/A"}</div>
+      {subcriptionId ? (
+        <div className={styles.container}>
+          <div className={styles.Logo}>
+            <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
           </div>
 
-          <div className={styles.row}>
-            <span>Email:</span>
-            <div className={styles.Right50}>{customer?.email || "N/A"}</div>
+          <div className={styles.ThankyouMsg}>
+            <div className={styles.title}>Thanks!</div>
+            <div className={styles.subtitle}>for your Purchase</div>
+            <p className={styles.description}>
+              Your payment was successful. We’ve sent you a confirmation email
+              with all the details you need.
+            </p>
           </div>
 
-          <div className={styles.row}>
-            <span>Price & Frequency:</span>
-            <div className={styles.Right50}>
-              {formatCurrency(
-                setSubscriptionDetails?.metadata?.original_plan_amount,
-                setSubscriptionDetails?.currency
-              )}{" "}
-              / {plan?.interval || "N/A"}
-            </div>
-          </div>
+          {loading ? (
+            <Loader2 />
+          ) : (
+            <div className={styles.infoBox}>
+              <p>Below is some Quick Info for your Reference:</p>
 
-          <div className={styles.row}>
-            <span>Billed Today:</span>
-            <div className={styles.Right50}>
-              {setSubscriptionDetails ? (
-                <>
-                  {/* Format the currency for the price */}
+              <div className={styles.row}>
+                <span>Name:</span>
+                <div className={styles.Right50}>{customer?.name || "N/A"}</div>
+              </div>
+
+              <div className={styles.row}>
+                <span>Email:</span>
+                <div className={styles.Right50}>{customer?.email || "N/A"}</div>
+              </div>
+
+              <div className={styles.row}>
+                <span>Price & Frequency:</span>
+                <div className={styles.Right50}>
                   {formatCurrency(
-                    setSubscriptionDetails?.planAmount, // This should be the amount billed today
-                    setSubscriptionDetails?.currency // Use the correct currency from the subscription
+                    setSubscriptionDetails?.metadata?.original_plan_amount,
+                    setSubscriptionDetails?.currency
                   )}{" "}
-                  on {/* Format the date for the current period start */}
-                  {new Date(
-                    setSubscriptionDetails?.currentPeriodStart
-                  ).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </>
-              ) : (
-                // Fallback values when subscription details are not available
-                "$5,688.60 on July 12, 2025"
-              )}
-            </div>
-          </div>
+                  / {plan?.interval || "N/A"}
+                </div>
+              </div>
 
-          {/* <div className={styles.row}>
+              <div className={styles.row}>
+                <span>Billed Today:</span>
+                <div className={styles.Right50}>
+                  {setSubscriptionDetails ? (
+                    <>
+                      {/* Format the currency for the price */}
+                      {formatCurrency(
+                        setSubscriptionDetails?.planAmount, // This should be the amount billed today
+                        setSubscriptionDetails?.currency // Use the correct currency from the subscription
+                      )}{" "}
+                      on {/* Format the date for the current period start */}
+                      {new Date(
+                        setSubscriptionDetails?.currentPeriodStart
+                      ).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </>
+                  ) : (
+                    // Fallback values when subscription details are not available
+                    "$5,688.60 on July 12, 2025"
+                  )}
+                </div>
+              </div>
+
+              {/* <div className={styles.row}>
             <span>Status:</span>
             <div className={styles.Right50}>
               {subscription?.status || "N/A"}
@@ -311,47 +331,48 @@ function Thankyou2() {
             </div>
           </div> */}
 
-          <div className={styles.row}>
-            <span>Next Billing:</span>
-            <div className={styles.Right50}>
-              {formatISODate(setSubscriptionDetails?.nextRenewalDate)}
-            </div>
-          </div>
+              <div className={styles.row}>
+                <span>Next Billing:</span>
+                <div className={styles.Right50}>
+                  {formatISODate(setSubscriptionDetails?.nextRenewalDate)}
+                </div>
+              </div>
 
-          {setSubscriptionDetails?.invoiceUrl && (
-            <div className={styles.row}>
-              <span>Invoice:</span>
-              <div className={styles.Right50}>
-                <a
-                  href={setSubscriptionDetails?.invoiceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.downloadButton}
-                  style={{ color: "purple", textDecoration: "none" }}
+              {setSubscriptionDetails?.invoiceUrl && (
+                <div className={styles.row}>
+                  <span>Invoice:</span>
+                  <div className={styles.Right50}>
+                    <a
+                      href={setSubscriptionDetails?.invoiceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.downloadButton}
+                      style={{ color: "purple", textDecoration: "none" }}
+                    >
+                      Download
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.ButtonTakeME}>
+                <button
+                  onClick={handleClick}
+                  className={styles.dashboardBtn}
+                  disabled={isButtonDisabled} // Disable button when loading
                 >
-                  Download
-                </a>
+                  {isLoadingRequest
+                    ? "Redirecting..."
+                    : "Take me to Agent Creation"}
+                </button>
               </div>
             </div>
           )}
-
-          <div className={styles.ButtonTakeME}>
-            <button
-              onClick={handleClick}
-              className={styles.dashboardBtn}
-              disabled={isButtonDisabled} // Disable button when loading
-            >
-              {isLoadingRequest
-                ? "Redirecting..."
-                : "Take me to Agent Creation"}
-            </button>
-          </div>
         </div>
+      ) : (
+        <Loader2 />
       )}
-    </div>: <Loader2/>}
-   
     </>
-    
   );
 }
 

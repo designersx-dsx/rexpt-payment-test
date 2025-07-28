@@ -98,7 +98,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 } else {
                     throw new Error("Invalid IP data");
                 }
-                
+
             } catch (error) {
                 console.error("Error determining location-based currency:", error);
                 setUserCurrency("usd"); // fallback
@@ -496,12 +496,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                             <AnimatedButton
                                                 label={
                                                     userCurrency === "inr"
-                                                    ? "Coming Soon.." :
-                                                    priceForInterval
-                                                        ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
-                                                            formatPrice(priceForInterval.unit_amount / 100
-                                                            ))}/${priceForInterval.interval}`
-                                                        : "Unavailable"
+                                                        ? "Coming Soon.." :
+                                                        priceForInterval
+                                                            ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
+                                                                formatPrice(priceForInterval.unit_amount / 100
+                                                                ))}/${priceForInterval.interval}`
+                                                            : "Unavailable"
                                                 }
                                                 disabled={userCurrency === "inr"}
                                                 position={{ position: "relative" }}
