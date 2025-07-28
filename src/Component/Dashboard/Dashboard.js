@@ -1582,7 +1582,7 @@ checkActiveSubscription()
 
     {activeSubs ? <Popup
   type="failed"
-  message="It looks like you left the agent creation process midway. Please log in to your account again, and you will be able to create your agent based on the payment you have already made."
+  message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
   onClose={() => {
     localStorage.setItem("paymentDone", true); // Set paymentDone to true
     navigate('/steps'); // Navigate to /steps page
