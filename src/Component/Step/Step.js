@@ -94,11 +94,11 @@ const Step = () => {
         return saved ? JSON.parse(saved) : [];
     });
 
+    const [isAgentCreated, setIsAgentCreated] = useState(false); 
+
     const checkPaymentDone = localStorage.getItem("paymentDone")
     const subsID = localStorage.getItem("subcriptionIdUrl")
-    console.log("subsID", subsID)
     const [AgentId, setAgentId] = useState()
-    console.log("agentIDDD", AgentId)
 
     // Plans
     const [allPlans, setAllPlans] = useState(() => {
@@ -823,6 +823,8 @@ const Step = () => {
                             // }
                             setPopupMessage("Agent created successfully!");
 
+                            setIsAgentCreated(true)
+
                             setShowPopup(true);
                             let value1 = location?.state?.value
                             if (freeTrail) {
@@ -845,6 +847,7 @@ const Step = () => {
                         // console.log(error,error.status)
                         if (error?.status == 400) {
                             // console.log('errorinside',error)
+                            setIsAgentCreated(false)
                             setPopupType("failed");
                             setPopupMessage(error?.response?.data?.message);
                             setShowPopup(true);
@@ -855,6 +858,7 @@ const Step = () => {
                             setPopupMessage("Agent creation failed while saving data in Database. Please try again.");
                             setShowPopup(true);
                             setLoading(false)
+                            setIsAgentCreated(false)
                         }
 
 
@@ -1161,7 +1165,9 @@ const Step = () => {
         handleContinue();
     }
     return (
-        <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation}  /> :
+
+        <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated}/> :
+
             <div className={styles.container}>
                 <StepHeader title={step?.title}
                     subTitle={step?.subTitle}

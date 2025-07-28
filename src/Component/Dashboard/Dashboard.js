@@ -40,6 +40,7 @@ import AnimatedButton from "../AnimatedButton/AnimatedButton";
 
 import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
+import PopUp from "../Popup/Popup";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -62,6 +63,7 @@ function Dashboard() {
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
+  console.log("decodeTokenData",decodeTokenData)
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
   // Agents and UI states
@@ -176,6 +178,7 @@ function Dashboard() {
     })
     }
   };
+
 
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
@@ -1556,6 +1559,7 @@ function Dashboard() {
   }
   return (
     <div>
+
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div
