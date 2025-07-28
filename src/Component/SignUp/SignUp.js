@@ -131,7 +131,13 @@ const SignUp = () => {
           "onboardComplete",
           verifiedUser ? "true" : "false"
         );
-        navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });
+        if (!response?.data?.user?.verifyDetails) {
+          navigate("/details", { replace: true });
+        }
+        else {
+          navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });
+        }
+
       } else {
         setPopupType("failed");
         setShowPopup(true);

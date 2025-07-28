@@ -106,6 +106,7 @@ const Details = () => {
           referredByName: referredByName || "",
           referredOn: localDateTime,
           userType: 0,
+          verifyDetails:true
         }
       );
       if (response.status === 200) {
