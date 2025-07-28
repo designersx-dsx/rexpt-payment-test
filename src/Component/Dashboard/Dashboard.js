@@ -64,7 +64,6 @@ function Dashboard() {
   // UserId decoded from token
   const token = localStorage.getItem("token") || "";
   const decodeTokenData = decodeToken(token);
-  console.log("decodeTokenData",decodeTokenData)
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
   // Agents and UI states
@@ -550,7 +549,7 @@ checkActiveSubscription()
       }
       try {
         await updateAgentEventId(agent.agent_id, eventTypeId);
-        console.log(" Event ID saved to agent.");
+       
       } catch (err) {
         console.error("Failed to update agent with event ID:", err);
       }
@@ -739,7 +738,7 @@ checkActiveSubscription()
             fetchAndMergeCalApiKeys();
           }, 1000);
 
-          console.log(res);
+         
         }
       } catch (notifyError) {
         throw new Error(`Refund failed: ${notifyError.message}`);
