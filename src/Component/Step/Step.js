@@ -408,6 +408,7 @@ const Step = () => {
                 agentNote: "{{AGENTNOTE}}",
                 timeZone: "{{TIMEZONE}}"
             });
+     
         const filledPrompt =
             getAgentPrompt({
                 industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
@@ -431,8 +432,9 @@ const Step = () => {
                 CallRecording:callRecording
 
             });
+            console.log(filledPrompt,"filledPrompt")
 
-
+return
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
             roleTitle: sessionStorage.getItem("agentRole"),
