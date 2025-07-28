@@ -408,6 +408,7 @@ const Step = () => {
                 agentNote: "{{AGENTNOTE}}",
                 timeZone: "{{TIMEZONE}}"
             });
+     
         const filledPrompt =
             getAgentPrompt({
                 industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
@@ -431,8 +432,6 @@ const Step = () => {
                 CallRecording:callRecording
 
             });
-
-
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
             industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
             roleTitle: sessionStorage.getItem("agentRole"),
@@ -1023,10 +1022,9 @@ const Step = () => {
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.value
-        console.log("freeTrail", freeTrail)
         if (freeTrail === "chatke") {
             handleContinue()
-            console.log('dd')
+           
 
         }
         else if (checkPaymentDone === "true") {
