@@ -268,7 +268,6 @@ export const useAgentCreator = ({
         model_high_priority: true,
         tool_call_strict_mode: true,
         general_prompt: filledPrompt,
-        general_tools: [],
         states: [
           {
             name: "information_collection",
