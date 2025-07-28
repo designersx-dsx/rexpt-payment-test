@@ -207,6 +207,12 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       icon: "svg/Boat Repair & Maintenance.svg"
 
     },
+    {
+      type: "Car & Bus Services",
+      subtype: "Quality Repairs, Every Time",
+      icon: "svg/Car Repair & Garage.svg",
+     
+    },
    
 
     {

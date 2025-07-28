@@ -590,6 +590,29 @@ const BusinessServices = forwardRef(
         ]
       }
 ,      
+{
+  type: "Car & Bus Services",
+  subtype: "Quality Repairs, Every Time",
+  icon: "svg/Car Repair & Garage.svg",
+  "services": [
+    "Engine Diagnostics & Repairs",
+    "Brake Inspection & Replacement",
+    "Oil Change & Filter Replacement",
+    "Battery Check & Replacement",
+    "Transmission Service & Repair",
+    "Suspension & Steering Services",
+    "AC & Heating System Repair",
+    "Electrical System Troubleshooting",
+    "Tire Rotation & Wheel Alignment",
+    "Exhaust System Repair",
+    "Fuel Injection Cleaning",
+    "Coolant System Flush & Repair",
+    "Bus Fleet Maintenance",
+    "Roadside Assistance & Towing",
+    "Preventive Maintenance Plans",
+    "Other"
+  ]
+}
       
       
 
