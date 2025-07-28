@@ -172,18 +172,18 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       icon: "svg/Bakery.svg",
     },
     {
-      type: "Dry Cleaner",
+      type: "Dry Cleaners",
       subtype: "Garment Cleaning & Care",
       icon: "svg/Dry Cleaner.svg",
     },
     {
-      type: "Cleaning Janitorial Service",
+      type: "Cleaning and Janitorial Services",
       subtype: "Professional Cleaning Solutions",
       icon: "svg/Cleaning Janitorial Service.svg",
     },
     {
       type: "Tour Guides",
-      subtype: "Local Experience Experts",  
+      subtype: "Local Experience Experts",
       icon: "svg/Tour-Guides.svg",
     },
     {
@@ -196,7 +196,18 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       subtype: "Your Journey Begins Here",
       icon: "svg/Marketing Agency.svg",
     },
+    {
+      type: "Car Repair & Garage",
+      subtype: "Quality Repairs, Every Time",
+      icon: "svg/Car Repair & Garage.svg",
+    },
+    {
+      type: "Boat Repair",
+      subtype: "Marine Care & Repair Experts",
+      icon: "svg/Boat Repair & Maintenance.svg"
 
+    },
+   
 
     {
       type: "Other",

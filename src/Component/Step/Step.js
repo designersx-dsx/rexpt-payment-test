@@ -822,7 +822,9 @@ const Step = () => {
                             //     await callNextApiAndRedirect(agentId)
                             // }
                             setPopupMessage("Agent created successfully!");
+
                             setIsAgentCreated(true)
+
                             setShowPopup(true);
                             let value1 = location?.state?.value
                             if (freeTrail) {
@@ -1163,7 +1165,9 @@ const Step = () => {
         handleContinue();
     }
     return (
+
         <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated}/> :
+
             <div className={styles.container}>
                 <StepHeader title={step?.title}
                     subTitle={step?.subTitle}

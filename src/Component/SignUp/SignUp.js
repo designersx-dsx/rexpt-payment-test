@@ -134,9 +134,14 @@ const SignUp = () => {
           "onboardComplete",
           verifiedUser ? "true" : "false"
         );
+
+        if (!response?.data?.user?.verifyDetails) {
+          navigate("/details", { replace: true });
+        }
         if (response?.data?.paymentDone) {
           
           navigate('/steps')
+
         }
         else {
           navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });
