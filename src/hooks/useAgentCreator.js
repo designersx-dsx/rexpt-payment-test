@@ -383,7 +383,7 @@ export const useAgentCreator = ({
             tools: [
               {
                 type: "end_call",
-                name: "end_call",
+                name: "end_call1",
                 description: "End the call with the user.",
               },
             ],
