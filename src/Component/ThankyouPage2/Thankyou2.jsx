@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./Thankyou2.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader2 from "../Loader2/Loader2";
-import {
-  API_BASE_URL,
-  verifyEmailOTP,
-  verifyOrCreateUser,
-} from "../../Store/apiStore";
+import {API_BASE_URL,verifyEmailOTP,verifyOrCreateUser} from "../../Store/apiStore";
 import axios from "axios";
 import useUser from "../../Store/Context/UserContext";
 
@@ -17,11 +13,12 @@ function Thankyou2() {
   const [sessionData, setSessionData] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Button disable state
   const [isLoadingRequest, setIsLoadingRequest] = useState(false); // API request loading state
-
+const [emails , setEmail] = useState()
+ const [hasUserCreated, setHasUserCreated] = useState(false); 
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
-
+const [data , setData] = useState()
   const [isSubscriptionDetailsLoading, setIsSubscriptionDetailsLoading] =
     useState(true); // Subscription details loading state
 
@@ -131,6 +128,76 @@ function Thankyou2() {
   const plan = subscription?.items?.data?.[0]?.plan;
   const price = plan?.amount;
   const currency = plan?.currency;
+  const createUser = async () => {
+    try {
+      // Retrieve email and customerId from session data
+      const email = sessionData?.customer_details?.email;
+      setEmail(email); // Storing the email in state if necessary
+
+      const customerId = sessionData?.customer?.id;
+      const fullOtp = "notRequired"; // since you're skipping OTP
+
+      // Make the API call to verify or create the user
+      const response = await verifyOrCreateUser(email, fullOtp, customerId);
+      console.log("response", response);
+
+      const data = await response;
+      setData(data); // Store the data in state if necessary
+
+      // Check if the response status is 200 (success)
+      if (data?.res?.status === 200) {
+        const userId = data?.res?.data?.user?.id;
+
+        // Store necessary data in localStorage
+        localStorage.setItem("token", data.res?.data?.token);
+        localStorage.setItem("onboardComplete", false);
+        localStorage.setItem("paymentDone", true);
+        localStorage.setItem("subcriptionIdUrl", subcriptionId);
+
+        sessionStorage.clear(); // Clear sessionStorage once the user is created
+
+        // Attach the user to the subscription
+        const attachUserResponse = await fetch(
+          `${API_BASE_URL}/pay-as-you-go-userID-attach`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              subscriptionId: subcriptionId,
+              userId: userId, // Assuming customerId is the userId here
+            }),
+          }
+        );
+        const attachUserData = await attachUserResponse.json();
+
+        if (attachUserData.success) {
+          console.log(`userId successfully attached to Subscription ${subcriptionId}`);
+        } else {
+          console.error("Failed to attach userId to subscription:", attachUserData.message);
+          // alert("Failed to attach userId to subscription.");
+        }
+
+        // Mark the user as created to prevent future API calls
+        setHasUserCreated(true);
+      } else {
+        console.error("Verification failed:", data.data?.error);
+        // alert(data.error); // Show the error message if verification failed
+      }
+    } catch (err) {
+      // Catch and log any error that occurs during the process
+      console.error("Error during user creation:", err);
+      // alert("Something went wrong while creating the user. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    // Only call createUser if sessionData is available and user creation hasn't been done already
+    if (sessionData && !hasUserCreated) {
+      createUser();
+    }
+  }, [sessionData, hasUserCreated]);
   const handleClick = async () => {
     try {
       // Disable the button and show loading
@@ -145,49 +212,7 @@ function Thankyou2() {
         console.warn("Missing required info to verify.");
         return;
       }
-
-      const response = await verifyOrCreateUser(email, fullOtp, customerId);
-      console.log("response", response);
-
-      const data = await response;
-
-      if (data?.res?.status === 200) {
-        const userId = data?.res?.data?.user?.id;
-        localStorage.setItem("token", data.res?.data?.token);
-        localStorage.setItem("onboardComplete", false);
-        localStorage.setItem("paymentDone", true);
-        localStorage.setItem("subcriptionIdUrl", subcriptionId);
-
-        sessionStorage.clear();
-
-        const attachUserResponse = await fetch(
-          `${API_BASE_URL}/pay-as-you-go-userID-attach`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              subscriptionId: subcriptionId,
-              userId: userId, // Assuming the customerId is the userId for this purpose
-            }),
-          }
-        );
-        const attachUserData = await attachUserResponse.json();
-
-        if (attachUserData.success) {
-          console.log(
-            `userId successfully attached to Subscription ${subcriptionId}`
-          );
-        } else {
-          console.error(
-            "Failed to attach userId to subscription:",
-            attachUserData.message
-          );
-          alert("Failed to attach userId to subscription.");
-        }
-
-        if (data?.res1) {
+ if (data?.res1) {
           const verifyStatus = data?.res1.data.verifiedStatus;
           if (verifyStatus === true) {
             const userData = {
@@ -204,16 +229,12 @@ function Thankyou2() {
           }
           navigate(verifyStatus ? "/steps" : "/details", { replace: true });
         }
+      
 
-        // Navigate to Agent Creation page
-        // navigate("/details"); // or any valid path
-      } else {
-        console.error("Verification failed:", data.data?.error);
-        alert(data.error);
-      }
+     
     } catch (err) {
       console.error("Error during OTP verification:", err);
-      alert("Something went wrong while verifying.");
+      // alert("Something went wrong while verifying.");
     } finally {
       // Re-enable the button and hide loading
       setIsButtonDisabled(false);

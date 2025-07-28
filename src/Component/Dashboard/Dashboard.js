@@ -17,6 +17,7 @@ import {
   updateShowReferralFloatingStatus,
   updateAgentEventId,
   refundAndCancelSubscriptionAgnetApi,
+  API_BASE_URL,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -146,10 +147,29 @@ function Dashboard() {
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
-
+const [activeSubs , setActiveSubs] = useState(false)
   //getTimeZone
   const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
-  // console.log(isConfirming)
+    
+const checkActiveSubscription = async()=>{
+  let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent` , {
+    userId : userId
+  })
+  
+setActiveSubs(res?.data?.paymentDone)
+ 
+}
+
+
+useEffect(()=>{
+  setTimeout(()=>{
+checkActiveSubscription()  
+  },2000)
+
+},[])
+
+
+
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -1560,6 +1580,15 @@ function Dashboard() {
   return (
     <div>
 
+    {activeSubs ? <Popup
+  type="failed"
+  message="It looks like you left the agent creation process midway. Please log in to your account again, and you will be able to create your agent based on the payment you have already made."
+  onClose={() => {
+    localStorage.setItem("paymentDone", true); // Set paymentDone to true
+    navigate('/steps'); // Navigate to /steps page
+  }}
+/> :null}
+
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div
@@ -2657,6 +2686,7 @@ function Dashboard() {
 
       {popupMessage2 && (
         <Popup
+
           type={popupType2}
           message={popupMessage2}
           onClose={() => setPopupMessage2("")}

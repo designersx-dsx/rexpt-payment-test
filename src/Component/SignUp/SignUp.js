@@ -140,8 +140,7 @@ const SignUp = () => {
         }
         if (response?.data?.paymentDone) {
           
-          navigate('/steps')
-
+          navigate(verifiedUser ? "/steps" : "/details", { replace: true });
         }
         else {
           navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });
