@@ -823,6 +823,7 @@ const Step = () => {
                             // }
                             setPopupMessage("Agent created successfully!");
                             setIsAgentCreated(true)
+
                             setShowPopup(true);
                             let value1 = location?.state?.value
                             if (freeTrail) {

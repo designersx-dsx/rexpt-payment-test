@@ -105,6 +105,7 @@ export const useAgentCreator = ({
       JSON.parse(sessionStorage.getItem("aboutBusinessForm")) ||
       "Your Business Services";
     const CallRecording = sessionStorage.getItem("callRecording") === "true";
+
     const agentGender = sessionStorage.getItem("agentGender");
     const languageSelect = sessionStorage?.getItem("agentLanguage");
     const plan = sessionStorage.getItem("plan");
@@ -600,12 +601,11 @@ export const useAgentCreator = ({
         // console.log('isValidjsdjajdja',isValid)
         setPopupMessage(`${screenLabels[isValid]} Updated Succesfully`);
         setShowPopup(true);
-        if (CallRecording === false) {
-        } else if (CallRecording === true) {
+        if (sessionStorage.getItem("naviateFrom") == "callRecording") {
         } else {
           setTimeout(() => {
             navigate("/edit-agent", { replace: true });
-          }, 1000);
+          }, 1500);
         }
 
         setHasFetched(false);

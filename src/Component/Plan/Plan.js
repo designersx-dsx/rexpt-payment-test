@@ -48,7 +48,8 @@ const Planss = () => {
     let locationPath = location?.state?.locationPath
     let agentPlan = location?.state?.planName
     let interval = location?.state?.interval
-    // console.log("interval", interval)
+
+    let cusotmerId = location?.state?.customerId
 
     const handleClick = () => {
         setFreeTrial(!freeTrial);
@@ -341,6 +342,129 @@ const Planss = () => {
         return new Intl.NumberFormat('en-IN').format(price);
     };
 
+    const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
+    // console.log("paygEnabled", paygEnabled)
+
+    // Handle the Payg enable/disable toggle change
+    const handlePaygToggle = async () => {
+
+        const isPayg = localStorage.getItem("isPayg") === "true";
+        const isCurrentlyEnabled = paygEnabled;
+        const status = isCurrentlyEnabled ? "disabled" : "active"; // Determine the action based on the current state
+
+
+
+        if (isPayg) {
+            // Prepare the request data
+            const requestData = {
+                customerId: cusotmerId,
+                agentId: agentID,
+                status: status,
+            };
+
+            try {
+                // Call the API to save the agent's payg status
+                const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData),
+                });
+
+                if (response.ok) {
+                    setPaygEnabled(!isCurrentlyEnabled)
+                    const responseData = await response.json();
+                    // console.log('Agent saved successfully:', responseData);
+                    if (responseData.status === "active") {
+                        setPopupMessage("Agent's Pay-as-you-go feature activated.");
+                        setPopupType("success"); // Pop-up for activated
+                    } else {
+                        setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
+                        setPopupType("failed"); // Pop-up for disabled
+                    }
+                } else {
+                    console.error('Failed to send the request to save the agent.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        else {
+
+            const requestData = {
+                customerId: cusotmerId,
+                priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38",
+                promotionCode: "",
+                userId: userId,
+                agentId: agentID,
+                url: "http://localhost:3000/plan?isPayg=true",
+                cancelUrl: "http://localhost:3000/plan?isPayg=false"
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/pay-as-you-go-checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (response.ok) {
+                    localStorage.setItem("isPayg", true)
+                    const responseData = await response.json();
+                    window.location.href = responseData.checkoutUrl;
+                    // console.log('API response:', responseData); // You can handle the API response here
+                } else {
+                    console.error('Failed to send the request');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    }
+
+    const checkAgentPaygStatus = async (agentId) => {
+        try {
+            setLoading(true); // Start loading state
+
+            const response = await fetch(`${API_BASE}/pay-as-you-go-status-check`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ agentId }) // Pass the agentId to the API
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // If the agent has an active Payg subscription
+                setPaygEnabled(true);
+                localStorage.setItem("isPayg", "true");
+                // setPopupMessage("Agent's Pay-as-you-go feature is active.");
+                // setPopupType("success");
+            } else {
+                // If the agent does not have an active Payg subscription
+                setPaygEnabled(false);
+                // localStorage.setItem("isPayg", "false");
+                // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
+                // setPopupType("failed");
+            }
+        } catch (error) {
+            console.error("Error checking Payg status:", error);
+            // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
+            // setPopupType("failed");
+        }
+    };
+
+    useEffect(() => {
+        if (agentID) {
+            checkAgentPaygStatus(agentID);
+        }
+    }, [agentID]);
+
 
     if (loading)
         return (
@@ -378,6 +502,25 @@ const Planss = () => {
                         )}
                     </span>
                 </label> : null}
+
+                {/* Show Payg toggle button */}
+                {subscriptionID && (
+                    <div className={styles.toggleContainer1}>
+                        <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
+                        <label className={styles.toggleLabel1}>
+                            <input
+                                type="checkbox"
+                                checked={paygEnabled}
+                                onChange={handlePaygToggle}
+                                className={styles.toggleInput1}
+                            />
+                            <span
+                                className={`${styles.toggleSlider1} ${paygEnabled ? styles.active1 : ''}`}
+                            />
+                        </label>
+
+                    </div>
+                )}
 
             </div>
             <div className={styles.sectionPart}>

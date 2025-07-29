@@ -117,9 +117,9 @@ function App() {
                   <Route
                     path="/calinfo"
                     element={
-                      <SecureRoute>
+                      
                         <CalInfo />
-                      </SecureRoute>
+                      
                     }   >
 
                   </Route>
@@ -279,8 +279,8 @@ function App() {
 
                   <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
                   <Route path="/documentation" element={<SecureRoute><Documentation /></SecureRoute>} />
-                  <Route path="/raise-tickets" element={<SecureRoute><RaiseTickets/></SecureRoute>} />  
-                  <Route path="/create-ticket" element={<SecureRoute><CreateTicket/></SecureRoute>} />  
+                  <Route path="/raise-tickets" element={<SecureRoute><RaiseTickets /></SecureRoute>} />
+                  <Route path="/create-ticket" element={<SecureRoute><CreateTicket /></SecureRoute>} />
 
                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
                   <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />

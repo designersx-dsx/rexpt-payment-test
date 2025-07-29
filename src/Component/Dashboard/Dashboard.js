@@ -1430,7 +1430,9 @@ function Dashboard() {
         locationPath: locationPath,
         subscriptionID: agent?.subscriptionId,
         planName: agent?.agentPlan,
-        interval: agent?.subscription?.interval || null
+        interval: agent?.subscription?.interval || null,
+        customerId:agent?.subscription?.customer_id || null
+        
 
       },
     });
