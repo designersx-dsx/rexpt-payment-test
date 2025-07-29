@@ -589,10 +589,82 @@ const BusinessServices = forwardRef(
           "Other"
         ]
       }
-,      
-      
-      
-
+      ,
+      {
+        type: "Car & Bus Services",
+        subtype: "Quality Repairs, Every Time",
+        icon: "svg/Car Repair & Garage.svg",
+        "services": [
+          "Engine Diagnostics & Repairs",
+          "Brake Inspection & Replacement",
+          "Oil Change & Filter Replacement",
+          "Battery Check & Replacement",
+          "Transmission Service & Repair",
+          "Suspension & Steering Services",
+          "AC & Heating System Repair",
+          "Electrical System Troubleshooting",
+          "Tire Rotation & Wheel Alignment",
+          "Exhaust System Repair",
+          "Fuel Injection Cleaning",
+          "Coolant System Flush & Repair",
+          "Bus Fleet Maintenance",
+          "Roadside Assistance & Towing",
+          "Preventive Maintenance Plans",
+          "Other"
+        ]
+      }
+      ,
+      {
+        type: "Taxi, Cab & Limo Booking",
+        subtype: "Reliable Rides, Anytime, Anywhere",
+        icon: "svg/Taxi.svg",
+        "services": [
+          "Local Taxi Booking",
+          "Outstation Cab Services",
+          "Airport Pickup & Drop",
+          "Corporate Cab Services",
+          "Hourly Limo Rentals",
+          "Luxury Car Chauffeur",
+          "Event Transportation",
+          "24/7 Cab Availability",
+          "One-Way & Round Trips",
+          "Shared Ride Services",
+          "Other"
+        ]
+      },
+      {
+        type: "Movers and Packers",
+        subtype: "Safe & Hassle-Free Relocation Services",
+        icon: "svg/Movers and Packers.svg",
+        "services": [
+          "Home Shifting",
+          "Office Relocation",
+          "Local & Domestic Moving",
+          "Packing & Unpacking Services",
+          "Loading & Unloading",
+          "Furniture Dismantling & Assembly",
+          "Vehicle Transportation",
+          "Storage & Warehousing",
+          "International Relocation",
+          "Fragile Item Handling",
+          "Other"
+        ]
+      },
+      {
+        type: "Trucking Company",
+        subtype: "Efficient Freight & Logistics Solutions",
+        icon: "svg/Trucking Company.svg",
+        "services": [
+          "Long-Haul Trucking",
+          "Local & Regional Deliveries",
+          "Refrigerated Trucking",
+          "Flatbed Trucking",
+          "Heavy Equipment Transportation",
+          "Interstate Cargo Transport",
+          "Logistics & Freight Management",
+          "24/7 Shipment Tracking"
+        ]
+      }
     ];
     const [searchTerm, setSearchTerm] = useState("");
     // const selectedBusiness = businessServices?.find(
@@ -852,8 +924,6 @@ const BusinessServices = forwardRef(
         }, 100);
       }
     }, [customServices]);
-
-    console.log("Selected businessType:", businessType);
     return (
       <div className={styles.container} id="servies">
         <div className={styles.searchBox}>

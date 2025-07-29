@@ -268,7 +268,6 @@ export const useAgentCreator = ({
         model_high_priority: true,
         tool_call_strict_mode: true,
         general_prompt: filledPrompt,
-        general_tools: [],
         states: [
           {
             name: "information_collection",
@@ -384,7 +383,7 @@ export const useAgentCreator = ({
             tools: [
               {
                 type: "end_call",
-                name: "end_call",
+                name: "end_call1",
                 description: "End the call with the user.",
               },
             ],

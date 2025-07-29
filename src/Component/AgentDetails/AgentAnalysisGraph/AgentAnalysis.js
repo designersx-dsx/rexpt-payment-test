@@ -90,7 +90,6 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
     );
 
     const callCount = callsForDate.length;
-
     return (
       <div className={styles.bookingDotContainer}>
         {callCount > 0 && (
@@ -190,7 +189,7 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
                         <b>Caller:</b>{" "}
                         {call.custom_analysis_data
                           ? call.custom_analysis_data[
-                              "_detailed _call _summery"
+                              "name"
                             ] || "N/A"
                           : "N/A"}
                       </span>

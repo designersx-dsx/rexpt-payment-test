@@ -17,6 +17,7 @@ import {
   updateShowReferralFloatingStatus,
   updateAgentEventId,
   refundAndCancelSubscriptionAgnetApi,
+  API_BASE_URL,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -40,6 +41,7 @@ import AnimatedButton from "../AnimatedButton/AnimatedButton";
 
 import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
+import PopUp from "../Popup/Popup";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -144,10 +146,29 @@ function Dashboard() {
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
-
+const [activeSubs , setActiveSubs] = useState(false)
   //getTimeZone
   const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
-  // console.log(isConfirming)
+    
+const checkActiveSubscription = async()=>{
+  let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent` , {
+    userId : userId
+  })
+  
+setActiveSubs(res?.data?.paymentDone)
+ 
+}
+
+
+useEffect(()=>{
+  setTimeout(()=>{
+checkActiveSubscription()  
+  },2000)
+
+},[])
+
+
+
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -176,6 +197,7 @@ function Dashboard() {
     })
     }
   };
+
 
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
@@ -527,7 +549,7 @@ function Dashboard() {
       }
       try {
         await updateAgentEventId(agent.agent_id, eventTypeId);
-        console.log(" Event ID saved to agent.");
+       
       } catch (err) {
         console.error("Failed to update agent with event ID:", err);
       }
@@ -716,7 +738,7 @@ function Dashboard() {
             fetchAndMergeCalApiKeys();
           }, 1000);
 
-          console.log(res);
+         
         }
       } catch (notifyError) {
         throw new Error(`Refund failed: ${notifyError.message}`);
@@ -1558,6 +1580,16 @@ function Dashboard() {
   }
   return (
     <div>
+
+    {activeSubs ? <Popup
+  type="failed"
+  message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
+  onClose={() => {
+    localStorage.setItem("paymentDone", true); // Set paymentDone to true
+    navigate('/steps'); // Navigate to /steps page
+  }}
+/> :null}
+
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div
@@ -2655,6 +2687,7 @@ function Dashboard() {
 
       {popupMessage2 && (
         <Popup
+
           type={popupType2}
           message={popupMessage2}
           onClose={() => setPopupMessage2("")}
