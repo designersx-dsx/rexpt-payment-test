@@ -55,6 +55,11 @@ const Planss = () => {
 
     let cusotmerId = location?.state?.customerId
 
+
+     const urlParams = new URLSearchParams(window.location.search);
+const isPayg = urlParams.get('isPayg');
+
+
     const handleClick = () => {
         setFreeTrial(!freeTrial);
         setIsModalOpen(true);
@@ -545,23 +550,24 @@ const Planss = () => {
                 </label> : null}
 
                 {/* Show Payg toggle button */}
-                {subscriptionID && (
-                    <div className={styles.toggleContainer1}>
-                        <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
-                        <label className={styles.toggleLabel1}>
-                            <input
-                                type="checkbox"
-                                checked={paygEnabled}
-                                onChange={handlePaygToggle}
-                                className={styles.toggleInput1}
-                            />
-                            <span
-                                className={`${styles.toggleSlider1} ${paygEnabled ? styles.active1 : ''}`}
-                            />
-                        </label>
+              {(subscriptionID || isPayg === "true") && (
+    <div className={styles.toggleContainer1}>
+        <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
+        <label className={styles.toggleLabel1}>
+            <input
+                type="checkbox"
+                checked={paygEnabled}
+                onChange={handlePaygToggle}
+                className={styles.toggleInput1}
+            />
+            <span
+                className={`${styles.toggleSlider1} ${paygEnabled ? styles.active1 : ''}`}
+            />
+        </label>
+    </div>
+)}
 
-                    </div>
-                )}
+
 
             </div>
             <div className={styles.sectionPart}>
