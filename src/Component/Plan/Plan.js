@@ -41,6 +41,10 @@ const Planss = () => {
 
     const [currencyLoaded, setCurrencyLoaded] = useState(false);
 
+    const [activeCount, setactiveCount] = useState(null)
+    const [PaygSubscriptionId, setPaygSubscriptionId] = useState(null)
+    console.log("activeCount", activeCount)
+    console.log("PaygSubscriptionId", PaygSubscriptionId)
 
     let agentID = location?.state?.agentID
 
@@ -171,7 +175,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                IN: "inr",
+                // IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -343,7 +347,6 @@ const Planss = () => {
     };
 
     const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
-    // console.log("paygEnabled", paygEnabled)
 
     // Handle the Payg enable/disable toggle change
     const handlePaygToggle = async () => {
@@ -356,6 +359,34 @@ const Planss = () => {
 
         if (isPayg) {
             // Prepare the request data
+
+            if (activeCount === 1 && isCurrentlyEnabled) {
+                try {
+                    const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
+                    });
+                    if (cancelResponse.ok) {
+                        localStorage.removeItem("isPayg")
+                        setPopupMessage("Payg Stripe Deactivated ");
+                        setPopupType("failed"); // Pop-up for disabled
+                    }
+
+
+                    if (!cancelResponse.ok) {
+                        console.error('Failed to cancel the subscription schedule.');
+                        return;
+                    }
+                    // Subscription cancelled successfully, now proceed to disable PAYG
+                } catch (error) {
+                    console.error('Error canceling subscription:', error);
+                    return;
+                }
+            }
+
             const requestData = {
                 customerId: cusotmerId,
                 agentId: agentID,
@@ -399,11 +430,12 @@ const Planss = () => {
                 userId: userId,
                 agentId: agentID,
                 url: "http://localhost:3000/plan?isPayg=true",
-                cancelUrl: "http://localhost:3000/plan?isPayg=false"
+                cancelUrl: "http://localhost:3000/plan?isPayg=false",
+                subscriptionId: PaygSubscriptionId
             };
 
             try {
-                const response = await fetch(`${API_BASE}/pay-as-you-go-checkout`, {
+                const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -411,10 +443,14 @@ const Planss = () => {
                     body: JSON.stringify(requestData)
                 });
 
+                console.log("response2222",response)
+
                 if (response.ok) {
                     localStorage.setItem("isPayg", true)
                     const responseData = await response.json();
-                    window.location.href = responseData.checkoutUrl;
+                    if (responseData.checkoutUrl) {
+                        window.location.href = responseData.checkoutUrl;
+                    }
                     // console.log('API response:', responseData); // You can handle the API response here
                 } else {
                     console.error('Failed to send the request');
@@ -434,19 +470,24 @@ const Planss = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ agentId }) // Pass the agentId to the API
+                body: JSON.stringify({ agentId, customerId: cusotmerId }) // Pass the agentId to the API
             });
 
             const data = await response.json();
+
 
             if (data.success) {
                 // If the agent has an active Payg subscription
                 setPaygEnabled(true);
                 localStorage.setItem("isPayg", "true");
+                setactiveCount(data?.activeCount || null)
+                setPaygSubscriptionId(data?.subscriptionId)
                 // setPopupMessage("Agent's Pay-as-you-go feature is active.");
                 // setPopupType("success");
             } else {
                 // If the agent does not have an active Payg subscription
+                setactiveCount(data?.activeCount || null)
+                setPaygSubscriptionId(data?.subscriptionId)
                 setPaygEnabled(false);
                 // localStorage.setItem("isPayg", "false");
                 // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
@@ -463,7 +504,7 @@ const Planss = () => {
         if (agentID) {
             checkAgentPaygStatus(agentID);
         }
-    }, [agentID]);
+    }, [agentID, activeCount]);
 
 
     if (loading)

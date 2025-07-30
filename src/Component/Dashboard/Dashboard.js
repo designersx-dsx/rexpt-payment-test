@@ -47,7 +47,7 @@ function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
 
-      const isRefreshing = useContext(RefreshContext);
+  const isRefreshing = useContext(RefreshContext);
 
   const navigate = useNavigate();
   const { user } = useUser();
@@ -146,26 +146,26 @@ function Dashboard() {
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
-const [activeSubs , setActiveSubs] = useState(false)
+  const [activeSubs, setActiveSubs] = useState(false)
   //getTimeZone
   const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
-    
-const checkActiveSubscription = async()=>{
-  let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent` , {
-    userId : userId
-  })
-  
-setActiveSubs(res?.data?.paymentDone)
- 
-}
+
+  const checkActiveSubscription = async () => {
+    let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent`, {
+      userId: userId
+    })
+
+    setActiveSubs(res?.data?.paymentDone)
+
+  }
 
 
-useEffect(()=>{
-  setTimeout(()=>{
-checkActiveSubscription()  
-  },2000)
+  useEffect(() => {
+    setTimeout(() => {
+      checkActiveSubscription()
+    }, 2000)
 
-},[])
+  }, [])
 
 
 
@@ -192,9 +192,9 @@ checkActiveSubscription()
     } else {
       // setSelectedAgentForAssign(agent);
       // setIsAssignModalOpen(true);
-      navigate("/assign-number",{
-      state: { agent: agent },
-    })
+      navigate("/assign-number", {
+        state: { agent: agent },
+      })
     }
   };
 
@@ -370,6 +370,7 @@ checkActiveSubscription()
       localStorage.removeItem("checkPage2")
       localStorage.removeItem("paymentDone")
       localStorage.removeItem("subcriptionIdUrl")
+      // localStorage.removeItem("isPayg")
       sessionStorage.removeItem("VoiceAgentName");
       sessionStorage.removeItem("selectedLangCode");
       sessionStorage.removeItem("AgentCode");
@@ -549,7 +550,7 @@ checkActiveSubscription()
       }
       try {
         await updateAgentEventId(agent.agent_id, eventTypeId);
-       
+
       } catch (err) {
         console.error("Failed to update agent with event ID:", err);
       }
@@ -738,7 +739,7 @@ checkActiveSubscription()
             fetchAndMergeCalApiKeys();
           }, 1000);
 
-         
+
         }
       } catch (notifyError) {
         throw new Error(`Refund failed: ${notifyError.message}`);
@@ -1453,8 +1454,8 @@ checkActiveSubscription()
         subscriptionID: agent?.subscriptionId,
         planName: agent?.agentPlan,
         interval: agent?.subscription?.interval || null,
-        customerId:agent?.subscription?.customer_id || null
-        
+        customerId: agent?.subscription?.customer_id || null
+
 
       },
     });
@@ -1581,14 +1582,14 @@ checkActiveSubscription()
   return (
     <div>
 
-    {activeSubs ? <Popup
-  type="failed"
-  message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
-  onClose={() => {
-    localStorage.setItem("paymentDone", true); // Set paymentDone to true
-    navigate('/steps'); // Navigate to /steps page
-  }}
-/> :null}
+      {activeSubs ? <Popup
+        type="failed"
+        message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
+        onClose={() => {
+          localStorage.setItem("paymentDone", true); // Set paymentDone to true
+          navigate('/steps'); // Navigate to /steps page
+        }}
+      /> : null}
 
       <div className={styles.forSticky}>
         <header className={styles.header}>
