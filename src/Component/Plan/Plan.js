@@ -56,8 +56,14 @@ const Planss = () => {
     let cusotmerId = location?.state?.customerId
 
 
-     const urlParams = new URLSearchParams(window.location.search);
-const isPayg = urlParams.get('isPayg');
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPayg = urlParams.get('isPayg');
+    useEffect(() => {
+        if (isPayg === "true") {
+            localStorage.setItem("isPayg", true)
+        }
+    }, [])
+
 
 
     const handleClick = () => {
@@ -452,9 +458,9 @@ const isPayg = urlParams.get('isPayg');
                 // console.log("response2222",response.json())
 
                 if (response.ok) {
-                    localStorage.setItem("isPayg", true)
                     const responseData = await response.json();
                     if (responseData.checkoutUrl) {
+                        // localStorage.setItem("isPayg", true)
                         window.location.href = responseData.checkoutUrl;
                     }
                     else if (responseData?.subscription) {
@@ -585,22 +591,22 @@ const isPayg = urlParams.get('isPayg');
                 </label> : null}
 
                 {/* Show Payg toggle button */}
-              {(subscriptionID || isPayg === "true") && (
-    <div className={styles.toggleContainer1}>
-        <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
-        <label className={styles.toggleLabel1}>
-            <input
-                type="checkbox"
-                checked={paygEnabled}
-                onChange={handlePaygToggle}
-                className={styles.toggleInput1}
-            />
-            <span
-                className={`${styles.toggleSlider1} ${paygEnabled ? styles.active1 : ''}`}
-            />
-        </label>
-    </div>
-)}
+                {(subscriptionID || isPayg === "true") && (
+                    <div className={styles.toggleContainer1}>
+                        <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
+                        <label className={styles.toggleLabel1}>
+                            <input
+                                type="checkbox"
+                                checked={paygEnabled}
+                                onChange={handlePaygToggle}
+                                className={styles.toggleInput1}
+                            />
+                            <span
+                                className={`${styles.toggleSlider1} ${paygEnabled ? styles.active1 : ''}`}
+                            />
+                        </label>
+                    </div>
+                )}
 
 
 
