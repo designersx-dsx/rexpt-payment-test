@@ -25,6 +25,7 @@ import Tooltip from "../TooltipSteps/Tooltip";
 import Step1 from "../Step1/Step1";
 import getDynamicAgentName from "../../utils/getDynamicAgentName";
 import Thankyou from "../ThankyouPage/Thankyou";
+import getTimezoneFromState from "../../lib/timeZone";
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -94,7 +95,7 @@ const Step = () => {
         return saved ? JSON.parse(saved) : [];
     });
 
-    const [isAgentCreated, setIsAgentCreated] = useState(false); 
+    const [isAgentCreated, setIsAgentCreated] = useState(false);
 
     const checkPaymentDone = localStorage.getItem("paymentDone")
     const subsID = localStorage.getItem("subcriptionIdUrl")
@@ -300,8 +301,7 @@ const Step = () => {
         const combinedChoices = Array.from(new Set([...fixedChoices, ...cleanedServices]));
         return combinedChoices;
     }
-    //getTimeZone
-    const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+
     ///extractPromptVariables
     function extractPromptVariables(template, dataObject) {
         const matches = [...template.matchAll(/{{(.*?)}}/g)];
@@ -365,6 +365,7 @@ const Step = () => {
         }
     };
     const currentState = getBusinessNameFromGoogleListing?.state || "";
+    //call recording functionlaity
     const statesRequiringCallRecording = [
         "Washington",
         "Vermont",
@@ -385,9 +386,19 @@ const Step = () => {
     const callRecording = statesRequiringCallRecording.includes(currentState)
         ? true
         : false;
+
+
+
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
+        //getTimeZone
+        let timeZone;
+        try {
+            timeZone = await getTimezoneFromState(currentState);
+        } catch (err) {
+            console.error(" Error fetching timezone:", err);
+        }
         const agentNote = sessionStorage.getItem("agentNote");
         const rawPromptTemplate =
             getAgentPrompt({
@@ -408,7 +419,7 @@ const Step = () => {
                 agentNote: "{{AGENTNOTE}}",
                 timeZone: "{{TIMEZONE}}"
             });
-     
+
         const filledPrompt =
             getAgentPrompt({
                 industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,   // ← dynamic from businessType
@@ -426,10 +437,10 @@ const Step = () => {
                 aboutBusinessForm,
                 commaSeparatedServices,
                 agentNote,
-                timeZone,
+                timeZone: timeZone?.timezoneId,
                 languageAccToPlan,
                 plan: plan,
-                CallRecording:callRecording
+                CallRecording: callRecording
 
             });
         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
@@ -446,7 +457,7 @@ const Step = () => {
             languageSelect: { key: "LANGUAGE", value: languageSelect || "" },
             businessType: { key: "BUSINESSTYPE", value: businessType || "" },
             commaSeparatedServices: { key: "SERVICES", value: servicesArray || "" },
-            timeZone: { key: "TIMEZONE", value: timeZone || "" }
+            timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" }
         });
         // const isValid = step8BRef.current.validate()
         //creation here
@@ -529,10 +540,42 @@ const Step = () => {
                             }
                         ]
                     },
-
                     {
                         name: "appointment_booking",
-                        state_prompt: "## Task\nYou will now help the user book an appointment."
+                        state_prompt: `First, call the check_availability tool to verify if the calendar is connected.
+                           - If calendar is connected and slots are returned:
+                            - Ask the user for preferred date and time.
+                            - Ask what service they’re interested in.
+                            - Once you have both, confirm the details.
+                            - Then call book_appointment_cal to schedule.
+                        
+                            If booking fails:
+                            - Say: "Our scheduling system is busy right now. I’ve saved your details, and a team member will call you within 24 hours to confirm your appointment."
+
+                            - Then, ask: "Do you have any other queries?"
+                        
+                            - If yes, transition to information_collection.
+                           
+                        
+                        - If check_availability fails or no slots are returned:
+                            - Say: "Our booking system is currently unavailable for direct scheduling. I’ll collect your details and a team member will reach out within 24 hours to confirm your appointment."
+                            - Collect: name, phone number, email, and purpose.
+                            - Then say: "Thanks! We’ll get back to you shortly."
+                            - Then ask: "Do you have any other queries?"
+                            - If yes, transition to information_collection.
+                            
+                        `
+                        ,
+                        tools: [
+
+                        ],
+                        edges: [
+                            {
+                                destination_state_name: "information_collection",
+                                description: "User has further queries or provides new information after booking."
+                            }
+
+                        ]
                     },
 
                     // 🌟 State: Dissatisfaction Confirmation
@@ -605,9 +648,9 @@ const Step = () => {
                 starting_state: "information_collection",
                 default_dynamic_variables: {
                     customer_name: "John Doe",
-                    business_Phone: businessPhone,
+                    business_Phone: businessPhone || "",
                     business_email: business.email,
-                    timeZone: timeZone
+                    timeZone: timeZone?.timezoneId
 
                 },
             };
@@ -806,7 +849,7 @@ const Step = () => {
                             },
                         ],
                         promptVariablesList: JSON.stringify(promptVariablesList),
-                        CallRecording:callRecording
+                        CallRecording: callRecording
 
                     }
                     try {
@@ -1024,7 +1067,7 @@ const Step = () => {
         let freeTrail = location?.state?.value
         if (freeTrail === "chatke") {
             handleContinue()
-           
+
 
         }
         else if (checkPaymentDone === "true") {
@@ -1164,7 +1207,7 @@ const Step = () => {
     }
     return (
 
-        <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated}/> :
+        <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated} /> :
 
             <div className={styles.container}>
                 <StepHeader title={step?.title}
