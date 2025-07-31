@@ -352,7 +352,7 @@ const isPayg = urlParams.get('isPayg');
     };
 
     const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
-
+console.log({paygEnabled})
     // Handle the Payg enable/disable toggle change
     const handlePaygToggle = async () => {
 
@@ -538,13 +538,16 @@ const isPayg = urlParams.get('isPayg');
             // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
             // setPopupType("failed");
         }
+        finally{
+          setLoading(false);    
+        }
     };
 
     useEffect(() => {
         if (agentID) {
             checkAgentPaygStatus(agentID);
         }
-    }, [agentID]);
+    }, [paygEnabled]);
 
 
     if (loading)
