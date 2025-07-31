@@ -48,6 +48,7 @@ function Dashboard() {
     useDashboardStore();
 
   const isRefreshing = useContext(RefreshContext);
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const navigate = useNavigate();
   const { user } = useUser();
@@ -1583,20 +1584,104 @@ function Dashboard() {
     }
     return number;
   }
+
+  const customer_id = decodeTokenData?.customerId
+  const [isPaygActive, setisPaygActive] = useState()
+  console.log("isPaygActive", isPaygActive)
+
+  const checkAgentPaygStatus = async (agentId) => {
+    try {
+      // setLoading(true); // Start loading state
+
+      const response = await fetch(`${API_BASE}/pay-as-you-go-status-check`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ agentId, customerId: customer_id }) // Pass the agentId to the API
+      });
+
+      const data = await response.json();
+
+
+      if (data.success) {
+        // If the agent has an active Payg subscription
+        setisPaygActive(true);
+        localStorage.setItem("isPayg", "true");
+        // setactiveCount(data?.activeCount || null)
+        // setPaygSubscriptionId(data?.subscriptionId)
+        // setPopupMessage("Agent's Pay-as-you-go feature is active.");
+        // setPopupType("success");
+      } else {
+        // If the agent does not have an active Payg subscription
+        // setactiveCount(data?.activeCount || null)
+        // setPaygSubscriptionId(data?.subscriptionId)
+        setisPaygActive(false);
+        // localStorage.setItem("isPayg", "false");
+        // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
+        // setPopupType("failed");
+      }
+    } catch (error) {
+      console.error("Error checking Payg status:", error);
+      // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
+      // setPopupType("failed");
+    }
+  };
+
+  useEffect(() => {
+    if (agentId) {
+      checkAgentPaygStatus(agentId);
+    }
+  }, [agentId]);
+
+
   const handleTogglePayG = async () => {
-  try {
-    // if (!agentId) {
-    //   console.error("Agent ID is not set.");
-    //   return; // Prevent further execution if agentId is not available.
-    // }
 
-    const res = await handleUpgradeClick(agentId);
-    console.log({ res });
+    try {
+      const requestData = {
+        customerId: customer_id,
+        agentId: agentId,
+        status: isPaygActive ? "inactive" : "active",
+      };
+      // Call the API to save the agent's payg status
+      const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
 
-  } catch (error) {
-    console.error("Error during upgrade:", error);
-  }
-};
+      if (response.ok) {
+        // setPaygEnabled(!isCurrentlyEnabled)
+        const responseData = await response.json();
+        // console.log('Agent saved successfully:', responseData);
+        if (responseData.status === "active") {
+          setisPaygActive(true)
+          setPopupMessage("Agent's Pay-as-you-go feature activated.");
+          setPopupType("success"); // Pop-up for activated
+        } else {
+          setisPaygActive(false)
+          setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
+          setPopupType("failed"); // Pop-up for disabled
+        }
+      } else if (response.ok === false) {
+        const responseData = await response.json();
+        // console.log("dasdd", responseData)
+        setPopupMessage(responseData?.error);
+        setPopupType("failed"); // Pop-up for disabled
+      } else {
+        console.error('Failed to send the request to save the agent.');
+      }
+
+
+
+
+    } catch (error) {
+      console.error("Error during upgrade:", error);
+    }
+  };
+
   return (
     <div>
 
@@ -1805,10 +1890,10 @@ function Dashboard() {
 
                 <div
                   className={styles.FilterIcon}
-                onClick={(e) => {
-  toggleDropdown(e, agent.agent_id);
-  setagentId(agent.agent_id);
-}}
+                  onClick={(e) => {
+                    toggleDropdown(e, agent.agent_id);
+                    setagentId(agent.agent_id);
+                  }}
                   ref={dropdownRef}
                 >
                   <svg
@@ -1931,32 +2016,38 @@ function Dashboard() {
                       {agent?.subscription &&
                         agent?.subscription?.plan_name?.toLowerCase() !==
                         "free" && (
-                          <div>
-                            <div
-                              className={styles.OptionItem}
-                              onMouseDown={(e) => {
-                                e.stopPropagation();
-                                setAgentToCancel(agent);
-                                setShowCancelConfirm(true);
-                              }}
-                            >
-                              Cancel Subscription
+                          <>
+                            <div>
+                              <div
+                                className={styles.OptionItem}
+                                onMouseDown={(e) => {
+                                  e.stopPropagation();
+                                  setAgentToCancel(agent);
+                                  setShowCancelConfirm(true);
+                                }}
+                              >
+                                Cancel Subscription
+                              </div>
                             </div>
-                          </div>
+                            <div>
+                              <div
+                                onMouseDown={(e) => {
+                                  handleTogglePayG()
+                                }}
+                                className={styles.OptionItem}
+
+                              >
+                                {isPaygActive === true ? "Deactivate PayG" : "Active PayG"}
+                              </div>
+                            </div>
+                          </>
                         )}
 
 
-                        <div>
-                            <div onClick={handleTogglePayG}
-                              className={styles.OptionItem}
-                             
-                            >
-                             Active PayG
-                            </div>
-                          </div> 
+
                     </div>
                   )}
-                  
+
                 </div>
               </div>
               <hr className={styles.agentLine} />
