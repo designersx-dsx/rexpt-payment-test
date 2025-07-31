@@ -27,6 +27,7 @@ import "react-phone-input-2/lib/style.css";
 import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 
+
 const EditProfile = () => {
   const fileInputRef = useRef(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -46,6 +47,12 @@ const EditProfile = () => {
   const [referralCode, setReferralCode] = useState("");
   const [showDashboardReferral, setShowDashboardReferral] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Payg states
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+  const [customerId, setcustomerId] = useState()
+  const [userId1, setuserId1] = useState()
+
 
   const [errors, setErrors] = useState({
     name: "",
@@ -119,6 +126,8 @@ const EditProfile = () => {
     try {
       if (!isRefreshing) { setLoading(true); }
       const user = await getUserDetails(userId);
+      setcustomerId(user?.customerId)
+      setuserId1(user?.userId)
       setReferralCode(user?.referralCode);
       setShowDashboardReferral(user?.showreferralfloating);
       localStorage.setItem(
@@ -325,7 +334,100 @@ const EditProfile = () => {
   const handleBack = () => {
     navigate(-1);
   };
-const nevigate = useNavigate();
+  const nevigate = useNavigate();
+
+
+  const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
+  const PaygSubscriptionId = subscriptionDetails.invoices
+    ?.filter(invoice => invoice.plan_name === "Extra Minutes" && invoice.status !== "canceled") // Filter by plan and status
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Sort by latest created_at
+    .map(invoice => invoice.subscription_id)[0]; // Get the subscription_id of the latest invoice
+  console.log("PaygSubscriptionId", PaygSubscriptionId)
+
+
+  const handlePaygToggle = async () => {
+
+    const isCurrentlyEnabled = paygEnabled;
+
+    if (isCurrentlyEnabled) {
+      console.log("Cancel Run")
+      try {
+        const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
+        });
+        if (cancelResponse.ok) {
+          localStorage.removeItem("isPayg")
+          setShowPopup(true)
+          setPopupMessage("Payg Stripe Deactivated ");
+          setPopupType("failed"); // Pop-up for disabled
+          setPaygEnabled(false)
+        }
+
+
+        if (!cancelResponse.ok) {
+          console.error('Failed to cancel the subscription schedule.');
+          return;
+        }
+        // Subscription cancelled successfully, now proceed to disable PAYG
+      } catch (error) {
+        console.error('Error canceling subscription:', error);
+        return;
+      }
+    }
+    else {
+      console.log("checkout Run")
+      const requestData = {
+        customerId: customerId,
+        priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38",
+        promotionCode: "",
+        userId: userId1,
+        // agentId: agentID,
+        url: "http://localhost:3000/edit-profile?isPayg=true",
+        cancelUrl: "http://localhost:3000/edit-profile?isPayg=false",
+        subscriptionId: PaygSubscriptionId
+      };
+
+      try {
+        const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData)
+        });
+
+        // console.log("response2222",response.json())
+
+        if (response.ok) {
+          const responseData = await response.json();
+          if (responseData.checkoutUrl) {
+            localStorage.setItem("isPayg", true)
+            window.location.href = responseData.checkoutUrl;
+          }
+          else if (responseData.subscription) {
+            setShowPopup(true)
+            console.log("resume Succesfully")
+            setPopupMessage("Payg resume Succesfully ");
+            setPopupType("success");
+            localStorage.setItem("isPayg", true)
+            setPaygEnabled(true)
+          }
+
+          console.log('API response:', responseData); // You can handle the API response here
+        } else {
+          console.error('Failed to send the request');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  }
+
+
 
 
 
@@ -407,6 +509,7 @@ const nevigate = useNavigate();
                     <hr className={styles.hrLine} />
                   </div>
                 </div>
+
                 {/* <div className={styles.Part}>
                   <img src="svg/line-email.svg" />
                   <div className={styles.infoItem}>
@@ -675,6 +778,23 @@ const nevigate = useNavigate();
                       )}
                     </p>
                   </div>
+                </div>
+              </div>
+              <div className={styles.infoSection}>
+                <div className={styles.toggleContainer1}>
+                  <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
+                  <label className={styles.toggleLabel1}>
+                    <input
+                      type="checkbox"
+                      checked={paygEnabled}
+                      onChange={handlePaygToggle}
+                      className={styles.toggleInput1}
+                    />
+                    <span
+                      className={`${styles.toggleSlider1} ${paygEnabled ? styles.active1 : ''}`}
+                    // className={`${styles.toggleSlider1} ${styles.active1}`}
+                    />
+                  </label>
                 </div>
               </div>
               <div className={styles.RefferalMain}>
