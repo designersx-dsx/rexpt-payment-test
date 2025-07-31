@@ -4,8 +4,9 @@ import "react-calendar/dist/Calendar.css";
 import styles from "./AgentAnalysis.module.css";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import axios from "axios";
-import { API_BASE_URL } from "../../../Store/apiStore";
+import { API_BASE_URL, getAgentCalls, getAgentCallsByMonth } from "../../../Store/apiStore";
 import { useNavigate } from "react-router-dom";
+import { useCallHistoryStore, useCallHistoryStore1 } from "../../../Store/useCallHistoryStore ";
 
 // Helper function to format date
 function formatDateISO(date) {
@@ -25,7 +26,7 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
   const [callHistory, setCallHistory] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [callsForSelectedDate, setCallsForSelectedDate] = useState([]);
-
+  const { mergeCallHistoryData } = useCallHistoryStore1();
   const bookingsRef = useRef(null);
 
   const token = localStorage.getItem("token") || "";
@@ -42,15 +43,22 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
   const fetchCallHistory = async () => {
     try {
       if (!agentId) return;
+    const currentDate = new Date();
+    const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
 
-      const response = await axios.get(
-        `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const agentCalls = response.data.filteredCalls || [];
-      setCallHistory(agentCalls);
+      // const response = await axios.get(
+      //   `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`,
+      //   {
+      //     headers: { Authorization: `Bearer ${token}` },
+      //   }
+      // );
+      // const agentCalls = response.data.filteredCalls || [];
+      // const response=await getAgentCalls(agentId) ||[]
+      const response=await getAgentCallsByMonth(agentId, month, year)
+      // console.log('response,response',response)
+      
+      setCallHistory(response?.calls||[]);
     } catch (error) {
       // console.error("Error fetching call history:", error);
       setCallHistory([]);
@@ -99,6 +107,19 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
         )}
       </div>
     );
+  };
+
+    const handleMonthChange = async (month, year) => {
+    try {
+      if (agentId) {
+        const res = await getAgentCallsByMonth(agentId, month, year);
+        setCallHistory(res.calls || []);
+      } 
+      
+    } catch (error) {
+      console.error("Error fetching month data:", error);
+      setCallHistory([]);
+    }
   };
 
   return (
@@ -154,6 +175,11 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
             onChange={handleDateClick}
             value={selectedDate}
             tileContent={tileContent}
+            onActiveStartDateChange={({ activeStartDate }) => {
+            const m = activeStartDate.getMonth() + 1;
+            const y = activeStartDate.getFullYear();
+            handleMonthChange(m, y);
+            }}
             calendarType="gregory"
             className={styles.reactCalendar}
           />
@@ -172,7 +198,14 @@ const AgentAnalysis = ({ data, callVolume, agentId }) => {
                   className={styles.bookingCard}
                   onClick={() => {
                     if (call.call_id) {
-                      navigate(`/call-details/${call.call_id}`);
+                      // navigate(`/call-details/${call.call_id}`);
+                         navigate(`/call-details/${call.call_id}`, {
+                        state: {
+                          agentId: call.agent_id,
+                          start_timestamp: call.start_timestamp
+                        }
+                      });
+                      
                     }
                   }}
                   style={{ cursor: call.call_id ? "pointer" : "default" }}
