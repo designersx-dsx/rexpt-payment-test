@@ -60,6 +60,7 @@ const Planss = () => {
     const isPayg = urlParams.get('isPayg');
     useEffect(() => {
         if (isPayg === "true") {
+            // console.log("RUNNNNN")
             localStorage.setItem("isPayg", true)
         }
     }, [])
@@ -484,6 +485,7 @@ const Planss = () => {
                                 const responseData = await response.json();
                                 // console.log('Agent saved successfully:', responseData);
                                 if (responseData?.success === true) {
+                                    localStorage.setItem("isPayg", true)
                                     setPopupMessage("Agent's Pay-as-you-go feature activated.");
                                     setPopupType("success"); // Pop-up for activated
                                 } else {
