@@ -42,12 +42,13 @@ import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import PopUp from "../Popup/Popup";
+import getTimezoneFromState from "../../lib/timeZone";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
 
-      const isRefreshing = useContext(RefreshContext);
+  const isRefreshing = useContext(RefreshContext);
 
   const navigate = useNavigate();
   const { user } = useUser();
@@ -144,31 +145,26 @@ function Dashboard() {
     sessionStorage.getItem("userCalApiKey")
   );
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
+  console.log(agentDetailsForCal,"agentDetailsForCal")
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
-const [activeSubs , setActiveSubs] = useState(false)
+  const [activeSubs, setActiveSubs] = useState(false)
   //getTimeZone
-  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
-    
-const checkActiveSubscription = async()=>{
-  let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent` , {
-    userId : userId
-  })
-  
-setActiveSubs(res?.data?.paymentDone)
- 
-}
+  const [timeZone, setTimeZone] = useState("")
+  const checkActiveSubscription = async () => {
+    let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent`, {
+      userId: userId
+    })
 
+    setActiveSubs(res?.data?.paymentDone)
 
-useEffect(()=>{
-  setTimeout(()=>{
-checkActiveSubscription()  
-  },2000)
+  }
+  useEffect(() => {
+    setTimeout(() => {
+      checkActiveSubscription()
+    }, 2000)
 
-},[])
-
-
-
+  }, [])
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -192,13 +188,11 @@ checkActiveSubscription()
     } else {
       // setSelectedAgentForAssign(agent);
       // setIsAssignModalOpen(true);
-      navigate("/assign-number",{
-      state: { agent: agent },
-    })
+      navigate("/assign-number", {
+        state: { agent: agent },
+      })
     }
   };
-
-
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
       localStorage.removeItem("UpdationMode");
@@ -517,9 +511,20 @@ checkActiveSubscription()
     }
   };
 
+  //getTimeZone
+  const fetchTimeZone = async (agent) => {
+    try {
+      const timeZone = await getTimezoneFromState(agent?.business?.state);
+      setTimeZone(timeZone)
+      // Proceed with using timeZone
+    } catch (err) {
+      console.error("Error fetching timezone:", err);
+    }
+  };
   // Create Cal event
   const createCalEvent = async () => {
     const agent = agentDetailsForCal;
+    fetchTimeZone(agent)
     await handleApiKeySubmit();
     try {
       setcalloading(true);
@@ -549,7 +554,7 @@ checkActiveSubscription()
       }
       try {
         await updateAgentEventId(agent.agent_id, eventTypeId);
-       
+
       } catch (err) {
         console.error("Failed to update agent with event ID:", err);
       }
@@ -563,15 +568,157 @@ checkActiveSubscription()
           },
           {
             type: "check_availability_cal",
-            name: "check_availability",
+            name: "check_availability_cal",
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
-            description: "Checking availability for event booking",
-            timezone: timeZone,
+            description: "Check the available appointment slots in the calendar and return times strictly in the user's timezone. Use this timezone to suggest and book appointments.",
+            timezone: timeZone?.timezoneId            ,
+          },
+        ],
+        states: [
+          {
+            name: "information_collection",
+            state_prompt: `
+        Greet the user with the begin_message and assist with their query.
+
+  
+        If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible","waste of time"),
+        ask them: "I'm sorry to hear that. Could you please tell me about your concern?"
+        Analyze their response. 
+        
+        If the concern contains **spam, irrelevant or abusive content**
+        (e.g., random questions, profanity, jokes), say:
+        "I’m here to assist with service-related concerns. Could you please share your issue regarding our service?"
+        and stay in this state.
+
+        If the concern is **service-related** or **business** (e.g., staff, delay, poor support),
+        transition to dissatisfaction_confirmation.
+
+        If the user asks for an appointment (e.g., "appointment", "book", "schedule"),
+        transition to appointment_booking.
+
+        after extracting user details using the extract_user_info tool,ask the user if they have any other quaries or want to get other information regarding the business.
+
+        If the user asks for address or email, transition to send_email.
+
+        If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
+    `,
+            edges: [
+              {
+                destination_state_name: "appointment_booking",
+                description: "User wants to book an appointment.",
+              },
+              {
+                destination_state_name: "dissatisfaction_confirmation",
+                description: "User sounds angry or expresses dissatisfaction.",
+              },
+            ],
+          },
+          {
+            name: "dissatisfaction_confirmation",
+            state_prompt: `
+        Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
+        Wait for their response.
+
+        If the user says yes, transition to call_transfer.
+        If the user says no, transition to end_call_state.
+        If the response is unclear, repeat the question once.
+      `,
+            edges: [
+              {
+                destination_state_name: "call_transfer",
+                description: "User agreed to speak to team member.",
+              },
+              {
+                destination_state_name: "end_call_state",
+                description: "User declined to speak to team member.",
+              },
+            ],
+            tools: [],
+          },
+          {
+            name: "call_transfer",
+            state_prompt: `Connecting you to a team member now. Please hold.`,
+            tools: [
+              {
+                type: "transfer_call",
+                name: "transfer_to_team",
+                description: "Transfer the call to the team member.",
+                transfer_destination: {
+                  type: "predefined",
+                  number: "{{business_Phone}}",
+                },
+                transfer_option: {
+                  type: "cold_transfer",
+                  public_handoff_option: {
+                    message: "Please hold while I transfer your call.",
+                  },
+                },
+                speak_during_execution: true,
+                speak_after_execution: true,
+                failure_message:
+                  "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly.",
+              },
+            ],
+            edges: [],
+          },
+          {
+            name: "appointment_booking",
+            state_prompt: `First, call the check_availability tool to verify if the calendar is connected.
+               - If calendar is connected and slots are returned:
+                - Ask the user for preferred date and time.
+                - Ask what service they’re interested in.
+                - Once you have both, confirm the details.
+                - Then call book_appointment_cal to schedule.
+            
+                If booking fails:
+                - Say: "Our scheduling system is busy right now. I’ve saved your details, and a team member will call you within 24 hours to confirm your appointment."
+            
+                - Then, ask: "Do you have any other queries?"
+            
+                - If yes, transition to information_collection.
+                - If no, transition to end_call_state.
+            
+            - If check_availability fails or no slots are returned:
+                - Say: "Our booking system is currently unavailable for direct scheduling. I’ll collect your details and a team member will reach out within 24 hours to confirm your appointment."
+                - Collect: name, phone number, email, and purpose.
+                - Then say: "Thanks! We’ll get back to you shortly."
+                - Then ask: "Do you have any other queries?"
+                - If yes, transition to information_collection.
+                - If no, transition to end_call_state.
+            `
+            ,
+            tools: [
+              {
+                type: "check_availability_cal",
+                name: "check_availability",
+                cal_api_key: userCalApiKey.trim(),
+                event_type_id: eventTypeId,
+                description: "Check if calendar is connected and fetch available time slots.",
+                timezone: timeZone?.timezoneId
+              }
+            ],
+            edges: [
+              {
+                destination_state_name: "information_collection",
+                description: "User has further queries or provides new information after booking."
+              }
+            ]
+          },
+          {
+            name: "end_call_state",
+            state_prompt: `Politely end the call by saying: "Thank you for calling. Have a great day!"`,
+            tools: [
+              {
+                type: "end_call",
+                name: "end_call1",
+                description: "End the call with the user.",
+              },
+            ],
+            edges: [],
           },
         ],
       };
-
       // Update LLM using the Retell API
       const retellUrl = `https://api.retellai.com/update-retell-llm/${agent.llmId}`;
       const retellResponse = await fetch(retellUrl, {
@@ -738,7 +885,7 @@ checkActiveSubscription()
             fetchAndMergeCalApiKeys();
           }, 1000);
 
-         
+
         }
       } catch (notifyError) {
         throw new Error(`Refund failed: ${notifyError.message}`);
@@ -883,12 +1030,6 @@ checkActiveSubscription()
   };
 
   const handleEditAgent = async (ag) => {
-    // localStorage.setItem("UpdationMode", "ON");
-    // await fetchPrevAgentDEtails(ag.agent_id, ag.businessId);
-
-    // navigate("/business-details", {
-    //   state: { agentId: ag.agent_id, bussinesId: ag.businessId },
-    // });
     sessionStorage.setItem("naviateFrom", "dashboard");
     sessionStorage.setItem("SelectAgentBusinessId", ag?.businessId);
     sessionStorage.setItem("SelectAgentId", ag?.agent_id);
@@ -1561,6 +1702,7 @@ checkActiveSubscription()
   };
   const checkRecentPageLocation = location.state?.currentLocation;
   useEffect(() => {
+ 
     if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
   }, []);
 
@@ -1579,14 +1721,14 @@ checkActiveSubscription()
   return (
     <div>
 
-    {activeSubs ? <Popup
-  type="failed"
-  message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
-  onClose={() => {
-    localStorage.setItem("paymentDone", true); // Set paymentDone to true
-    navigate('/steps'); // Navigate to /steps page
-  }}
-/> :null}
+      {activeSubs ? <Popup
+        type="failed"
+        message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
+        onClose={() => {
+          localStorage.setItem("paymentDone", true); // Set paymentDone to true
+          navigate('/steps'); // Navigate to /steps page
+        }}
+      /> : null}
 
       <div className={styles.forSticky}>
         <header className={styles.header}>

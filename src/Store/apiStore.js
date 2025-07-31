@@ -486,6 +486,14 @@ export const createNumberOrder = async (phoneNumbers,agent_id) => {
     console.log(error)
   }
 }
+export const createEvent=async(apiKey,eventName,slug,eventLength)=>{
+  try {
+    const res = await axios.post(`${API_BASE_URL}/agent/createCalEvent`, { apiKey:apiKey,eventName:eventName,slug:slug,eventLength:eventLength})
+    return res.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 
 export default api;
