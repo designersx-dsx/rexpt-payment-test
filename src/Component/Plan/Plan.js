@@ -378,7 +378,7 @@ console.log({paygEnabled})
                     const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
+                            'Cotnent-Type': 'application/json',
                         },
                         body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
                     });
@@ -403,6 +403,10 @@ console.log({paygEnabled})
             const requestData = {
                 customerId: cusotmerId,
                 agentId: agentID,
+
+
+
+                
                 status: status,
             };
 
