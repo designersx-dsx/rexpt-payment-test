@@ -566,7 +566,8 @@ const Planss = () => {
     return (
         <div className={styles.subscriptionMain}>
             <div className={styles.firstdiv}>
-                <HeaderBar title="Upgrade Plan" />
+                {subscriptionID ?<HeaderBar title="Upgrade Plan" /> :<HeaderBar title="Select Plan" />}
+                
                 {agentCount == 0 ? <label className={styles.freeTrialBtn} onChange={handleClick}>
                     FREE TRIAL
                     <input
