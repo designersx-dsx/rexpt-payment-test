@@ -8,10 +8,13 @@ import decodeToken from "../../lib/decodeToken";
 import {
   API_BASE_URL,
   fetchDashboardDetails,
+  getAgentCalls,
+  getAgentCallsByMonth,
   getAllAgentCalls,
+  getUserCallsByMonth,
 } from "../../Store/apiStore";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { useCallHistoryStore } from "../../Store/useCallHistoryStore ";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 
@@ -62,7 +65,6 @@ const AgentAnalysis = () => {
       unsub();
     };
   }, []);
-
   useEffect(() => {
     const foundAgent = agents.find((a) => a.agent_id === selectedAgentId);
     setSelectedAgentEventId(foundAgent?.eventId || "");
@@ -99,20 +101,28 @@ const AgentAnalysis = () => {
       if (hasFetched) {
         return;
       }
+    const currentDate = new Date();
+    const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
+
       if (selectedAgentId === "") {
-        const res = await getAllAgentCalls(userId);
+        // const res = await getAllAgentCalls(userId);
+        const res = await  getUserCallsByMonth(userId, month,year);
         const allCalls = res.calls || [];
         // setCallHistory(allCalls);
         setCallHistoryData(allCalls);
         setapiCallHistory(allCalls);
       } else {
-        const response = await axios.get(
-          `${API_BASE_URL}/agent/getAgentCallHistory/${selectedAgentId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const agentCalls = response.data.filteredCalls || [];
+        // const response = await axios.get(
+        //   `${API_BASE_URL}/agent/getAgentCallHistory/${selectedAgentId}`,
+        //   // `${API_BASE_URL}/callHistory/agentCalLHistory/${selectedAgentId}/last3months`,
+        //   {
+        //     headers: { Authorization: `Bearer ${token}` },
+        //   }
+        // );
+        // const response=await getAgentCalls(selectedAgentId)2
+        const response=await getAgentCallsByMonth(selectedAgentId, month, year);
+        const agentCalls = response.calls || [];
         setCallHistoryData(agentCalls);
         setapiCallHistory(agentCalls);
         // setCallHistory(agentCalls);
@@ -133,7 +143,6 @@ const AgentAnalysis = () => {
     fetchCallHistory();
   }, [selectedAgentId, agents]);
   const fetchBookingDates = async () => {
-    console.log("Fetching booking dates...");
     const filteredCalls = selectedAgentId
       ? callHistory.filter(
         (call) => String(call.agent_id) === String(selectedAgentId)
@@ -182,7 +191,7 @@ const AgentAnalysis = () => {
         console.error("Cal.com API fetch failed:", error);
       }
     }
-
+    
     setBookingDates(bookingsMap);
     setBookingsForSelectedDate(
       bookingsMap[formatDateISO(selectedDate)] || []
@@ -211,8 +220,8 @@ const AgentAnalysis = () => {
     const items = bookingDates[dateStr] || [];
     const meetingCount = items.filter((i) => i.type === "meeting").length;
     const callCount = items.filter((i) => i.type === "call").length;
-
     const formatCount = (count) => (count > 99 ? "99+" : count);
+
     return (
       <div className={styles.bookingDotContainer}>
         {meetingCount > 0 && (
@@ -236,6 +245,25 @@ const AgentAnalysis = () => {
       fetchBookingDates();  
     }
   }, [isRefreshing]);
+
+  const handleMonthChange = async (month, year) => {
+  try {
+    if (selectedAgentId) {
+      const res = await getAgentCallsByMonth(selectedAgentId, month, year);
+      setCallHistoryData(res.calls || []);
+      setapiCallHistory(res.calls || []);
+    } else {
+      const res = await getUserCallsByMonth(userId, month, year);
+      setCallHistoryData(res.calls || []);
+      setapiCallHistory(res.calls || []);
+    }
+    
+  } catch (error) {
+    console.error("Error fetching month data:", error);
+    setCallHistoryData([]);
+    setapiCallHistory([]);
+  }
+};
 
   return (
     <div className={styles.container}>
@@ -291,6 +319,11 @@ const AgentAnalysis = () => {
           onChange={handleDateClick}
           value={selectedDate}
           tileContent={tileContent}
+          onActiveStartDateChange={({ activeStartDate }) => {
+            const m = activeStartDate.getMonth() + 1;
+            const y = activeStartDate.getFullYear();
+            handleMonthChange(m, y);
+          }}
           calendarType="gregory"
           className={styles.reactCalendar}
         />
@@ -315,7 +348,13 @@ const AgentAnalysis = () => {
                   className={styles.bookingItem}
                   onClick={() => {
                     if (isCall && item.call_id) {
-                      navigate(`/call-details/${item.call_id}`);
+                      // navigate(`/call-details/${item.call_id}`);
+                      navigate(`/call-details/${item.call_id}`, {
+                        state: {
+                          agentId: item.agent_id,
+                          start_timestamp: item.start_timestamp
+                        }
+                      });
                     }
                   }}
                   style={{ cursor: isCall ? "pointer" : "default" }}
