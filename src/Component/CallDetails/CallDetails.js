@@ -22,7 +22,7 @@ const CallDetails = () => {
   const agentData = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
-    const { agents,} = useDashboardStore();
+  const { agents, } = useDashboardStore();
   const { callId } = useParams();
   // const agents = agentData?.state?.agents || [];
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ const CallDetails = () => {
   };
 
   useEffect(() => {
-    if (!callId || !agentId ||!start_timestamp) return;
+    if (!callId || !agentId || !start_timestamp) return;
 
     const fetchCallDetails = async () => {
       try {
@@ -75,8 +75,8 @@ const CallDetails = () => {
         //     },
         //   }
         // );
-       const res =await getAgentCallById(agentId,callId,start_timestamp)
-      //  console.log('res',res)
+        const res = await getAgentCallById(agentId, callId, start_timestamp)
+        //  console.log('res',res)
 
         setCallData(res?.call);
       } catch (err) {
@@ -126,7 +126,7 @@ const CallDetails = () => {
   let data = callData.call_analysis?.custom_analysis_data;
   let name = data?.name || "";
 
-  let lead_type = data?.lead_type||"";
+  let lead_type = data?.lead_type || "";
 
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
@@ -189,10 +189,10 @@ const CallDetails = () => {
             </div>
             <div
               className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
-                  ? styles.green
-                  : callData.call_analysis?.user_sentiment === "Neutral"
-                    ? styles.yellow
-                    : styles.red
+                ? styles.green
+                : callData.call_analysis?.user_sentiment === "Neutral"
+                  ? styles.yellow
+                  : styles.red
                 }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
@@ -397,50 +397,43 @@ const CallDetails = () => {
                 <h1>Call Transcript</h1>
               </div>
               <div className={styles.ChatBox2}>
-                {transcript.map((entry, index) => (
-                  <div key={index} className={styles.messageWrapper}>
-                    {entry.role === "agent" ? (
-                      <>
-                        <div className={styles.messageLeftWrapper}>
-                          <img
-                            src={
-                              `/${currentAgent?.avatar}` ||
-                              "/svg/default-agent.svg"
-                            }
-                            alt="Agent"
-                            className={styles.profileImage}
-                          />
-
-                          <div className={styles.messageLeft}>
-                            <div className={styles.bubbleLeft}>
-                              {entry.content}
-                            </div>
-                            <span className={styles.time}>
-                              {callData?.agent_id
-                                ? formatName(
-                                  agents.find(
-                                    (a) => a.agent_id === callData.agent_id
-                                  )?.agentName
-                                ) || "Unknown Agent"
-                                : "Loading..."}
-                            </span>
+              {transcript.map((entry, index) => (
+                  entry.role === "agent" ? (
+                    <div key={index} className={styles.messageWrapper}>
+                      <div className={styles.messageLeftWrapper}>
+                        <img
+                          src={
+                            `/${currentAgent?.avatar}` || "/svg/default-agent.svg"
+                          }
+                          alt="Agent"
+                          className={styles.profileImage}
+                        />
+                        <div className={styles.messageLeft}>
+                          <div className={styles.bubbleLeft}>
+                            {entry.content}
                           </div>
+                          <span className={styles.time}>
+                            {callData?.agent_id
+                              ? formatName(
+                                agents.find(
+                                  (a) => a.agent_id === callData.agent_id
+                                )?.agentName
+                              ) || "Unknown Agent"
+                              : "Loading..."}
+                          </span>
                         </div>
-
-                      </>
-                    ) : (
-                      <>
-                        <div className={styles.messageWrapper2}>
-                          <div className={styles.messageRight}>
-                            <div className={styles.bubbleRight}>
-                              {entry.content}
-                            </div>
-                          </div>
-                          <span className={styles.time}>User</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={index} className={styles.messageWrapper2}>
+                      <div className={styles.messageRight}>
+                        <div className={styles.bubbleRight}>
+                          {entry.content}
                         </div>
-                      </>
-                    )}
-                  </div>
+                      </div>
+                      <span className={styles.time}>User</span>
+                    </div>
+                  )
                 ))}
               </div>
             </DetailModal>
