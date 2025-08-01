@@ -1637,6 +1637,7 @@ function Dashboard() {
 
   const handleTogglePayG = async () => {
 
+
     try {
       const requestData = {
         customerId: customer_id,
@@ -1681,6 +1682,7 @@ function Dashboard() {
       console.error("Error during upgrade:", error);
     }
   };
+
 
   return (
     <div>
@@ -2044,6 +2046,14 @@ function Dashboard() {
                         )}
 
 
+                      <div>
+                        <div onClick={handleTogglePayG}
+                          className={styles.OptionItem}
+
+                        >
+                          Active PayG
+                        </div>
+                      </div>
 
                     </div>
                   )}
