@@ -74,6 +74,7 @@ function Dashboard() {
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
+   const [timeZone, setTimeZone] = useState("")
   // Cal API modal & event states
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -153,7 +154,7 @@ function Dashboard() {
   const isConfirmedRef = useRef(false);
   const [activeSubs, setActiveSubs] = useState(false)
 
-  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+  // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 
 
   const checkActiveSubscription = async () => {
