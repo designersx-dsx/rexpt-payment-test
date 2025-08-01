@@ -48,6 +48,7 @@ export default function Home() {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [loadedMonths, setLoadedMonths] = useState([]);
   const [loadMoreError, setLoadMoreError] = useState("");
+  const [loadMoreAvailable, setloadMoreAvailable] = useState(false);
   function extractCallIdFromRecordingUrl(url) {
     if (!url) return null;
     try {
@@ -106,7 +107,7 @@ export default function Home() {
   //     setLoading(false);
   //   }
   // };
- 
+//  console.log(loadMoreAvailable)
    const fetchCalls = async (month, year, append = false) => {
     try {
       setLoading(true);
@@ -124,6 +125,8 @@ export default function Home() {
 
       // Month store
       setLoadedMonths(prev => [...prev, `${month}-${year}`]);
+
+      setloadMoreAvailable(res.hasRecordingsLastMonths)
     } catch (err) {
       console.error("Error fetching calls:", err);
     } finally {
@@ -412,7 +415,7 @@ export default function Home() {
           </table>
         </div>
               
-      {currentPage === totalPages &&
+      {(currentPage == totalPages || loadMoreAvailable)&&
         <div className={styles.bottomBar}>
           {loadMoreError && <span className={styles.error}>{loadMoreError}</span>}
           <button onClick={loadMore} disabled={loading}>
