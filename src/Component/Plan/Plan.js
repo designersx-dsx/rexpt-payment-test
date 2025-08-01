@@ -43,8 +43,8 @@ const Planss = () => {
 
     const [activeCount, setactiveCount] = useState(null)
     const [PaygSubscriptionId, setPaygSubscriptionId] = useState(null)
-    console.log("activeCount", activeCount)
-    console.log("PaygSubscriptionId", PaygSubscriptionId)
+    // console.log("activeCount", activeCount)
+    // console.log("PaygSubscriptionId", PaygSubscriptionId)
 
     let agentID = location?.state?.agentID
 
@@ -60,7 +60,6 @@ const Planss = () => {
     const isPayg = urlParams.get('isPayg');
     useEffect(() => {
         if (isPayg === "true") {
-            // console.log("RUNNNNN")
             localStorage.setItem("isPayg", true)
         }
     }, [])
@@ -359,7 +358,7 @@ const Planss = () => {
     };
 
     const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
-console.log({paygEnabled})
+
     // Handle the Payg enable/disable toggle change
     const handlePaygToggle = async () => {
 
@@ -550,16 +549,13 @@ console.log({paygEnabled})
             // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
             // setPopupType("failed");
         }
-        finally{
-          setLoading(false);    
-        }
     };
 
     useEffect(() => {
         if (agentID) {
             checkAgentPaygStatus(agentID);
         }
-    }, [paygEnabled]);
+    }, [agentID]);
 
 
     if (loading)
@@ -573,7 +569,8 @@ console.log({paygEnabled})
     return (
         <div className={styles.subscriptionMain}>
             <div className={styles.firstdiv}>
-                <HeaderBar title="Upgrade Plan" />
+                {subscriptionID ? <HeaderBar title="Upgrade Plan" /> : <HeaderBar title="Select Plan" />}
+
                 {agentCount == 0 ? <label className={styles.freeTrialBtn} onChange={handleClick}>
                     FREE TRIAL
                     <input
