@@ -1639,6 +1639,7 @@ function Dashboard() {
 
 
     try {
+      console.log({customer_id})
       const requestData = {
         customerId: customer_id,
         agentId: agentId,
