@@ -176,9 +176,9 @@ function Dashboard() {
   }, [])
 
 
-    setActiveSubs(res?.data?.paymentDone)
+  //   setActiveSubs(res?.data?.paymentDone)
 
-  }
+  // }
   useEffect(() => {
     setTimeout(() => {
       checkActiveSubscription()
