@@ -1,13 +1,16 @@
 import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styles from "../CallDetails/CallDetails.module.css";
 import Loader2 from "../Loader2/Loader2";
 import DetailModal from "../DetailModal/DetailModal";
 import { useDashboardStore } from "../../Store/agentZustandStore";
+import { getAgentCallById } from "../../Store/apiStore";
 
 
 const CallDetails = () => {
+  const location = useLocation();   //adding json call history
+  const { agentId, start_timestamp } = location.state || {}; //adding json call history
   const [isChatModalOpen, setChatModalOpen] = useState(false);
   const [callData, setCallData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,7 +22,7 @@ const CallDetails = () => {
   const agentData = JSON.parse(
     sessionStorage.getItem("dashboard-session-storage")
   );
-    const { agents,} = useDashboardStore();
+  const { agents, } = useDashboardStore();
   const { callId } = useParams();
   // const agents = agentData?.state?.agents || [];
   const navigate = useNavigate();
@@ -60,19 +63,22 @@ const CallDetails = () => {
   };
 
   useEffect(() => {
-    if (!callId) return;
+    if (!callId || !agentId || !start_timestamp) return;
 
     const fetchCallDetails = async () => {
       try {
-        const res = await axios.get(
-          `https://api.retellai.com/v2/get-call/${callId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-            },
-          }
-        );
-        setCallData(res.data);
+        // const res = await axios.get(
+        //   `https://api.retellai.com/v2/get-call/${callId}`,
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+        //     },
+        //   }
+        // );
+        const res = await getAgentCallById(agentId, callId, start_timestamp)
+        //  console.log('res',res)
+
+        setCallData(res?.call);
       } catch (err) {
         console.error("Error fetching call details:", err);
         setError("Could not load call details.");
@@ -100,7 +106,7 @@ const CallDetails = () => {
   if (error) return <p>{error}</p>;
 
   const transcript = callData.transcript_object || [];
-  const formattedDate = new Date(callData.end_timestamp).toLocaleDateString(
+  const formattedDate = new Date(callData?.end_timestamp)?.toLocaleDateString(
     "en-GB",
     {
       day: "2-digit",
@@ -108,7 +114,7 @@ const CallDetails = () => {
       year: "numeric",
     }
   );
-  const formattedTime = new Date(callData.end_timestamp).toLocaleTimeString(
+  const formattedTime = new Date(callData?.end_timestamp)?.toLocaleTimeString(
     "en-GB",
     {
       hour: "2-digit",
@@ -116,9 +122,11 @@ const CallDetails = () => {
       hour12: true,
     }
   );
+  // console.log('callData',callData)
   let data = callData.call_analysis?.custom_analysis_data;
-  let name = data?.name || data["_detailed _call _summery"];
-  let lead_type = data[ "lead_type"];
+  let name = data?.name || "";
+
+  let lead_type = data?.lead_type || "";
 
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
@@ -181,10 +189,10 @@ const CallDetails = () => {
             </div>
             <div
               className={`${styles.status} ${callData.call_analysis?.user_sentiment === "Positive"
-                  ? styles.green
-                  : callData.call_analysis?.user_sentiment === "Neutral"
-                    ? styles.yellow
-                    : styles.red
+                ? styles.green
+                : callData.call_analysis?.user_sentiment === "Neutral"
+                  ? styles.yellow
+                  : styles.red
                 }`}
             >
               <p>{callData.call_analysis?.user_sentiment || "N/A"}</p>
@@ -225,7 +233,7 @@ const CallDetails = () => {
           <div className={styles.dataCard}>
             <div className={styles.PhoneNumber}>
               <p>Phone number</p>
-              <b>{data.phone_number ? data.phone_number : '-'}</b>
+              <b>{data?.phone_number ? data.phone_number : '-'}</b>
             </div>
             <div className={styles.EmailAddress}>
               <p>Email address</p>
@@ -389,50 +397,43 @@ const CallDetails = () => {
                 <h1>Call Transcript</h1>
               </div>
               <div className={styles.ChatBox2}>
-                {transcript.map((entry, index) => (
-                  <div key={index} className={styles.messageWrapper}>
-                    {entry.role === "agent" ? (
-                      <>
-                        <div className={styles.messageLeftWrapper}>
-                          <img
-                            src={
-                              `/${currentAgent?.avatar}` ||
-                              "/svg/default-agent.svg"
-                            }
-                            alt="Agent"
-                            className={styles.profileImage}
-                          />
-
-                          <div className={styles.messageLeft}>
-                            <div className={styles.bubbleLeft}>
-                              {entry.content}
-                            </div>
-                            <span className={styles.time}>
-                              {callData?.agent_id
-                                ? formatName(
-                                  agents.find(
-                                    (a) => a.agent_id === callData.agent_id
-                                  )?.agentName
-                                ) || "Unknown Agent"
-                                : "Loading..."}
-                            </span>
+              {transcript.map((entry, index) => (
+                  entry.role === "agent" ? (
+                    <div key={index} className={styles.messageWrapper}>
+                      <div className={styles.messageLeftWrapper}>
+                        <img
+                          src={
+                            `/${currentAgent?.avatar}` || "/svg/default-agent.svg"
+                          }
+                          alt="Agent"
+                          className={styles.profileImage}
+                        />
+                        <div className={styles.messageLeft}>
+                          <div className={styles.bubbleLeft}>
+                            {entry.content}
                           </div>
+                          <span className={styles.time}>
+                            {callData?.agent_id
+                              ? formatName(
+                                agents.find(
+                                  (a) => a.agent_id === callData.agent_id
+                                )?.agentName
+                              ) || "Unknown Agent"
+                              : "Loading..."}
+                          </span>
                         </div>
-
-                      </>
-                    ) : (
-                      <>
-                        <div className={styles.messageWrapper2}>
-                          <div className={styles.messageRight}>
-                            <div className={styles.bubbleRight}>
-                              {entry.content}
-                            </div>
-                          </div>
-                          <span className={styles.time}>User</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={index} className={styles.messageWrapper2}>
+                      <div className={styles.messageRight}>
+                        <div className={styles.bubbleRight}>
+                          {entry.content}
                         </div>
-                      </>
-                    )}
-                  </div>
+                      </div>
+                      <span className={styles.time}>User</span>
+                    </div>
+                  )
                 ))}
               </div>
             </DetailModal>

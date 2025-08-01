@@ -220,7 +220,8 @@ export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) 
 
 export const getAllAgentCalls = async (userId) => {
   try {
-    const res = await api.get(`/agent/user/${userId}/agent/calls`, {
+    // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
+    const res = await api.get(`callHistory/agent-call-history/last3months/users/${userId}`, {
       headers: {
         Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
       },
@@ -231,6 +232,70 @@ export const getAllAgentCalls = async (userId) => {
     throw new Error("Failed to fetch agent calls");
   }
 };
+
+export const getAgentCallById = async (agentId,callId,start_timestamp) => {
+  try {
+    // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
+    const res = await api.get(`callHistory/getSpecificCallData/call/${agentId}/${callId}?start_timestamp=${start_timestamp}`, {
+      headers: {
+        Authorization: `Bearer $${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching agent calls:", error.response?.data || error.message);
+    throw new Error("Failed to fetch agent calls");
+  }
+};
+
+export const getAgentCalls = async (agentId) => {
+  try {
+    // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
+    const res = await api.get(`/callHistory/agentCalLHistory/${agentId}/last3months`, {
+      headers: {
+        Authorization: `Bearer $${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching agent calls:", error.response?.data || error.message);
+    throw new Error("Failed to fetch agent calls");
+  }
+};
+export async function getUserCallsByMonth(userId, month, year) {
+    try {
+  const res = await axios.get(`${API_BASE_URL}/callHistory/user/${userId}/calls-by-month`, {
+    params: { month, year },
+     headers: {
+        Authorization: `Bearer $${token}`,
+      },
+  });
+  return res.data;
+   } catch (error) {
+    console.error("Error fetching agent calls:", error.response?.data || error.message);
+    // throw new Error("Failed to fetch agent calls");
+        return error?.response?.data ;
+
+  }
+}
+
+// Specific agent ka month-wise
+export async function getAgentCallsByMonth(agentId, month, year) {
+    try {
+  const res = await axios.get(`${API_BASE_URL}/callHistory/agent/${agentId}/calls-by-month`, {
+    params: { month, year },
+     headers: {
+        Authorization: `Bearer $${token}`,
+      },
+  });
+  return res.data;
+   } catch (error) {
+    console.error("Error fetching agent calls:", error.response?.data || error.message);
+    return error?.response?.data ;
+    // throw new Error("Failed to fetch agent calls");
+  }
+}
+
 export const fetchUserDetails = async (id) => {
   const userId = id
   try {
@@ -481,6 +546,14 @@ export const fetchAvailablePhoneNumberByCountry = async (country_code, locality,
 export const createNumberOrder = async (phoneNumbers,agent_id) => {
   try {
     const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id})
+    return res.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const createEvent=async(apiKey,eventName,slug,eventLength)=>{
+  try {
+    const res = await axios.post(`${API_BASE_URL}/agent/createCalEvent`, { apiKey:apiKey,eventName:eventName,slug:slug,eventLength:eventLength})
     return res.data;
   } catch (error) {
     console.log(error)

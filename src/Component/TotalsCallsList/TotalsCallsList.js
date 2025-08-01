@@ -3,11 +3,12 @@ import { useContext, useEffect, useState } from "react";
 import styles from "./TotalsCallsList.module.css";
 import HeaderFilter from "../HeaderFilter/HeaderFilter";
 import axios from "axios";
-import { API_BASE_URL, getAllAgentCalls } from "../../Store/apiStore";
+import { API_BASE_URL, getAgentCalls, getAgentCallsByMonth, getAllAgentCalls, getUserCallsByMonth } from "../../Store/apiStore";
 import Loader from "../Loader/Loader";
 import Loader2 from "../Loader2/Loader2";
 import { useNavigate } from "react-router-dom";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
+import { red } from "@mui/material/colors";
 
 const options = [
   { id: 1, label: "All", imageUrl: "svg/ThreOpbtn.svg" },
@@ -20,6 +21,7 @@ const callsPerPage = 6;
 export default function Home() {
   const totalAgentView = localStorage.getItem("filterType");
   const sessionAgentId = sessionStorage.getItem("agentId") || "";
+  const [refresh,setRefresh]=useState(false)
   const isRefreshing = useContext(RefreshContext);
   const [agentId, setAgentId] = useState(
     totalAgentView === "all" ? "all" : sessionAgentId || ""
@@ -42,6 +44,11 @@ export default function Home() {
   );
   const [filters, setFilters] = useState({ leadType: [], channel: "" });
   const userId = localStorage.getItem("userId") || "";
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [loadedMonths, setLoadedMonths] = useState([]);
+  const [loadMoreError, setLoadMoreError] = useState("");
+  const [loadMoreAvailable, setloadMoreAvailable] = useState(false);
   function extractCallIdFromRecordingUrl(url) {
     if (!url) return null;
     try {
@@ -52,53 +59,105 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    if (agentId === "all") {
-      fetchAllAgentCalls();
-    } else if (agentId) {
-      fetchCallHistory(agentId);
-    }
-  }, [agentId]);
-  const fetchCallHistory = async () => {
+  // useEffect(() => {
+  //   if (agentId === "all") {
+  //     fetchAllAgentCalls();
+  //   } else if (agentId) {
+  //     fetchCallHistory(agentId);
+  //   }
+  // }, [agentId]);
+  // const fetchCallHistory = async () => {
+  //   try {
+  //     setLoading(true);
+  //     if (agentId) {
+  //       const response = await axios.get(
+  //         `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       // const calls = (response.data.filteredCalls || []).map((call) => ({
+  //       //   ...call,
+  //       //   call_id:
+  //       //     call.call_id || extractCallIdFromRecordingUrl(call.recording_url),
+  //       // }));
+  //       const data = await getAgentCalls(agentId) ||[]
+
+  //       setData(data?.calls);
+  //     } else {
+  //       setData([]);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching call history:", error);
+  //     setData([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  // const fetchAllAgentCalls = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const res = await getAllAgentCalls(userId);
+  //     setData(res.calls || []);
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+//  console.log(loadMoreAvailable)
+   const fetchCalls = async (month, year, append = false) => {
     try {
       setLoading(true);
-      if (agentId) {
-        const response = await axios.get(
-          `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const calls = (response.data.filteredCalls || []).map((call) => ({
-          ...call,
-          call_id:
-            call.call_id || extractCallIdFromRecordingUrl(call.recording_url),
-        }));
-
-        setData(calls);
+      let res;
+      if (agentId === "all") {
+        res = await getUserCallsByMonth(userId, month, year);
       } else {
-        setData([]);
+        res = await getAgentCallsByMonth(agentId, month, year);
       }
-    } catch (error) {
-      console.error("Error fetching call history:", error);
-      setData([]);
+      if(res.status==false){
+        setLoadMoreError("No more calls to load");
+      }
+      const newCalls = res?.calls || [];
+      setData(prev => append ? [...prev, ...newCalls] : newCalls);
+
+      // Month store
+      setLoadedMonths(prev => [...prev, `${month}-${year}`]);
+
+      setloadMoreAvailable(res.hasRecordingsLastMonths)
+    } catch (err) {
+      console.error("Error fetching calls:", err);
     } finally {
       setLoading(false);
     }
   };
-  const fetchAllAgentCalls = async () => {
-    setLoading(true);
-    try {
-      const res = await getAllAgentCalls(userId);
-      setData(res.calls || []);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+
+  useEffect(() => {
+    // First load current month
+    fetchCalls(currentMonth, currentYear);
+  }, [agentId,refresh]);
+
+  const loadMore = () => {
+    let month = currentMonth - 1;
+    let year = currentYear;
+
+    if (month < 1) {
+      month = 12;
+      year = year - 1;
+    }
+
+    // Update month-year for tracking
+    setCurrentMonth(month);
+    setCurrentYear(year);
+
+    // Avoid duplicate fetch
+    if (!loadedMonths.includes(`${month}-${year}`)) {
+      fetchCalls(month, year, true);
     }
   };
+
   const convertMsToMinSec = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
     const seconds = Math.floor((durationMs % 60000) / 1000);
@@ -111,7 +170,7 @@ export default function Home() {
     const time = dateObj.toLocaleTimeString();
     return { date, time };
   };
-  const filteredData = data.filter((call) => {
+  const filteredData = data?.filter((call) => {
     // Sentiment Filter (apply only if not "All")
     const sentimentMatch =
       selectedSentiment === "All" ||
@@ -165,7 +224,7 @@ export default function Home() {
 
   // Function to handle the "All Agents" selection logic
   const handleSelectAllAgents = () => {
-    fetchAllAgentCalls();
+    // fetchAllAgentCalls();
     // Perform additional logic related to "All Agents" if needed
   };
   const navigate = useNavigate();
@@ -191,15 +250,15 @@ export default function Home() {
         return "";
     }
   };
-  useEffect(() => {
-    if (isRefreshing) {
-      if (agentId === "all") {
-        fetchAllAgentCalls();
-      } else {
-        fetchCallHistory();
-      }
-    }
-  }, [isRefreshing]);
+  // useEffect(() => {
+  //   if (isRefreshing) {
+  //     if (agentId === "all") {
+  //       fetchAllAgentCalls();
+  //     } else {
+  //       fetchCallHistory();
+  //     }
+  //   }
+  // }, [isRefreshing]);
 
   return (
     <div className={styles.container}>
@@ -218,9 +277,16 @@ export default function Home() {
           }}
           selectedAgentId={agentId}
           onAgentChange={(newAgentId) => {
+            setRefresh((prev)=>!prev)
+           setCurrentMonth(new Date().getMonth() + 1);
+           setCurrentYear(new Date().getFullYear());
+           setLoadedMonths([]);
             setAgentId(newAgentId);
             sessionStorage.setItem("agentId", newAgentId);
             localStorage.setItem("filterType", "agent");
+            setLoadMoreError("")
+            setCurrentPage(1)
+
           }}
           isCallSummary={data}
           filters={filters}
@@ -258,13 +324,19 @@ export default function Home() {
                 currentCalls.map((call, i) => (
                   <tr
                     key={i}
-                    className={styles.clickableRow}
+                    className={styles.clickableRow} 
                     onClick={() => {
                       if (!call.call_id) {
                         console.warn("Missing call_id for this call:", call);
                         return;
                       }
-                      navigate(`/call-details/${call.call_id}`);
+                      // navigate(`/call-details/${call.call_id}`);
+                          navigate(`/call-details/${call.call_id}`, {
+                        state: {
+                          agentId: call.agent_id,
+                          start_timestamp: call.start_timestamp
+                        }
+                      });
                     }}
                   >
                     <td> <div className={styles.callDateTime}>
@@ -342,41 +414,56 @@ export default function Home() {
             </tbody>
           </table>
         </div>
+              
+      {(currentPage == totalPages || loadMoreAvailable)&&
+        <div className={styles.bottomBar}>
+          {loadMoreError && <span className={styles.error}>{loadMoreError}</span>}
+          <button onClick={loadMore} disabled={loading}>
+            Load More
+          </button>
+        </div>
+      }
+          {/* Pagination */}
+          {filteredData.length > 0 && (
+            <>
+            
+            <div className={styles.pagination}>
+            
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                &lt;
+              </button>
 
-        {/* Pagination */}
-        {filteredData.length > 0 && (
-          <div className={styles.pagination}>
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              &lt;
-            </button>
+              {[...Array(totalPages)].map((_, idx) => {
+                const pageNum = idx + 1;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={
+                      currentPage === pageNum ? styles.pageButtonActive : ""
+                    }
+                  >
+                    {pageNum}
+                  </button>
+                  
+                  
+                );
+              })}
 
-            {[...Array(totalPages)].map((_, idx) => {
-              const pageNum = idx + 1;
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => handlePageChange(pageNum)}
-                  className={
-                    currentPage === pageNum ? styles.pageButtonActive : ""
-                  }
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              &gt;
-            </button>
-          </div>
-        )}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                &gt;
+              </button>            
+            </div>
+            </>
+          )}
       </div>
+      
     </div>
   );
 }

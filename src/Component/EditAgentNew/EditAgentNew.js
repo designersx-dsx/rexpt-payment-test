@@ -103,6 +103,7 @@ const EditAgentNew = () => {
       localStorage.setItem("googleUrl", business.googleUrl);
       localStorage.setItem("webUrl", business.webUrl);
       localStorage.setItem("aboutBusiness", business.aboutBusiness);
+
       localStorage.setItem(
         "additionalInstruction",
         business.additionalInstruction
@@ -110,6 +111,7 @@ const EditAgentNew = () => {
       localStorage.setItem("knowledge_base_name", business.knowledge_base_name);
       localStorage.setItem("knowledge_base_id", business.knowledge_base_id);
      sessionStorage.setItem("callRecording",agent.CallRecording==1?true:false)
+     sessionStorage.setItem("state", business.state);
       //need to clear above
 
       sessionStorage.setItem(
