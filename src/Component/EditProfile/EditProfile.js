@@ -49,6 +49,10 @@ const EditProfile = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Payg states
+  const params = new URLSearchParams(window.location.search);
+
+const isPayg = params.get('isPayg');
+console.log("isPayg:", isPayg );
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
   const [customerId, setcustomerId] = useState()
   const [userId1, setuserId1] = useState()
@@ -444,7 +448,7 @@ const EditProfile = () => {
                   src="svg/Notification.svg"
                   alt="Back-icon"
                   className={styles.imageIcon}
-                  onClick={handleBack}
+                onClick={() => isPayg === "true" ? navigate('/dashboard') : handleBack()}
                 />
                 <p>My Account</p>
               </div>

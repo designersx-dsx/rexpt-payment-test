@@ -2046,14 +2046,7 @@ function Dashboard() {
                         )}
 
 
-                      <div>
-                        <div onClick={handleTogglePayG}
-                          className={styles.OptionItem}
-
-                        >
-                          Active PayG
-                        </div>
-                      </div>
+                    
 
                     </div>
                   )}
