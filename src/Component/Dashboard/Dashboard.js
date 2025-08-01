@@ -1583,19 +1583,19 @@ function Dashboard() {
     return number;
   }
   const handleTogglePayG = async () => {
-  try {
-    // if (!agentId) {
-    //   console.error("Agent ID is not set.");
-    //   return; // Prevent further execution if agentId is not available.
-    // }
+    try {
+      // if (!agentId) {
+      //   console.error("Agent ID is not set.");
+      //   return; // Prevent further execution if agentId is not available.
+      // }
 
-    const res = await handleUpgradeClick(agentId);
-    console.log({ res });
+      const res = await handleUpgradeClick(agentId);
+      console.log({ res });
 
-  } catch (error) {
-    console.error("Error during upgrade:", error);
-  }
-};
+    } catch (error) {
+      console.error("Error during upgrade:", error);
+    }
+  };
   return (
     <div>
 
@@ -1804,10 +1804,10 @@ function Dashboard() {
 
                 <div
                   className={styles.FilterIcon}
-                onClick={(e) => {
-  toggleDropdown(e, agent.agent_id);
-  setagentId(agent.agent_id);
-}}
+                  onClick={(e) => {
+                    toggleDropdown(e, agent.agent_id);
+                    setagentId(agent.agent_id);
+                  }}
                   ref={dropdownRef}
                 >
                   <svg
@@ -1945,17 +1945,17 @@ function Dashboard() {
                         )}
 
 
-                        <div>
-                            <div onClick={handleTogglePayG}
-                              className={styles.OptionItem}
-                             
-                            >
-                             Active PayG
-                            </div>
-                          </div> 
+                      <div>
+                        <div onClick={handleTogglePayG}
+                          className={styles.OptionItem}
+
+                        >
+                          Active PayG
+                        </div>
+                      </div>
                     </div>
                   )}
-                  
+
                 </div>
               </div>
               <hr className={styles.agentLine} />
