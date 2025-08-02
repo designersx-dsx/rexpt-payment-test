@@ -108,11 +108,14 @@ const SignUp = () => {
         sessionStorage.setItem("referredBy", tempReferral);
         sessionStorage.setItem("selectedPlan", tempLandingSelectedPlan);
         sessionStorage.setItem("referredByName", tempReferredByName);
+        if (response?.data?.paymentDone) {
+          localStorage.setItem("paymentDone", true);
+        }
         localStorage.setItem(
           "showreferralfloating",
           response?.data?.user?.showreferralfloating
         );
-
+        console.log(response, "thussa")
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");
@@ -131,7 +134,18 @@ const SignUp = () => {
           "onboardComplete",
           verifiedUser ? "true" : "false"
         );
-        navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });
+
+        if (!response?.data?.user?.verifyDetails) {
+          navigate("/details", { replace: true });
+        }
+        if (response?.data?.paymentDone) {
+          
+          navigate(verifiedUser ? "/steps" : "/details", { replace: true });
+        }
+        else {
+          navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });
+        }
+
       } else {
         setPopupType("failed");
         setShowPopup(true);

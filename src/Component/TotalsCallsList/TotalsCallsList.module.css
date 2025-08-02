@@ -73,8 +73,8 @@
 }
 
 .tbody tr:hover {
-  background-color: #F3EEFF; 
-  border-bottom: 1px solid #d4d4d4; 
+  background-color: #F3EEFF;
+  border-bottom: 1px solid #d4d4d4;
 
 }
 
@@ -132,7 +132,7 @@
 .pagination {
   display: flex;
   max-width: 600px;
-   width: 50vw;
+  width: 50vw;
   justify-content: center;
   gap: 8px;
   padding: 16px 0;
@@ -178,37 +178,278 @@
   text-transform: capitalize;
 }
 
+
+.bottomBar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bottomBar span {
+  text-align: center;
+  margin-top: 1rem;
+}
+.bottomBar button{
+      border: none;
+    background-color: #6524eb;
+    color: #ffffff;
+    width: max-content;
+    padding-inline: 20px;
+    border-radius: 10px;
+    min-height: 30px;
+    margin: 1rem auto;
+}
 @media screen and (min-width: 601px) {
-.container {
+  .container {
     /* min-height: 100vh; */
     max-width: unset;
-    
+
     width: 50%;
     margin: auto;
-}
+  }
 
-.pagination {
-       left: 0;
+  .pagination {
+    left: 0;
     right: 0;
-    
-}
+
+  }
 
 
 }
 
-@media (max-width:600px){
-   .pagination {
-  display: flex;
-  max-width: 600px;
-   width: 100%;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px 0;
+@media (max-width:600px) {
+  .pagination {
+    display: flex;
+    max-width: 600px;
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 0;
+    position: fixed;
+    bottom: 1rem;
+    margin: auto;
+    left: 0;
+    right: 0px;
+  }
+
+}
+
+/* Floating Export Button */
+.exportButton {
   position: fixed;
-  bottom: 1rem;
-  margin: auto;
-  left: 0;
-  right: 0px;
+  bottom: 70px;  
+  right: 20px;    
+  background-color:  #6524eb; 
+  color: white; 
+  padding: 15px 25px;
+  border-radius: 50px; 
+  border: none;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 9999; 
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease; 
 }
 
+.exportButton:hover {
+  background-color: #5f33e1; 
+  transform: translateY(-3px); 
+}
+
+
+.exportButton:focus {
+  outline: none;
+}
+
+.exportButton:active {
+  transform: scale(1); 
+}
+
+.exportButton:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+.fadeIn {
+  opacity: 1;
+}
+
+.fadeOut {
+  opacity: 0;
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.exportModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Content Box */
+.modalContent {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: slideUp 0.5s ease-in-out;
+}
+
+/* Modal Slide-in Animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Select Container (Year & Month) */
+.selectContainer {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+select {
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  background-color: #fafafa;
+  color: #333;
+  width: 45%;
+  transition: border 0.3s ease;
+}
+
+/* Hover/Focus Styling for Select */
+select:hover,
+select:focus {
+  border-color: #7b61ff;
+  box-shadow: 0 0 5px rgba(123, 97, 255, 0.5);
+}
+
+/* Buttons Container */
+.buttonsContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+/* Cancel Button */
+.cancelButton {
+  background-color: #fcfbfe;
+  color: #333;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.cancelButton:hover {
+  background-color: #c0c0c0;
+}
+
+/* Submit Button */
+.submitButton {
+  background-color: #6524eb;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color: #5f33e1;
+}
+
+.exportModal .overlay {
+  display: block;
+}
+
+/* Modal Close Button */
+exportModal .close {
+  font-size: 24px;
+  color: #fff;
+  background-color: #333;
+  border-radius: 50%;
+  padding: 8px 12px;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.close:hover {
+  background-color: #7b61ff;
 }

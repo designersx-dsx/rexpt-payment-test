@@ -3,6 +3,7 @@ import axios from "axios";
 import { API_BASE_URL, listAgents, updateAgent } from "../Store/apiStore";
 import decodeToken from "../lib/decodeToken";
 import { getAgentPrompt, useAgentPrompt } from "./useAgentPrompt";
+import getTimezoneFromState from "../lib/timeZone";
 // import { createAgent, updateAgent } from '../api'; // adjust path
 
 const getFromStorage = (key, fallback = "") =>
@@ -19,10 +20,11 @@ export const useAgentCreator = ({
 }) => {
   const token = localStorage.getItem("token") || "";
   const sessionBusinessiD = sessionStorage.getItem("bId");
+  const state = sessionStorage.getItem("state")
+  console.log(state,"state")
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
-
   // const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
   // const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
   const [agentCount, setAgentCount] = useState(0);
@@ -57,9 +59,9 @@ export const useAgentCreator = ({
       status: true,
     }));
   }
-  //getTimeZone
-  const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+
   const handleCreateAgent = useCallback(async () => {
+ 
     const isValid = stepValidator();
     if (!isValid) return;
     console.log("Creating agent...", isValid);
@@ -72,6 +74,7 @@ export const useAgentCreator = ({
       Corporate: 5,
       Enterprise: 6,
     };
+
     const Buisness = JSON.parse(sessionStorage.getItem("businessDetails"));
     const businessType =
       Buisness?.businessType === "Other"
@@ -139,6 +142,7 @@ export const useAgentCreator = ({
     const CustomservicesArray =
       cleanedCustomServices?.map((item) => item.service) || [];
     const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone);
+    const timeZone = await getTimezoneFromState(getBusinessNameFromGoogleListing?.state);
     const rawPromptTemplate = getAgentPrompt({
       industryKey:
         business?.businessType == "Other"
@@ -181,13 +185,11 @@ export const useAgentCreator = ({
       aboutBusinessForm,
       commaSeparatedServices,
       agentNote,
-      timeZone,
+      timeZone: timeZone?.timezoneId,
       languageAccToPlan,
       plan,
       CallRecording,
     });
-    console.log("CallRecording flag:", CallRecording);
-    console.log("Prompt start:", filledPrompt.slice(0, 300));
 
     const getLeadTypeChoices = () => {
       const fixedChoices = [
@@ -232,6 +234,7 @@ export const useAgentCreator = ({
           .map((item) => item?.service?.trim())
           .filter(Boolean)
           .map((service) => ({ service }));
+         
         try {
           const response = await axios.patch(
             `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`,
@@ -247,6 +250,7 @@ export const useAgentCreator = ({
               customServices: cleanedCustomServices,
             }
           );
+       
           if (sessionStorage.getItem("prevBuisnessType")) {
             sessionStorage.removeItem("prevBuisnessType");
           }
@@ -261,6 +265,7 @@ export const useAgentCreator = ({
       const storedKnowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
       const llm_id =
         localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
+    
       const agentConfig = {
         version: 0,
         model: "gemini-2.0-flash",
@@ -268,140 +273,16 @@ export const useAgentCreator = ({
         model_high_priority: true,
         tool_call_strict_mode: true,
         general_prompt: filledPrompt,
-        general_tools: [],
-        states: [
-          {
-            name: "information_collection",
-            state_prompt: `
-        Greet the user with the begin_message and assist with their query.
-
-  
-        If the user sounds dissatisfied (angry, frustrated, upset) or uses negative words (like "bad service", "unhappy", "terrible","waste of time"),
-        ask them: "I'm sorry to hear that. Could you please tell me about your concern?"
-        Analyze their response. 
-        
-        If the concern contains **spam, irrelevant or abusive content**
-        (e.g., random questions, profanity, jokes), say:
-        "I’m here to assist with service-related concerns. Could you please share your issue regarding our service?"
-        and stay in this state.
-
-        If the concern is **service-related** or **business** (e.g., staff, delay, poor support),
-        transition to dissatisfaction_confirmation.
-
-        If the user asks for an appointment (e.g., "appointment", "book", "schedule"),
-        transition to appointment_booking.
-
-        after extracting user details using the extract_user_info tool,ask the user if they have any other quaries or want to get other information regarding the business.
-
-        If the user asks for address or email, transition to send_email.
-
-        If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
-    `,
-            edges: [
-              {
-                destination_state_name: "appointment_booking",
-                description: "User wants to book an appointment.",
-              },
-              {
-                destination_state_name: "dissatisfaction_confirmation",
-                description: "User sounds angry or expresses dissatisfaction.",
-              },
-            ],
-          },
-          {
-            name: "dissatisfaction_confirmation",
-            state_prompt: `
-        Say: "I'm sorry you're not satisfied. Would you like me to connect you to a team member? Please say yes or no."
-        Wait for their response.
-
-        If the user says yes, transition to call_transfer.
-        If the user says no, transition to end_call_state.
-        If the response is unclear, repeat the question once.
-      `,
-            edges: [
-              {
-                destination_state_name: "call_transfer",
-                description: "User agreed to speak to team member.",
-              },
-              {
-                destination_state_name: "end_call_state",
-                description: "User declined to speak to team member.",
-              },
-            ],
-            tools: [],
-          },
-          {
-            name: "call_transfer",
-            state_prompt: `Connecting you to a team member now. Please hold.`,
-            tools: [
-              {
-                type: "transfer_call",
-                name: "transfer_to_team",
-                description: "Transfer the call to the team member.",
-                transfer_destination: {
-                  type: "predefined",
-                  number: "{{business_Phone}}",
-                },
-                transfer_option: {
-                  type: "cold_transfer",
-                  public_handoff_option: {
-                    message: "Please hold while I transfer your call.",
-                  },
-                },
-                speak_during_execution: true,
-                speak_after_execution: true,
-                failure_message:
-                  "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly.",
-              },
-            ],
-            edges: [],
-          },
-          {
-            name: "appointment_booking",
-            state_prompt: `
-        Help the user book an appointment by asking date, time, and service details.
-        Confirm once all details are provided.
-
-
-
-      `,
-            edges: [
-              {
-                destination_state_name: "end_call_state",
-                description: "User has no further queries after booking.",
-              },
-              {
-                destination_state_name: "information_collection",
-                description:
-                  "User has further queries or provides new information after booking.",
-              },
-            ],
-            tools: [],
-          },
-          {
-            name: "end_call_state",
-            state_prompt: `Politely end the call by saying: "Thank you for calling. Have a great day!"`,
-            tools: [
-              {
-                type: "end_call",
-                name: "end_call",
-                description: "End the call with the user.",
-              },
-            ],
-            edges: [],
-          },
-        ],
         starting_state: "information_collection",
-        // begin_message: `Hi I am ${agentName?.split(" ")[0]}, calling from ${getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom}. How may I help you?`,
         default_dynamic_variables: {
           customer_name: "John Doe",
-          timeZone: "Asia/Kolkata",
+          timeZone: timeZone?.timezoneId          ,
           business_Phone: businessPhone,
           business_email: business.email,
           email: "",
         },
       };
-
+      console.log(agentConfig, "agentConfigagentConfig")
       if (isValid == "BusinessListing") {
         agentConfig.knowledge_base_ids = [storedKnowledgeBaseId];
       }
@@ -506,6 +387,9 @@ export const useAgentCreator = ({
               },
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+
+            // webhook_url: ` https://18a4251b9d16.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+
             normalize_for_speech: true,
           };
           const agent_id =

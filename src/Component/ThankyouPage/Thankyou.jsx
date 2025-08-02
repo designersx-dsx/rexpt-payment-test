@@ -10,8 +10,10 @@ import { API_BASE_URL } from "../../Store/apiStore";
 import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
 
-function Thankyou({ onSubmit }) {
+function Thankyou({ onSubmit, isAgentCreated }) {
   const hasRunRef = useRef(false);
+
+  console.log("isAgentCreated", isAgentCreated);
 
   const navigate = useNavigate();
   const { id: paramMode } = useParams();
@@ -472,10 +474,13 @@ function Thankyou({ onSubmit }) {
                 }}
                 className={styles.dashboardBtn}
                 // disabled={key === "create" ? true : false}
+                disabled={key === "create" ? !isAgentCreated : false} 
               >
                 {key === "create"
-                  ? "Take me to Dashboard"
-                  : "Take me to Dashboard"}
+                  ? isAgentCreated
+                    ? "Take me to Dashboard"
+                    : "Loading..."
+                  : "Take me to Dashboard"}{" "}
               </button>
             </div>
           </div>
