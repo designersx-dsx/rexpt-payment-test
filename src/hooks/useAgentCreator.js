@@ -21,6 +21,7 @@ export const useAgentCreator = ({
   const token = localStorage.getItem("token") || "";
   const sessionBusinessiD = sessionStorage.getItem("bId");
   const state = sessionStorage.getItem("state")
+  console.log(state,"state")
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
@@ -141,7 +142,7 @@ export const useAgentCreator = ({
     const CustomservicesArray =
       cleanedCustomServices?.map((item) => item.service) || [];
     const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone);
-    const timeZone = await getTimezoneFromState(state);
+    const timeZone = await getTimezoneFromState(getBusinessNameFromGoogleListing?.state);
     const rawPromptTemplate = getAgentPrompt({
       industryKey:
         business?.businessType == "Other"
@@ -385,9 +386,9 @@ export const useAgentCreator = ({
                   "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
               },
             ],
-            // webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+            webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
 
-            webhook_url: ` https://18a4251b9d16.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+            // webhook_url: ` https://18a4251b9d16.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
 
             normalize_for_speech: true,
           };
