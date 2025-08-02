@@ -573,6 +573,12 @@
   margin: 20px 0 20px 0;
   text-align: left;
 }
+.Agenttitle span {
+  font-size: 0.8rem; /* smaller than main title */
+  font-weight: 400; /* slightly bolder if needed */
+  color: #555; /* optional: make it lighter */
+  margin-left: 8px; /* spacing from main text */
+}
 
 .agentStats .stat {
   /* min-width: 90px;
