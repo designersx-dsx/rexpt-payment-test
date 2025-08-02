@@ -237,24 +237,23 @@
 /* Floating Export Button */
 .exportButton {
   position: fixed;
-  bottom: 50px;  /* Position from the bottom */
-  right: 20px;    /* Position from the left */
-  background-color: #7b61ff; /* Button color */
-  color: white;  /* Text color */
-  padding: 15px 25px; /* Padding to make the button larger */
-  border-radius: 50px; /* Rounded corners */
+  bottom: 70px;  
+  right: 20px;    
+  background-color:  #6524eb; 
+  color: white; 
+  padding: 15px 25px;
+  border-radius: 50px; 
   border: none;
   font-size: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Shadow for depth */
-  z-index: 9999; /* Make sure it's on top */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 9999; 
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+  transition: background-color 0.3s ease, transform 0.3s ease; 
 }
 
-/* Button Hover Effect */
 .exportButton:hover {
-  background-color: #5f33e1; /* Darker shade on hover */
-  transform: translateY(-3px); /* Small lift on hover */
+  background-color: #5f33e1; 
+  transform: translateY(-3px); 
 }
 
 
@@ -263,11 +262,11 @@
 }
 
 .exportButton:active {
-  transform: scale(1); /* Shrinks back when clicked */
+  transform: scale(1); 
 }
 
 .exportButton:disabled {
-  background-color: #ddd; /* Light grey */
+  background-color: #ddd;
   cursor: not-allowed;
 }
 .overlay {
@@ -312,14 +311,13 @@
   }
 }
 
-/* Modal Background */
 .exportModal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4); /* Dark background with transparency */
+  background-color: rgba(0, 0, 0, 0.4); 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -396,15 +394,15 @@ select:focus {
 }
 
 /* Buttons Container */
-/* .buttonsContainer {
+.buttonsContainer {
   display: flex;
   justify-content: space-between;
   gap: 15px;
-} */
+}
 
 /* Cancel Button */
 .cancelButton {
-  background-color: #7b61ff;
+  background-color: #fcfbfe;
   color: #333;
   padding: 12px 20px;
   border-radius: 8px;
@@ -420,7 +418,7 @@ select:focus {
 
 /* Submit Button */
 .submitButton {
-  background-color: #7b61ff;
+  background-color: #6524eb;
   color: white;
   padding: 12px 20px;
   border-radius: 8px;
@@ -434,7 +432,6 @@ select:focus {
   background-color: #5f33e1;
 }
 
-/* Style when the modal background is clicked */
 .exportModal .overlay {
   display: block;
 }

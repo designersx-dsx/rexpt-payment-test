@@ -311,7 +311,7 @@ export default function Home() {
                 {selectedYear && (
                   <select
                     value={selectedMonth}
-                    onChange={(e) => handleMonthSelect(e.target.value)}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
                     className={styles.monthSelect}
                   >
                     <option value="">Select Month</option>
@@ -330,9 +330,9 @@ export default function Home() {
                 >
                   Cancel
                 </button>
-                {/* <button className={styles.submitButton} onClick={() => handleMonthSelect(selectedMonth)}>
+                <button className={styles.submitButton} onClick={() => handleMonthSelect(selectedMonth)}>
           Submit
-        </button> */}
+        </button>
               </div>
             </div>
           </div>
