@@ -300,7 +300,7 @@ export default function Home() {
                   className={styles.yearSelect}
                 >
                   <option value="">Select Year</option>
-                  {[2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033].map(
+                  {[2025].map(
                     (year) => (
                       <option key={year} value={year}>
                         {year}
@@ -316,9 +316,22 @@ export default function Home() {
                     className={styles.monthSelect}
                   >
                     <option value="">Select Month</option>
-                    {[...Array(12).keys()].map((i) => (
-                      <option key={i} value={i + 1}>
-                        {i + 1}
+                    {[
+                      "January",
+                      "February",
+                      "March",
+                      "April",
+                      "May",
+                      "June",
+                      "July",
+                      "August",
+                      "September",
+                      "October",
+                      "November",
+                      "December",
+                    ].map((month, index) => (
+                      <option key={index} value={index + 1}>
+                        {month}
                       </option>
                     ))}
                   </select>
