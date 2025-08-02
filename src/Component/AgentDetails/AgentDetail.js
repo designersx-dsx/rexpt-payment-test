@@ -1420,7 +1420,7 @@ const AgentDashboard = () => {
               </div> */}
             </div>
             <hr className={styles.line} />
-            <h1 className={styles.Agenttitle}>Agent Analysis</h1>
+            <h1 className={styles.Agenttitle}>Agent Analysis<span>(Current Month)</span></h1>
             <div className={styles.agentStats}>
               <div
                 className={` ${styles.stat} ${styles.Yellow}`}
