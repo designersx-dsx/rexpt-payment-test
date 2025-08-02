@@ -386,7 +386,7 @@ export const useAgentCreator = ({
               },
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-            // webhook_url: `https://58847648a191.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+
             normalize_for_speech: true,
           };
           const agent_id =
