@@ -28,6 +28,7 @@ const options = [
 
 const callsPerPage = 6;
 export default function Home() {
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
   const totalAgentView = localStorage.getItem("filterType");
   const sessionAgentId = sessionStorage.getItem("agentId") || "";
   const [refresh, setRefresh] = useState(false);
@@ -60,7 +61,7 @@ export default function Home() {
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [loadMoreError, setLoadMoreError] = useState("");
-    const [loadMoreAvailable, setloadMoreAvailable] = useState(false);
+  const [loadMoreAvailable, setloadMoreAvailable] = useState(false);
 
   const [showPopUp, setShowPopUp] = useState(false);
   const [popUpMessage, setPopUpMessage] = useState("");
@@ -80,7 +81,6 @@ export default function Home() {
     fetchCalls(currentMonth, currentYear);
   }, [agentId, refresh]);
 
-
   const fetchCalls = async (month, year, append = false) => {
     try {
       setLoading(true);
@@ -91,19 +91,17 @@ export default function Home() {
         res = await getAgentCallsByMonth(agentId, month, year);
       }
 
-      if(res.status==false){
-        setLoadMoreError(res.error ||"No more calls to load");
-
+      if (res.status == false) {
+        setLoadMoreError(res.error || "No more calls to load");
       }
       const newCalls = res?.calls || [];
       setData((prev) => (append ? [...prev, ...newCalls] : newCalls));
 
       // Month store
 
-      setLoadedMonths(prev => [...prev, `${month}-${year}`]);
+      setLoadedMonths((prev) => [...prev, `${month}-${year}`]);
 
-      setloadMoreAvailable(res.hasRecordingsLastMonths)
-
+      setloadMoreAvailable(res.hasRecordingsLastMonths);
     } catch (err) {
       console.error("Error fetching calls:", err);
     } finally {
@@ -219,6 +217,7 @@ export default function Home() {
 
   const handleMonthSelect = async (month) => {
     setSelectedMonth(month);
+    setIsLoadingSubmit(true);
     sessionStorage.setItem("selectedYear", selectedYear);
     sessionStorage.setItem("selectedMonth", month);
 
@@ -249,6 +248,8 @@ export default function Home() {
       setPopUpType("failed");
       setShowPopUp(true);
       console.error("Error during email sending:", error);
+    } finally {
+      setIsLoadingSubmit(false);
     }
   };
   return (
@@ -330,9 +331,13 @@ export default function Home() {
                 >
                   Cancel
                 </button>
-                <button className={styles.submitButton} onClick={() => handleMonthSelect(selectedMonth)}>
-          Submit
-        </button>
+                <button
+                  className={styles.submitButton}
+                  onClick={() => handleMonthSelect(selectedMonth)}
+                  disabled={isLoadingSubmit}
+                >
+                  {isLoadingSubmit ? <Loader size={16} /> : "Submit"}
+                </button>
               </div>
             </div>
           </div>
@@ -483,20 +488,19 @@ export default function Home() {
           </table>
         </div>
 
-              
-      {(currentPage == totalPages || loadMoreAvailable)&&
-        <div className={styles.bottomBar}>
-          {loadMoreError && <span className={styles.error}>{loadMoreError}</span>}
-          <button onClick={loadMore} disabled={loading}>
-            Load More
-          </button>
-        </div>
-      }
-          {/* Pagination */}
-          {filteredData.length > 0 && (
-            <>
-            
-
+        {(currentPage == totalPages || loadMoreAvailable) && (
+          <div className={styles.bottomBar}>
+            {loadMoreError && (
+              <span className={styles.error}>{loadMoreError}</span>
+            )}
+            <button onClick={loadMore} disabled={loading}>
+              Load More
+            </button>
+          </div>
+        )}
+        {/* Pagination */}
+        {filteredData.length > 0 && (
+          <>
             <div className={styles.pagination}>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
