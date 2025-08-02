@@ -234,24 +234,29 @@
 
 }
 
+/* Floating Export Button */
 .exportButton {
-  background-color: #5f33e1; 
-  color: white;
-  padding: 12px 20px;
+  position: fixed;
+  bottom: 50px;  /* Position from the bottom */
+  right: 20px;    /* Position from the left */
+  background-color: #7b61ff; /* Button color */
+  color: white;  /* Text color */
+  padding: 15px 25px; /* Padding to make the button larger */
+  border-radius: 50px; /* Rounded corners */
   border: none;
-  border-radius: 25px;
   font-size: 16px;
-  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+  z-index: 9999; /* Make sure it's on top */
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: inline-block;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
 }
 
+/* Button Hover Effect */
 .exportButton:hover {
-  background-color: #4c2a91; 
-  transform: scale(1.05); 
+  background-color: #5f33e1; /* Darker shade on hover */
+  transform: translateY(-3px); /* Small lift on hover */
 }
+
 
 .exportButton:focus {
   outline: none;
@@ -391,15 +396,15 @@ select:focus {
 }
 
 /* Buttons Container */
-.buttonsContainer {
+/* .buttonsContainer {
   display: flex;
   justify-content: space-between;
   gap: 15px;
-}
+} */
 
 /* Cancel Button */
 .cancelButton {
-  background-color: #e0e0e0;
+  background-color: #7b61ff;
   color: #333;
   padding: 12px 20px;
   border-radius: 8px;
