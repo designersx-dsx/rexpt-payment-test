@@ -60,6 +60,8 @@ export default function Home() {
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [loadMoreError, setLoadMoreError] = useState("");
+    const [loadMoreAvailable, setloadMoreAvailable] = useState(false);
+
   const [showPopUp, setShowPopUp] = useState(false);
   const [popUpMessage, setPopUpMessage] = useState("");
   const [popUpType, setPopUpType] = useState("");
@@ -75,9 +77,9 @@ export default function Home() {
       setSelectedYear("");
       setSelectedMonth("");
     }
-
     fetchCalls(currentMonth, currentYear);
   }, [agentId, refresh]);
+
 
   const fetchCalls = async (month, year, append = false) => {
     try {
@@ -95,7 +97,11 @@ export default function Home() {
       setData((prev) => (append ? [...prev, ...newCalls] : newCalls));
 
       // Month store
-      setLoadedMonths((prev) => [...prev, `${month}-${year}`]);
+
+      setLoadedMonths(prev => [...prev, `${month}-${year}`]);
+
+      setloadMoreAvailable(res.hasRecordingsLastMonths)
+
     } catch (err) {
       console.error("Error fetching calls:", err);
     } finally {
@@ -475,19 +481,20 @@ export default function Home() {
           </table>
         </div>
 
-        {currentPage === totalPages && (
-          <div className={styles.bottomBar}>
-            {loadMoreError && (
-              <span className={styles.error}>{loadMoreError}</span>
-            )}
-            <button onClick={loadMore} disabled={loading}>
-              Load More
-            </button>
-          </div>
-        )}
-        {/* Pagination */}
-        {filteredData.length > 0 && (
-          <>
+              
+      {(currentPage == totalPages || loadMoreAvailable)&&
+        <div className={styles.bottomBar}>
+          {loadMoreError && <span className={styles.error}>{loadMoreError}</span>}
+          <button onClick={loadMore} disabled={loading}>
+            Load More
+          </button>
+        </div>
+      }
+          {/* Pagination */}
+          {filteredData.length > 0 && (
+            <>
+            
+
             <div className={styles.pagination}>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
