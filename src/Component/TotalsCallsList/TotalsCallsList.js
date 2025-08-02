@@ -90,8 +90,10 @@ export default function Home() {
       } else {
         res = await getAgentCallsByMonth(agentId, month, year);
       }
-      if (res.status == false) {
-        setLoadMoreError("No more calls to load");
+
+      if(res.status==false){
+        setLoadMoreError(res.error ||"No more calls to load");
+
       }
       const newCalls = res?.calls || [];
       setData((prev) => (append ? [...prev, ...newCalls] : newCalls));
