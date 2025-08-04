@@ -597,7 +597,7 @@ const Planss = () => {
                 </label> : null}
 
                 {/* Show Payg toggle button */}
-                {(subscriptionID || isPayg === "true") && (
+                {/* {(subscriptionID || isPayg === "true") && (
                     <div className={styles.toggleContainer1}>
                         <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
                         <label className={styles.toggleLabel1}>
@@ -612,7 +612,7 @@ const Planss = () => {
                             />
                         </label>
                     </div>
-                )}
+                )} */}
 
 
 

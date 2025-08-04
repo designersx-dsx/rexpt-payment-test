@@ -3,12 +3,21 @@ import { useContext, useEffect, useState } from "react";
 import styles from "./TotalsCallsList.module.css";
 import HeaderFilter from "../HeaderFilter/HeaderFilter";
 import axios from "axios";
-import { API_BASE_URL, getAgentCalls, getAgentCallsByMonth, getAllAgentCalls, getUserCallsByMonth } from "../../Store/apiStore";
+import {
+  API_BASE_URL,
+  getAgentCalls,
+  getAgentCallsByMonth,
+  getAllAgentCalls,
+  getUserCallsByMonth,
+  sendAgentCallsByMonth,
+  sendUserAgentCallsByMonth,
+} from "../../Store/apiStore";
 import Loader from "../Loader/Loader";
 import Loader2 from "../Loader2/Loader2";
 import { useNavigate } from "react-router-dom";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { red } from "@mui/material/colors";
+import PopUp from "../Popup/Popup";
 
 const options = [
   { id: 1, label: "All", imageUrl: "svg/ThreOpbtn.svg" },
@@ -19,9 +28,10 @@ const options = [
 
 const callsPerPage = 6;
 export default function Home() {
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
   const totalAgentView = localStorage.getItem("filterType");
   const sessionAgentId = sessionStorage.getItem("agentId") || "";
-  const [refresh,setRefresh]=useState(false)
+  const [refresh, setRefresh] = useState(false);
   const isRefreshing = useContext(RefreshContext);
   const [agentId, setAgentId] = useState(
     totalAgentView === "all" ? "all" : sessionAgentId || ""
@@ -44,71 +54,34 @@ export default function Home() {
   );
   const [filters, setFilters] = useState({ leadType: [], channel: "" });
   const userId = localStorage.getItem("userId") || "";
-    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [loadedMonths, setLoadedMonths] = useState([]);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [loadMoreError, setLoadMoreError] = useState("");
   const [loadMoreAvailable, setloadMoreAvailable] = useState(false);
-  function extractCallIdFromRecordingUrl(url) {
-    if (!url) return null;
-    try {
-      const parts = url.split("/");
-      return parts[3] || null;
-    } catch {
-      return null;
+
+  const [showPopUp, setShowPopUp] = useState(false);
+  const [popUpMessage, setPopUpMessage] = useState("");
+  const [popUpType, setPopUpType] = useState("");
+
+  useEffect(() => {
+    const storedYear = sessionStorage.getItem("selectedYear");
+    const storedMonth = sessionStorage.getItem("selectedMonth");
+
+    if (storedYear && storedMonth) {
+      setSelectedYear(storedYear);
+      setSelectedMonth(storedMonth);
+    } else {
+      setSelectedYear("");
+      setSelectedMonth("");
     }
-  }
+    fetchCalls(currentMonth, currentYear);
+  }, [agentId, refresh]);
 
-  // useEffect(() => {
-  //   if (agentId === "all") {
-  //     fetchAllAgentCalls();
-  //   } else if (agentId) {
-  //     fetchCallHistory(agentId);
-  //   }
-  // }, [agentId]);
-  // const fetchCallHistory = async () => {
-  //   try {
-  //     setLoading(true);
-  //     if (agentId) {
-  //       const response = await axios.get(
-  //         `${API_BASE_URL}/agent/getAgentCallHistory/${agentId}`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       // const calls = (response.data.filteredCalls || []).map((call) => ({
-  //       //   ...call,
-  //       //   call_id:
-  //       //     call.call_id || extractCallIdFromRecordingUrl(call.recording_url),
-  //       // }));
-  //       const data = await getAgentCalls(agentId) ||[]
-
-  //       setData(data?.calls);
-  //     } else {
-  //       setData([]);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching call history:", error);
-  //     setData([]);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // const fetchAllAgentCalls = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const res = await getAllAgentCalls(userId);
-  //     setData(res.calls || []);
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-//  console.log(loadMoreAvailable)
-   const fetchCalls = async (month, year, append = false) => {
+  const fetchCalls = async (month, year, append = false) => {
     try {
       setLoading(true);
       let res;
@@ -117,16 +90,18 @@ export default function Home() {
       } else {
         res = await getAgentCallsByMonth(agentId, month, year);
       }
-      if(res.status==false){
-        setLoadMoreError("No more calls to load");
+
+      if (res.status == false) {
+        setLoadMoreError(res.error || "No more calls to load");
       }
       const newCalls = res?.calls || [];
-      setData(prev => append ? [...prev, ...newCalls] : newCalls);
+      setData((prev) => (append ? [...prev, ...newCalls] : newCalls));
 
       // Month store
-      setLoadedMonths(prev => [...prev, `${month}-${year}`]);
 
-      setloadMoreAvailable(res.hasRecordingsLastMonths)
+      setLoadedMonths((prev) => [...prev, `${month}-${year}`]);
+
+      setloadMoreAvailable(res.hasRecordingsLastMonths);
     } catch (err) {
       console.error("Error fetching calls:", err);
     } finally {
@@ -135,9 +110,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // First load current month
     fetchCalls(currentMonth, currentYear);
-  }, [agentId,refresh]);
+  }, [agentId, refresh]);
 
   const loadMore = () => {
     let month = currentMonth - 1;
@@ -147,8 +121,6 @@ export default function Home() {
       month = 12;
       year = year - 1;
     }
-
-    // Update month-year for tracking
     setCurrentMonth(month);
     setCurrentYear(year);
 
@@ -171,13 +143,10 @@ export default function Home() {
     return { date, time };
   };
   const filteredData = data?.filter((call) => {
-    // Sentiment Filter (apply only if not "All")
     const sentimentMatch =
       selectedSentiment === "All" ||
       call?.user_sentiment === selectedSentiment ||
       call?.call_analysis?.user_sentiment === selectedSentiment;
-
-    // Date Range Filter (apply only if both dates are selected)
     const inDateRange = (() => {
       if (!selectedDateRange.startDate || !selectedDateRange.endDate)
         return true;
@@ -193,22 +162,16 @@ export default function Home() {
         call.end_timestamp <= endDate.getTime()
       );
     })();
-
-    // Lead Type Filter (apply only if leadType has selections)
     const leadTypeMatch =
       !filters ||
       !Array.isArray(filters?.leadType) ||
       filters?.leadType.length === 0 ||
       filters?.leadType.includes(
         call.custom_analysis_data?.lead_type ||
-        call?.call_analysis?.custom_analysis_data?.lead_type
+          call?.call_analysis?.custom_analysis_data?.lead_type
       );
-
-    // Channel Filter (apply only if a channel is selected)
     const channelMatch =
       filters?.channel === "" || call?.call_type === filters?.channel;
-
-    //  Return only if all conditions match
     return sentimentMatch && inDateRange && leadTypeMatch && channelMatch;
   });
   // Pagination
@@ -221,23 +184,14 @@ export default function Home() {
     if (pageNum < 1 || pageNum > totalPages) return;
     setCurrentPage(pageNum);
   };
-
-  // Function to handle the "All Agents" selection logic
-  const handleSelectAllAgents = () => {
-    // fetchAllAgentCalls();
-    // Perform additional logic related to "All Agents" if needed
-  };
   const navigate = useNavigate();
   const formattedDate = (date) => {
-    return new Date(date).toLocaleDateString(
-      "en-GB",
-      {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      }
-    );
-  }
+    return new Date(date).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
   const getSentimentClass = (sentiment) => {
     switch (sentiment?.toLowerCase()) {
       case "positive":
@@ -250,16 +204,54 @@ export default function Home() {
         return "";
     }
   };
-  // useEffect(() => {
-  //   if (isRefreshing) {
-  //     if (agentId === "all") {
-  //       fetchAllAgentCalls();
-  //     } else {
-  //       fetchCallHistory();
-  //     }
-  //   }
-  // }, [isRefreshing]);
+  const handleExportClick = () => {
+    setShowExportModal(true);
+  };
 
+  const handleYearSelect = (year) => {
+    setSelectedYear(year);
+    setSelectedMonth("");
+    sessionStorage.removeItem("selectedYear");
+    sessionStorage.removeItem("selectedMonth");
+  };
+
+  const handleMonthSelect = async (month) => {
+    setSelectedMonth(month);
+    setIsLoadingSubmit(true);
+    sessionStorage.setItem("selectedYear", selectedYear);
+    sessionStorage.setItem("selectedMonth", month);
+
+    try {
+      let response;
+      if (agentId === "all") {
+        response = await sendUserAgentCallsByMonth(userId, month, selectedYear);
+      } else {
+        response = await sendAgentCallsByMonth(agentId, month, selectedYear);
+      }
+      if (response.status === false) {
+        setPopUpMessage(response.error);
+        setPopUpType("failed");
+      } else {
+        setPopUpMessage(
+          "Your call details have been successfully sent to your email. You can expect to receive them within the next 10 to 15 minutes."
+        );
+        setPopUpType("success");
+      }
+      setShowPopUp(true);
+      setShowExportModal(false);
+      sessionStorage.removeItem("selectedYear");
+      sessionStorage.removeItem("selectedMonth");
+      setSelectedYear("");
+      setSelectedMonth("");
+    } catch (error) {
+      setPopUpMessage("No call data found for this selected month.");
+      setPopUpType("failed");
+      setShowPopUp(true);
+      console.error("Error during email sending:", error);
+    } finally {
+      setIsLoadingSubmit(false);
+    }
+  };
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -277,16 +269,15 @@ export default function Home() {
           }}
           selectedAgentId={agentId}
           onAgentChange={(newAgentId) => {
-            setRefresh((prev)=>!prev)
-           setCurrentMonth(new Date().getMonth() + 1);
-           setCurrentYear(new Date().getFullYear());
-           setLoadedMonths([]);
+            setRefresh((prev) => !prev);
+            setCurrentMonth(new Date().getMonth() + 1);
+            setCurrentYear(new Date().getFullYear());
+            setLoadedMonths([]);
             setAgentId(newAgentId);
             sessionStorage.setItem("agentId", newAgentId);
             localStorage.setItem("filterType", "agent");
-            setLoadMoreError("")
-            setCurrentPage(1)
-
+            setLoadMoreError("");
+            setCurrentPage(1);
           }}
           isCallSummary={data}
           filters={filters}
@@ -295,6 +286,76 @@ export default function Home() {
             setCurrentPage(1);
           }}
         />
+        <button className={styles.exportButton} onClick={handleExportClick}>
+          Export
+        </button>
+        {showExportModal && (
+          <div className={styles.exportModal}>
+            <div className={styles.modalContent}>
+              <h3>Select Year and Month</h3>
+              <div className={styles.selectContainer}>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => handleYearSelect(e.target.value)}
+                  className={styles.yearSelect}
+                >
+                  <option value="">Select Year</option>
+                  {[2025].map(
+                    (year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    )
+                  )}
+                </select>
+
+                {selectedYear && (
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className={styles.monthSelect}
+                  >
+                    <option value="">Select Month</option>
+                    {[
+                      "January",
+                      "February",
+                      "March",
+                      "April",
+                      "May",
+                      "June",
+                      "July",
+                      "August",
+                      "September",
+                      "October",
+                      "November",
+                      "December",
+                    ].map((month, index) => (
+                      <option key={index} value={index + 1}>
+                        {month}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              <div className={styles.buttonsContainer}>
+                <button
+                  className={styles.cancelButton}
+                  onClick={() => setShowExportModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className={styles.submitButton}
+                  onClick={() => handleMonthSelect(selectedMonth)}
+                  disabled={isLoadingSubmit}
+                >
+                  {isLoadingSubmit ? <Loader size={16} /> : "Submit"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <div className={styles.tableContainer}>
           <table className={styles.table}>
@@ -324,29 +385,54 @@ export default function Home() {
                 currentCalls.map((call, i) => (
                   <tr
                     key={i}
-                    className={styles.clickableRow} 
+                    className={styles.clickableRow}
                     onClick={() => {
                       if (!call.call_id) {
                         console.warn("Missing call_id for this call:", call);
                         return;
                       }
-                      // navigate(`/call-details/${call.call_id}`);
-                          navigate(`/call-details/${call.call_id}`, {
+                      navigate(`/call-details/${call.call_id}`, {
                         state: {
                           agentId: call.agent_id,
-                          start_timestamp: call.start_timestamp
-                        }
+                          start_timestamp: call.start_timestamp,
+                        },
                       });
                     }}
                   >
-                    <td> <div className={styles.callDateTime}>
-                      <div> {call?.end_timestamp ? getDateTimeFromTimestamp(call?.end_timestamp).time : '-'} </div>
-                      <div className={styles.callDate}> {call?.end_timestamp ? formattedDate(call?.end_timestamp) : '-'} </div>
-                    </div>
+                    <td>
+                      {" "}
+                      <div className={styles.callDateTime}>
+                        <div>
+                          {" "}
+                          {call?.end_timestamp
+                            ? getDateTimeFromTimestamp(call?.end_timestamp).time
+                            : "-"}{" "}
+                        </div>
+                        <div className={styles.callDate}>
+                          {" "}
+                          {call?.end_timestamp
+                            ? formattedDate(call?.end_timestamp)
+                            : "-"}{" "}
+                        </div>
+                      </div>
                     </td>
-                    <td>{call?.duration_ms ? convertMsToMinSec(call.duration_ms) : '-'}</td>
-                    <td> <p className={`${styles.fromNumber} ${getSentimentClass(call.user_sentiment || call?.call_analysis?.user_sentiment)}`}>
-                      {call?.call_type == 'phone_call' ? call?.from_number : call?.call_type} </p>
+                    <td>
+                      {call?.duration_ms
+                        ? convertMsToMinSec(call.duration_ms)
+                        : "-"}
+                    </td>
+                    <td>
+                      {" "}
+                      <p
+                        className={`${styles.fromNumber} ${getSentimentClass(
+                          call.user_sentiment ||
+                            call?.call_analysis?.user_sentiment
+                        )}`}
+                      >
+                        {call?.call_type == "phone_call"
+                          ? call?.from_number
+                          : call?.call_type}{" "}
+                      </p>
                     </td>
 
                     <td>
@@ -414,21 +500,21 @@ export default function Home() {
             </tbody>
           </table>
         </div>
-              
-      {(currentPage == totalPages || loadMoreAvailable)&&
-        <div className={styles.bottomBar}>
-          {loadMoreError && <span className={styles.error}>{loadMoreError}</span>}
-          <button onClick={loadMore} disabled={loading}>
-            Load More
-          </button>
-        </div>
-      }
-          {/* Pagination */}
-          {filteredData.length > 0 && (
-            <>
-            
+
+        {(currentPage == totalPages || loadMoreAvailable) && (
+          <div className={styles.bottomBar}>
+            {loadMoreError && (
+              <span className={styles.error}>{loadMoreError}</span>
+            )}
+            <button onClick={loadMore} disabled={loading}>
+              Load More
+            </button>
+          </div>
+        )}
+        {/* Pagination */}
+        {filteredData.length > 0 && (
+          <>
             <div className={styles.pagination}>
-            
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
@@ -448,8 +534,6 @@ export default function Home() {
                   >
                     {pageNum}
                   </button>
-                  
-                  
                 );
               })}
 
@@ -458,12 +542,21 @@ export default function Home() {
                 disabled={currentPage === totalPages}
               >
                 &gt;
-              </button>            
+              </button>
             </div>
-            </>
-          )}
+          </>
+        )}
       </div>
-      
+      {showPopUp && (
+        <PopUp
+          type={popUpType}
+          message={popUpMessage}
+          onClose={() => setShowPopUp(false)}
+          onConfirm={() => {
+            setShowPopUp(false);
+          }}
+        />
+      )}
     </div>
   );
 }

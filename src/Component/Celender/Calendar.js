@@ -99,7 +99,7 @@ const AgentAnalysis = () => {
   const fetchCallHistory = async () => {
     try {
       if (hasFetched) {
-        return;
+        // return;
       }
     const currentDate = new Date();
     const month = currentDate.getMonth() + 1;
