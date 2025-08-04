@@ -560,5 +560,35 @@ export const createEvent=async(apiKey,eventName,slug,eventLength)=>{
   }
 }
 
+export const sendUserAgentCallsByMonth = async (userId, month, year) => {
+  try {
+    const res = await api.get(`/callHistory/user/${userId}/calls-by-month/send-email`, {
+      params: { month, year },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error sending user agent calls by month:", error.response?.data || error.message);
+    throw new Error("Failed to send user agent calls by month");
+  }
+};
+
+export const sendAgentCallsByMonth = async (agentId, month, year) => {
+  try {
+    const res = await api.get(`/callHistory/agent/${agentId}/calls-by-month/send-email`, {
+      params: { month, year },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error sending agent calls by month:", error.response?.data || error.message);
+    throw new Error("Failed to send agent calls by month");
+  }
+};
+
 
 export default api;
