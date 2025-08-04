@@ -154,6 +154,7 @@ function Dashboard() {
   const isConfirmedRef = useRef(false);
   const [activeSubs, setActiveSubs] = useState(false)
 
+  const [redirectButton, setredirectButton] = useState(false)
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 
 
@@ -1797,8 +1798,7 @@ function Dashboard() {
 
 
   const handleTogglePayG = async () => {
-
-
+    
     try {
       console.log({ customer_id })
       const requestData = {
@@ -1831,17 +1831,18 @@ function Dashboard() {
       } else if (response.ok === false) {
         const responseData = await response.json();
         // console.log("dasdd", responseData)
+        setredirectButton(true)
         setPopupMessage(responseData?.error);
         setPopupType("failed"); // Pop-up for disabled
       } else {
         console.error('Failed to send the request to save the agent.');
       }
 
-
-
-
     } catch (error) {
       console.error("Error during upgrade:", error);
+    }
+    finally {
+      // setredirectButton(false);
     }
   };
 
@@ -2969,8 +2970,19 @@ function Dashboard() {
         <Popup
           type={popupType}
           message={popupMessage}
-          onClose={() => setPopupMessage("")}
+          onClose={() => {
+            setPopupMessage("")
+            setredirectButton(false)
+          }}
           onConfirm={handleLogoutConfirm}
+          extraButton={
+            redirectButton
+              ? {
+                label: "Activate Payg",
+                onClick: () => navigate("/edit-profile#payg-toggle"),
+              }
+              : undefined
+          }
         />
       )}
 
@@ -2983,6 +2995,8 @@ function Dashboard() {
           onConfirm={handleChangeStatus}
         />
       )}
+
+
 
       <Popup
         type={popupType3}

@@ -82,6 +82,10 @@ const EditProfile = () => {
   const isOtpFilled = otp.every((digit) => digit !== "");
   const [subscriptionDetails, setSubscriptionDetails] = useState({});
   const isRefreshing = useContext(RefreshContext);
+  const [redirectButton, setRedirectButton] = useState(false);
+
+  console.log("redirectButton", redirectButton)
+
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
   };
@@ -91,6 +95,7 @@ const EditProfile = () => {
   useEffect(() => {
     if (isPayg1 === "true") {
       localStorage.setItem("isPayg", true)
+      setPaygEnabled(true)
     }
   }, [])
 
@@ -340,10 +345,12 @@ const EditProfile = () => {
   };
   const handleClosePopup = () => {
     setShowPopup(false);
+    setRedirectButton(false)
   };
   const handleBack = () => {
-    if(isPayg1){
+    if (isPayg1) {
       navigate("/dashboard")
+      return
     }
     navigate(-1);
   };
@@ -360,11 +367,13 @@ const EditProfile = () => {
 
   const handlePaygToggle = async () => {
     if (subscriptionDetails.invoices.length === 0) {
+      setRedirectButton(true)
       setShowPopup(true);
       setPopupType("failed");
       setPopupMessage("To enable Pay As You Go, please ensure you have an active subscription.");
       return
     }
+
 
     const isCurrentlyEnabled = paygEnabled;
 
@@ -445,11 +454,19 @@ const EditProfile = () => {
       } catch (error) {
         console.error('Error:', error);
       }
+
     }
   }
 
-
-
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === "#payg-toggle") {
+      const el = document.getElementById("payg-toggle");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, []);
 
 
   return (
@@ -801,7 +818,7 @@ const EditProfile = () => {
                   </div>
                 </div>
               </div>
-              <div className={styles.infoSection}>
+              <div className={styles.infoSection} id="payg-toggle">
                 <div className={styles.toggleContainer1}>
                   <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
                   <label className={styles.toggleLabel1}>
@@ -893,6 +910,14 @@ const EditProfile = () => {
           type={popupType}
           onClose={() => handleClosePopup()}
           message={popupMessage}
+          extraButton={
+            redirectButton
+              ? {
+                label: "Redirect",
+                onClick: () => navigate("/dashboard"),
+              }
+              : undefined
+          }
         />
       )}
     </>

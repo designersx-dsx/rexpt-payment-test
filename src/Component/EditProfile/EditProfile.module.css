@@ -417,3 +417,6 @@
 .toggleInput1:checked + .toggleSlider1::before {
     transform: translateX(20px); /* Move the slider */
 }
+
+
+
