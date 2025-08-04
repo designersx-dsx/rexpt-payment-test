@@ -51,8 +51,8 @@ const EditProfile = () => {
   // Payg states
   const params = new URLSearchParams(window.location.search);
 
-const isPayg = params.get('isPayg');
-console.log("isPayg:", isPayg );
+  const isPayg = params.get('isPayg');
+  // console.log("isPayg:", isPayg);
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
   const [customerId, setcustomerId] = useState()
   const [userId1, setuserId1] = useState()
@@ -85,6 +85,14 @@ console.log("isPayg:", isPayg );
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
   };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const isPayg1 = urlParams.get('isPayg');
+  useEffect(() => {
+    if (isPayg1 === "true") {
+      localStorage.setItem("isPayg", true)
+    }
+  }, [])
 
   const closeUploadModal = () => {
     setIsUploadModalOpen(false);
@@ -162,8 +170,6 @@ console.log("isPayg:", isPayg );
     }
   };
   useEffect(() => {
-
-
     fetchUser();
   }, []);
   useEffect(() => {
@@ -336,6 +342,9 @@ console.log("isPayg:", isPayg );
     setShowPopup(false);
   };
   const handleBack = () => {
+    if(isPayg1){
+      navigate("/dashboard")
+    }
     navigate(-1);
   };
   const nevigate = useNavigate();
@@ -346,10 +355,16 @@ console.log("isPayg:", isPayg );
     ?.filter(invoice => invoice.plan_name === "Extra Minutes" && invoice.status !== "canceled") // Filter by plan and status
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Sort by latest created_at
     .map(invoice => invoice.subscription_id)[0]; // Get the subscription_id of the latest invoice
-  console.log("PaygSubscriptionId", PaygSubscriptionId)
+  // console.log("PaygSubscriptionId", PaygSubscriptionId)
 
 
   const handlePaygToggle = async () => {
+    if (subscriptionDetails.invoices.length === 0) {
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage("To enable Pay As You Go, please ensure you have an active subscription.");
+      return
+    }
 
     const isCurrentlyEnabled = paygEnabled;
 
@@ -384,14 +399,16 @@ console.log("isPayg:", isPayg );
     }
     else {
       console.log("checkout Run")
+      // console.log("d",window.location.origin)
+      const currentUrl = window.location.origin
       const requestData = {
         customerId: customerId,
         priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38",
         promotionCode: "",
         userId: userId1,
         // agentId: agentID,
-        url: "http://localhost:3000/edit-profile?isPayg=true",
-        cancelUrl: "http://localhost:3000/edit-profile?isPayg=false",
+        url: `${currentUrl}/edit-profile?isPayg=true`,
+        cancelUrl: `${currentUrl}/edit-profile?isPayg=false`,
         subscriptionId: PaygSubscriptionId
       };
 
@@ -409,7 +426,7 @@ console.log("isPayg:", isPayg );
         if (response.ok) {
           const responseData = await response.json();
           if (responseData.checkoutUrl) {
-            localStorage.setItem("isPayg", true)
+            // localStorage.setItem("isPayg", true)
             window.location.href = responseData.checkoutUrl;
           }
           else if (responseData.subscription) {
@@ -448,7 +465,7 @@ console.log("isPayg:", isPayg );
                   src="svg/Notification.svg"
                   alt="Back-icon"
                   className={styles.imageIcon}
-                onClick={() => isPayg === "true" ? navigate('/dashboard') : handleBack()}
+                  onClick={() => isPayg === "true" ? navigate('/dashboard') : handleBack()}
                 />
                 <p>My Account</p>
               </div>
@@ -801,6 +818,7 @@ console.log("isPayg:", isPayg );
                   </label>
                 </div>
               </div>
+
               <div className={styles.RefferalMain}>
                 {/* <Refferal
                   referralCode={referralCode}

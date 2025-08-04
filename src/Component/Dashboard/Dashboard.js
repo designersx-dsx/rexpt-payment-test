@@ -74,7 +74,7 @@ function Dashboard() {
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
-   const [timeZone, setTimeZone] = useState("")
+  const [timeZone, setTimeZone] = useState("")
   // Cal API modal & event states
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -149,7 +149,7 @@ function Dashboard() {
     sessionStorage.getItem("userCalApiKey")
   );
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
-  console.log(agentDetailsForCal,"agentDetailsForCal")
+  console.log(agentDetailsForCal, "agentDetailsForCal")
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
   const [activeSubs, setActiveSubs] = useState(false)
@@ -594,7 +594,7 @@ function Dashboard() {
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
             description: "Check the available appointment slots in the calendar and return times strictly in the user's timezone. Use this timezone to suggest and book appointments.",
-            timezone: timeZone?.timezoneId            ,
+            timezone: timeZone?.timezoneId,
           },
         ],
         states: [
@@ -966,7 +966,7 @@ function Dashboard() {
         }
       );
       if (res.status == 403) {
-        setPopupMessage("Agent Plan minutes exhausted");
+        setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
         setPopupType("failed");
         setIsCallInProgress(false);
         setTimeout(() => {
@@ -1729,7 +1729,7 @@ function Dashboard() {
   };
   const checkRecentPageLocation = location.state?.currentLocation;
   useEffect(() => {
- 
+
     if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
   }, []);
 
@@ -1800,7 +1800,7 @@ function Dashboard() {
 
 
     try {
-      console.log({customer_id})
+      console.log({ customer_id })
       const requestData = {
         customerId: customer_id,
         agentId: agentId,
@@ -2208,7 +2208,7 @@ function Dashboard() {
                         )}
 
 
-                    
+
 
                     </div>
                   )}
