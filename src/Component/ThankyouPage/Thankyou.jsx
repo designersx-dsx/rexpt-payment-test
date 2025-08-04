@@ -13,7 +13,7 @@ import Loader2 from "../Loader2/Loader2";
 function Thankyou({ onSubmit, isAgentCreated }) {
   const hasRunRef = useRef(false);
 
-  console.log("isAgentCreated", isAgentCreated);
+  // console.log("isAgentCreated", isAgentCreated);
 
   const navigate = useNavigate();
   const { id: paramMode } = useParams();

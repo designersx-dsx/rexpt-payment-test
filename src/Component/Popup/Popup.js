@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import styles from './Popup.module.css'
-const PopUp = ({ type, message, renderHTML = false, onClose = () => { }, onConfirm = () => { } }) => {
+const PopUp = ({ type, message, renderHTML = false, onClose = () => { }, onConfirm = () => { },
+    extraButton // { label: string, onClick: function }
+}) => {
     const [show, setShow] = useState(false);
 
     useEffect(() => {
@@ -76,7 +78,19 @@ const PopUp = ({ type, message, renderHTML = false, onClose = () => { }, onConfi
                             </button>
                         </div>
                     ) : (
-                        <button className={styles.close} onClick={handleClose}>Close</button>
+                        <>
+                            <button className={styles.close} onClick={handleClose}>Close</button>
+                            {extraButton && (
+                                <button
+                                    className={styles.extra}
+                                    onClick={() => {
+                                        extraButton.onClick?.();
+                                    }}
+                                >
+                                    {extraButton.label}
+                                </button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
