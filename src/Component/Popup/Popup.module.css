@@ -13,8 +13,6 @@
   opacity: 1;
 }
 
-
-
 .fadeIn {
   opacity: 1;
 }
@@ -45,7 +43,7 @@
 
 /* Type borders */
 .success {
-  border-top: 5px solid #6524EB;
+  border-top: 5px solid #6524eb;
 }
 
 .failed {
@@ -114,7 +112,7 @@
 }
 
 .confirmBtn {
-  background-color: #6524EB;
+  background-color: #6524eb;
   color: rgb(255, 255, 255);
 }
 
@@ -133,4 +131,16 @@
   opacity: 0;
   pointer-events: none;
   /* This line allows clicks to pass through */
+}
+
+.extra {
+  /* Example styling */
+  margin-left: 20px;
+  background-color: #5F33E1;
+  color: #ffffff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
 }
