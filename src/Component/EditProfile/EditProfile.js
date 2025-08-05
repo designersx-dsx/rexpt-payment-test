@@ -138,11 +138,14 @@ const EditProfile = () => {
       console.error("Error fetching user details:", error);
     }
   }
-
+  const [zapApikey, setZapApikey] = useState("")
   const fetchUser = async () => {
     try {
       if (!isRefreshing) { setLoading(true); }
       const user = await getUserDetails(userId);
+
+      console.log(user, "user@@@@")
+      setZapApikey(user?.ZapApikey)
       setcustomerId(user?.customerId)
       setuserId1(user?.userId)
       setReferralCode(user?.referralCode);
@@ -468,7 +471,8 @@ const EditProfile = () => {
     }
   }, []);
 
-
+  const [zapierVisible, setZapierVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
   return (
     <>
       {loading ? (
@@ -729,17 +733,6 @@ const EditProfile = () => {
                       maxLength={10000}
                     />
                     <hr className={styles.hrLine} />
-                    {/* {isUploadModalOpen && (
-                      <UploadProfile
-                        onClose={closeUploadModal}
-                        onUpload={handleUpload}
-                        currentProfile={
-                          uploadedImage ||
-                          formData.profilePicture ||
-                          "Images/editProfile.png"
-                        }
-                      />
-                    )} */}
                   </div>
 
 
@@ -759,25 +752,6 @@ const EditProfile = () => {
                         }
                       : undefined
                   }
-                  // style={{
-                  //   opacity:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent))
-                  //       ? 1
-                  //       : 0.5,
-                  //   pointerEvents:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
-                  //       !addLoading
-                  //       ? "auto"
-                  //       : "none",
-                  //   cursor:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
-                  //       !addLoading
-                  //       ? "pointer"
-                  //       : "not-allowed",
-                  // }}
                   style={{
                     opacity:
                       isDataChanged() &&
@@ -835,14 +809,56 @@ const EditProfile = () => {
                   </label>
                 </div>
               </div>
-
+              {/* Zapier Section */}
+              <div className={styles.infoSection} style={{ marginTop: '20px' }}>
+                <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
+                  Get your Zapier key
+                  <i
+                    onClick={() => setZapierVisible(!zapierVisible)}
+                    style={{ cursor: 'pointer', marginLeft: '20px' }}
+                    title={zapierVisible ? 'Hide Key' : 'Show Key'}
+                    className={`fas ${zapierVisible ? 'fa-eye-slash' : 'fa-eye'}`}
+                  ></i>
+                  {zapierVisible && (
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(zapApikey);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid #ccc',
+                        background: '#f5f5f5',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        position: "absolute",
+                        right: "0px",
+                        top: "2px"
+                      }}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  )}
+                </div>
+                <div className={styles.toggleContainer1}>
+                  {zapierVisible && (
+                    <div
+                      style={{
+                        borderRadius: '5px',
+                        fontFamily: 'monospace',
+                        wordBreak: 'break-all',
+                      }}
+                    >
+                      <div style={{ marginTop: '5px' }}>
+                      {zapApikey}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className={styles.RefferalMain}>
-                {/* <Refferal
-                  referralCode={referralCode}
-                  setShowDashboardReferral={setShowDashboardReferral}
-                  showDashboardReferral={showDashboardReferral}
-                  userId={userId}
-                /> */}
               </div>
               <br></br>
               <div className={styles.mySubscription}>
@@ -861,36 +877,6 @@ const EditProfile = () => {
                 Delete Profile
               </button>
             </div>
-            {/* {showDeleteModal && (
-              <div className={styles.modalOverlay}>
-                <div className={styles.modalContent}>
-                  <h3>Delete Your Profile?</h3>
-                  <p>
-                    Deleting your profile will permanently remove all your data
-                    including agents, business information, and usage history.{" "}
-                    <br />
-                    <strong>
-                      This action is irreversible and no refunds will be
-                      provided.
-                    </strong>
-                  </p>
-                  <div className={styles.modalButtons}>
-                    <button
-                      className={styles.deleteConfirmButton}
-                      onClick={handleDeleteProfile}
-                    >
-                      {addLoading ? <Loader size={18} /> : "Delete Profile"}
-                    </button>
-                    <button
-                      className={styles.cancelButton}
-                      onClick={() => setShowDeleteModal(false)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )} */}
           </div>
           {isUploadModalOpen && (
             <UploadProfile
