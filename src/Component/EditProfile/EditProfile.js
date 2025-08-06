@@ -84,7 +84,7 @@ const EditProfile = () => {
   const isRefreshing = useContext(RefreshContext);
   const [redirectButton, setRedirectButton] = useState(false);
 
-  console.log("redirectButton", redirectButton)
+  // console.log("redirectButton", redirectButton)
 
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
@@ -394,7 +394,7 @@ const EditProfile = () => {
         if (cancelResponse.ok) {
           localStorage.removeItem("isPayg")
           setShowPopup(true)
-          setPopupMessage("Payg Stripe Deactivated ");
+          setPopupMessage("Your PAYG Stripe has been deactivated. All active PAYG agents will be disabled.");
           setPopupType("failed"); // Pop-up for disabled
           setPaygEnabled(false)
 
