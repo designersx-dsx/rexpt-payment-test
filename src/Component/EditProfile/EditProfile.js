@@ -397,6 +397,22 @@ const EditProfile = () => {
           setPopupMessage("Payg Stripe Deactivated ");
           setPopupType("failed"); // Pop-up for disabled
           setPaygEnabled(false)
+
+
+          // Step 3: Disable PAYG for all agents by calling the payg-agents-disabled API
+          const disablePaygResponse = await fetch(`${API_BASE}/payg-agents-disabled`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),  // Assuming PaygSubscriptionId is related to customerId
+          });
+
+          if (disablePaygResponse.ok) {
+            console.log("✅ PAYG agents disabled successfully.");
+          } else {
+            console.log("❌ Failed to disable PAYG agents.");
+          }
         }
 
 

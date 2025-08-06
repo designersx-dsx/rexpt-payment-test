@@ -1768,7 +1768,7 @@ const checkActiveSubscription = async () => {
 
   const customer_id = decodeTokenData?.customerId
   const [isPaygActive, setisPaygActive] = useState()
-  console.log("isPaygActive", isPaygActive)
+  // console.log("isPaygActive", isPaygActive)
 
   const checkAgentPaygStatus = async (agentId) => {
     try {
