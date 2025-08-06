@@ -2821,8 +2821,8 @@ const checkActiveSubscription = async () => {
                 : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."}
               <strong>
                 {agentToDeactivate?.isDeactivated === 1
-                  ? "activate"
-                  : "deactivate"}
+                  ? "Activate"
+                  : "Deactivate"}
               </strong>{" "}
               <strong>{formatName(agentToDeactivate?.agentName)}</strong>?
             </p>

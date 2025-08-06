@@ -71,6 +71,7 @@ import CallRecording from "./Component/CallRecording/CallRecording";
 import RaiseTickets from "./Component/Tickets/RaiseTickets";
 import CreateTicketModal from "./Component/Tickets/CreateTicketModal";
 import CreateTicket from "./Component/Tickets/CreateTicket";
+import ForcePortraitOnly from "./utils/ForcePortraitOnly";
 
 
 // import Test from "./utils/Test";
@@ -91,6 +92,7 @@ function App() {
   }, []);
   return (
     <>
+     <ForcePortraitOnly />
       <div className="DesktopPlusMobile">
         <div className="ForDesktop">
           <img src="svg/Rexpt-Logo.svg" />

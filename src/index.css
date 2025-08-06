@@ -1,0 +1,31 @@
+/* ForceLandscapeOnly.css */
+.landscape-only-content {
+    display: block;
+  }
+  
+  .portrait-warning {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    color: #fff;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    text-align: center;
+  }
+  
+  /* Hide content and show warning in portrait mode */
+  @media (orientation: portrait) {
+    .landscape-only-content {
+      display: none;
+    }
+    .portrait-warning {
+      display: flex;
+    }
+  }

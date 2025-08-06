@@ -133,7 +133,20 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     slidesToScroll: 1,
     arrows: false,
   };
-
+  //check is this webview or not 
+  const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
+  const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+  const handleFocus = (e) => {
+    if (isAndroidApp() || isIOSApp()) {
+      setTimeout(() => {
+        // Method 1: Smooth scroll to element
+        e.target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }, 300);
+    }
+  };
   return (
     <div className={`${styles.sliderContainer} ${loading ? styles.blocked : ""}`} id='avtarSlider' >
       {/* <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2> */}
@@ -148,6 +161,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 checked={selectedAvatar?.img === avatar.img}
                 onChange={() => handleAvatarChange(avatar)}
                 className={styles.radioButton}
+                onFocus={handleFocus}
               />
               <img
                 src={avatar.img}
