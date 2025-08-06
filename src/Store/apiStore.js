@@ -3,7 +3,7 @@ import axios from 'axios';
 // Centralized API base URL
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'
 console.log(API_BASE_URL)
-const token = localStorage.getItem('token') || "";
+export const token = localStorage.getItem('token') || "";
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -519,7 +519,14 @@ export const saveAgentSchedule = async (scheduleData) => {
 };
 export const getAgentScheduleByUserId = async (userId) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}`);
+    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}` , 
+      {
+          headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  }
+      }
+    );
     return res.data;
   } catch (error) {
     console.error("Error fetching agent schedule:", error.response?.data || error.message);
@@ -535,7 +542,14 @@ export const fetchAvailablePhoneNumberByCountry = async (country_code, locality,
         administrative_area: administrative_area,
         starts_with: startsWith,
         ends_with: endsWith
-      }
+      } , 
+     
+      
+    } , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
     });
     return res.data;
   } catch (error) {
@@ -545,7 +559,12 @@ export const fetchAvailablePhoneNumberByCountry = async (country_code, locality,
 }
 export const createNumberOrder = async (phoneNumbers,agent_id) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id})
+    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id} , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+    })
     return res.data;
   } catch (error) {
     console.log(error)

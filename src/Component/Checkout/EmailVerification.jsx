@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './checkout.module.css';
-import { LoginWithEmailOTP, verifyEmailOTP } from "../../Store/apiStore";
+import { LoginWithEmailOTP, token, verifyEmailOTP } from "../../Store/apiStore";
 
 const API_BASE = 'http://localhost:5000';
 
@@ -39,13 +39,19 @@ const verifyOtp = async () => {
 
       // Save the token
       localStorage.setItem("token", verifyRes.data.token);
-
+console.log("token", verifyRes.data.token)
       // Proceed to fetch the customer details
-      const customerRes = await fetch(`${API_BASE}/customer`, {
+      if( verifyRes.data.token){
+ const customerRes = await fetch(`${API_BASE}/customer`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+       headers: {
+    'Content-Type': 'application/json',
+   
+  },
         body: JSON.stringify({ email }),
       });
+      }
+     
 
       const customerData = await customerRes.json();
 

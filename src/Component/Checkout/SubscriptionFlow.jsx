@@ -76,7 +76,12 @@ export default function SubscriptionFlow() {
 
     const checkSubscription = async () => {
       try {
-        const res = await fetch(`${API_BASE}/subscription/${customerId}`);
+        const res = await fetch(`${API_BASE}/subscription/${customerId}` , {
+           headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+        });
         const data = await res.json();
 
         const isActive =

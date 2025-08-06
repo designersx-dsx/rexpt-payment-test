@@ -16,7 +16,7 @@ import { useDashboardStore } from "../../Store/agentZustandStore";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import CallRecording from "../CallRecording/CallRecording";
-import { API_BASE_URL } from "../../Store/apiStore";
+import { API_BASE_URL, token } from "../../Store/apiStore";
 import axios from "axios";
 
 const countryMappings = {
@@ -102,7 +102,11 @@ export default function CallSetting() {
       const fetchAgentDetails = async () => {
         try {
           const res = await axios.get(
-            `${API_BASE_URL}/agent/getAgent/${selectedAgentId}`
+            `${API_BASE_URL}/agent/getAgent/${selectedAgentId}` , 
+             { headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },}
           );
           const silenceDurationMs = res.data.end_call_after_silence_ms;
           const silenceDurationSec = silenceDurationMs / 1000;
