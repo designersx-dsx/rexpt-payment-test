@@ -3,6 +3,7 @@ import styles from "../Start/Start.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import axios from "axios";
+import { token } from "../../Store/apiStore";
 
 function Start() {
   const navigate = useNavigate();
@@ -31,7 +32,12 @@ function Start() {
       if (referral && isFromReferrerLink) {
         try {
           const res = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}`
+            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}` ,
+            {
+               headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },            }
           );
 
           if (res?.data?.valid) {
@@ -52,7 +58,13 @@ function Start() {
       if (referral) {
         try {
           const res = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}`
+            `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}` , 
+            {
+               headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+            }
           );
           if (res?.data?.valid) {
           sessionStorage.setItem("referredBy", referral);
