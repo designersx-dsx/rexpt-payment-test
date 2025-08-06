@@ -158,16 +158,26 @@ function Dashboard() {
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 
 
-  const checkActiveSubscription = async () => {
-    let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent`, {
-      userId: userId
-    })
+const checkActiveSubscription = async () => {
+  try {
+    let res = await axios.post(
+      `${API_BASE_URL}/checkSubscriptiAgent`,
+      { userId: userId },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-
-    setActiveSubs(res?.data?.paymentDone)
-
+    setActiveSubs(res?.data?.paymentDone);
+  } catch (error) {
+    console.error("Subscription check failed:", error.response?.data || error.message);
   }
-  console.log(agentId)
+};
+
+
 
 
   useEffect(() => {
@@ -450,7 +460,14 @@ function Dashboard() {
   // Fetch Cal API keys from backend
   const fetchCalApiKeys = async (userId) => {
     const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/agent/calapikeys/${userId}`
+      `${process.env.REACT_APP_API_BASE_URL}/agent/calapikeys/${userId}` ,
+
+      {
+          headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  }
+      }
     );
     if (!response.ok) throw new Error("Failed to fetch Cal API keys");
     const data = await response.json();
@@ -1411,6 +1428,7 @@ function Dashboard() {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                   subscriptionId: agentToDeactivate.subscriptionId,
@@ -1546,6 +1564,7 @@ function Dashboard() {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
                   },
                   body: JSON.stringify({
                     subscriptionId: agentToDeactivate.subscriptionId,
@@ -1759,6 +1778,7 @@ function Dashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ agentId, customerId: customer_id }) // Pass the agentId to the API
       });
@@ -1811,6 +1831,7 @@ function Dashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestData),
       });

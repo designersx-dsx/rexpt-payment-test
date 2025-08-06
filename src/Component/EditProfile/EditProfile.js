@@ -384,6 +384,7 @@ const EditProfile = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
         });
@@ -426,6 +427,7 @@ const EditProfile = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            
           },
           body: JSON.stringify(requestData)
         });
