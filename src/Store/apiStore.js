@@ -205,7 +205,7 @@ export const validateEmail = async (email) => {
     console.error("Error validating email:", error);
     return { valid: false, reason: 'Error validating email' };
   }
-};
+}
 
 
 export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) => {
@@ -299,7 +299,12 @@ export async function getAgentCallsByMonth(agentId, month, year) {
 export const fetchUserDetails = async (id) => {
   const userId = id
   try {
-    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}`)
+    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+    })
     return response
   } catch (error) {
     console.log(error)
@@ -608,6 +613,4 @@ export const sendAgentCallsByMonth = async (agentId, month, year) => {
     throw new Error("Failed to send agent calls by month");
   }
 };
-
-
 export default api;
