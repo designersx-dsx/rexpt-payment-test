@@ -611,6 +611,20 @@ const BusinessListing = forwardRef(
         }
       }, 300);
     }, []);
+   //check is this webview or not 
+   const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
+   const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+   const handleFocus = (e) => {
+     if (isAndroidApp() || isIOSApp()) {
+       setTimeout(() => {
+         // Method 1: Smooth scroll to element
+         e.target.scrollIntoView({
+           behavior: 'smooth',
+           block: 'center',
+         });
+       }, 300); 
+     }
+   };
     return (
       <div className={styles.container}>
         <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -636,6 +650,7 @@ const BusinessListing = forwardRef(
                   placeholder="Your Business Name"
                   required
                   maxLength={50}
+                  onFocus={handleFocus}
                 />{" "}
               </div>
 
@@ -662,6 +677,7 @@ const BusinessListing = forwardRef(
                   }}
                   placeholder="+1 (123)456-7890"
                   required
+                  onFocus={handleFocus}
                 />
               </div>
 
@@ -685,6 +701,7 @@ const BusinessListing = forwardRef(
                   placeholder="Business Address"
                   required
                   maxLength={300}
+                  onFocus={handleFocus}
                 />
               </div>
 
@@ -695,19 +712,21 @@ const BusinessListing = forwardRef(
                   value={email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="Business Email Address"
+                  onFocus={handleFocus}
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label>About My Business</label>
                 <textarea
-                  rows="5"
+                  rows="3"
                   value={aboutBussiness}
                   onChange={(e) =>
                     handleInputChange("aboutBussiness", e.target.value)
                   }
                   placeholder="Describe"
                   maxLength={200}
+                  onFocus={handleFocus}
                 />
               </div>
 
