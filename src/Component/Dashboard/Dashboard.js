@@ -1768,6 +1768,7 @@ const checkActiveSubscription = async () => {
 
   const customer_id = decodeTokenData?.customerId
   const [isPaygActive, setisPaygActive] = useState()
+  const [paygStatusLoading, setpaygStatusLoading] = useState(true)
   // console.log("isPaygActive", isPaygActive)
 
   const checkAgentPaygStatus = async (agentId) => {
@@ -1785,10 +1786,11 @@ const checkActiveSubscription = async () => {
 
       const data = await response.json();
 
-
+      setpaygStatusLoading(true)
       if (data.success) {
         // If the agent has an active Payg subscription
         setisPaygActive(true);
+        setpaygStatusLoading(false)
         localStorage.setItem("isPayg", "true");
         // setactiveCount(data?.activeCount || null)
         // setPaygSubscriptionId(data?.subscriptionId)
@@ -1799,6 +1801,7 @@ const checkActiveSubscription = async () => {
         // setactiveCount(data?.activeCount || null)
         // setPaygSubscriptionId(data?.subscriptionId)
         setisPaygActive(false);
+        setpaygStatusLoading(false)
         // localStorage.setItem("isPayg", "false");
         // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
         // setPopupType("failed");
@@ -1818,9 +1821,9 @@ const checkActiveSubscription = async () => {
 
 
   const handleTogglePayG = async () => {
-    
+    setpaygStatusLoading(true)
     try {
-      console.log({ customer_id })
+      // console.log({ customer_id })
       const requestData = {
         customerId: customer_id,
         agentId: agentId,
@@ -1842,10 +1845,12 @@ const checkActiveSubscription = async () => {
         // console.log('Agent saved successfully:', responseData);
         if (responseData.status === "active") {
           setisPaygActive(true)
+          setpaygStatusLoading(false)
           setPopupMessage("Agent's Pay-as-you-go feature activated.");
           setPopupType("success"); // Pop-up for activated
         } else {
           setisPaygActive(false)
+          setpaygStatusLoading(false)
           setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
           setPopupType("failed"); // Pop-up for disabled
         }
@@ -2223,7 +2228,8 @@ const checkActiveSubscription = async () => {
                                 className={styles.OptionItem}
 
                               >
-                                {isPaygActive === true ? "Deactivate PayG" : "Active PayG"}
+                                {paygStatusLoading ? "Loading.." : (isPaygActive === true ? "Deactivate PayG" : "Active PayG")}
+                                
                               </div>
                             </div>
                           </>

@@ -376,6 +376,7 @@
 }
 
 .toggleLabel1 {
+  cursor: pointer;
     position: relative;
     display: inline-block;
     height: 24px; /* Ensure toggle height matches text height */
