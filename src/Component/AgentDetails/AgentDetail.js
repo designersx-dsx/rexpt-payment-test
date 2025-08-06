@@ -681,7 +681,7 @@ const AgentDashboard = () => {
     if (!agent.subscriptionId) {
       openAssignNumberModal();
     } else {
- 
+
       // setSelectedAgentForAssign(agent);
       // setIsAssignModalOpen(true);
       navigate("/assign-number", {
@@ -882,8 +882,8 @@ const AgentDashboard = () => {
                 <h2>
                   {formatBusinessName(
                     agentData?.business?.businessName ||
-                      agentData?.knowledge_base_texts?.name ||
-                      agentData?.business?.googleBusinessName
+                    agentData?.knowledge_base_texts?.name ||
+                    agentData?.business?.googleBusinessName
                   )}
                 </h2>
 
@@ -923,10 +923,18 @@ const AgentDashboard = () => {
                         // return filteredUrls.map((src, index) => (
                         //   <div key={index}>{src.url}</div>
                         // ));
-
+                        const url = filteredUrls[filteredUrls.length - 1]?.url;
                         return (
-                          filteredUrls[filteredUrls?.length - 1]?.url || "NA"
-                        );
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "#007bff", textDecoration: "underline" }}
+                          >
+                            {url}
+                          </a>
+                        )
+
                       } else {
                         return <div>Not Available</div>;
                       }
@@ -1204,7 +1212,7 @@ const AgentDashboard = () => {
                     handleCallTransfer();
                   }
                 }}
-                // onClick={handleCallTransfer}
+              // onClick={handleCallTransfer}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1258,13 +1266,13 @@ const AgentDashboard = () => {
                     });
                   }
                 }}
-                // onClick={async () => {
-                //   await fetchPrevAgentDEtails(
-                //     agentData?.agent?.agent_id,
-                //     agentData?.agent?.businessId
-                //   );
-                //   setModalOpen(true);
-                // }}
+              // onClick={async () => {
+              //   await fetchPrevAgentDEtails(
+              //     agentData?.agent?.agent_id,
+              //     agentData?.agent?.businessId
+              //   );
+              //   setModalOpen(true);
+              // }}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1442,7 +1450,7 @@ const AgentDashboard = () => {
 
                 <span className={styles.statDetail}>
                   {agentData?.avgCallTime?.minutes ||
-                  agentData?.avgCallTime?.seconds ? (
+                    agentData?.avgCallTime?.seconds ? (
                     <>
                       {agentData?.avgCallTime?.minutes}
                       <span className={styles.MinFont}>m</span>
@@ -1936,9 +1944,9 @@ const fetchPrevAgentDEtails = async (agent_id, businessId) => {
 
     const cleanedCustomServices = Array.isArray(rawCustomServices)
       ? rawCustomServices
-          .map((item) => item?.service?.trim())
-          .filter(Boolean)
-          .map((service) => ({ service }))
+        .map((item) => item?.service?.trim())
+        .filter(Boolean)
+        .map((service) => ({ service }))
       : [];
 
     sessionStorage.setItem(
