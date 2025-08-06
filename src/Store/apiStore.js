@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-// Centralized API base URL
+// Centralized API base URL here
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'
 console.log(API_BASE_URL)
 export const token = localStorage.getItem('token') || "";
@@ -613,4 +613,6 @@ export const sendAgentCallsByMonth = async (agentId, month, year) => {
     throw new Error("Failed to send agent calls by month");
   }
 };
+
 export default api;
+
