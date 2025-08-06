@@ -202,7 +202,13 @@ const Planss = () => {
         if (!userCurrency || !currencyLoaded) return;
         setLoading(true);
 
-        fetch(`${API_BASE}/products`)
+        fetch(`${API_BASE}/products` , {
+
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              }}
+        )
             .then((res) => res.json())
             .then((data) => {
                 const planColorMap = ["starter", "scaler", "growth", "corporate"];
@@ -378,6 +384,7 @@ const Planss = () => {
                         method: 'POST',
                         headers: {
                             'Cotnent-Type': 'application/json',
+                              Authorization: `Bearer ${token}`,
                         },
                         body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
                     });

@@ -6,7 +6,7 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import { API_BASE_URL } from "../../Store/apiStore";
+import { API_BASE_URL, token } from "../../Store/apiStore";
 import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
 
@@ -168,7 +168,11 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     try {
       const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json"  ,
+          
+           Authorization: `Bearer ${token}`,
+          
+        },
         body: JSON.stringify({ subscriptionId: subsid }),
       });
 
@@ -236,7 +240,10 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     try {
       const res = await fetch(`${API_BASE_URL}/subscription-details`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" , 
+
+            Authorization: `Bearer ${token}`,
+         },
         body: JSON.stringify(
           agentId ? { agentId } : { userId } // Send only one key based on availability
         ),
