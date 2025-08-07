@@ -132,6 +132,7 @@ console.log('selectedAttachments',selectedAttachments)
               <th>Status</th>
               <th>Ticket Raised</th>
               <th>Last Activity</th>
+              <th>Resolution Notes</th>
             </tr>
           </thead>
           <tbody>
@@ -158,6 +159,7 @@ console.log('selectedAttachments',selectedAttachments)
                 </td>
                 <td>{new Date(ticket.createdAt).toLocaleDateString("en-GB")}</td>
                 <td>{new Date(ticket.updatedAt).toLocaleString("en-GB")}</td>
+                <td>{ticket.resolutionNotes ? ticket?.resolutionNotes:'-'}</td>
               </tr>
             ))}
           </tbody>

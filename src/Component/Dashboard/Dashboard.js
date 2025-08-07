@@ -43,6 +43,7 @@ import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import PopUp from "../Popup/Popup";
 import getTimezoneFromState from "../../lib/timeZone";
+import { useNotificationStore } from "../../Store/notificationStore";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -151,6 +152,9 @@ function Dashboard() {
   const [activeSubs, setActiveSubs] = useState(false)
   //getTimeZone
   const [timeZone, setTimeZone] = useState("")
+  const notifications = useNotificationStore((state) => state.notifications);
+  const unreadCount = notifications.filter((n) => n.status === 'unread').length;
+  console.log('unreadCount',unreadCount)
   const checkActiveSubscription = async () => {
     let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent`, {
       userId: userId
@@ -1762,9 +1766,10 @@ function Dashboard() {
             </div>
           </div>
           <div className={styles.notifiMain}>
+             <div className={styles.notificationWrapper}>
             <div
               className={styles.notificationIcon}
-              onClick={() => setShowModal(true)}
+              onClick={() => navigate('/notifications')}
             >
               <svg
                 width="20"
@@ -1795,6 +1800,10 @@ function Dashboard() {
                   fill-opacity="0.9"
                 />
               </svg>
+               {unreadCount > 0 && (
+          <span className={styles.unreadBadge}>{unreadCount}</span>
+        )}
+            </div>
             </div>
             <div className={styles.notificationIcon} onClick={handleLogout}>
               <svg
@@ -2255,7 +2264,7 @@ function Dashboard() {
                       Updating <Loader size={18} />
                     </button>
                   ) : (
-                    <button
+                    <button 
                       className={`${styles.modalButton} ${styles.submit}`}
                       onClick={handleApiKeySubmit}
                       disabled={!isValidCalApiKey(apiKey.trim())}

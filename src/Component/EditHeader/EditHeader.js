@@ -7,15 +7,20 @@ const EditHeader = ({ title, agentName, }) => {
   const location = useLocation();
 
   const handleBack = () => {
-    if (location.pathname === '/edit-agent') {
+    if (location.pathname == '/edit-agent') {
       if (sessionStorage.getItem('naviateFrom') == 'dashboard') {
         navigate('/dashboard');
       } else {
         navigate('/agent-detail');
       }
     } else if(location.pathname =='/raise-tickets')
-      {
-        navigate('/dashboard');
+      { 
+        if(sessionStorage.getItem('naviateFrom')!='notifications'){
+          navigate('/dashboard');
+        }else{
+          navigate(-1);
+        }
+        
       }
       else{
       navigate(-1);
