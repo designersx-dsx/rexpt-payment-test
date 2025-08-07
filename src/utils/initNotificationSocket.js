@@ -11,8 +11,16 @@ export const initNotificationSocket = (userId,navigate) => {
 
   if (socketInstance) return socketInstance; // ✅ Already connected
 
-  socketInstance = io(`wss://${process.env.REACT_APP_API_BASE_URL}`, {
+  // socketInstance = io(1${process.env.REACT_APP_API_BASE_URL}`, {
+  //   transports: ["websocket"],
+  // });
+  const baseUrl = process.env.REACT_APP_API_BASE_URL
+    ? process.env.REACT_APP_API_BASE_URL.split("/api")[0]
+    : "http://localhost:2512";
+ socketInstance = io(baseUrl, {
     transports: ["websocket"],
+    // Specify the path if your Socket.IO server uses a custom path like /api/socket.io
+    // path: "/api/socket.io", // Uncomment and adjust if needed
   });
 
   socketInstance.on("connect", () => {
