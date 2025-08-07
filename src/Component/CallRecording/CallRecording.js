@@ -4,6 +4,7 @@ import styles from "./CallRecording.module.css";
 import {
   API_BASE_URL,
   getUserAgentMergedDataForAgentUpdate,
+  token,
   updateAgent,
 } from "../../Store/apiStore";
 import Switch from "@mui/material/Switch";
@@ -219,7 +220,12 @@ const CallRecording = ({ agentId, businessId }) => {
   const loadAgentStatus = async (id) => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/agent/getAgent/${id}`);
+      const res = await axios.get(`${API_BASE_URL}/agent/getAgent/${id}` , 
+         { headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },}
+      );
       setCallRecording(res.data.CallRecording);
       sessionStorage.setItem("callRecording", res.data.CallRecording==1?true:false);
     } catch (error) {

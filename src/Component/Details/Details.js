@@ -29,7 +29,7 @@ const Details = () => {
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
   const { user, setUser } = useUser();
-  const [country, setCountry] = useState("in");
+  const [country, setCountry] = useState("us");
   const referralCode = sessionStorage.getItem("referredBy") || "";
   const referredByName = sessionStorage.getItem("referredByName") || "";
 
@@ -86,13 +86,13 @@ const Details = () => {
     setPhoneSubmitted(true);
 
     const nError = validateName(name);
-    // const pError = validatePhone(phone);
+    const pError = validatePhone(phone)
 
     setNameError(nError);
-    // setPhoneError(pError);
+    setPhoneError(pError);
 
     if (nError ) return;
-
+    if (pError ) return;
     setLoading(true);
 
     try {
@@ -172,8 +172,9 @@ const Details = () => {
       try {
         const response = await axios.get("https://ipapi.co/json/");
         const userCountry = response.data.country_code?.toLowerCase();
+        console.log(userCountry,"userCountry")
         if (userCountry) {
-          setCountry(userCountry);
+          setCountry("us"||userCountry);
         }
       } catch (error) {
         console.error("Could not fetch country by IP:", error);
@@ -184,6 +185,10 @@ const Details = () => {
   }, []);
 
   const validatePhone = (value) => {
+    if (!value || value.trim() === "") return ""; // optional
+  
+    if (value.length < 10) return "Phone number must be at least 10 digits.";
+  
     try {
       const phoneNumber = parsePhoneNumberFromString("+" + value);
       if (!phoneNumber) return "Invalid phone number format.";
@@ -193,6 +198,8 @@ const Details = () => {
       return "Invalid phone number.";
     }
   };
+  
+  
   return (
     <>
       <div className={styles.signUpContainer}>
@@ -241,9 +248,11 @@ const Details = () => {
                 <label className={styles.label}>Name</label>
                 <input
                   type="text"
+
                   className={`${styles.input} ${nameError ? styles.inputError : ""
                     }`}
                   placeholder="Your name"
+                  maxLength={150} 
                   value={name}
                   onChange={handleNameChange}
                 />
@@ -252,7 +261,7 @@ const Details = () => {
             </div>
             <div className={styles.labReq}>
               <div className={styles.Dblock}>
-                <label className={styles.label}>Phone Number</label>
+                <label className={styles.label}>Phone Number (Optional)</label>
                 <PhoneInput
                   ref={phoneInputRef}
                   country={country}
@@ -260,18 +269,18 @@ const Details = () => {
                   value={phone}
                   onChange={(val, countryData) => {
                     setPhone(val);
-                    // if (phoneSubmitted) {
-                    //   setPhoneError(validatePhone(val));
-                    // } else {
-                    //   setPhoneError("");
-                    // }
+                    if (phoneSubmitted) {
+                      setPhoneError(validatePhone(val));
+                    } else {
+                      setPhoneError("");
+                    }
                   }}
                   onClickFlag={handleFlagClick}
                   inputClass={`${styles.input} ${phoneError ? styles.inputError : ""
                     }`}
                 />
               </div>
-              {/* {phoneError && <p className={styles.inlineError}>{phoneError}</p>} */}
+              {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
             </div>
           </div>
 

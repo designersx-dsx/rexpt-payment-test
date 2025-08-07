@@ -1,10 +1,8 @@
 import React from 'react';
 import styles from "../HeaderBar/HeaderBar.module.css";
 import { useNavigate } from 'react-router-dom';
-
 const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange,selectedAgent, backgroundColor = "#fff", color = '#24252C' }) => {
   const navigate = useNavigate();
-
   const handleBack = () => {
     const currentPath = window.location.pathname;
 

@@ -1,9 +1,9 @@
 
 import axios from 'axios';
-// Centralized API base URL
+// Centralized API base URL here
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'
 console.log(API_BASE_URL)
-const token = localStorage.getItem('token') || "";
+export const token = localStorage.getItem('token') || "";
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -205,7 +205,7 @@ export const validateEmail = async (email) => {
     console.error("Error validating email:", error);
     return { valid: false, reason: 'Error validating email' };
   }
-};
+}
 
 
 export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) => {
@@ -299,7 +299,12 @@ export async function getAgentCallsByMonth(agentId, month, year) {
 export const fetchUserDetails = async (id) => {
   const userId = id
   try {
-    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}`)
+    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+    })
     return response
   } catch (error) {
     console.log(error)
@@ -519,7 +524,14 @@ export const saveAgentSchedule = async (scheduleData) => {
 };
 export const getAgentScheduleByUserId = async (userId) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}`);
+    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}` , 
+      {
+          headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  }
+      }
+    );
     return res.data;
   } catch (error) {
     console.error("Error fetching agent schedule:", error.response?.data || error.message);
@@ -535,7 +547,14 @@ export const fetchAvailablePhoneNumberByCountry = async (country_code, locality,
         administrative_area: administrative_area,
         starts_with: startsWith,
         ends_with: endsWith
-      }
+      } , 
+     
+      
+    } , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
     });
     return res.data;
   } catch (error) {
@@ -545,7 +564,12 @@ export const fetchAvailablePhoneNumberByCountry = async (country_code, locality,
 }
 export const createNumberOrder = async (phoneNumbers,agent_id) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id})
+    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id} , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+    })
     return res.data;
   } catch (error) {
     console.log(error)
@@ -624,6 +648,7 @@ export const getAgentFiles = async (agentId) => {
   }
 };
 
+
 export const deleteAgentFile = async (agentId, filename) => {
   try {
      const response = await api.delete(`/agent/delete-file/${agentId}/${filename}`, {
@@ -639,3 +664,6 @@ export const deleteAgentFile = async (agentId, filename) => {
 };
 
 export default api;
+
+
+// gaurav chutiya

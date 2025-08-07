@@ -47,10 +47,8 @@ const EditProfile = () => {
   const [referralCode, setReferralCode] = useState("");
   const [showDashboardReferral, setShowDashboardReferral] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
   // Payg states
   const params = new URLSearchParams(window.location.search);
-
   const isPayg = params.get('isPayg');
   // console.log("isPayg:", isPayg);
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -83,8 +81,9 @@ const EditProfile = () => {
   const [subscriptionDetails, setSubscriptionDetails] = useState({});
   const isRefreshing = useContext(RefreshContext);
   const [redirectButton, setRedirectButton] = useState(false);
-
-  console.log("redirectButton", redirectButton)
+  const [zapierVisible, setZapierVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
@@ -138,11 +137,14 @@ const EditProfile = () => {
       console.error("Error fetching user details:", error);
     }
   }
-
+  const [zapApikey, setZapApikey] = useState("")
   const fetchUser = async () => {
     try {
       if (!isRefreshing) { setLoading(true); }
       const user = await getUserDetails(userId);
+
+      console.log(user, "user@@@@")
+      setZapApikey(user?.ZapApikey)
       setcustomerId(user?.customerId)
       setuserId1(user?.userId)
       setReferralCode(user?.referralCode);
@@ -303,8 +305,11 @@ const EditProfile = () => {
         newErrors.email = "Invalid email format.";
       }
 
-      if (formData.phone && !/^\+?\d{12,15}$/.test(formData.phone)) {
-        newErrors.phone = "Enter a valid phone number with country code.";
+      if (formData.phone) {
+        const cleanedPhone = formData.phone.replace(/[\s()-]/g, ""); // remove spaces, parentheses, dashes
+        if (!/^\+?\d{12,15}$/.test(cleanedPhone)) {
+          newErrors.phone = "Enter a valid phone number with country code.";
+        }
       }
     }
 
@@ -334,6 +339,7 @@ const EditProfile = () => {
       setTimeout(() => {
         handleClosePopup();
       }, 2000);
+      setIsEditing(false);
     } catch (error) {
       console.error(error);
       setShowPopup(true);
@@ -384,6 +390,7 @@ const EditProfile = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
         });
@@ -393,6 +400,22 @@ const EditProfile = () => {
           setPopupMessage("Payg Stripe Deactivated ");
           setPopupType("failed"); // Pop-up for disabled
           setPaygEnabled(false)
+
+
+          // Step 3: Disable PAYG for all agents by calling the payg-agents-disabled API
+          const disablePaygResponse = await fetch(`${API_BASE}/payg-agents-disabled`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),  // Assuming PaygSubscriptionId is related to customerId
+          });
+
+          if (disablePaygResponse.ok) {
+            console.log("✅ PAYG agents disabled successfully.");
+          } else {
+            console.log("❌ Failed to disable PAYG agents.");
+          }
         }
 
 
@@ -426,6 +449,7 @@ const EditProfile = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+
           },
           body: JSON.stringify(requestData)
         });
@@ -468,6 +492,14 @@ const EditProfile = () => {
     }
   }, []);
 
+
+  const handleEditSection = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
 
   return (
     <>
@@ -521,13 +553,23 @@ const EditProfile = () => {
               <div className={styles.infoSection}>
                 <div className={styles.header}>
                   <h3>Personal Info</h3>
-                  <span className={styles.editText}>
-                    <img
-                      src="/svg/edit-icon2.svg"
-                      className={styles.PurpolIcon}
-                    />
-                    Edit
-                  </span>
+                  {isEditing ? (
+                    <span className={styles.editText} onClick={handleCancel}>
+                      <img
+                        src="/svg/CrosSvg.svg" // You can change the icon if needed
+                        className={styles.PurpolIcon}
+                      />
+                      Cancel
+                    </span>
+                  ) : (
+                    <span className={styles.editText} onClick={handleEditSection}>
+                      <img
+                        src="/svg/edit-icon2.svg"
+                        className={styles.PurpolIcon}
+                      />
+                      Edit
+                    </span>
+                  )}
                 </div>
 
                 <div className={styles.Part}>
@@ -536,6 +578,7 @@ const EditProfile = () => {
                     <label>Name</label>
                     <input
                       type="text"
+                      disabled={!isEditing}
                       name="name"
                       maxLength={100}
                       value={formData.name}
@@ -694,6 +737,7 @@ const EditProfile = () => {
                     <PhoneInput
                       country={"in"}
                       value={formData.phone}
+                      disabled={!isEditing}
                       className={styles.phoneInput}
                       onChange={(val) => {
                         setFormData((prev) => ({
@@ -727,19 +771,9 @@ const EditProfile = () => {
                       value={formData.address}
                       onChange={handleChange}
                       maxLength={10000}
+                      disabled={!isEditing}
                     />
                     <hr className={styles.hrLine} />
-                    {/* {isUploadModalOpen && (
-                      <UploadProfile
-                        onClose={closeUploadModal}
-                        onUpload={handleUpload}
-                        currentProfile={
-                          uploadedImage ||
-                          formData.profilePicture ||
-                          "Images/editProfile.png"
-                        }
-                      />
-                    )} */}
                   </div>
 
 
@@ -759,25 +793,6 @@ const EditProfile = () => {
                         }
                       : undefined
                   }
-                  // style={{
-                  //   opacity:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent))
-                  //       ? 1
-                  //       : 0.5,
-                  //   pointerEvents:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
-                  //       !addLoading
-                  //       ? "auto"
-                  //       : "none",
-                  //   cursor:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
-                  //       !addLoading
-                  //       ? "pointer"
-                  //       : "not-allowed",
-                  // }}
                   style={{
                     opacity:
                       isDataChanged() &&
@@ -804,7 +819,7 @@ const EditProfile = () => {
                         : "not-allowed",
                   }}
                 >
-                  <div className={styles.btnTheme}>
+                  {isEditing && <div className={styles.btnTheme}>
                     <img src="svg/svg-theme.svg" alt="" />
                     <p>
                       {addLoading ? (
@@ -815,7 +830,7 @@ const EditProfile = () => {
                         "Save"
                       )}
                     </p>
-                  </div>
+                  </div>}
                 </div>
               </div>
               <div className={styles.infoSection} id="payg-toggle">
@@ -835,14 +850,56 @@ const EditProfile = () => {
                   </label>
                 </div>
               </div>
-
+              {/* Zapier Section */}
+              <div className={styles.infoSection} style={{ marginTop: '20px' }}>
+                <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
+                  Get your Zapier key
+                  <i
+                    onClick={() => setZapierVisible(!zapierVisible)}
+                    style={{ cursor: 'pointer', marginLeft: '20px' }}
+                    title={zapierVisible ? 'Hide Key' : 'Show Key'}
+                    className={`fas ${zapierVisible ? 'fa-eye-slash' : 'fa-eye'}`}
+                  ></i>
+                  {zapierVisible && (
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(zapApikey);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid #ccc',
+                        background: '#f5f5f5',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        position: "absolute",
+                        right: "0px",
+                        top: "2px"
+                      }}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  )}
+                </div>
+                <div className={styles.toggleContainer1}>
+                  {zapierVisible && (
+                    <div
+                      style={{
+                        borderRadius: '5px',
+                        fontFamily: 'monospace',
+                        wordBreak: 'break-all',
+                      }}
+                    >
+                      <div style={{ marginTop: '5px' }}>
+                        {zapApikey}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className={styles.RefferalMain}>
-                {/* <Refferal
-                  referralCode={referralCode}
-                  setShowDashboardReferral={setShowDashboardReferral}
-                  showDashboardReferral={showDashboardReferral}
-                  userId={userId}
-                /> */}
               </div>
               <br></br>
               <div className={styles.mySubscription}>
@@ -861,36 +918,6 @@ const EditProfile = () => {
                 Delete Profile
               </button>
             </div>
-            {/* {showDeleteModal && (
-              <div className={styles.modalOverlay}>
-                <div className={styles.modalContent}>
-                  <h3>Delete Your Profile?</h3>
-                  <p>
-                    Deleting your profile will permanently remove all your data
-                    including agents, business information, and usage history.{" "}
-                    <br />
-                    <strong>
-                      This action is irreversible and no refunds will be
-                      provided.
-                    </strong>
-                  </p>
-                  <div className={styles.modalButtons}>
-                    <button
-                      className={styles.deleteConfirmButton}
-                      onClick={handleDeleteProfile}
-                    >
-                      {addLoading ? <Loader size={18} /> : "Delete Profile"}
-                    </button>
-                    <button
-                      className={styles.cancelButton}
-                      onClick={() => setShowDeleteModal(false)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )} */}
           </div>
           {isUploadModalOpen && (
             <UploadProfile
