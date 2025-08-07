@@ -92,7 +92,7 @@ function App() {
   }, []);
   return (
     <>
-     <ForcePortraitOnly />
+     {/* <ForcePortraitOnly /> */}
       <div className="DesktopPlusMobile">
         <div className="ForDesktop">
           <img src="svg/Rexpt-Logo.svg" />
