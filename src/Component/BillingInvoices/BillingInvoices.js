@@ -47,7 +47,7 @@ const BillingInvoices = ({ invoices }) => {
       id: invoice.id,
       time: new Date(invoice.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       date: new Date(invoice.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' }),
-      amount: invoice?.plan_unit_amount != null
+      amount: invoice?.plan_unit_amount != null && invoice?.plan_unit_amount >=1
         ? `${invoice?.plan_currency?.toUpperCase()} ${invoice?.plan_unit_amount}`
         : "PAYG",
       invoice_url: invoice.invoice_url,
