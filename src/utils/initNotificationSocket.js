@@ -16,7 +16,7 @@ export const initNotificationSocket = (userId,navigate) => {
   // });
   const baseUrl = process.env.REACT_APP_API_BASE_URL
     ? process.env.REACT_APP_API_BASE_URL.split("/api")[0]
-    : "http://localhost:4000";
+    : "http://localhost:2512";
  socketInstance = io(baseUrl, {
     transports: ["websocket"],
     // Specify the path if your Socket.IO server uses a custom path like /api/socket.io
