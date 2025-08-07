@@ -918,6 +918,7 @@ function CheckoutForm({
       url = `${origin}/steps?${queryParams.toString()}`;
     }
     if (checkPage !== "checkout") {
+     
       try {
         const response = await fetch(
           `${API_BASE_URL}/create-checkout-session`,
@@ -925,7 +926,7 @@ function CheckoutForm({
             method: "POST",
             headers: { "Content-Type": "application/json" , 
 
-                Authorization: `Bearer ${token}`,
+               
              },
             body: JSON.stringify({
               customerId,

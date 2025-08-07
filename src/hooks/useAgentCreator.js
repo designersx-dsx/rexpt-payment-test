@@ -21,7 +21,7 @@ export const useAgentCreator = ({
   const token = localStorage.getItem("token") || "";
   const sessionBusinessiD = sessionStorage.getItem("bId");
   const state = sessionStorage.getItem("state")
-  console.log(state,"state")
+  console.log(state, "state")
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
@@ -50,18 +50,34 @@ export const useAgentCreator = ({
     fetchAgentCountFromUser();
   }, []);
   ///extractPromptVariables
-  function extractPromptVariables(template) {
+  function extractPromptVariables(template, dataObject) {
     const matches = [...template.matchAll(/{{(.*?)}}/g)];
-    const uniqueVars = new Set(matches.map((m) => m[1].trim()));
+    const uniqueVars = new Set(matches.map(m => m[1].trim()));
 
-    return Array.from(uniqueVars).map((variable) => ({
+    // Flatten dataObject to a key-value map
+    const flatData = {};
+
+    function flatten(obj) {
+      for (const key in obj) {
+        const val = obj[key];
+        if (typeof val === "object" && val !== null && 'key' in val && 'value' in val) {
+          flatData[val.key.trim()] = val.value;
+        } else if (typeof val === "object" && val !== null) {
+          flatten(val); // Recursively flatten nested objects
+        }
+      }
+    }
+
+    flatten(dataObject);
+
+    return Array.from(uniqueVars).map(variable => ({
       name: variable,
-      status: true,
+      value: flatData[variable] ?? null,
+      status: true
     }));
   }
-
   const handleCreateAgent = useCallback(async () => {
- 
+
     const isValid = stepValidator();
     if (!isValid) return;
     console.log("Creating agent...", isValid);
@@ -133,7 +149,11 @@ export const useAgentCreator = ({
 
     const commaSeparatedServices = allServices;
     console.log(allServices);
-
+    const commaSeparatedServicesForServices = (allServices?.join(", ").replace("Other", "") || "Your Business Services")
+      .split(",")
+      .filter(service => service.trim() !== "")
+      .map(service => `- ${service.trim()}`)
+      .join("\n");
     const dynamicAgentName = `${sanitize(businessType)}_${sanitize(
       getBusinessNameFromGoogleListing?.businessName ||
       getBusinessNameFormCustom
@@ -143,6 +163,11 @@ export const useAgentCreator = ({
       cleanedCustomServices?.map((item) => item.service) || [];
     const businessPhone = removeSpaces(getBusinessNameFromGoogleListing?.phone);
     const timeZone = await getTimezoneFromState(getBusinessNameFromGoogleListing?.state);
+    const servicesArray = commaSeparatedServicesForServices
+      .split("\n")
+      .map(line => line.replace(/^-\s*/, "").trim())
+      .filter(line => line !== "")
+      .map(service => ({ service }));
     const rawPromptTemplate = getAgentPrompt({
       industryKey:
         business?.businessType == "Other"
@@ -150,12 +175,12 @@ export const useAgentCreator = ({
           : business?.businessType,
       roleTitle: sessionStorage.getItem("agentRole"),
       agentName: "{{AGENT NAME}}",
-      agentGender: "{{MALE or FEMALE}}",
+      agentGender: "{{AGENT GENDER}}",
       business: {
         businessName: "{{BUSINESS NAME}}",
         email: "{{BUSINESS EMAIL ID}}",
         aboutBusiness: "{{MORE ABOUT YOUR BUSINESS}}",
-        address: "{{ CITY}},{{ STATE}}, {{COUNTRY}}",
+        address: "{{BUSINESS ADDRESS}}"
       },
       languageSelect: "{{LANGUAGE}}",
       businessType: "{{BUSINESSTYPE}}",
@@ -234,7 +259,7 @@ export const useAgentCreator = ({
           .map((item) => item?.service?.trim())
           .filter(Boolean)
           .map((service) => ({ service }));
-         
+
         try {
           const response = await axios.patch(
             `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`,
@@ -250,7 +275,7 @@ export const useAgentCreator = ({
               customServices: cleanedCustomServices,
             }
           );
-       
+
           if (sessionStorage.getItem("prevBuisnessType")) {
             sessionStorage.removeItem("prevBuisnessType");
           }
@@ -265,7 +290,7 @@ export const useAgentCreator = ({
       const storedKnowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
       const llm_id =
         localStorage.getItem("llmId") || sessionStorage.getItem("llmId");
-    
+
       const agentConfig = {
         version: 0,
         model: "gemini-2.0-flash",
@@ -276,7 +301,7 @@ export const useAgentCreator = ({
         starting_state: "information_collection",
         default_dynamic_variables: {
           customer_name: "John Doe",
-          timeZone: timeZone?.timezoneId          ,
+          timeZone: timeZone?.timezoneId,
           business_Phone: businessPhone,
           business_email: business.email,
           email: "",
@@ -386,10 +411,34 @@ export const useAgentCreator = ({
                 description:
                   "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
               },
+              {
+                "type": "boolean",
+                "name": "appointment_booked",
+                "description": "Determine if appointment was successfully booked during the call",
+                "examples": [true, false]
+              },
+             {
+                "type": "string", 
+                "name": "appointment_date",
+                "description": "Extract the exact appointment date mentioned by customer. Format: YYYY-MM-DD",
+                "examples": ["2025-01-15", "2025-02-20", "2025-03-10"]
+              },
+             {
+                "type": "string",
+                "name": "appointment_time", 
+                "description": "Extract the exact appointment time mentioned by customer. Format: HH:MM AM/PM",
+                "examples": ["10:00 AM", "2:30 PM", "9:15 AM"]
+              },
+              {
+                "type": "string",
+                "name": "appointment_timezone",
+                "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
+                "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
+              }
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
 
-            // webhook_url: `  https://18a4251b9d16.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+
 
             normalize_for_speech: true,
           };
@@ -413,8 +462,23 @@ export const useAgentCreator = ({
 
             // Convert string to object
             const businessIdObj = JSON.parse(businessIdString);
-            const promptVariablesList =
-              extractPromptVariables(rawPromptTemplate);
+            const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
+              industryKey: business?.businessType == "Other" ? business?.customBuisness : business?.businessType,
+              roleTitle: sessionStorage.getItem("agentRole"),
+              agentName: { key: "AGENT NAME", value: agentName?.split(" ")[0] },
+              agentGender: { key: "AGENT GENDER", value: agentGender },
+              business: {
+                businessName: { key: "BUSINESS NAME", value: getBusinessNameFromGoogleListing?.businessName || getBusinessNameFormCustom },
+                email: { key: "BUSINESS EMAIL ID", value: getBusinessNameFromGoogleListing?.email || "" },
+                aboutBusiness: { key: "MORE ABOUT YOUR BUSINESS", value: getBusinessNameFromGoogleListing?.aboutBusiness || getBusinessNameFromGoogleListing?.aboutBussiness },
+                address: { key: "BUSINESS ADDRESS", value: getBusinessNameFromGoogleListing?.address || "" }
+              },
+              languageSelect: { key: "LANGUAGE", value: languageSelect || "" },
+              businessType: { key: "BUSINESSTYPE", value: businessType || "" },
+              commaSeparatedServices: { key: "SERVICES", value: servicesArray || "" },
+              timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" },
+
+            });
             // Now access the actual ID
             const agentData = {
               userId: userId,
