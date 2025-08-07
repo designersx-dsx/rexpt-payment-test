@@ -386,10 +386,34 @@ export const useAgentCreator = ({
                 description:
                   "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
               },
+              {
+                "type": "boolean",
+                "name": "appointment_booked",
+                "description": "Determine if appointment was successfully booked during the call",
+                "examples": [true, false]
+              },
+             {
+                "type": "string", 
+                "name": "appointment_date",
+                "description": "Extract the exact appointment date mentioned by customer. Format: YYYY-MM-DD",
+                "examples": ["2025-01-15", "2025-02-20", "2025-03-10"]
+              },
+             {
+                "type": "string",
+                "name": "appointment_time", 
+                "description": "Extract the exact appointment time mentioned by customer. Format: HH:MM AM/PM",
+                "examples": ["10:00 AM", "2:30 PM", "9:15 AM"]
+              },
+              {
+                "type": "string",
+                "name": "appointment_timezone",
+                "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
+                "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
+              }
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
 
-            // webhook_url: `  https://18a4251b9d16.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+            // webhook_url: `https://0fa0a6835e33.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
 
             normalize_for_speech: true,
           };

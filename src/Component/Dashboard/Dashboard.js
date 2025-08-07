@@ -44,6 +44,11 @@ import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import PopUp from "../Popup/Popup";
 import getTimezoneFromState from "../../lib/timeZone";
 
+import { useNotificationStore } from "../../Store/notificationStore";
+
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
+
+
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -129,6 +134,11 @@ function Dashboard() {
   const dropdownRef = useRef(null);
   const location = useLocation();
 
+  const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
+  const [showUpgradeConfirmModal, setShowUpgradeConfirmModal] = useState(false);
+  const [upgradeLoading, setUpgradeLoading] = useState(false);
+
+
   const [deactivateLoading, setDeactivateLoading] = useState(false);
 
   const [calloading, setcalloading] = useState(false);
@@ -154,28 +164,36 @@ function Dashboard() {
   const isConfirmedRef = useRef(false);
   const [activeSubs, setActiveSubs] = useState(false)
 
+  //getTimeZone
+  const [timeZone, setTimeZone] = useState("")
+  const notifications = useNotificationStore((state) => state.notifications);
+  const unreadCount = notifications.filter((n) => n.status === 'unread').length;
+  console.log('unreadCount',unreadCount)
+
+
   const [redirectButton, setredirectButton] = useState(false)
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 
 
-const checkActiveSubscription = async () => {
-  try {
-    let res = await axios.post(
-      `${API_BASE_URL}/checkSubscriptiAgent`,
-      { userId: userId },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
 
-    setActiveSubs(res?.data?.paymentDone);
-  } catch (error) {
-    console.error("Subscription check failed:", error.response?.data || error.message);
-  }
-};
+  const checkActiveSubscription = async () => {
+    try {
+      let res = await axios.post(
+        `${API_BASE_URL}/checkSubscriptiAgent`,
+        { userId: userId },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setActiveSubs(res?.data?.paymentDone);
+    } catch (error) {
+      console.error("Subscription check failed:", error.response?.data || error.message);
+    }
+  };
 
 
 
@@ -460,13 +478,13 @@ const checkActiveSubscription = async () => {
   // Fetch Cal API keys from backend
   const fetchCalApiKeys = async (userId) => {
     const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/agent/calapikeys/${userId}` ,
+      `${process.env.REACT_APP_API_BASE_URL}/agent/calapikeys/${userId}`,
 
       {
-          headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-  }
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        }
       }
     );
     if (!response.ok) throw new Error("Failed to fetch Cal API keys");
@@ -1428,7 +1446,7 @@ const checkActiveSubscription = async () => {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                   subscriptionId: agentToDeactivate.subscriptionId,
@@ -1564,7 +1582,7 @@ const checkActiveSubscription = async () => {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                   },
                   body: JSON.stringify({
                     subscriptionId: agentToDeactivate.subscriptionId,
@@ -1624,27 +1642,66 @@ const checkActiveSubscription = async () => {
       setDeactivateLoading(false);
     }
   };
+  // const handleUpgradeClick = (agent) => {
+  //   // console.log("agent", agent)
+  //   setagentId(agent?.agent_id);
+  //   setsubscriptionId(agent?.subscriptionId);
+  //   sessionStorage.setItem("updateBtn", "update")
+  //   sessionStorage.setItem("selectedPlan", agent?.agentPlan)
+
+  //   navigate("/plan", {
+
+  //     state: {
+  //       agentID: agent?.agent_id,
+  //       locationPath: locationPath,
+  //       subscriptionID: agent?.subscriptionId,
+  //       planName: agent?.agentPlan,
+  //       interval: agent?.subscription?.interval || null,
+  //       customerId: agent?.subscription?.customer_id || null
+
+
+  //     },
+  //   });
+  // };
+
   const handleUpgradeClick = (agent) => {
-    console.log("agent", agent)
-    setagentId(agent?.agent_id);
-    setsubscriptionId(agent?.subscriptionId);
-    sessionStorage.setItem("updateBtn", "update")
-    sessionStorage.setItem("selectedPlan", agent?.agentPlan)
-
-    navigate("/plan", {
-
-      state: {
-        agentID: agent?.agent_id,
-        locationPath: locationPath,
-        subscriptionID: agent?.subscriptionId,
-        planName: agent?.agentPlan,
-        interval: agent?.subscription?.interval || null,
-        customerId: agent?.subscription?.customer_id || null
-
-
-      },
-    });
+    setPendingUpgradeAgent(agent);         // Save agent temporarily
+    setShowUpgradeConfirmModal(true);      // Show modal
   };
+
+  const handleUpgradePaygConfirmed = async () => {
+    if (!pendingUpgradeAgent) return;
+
+    setUpgradeLoading(true);
+    try {
+      const agent = pendingUpgradeAgent;
+
+      // Set required session/local storage
+      setagentId(agent?.agent_id);
+      setsubscriptionId(agent?.subscriptionId);
+      sessionStorage.setItem("updateBtn", "update");
+      sessionStorage.setItem("selectedPlan", agent?.agentPlan);
+
+      // Navigate to /plan
+      navigate("/plan", {
+        state: {
+          agentID: agent?.agent_id,
+          locationPath: locationPath,
+          subscriptionID: agent?.subscriptionId,
+          planName: agent?.agentPlan,
+          interval: agent?.subscription?.interval || null,
+          customerId: agent?.subscription?.customer_id || null
+        }
+      });
+
+      setShowUpgradeConfirmModal(false); // Close the modal
+    } catch (err) {
+      console.error("Error during upgrade navigation:", err);
+    } finally {
+      setUpgradeLoading(false);
+    }
+  };
+
 
   const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
   const locationPath = location.pathname;
@@ -1768,6 +1825,9 @@ const checkActiveSubscription = async () => {
 
   const customer_id = decodeTokenData?.customerId
   const [isPaygActive, setisPaygActive] = useState()
+
+  const [paygStatusLoading, setpaygStatusLoading] = useState(true)
+
   // console.log("isPaygActive", isPaygActive)
 
   const checkAgentPaygStatus = async (agentId) => {
@@ -1778,17 +1838,18 @@ const checkActiveSubscription = async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ agentId, customerId: customer_id }) // Pass the agentId to the API
       });
 
       const data = await response.json();
 
-
+      setpaygStatusLoading(true)
       if (data.success) {
         // If the agent has an active Payg subscription
         setisPaygActive(true);
+        setpaygStatusLoading(false)
         localStorage.setItem("isPayg", "true");
         // setactiveCount(data?.activeCount || null)
         // setPaygSubscriptionId(data?.subscriptionId)
@@ -1799,6 +1860,7 @@ const checkActiveSubscription = async () => {
         // setactiveCount(data?.activeCount || null)
         // setPaygSubscriptionId(data?.subscriptionId)
         setisPaygActive(false);
+        setpaygStatusLoading(false)
         // localStorage.setItem("isPayg", "false");
         // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
         // setPopupType("failed");
@@ -1818,9 +1880,9 @@ const checkActiveSubscription = async () => {
 
 
   const handleTogglePayG = async () => {
-    
+    setpaygStatusLoading(true)
     try {
-      console.log({ customer_id })
+      // console.log({ customer_id })
       const requestData = {
         customerId: customer_id,
         agentId: agentId,
@@ -1831,7 +1893,7 @@ const checkActiveSubscription = async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestData),
       });
@@ -1842,10 +1904,12 @@ const checkActiveSubscription = async () => {
         // console.log('Agent saved successfully:', responseData);
         if (responseData.status === "active") {
           setisPaygActive(true)
+          setpaygStatusLoading(false)
           setPopupMessage("Agent's Pay-as-you-go feature activated.");
           setPopupType("success"); // Pop-up for activated
         } else {
           setisPaygActive(false)
+          setpaygStatusLoading(false)
           setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
           setPopupType("failed"); // Pop-up for disabled
         }
@@ -1912,9 +1976,10 @@ const checkActiveSubscription = async () => {
             </div>
           </div>
           <div className={styles.notifiMain}>
+             <div className={styles.notificationWrapper}>
             <div
               className={styles.notificationIcon}
-              onClick={() => setShowModal(true)}
+              onClick={() => navigate('/notifications')}
             >
               <svg
                 width="20"
@@ -1945,6 +2010,10 @@ const checkActiveSubscription = async () => {
                   fill-opacity="0.9"
                 />
               </svg>
+               {unreadCount > 0 && (
+          <span className={styles.unreadBadge}>{unreadCount}</span>
+        )}
+            </div>
             </div>
             <div className={styles.notificationIcon} onClick={handleLogout}>
               <svg
@@ -2223,7 +2292,8 @@ const checkActiveSubscription = async () => {
                                 className={styles.OptionItem}
 
                               >
-                                {isPaygActive === true ? "Deactivate PayG" : "Active PayG"}
+                                {paygStatusLoading ? "Loading.." : (isPaygActive === true ? "Deactivate PayG" : "Active PayG")}
+
                               </div>
                             </div>
                           </>
@@ -2426,7 +2496,7 @@ const checkActiveSubscription = async () => {
                       Updating <Loader size={18} />
                     </button>
                   ) : (
-                    <button
+                    <button 
                       className={`${styles.modalButton} ${styles.submit}`}
                       onClick={handleApiKeySubmit}
                       disabled={!isValidCalApiKey(apiKey.trim())}
@@ -3017,6 +3087,20 @@ const checkActiveSubscription = async () => {
         />
       )}
 
+      <ConfirmModal
+        show={showUpgradeConfirmModal}
+        onClose={() => setShowUpgradeConfirmModal(false)}
+        title="Upgrade Plan?"
+        message="You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."
+        type="info"
+        confirmText={upgradeLoading ? "Redirecting..." : "Yes, Upgrade"}
+        cancelText="Cancel"
+        showCancel={true}
+        isLoading={upgradeLoading}
+        onConfirm={handleUpgradePaygConfirmed}
+      />
+
+
 
 
       <Popup
@@ -3034,6 +3118,8 @@ const checkActiveSubscription = async () => {
           handleCalConnectWithConfirm();
           setPopupMessage3("");
         }}
+
+
       />
     </div>
   );

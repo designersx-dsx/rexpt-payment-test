@@ -177,6 +177,7 @@ background-color: #f3eeff;
 border-radius: 10px;
 padding: 5px;
 color: #6524eb;
+width: 100%;
 }
 .PlansSelectDrop select:focus{
   border: unset;
