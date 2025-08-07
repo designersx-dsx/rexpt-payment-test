@@ -506,6 +506,30 @@ const Step = () => {
                                 "name": "name",
                                 "description": "Extract the user's name from the conversation\""
                             },
+                            {
+                                "type": "boolean",
+                                "name": "appointment_booked",
+                                "description": "Determine if appointment was successfully booked during the call",
+                                "examples": [true, false]
+                            },
+                            {
+                                "type": "string", 
+                                "name": "appointment_date",
+                                "description": "Extract the exact appointment date mentioned by customer. Format: YYYY-MM-DD",
+                                "examples": ["2025-01-15", "2025-02-20", "2025-03-10"]
+                            },
+                            {
+                                "type": "string",
+                                "name": "appointment_time", 
+                                "description": "Extract the exact appointment time mentioned by customer. Format: HH:MM AM/PM",
+                                "examples": ["10:00 AM", "2:30 PM", "9:15 AM"]
+                            },
+                            {
+                                "type": "string",
+                                "name": "appointment_timezone",
+                                "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
+                                "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
+                            },
                         ]
                     }
 
