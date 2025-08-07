@@ -11,7 +11,7 @@ export const initNotificationSocket = (userId,navigate) => {
 
   if (socketInstance) return socketInstance; // ✅ Already connected
 
-  socketInstance = io("http://localhost:2512", {
+  socketInstance = io(`wss://${process.env.REACT_APP_API_BASE_URL}`, {
     transports: ["websocket"],
   });
 
