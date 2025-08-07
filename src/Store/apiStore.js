@@ -613,7 +613,57 @@ export const sendAgentCallsByMonth = async (agentId, month, year) => {
     throw new Error("Failed to send agent calls by month");
   }
 };
+export const uploadAgentFiles = async (agentId, files) => {
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append('additional_file', file);
+  });
+
+  try {
+    const response = await api.post(`/agent/upload-agent-files/${agentId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    throw new Error("Error uploading files");
+  }
+};
+
+
+export const getAgentFiles = async (agentId) => {
+  try {
+    const response = await api.get(`/agent/get-agent-files/${agentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching agent files:", error);
+    throw new Error("Error fetching agent files");
+  }
+};
+
+
+export const deleteAgentFile = async (agentId, filename) => {
+  try {
+     const response = await api.delete(`/agent/delete-file/${agentId}/${filename}`, {
+       headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting agent file:", error.response?.data || error.message);
+    throw new Error("Error deleting agent file");
+  }
+};
 
 export default api;
 
-// nitish thoosa
+
+// gaurav chutiya
