@@ -43,7 +43,11 @@ import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import PopUp from "../Popup/Popup";
 import getTimezoneFromState from "../../lib/timeZone";
+
+import { useNotificationStore } from "../../Store/notificationStore";
+
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
+
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -160,8 +164,16 @@ function Dashboard() {
   const isConfirmedRef = useRef(false);
   const [activeSubs, setActiveSubs] = useState(false)
 
+  //getTimeZone
+  const [timeZone, setTimeZone] = useState("")
+  const notifications = useNotificationStore((state) => state.notifications);
+  const unreadCount = notifications.filter((n) => n.status === 'unread').length;
+  console.log('unreadCount',unreadCount)
+
+
   const [redirectButton, setredirectButton] = useState(false)
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+
 
 
   const checkActiveSubscription = async () => {
@@ -1962,9 +1974,10 @@ function Dashboard() {
             </div>
           </div>
           <div className={styles.notifiMain}>
+             <div className={styles.notificationWrapper}>
             <div
               className={styles.notificationIcon}
-              onClick={() => setShowModal(true)}
+              onClick={() => navigate('/notifications')}
             >
               <svg
                 width="20"
@@ -1995,6 +2008,10 @@ function Dashboard() {
                   fill-opacity="0.9"
                 />
               </svg>
+               {unreadCount > 0 && (
+          <span className={styles.unreadBadge}>{unreadCount}</span>
+        )}
+            </div>
             </div>
             <div className={styles.notificationIcon} onClick={handleLogout}>
               <svg
@@ -2477,7 +2494,7 @@ function Dashboard() {
                       Updating <Loader size={18} />
                     </button>
                   ) : (
-                    <button
+                    <button 
                       className={`${styles.modalButton} ${styles.submit}`}
                       onClick={handleApiKeySubmit}
                       disabled={!isValidCalApiKey(apiKey.trim())}

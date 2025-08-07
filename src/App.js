@@ -71,13 +71,29 @@ import CallRecording from "./Component/CallRecording/CallRecording";
 import RaiseTickets from "./Component/Tickets/RaiseTickets";
 import CreateTicketModal from "./Component/Tickets/CreateTicketModal";
 import CreateTicket from "./Component/Tickets/CreateTicket";
-
+import decodeToken from "./lib/decodeToken";
+import { initNotificationSocket } from "./utils/initNotificationSocket";
+import { getUserNotifications } from "./Store/apiStore";
+import { io } from "socket.io-client"; 
+import { useNotificationStore } from "./Store/notificationStore";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import NotificationView from "./Component/Notifications/NotificationView";
 
 // import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
+  const decoded = decodeToken(token);
+  const userID=decoded?.id
+  const SOCKET_URL = process.env.REACT_APP_API_BASE_URL?.split('/api')[0]
+  const notifications = useNotificationStore((state) => state.notifications);
+  const addNotification = useNotificationStore((state) => state.addNotification);
+  const loadNotifications = useNotificationStore((state) => state.loadNotifications);
+  // const [refreshNotification,setRefreshNoitification]=useState(false)
+  const navigate=useNavigate()
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
@@ -89,6 +105,75 @@ function App() {
       document.body.removeChild(script);
     };
   }, []);
+
+    useEffect(() => {
+    if (userID) {
+      try {
+        initNotificationSocket(userID,navigate); // ✅ Connect socket once
+      } catch (err) {
+        console.error("Token decode error:", err);
+      }
+    }
+  }, [userID]);
+
+    useEffect(() => {
+        if (userID) {
+          getUserNotifications(userID)
+         .then((resp)=> {console.log('user notifications ',resp);loadNotifications(resp?.notifications)})
+         .catch((err)=>console.log('error while fetching user Notifications'))
+   
+          // ;
+   
+    }
+  }, [userID]);
+
+   useEffect(() => {
+    if (!userID) return;
+
+
+    // 🔌 Socket connect
+    const socket = io(SOCKET_URL, {
+      transports: ["websocket"],
+    });
+
+    socket.on("connect", () => {
+      console.log("🟢 Connected:", socket.id);
+      socket.emit("register", userID); // register user
+    });
+
+    // 📩 Listen for notification
+    socket.on("notification", (msg) => {
+      // console.log("📩 New Notification:", msg);
+      //  window.alert(`${msg.title || "Notification"}: ${msg.message}`);
+      // alert(`${msg.title || "Notification"}: ${msg.message}`)
+    //   toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
+    //   position: "top-right",
+    //   autoClose: 3000,
+    //   hideProgressBar: false,
+    //   closeOnClick: true,
+    //   pauseOnHover: true,
+    //   draggable: true,
+    //   progress: undefined,
+    //   theme: "light",
+    // });
+      // toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
+      //   position: "top-right",
+      //   autoClose: 3000,
+      // });
+      // setRefreshNoitification((prev)=>!prev)
+      console.log('new notification')
+    });
+
+    socket.on("disconnect", () => {
+      console.log("🔴 Disconnected");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [userID]);
+
+  console.log('notifications',notifications)
   return (
     <>
       <div className="DesktopPlusMobile">
@@ -105,7 +190,7 @@ function App() {
         <div className="ForMobile">
 
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
-            <BrowserRouter>
+            {/* <BrowserRouter> */}
               <div className="App" key={refreshKey}>
                 {/* <RoutePersistence /> */}
                 <Routes>
@@ -295,6 +380,7 @@ function App() {
 
                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
                   <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
+                  <Route path="/notifications" element={<SecureRoute><NotificationView/></SecureRoute>} />
 
 
                   <Route path="/test-other" element={<Test />} />
@@ -308,18 +394,17 @@ function App() {
 
 
 
-
                   <Route path="/number" element={< Number />} />
 
                   <Route path="/delete-account" element={<Delete />} />
                 </Routes>
               </div>
-            </BrowserRouter>
+            {/* </BrowserRouter> */}
           </PreventPullToRefresh>
 
         </div>
       </div>
-
+ <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }

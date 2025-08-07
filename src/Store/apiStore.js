@@ -609,5 +609,32 @@ export const sendAgentCallsByMonth = async (agentId, month, year) => {
   }
 };
 
+export async function getUserNotifications(userId) {
+  console.log(userId)
+  try {
+    const res = await axios.get(`${API_BASE_URL}/notifications/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error(" Error fetching notifications:", error.response?.data || error.message);
+    return error?.response?.data || { success: false, message: "Failed to fetch notifications" };
+  }
+}
+
+export const markNotificationAsSeen = async (id) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{},{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+  });
+    return response.data;
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
 
 export default api;
