@@ -2886,7 +2886,7 @@ function Dashboard() {
       {showDeactivateConfirm && agentToDeactivate && (
         <div
           className={styles.modalBackdrop}
-          onClick={() => setShowDeactivateConfirm(false)}
+         
         >
           <div
             className={styles.modalContainer}
@@ -2913,6 +2913,7 @@ function Dashboard() {
               <button
                 className={`${styles.modalButton} ${styles.cancel}`}
                 onClick={() => setShowDeactivateConfirm(false)}
+                disabled= {deactivateLoading ? true: false }
               >
                 {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
               </button>
