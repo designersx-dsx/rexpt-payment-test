@@ -71,6 +71,7 @@ import CallRecording from "./Component/CallRecording/CallRecording";
 import RaiseTickets from "./Component/Tickets/RaiseTickets";
 import CreateTicketModal from "./Component/Tickets/CreateTicketModal";
 import CreateTicket from "./Component/Tickets/CreateTicket";
+import Fileinfo from "./Component/AgentDetails/FileInfo/Fileinfo";
 
 
 // import Test from "./utils/Test";
@@ -295,6 +296,7 @@ function App() {
 
                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
                   <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
+                  <Route path='/add-file' element={<SecureRoute><Fileinfo/></SecureRoute>}/>
 
 
                   <Route path="/test-other" element={<Test />} />
