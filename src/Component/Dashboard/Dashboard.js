@@ -168,7 +168,7 @@ function Dashboard() {
   const [timeZone, setTimeZone] = useState("")
   const notifications = useNotificationStore((state) => state.notifications);
   const unreadCount = notifications.filter((n) => n.status === 'unread').length;
-  console.log('unreadCount',unreadCount)
+  console.log('unreadCount', unreadCount)
 
 
   const [redirectButton, setredirectButton] = useState(false)
@@ -1827,6 +1827,7 @@ function Dashboard() {
   const [isPaygActive, setisPaygActive] = useState()
 
   const [paygStatusLoading, setpaygStatusLoading] = useState(true)
+  console.log("paygStatusLoading", paygStatusLoading)
 
   // console.log("isPaygActive", isPaygActive)
 
@@ -1869,6 +1870,9 @@ function Dashboard() {
       console.error("Error checking Payg status:", error);
       // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
       // setPopupType("failed");
+    }
+    finally {
+      setpaygStatusLoading(false)
     }
   };
 
@@ -1921,6 +1925,7 @@ function Dashboard() {
         setPopupType("failed"); // Pop-up for disabled
       } else {
         console.error('Failed to send the request to save the agent.');
+
       }
 
     } catch (error) {
@@ -1976,44 +1981,44 @@ function Dashboard() {
             </div>
           </div>
           <div className={styles.notifiMain}>
-             <div className={styles.notificationWrapper}>
-            <div
-              className={styles.notificationIcon}
-              onClick={() => navigate('/notifications')}
-            >
-              <svg
-                width="20"
-                height="22"
-                viewBox="0 0 20 22"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            <div className={styles.notificationWrapper}>
+              <div
+                className={styles.notificationIcon}
+                onClick={() => navigate('/notifications')}
               >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M10 4.68945C10.4142 4.68945 10.75 5.02524 10.75 5.43945V8.76945C10.75 9.18367 10.4142 9.51945 10 9.51945C9.58579 9.51945 9.25 9.18367 9.25 8.76945V5.43945C9.25 5.02524 9.58579 4.68945 10 4.68945Z"
-                  fill="#0A0A0A"
-                  fill-opacity="0.9"
-                />
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M2.61001 7.66C2.61001 3.56579 5.9258 0.25 10.02 0.25C14.0946 0.25 17.4289 3.58574 17.44 7.65795L17.44 7.65898V9.76C17.44 10.0064 17.4942 10.3614 17.5969 10.7349C17.6997 11.1089 17.8345 11.441 17.9621 11.6525L17.9628 11.6535L19.2334 13.7746L19.2336 13.7749C20.2082 15.4038 19.4348 17.519 17.6272 18.1215L17.6269 18.1216L17.6267 18.1217C12.693 19.7628 7.35696 19.7628 2.42329 18.1217L2.42306 18.1216L2.42284 18.1215C1.50673 17.8161 0.827321 17.1773 0.523982 16.3562C0.220761 15.5354 0.320841 14.6072 0.815592 13.7763L0.816106 13.7754L2.08724 11.6535L2.08787 11.6525C2.21604 11.4401 2.35075 11.1098 2.45325 10.7381C2.55563 10.3669 2.61001 10.0118 2.61001 9.76V7.66ZM10.02 1.75C6.75423 1.75 4.11001 4.39421 4.11001 7.66V9.76C4.11001 10.1882 4.02439 10.6831 3.89927 11.1369C3.7744 11.5897 3.59436 12.0589 3.37286 12.4263C3.37262 12.4267 3.37239 12.4271 3.37215 12.4275L2.10443 14.5437C2.10428 14.544 2.10413 14.5442 2.10398 14.5445C1.81916 15.0233 1.79933 15.4798 1.93104 15.8363C2.0627 16.1927 2.37329 16.5239 2.89718 16.6985C7.52323 18.2372 12.5268 18.2372 17.1528 16.6985C18.0452 16.401 18.4317 15.3562 17.9464 14.5451L16.6778 12.4275C16.6777 12.4272 16.6775 12.427 16.6774 12.4267C16.4552 12.0583 16.2752 11.5858 16.1506 11.1326C16.0258 10.6786 15.94 10.1836 15.94 9.76V7.66107C15.9306 4.41373 13.2651 1.75 10.02 1.75Z"
-                  fill="#0A0A0A"
-                  fill-opacity="0.9"
-                />
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M7.41992 17.8203C7.41992 18.5204 7.71292 19.1727 8.18025 19.64L8.18027 19.64C8.64755 20.1073 9.2998 20.4003 9.99988 20.4003C11.4157 20.4003 12.5799 19.2361 12.5799 17.8203H14.0799C14.0799 20.0645 12.2441 21.9003 9.99988 21.9003C8.87997 21.9003 7.85223 21.4333 7.11959 20.7006M7.11957 20.7006C6.38691 19.968 5.91992 18.9402 5.91992 17.8203H7.41992"
-                  fill="#0A0A0A"
-                  fill-opacity="0.9"
-                />
-              </svg>
-               {unreadCount > 0 && (
-          <span className={styles.unreadBadge}>{unreadCount}</span>
-        )}
-            </div>
+                <svg
+                  width="20"
+                  height="22"
+                  viewBox="0 0 20 22"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M10 4.68945C10.4142 4.68945 10.75 5.02524 10.75 5.43945V8.76945C10.75 9.18367 10.4142 9.51945 10 9.51945C9.58579 9.51945 9.25 9.18367 9.25 8.76945V5.43945C9.25 5.02524 9.58579 4.68945 10 4.68945Z"
+                    fill="#0A0A0A"
+                    fill-opacity="0.9"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M2.61001 7.66C2.61001 3.56579 5.9258 0.25 10.02 0.25C14.0946 0.25 17.4289 3.58574 17.44 7.65795L17.44 7.65898V9.76C17.44 10.0064 17.4942 10.3614 17.5969 10.7349C17.6997 11.1089 17.8345 11.441 17.9621 11.6525L17.9628 11.6535L19.2334 13.7746L19.2336 13.7749C20.2082 15.4038 19.4348 17.519 17.6272 18.1215L17.6269 18.1216L17.6267 18.1217C12.693 19.7628 7.35696 19.7628 2.42329 18.1217L2.42306 18.1216L2.42284 18.1215C1.50673 17.8161 0.827321 17.1773 0.523982 16.3562C0.220761 15.5354 0.320841 14.6072 0.815592 13.7763L0.816106 13.7754L2.08724 11.6535L2.08787 11.6525C2.21604 11.4401 2.35075 11.1098 2.45325 10.7381C2.55563 10.3669 2.61001 10.0118 2.61001 9.76V7.66ZM10.02 1.75C6.75423 1.75 4.11001 4.39421 4.11001 7.66V9.76C4.11001 10.1882 4.02439 10.6831 3.89927 11.1369C3.7744 11.5897 3.59436 12.0589 3.37286 12.4263C3.37262 12.4267 3.37239 12.4271 3.37215 12.4275L2.10443 14.5437C2.10428 14.544 2.10413 14.5442 2.10398 14.5445C1.81916 15.0233 1.79933 15.4798 1.93104 15.8363C2.0627 16.1927 2.37329 16.5239 2.89718 16.6985C7.52323 18.2372 12.5268 18.2372 17.1528 16.6985C18.0452 16.401 18.4317 15.3562 17.9464 14.5451L16.6778 12.4275C16.6777 12.4272 16.6775 12.427 16.6774 12.4267C16.4552 12.0583 16.2752 11.5858 16.1506 11.1326C16.0258 10.6786 15.94 10.1836 15.94 9.76V7.66107C15.9306 4.41373 13.2651 1.75 10.02 1.75Z"
+                    fill="#0A0A0A"
+                    fill-opacity="0.9"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M7.41992 17.8203C7.41992 18.5204 7.71292 19.1727 8.18025 19.64L8.18027 19.64C8.64755 20.1073 9.2998 20.4003 9.99988 20.4003C11.4157 20.4003 12.5799 19.2361 12.5799 17.8203H14.0799C14.0799 20.0645 12.2441 21.9003 9.99988 21.9003C8.87997 21.9003 7.85223 21.4333 7.11959 20.7006M7.11957 20.7006C6.38691 19.968 5.91992 18.9402 5.91992 17.8203H7.41992"
+                    fill="#0A0A0A"
+                    fill-opacity="0.9"
+                  />
+                </svg>
+                {unreadCount > 0 && (
+                  <span className={styles.unreadBadge}>{unreadCount}</span>
+                )}
+              </div>
             </div>
             <div className={styles.notificationIcon} onClick={handleLogout}>
               <svg
@@ -2496,7 +2501,7 @@ function Dashboard() {
                       Updating <Loader size={18} />
                     </button>
                   ) : (
-                    <button 
+                    <button
                       className={`${styles.modalButton} ${styles.submit}`}
                       onClick={handleApiKeySubmit}
                       disabled={!isValidCalApiKey(apiKey.trim())}
