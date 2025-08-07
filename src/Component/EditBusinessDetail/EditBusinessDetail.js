@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import styles from './EditBusinessDetail.module.css'
-import EditHeader from '../EditHeader/EditHeader'
-import SectionHeader from '../SectionHeader/SectionHeader'
-import AnimatedButton from '../AnimatedButton/AnimatedButton';
-import { useAgentCreator } from '../../hooks/useAgentCreator';
-import decodeToken from '../../lib/decodeToken';
-import { useNavigate } from 'react-router-dom';
-import PopUp from '../Popup/Popup';
-import axios from 'axios';
-import getKnowledgeBaseName from '../../utils/getKnowledgeBaseName';
-import { API_BASE_URL } from '../../Store/apiStore';
-import { useDashboardStore } from '../../Store/agentZustandStore';
-import { red } from '@mui/material/colors';
+import React, { useState, useEffect } from "react";
+import styles from "./EditBusinessDetail.module.css";
+import EditHeader from "../EditHeader/EditHeader";
+import SectionHeader from "../SectionHeader/SectionHeader";
+import AnimatedButton from "../AnimatedButton/AnimatedButton";
+import { useAgentCreator } from "../../hooks/useAgentCreator";
+import decodeToken from "../../lib/decodeToken";
+import { useNavigate } from "react-router-dom";
+import PopUp from "../Popup/Popup";
+import axios from "axios";
+import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
+import { API_BASE_URL, getAgentFiles } from "../../Store/apiStore";
+import { useDashboardStore } from "../../Store/agentZustandStore";
+import { red } from "@mui/material/colors";
 const EditBusinessDetail = () => {
   const agentnm = sessionStorage.getItem("agentName");
   const [businessName, setBusinessName] = useState("");
@@ -23,15 +23,15 @@ const EditBusinessDetail = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [emailError, setEmailError] = useState('');
+  const [emailError, setEmailError] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("us");
-  const [street_number, setStreet_number] = useState("")
-  const [city, setCity] = useState("")
-  const [state, setState] = useState("")
-  const [country, setCountry] = useState("")
-  const [postal_code, setPostal_code] = useState("")
-  const [country_code, setCountry_code] = useState("")
-  const [state_code, setState_code] = useState("")
+  const [street_number, setStreet_number] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
+  const [postal_code, setPostal_code] = useState("");
+  const [country_code, setCountry_code] = useState("");
+  const [state_code, setState_code] = useState("");
   const token = localStorage.getItem("token");
   const decodeTokenData = decodeToken(token);
   const userId = decodeTokenData?.id;
@@ -39,7 +39,7 @@ const EditBusinessDetail = () => {
   const EditingMode1 = localStorage.getItem("UpdationMode");
   const { setHasFetched } = useDashboardStore();
 
-  const agentCode = sessionStorage.getItem('agentCode') || "";
+  const agentCode = sessionStorage.getItem("agentCode") || "";
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessDetail",
     setLoading,
@@ -53,7 +53,7 @@ const EditBusinessDetail = () => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
       const details = JSON.parse(storedDetails);
-      setBusinessName(details?.businessName || "");;
+      setBusinessName(details?.businessName || "");
       setPhoneNumber(details.internationalPhone || details?.phone || "");
       setAddress(details?.address || "");
       setEmail(details?.email || "");
@@ -105,7 +105,7 @@ const EditBusinessDetail = () => {
     }
 
     if (emailError) {
-      return
+      return;
     }
     try {
       setLoading(true);
@@ -120,16 +120,16 @@ const EditBusinessDetail = () => {
       );
       const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));
       const knowledgeBaseId = sessionStorage.getItem("knowledgeBaseId");
-      const displayBusinessName = sessionStorage.getItem("displayBusinessName")
+      const displayBusinessName = sessionStorage.getItem("displayBusinessName");
       const packageName = sessionStorage.getItem("package") || "Free";
       const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
       const EditingMode = localStorage.getItem("UpdationMode");
-      const googleListing = sessionStorage.getItem('googleListing')
+      const googleListing = sessionStorage.getItem("googleListing");
       const agentCount = 0;
       if (!businessName || !address || !phoneNumber) {
-        setShowPopup(true)
-        setPopupType("failed")
-        setPopupMessage("Please fill all required fields.")
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage("Please fill all required fields.");
         return;
       }
       console.log("businessName", phoneNumber, address);
@@ -156,7 +156,12 @@ const EditBusinessDetail = () => {
         Enterprise: 6,
       };
       const packageValue = packageMap[packageName] || 1;
-      const knowledgeBaseName = await getKnowledgeBaseName(business, userId, packageValue, agentCode);
+      const knowledgeBaseName = await getKnowledgeBaseName(
+        business,
+        userId,
+        packageValue,
+        agentCode
+      );
 
       const businessData = {
         businessName: businessName || placeDetails?.businessName || "",
@@ -165,22 +170,29 @@ const EditBusinessDetail = () => {
         website: placeDetails?.website || aboutBusinessForm.businessUrl,
         rating: placeDetails?.rating || "",
         totalRatings: placeDetails?.totalRatings || "",
-        hours: Array.isArray(placeDetails?.hours) ? placeDetails.hours.join(" | ") : "",
+        hours: Array.isArray(placeDetails?.hours)
+          ? placeDetails.hours.join(" | ")
+          : "",
         businessStatus: placeDetails?.businessStatus || "",
-        categories: Array.isArray(placeDetails?.categories) ? placeDetails.categories.join(", ") : "",
+        categories: Array.isArray(placeDetails?.categories)
+          ? placeDetails.categories.join(", ")
+          : "",
         email: email,
         aboutBussiness: aboutBussiness,
         street_number: placeDetails.street_number || "",
         city: placeDetails.city,
         state: placeDetails.state,
         country: placeDetails.country,
-        postal_code: placeDetails.postal_code
+        postal_code: placeDetails.postal_code,
       };
-      const placeDetailsForKBT = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
+      const placeDetailsForKBT = JSON.parse(
+        sessionStorage.getItem("placeDetailsExtract") || "{}"
+      );
       const readableDetails = Object?.entries(placeDetailsForKBT)
         .map(
           ([key, value]) =>
-            `${formatLabel(key)}: ${Array.isArray(value) ? value.join(", ") : value || "N/A"
+            `${formatLabel(key)}: ${
+              Array.isArray(value) ? value.join(", ") : value || "N/A"
             }`
         )
         .join("\n");
@@ -194,8 +206,10 @@ const EditBusinessDetail = () => {
       //extractAddressFields
       function extractAddressFields(addressComponents) {
         const getComponent = (primaryType, fallbackType = null) =>
-          addressComponents.find((comp) =>
-            comp.types.includes(primaryType) || (fallbackType && comp.types.includes(fallbackType))
+          addressComponents.find(
+            (comp) =>
+              comp.types.includes(primaryType) ||
+              (fallbackType && comp.types.includes(fallbackType))
           )?.long_name || "";
 
         return {
@@ -208,70 +222,42 @@ const EditBusinessDetail = () => {
           country_code: getComponent("country", null, true),
         };
       }
-      const addressFields = extractAddressFields(placeDetails?.address_components || []);
-      setCity(addressFields.city)
-      setState(addressFields.state)
-      setCountry(addressFields.country)
-      setPostal_code(addressFields.postal_code)
-      setStreet_number(addressFields.street_number)
-      setCountry_code(addressFields.country_code)
-      setCountry_code(addressFields.state_code)
-      setState_code(addressFields.street_number)
+      const addressFields = extractAddressFields(
+        placeDetails?.address_components || []
+      );
+      setCity(addressFields.city);
+      setState(addressFields.state);
+      setCountry(addressFields.country);
+      setPostal_code(addressFields.postal_code);
+      setStreet_number(addressFields.street_number);
+      setCountry_code(addressFields.country_code);
+      setCountry_code(addressFields.state_code);
+      setState_code(addressFields.street_number);
 
       const rawUrl = aboutBusinessForm.businessUrl?.trim();
       const mergedUrls = [];
       if (rawUrl) {
-        mergedUrls.push(rawUrl); // add businessUrl
+        mergedUrls.push(rawUrl);  
       }
 
       if (googleListing) {
-        mergedUrls.push(googleListing); // add googleListing
+        mergedUrls.push(googleListing); 
       }
 
       // const mergedUrls = rawUrl ? [rawUrl] : [];
       const formData = new FormData();
       const formData2 = new FormData();
       const formData3 = new FormData();
-      if (mergedUrls.length > 0) {
-        formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-        formData3.append("knowledge_base_urls", JSON.stringify(mergedUrls));
-      }
-      formData.append("knowledge_base_name", knowledgeBaseName);
-      formData.append("enable_auto_refresh", "true");
-      formData.append(
-        "knowledge_base_texts",
-        JSON.stringify(knowledgeBaseText)
-      );
-      formData2.append(
-        "knowledge_base_texts",
-        JSON.stringify(businessData)
-      );
-      //Crate Knowledge Base
-      formData2.append("googleUrl", aboutBusinessForm?.googleListing);
-      formData2.append("webUrl", aboutBusinessForm?.businessUrl?.trim());
-      formData2.append("aboutBusiness", aboutBussiness);
-      formData2.append("additionalInstruction", aboutBusinessForm?.note || "");
-      formData2.append("agentId", localStorage.getItem("agent_id"));
-      formData2.append("googleBusinessName", displayBusinessName || "");
-      formData2.append("address1", businessData?.address);
-      formData2.append("businessEmail", email);
-      formData2.append("businessName", placeDetails?.businessName || businessName);
-      formData2.append("phoneNumber", phoneNumber);
-      formData2.append("isGoogleListing", aboutBusinessForm?.noGoogleListing);
-      formData2.append("isWebsiteUrl", aboutBusinessForm?.noBusinessWebsite)
-      formData2.append("city", businessData?.city || city);
-      formData2.append("state", businessData?.state || state);
-      formData2.append("country", businessData?.country || country);
-      formData2.append("postal_code", businessData?.postal_code || postal_code);
-      formData2.append("street_number", businessData?.street_number || street_number);
+      let agentId = localStorage.getItem("agent_id");
       let knowledge_Base_ID = knowledgeBaseId;
 
-      if (knowledge_Base_ID !== null &&
+      if (
+        knowledge_Base_ID !== null &&
         knowledge_Base_ID !== undefined &&
         knowledge_Base_ID !== "null" &&
         knowledge_Base_ID !== "undefined" &&
-        knowledge_Base_ID !== "") {
-
+        knowledge_Base_ID !== ""
+      ) {
         try {
           const sourcesResp = await axios.delete(
             `https://api.retellai.com/delete-knowledge-base/${knowledge_Base_ID}`,
@@ -282,11 +268,65 @@ const EditBusinessDetail = () => {
               },
             }
           );
-          console.log('prev Knowledgbase deleted')
+          console.log("prev Knowledgbase deleted");
         } catch (error) {
-          console.log('error while removing prev Knowledgbase ', error)
+          console.log("error while removing prev Knowledgbase ", error);
         }
       }
+      const filesResponse = await getAgentFiles(agentId);
+      const existingFiles = filesResponse?.files || [];
+
+      if (existingFiles.length > 0) {
+        for (const file of existingFiles) {
+          const byteCharacters = atob(file.data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const fileBlob = new Blob([byteArray], { type: file.mimetype });
+
+          const fileObject = new File([fileBlob], file.name, {
+            type: file.mimetype,
+          });
+          formData.append("knowledge_base_files", fileObject);
+        }
+      }
+      if (mergedUrls.length > 0) {
+        formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+        formData3.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+      }
+      formData.append("knowledge_base_name", knowledgeBaseName);
+      formData.append("enable_auto_refresh", "true");
+      formData.append(
+        "knowledge_base_texts",
+        JSON.stringify(knowledgeBaseText)
+      );
+      formData2.append("knowledge_base_texts", JSON.stringify(businessData));
+      //Crate Knowledge Base
+      formData2.append("googleUrl", aboutBusinessForm?.googleListing);
+      formData2.append("webUrl", aboutBusinessForm?.businessUrl?.trim());
+      formData2.append("aboutBusiness", aboutBussiness);
+      formData2.append("additionalInstruction", aboutBusinessForm?.note || "");
+      formData2.append("agentId", localStorage.getItem("agent_id"));
+      formData2.append("googleBusinessName", displayBusinessName || "");
+      formData2.append("address1", businessData?.address);
+      formData2.append("businessEmail", email);
+      formData2.append(
+        "businessName",
+        placeDetails?.businessName || businessName
+      );
+      formData2.append("phoneNumber", phoneNumber);
+      formData2.append("isGoogleListing", aboutBusinessForm?.noGoogleListing);
+      formData2.append("isWebsiteUrl", aboutBusinessForm?.noBusinessWebsite);
+      formData2.append("city", businessData?.city || city);
+      formData2.append("state", businessData?.state || state);
+      formData2.append("country", businessData?.country || country);
+      formData2.append("postal_code", businessData?.postal_code || postal_code);
+      formData2.append(
+        "street_number",
+        businessData?.street_number || street_number
+      );
 
       try {
         const response = await axios.post(
@@ -299,15 +339,17 @@ const EditBusinessDetail = () => {
             },
           }
         );
-        formData2.append("knowledge_base_id", response?.data?.knowledge_base_id);
+        formData2.append(
+          "knowledge_base_id",
+          response?.data?.knowledge_base_id
+        );
         formData2.append("knowledge_base_name", knowledgeBaseName);
 
         knowledge_Base_ID = response?.data?.knowledge_base_id;
         sessionStorage.setItem("knowledgeBaseId", knowledge_Base_ID);
       } catch (error) {
-        console.log('error while adding knowlde create-knowledge-base', error)
+        console.log("error while adding knowlde create-knowledge-base", error);
       }
-
 
       await axios.patch(
         `${API_BASE_URL}/businessDetails/updateKnowledeBase/${sessionBusinessiD}`,
@@ -321,26 +363,24 @@ const EditBusinessDetail = () => {
       );
 
       if (EditingMode === "ON" && knowledge_Base_ID) {
-
-        handleCreateAgent()
+        handleCreateAgent();
         setHasFetched(false);
       }
 
-
-
       // }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       if (error?.response?.status === 422) {
-        setShowPopup(true)
-        setPopupType("failed")
-        setPopupMessage("Knowledge base is currently updating. Try again later.")
+        setShowPopup(true);
+        setPopupType("failed");
+        setPopupMessage(
+          "Knowledge base is currently updating. Try again later."
+        );
       } else {
-        setShowPopup(true)
-        setPopupType("failed")
+        setShowPopup(true);
+        setPopupType("failed");
         console.error("Submission failed:", error);
-        setPopupMessage("Something went wrong. Please try again.")
-
+        setPopupMessage("Something went wrong. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -378,9 +418,15 @@ const EditBusinessDetail = () => {
     }
 
     const components = place.address_components;
-    const getComponent = (primaryType, fallbackType = null, useShort = false) => {
-      const comp = components.find((c) =>
-        c.types.includes(primaryType) || (fallbackType && c.types.includes(fallbackType))
+    const getComponent = (
+      primaryType,
+      fallbackType = null,
+      useShort = false
+    ) => {
+      const comp = components.find(
+        (c) =>
+          c.types.includes(primaryType) ||
+          (fallbackType && c.types.includes(fallbackType))
       );
       return comp ? (useShort ? comp.short_name : comp.long_name) : "";
     };
@@ -407,7 +453,10 @@ const EditBusinessDetail = () => {
       address_components: components,
     };
 
-    sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedDetails));
+    sessionStorage.setItem(
+      "placeDetailsExtract",
+      JSON.stringify(updatedDetails)
+    );
   };
   //initAddressAutocomplete
   useEffect(() => {
@@ -423,14 +472,13 @@ const EditBusinessDetail = () => {
   }, []);
   return (
     <>
-      <EditHeader title='Edit Agent ' agentName={agentnm} />
+      <EditHeader title="Edit Agent " agentName={agentnm} />
       <div className={styles.Maindiv}>
         <SectionHeader
           heading="Business Details"
           subheading="Verify or Update your Business Details we got from your public listings"
           highlight=""
         />
-
       </div>
 
       <div className={styles.container}>
@@ -442,7 +490,6 @@ const EditBusinessDetail = () => {
             placeholder="Your Business Name"
             value={businessName}
             onChange={(e) => handleInputChange("businessName", e.target.value)}
-
           />
         </div>
 
@@ -460,8 +507,7 @@ const EditBusinessDetail = () => {
               const cleaned = raw.replace(/[^0-9+\s]/g, "");
               handleInputChange("phone", cleaned);
             }}
-          // onChange={(e) => {handleInputChange("phone", e.target.value)}
-
+            // onChange={(e) => {handleInputChange("phone", e.target.value)}
           />
         </div>
 
@@ -485,7 +531,6 @@ const EditBusinessDetail = () => {
             placeholder="Business Address"
             required
             maxLength={300}
-
           />
         </div>
 
@@ -497,7 +542,6 @@ const EditBusinessDetail = () => {
             placeholder="Business Email Address"
             value={email}
             onChange={(e) => handleInputChange("email", e.target.value)}
-
             onBlur={(e) => {
               const value = e.target.value;
               const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -505,25 +549,30 @@ const EditBusinessDetail = () => {
               if (value && !emailRegex.test(value)) {
                 setEmailError("Please enter a valid email address.");
               } else {
-                setEmailError('');
+                setEmailError("");
               }
             }}
           />
-          {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
+          {emailError && <p style={{ color: "red" }}>{emailError}</p>}
         </div>
 
         <div className={styles.inputSection}>
-          <label className={styles.label}>Business Intro for Your Agent to know</label>
-          <textarea rows="3" cols="50" className={styles.textarea}
+          <label className={styles.label}>
+            Business Intro for Your Agent to know
+          </label>
+          <textarea
+            rows="3"
+            cols="50"
+            className={styles.textarea}
             placeholder="Write an Intro for your Business here"
             value={aboutBussiness}
-            onChange={(e) => handleInputChange("aboutBussiness", e.target.value)}
-          > </textarea>
+            onChange={(e) =>
+              handleInputChange("aboutBussiness", e.target.value)
+            }
+          >
+            {" "}
+          </textarea>
         </div>
-
-
-
-
 
         <div className={styles.stickyWrapper} onClick={handleSubmit}>
           <AnimatedButton label="Save" isLoading={loading} />
@@ -531,16 +580,16 @@ const EditBusinessDetail = () => {
         {showPopup && (
           <PopUp
             type={popupType}
-            onClose={() => { setShowPopup(false) }}
+            onClose={() => {
+              setShowPopup(false);
+            }}
             message={popupMessage}
-            onConfirm={() => { }}
+            onConfirm={() => {}}
           />
         )}
       </div>
-
-
     </>
-  )
-}
+  );
+};
 
-export default EditBusinessDetail
+export default EditBusinessDetail;

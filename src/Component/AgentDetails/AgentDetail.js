@@ -1375,16 +1375,16 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Upgrade</p>
               </div>
-              {/* <div
+              <div
                 className={styles.managementItem}
-                onClick={() =>
-                  navigate("/call-recording", {
+                onClick={() => {
+                  navigate("/add-file", {
                     state: {
-                      agentId: agentData?.agent?.agent_id,
-                      businessId: agentData?.agent?.businessId,
+                      agent_id: agentData?.agent?.agent_id,
+                      knowledgeBaseId: agentData?.agent?.knowledgeBaseId,
                     },
-                  })
-                }
+                  });
+                }}
               >
                 <div className={styles.SvgDesign}>
                   <svg
@@ -1400,35 +1400,13 @@ const AgentDashboard = () => {
                     />
                   </svg>
                 </div>
-                <p className={styles.managementText}>Call Recording</p>
-              </div> */}
-              {/* <div
-                className={styles.managementItem}
-                onClick={() => setShowModal(true)}
-              >
-                <div className={styles.SvgDesign}>
-                  <svg
-                    width="17"
-                    height="19"
-                    viewBox="0 0 17 19"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M3.01032 16.5278C3.10401 17.5153 3.92705 18.2446 4.91546 18.2446H11.6882C12.6756 18.2446 13.4987 17.5153 13.5933 16.5278L14.6754 5.875L1.90527 5.87592L3.01032 16.5278ZM9.59468 9.2857H10.5353V14.8119H9.59468V9.2857ZM6.37328 9.2857H7.3139V14.8119H6.37328V9.2857Z"
-                      fill="#6524EB"
-                    />
-                    <path
-                      d="M11.5694 1.40769C11.5694 0.772956 11.0522 0.255801 10.4175 0.255801L6.18469 0.254883C5.54996 0.254883 5.0328 0.772038 5.0328 1.40677V3.00602H0V4.88726H16.6025V3.00602H11.5697L11.5694 1.40769Z"
-                      fill="#6524EB"
-                    />
-                  </svg>
-                </div>
-                <p className={styles.managementText}>Delete Agent</p>
-              </div> */}
+                <p className={styles.managementText}>Additional Info</p>
+              </div>
             </div>
             <hr className={styles.line} />
-            <h1 className={styles.Agenttitle}>Agent Analysis<span>(Current Month)</span></h1>
+            <h1 className={styles.Agenttitle}>
+              Agent Analysis<span>(Current Month)</span>
+            </h1>
             <div className={styles.agentStats}>
               <div
                 className={` ${styles.stat} ${styles.Yellow}`}
