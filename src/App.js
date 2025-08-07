@@ -71,6 +71,14 @@ import CallRecording from "./Component/CallRecording/CallRecording";
 import RaiseTickets from "./Component/Tickets/RaiseTickets";
 import CreateTicketModal from "./Component/Tickets/CreateTicketModal";
 import CreateTicket from "./Component/Tickets/CreateTicket";
+
+
+import Fileinfo from "./Component/AgentDetails/FileInfo/Fileinfo";
+
+import ForcePortraitOnly from "./utils/ForcePortraitOnly";
+
+
+
 import decodeToken from "./lib/decodeToken";
 import { initNotificationSocket } from "./utils/initNotificationSocket";
 import { getUserNotifications } from "./Store/apiStore";
@@ -80,6 +88,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
+
 
 // import Test from "./utils/Test";
 function App() {
@@ -176,6 +185,7 @@ function App() {
   console.log('notifications',notifications)
   return (
     <>
+     {/* <ForcePortraitOnly /> */}
       <div className="DesktopPlusMobile">
         <div className="ForDesktop">
           <img src="svg/Rexpt-Logo.svg" />
@@ -380,7 +390,11 @@ function App() {
 
                   <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
                   <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
+
+                  <Route path='/add-file' element={<SecureRoute><Fileinfo/></SecureRoute>}/>
+
                   <Route path="/notifications" element={<SecureRoute><NotificationView/></SecureRoute>} />
+
 
 
                   <Route path="/test-other" element={<Test />} />

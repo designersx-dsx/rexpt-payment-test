@@ -1825,7 +1825,9 @@ function Dashboard() {
 
   const customer_id = decodeTokenData?.customerId
   const [isPaygActive, setisPaygActive] = useState()
+
   const [paygStatusLoading, setpaygStatusLoading] = useState(true)
+
   // console.log("isPaygActive", isPaygActive)
 
   const checkAgentPaygStatus = async (agentId) => {
@@ -2889,8 +2891,8 @@ function Dashboard() {
                 : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."}
               <strong>
                 {agentToDeactivate?.isDeactivated === 1
-                  ? "activate"
-                  : "deactivate"}
+                  ? "Activate"
+                  : "Deactivate"}
               </strong>{" "}
               <strong>{formatName(agentToDeactivate?.agentName)}</strong>?
             </p>

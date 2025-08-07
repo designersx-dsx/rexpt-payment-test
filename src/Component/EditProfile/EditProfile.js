@@ -48,10 +48,8 @@ const EditProfile = () => {
   const [referralCode, setReferralCode] = useState("");
   const [showDashboardReferral, setShowDashboardReferral] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
   // Payg states
   const params = new URLSearchParams(window.location.search);
-
   const isPayg = params.get('isPayg');
   // console.log("isPayg:", isPayg);
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -85,6 +83,11 @@ const EditProfile = () => {
   const isRefreshing = useContext(RefreshContext);
   const [redirectButton, setRedirectButton] = useState(false);
 
+  const [zapierVisible, setZapierVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -92,7 +95,6 @@ const EditProfile = () => {
   const [disableLoading, setDisableLoading] = useState(false);
 
 
-  // console.log("redirectButton", redirectButton)
 
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
@@ -317,8 +319,11 @@ const EditProfile = () => {
         newErrors.email = "Invalid email format.";
       }
 
-      if (formData.phone && !/^\+?\d{12,15}$/.test(formData.phone)) {
-        newErrors.phone = "Enter a valid phone number with country code.";
+      if (formData.phone) {
+        const cleanedPhone = formData.phone.replace(/[\s()-]/g, ""); // remove spaces, parentheses, dashes
+        if (!/^\+?\d{12,15}$/.test(cleanedPhone)) {
+          newErrors.phone = "Enter a valid phone number with country code.";
+        }
       }
     }
 
@@ -348,6 +353,7 @@ const EditProfile = () => {
       setTimeout(() => {
         handleClosePopup();
       }, 2000);
+      setIsEditing(false);
     } catch (error) {
       console.error(error);
       setShowPopup(true);
@@ -604,8 +610,15 @@ const EditProfile = () => {
     }
   }, []);
 
-  const [zapierVisible, setZapierVisible] = useState(false);
-  const [copied, setCopied] = useState(false);
+
+  const handleEditSection = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
   return (
     <>
       {loading ? (
@@ -658,13 +671,23 @@ const EditProfile = () => {
               <div className={styles.infoSection}>
                 <div className={styles.header}>
                   <h3>Personal Info</h3>
-                  <span className={styles.editText}>
-                    <img
-                      src="/svg/edit-icon2.svg"
-                      className={styles.PurpolIcon}
-                    />
-                    Edit
-                  </span>
+                  {isEditing ? (
+                    <span className={styles.editText} onClick={handleCancel}>
+                      <img
+                        src="/svg/CrosSvg.svg" // You can change the icon if needed
+                        className={styles.PurpolIcon}
+                      />
+                      Cancel
+                    </span>
+                  ) : (
+                    <span className={styles.editText} onClick={handleEditSection}>
+                      <img
+                        src="/svg/edit-icon2.svg"
+                        className={styles.PurpolIcon}
+                      />
+                      Edit
+                    </span>
+                  )}
                 </div>
 
                 <div className={styles.Part}>
@@ -673,6 +696,7 @@ const EditProfile = () => {
                     <label>Name</label>
                     <input
                       type="text"
+                      disabled={!isEditing}
                       name="name"
                       maxLength={100}
                       value={formData.name}
@@ -831,6 +855,7 @@ const EditProfile = () => {
                     <PhoneInput
                       country={"in"}
                       value={formData.phone}
+                      disabled={!isEditing}
                       className={styles.phoneInput}
                       onChange={(val) => {
                         setFormData((prev) => ({
@@ -864,6 +889,7 @@ const EditProfile = () => {
                       value={formData.address}
                       onChange={handleChange}
                       maxLength={10000}
+                      disabled={!isEditing}
                     />
                     <hr className={styles.hrLine} />
                   </div>
@@ -911,7 +937,7 @@ const EditProfile = () => {
                         : "not-allowed",
                   }}
                 >
-                  <div className={styles.btnTheme}>
+                  {isEditing && <div className={styles.btnTheme}>
                     <img src="svg/svg-theme.svg" alt="" />
                     <p>
                       {addLoading ? (
@@ -922,7 +948,7 @@ const EditProfile = () => {
                         "Save"
                       )}
                     </p>
-                  </div>
+                  </div>}
                 </div>
               </div>
               <div className={styles.infoSection} id="payg-toggle">

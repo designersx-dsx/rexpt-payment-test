@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-// Centralized API base URL
+// Centralized API base URL here
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'
 console.log(API_BASE_URL)
 export const token = localStorage.getItem('token') || "";
@@ -205,7 +205,7 @@ export const validateEmail = async (email) => {
     console.error("Error validating email:", error);
     return { valid: false, reason: 'Error validating email' };
   }
-};
+}
 
 
 export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) => {
@@ -299,7 +299,12 @@ export async function getAgentCallsByMonth(agentId, month, year) {
 export const fetchUserDetails = async (id) => {
   const userId = id
   try {
-    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}`)
+    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+    })
     return response
   } catch (error) {
     console.log(error)
@@ -608,6 +613,25 @@ export const sendAgentCallsByMonth = async (agentId, month, year) => {
     throw new Error("Failed to send agent calls by month");
   }
 };
+export const uploadAgentFiles = async (agentId, files) => {
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append('additional_file', file);
+  });
+
+  try {
+    const response = await api.post(`/agent/upload-agent-files/${agentId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    throw new Error("Error uploading files");
+  }
+};
 
 export async function getUserNotifications(userId) {
   console.log(userId)
@@ -637,4 +661,36 @@ export const markNotificationAsSeen = async (id) => {
   }
 };
 
+export const getAgentFiles = async (agentId) => {
+  try {
+    const response = await api.get(`/agent/get-agent-files/${agentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching agent files:", error);
+    throw new Error("Error fetching agent files");
+  }
+};
+
+
+export const deleteAgentFile = async (agentId, filename) => {
+  try {
+     const response = await api.delete(`/agent/delete-file/${agentId}/${filename}`, {
+       headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting agent file:", error.response?.data || error.message);
+    throw new Error("Error deleting agent file");
+  }
+};
+
 export default api;
+
+
+// gaurav chutiya

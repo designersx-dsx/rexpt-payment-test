@@ -27,6 +27,7 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { token } from "../Store/apiStore";
 
 const RedirectHandler = () => {
   console.log("RedirectHandler component mounted");
@@ -53,7 +54,12 @@ const RedirectHandler = () => {
     
         if (slug && isFromReferrerLink) {
           const res = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/endusers/validate-referral/${slug}`
+            `${process.env.REACT_APP_API_BASE_URL}/endusers/validate-referral/${slug}` ,{
+               headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+            }
           );
           console.log("Response from API:", res.data);
 
@@ -77,7 +83,12 @@ const RedirectHandler = () => {
 
           if (slug) {
              const res = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/endusers/validate-referral/${slug}`
+            `${process.env.REACT_APP_API_BASE_URL}/endusers/validate-referral/${slug}` , {
+               headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+            }
           );
           if (res?.data?.valid) {
             sessionStorage.setItem("referredByName", slug);
