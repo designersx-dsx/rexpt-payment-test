@@ -1045,7 +1045,7 @@ const EditProfile = () => {
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         title="Enable Pay As You Go"
-        message="Enabling Pay As You Go gives your agents unlimited flexibility — no more minute caps. You’ll be billed based on usage starting now."
+        message="Enabling Pay As You Go gives your account unlimited flexibility — no more minute caps. Once your current plan minutes are used, you can activate/deactivate PAYG for your agents, and billing will start based on usage."
         type="info"
         confirmText={confirmLoading ? "Processing..." : "Yes"}
         cancelText="Later"
@@ -1058,7 +1058,7 @@ const EditProfile = () => {
         show={showDisableConfirmModal}
         onClose={() => setShowDisableConfirmModal(false)}
         title="Disable Pay As You Go?"
-        message="Are you sure you want to disable Pay As You Go? All active PAYG agents will be deactivated immediately."
+        message="Are you sure you want to disable Pay As You Go? All active PAYG agents will be deactivated immediately. Your final bill will be generated at the end of your current PAYG billing cycle and will be automatically deducted from your account."
         type="warning"
         confirmText={disableLoading ? "Disabling..." : "Yes, Disable"}
         cancelText="Cancel"
