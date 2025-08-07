@@ -88,6 +88,9 @@ const EditProfile = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
+  const [showDisableConfirmModal, setShowDisableConfirmModal] = useState(false);
+  const [disableLoading, setDisableLoading] = useState(false);
+
 
   // console.log("redirectButton", redirectButton)
 
@@ -394,6 +397,11 @@ const EditProfile = () => {
     }
 
     if (isCurrentlyEnabled) {
+      setShowDisableConfirmModal(true); // Show confirmation modal
+      return;
+    }
+
+    if (isCurrentlyEnabled) {
       console.log("Cancel Run")
       try {
         const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
@@ -538,6 +546,52 @@ const EditProfile = () => {
       setConfirmLoading(false);
     }
   };
+
+  const handleDisablePaygConfirmed = async () => {
+    setDisableLoading(true);
+    try {
+      const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
+      });
+
+      if (cancelResponse.ok) {
+        localStorage.removeItem("isPayg");
+        setPaygEnabled(false);
+
+        const disablePaygResponse = await fetch(`${API_BASE}/payg-agents-disabled`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
+        });
+
+        if (disablePaygResponse.ok) {
+          console.log("✅ PAYG agents disabled successfully.");
+        } else {
+          console.log("❌ Failed to disable PAYG agents.");
+        }
+
+        // Close confirm modal, show final popup
+        setShowDisableConfirmModal(false);
+        setShowPopup(true);
+        setPopupMessage("Your PAYG subscription has been deactivated. All active PAYG agents are now disabled.");
+        setPopupType("failed");
+      } else {
+        console.error("Failed to cancel PAYG subscription.");
+      }
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+    } finally {
+      setDisableLoading(false);
+    }
+  };
+
 
 
   useEffect(() => {
@@ -991,7 +1045,7 @@ const EditProfile = () => {
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         title="Enable Pay As You Go"
-        message="Are you sure you want to enable Pay As You Go? This will activate billing and usage tracking."
+        message="Enabling Pay As You Go gives your agents unlimited flexibility — no more minute caps. You’ll be billed based on usage starting now."
         type="info"
         confirmText={confirmLoading ? "Processing..." : "Yes"}
         cancelText="Later"
@@ -999,6 +1053,20 @@ const EditProfile = () => {
         isLoading={confirmLoading}
         onConfirm={handleEnablePaygConfirmed}
       />
+
+      <ConfirmModal
+        show={showDisableConfirmModal}
+        onClose={() => setShowDisableConfirmModal(false)}
+        title="Disable Pay As You Go?"
+        message="Are you sure you want to disable Pay As You Go? All active PAYG agents will be deactivated immediately."
+        type="warning"
+        confirmText={disableLoading ? "Disabling..." : "Yes, Disable"}
+        cancelText="Cancel"
+        showCancel={true}
+        isLoading={disableLoading}
+        onConfirm={handleDisablePaygConfirmed}
+      />
+
 
 
 
