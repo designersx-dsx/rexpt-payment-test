@@ -1672,7 +1672,13 @@ function Dashboard() {
   // };
 
   const handleUpgradeClick = (agent) => {
+    console.log("agent",agent)
     setPendingUpgradeAgent(agent);         // Save agent temporarily
+    if(agent?.agentPlan === "free"){
+      setShowUpgradeConfirmModal(false);
+      handleUpgradePaygConfirmed()
+      return 
+    }
     setShowUpgradeConfirmModal(true);      // Show modal
   };
 
