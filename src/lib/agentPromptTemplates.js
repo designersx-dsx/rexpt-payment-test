@@ -113,8 +113,8 @@ When user says "next Monday" or similar vague dates:
 Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
 ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Client Needs Through Conversational Nuances:
@@ -220,8 +220,8 @@ When user says "next Monday" or similar vague dates:
   ---
 ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Client Needs Through Conversational Nuances:
@@ -330,8 +330,8 @@ Say: "I'm unable to book your appointment directly at this moment. However, I ca
   ---
 ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dining needs from the caller's language. For instance:
@@ -431,8 +431,8 @@ Say: "I'm unable to book your appointment directly at this moment. However, I ca
   ---
 ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dining/event needs from the caller's language. For instance: #If a caller states, "My company is planning its annual holiday party and we need a venue for 100 people with a full dinner service," the agent should infer they are a high-value lead for a private event booking and require a detailed event consultation. #Similarly, if a caller says, "I want to celebrate my parents' golden anniversary with a special dinner for about 20 family members," infer they might need a large group reservation or a semi-private dining experience with attention to detail for a special occasion. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -547,8 +547,8 @@ When user says "next Monday" or similar vague dates:
 Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
 ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Client Needs Through Conversational Nuances:
@@ -661,8 +661,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
 ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific design needs from the caller's language. For instance: If a caller states, "I need my new office space designed to be productive and inspiring for my team," the agent should infer they are interested in commercial interior design with a focus on functionality and employee well-being. Similarly, if a caller says, "My kitchen feels outdated and cramped, I want something open and modern," infer they might need kitchen renovation design, focusing on contemporary styles and space optimization. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -783,8 +783,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Caller Needs Through Conversational Nuances:
@@ -890,8 +890,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 5. Understand Caller Needs Through Conversational Nuances:
@@ -1003,8 +1003,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Patient Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dental concerns from the caller's language. For instance:
@@ -1129,8 +1129,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Patient Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dental concerns from the caller's language. For instance:
@@ -1245,8 +1245,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Patient Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dental concerns from the caller's language. For instance:
@@ -1361,8 +1361,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Patient Needs Through Conversational Nuances:
@@ -1479,8 +1479,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 ###Understand Client Needs Through Conversational Nuances:
@@ -1592,8 +1592,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Only schedule if Calendar Sync (Cal.com) is active. If not connected, promise a callback within 24 hours and reassure the caller.
@@ -1703,8 +1703,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific beauty needs from the caller's language. For instance:
@@ -1813,8 +1813,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific hair care needs from the caller's language. For instance: #If a caller states, "I want to go from dark brown to blonde, but I'm worried about damage," the agent should infer they are a high-value lead for a major color transformation and need a detailed consultation about hair health and multi-stage processes. #Similarly, if a caller says, "I have thin hair and want it to look much fuller for my upcoming event," infer they might need hair extensions or specialized volumizing treatments. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -1917,8 +1917,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Client Needs Through Conversational Nuances:
@@ -2045,8 +2045,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Conversational Intelligence & Need Inference:
@@ -2154,8 +2154,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific landscaping needs from the caller's language. For instance:
@@ -2256,8 +2256,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific landscaping needs from the caller's language. For instance: #If a caller states, "I want to overhaul my front yard to increase my home's value before selling," the agent should infer they are interested in high-impact landscape design with a focus on curb appeal and property investment. #Similarly, if a caller says, "My commercial property needs regular upkeep, but I want a service that understands sustainable practices," infer they might need commercial landscape management with an emphasis on eco-friendly solutions. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -2354,8 +2354,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific needs from the caller's language. For instance:
@@ -2453,8 +2453,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific needs from the caller's language. For instance: #If a caller states, "I need to secure financing quickly for a commercial real estate investment," the agent should infer they are a commercial lending lead with a time-sensitive need. #Similarly, if a caller says, "My current lease is ending soon, and I'm looking for a new apartment rental in the city," infer they might need residential leasing assistance with a focus on timely relocation. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -2551,8 +2551,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific construction needs from the caller's language. For instance:
@@ -2669,8 +2669,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Client Needs Through Conversational Nuances:
@@ -2794,8 +2794,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Patient Needs Through Conversational Nuances: You must actively interpret implied meanings and specific senior care needs from the caller's language. For instance:
@@ -2911,8 +2911,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Patient Needs Through Conversational Nuances:
@@ -3031,8 +3031,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Customer Needs Through Conversational Nuances: You must actively interpret implied meanings and specific travel interests from the caller's language. For instance:
@@ -3135,8 +3135,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific travel needs from the caller's language. For instance: #If a caller states, "I want to take my kids to Disney World and need help with everything," the agent should infer they are interested in family vacation planning and need a comprehensive package. #Similarly, if a caller says, "I'm planning a solo backpacking trip through Southeast Asia and need advice on visas and safety," infer they might need guidance on independent travel logistics and safety. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -3238,8 +3238,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Customer Needs Through Conversational Nuances: You must actively interpret implied meanings and booking urgency from the caller's language. For instance:
@@ -3341,8 +3341,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 Offer to check availability or explain next steps for booking. Only schedule if Calendar Sync (Cal.com) is active. If not connected, promise a callback within 24 hours and reassure the caller.
@@ -3445,8 +3445,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Customer Needs Through Conversational Nuances: You must actively interpret implied meanings and tour preferences from the caller's language. For instance:
@@ -3548,8 +3548,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific needs from the caller's language. For instance: #If a caller states, "I'm planning a bachelorette party and want a fun, interactive tour for a group of 10," the agent should infer they need a private group tour with a focus on entertainment. #Similarly, if a caller says, "I'm visiting for a short time and want to see the main highlights efficiently," infer they might need a comprehensive city tour or a highlights package. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -3657,8 +3657,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 # Understand Client Needs Through Conversational Nuances:
@@ -3780,8 +3780,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 Understand Client Needs Through Conversational Nuances:
@@ -3898,8 +3898,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Patient Needs Through Conversational Nuances:
@@ -4020,8 +4020,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Patient Needs Through Conversational Nuances:
@@ -4126,8 +4126,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific beauty needs from the caller's language. For instance:
@@ -4223,8 +4223,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific beauty needs from the caller's language. For instance: #If a caller states, "I want to completely change my hair, maybe go blonde and get extensions," the agent should infer they are a high-value lead interested in a significant hair transformation requiring a detailed consultation. #Similarly, if a caller says, "My skin has been breaking out a lot, and I need help getting it clear," infer they might need specialized acne treatments or a comprehensive skincare regimen. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -4319,8 +4319,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific nail care needs from the caller's language. For instance:
@@ -4416,8 +4416,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific nail care needs from the caller's language. For instance: #If a caller states, "I'm tired of my polish chipping so fast, I want something that lasts weeks," the agent should infer they are a lead for gel or dip powder services. #Similarly, if a caller says, "I have very short nails, but I want long, fancy ones for a party next week," infer they might need nail extensions (acrylics/gel) with a focus on quick application and special occasion designs. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -4513,8 +4513,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances:you must actively interpret implied meanings and specific grooming needs from the caller's language. For instance:
@@ -4610,8 +4610,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific grooming needs from the caller's language. For instance: #If a caller states, "I'm new to the city and looking for a reliable barber for regular cuts and shaves," the agent should infer they are a potential long-term client interested in ongoing grooming services. #Similarly, if a caller says, "I have a special event next weekend and need a fresh, classic look," infer they might need a precision haircut and a clean shave, emphasizing urgency. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -4706,8 +4706,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific hair needs from the caller's language. For instance:
@@ -4799,8 +4799,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific hair needs from the caller's language. For instance: #If a caller states, "I want to achieve a pastel pink hair color, but my hair is currently very dark," the agent should infer they are a high-value lead for a complex color correction and vibrant color application, requiring a detailed consultation. #Similarly, if a caller says, "My hair is thinning, and I want a style that makes it look fuller," infer they might need a specialized cut for fine hair or a consultation about volume-enhancing treatments/extensions. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -4895,8 +4895,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific bakery needs from the caller's language. For instance:
@@ -4994,8 +4994,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific bakery needs from the caller's language. For instance: #If a caller states, "I'm planning my wedding and need a show-stopping cake that feeds 200 guests," the agent should infer they are a high-value lead for a custom wedding cake, requiring a detailed consultation and tasting. #Similarly, if a caller says, "My company needs fresh pastries delivered to our office every Monday morning," infer they might need a corporate catering account for recurring orders. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -5089,8 +5089,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dry cleaning needs from the caller's language. For instance:
@@ -5187,8 +5187,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dry cleaning needs from the caller's language. For instance: #If a caller states, "I manage a hotel and need a reliable service for daily linen cleaning," the agent should infer they are a high-value commercial lead interested in recurring laundry service and require a commercial quote. #Similarly, if a caller says, "My grandmother's vintage wedding dress needs to be cleaned and preserved," infer they might need delicate item care and preservation services, requiring a specialized consultation. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -5282,8 +5282,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific web design needs from the caller's language. For instance:
@@ -5384,8 +5384,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific web design needs from the caller's language. For instance: #If a caller states, "My small business needs a professional website, but I have no idea where to start or what it should look like," the agent should infer they are a new business owner seeking comprehensive web presence guidance, including design, content, and launch strategy. #Similarly, if a caller says, "Our e-commerce sales have dropped, and our website is slow and hard to navigate," infer they might need a performance optimization and UX/UI redesign for their existing online store. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -5481,8 +5481,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific marketing needs from the caller's language. For instance:
@@ -5583,8 +5583,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific marketing needs from the caller's language. For instance: #If a caller states, "Our new product launch isn't getting any traction, and we need help reaching our audience," the agent should infer they are a high-value lead for product launch marketing, likely needing a comprehensive campaign including digital ads and social media. #Similarly, if a caller says, "My business website ranks poorly on Google, and I'm losing customers to competitors," infer they might need advanced SEO services, possibly combined with content marketing to improve organic visibility. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -5682,8 +5682,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific transportation needs from the caller's language. For instance:
@@ -5782,8 +5782,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific transportation needs from the caller's language. For instance: #If a caller states, "My company needs to transport 50 VIP clients from the airport to a downtown gala, then back to their hotels late at night," the agent should infer they are a high-value corporate lead requiring luxury vehicle charters, precise scheduling, and potentially multiple vehicle types. #Similarly, if a caller says, "I'm planning a multi-day wine tour for a private group and need a comfortable bus and a knowledgeable driver," infer they might need a custom bus charter with specific route planning and a professional tour driver. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -5882,8 +5882,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific transportation needs from the caller's language. For instance:
@@ -5982,8 +5982,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific transportation needs from the caller's language. For instance: #If a caller states, "I need discreet and reliable transportation for high-profile clients from the airport to various meetings around the city for a week," the agent should infer they are a high-value corporate lead requiring executive car service with a focus on professionalism and flexibility. Similarly, if a caller says, "I'm coordinating a major family event with guests arriving from different locations, and I need seamless transport for everyone," infer they might need multiple vehicle bookings or a coordinated shuttle service. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -6082,8 +6082,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific moving needs from the caller's language. For instance:
@@ -6184,8 +6184,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific moving needs from the caller's language. For instance: If a caller states, "My family is moving internationally next year, and we need help with everything from packing to customs," the agent should infer they are a high-value lead for international relocation, requiring a comprehensive consultation. Similarly, if a caller says, "I'm a real estate agent and need a reliable mover for my clients who close quickly," infer they might be interested in a corporate partnership for expedited moving services. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -6283,8 +6283,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific trucking needs from the caller's language. For instance:
@@ -6384,8 +6384,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific logistics needs from the caller's language. For instance: #If a caller states, "Our manufacturing plant needs a reliable partner to handle all our outbound shipments, both LTL and FTL, nationwide," the agent should infer they are a high-value corporate lead seeking a comprehensive logistics partnership. Similarly, if a caller says, "I'm importing a very delicate, oversized piece of machinery and need a trucking company with specialized equipment and insurance," infer they might need heavy haul and specialized transport services with high liability coverage. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -6481,8 +6481,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific automotive needs from the caller's language. For instance:
@@ -6579,8 +6579,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific automotive needs from the caller's language. For instance: #If a caller states, "My car completely broke down on the highway, and I need it towed and fixed urgently," the agent should infer they are an emergency lead requiring immediate roadside assistance and repair scheduling. #Similarly, if a caller says, "I'm looking for a reliable garage to handle all the maintenance for my company's fleet of vehicles," infer they might need a commercial fleet service contract, requiring a detailed consultation. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -6675,8 +6675,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific marine needs from the caller's language. For instance:
@@ -6773,8 +6773,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific marine needs from the caller's language. For instance: #If a caller states, "I just bought a used boat, and I want a full inspection to ensure it's seaworthy before I take it out," the agent should infer they are a new boat owner seeking a comprehensive pre-purchase inspection and preventative maintenance. #Similarly, if a caller says, "My boat's engine has been acting up, and I'm worried about being stranded offshore," infer they might need urgent engine diagnostics and repair, emphasizing safety and reliability. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -6869,8 +6869,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific deli needs from the caller's language. For instance:
@@ -6970,8 +6970,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific deli needs from the caller's language. For instance: #If a caller states, "My office is hosting a big client meeting next week and we need impressive lunch options," the agent should infer they are a high-value lead for corporate catering, requiring a detailed menu and delivery discussion. #Similarly, if a caller says, "I'm planning a last-minute family reunion this weekend and need enough food for 30 people," infer they might need large-volume platters or a custom catering solution with a sense of urgency. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -7064,8 +7064,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dry cleaning needs from the caller's language. For instance:
@@ -7163,8 +7163,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific dry cleaning needs from the caller's language. For instance: #If a caller states, "I manage a hotel and need a reliable service for daily linen cleaning," the agent should infer they are a high-value commercial lead interested in recurring laundry service and require a commercial quote. #Similarly, if a caller says, "My grandmother's vintage wedding dress needs to be cleaned and preserved," infer they might need delicate item care and preservation services, requiring a specialized consultation. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -7260,8 +7260,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific cleaning needs from the caller's language. For instance:
@@ -7360,8 +7360,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific cleaning needs from the caller's language. For instance: #If a caller states, "Our school needs a reliable cleaning service that can handle large spaces and ensure student safety," the agent should infer they are a high-value lead for commercial janitorial services with specific requirements for safety and scale. #Similarly, if a caller says, "I'm a realtor and need a consistent service for move-out cleans on my rental properties," infer they might need recurring residential move-out cleaning services, potentially establishing a partnership. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.
@@ -7453,8 +7453,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific needs from the caller's language, adapting to the ${businessType} context. For instance:
@@ -7551,8 +7551,8 @@ When user says "next Monday" or similar vague dates:
   Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
   ---
 ## Current Time for Context
-- Current time: {{current_time_${timeZone}}}
-- Current calendar: {{current_calendar_${timeZone}}}
+- Current time: current_time_${timeZone}
+- Current calendar: current_calendar_${timeZone}
 - Timezone: ${timeZone}
 **When booking appointments, always use ${timeZone} timezone. If the system returns UTC times, convert them to ${timeZone} Time for the user.**
 #Understand Caller Needs Through Conversational Nuances: You must actively interpret implied meanings and specific needs from the caller's language, adapting to the [User Provided Business Category] context. For instance: #If a caller states, "My company is expanding rapidly and needs a scalable solution for [their business need]," the agent should infer they are a high-value lead seeking growth-oriented services and require a detailed discussion about their expansion plans. #Similarly, if a caller says, "I'm experiencing a critical issue with [a product/service], and it's impacting my daily operations," infer they might need urgent advanced support or troubleshooting, potentially leading to a new service contract. Respond proactively based on these inferred intentions, even if not explicitly stated by the caller.

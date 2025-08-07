@@ -457,7 +457,8 @@ const Step = () => {
             languageSelect: { key: "LANGUAGE", value: languageSelect || "" },
             businessType: { key: "BUSINESSTYPE", value: businessType || "" },
             commaSeparatedServices: { key: "SERVICES", value: servicesArray || "" },
-            timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" }
+            timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" },
+          
         });
         // const isValid = step8BRef.current.validate()
         //creation here
