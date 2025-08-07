@@ -12,7 +12,7 @@ import {
   getBusinessDetailsByBusinessId,
   getUserAgentMergedDataForAgentUpdate,
   toggleAgentActivation,
-  updateAgentKnowledgeBaseId,
+  updateAgentKnowledgeBaseId, 
   getUserReferralCodeForDashboard,
   updateShowReferralFloatingStatus,
   updateAgentEventId,
@@ -79,7 +79,6 @@ function Dashboard() {
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
-  const [timeZone, setTimeZone] = useState("")
   // Cal API modal & event states
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -166,10 +165,18 @@ function Dashboard() {
 
   //getTimeZone
   const [timeZone, setTimeZone] = useState("")
+  // const [unreadCount, setUnreadCount] = useState("")
   const notifications = useNotificationStore((state) => state.notifications);
-  const unreadCount = notifications.filter((n) => n.status === 'unread').length;
-  console.log('unreadCount',unreadCount)
+  // const toggleFlag = useNotificationStore((state) => state.toggleFlag);
+      const unreadCount=notifications?.filter((n) => n.status === 'unread').length
+  
+  // useEffect(()=>{
+  //   const notificationsCount = notifications.filter((n) => n.status === 'unread').length;
+  //     setUnreadCount(notificationsCount)
+  // },[notifications.length,notifications,toggleFlag])
 
+  // console.log('unreadCount',unreadCount,toggleFlag)
+  // console.log('asasasasa',unreadCount)
 
   const [redirectButton, setredirectButton] = useState(false)
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;

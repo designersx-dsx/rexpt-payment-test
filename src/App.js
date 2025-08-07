@@ -101,6 +101,8 @@ function App() {
   const notifications = useNotificationStore((state) => state.notifications);
   const addNotification = useNotificationStore((state) => state.addNotification);
   const loadNotifications = useNotificationStore((state) => state.loadNotifications);
+  const toggleFlag = useNotificationStore((state) => state.toggleFlag);
+  const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
   const navigate=useNavigate()
   useEffect(() => {
@@ -115,26 +117,33 @@ function App() {
     };
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     if (userID) {
       try {
-        initNotificationSocket(userID,navigate); // ✅ Connect socket once
+        initNotificationSocket(userID, navigate);
       } catch (err) {
         console.error("Token decode error:", err);
       }
     }
-  }, [userID]);
+  }, [userID, navigate]);
 
-    useEffect(() => {
-        if (userID) {
-          getUserNotifications(userID)
-         .then((resp)=> {console.log('user notifications ',resp);loadNotifications(resp?.notifications)})
-         .catch((err)=>console.log('error while fetching user Notifications'))
-   
-          // ;
-   
+  useEffect(() => {
+    if (userID) {
+      getUserNotifications(userID)
+        .then((resp) => {
+          // console.log("user notifications ", resp);
+          loadNotifications(resp?.notifications || []);
+        })
+        .catch((err) => console.log("error while fetching user Notifications", err));
     }
   }, [userID]);
+
+  useEffect(() => {
+    const count = notifications.filter((n) => n.status === "unread").length;
+    setUnreadCount(count);
+    // console.log("Notifications:", notifications);
+    // console.log("Unread Count:", count);
+  }, [notifications]);
 
    useEffect(() => {
     if (!userID) return;
@@ -170,7 +179,7 @@ function App() {
       //   autoClose: 3000,
       // });
       // setRefreshNoitification((prev)=>!prev)
-      console.log('new notification')
+      // console.log('new notification')
     });
 
     socket.on("disconnect", () => {
@@ -181,8 +190,9 @@ function App() {
       socket.disconnect();
     };
   }, [userID]);
+  // console.log('notifications',notifications)
 
-  console.log('notifications',notifications)
+
   return (
     <>
      {/* <ForcePortraitOnly /> */}
@@ -287,7 +297,7 @@ function App() {
                     path="/dashboard"
                     element={
                       <SecureRoute>
-                        <Dashboard />
+                        <Dashboard unreadCount={unreadCount}/>
                       </SecureRoute>
                     }
                   />
