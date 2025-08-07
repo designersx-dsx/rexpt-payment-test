@@ -41,6 +41,10 @@ const Planss = () => {
 
     const [currencyLoaded, setCurrencyLoaded] = useState(false);
 
+    const [activeCount, setactiveCount] = useState(null)
+    const [PaygSubscriptionId, setPaygSubscriptionId] = useState(null)
+    // console.log("activeCount", activeCount)
+    // console.log("PaygSubscriptionId", PaygSubscriptionId)
 
     let agentID = location?.state?.agentID
 
@@ -48,7 +52,19 @@ const Planss = () => {
     let locationPath = location?.state?.locationPath
     let agentPlan = location?.state?.planName
     let interval = location?.state?.interval
-    // console.log("interval", interval)
+
+    let cusotmerId = location?.state?.customerId
+
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPayg = urlParams.get('isPayg');
+    useEffect(() => {
+        if (isPayg === "true") {
+            localStorage.setItem("isPayg", true)
+        }
+    }, [])
+
+
 
     const handleClick = () => {
         setFreeTrial(!freeTrial);
@@ -186,7 +202,13 @@ const Planss = () => {
         if (!userCurrency || !currencyLoaded) return;
         setLoading(true);
 
-        fetch(`${API_BASE}/products`)
+        fetch(`${API_BASE}/products` , {
+
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              }}
+        )
             .then((res) => res.json())
             .then((data) => {
                 const planColorMap = ["starter", "scaler", "growth", "corporate"];
@@ -341,6 +363,207 @@ const Planss = () => {
         return new Intl.NumberFormat('en-IN').format(price);
     };
 
+    const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
+
+    // Handle the Payg enable/disable toggle change
+    const handlePaygToggle = async () => {
+
+        const isPayg = localStorage.getItem("isPayg") === "true";
+        const isCurrentlyEnabled = paygEnabled;
+        const status = isCurrentlyEnabled ? "disabled" : "active"; // Determine the action based on the current state
+
+
+
+        if (isPayg) {
+            // Prepare the request data
+
+            if (activeCount === 1 && isCurrentlyEnabled) {
+                console.log("Cancel Run")
+                try {
+                    const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+                        method: 'POST',
+                        headers: {
+                            'Cotnent-Type': 'application/json',
+                              Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
+                    });
+                    if (cancelResponse.ok) {
+                        localStorage.removeItem("isPayg")
+                        setPopupMessage("Payg Stripe Deactivated ");
+                        setPopupType("failed"); // Pop-up for disabled
+                    }
+
+
+                    if (!cancelResponse.ok) {
+                        console.error('Failed to cancel the subscription schedule.');
+                        return;
+                    }
+                    // Subscription cancelled successfully, now proceed to disable PAYG
+                } catch (error) {
+                    console.error('Error canceling subscription:', error);
+                    return;
+                }
+            }
+
+            const requestData = {
+                customerId: cusotmerId,
+                agentId: agentID,
+
+
+
+                
+                status: status,
+            };
+
+            try {
+                // Call the API to save the agent's payg status
+                const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData),
+                });
+
+                if (response.ok) {
+                    setPaygEnabled(!isCurrentlyEnabled)
+                    const responseData = await response.json();
+                    // console.log('Agent saved successfully:', responseData);
+                    if (responseData.status === "active") {
+                        setPopupMessage("Agent's Pay-as-you-go feature activated.");
+                        setPopupType("success"); // Pop-up for activated
+                    } else {
+                        setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
+                        setPopupType("failed"); // Pop-up for disabled
+                    }
+                } else {
+                    console.error('Failed to send the request to save the agent.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        else {
+
+            const requestData = {
+                customerId: cusotmerId,
+                priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38",
+                promotionCode: "",
+                userId: userId,
+                agentId: agentID,
+                url: "http://localhost:3000/plan?isPayg=true",
+                cancelUrl: "http://localhost:3000/plan?isPayg=false",
+                subscriptionId: PaygSubscriptionId
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                // console.log("response2222",response.json())
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    if (responseData.checkoutUrl) {
+                        // localStorage.setItem("isPayg", true)
+                        window.location.href = responseData.checkoutUrl;
+                    }
+                    else if (responseData?.subscription) {
+                        const requestData = {
+                            customerId: cusotmerId,
+                            agentId: agentID,
+                            status: "active",
+                        };
+                        try {
+                            // Call the API to save the agent's payg status
+                            const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(requestData),
+                            });
+
+                            if (response.ok) {
+                                setPaygEnabled(!isCurrentlyEnabled)
+                                const responseData = await response.json();
+                                // console.log('Agent saved successfully:', responseData);
+                                if (responseData?.success === true) {
+                                    localStorage.setItem("isPayg", true)
+                                    setPopupMessage("Agent's Pay-as-you-go feature activated.");
+                                    setPopupType("success"); // Pop-up for activated
+                                } else {
+                                    setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
+                                    setPopupType("failed"); // Pop-up for disabled
+                                }
+                            } else {
+                                console.error('Failed to send the request to save the agent.');
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+                    }
+                    console.log('API response:', responseData); // You can handle the API response here
+                } else {
+                    console.error('Failed to send the request');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    }
+
+    const checkAgentPaygStatus = async (agentId) => {
+        try {
+            setLoading(true); // Start loading state
+
+            const response = await fetch(`${API_BASE}/pay-as-you-go-status-check`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ agentId, customerId: cusotmerId }) // Pass the agentId to the API
+            });
+
+            const data = await response.json();
+
+
+            if (data.success) {
+                // If the agent has an active Payg subscription
+                setPaygEnabled(true);
+                localStorage.setItem("isPayg", "true");
+                setactiveCount(data?.activeCount || null)
+                setPaygSubscriptionId(data?.subscriptionId)
+                // setPopupMessage("Agent's Pay-as-you-go feature is active.");
+                // setPopupType("success");
+            } else {
+                // If the agent does not have an active Payg subscription
+                setactiveCount(data?.activeCount || null)
+                setPaygSubscriptionId(data?.subscriptionId)
+                setPaygEnabled(false);
+                // localStorage.setItem("isPayg", "false");
+                // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
+                // setPopupType("failed");
+            }
+        } catch (error) {
+            console.error("Error checking Payg status:", error);
+            // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
+            // setPopupType("failed");
+        }
+    };
+
+    useEffect(() => {
+        if (agentID) {
+            checkAgentPaygStatus(agentID);
+        }
+    }, [agentID]);
+
 
     if (loading)
         return (
@@ -353,7 +576,8 @@ const Planss = () => {
     return (
         <div className={styles.subscriptionMain}>
             <div className={styles.firstdiv}>
-                <HeaderBar title="Upgrade Plan" />
+                {subscriptionID ? <HeaderBar title="Upgrade Plan" /> : <HeaderBar title="Select Plan" />}
+
                 {agentCount == 0 ? <label className={styles.freeTrialBtn} onChange={handleClick}>
                     FREE TRIAL
                     <input
@@ -378,6 +602,26 @@ const Planss = () => {
                         )}
                     </span>
                 </label> : null}
+
+                {/* Show Payg toggle button */}
+                {/* {(subscriptionID || isPayg === "true") && (
+                    <div className={styles.toggleContainer1}>
+                        <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
+                        <label className={styles.toggleLabel1}>
+                            <input
+                                type="checkbox"
+                                checked={paygEnabled}
+                                onChange={handlePaygToggle}
+                                className={styles.toggleInput1}
+                            />
+                            <span
+                                className={`${styles.toggleSlider1} ${paygEnabled ? styles.active1 : ''}`}
+                            />
+                        </label>
+                    </div>
+                )} */}
+
+
 
             </div>
             <div className={styles.sectionPart}>

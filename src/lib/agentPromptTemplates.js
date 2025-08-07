@@ -109,14 +109,8 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
+#### If Calendar NOT Connected (check_availability fails):
+Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
 ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
@@ -221,14 +215,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
@@ -336,14 +325,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
+#### If Calendar NOT Connected (check_availability fails):
+Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
@@ -442,14 +426,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
+#### If Calendar NOT Connected (check_availability fails):
+Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
@@ -564,14 +543,8 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
+#### If Calendar NOT Connected (check_availability fails):
+Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
 ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
@@ -684,14 +657,8 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
 ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
@@ -812,15 +779,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -925,15 +886,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -1044,15 +999,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -1176,15 +1125,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -1298,15 +1241,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -1420,15 +1357,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -1544,15 +1475,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -1663,15 +1588,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -1780,15 +1699,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -1896,15 +1809,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2006,15 +1913,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2140,15 +2041,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2255,15 +2150,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2363,15 +2252,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2467,15 +2350,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2572,15 +2449,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2676,15 +2547,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2800,15 +2665,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -2931,15 +2790,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3054,15 +2907,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3180,15 +3027,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3290,15 +3131,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3399,15 +3234,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3508,15 +3337,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3618,15 +3441,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3727,15 +3544,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3842,15 +3653,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -3971,15 +3776,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4095,15 +3894,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4223,15 +4016,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4335,15 +4122,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4438,15 +4219,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4540,15 +4315,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4643,15 +4412,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4746,15 +4509,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4849,15 +4606,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -4951,15 +4702,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5050,15 +4795,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5152,15 +4891,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5257,15 +4990,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5358,15 +5085,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5462,15 +5183,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5563,15 +5278,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5671,15 +5380,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5774,15 +5477,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5882,15 +5579,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -5987,15 +5678,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6093,15 +5778,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6199,15 +5878,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6305,15 +5978,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6411,15 +6078,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6519,15 +6180,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6624,15 +6279,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6731,15 +6380,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6834,15 +6477,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -6938,15 +6575,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7040,15 +6671,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7144,15 +6769,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7246,15 +6865,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7353,15 +6966,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7453,15 +7060,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7558,15 +7159,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7661,15 +7256,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7767,15 +7356,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7866,15 +7449,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}
@@ -7970,15 +7547,9 @@ When user says "next Monday" or similar vague dates:
 - If caller gives exact date/time:
   - Confirm availability and offer slots.
   - Use book_appointment_cal after confirmation.
-#### If booking fails:
-Say:
-> “It looks like our scheduling system is busy at the moment.”
-Then log caller info. Do **not** try to book again.
-#### If Calendar NOT Connected:
-Say:
-> “I’m unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further.”
-Collect info and end politely. Do **not** offer time slots.
----
+  #### If Calendar NOT Connected (check_availability fails):
+  Say: "I'm unable to book your appointment directly at this moment. However, I can take down your details, and a team member will call you back within 24 hours to assist you further."
+  ---
 ## Current Time for Context
 - Current time: {{current_time_${timeZone}}}
 - Current calendar: {{current_calendar_${timeZone}}}

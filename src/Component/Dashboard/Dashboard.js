@@ -43,13 +43,20 @@ import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import PopUp from "../Popup/Popup";
 import getTimezoneFromState from "../../lib/timeZone";
+
 import { useNotificationStore } from "../../Store/notificationStore";
+
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
+
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
 
   const isRefreshing = useContext(RefreshContext);
+
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+
 
   const navigate = useNavigate();
   const { user } = useUser();
@@ -72,6 +79,7 @@ function Dashboard() {
   const [localAgents, setLocalAgents] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openOffcanvas, setOpenOffcanvas] = useState(false);
+  const [timeZone, setTimeZone] = useState("")
   // Cal API modal & event states
   const [isCalModalOpen, setIsCalModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -126,6 +134,11 @@ function Dashboard() {
   const dropdownRef = useRef(null);
   const location = useLocation();
 
+  const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
+  const [showUpgradeConfirmModal, setShowUpgradeConfirmModal] = useState(false);
+  const [upgradeLoading, setUpgradeLoading] = useState(false);
+
+
   const [deactivateLoading, setDeactivateLoading] = useState(false);
 
   const [calloading, setcalloading] = useState(false);
@@ -146,23 +159,56 @@ function Dashboard() {
     sessionStorage.getItem("userCalApiKey")
   );
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
-  console.log(agentDetailsForCal,"agentDetailsForCal")
+  console.log(agentDetailsForCal, "agentDetailsForCal")
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
   const [activeSubs, setActiveSubs] = useState(false)
+
   //getTimeZone
   const [timeZone, setTimeZone] = useState("")
   const notifications = useNotificationStore((state) => state.notifications);
   const unreadCount = notifications.filter((n) => n.status === 'unread').length;
   console.log('unreadCount',unreadCount)
+
+
+  const [redirectButton, setredirectButton] = useState(false)
+  // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+
+
+
   const checkActiveSubscription = async () => {
-    let res = await axios.post(`${API_BASE_URL}/checkSubscriptiAgent`, {
-      userId: userId
-    })
+    try {
+      let res = await axios.post(
+        `${API_BASE_URL}/checkSubscriptiAgent`,
+        { userId: userId },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    setActiveSubs(res?.data?.paymentDone)
+      setActiveSubs(res?.data?.paymentDone);
+    } catch (error) {
+      console.error("Subscription check failed:", error.response?.data || error.message);
+    }
+  };
 
-  }
+
+
+
+  useEffect(() => {
+    setTimeout(() => {
+      checkActiveSubscription()
+    }, 2000)
+
+  }, [])
+
+
+  //   setActiveSubs(res?.data?.paymentDone)
+
+  // }
   useEffect(() => {
     setTimeout(() => {
       checkActiveSubscription()
@@ -368,6 +414,7 @@ function Dashboard() {
       localStorage.removeItem("checkPage2")
       localStorage.removeItem("paymentDone")
       localStorage.removeItem("subcriptionIdUrl")
+      // localStorage.removeItem("isPayg")
       sessionStorage.removeItem("VoiceAgentName");
       sessionStorage.removeItem("selectedLangCode");
       sessionStorage.removeItem("AgentCode");
@@ -431,7 +478,14 @@ function Dashboard() {
   // Fetch Cal API keys from backend
   const fetchCalApiKeys = async (userId) => {
     const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/agent/calapikeys/${userId}`
+      `${process.env.REACT_APP_API_BASE_URL}/agent/calapikeys/${userId}`,
+
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        }
+      }
     );
     if (!response.ok) throw new Error("Failed to fetch Cal API keys");
     const data = await response.json();
@@ -576,7 +630,7 @@ function Dashboard() {
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
             description: "Check the available appointment slots in the calendar and return times strictly in the user's timezone. Use this timezone to suggest and book appointments.",
-            timezone: timeZone?.timezoneId            ,
+            timezone: timeZone?.timezoneId,
           },
         ],
         states: [
@@ -948,7 +1002,7 @@ function Dashboard() {
         }
       );
       if (res.status == 403) {
-        setPopupMessage("Agent Plan minutes exhausted");
+        setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
         setPopupType("failed");
         setIsCallInProgress(false);
         setTimeout(() => {
@@ -1392,6 +1446,7 @@ function Dashboard() {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                   subscriptionId: agentToDeactivate.subscriptionId,
@@ -1480,6 +1535,8 @@ function Dashboard() {
           throw new Error("Failed to create knowledge base during activation");
         }
 
+
+
         const createdKB = await createRes.json();
         const knowledgeBaseId = createdKB.knowledge_base_id;
         sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
@@ -1525,6 +1582,7 @@ function Dashboard() {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                   },
                   body: JSON.stringify({
                     subscriptionId: agentToDeactivate.subscriptionId,
@@ -1584,24 +1642,66 @@ function Dashboard() {
       setDeactivateLoading(false);
     }
   };
+  // const handleUpgradeClick = (agent) => {
+  //   // console.log("agent", agent)
+  //   setagentId(agent?.agent_id);
+  //   setsubscriptionId(agent?.subscriptionId);
+  //   sessionStorage.setItem("updateBtn", "update")
+  //   sessionStorage.setItem("selectedPlan", agent?.agentPlan)
+
+  //   navigate("/plan", {
+
+  //     state: {
+  //       agentID: agent?.agent_id,
+  //       locationPath: locationPath,
+  //       subscriptionID: agent?.subscriptionId,
+  //       planName: agent?.agentPlan,
+  //       interval: agent?.subscription?.interval || null,
+  //       customerId: agent?.subscription?.customer_id || null
+
+
+  //     },
+  //   });
+  // };
+
   const handleUpgradeClick = (agent) => {
-    setagentId(agent?.agent_id);
-    setsubscriptionId(agent?.subscriptionId);
-    sessionStorage.setItem("updateBtn", "update")
-    sessionStorage.setItem("selectedPlan", agent?.agentPlan)
-
-    navigate("/plan", {
-
-      state: {
-        agentID: agent?.agent_id,
-        locationPath: locationPath,
-        subscriptionID: agent?.subscriptionId,
-        planName: agent?.agentPlan,
-        interval: agent?.subscription?.interval || null
-
-      },
-    });
+    setPendingUpgradeAgent(agent);         // Save agent temporarily
+    setShowUpgradeConfirmModal(true);      // Show modal
   };
+
+  const handleUpgradePaygConfirmed = async () => {
+    if (!pendingUpgradeAgent) return;
+
+    setUpgradeLoading(true);
+    try {
+      const agent = pendingUpgradeAgent;
+
+      // Set required session/local storage
+      setagentId(agent?.agent_id);
+      setsubscriptionId(agent?.subscriptionId);
+      sessionStorage.setItem("updateBtn", "update");
+      sessionStorage.setItem("selectedPlan", agent?.agentPlan);
+
+      // Navigate to /plan
+      navigate("/plan", {
+        state: {
+          agentID: agent?.agent_id,
+          locationPath: locationPath,
+          subscriptionID: agent?.subscriptionId,
+          planName: agent?.agentPlan,
+          interval: agent?.subscription?.interval || null,
+          customerId: agent?.subscription?.customer_id || null
+        }
+      });
+
+      setShowUpgradeConfirmModal(false); // Close the modal
+    } catch (err) {
+      console.error("Error during upgrade navigation:", err);
+    } finally {
+      setUpgradeLoading(false);
+    }
+  };
+
 
   const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
   const locationPath = location.pathname;
@@ -1706,7 +1806,7 @@ function Dashboard() {
   };
   const checkRecentPageLocation = location.state?.currentLocation;
   useEffect(() => {
- 
+
     if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
   }, []);
 
@@ -1722,6 +1822,114 @@ function Dashboard() {
     }
     return number;
   }
+
+  const customer_id = decodeTokenData?.customerId
+  const [isPaygActive, setisPaygActive] = useState()
+  const [paygStatusLoading, setpaygStatusLoading] = useState(true)
+  // console.log("isPaygActive", isPaygActive)
+
+  const checkAgentPaygStatus = async (agentId) => {
+    try {
+      // setLoading(true); // Start loading state
+
+      const response = await fetch(`${API_BASE}/pay-as-you-go-status-check`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ agentId, customerId: customer_id }) // Pass the agentId to the API
+      });
+
+      const data = await response.json();
+
+      setpaygStatusLoading(true)
+      if (data.success) {
+        // If the agent has an active Payg subscription
+        setisPaygActive(true);
+        setpaygStatusLoading(false)
+        localStorage.setItem("isPayg", "true");
+        // setactiveCount(data?.activeCount || null)
+        // setPaygSubscriptionId(data?.subscriptionId)
+        // setPopupMessage("Agent's Pay-as-you-go feature is active.");
+        // setPopupType("success");
+      } else {
+        // If the agent does not have an active Payg subscription
+        // setactiveCount(data?.activeCount || null)
+        // setPaygSubscriptionId(data?.subscriptionId)
+        setisPaygActive(false);
+        setpaygStatusLoading(false)
+        // localStorage.setItem("isPayg", "false");
+        // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
+        // setPopupType("failed");
+      }
+    } catch (error) {
+      console.error("Error checking Payg status:", error);
+      // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
+      // setPopupType("failed");
+    }
+  };
+
+  useEffect(() => {
+    if (agentId) {
+      checkAgentPaygStatus(agentId);
+    }
+  }, [agentId]);
+
+
+  const handleTogglePayG = async () => {
+    setpaygStatusLoading(true)
+    try {
+      // console.log({ customer_id })
+      const requestData = {
+        customerId: customer_id,
+        agentId: agentId,
+        status: isPaygActive ? "inactive" : "active",
+      };
+      // Call the API to save the agent's payg status
+      const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        // setPaygEnabled(!isCurrentlyEnabled)
+        const responseData = await response.json();
+        // console.log('Agent saved successfully:', responseData);
+        if (responseData.status === "active") {
+          setisPaygActive(true)
+          setpaygStatusLoading(false)
+          setPopupMessage("Agent's Pay-as-you-go feature activated.");
+          setPopupType("success"); // Pop-up for activated
+        } else {
+          setisPaygActive(false)
+          setpaygStatusLoading(false)
+          setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
+          setPopupType("failed"); // Pop-up for disabled
+        }
+      } else if (response.ok === false) {
+        const responseData = await response.json();
+        // console.log("dasdd", responseData)
+        setredirectButton(true)
+        setPopupMessage(responseData?.error);
+        setPopupType("failed"); // Pop-up for disabled
+      } else {
+        console.error('Failed to send the request to save the agent.');
+      }
+
+    } catch (error) {
+      console.error("Error during upgrade:", error);
+    }
+    finally {
+      // setredirectButton(false);
+    }
+  };
+
+
   return (
     <div>
 
@@ -1935,7 +2143,10 @@ function Dashboard() {
 
                 <div
                   className={styles.FilterIcon}
-                  onClick={(e) => toggleDropdown(e, agent.agent_id)}
+                  onClick={(e) => {
+                    toggleDropdown(e, agent.agent_id);
+                    setagentId(agent.agent_id);
+                  }}
                   ref={dropdownRef}
                 >
                   <svg
@@ -2058,21 +2269,40 @@ function Dashboard() {
                       {agent?.subscription &&
                         agent?.subscription?.plan_name?.toLowerCase() !==
                         "free" && (
-                          <div>
-                            <div
-                              className={styles.OptionItem}
-                              onMouseDown={(e) => {
-                                e.stopPropagation();
-                                setAgentToCancel(agent);
-                                setShowCancelConfirm(true);
-                              }}
-                            >
-                              Cancel Subscription
+                          <>
+                            <div>
+                              <div
+                                className={styles.OptionItem}
+                                onMouseDown={(e) => {
+                                  e.stopPropagation();
+                                  setAgentToCancel(agent);
+                                  setShowCancelConfirm(true);
+                                }}
+                              >
+                                Cancel Subscription
+                              </div>
                             </div>
-                          </div>
+                            <div>
+                              <div
+                                onMouseDown={(e) => {
+                                  handleTogglePayG()
+                                }}
+                                className={styles.OptionItem}
+
+                              >
+                                {paygStatusLoading ? "Loading.." : (isPaygActive === true ? "Deactivate PayG" : "Active PayG")}
+
+                              </div>
+                            </div>
+                          </>
                         )}
+
+
+
+
                     </div>
                   )}
+
                 </div>
               </div>
               <hr className={styles.agentLine} />
@@ -2829,8 +3059,19 @@ function Dashboard() {
         <Popup
           type={popupType}
           message={popupMessage}
-          onClose={() => setPopupMessage("")}
+          onClose={() => {
+            setPopupMessage("")
+            setredirectButton(false)
+          }}
           onConfirm={handleLogoutConfirm}
+          extraButton={
+            redirectButton
+              ? {
+                label: "Activate Payg",
+                onClick: () => navigate("/edit-profile#payg-toggle"),
+              }
+              : undefined
+          }
         />
       )}
 
@@ -2843,6 +3084,22 @@ function Dashboard() {
           onConfirm={handleChangeStatus}
         />
       )}
+
+      <ConfirmModal
+        show={showUpgradeConfirmModal}
+        onClose={() => setShowUpgradeConfirmModal(false)}
+        title="Upgrade Plan?"
+        message="You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."
+        type="info"
+        confirmText={upgradeLoading ? "Redirecting..." : "Yes, Upgrade"}
+        cancelText="Cancel"
+        showCancel={true}
+        isLoading={upgradeLoading}
+        onConfirm={handleUpgradePaygConfirmed}
+      />
+
+
+
 
       <Popup
         type={popupType3}
@@ -2859,6 +3116,8 @@ function Dashboard() {
           handleCalConnectWithConfirm();
           setPopupMessage3("");
         }}
+
+
       />
     </div>
   );

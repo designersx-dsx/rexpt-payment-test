@@ -26,6 +26,8 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
+
 
 const EditProfile = () => {
   const fileInputRef = useRef(null);
@@ -46,6 +48,16 @@ const EditProfile = () => {
   const [referralCode, setReferralCode] = useState("");
   const [showDashboardReferral, setShowDashboardReferral] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Payg states
+  const params = new URLSearchParams(window.location.search);
+
+  const isPayg = params.get('isPayg');
+  // console.log("isPayg:", isPayg);
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+  const [customerId, setcustomerId] = useState()
+  const [userId1, setuserId1] = useState()
+
 
   const [errors, setErrors] = useState({
     name: "",
@@ -71,9 +83,32 @@ const EditProfile = () => {
   const isOtpFilled = otp.every((digit) => digit !== "");
   const [subscriptionDetails, setSubscriptionDetails] = useState({});
   const isRefreshing = useContext(RefreshContext);
+  const [redirectButton, setRedirectButton] = useState(false);
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const [showDisableConfirmModal, setShowDisableConfirmModal] = useState(false);
+  const [disableLoading, setDisableLoading] = useState(false);
+
+
+  // console.log("redirectButton", redirectButton)
+
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
   };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const isPayg1 = urlParams.get('isPayg');
+  useEffect(() => {
+    if (isPayg1 === "true") {
+      localStorage.setItem("isPayg", true)
+      setPaygEnabled(true)
+      setPopupType("success");
+      setPopupMessage("Pay As You Go Activated successfully.");
+      setShowPopup(true);
+    }
+  }, [])
 
   const closeUploadModal = () => {
     setIsUploadModalOpen(false);
@@ -114,11 +149,16 @@ const EditProfile = () => {
       console.error("Error fetching user details:", error);
     }
   }
-
+  const [zapApikey, setZapApikey] = useState("")
   const fetchUser = async () => {
     try {
       if (!isRefreshing) { setLoading(true); }
       const user = await getUserDetails(userId);
+
+      console.log(user, "user@@@@")
+      setZapApikey(user?.ZapApikey)
+      setcustomerId(user?.customerId)
+      setuserId1(user?.userId)
       setReferralCode(user?.referralCode);
       setShowDashboardReferral(user?.showreferralfloating);
       localStorage.setItem(
@@ -149,8 +189,6 @@ const EditProfile = () => {
     }
   };
   useEffect(() => {
-
-
     fetchUser();
   }, []);
   useEffect(() => {
@@ -321,14 +359,253 @@ const EditProfile = () => {
   };
   const handleClosePopup = () => {
     setShowPopup(false);
+    setRedirectButton(false)
   };
   const handleBack = () => {
+    if (isPayg1) {
+      navigate("/dashboard")
+      return
+    }
     navigate(-1);
   };
-const nevigate = useNavigate();
+  const nevigate = useNavigate();
+
+
+  const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
+  const PaygSubscriptionId = subscriptionDetails.invoices
+    ?.filter(invoice => invoice.plan_name === "Extra Minutes" && invoice.status !== "canceled") // Filter by plan and status
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Sort by latest created_at
+    .map(invoice => invoice.subscription_id)[0]; // Get the subscription_id of the latest invoice
+  // console.log("PaygSubscriptionId", PaygSubscriptionId)
+
+
+  const handlePaygToggle = async () => {
+    if (subscriptionDetails.invoices.length === 0) {
+      setRedirectButton(true)
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage("To enable Pay As You Go, please ensure you have an active subscription.");
+      return
+    }
+
+
+    const isCurrentlyEnabled = paygEnabled;
+
+    if (!isCurrentlyEnabled) {
+      setShowConfirmModal(true); // Show confirmation modal first
+      return;
+    }
+
+    if (isCurrentlyEnabled) {
+      setShowDisableConfirmModal(true); // Show confirmation modal
+      return;
+    }
+
+    if (isCurrentlyEnabled) {
+      console.log("Cancel Run")
+      try {
+        const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
+        });
+        if (cancelResponse.ok) {
+          localStorage.removeItem("isPayg")
+          setShowPopup(true)
+          setPopupMessage("Your PAYG Stripe has been deactivated. All active PAYG agents will be disabled.");
+          setPopupType("failed"); // Pop-up for disabled
+          setPaygEnabled(false)
+
+
+          // Step 3: Disable PAYG for all agents by calling the payg-agents-disabled API
+          const disablePaygResponse = await fetch(`${API_BASE}/payg-agents-disabled`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),  // Assuming PaygSubscriptionId is related to customerId
+          });
+
+          if (disablePaygResponse.ok) {
+            console.log("✅ PAYG agents disabled successfully.");
+          } else {
+            console.log("❌ Failed to disable PAYG agents.");
+          }
+        }
+
+
+        if (!cancelResponse.ok) {
+          console.error('Failed to cancel the subscription schedule.');
+          return;
+        }
+        // Subscription cancelled successfully, now proceed to disable PAYG
+      } catch (error) {
+        console.error('Error canceling subscription:', error);
+        return;
+      }
+    }
+    else {
+      console.log("checkout Run")
+      // console.log("d",window.location.origin)
+      const currentUrl = window.location.origin
+      const requestData = {
+        customerId: customerId,
+        priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38",
+        promotionCode: "",
+        userId: userId1,
+        // agentId: agentID,
+        url: `${currentUrl}/edit-profile?isPayg=true`,
+        cancelUrl: `${currentUrl}/edit-profile?isPayg=false`,
+        subscriptionId: PaygSubscriptionId
+      };
+
+      try {
+        const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+
+          },
+          body: JSON.stringify(requestData)
+        });
+
+        // console.log("response2222",response.json())
+
+        if (response.ok) {
+          const responseData = await response.json();
+          if (responseData.checkoutUrl) {
+            // localStorage.setItem("isPayg", true)
+            window.location.href = responseData.checkoutUrl;
+          }
+          else if (responseData.subscription) {
+            setShowPopup(true)
+            console.log("resume Succesfully")
+            setPopupMessage("Payg resume Succesfully ");
+            setPopupType("success");
+            localStorage.setItem("isPayg", true)
+            setPaygEnabled(true)
+          }
+
+          console.log('API response:', responseData); // You can handle the API response here
+        } else {
+          console.error('Failed to send the request');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+
+    }
+  }
+
+  const handleEnablePaygConfirmed = async () => {
+    setConfirmLoading(true);
+
+    try {
+      const currentUrl = window.location.origin;
+      const requestData = {
+        customerId,
+        priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38",
+        promotionCode: "",
+        userId: userId1,
+        url: `${currentUrl}/edit-profile?isPayg=true`,
+        cancelUrl: `${currentUrl}/edit-profile?isPayg=false`,
+        subscriptionId: PaygSubscriptionId
+      };
+
+      const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        if (responseData.checkoutUrl) {
+          window.location.href = responseData.checkoutUrl;
+        } else if (responseData.subscription) {
+          localStorage.setItem("isPayg", true);
+          setPaygEnabled(true);
+
+          // Close confirmation modal, open info popup
+          setShowConfirmModal(false);
+          setConfirmLoading(false);
+          setPopupType("success");
+          setPopupMessage("Pay As You Go resumed successfully.");
+          setShowPopup(true);
+        }
+      } else {
+        console.error('Failed to activate PAYG');
+        setConfirmLoading(false);
+      }
+    } catch (error) {
+      console.error('Error enabling PAYG:', error);
+      setConfirmLoading(false);
+    }
+  };
+
+  const handleDisablePaygConfirmed = async () => {
+    setDisableLoading(true);
+    try {
+      const cancelResponse = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
+      });
+
+      if (cancelResponse.ok) {
+        localStorage.removeItem("isPayg");
+        setPaygEnabled(false);
+
+        const disablePaygResponse = await fetch(`${API_BASE}/payg-agents-disabled`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
+        });
+
+        if (disablePaygResponse.ok) {
+          console.log("✅ PAYG agents disabled successfully.");
+        } else {
+          console.log("❌ Failed to disable PAYG agents.");
+        }
+
+        // Close confirm modal, show final popup
+        setShowDisableConfirmModal(false);
+        setShowPopup(true);
+        setPopupMessage("Your PAYG subscription has been deactivated. All active PAYG agents are now disabled.");
+        setPopupType("failed");
+      } else {
+        console.error("Failed to cancel PAYG subscription.");
+      }
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+    } finally {
+      setDisableLoading(false);
+    }
+  };
 
 
 
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === "#payg-toggle") {
+      const el = document.getElementById("payg-toggle");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, []);
+
+  const [zapierVisible, setZapierVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
   return (
     <>
       {loading ? (
@@ -342,7 +619,7 @@ const nevigate = useNavigate();
                   src="svg/Notification.svg"
                   alt="Back-icon"
                   className={styles.imageIcon}
-                  onClick={handleBack}
+                  onClick={() => isPayg === "true" ? navigate('/dashboard') : handleBack()}
                 />
                 <p>My Account</p>
               </div>
@@ -407,6 +684,7 @@ const nevigate = useNavigate();
                     <hr className={styles.hrLine} />
                   </div>
                 </div>
+
                 {/* <div className={styles.Part}>
                   <img src="svg/line-email.svg" />
                   <div className={styles.infoItem}>
@@ -588,17 +866,6 @@ const nevigate = useNavigate();
                       maxLength={10000}
                     />
                     <hr className={styles.hrLine} />
-                    {/* {isUploadModalOpen && (
-                      <UploadProfile
-                        onClose={closeUploadModal}
-                        onUpload={handleUpload}
-                        currentProfile={
-                          uploadedImage ||
-                          formData.profilePicture ||
-                          "Images/editProfile.png"
-                        }
-                      />
-                    )} */}
                   </div>
 
 
@@ -618,25 +885,6 @@ const nevigate = useNavigate();
                         }
                       : undefined
                   }
-                  // style={{
-                  //   opacity:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent))
-                  //       ? 1
-                  //       : 0.5,
-                  //   pointerEvents:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
-                  //       !addLoading
-                  //       ? "auto"
-                  //       : "none",
-                  //   cursor:
-                  //     isDataChanged() &&
-                  //       (formData.email === initialData?.email || (emailVerified && !otpSent)) &&
-                  //       !addLoading
-                  //       ? "pointer"
-                  //       : "not-allowed",
-                  // }}
                   style={{
                     opacity:
                       isDataChanged() &&
@@ -677,13 +925,73 @@ const nevigate = useNavigate();
                   </div>
                 </div>
               </div>
+              <div className={styles.infoSection} id="payg-toggle">
+                <div className={styles.toggleContainer1}>
+                  <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
+                  <label className={styles.toggleLabel1}>
+                    <input
+                      type="checkbox"
+                      checked={paygEnabled}
+                      onChange={handlePaygToggle}
+                      className={styles.toggleInput1}
+                    />
+                    <span
+                      className={`${styles.toggleSlider1} ${paygEnabled ? styles.active1 : ''}`}
+                    // className={`${styles.toggleSlider1} ${styles.active1}`}
+                    />
+                  </label>
+                </div>
+              </div>
+              {/* Zapier Section */}
+              <div className={styles.infoSection} style={{ marginTop: '20px' }}>
+                <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
+                  Get your Zapier key
+                  <i
+                    onClick={() => setZapierVisible(!zapierVisible)}
+                    style={{ cursor: 'pointer', marginLeft: '20px' }}
+                    title={zapierVisible ? 'Hide Key' : 'Show Key'}
+                    className={`fas ${zapierVisible ? 'fa-eye-slash' : 'fa-eye'}`}
+                  ></i>
+                  {zapierVisible && (
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(zapApikey);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid #ccc',
+                        background: '#f5f5f5',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        position: "absolute",
+                        right: "0px",
+                        top: "2px"
+                      }}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  )}
+                </div>
+                <div className={styles.toggleContainer1}>
+                  {zapierVisible && (
+                    <div
+                      style={{
+                        borderRadius: '5px',
+                        fontFamily: 'monospace',
+                        wordBreak: 'break-all',
+                      }}
+                    >
+                      <div style={{ marginTop: '5px' }}>
+                        {zapApikey}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className={styles.RefferalMain}>
-                {/* <Refferal
-                  referralCode={referralCode}
-                  setShowDashboardReferral={setShowDashboardReferral}
-                  showDashboardReferral={showDashboardReferral}
-                  userId={userId}
-                /> */}
               </div>
               <br></br>
               <div className={styles.mySubscription}>
@@ -702,36 +1010,6 @@ const nevigate = useNavigate();
                 Delete Profile
               </button>
             </div>
-            {/* {showDeleteModal && (
-              <div className={styles.modalOverlay}>
-                <div className={styles.modalContent}>
-                  <h3>Delete Your Profile?</h3>
-                  <p>
-                    Deleting your profile will permanently remove all your data
-                    including agents, business information, and usage history.{" "}
-                    <br />
-                    <strong>
-                      This action is irreversible and no refunds will be
-                      provided.
-                    </strong>
-                  </p>
-                  <div className={styles.modalButtons}>
-                    <button
-                      className={styles.deleteConfirmButton}
-                      onClick={handleDeleteProfile}
-                    >
-                      {addLoading ? <Loader size={18} /> : "Delete Profile"}
-                    </button>
-                    <button
-                      className={styles.cancelButton}
-                      onClick={() => setShowDeleteModal(false)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )} */}
           </div>
           {isUploadModalOpen && (
             <UploadProfile
@@ -751,8 +1029,47 @@ const nevigate = useNavigate();
           type={popupType}
           onClose={() => handleClosePopup()}
           message={popupMessage}
+          extraButton={
+            redirectButton
+              ? {
+                label: "Redirect",
+                onClick: () => navigate("/dashboard"),
+              }
+              : undefined
+          }
         />
       )}
+
+
+      <ConfirmModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        title="Enable Pay As You Go"
+        message="Enabling Pay As You Go gives your account unlimited flexibility — no more minute caps. Once your current plan minutes are used, you can activate/deactivate PAYG for your agents, and billing will start based on usage."
+        type="info"
+        confirmText={confirmLoading ? "Processing..." : "Yes"}
+        cancelText="Later"
+        showCancel={true}
+        isLoading={confirmLoading}
+        onConfirm={handleEnablePaygConfirmed}
+      />
+
+      <ConfirmModal
+        show={showDisableConfirmModal}
+        onClose={() => setShowDisableConfirmModal(false)}
+        title="Disable Pay As You Go?"
+        message="Are you sure you want to disable Pay As You Go? All active PAYG agents will be deactivated immediately. Your final bill will be generated at the end of your current PAYG billing cycle and will be automatically deducted from your account."
+        type="warning"
+        confirmText={disableLoading ? "Disabling..." : "Yes, Disable"}
+        cancelText="Cancel"
+        showCancel={true}
+        isLoading={disableLoading}
+        onConfirm={handleDisablePaygConfirmed}
+      />
+
+
+
+
     </>
   );
 };

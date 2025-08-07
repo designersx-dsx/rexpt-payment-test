@@ -9,7 +9,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import styles from "./checkout.module.css";
-import { API_BASE_URL } from "../../Store/apiStore";
+import { API_BASE_URL, token } from "../../Store/apiStore";
 import PopUp from "../Popup/Popup";
 import CountdownPopup from "../CountDownPopup/CountdownPopup";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -923,7 +923,10 @@ function CheckoutForm({
           `${API_BASE_URL}/create-checkout-session`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" , 
+
+                Authorization: `Bearer ${token}`,
+             },
             body: JSON.stringify({
               customerId,
               priceId,

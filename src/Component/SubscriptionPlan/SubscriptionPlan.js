@@ -107,7 +107,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
+
                 // IN: "inr",   
+
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -122,7 +124,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     useEffect(() => {
         if (!userCurrency) return;
 
-        fetch(`${API_BASE}/products`)
+        fetch(`${API_BASE}/products`  , {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+        })
             .then((res) => res.json())
             .then((data) => {
                 const planColorMap = ["starter", "scaler", "growth", "corporate"];

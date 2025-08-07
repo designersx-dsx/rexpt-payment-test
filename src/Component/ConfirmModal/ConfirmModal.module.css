@@ -1,0 +1,709 @@
+
+@keyframes floatUpDown {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+
+
+
+
+
+
+
+
+@media (min-width: 380px) and (max-width: 406px) {
+    /* .agentInfo h2 {
+        font-size: 30px;
+    } */
+
+    /* .agentInfo2 h2 {
+        font-size: 30px;
+    } */
+}
+
+@media (max-width:380px) {
+    .agentInfo2 {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        text-align: center;
+        width: 50%;
+        justify-content: center;
+    }
+
+    .agentInfo {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        text-align: center;
+        width: 50%;
+        justify-content: center;
+    }
+
+
+
+
+
+}
+
+@media (max-width:370px) {
+    .main {
+        display: grid;
+        margin: auto;
+        overflow: unset;
+        align-items: center;
+        justify-content: center;
+    }
+
+}
+
+@media (max-width:350px) {
+    .agentInfo2 {
+        display: flex;
+    }
+
+    .agentInfo {
+        display: flex;
+
+    }
+}
+
+.logoutdiv {
+    margin-block: 5rem;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    background-color: #d5d5d5;
+    padding: 13px;
+    cursor: pointer
+}
+
+/* Modal backdrop */
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal container */
+.modalContainer {
+    background-color: #fff;
+    padding: 24px 32px;
+    border-radius: 18px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #24252C;
+    position: relative;
+}
+
+/* Modal header */
+.modalContainer h2 {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+}
+
+/* Modal paragraph with link */
+.modalContainer p {
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 24px;
+    line-height: 1.4;
+}
+
+.modalContainer a {
+    color: #6524EB;
+    /* use your purple theme color */
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.modalContainer a:hover {
+    text-decoration: underline;
+}
+
+/* Input label */
+.modalContainer label {
+    font-size: 14px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 6px;
+    color: #24252C;
+}
+
+/* Input field */
+.modalInput {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1.5px solid #d6d6d6;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.modalInput:focus {
+    border-color: #6524EB;
+    box-shadow: 0 0 8px rgba(101, 36, 235, 0.3);
+}
+
+/* Button container */
+.modalButtons {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Buttons */
+.modalButton {
+    padding: 10px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+/* Cancel button */
+.modalButton.cancel {
+    background-color: #d5d5d5;
+    color: #24252C;
+}
+
+.modalButton.cancel:hover {
+    background-color: #bfbfbf;
+}
+
+/* Submit button */
+.modalButton.submit {
+    background-color: #6524EB;
+    color: #fff;
+}
+
+.modalButton.submit:disabled {
+    background-color: #a98ce9;
+    cursor: not-allowed;
+}
+
+.modalButton.submit:not(:disabled):hover {
+    background-color: #4b19b2;
+}
+
+/* Container for the Create Event inputs */
+.createEventSection {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+/* Title for Create Event */
+.createEventSection h3 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #6524EB;
+    padding-bottom: 5px;
+}
+
+/* Each label + input group */
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.agentAvatarContainer {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+/* Label style */
+.inputGroup label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* Input style: reuse your modalInput but add margin */
+.inputGroup input.modalInput {
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+/* Focus effect for inputs */
+.inputGroup input.modalInput:focus {
+    border-color: #6524EB;
+    outline: none;
+    box-shadow: 0 0 5px rgba(101, 36, 235, 0.5);
+}
+
+.infoBanner {
+    background-color: #f3e8ff;
+    color: #6a0dad;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Profile section containing avatar and dropdown */
+.profileSection {
+    position: relative;
+    /* anchor for dropdown */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Avatar button */
+.avatarBtn {
+    all: unset;
+    /* wipe default button styles */
+    cursor: pointer;
+    border-radius: 50%;
+    line-height: 0;
+    /* shrink-to-fit */
+    transition: box-shadow 0.2s ease;
+}
+
+.avatarBtn:focus-visible,
+.avatarBtn:hover {
+    box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.4);
+}
+
+/* Circular profile picture */
+.profilePic {
+    width: 3rem;
+    /* 48 px */
+    height: 3rem;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #f0f0f0;
+}
+
+/* Dropdown menu */
+.dropdown {
+    position: absolute;
+    top: 100%;
+    /* Below the avatar */
+    left: 0;
+    margin-top: 0.5rem;
+    min-width: 12rem;
+    padding: 0.5rem 0;
+    list-style: none;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    /* gray-200 */
+    border-radius: 0.5rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    z-index: 50;
+}
+
+.dropdown li {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #111827;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease;
+}
+
+.dropdown li:hover {
+    background: #f3f4f6;
+    /* gray-100 */
+}
+
+/* Backdrop: dim the screen */
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal box */
+.modalContainer {
+    background-color: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    animation: slideFadeIn 0.3s ease-out;
+}
+
+/* Title */
+.modalContainer h2 {
+    font-size: 1.8rem;
+    color: #222;
+    margin-bottom: 12px;
+}
+
+/* Paragraph */
+.modalContainer p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+/* Button wrapper */
+.modalButtons {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+/* Shared button styles */
+.modalButton {
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.25s ease;
+    min-width: 100px;
+}
+
+/* No Button */
+.cancel {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.cancel:hover {
+    background-color: #e0e0e0;
+}
+
+/* Yes Button */
+.submit {
+    background-color: #d72638;
+    color: #fff;
+}
+
+.submit:hover {
+    background-color: #b71c2b;
+}
+
+/* Modal entry animation */
+@keyframes slideFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* referal Css START */
+.Refferalinfo {
+    margin-top: 00px;
+    border-radius: 15px;
+}
+
+.headerPart h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card {
+    margin-top: 1rem;
+}
+
+.customCheckbox {
+    accent-color: #5F33E1;
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    gap: 10px;
+    color: #24252C;
+}
+
+.linkSection {
+    margin-bottom: 12px;
+}
+
+.label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #24252C;
+    font-size: 16px;
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #F2F2F2;
+    color: #555;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    border: 1px solid #cccccc00;
+    max-height: 27px;
+}
+
+.input:focus {
+    border-color: #6524EB;
+}
+
+.copyButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.divider {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid #D9D9D9;
+}
+
+.infoSection {
+    font-size: 13px;
+    color: #24252C;
+    margin-bottom: 1rem;
+
+}
+
+.linkDiv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.Linkdec {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.icon {
+    margin-right: 8px;
+}
+
+
+.btnTheme {
+    position: relative;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 55px;
+    margin-top: 2rem;
+    width: 90%;
+    margin: auto;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+
+.btnTheme::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Trigger shine on hover */
+.btnTheme:hover::after {
+    animation: shine 0.6s ease-out forwards;
+}
+
+/* Shine animation keyframes */
+@keyframes shine {
+    0% {
+        left: -75%;
+    }
+
+    100% {
+        left: 125%;
+    }
+}
+
+/* Ensure p and img stay above background */
+.btnTheme p {
+    position: relative;
+    z-index: 3;
+    margin: 0;
+    font-weight: 500;
+    font-size: 19px;
+}
+
+.btnTheme img {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Media QUERY CSS START */
+@media (max-width:370px) {
+    .header h3 {
+        font-size: 18px;
+    }
+}
+
+
+
+
+/* Media QUERY CSS END */
+
+/* ajay css start */
+
+.copyWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip {
+    position: absolute;
+    top: -28px;
+    right: 0;
+    background: #333;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    opacity: 0.9;
+    animation: fadeInOut 2s ease forwards;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+}
+
+.NativeSelectWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.NativeSelect {
+    appearance: none;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 6px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.FilterIcon {
+    position: relative;
+    cursor: pointer;
+}
+
+.DropdownMenu {
+    position: absolute;
+    top: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.OptionItem {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.OptionItem:hover {
+    background-color: #f0f0f0;
+}
+
+/* ajay css end */
