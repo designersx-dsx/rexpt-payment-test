@@ -2804,7 +2804,7 @@ const checkActiveSubscription = async () => {
       {showDeactivateConfirm && agentToDeactivate && (
         <div
           className={styles.modalBackdrop}
-          onClick={() => setShowDeactivateConfirm(false)}
+         
         >
           <div
             className={styles.modalContainer}
@@ -2831,6 +2831,7 @@ const checkActiveSubscription = async () => {
               <button
                 className={`${styles.modalButton} ${styles.cancel}`}
                 onClick={() => setShowDeactivateConfirm(false)}
+                disabled= {deactivateLoading ? true: false }
               >
                 {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
               </button>
