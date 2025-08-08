@@ -69,10 +69,12 @@ export const createAgent = async (data) => {
   return res;
 };
 
-export const fetchDashboardDetails = async (userId) => {
+export const fetchDashboardDetails = async (userId , token) => {
+      let t = token
   const res = await api.get(`${API_BASE_URL}/agent/getUserAgentsDetails/${userId}`, {
+
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${t}`,
     },
   });
   return res.data;
@@ -238,7 +240,7 @@ export const getAgentCallById = async (agentId,callId,start_timestamp) => {
     // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
     const res = await api.get(`callHistory/getSpecificCallData/call/${agentId}/${callId}?start_timestamp=${start_timestamp}`, {
       headers: {
-        Authorization: `Bearer $${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return res.data;
@@ -267,7 +269,7 @@ export async function getUserCallsByMonth(userId, month, year) {
   const res = await axios.get(`${API_BASE_URL}/callHistory/user/${userId}/calls-by-month`, {
     params: { month, year },
      headers: {
-        Authorization: `Bearer $${token}`,
+        Authorization: `Bearer ${token}`,
       },
   });
   return res.data;
@@ -323,9 +325,15 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
   }
 };
 
-export const getUserDetails = async (userId) => {
+export const getUserDetails = async (userId , token) => {
+  let t = token
   try {
-    const response = await api.get(`/endusers/users/${userId}`);
+    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
+headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${t}`,
+  },
+    });
     // console.log(response, "response")
     return response.data;
   } catch (error) {
@@ -538,24 +546,23 @@ export const getAgentScheduleByUserId = async (userId) => {
     throw new Error("Failed to fetch agent schedule");
   }
 }
-export const fetchAvailablePhoneNumberByCountry = async (country_code, locality, administrative_area, startsWith, endsWith) => {
+export const fetchAvailablePhoneNumberByCountry = async (token , country_code, locality, administrative_area, startsWith, endsWith) => {
+  let t = token
   try {
-    const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
-      params: {
-        country_code: country_code,
-        locality: locality,
-        administrative_area: administrative_area,
-        starts_with: startsWith,
-        ends_with: endsWith
-      } , 
-     
-      
-    } , {
-       headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
+   const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
+  params: {
+    country_code,
+    locality,
+    administrative_area,
+    starts_with: startsWith,
+    ends_with: endsWith
   },
-    });
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${t}`,
+  }
+});
+
     return res.data;
   } catch (error) {
    return error.response?.data 

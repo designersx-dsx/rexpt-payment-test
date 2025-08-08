@@ -73,7 +73,7 @@ const AgentAnalysis = () => {
   const fetchUserAgents = async () => {
     if (!userId) return;
     try {
-      const res = await fetchDashboardDetails(userId);
+      const res = await fetchDashboardDetails(userId , token);
       setAgents(res?.agents);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
