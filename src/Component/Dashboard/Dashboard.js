@@ -12,7 +12,7 @@ import {
   getBusinessDetailsByBusinessId,
   getUserAgentMergedDataForAgentUpdate,
   toggleAgentActivation,
-  updateAgentKnowledgeBaseId, 
+  updateAgentKnowledgeBaseId,
   getUserReferralCodeForDashboard,
   updateShowReferralFloatingStatus,
   updateAgentEventId,
@@ -1672,21 +1672,26 @@ function Dashboard() {
   // };
 
   const handleUpgradeClick = (agent) => {
-    // console.log("agent",agent)
-    setPendingUpgradeAgent(agent);         // Save agent temporarily
-    if(agent?.agentPlan === "free"){
+    setPendingUpgradeAgent(agent);
+    if (agent?.agentPlan == "free") {
       setShowUpgradeConfirmModal(false);
+      //  setPendingUpgradeAgent(agent);  
       handleUpgradePaygConfirmed()
-      return 
+      return
     }
     setShowUpgradeConfirmModal(true);      // Show modal
   };
 
   const handleUpgradePaygConfirmed = async () => {
-    if (!pendingUpgradeAgent) return;
+    // console.log("runnnnnnnn2222222------------")
+    // console.log("pendingUpgradeAgent",pendingUpgradeAgent)
+
+    // console.log("runnnnnnnn111111111111111111111111111------------")
 
     setUpgradeLoading(true);
     try {
+      // console.log({ pendingUpgradeAgent })
+      if (!pendingUpgradeAgent) return;
       const agent = pendingUpgradeAgent;
 
       // Set required session/local storage
@@ -2166,6 +2171,7 @@ function Dashboard() {
                   onClick={(e) => {
                     toggleDropdown(e, agent.agent_id);
                     setagentId(agent.agent_id);
+                    setPendingUpgradeAgent(agent)
                   }}
                   ref={dropdownRef}
                 >
@@ -2239,6 +2245,7 @@ function Dashboard() {
                         onMouseDown={(e) => {
                           e.stopPropagation();
                           handleUpgradeClick(agent);
+                          setPendingUpgradeAgent(agent)
                         }}
                       >
                         Upgrade
@@ -2892,7 +2899,7 @@ function Dashboard() {
       {showDeactivateConfirm && agentToDeactivate && (
         <div
           className={styles.modalBackdrop}
-         
+
         >
           <div
             className={styles.modalContainer}
@@ -2919,7 +2926,7 @@ function Dashboard() {
               <button
                 className={`${styles.modalButton} ${styles.cancel}`}
                 onClick={() => setShowDeactivateConfirm(false)}
-                disabled= {deactivateLoading ? true: false }
+                disabled={deactivateLoading ? true : false}
               >
                 {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
               </button>
