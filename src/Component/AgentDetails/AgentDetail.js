@@ -1375,7 +1375,7 @@ const AgentDashboard = () => {
                 </div>
                 <p className={styles.managementText}>Upgrade</p>
               </div>
-              {/* <div
+              <div
                 className={styles.managementItem}
                 onClick={() => {
                   navigate("/add-file", {
@@ -1401,7 +1401,7 @@ const AgentDashboard = () => {
                   </svg>
                 </div>
                 <p className={styles.managementText}>Additional Info</p>
-              </div> */}
+              </div>
             </div>
             <hr className={styles.line} />
             <h1 className={styles.Agenttitle}>
