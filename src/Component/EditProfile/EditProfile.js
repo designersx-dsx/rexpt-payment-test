@@ -155,7 +155,7 @@ const EditProfile = () => {
   const fetchUser = async () => {
     try {
       if (!isRefreshing) { setLoading(true); }
-      const user = await getUserDetails(userId);
+      const user = await getUserDetails(userId  , token);
 
       console.log(user, "user@@@@")
       setZapApikey(user?.ZapApikey)
@@ -469,13 +469,14 @@ const EditProfile = () => {
       };
 
       try {
-        const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
+        const t = localStorage.getItem("t")
+        if(t){
+             const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-             Authorization: `Bearer ${token}`,
-
-          },
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
           body: JSON.stringify(requestData)
         });
 
@@ -500,6 +501,8 @@ const EditProfile = () => {
         } else {
           console.error('Failed to send the request');
         }
+        }
+     
       } catch (error) {
         console.error('Error:', error);
       }
@@ -524,7 +527,10 @@ const EditProfile = () => {
 
       const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+       headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(requestData)
       });
 
