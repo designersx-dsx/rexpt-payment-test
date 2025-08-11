@@ -292,9 +292,9 @@ const Fileinfo = () => {
     <div className={styles.container}>
       <HeaderBar title="Additional File" />
       <br />
-      <button onClick={() => setShowModal(true)} className={styles.addButton}>
-        Add Files
-      </button>
+      <div onClick={() => setShowModal(true)} className={styles.addButton}>
+        <img src="/svg/Add-icon.svg" />
+      </div>
       <div className={styles.fileListHeader}>
         {loading ? <Loader2 /> : knowledgeBaseSources.length > 0 ? knowledgeBaseSources
           .filter((source) => source.file_size)
@@ -310,14 +310,14 @@ const Fileinfo = () => {
                   className={styles.iconButton}
                   title="Download"
                 >
-                  <FiDownload />
+                  <img src='/svg/download-invoice.svg' alt='download-invoice' />
                 </a>
                 <button
                   className={styles.iconButton}
                   title="Delete"
                   onClick={() => handleDeleteSource(source.source_id)}
                 >
-                  <FiTrash2 />
+                  <img src='/svg/delete-invoice.svg' alt='download-invoice' />
                 </button>
               </div>
             </li>
