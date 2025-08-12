@@ -500,7 +500,7 @@ const EditProfile = () => {
             setPaygEnabled(true)
           }
 
-          console.log('API response:', responseData); // You can handle the API response here
+          console.log('API response:', responseData); // You can handle the API response heree
         } else {
           console.error('Failed to send the request');
         }
