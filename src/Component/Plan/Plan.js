@@ -528,6 +528,7 @@ const Planss = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ agentId, customerId: cusotmerId }) // Pass the agentId to the API
             });

@@ -34,6 +34,7 @@ const AssignNumber = () => {
     const debounceTimeoutRef = useRef(null);
     const requestVersion = useRef(0)
     const popupShownRef = useRef(false);
+    const token = localStorage.getItem("token")
     const languages = [
         {
             name: "English (US)",
@@ -113,14 +114,14 @@ const AssignNumber = () => {
         setShowPopup(false)
         try {
             // First attempt: Country + State + City
-            const res = await fetchAvailablePhoneNumberByCountry(countryCode, cityName, stateCode);
+            const res = await fetchAvailablePhoneNumberByCountry( token, countryCode, cityName, stateCode);
             if (requestVersion.current !== currentVersion) return;
             if (res?.success && res?.data?.length > 0) {
                 setAvailableNumbers(res.data);
 
             } else {
                 // Fallback: Country + State (without city)
-                const fallbackRes = await fetchAvailablePhoneNumberByCountry(countryCode, "", stateCode);
+                const fallbackRes = await fetchAvailablePhoneNumberByCountry(token  , countryCode, "", stateCode);
 
                 if (fallbackRes?.success && fallbackRes?.data?.length > 0) {
                     setTimeout(() => {
@@ -168,12 +169,12 @@ const AssignNumber = () => {
         const endsWith = getRandomDigit();
         try {
             // First: Try with city + state + country
-            const res = await fetchAvailablePhoneNumberByCountry(countryCode, cityName, stateCode, startsWith, endsWith);
+            const res = await fetchAvailablePhoneNumberByCountry(token  , countryCode, cityName, stateCode, startsWith, endsWith);
             if (res?.success) {
                 setAvailableNumbers(res.data);
             } else {
                 // Fallback: Try with state + country only  
-                const fallbackRes = await fetchAvailablePhoneNumberByCountry(countryCode, cityName, stateCode);
+                const fallbackRes = await fetchAvailablePhoneNumberByCountry(token , countryCode, cityName, stateCode);
                 if (fallbackRes?.success && fallbackRes?.data?.length > 0) {
                     setAvailableNumbers(fallbackRes.data);
                 } else {

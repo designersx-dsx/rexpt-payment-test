@@ -502,7 +502,7 @@ function Dashboard() {
   const fetchAndMergeCalApiKeys = async () => {
     if (!userId) return;
     try {
-      const res = await fetchDashboardDetails(userId);
+      const res = await fetchDashboardDetails(userId , token);
       // console.log(res, "res")
       setUserCalApiKey(res?.calApiKey);
       sessionStorage.setItem("userCalApiKey", res?.calApiKey);

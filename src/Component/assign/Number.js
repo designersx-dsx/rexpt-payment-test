@@ -13,7 +13,7 @@ const Number = () => {
     const [availableNumbers, setAvailableNumbers] = useState([]);
     const stateInputRef = useRef(null);
     const cityInputRef = useRef(null);
-
+const token = localStorage.getItem("token")
     // Extract business details and set fields
     useEffect(() => {
         const businessDetails = location?.state?.agent?.business;
@@ -29,7 +29,7 @@ const Number = () => {
         setAdministrative_area(state);
         console.log(country_code, locality, administrative_area, "country_code, locality, administrative_area")
         if (country_code || locality || administrative_area) {
-            fetchAvailablePhoneNumberByCountry(country_code, locality, administrative_area)
+            fetchAvailablePhoneNumberByCountry(token , country_code, locality, administrative_area , token)
                 .then((res) => {
                     setAvailableNumbers(res.data);
                     console.log(res.data, "numbers");
@@ -93,7 +93,7 @@ const Number = () => {
     useEffect(() => {
         if (country_code || locality || administrative_area) {
             const delayDebounce = setTimeout(() => {
-                fetchAvailablePhoneNumberByCountry(country_code, locality, administrative_area)
+                fetchAvailablePhoneNumberByCountry(token  , country_code, locality, administrative_area , token)
                     .then((res) => {
                         setAvailableNumbers(res.data);
                         console.log("Auto-fetched numbers:", res.data);
@@ -109,7 +109,7 @@ const Number = () => {
     const handleRefresh = () => {
     
         // console.log(randomNumericPrefix, "randomNumericPrefix")
-        fetchAvailablePhoneNumberByCountry(country_code, locality, administrative_area)
+        fetchAvailablePhoneNumberByCountry(token  , country_code, locality, administrative_area , token)
             .then((res) => {
                 setAvailableNumbers(res.data);
             })

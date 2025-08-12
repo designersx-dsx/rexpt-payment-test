@@ -11,6 +11,9 @@ import {
 } from "../../../Store/apiStore";
 import PopUp from "../../Popup/Popup";
 
+import Loader from "../../Loader/Loader";
+import Loader2 from "../../Loader2/Loader2";
+
 const MAX_FILES = 5;
 
 const Fileinfo = () => {
@@ -19,6 +22,8 @@ const Fileinfo = () => {
   const [knowledgeBaseSources, setKnowledgeBaseSources] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [loading, setLoading] = useState(true)
+  const [submitLoading, submitSetLoading] = useState(false)
   const [popup, setPopup] = useState({
     show: false,
     type: "",
@@ -32,6 +37,7 @@ const Fileinfo = () => {
 
   const fetchKnowledgeBaseDetails = async () => {
     if (!knowledgeBaseId) return;
+    setLoading(true)
     try {
       const response = await axios.get(
         `https://api.retellai.com/get-knowledge-base/${knowledgeBaseId}`,
@@ -42,14 +48,16 @@ const Fileinfo = () => {
         }
       );
       setKnowledgeBaseSources(response.data.knowledge_base_sources || []);
+      setLoading(false)
     } catch (error) {
       console.error("Failed to fetch knowledge base details:", error);
-      setPopup({
-        show: true,
-        type: "failed",
-        message: "Failed to fetch knowledge base details.",
-        onConfirm: null,
-      });
+      setLoading(false)
+      // setPopup({
+      //   show: true,
+      //   type: "failed",
+      //   message: "Failed to fetch knowledge base details.",
+      //   onConfirm: null,
+      // });
     }
   };
 
@@ -96,6 +104,7 @@ const Fileinfo = () => {
     }
 
     try {
+      submitSetLoading(true)
       // Step 1: Upload files to the server
       const uploadResponse = await uploadAgentFiles(agent_id, selectedFiles);
 
@@ -207,7 +216,9 @@ const Fileinfo = () => {
           onConfirm: null,
         });
       }
+      submitSetLoading(false)
     } catch (error) {
+      submitSetLoading(false)
       console.error("Error during upload:", error);
       setPopup({
         show: true,
@@ -216,6 +227,7 @@ const Fileinfo = () => {
         onConfirm: null,
       });
     } finally {
+      submitSetLoading(false)
       localStorage.removeItem("newlyUploadedFiles");
     }
   };
@@ -279,11 +291,12 @@ const Fileinfo = () => {
   return (
     <div className={styles.container}>
       <HeaderBar title="Additional File" />
-      <button onClick={() => setShowModal(true)} className={styles.addButton}>
-        Add Files
-      </button>
+      <br />
+      <div onClick={() => setShowModal(true)} className={styles.addButton}>
+        <img src="/svg/Add-icon.svg" />
+      </div>
       <div className={styles.fileListHeader}>
-        {knowledgeBaseSources
+        {loading ? <Loader2 /> : knowledgeBaseSources.length > 0 ? knowledgeBaseSources
           .filter((source) => source.file_size)
           .map((source) => (
             <li key={source.source_id} className={styles.uploadedFileItem}>
@@ -297,18 +310,18 @@ const Fileinfo = () => {
                   className={styles.iconButton}
                   title="Download"
                 >
-                  <FiDownload />
+                  <img src='/svg/download-invoice.svg' alt='download-invoice' />
                 </a>
                 <button
                   className={styles.iconButton}
                   title="Delete"
                   onClick={() => handleDeleteSource(source.source_id)}
                 >
-                  <FiTrash2 />
+                  <img src='/svg/delete-invoice.svg' alt='download-invoice' />
                 </button>
               </div>
             </li>
-          ))}
+          )) : <p>No data</p>}
       </div>
 
       {showModal && (
@@ -354,8 +367,10 @@ const Fileinfo = () => {
                 onClick={handleSubmit}
                 className={styles.submitButton}
                 disabled={selectedFiles.length === 0}
+
               >
-                Submit
+                {submitLoading ? <div style={{ display: "flex" }}><Loader size={16} />&nbsp; Submitting
+                </div> : "Submit"}
               </button>
             </div>
           </div>
