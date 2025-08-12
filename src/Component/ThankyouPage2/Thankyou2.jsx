@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./Thankyou2.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader2 from "../Loader2/Loader2";
-import {API_BASE_URL,verifyEmailOTP,verifyOrCreateUser} from "../../Store/apiStore";
+import { API_BASE_URL, verifyEmailOTP, verifyOrCreateUser } from "../../Store/apiStore";
 import axios from "axios";
 import useUser from "../../Store/Context/UserContext";
 
@@ -13,12 +13,12 @@ function Thankyou2() {
   const [sessionData, setSessionData] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Button disable state
   const [isLoadingRequest, setIsLoadingRequest] = useState(false); // API request loading state
-const [emails , setEmail] = useState()
- const [hasUserCreated, setHasUserCreated] = useState(false); 
+  const [emails, setEmail] = useState()
+  const [hasUserCreated, setHasUserCreated] = useState(false);
   const sessionId = new URLSearchParams(location.search).get("session_id");
   const [subcriptionId, setsubcriptionId] = useState();
   const [setSubscriptionDetails, setsetSubscriptionDetails] = useState();
-const [data , setData] = useState()
+  const [data, setData] = useState()
   const [isSubscriptionDetailsLoading, setIsSubscriptionDetailsLoading] =
     useState(true); // Subscription details loading state
 
@@ -212,26 +212,25 @@ const [data , setData] = useState()
         console.warn("Missing required info to verify.");
         return;
       }
- if (data?.res1) {
-          const verifyStatus = data?.res1.data.verifiedStatus;
-          if (verifyStatus === true) {
-            const userData = {
-              name: data.res?.data?.user?.name || "",
-              profile:
-                `${API_BASE_URL?.split("/api")[0]}${
-                  data.res?.data?.profile?.split("public")[1]
-                }` || "images/camera-icon.avif",
-              subscriptionDetails: {},
-            };
+      if (data?.res1) {
+        const verifyStatus = data?.res1.data.verifiedStatus;
+        if (verifyStatus === true) {
+          const userData = {
+            name: data.res?.data?.user?.name || "",
+            profile:
+              `${API_BASE_URL?.split("/api")[0]}${data.res?.data?.profile?.split("public")[1]
+              }` || "images/camera-icon.avif",
+            subscriptionDetails: {},
+          };
 
-            setUser(userData);
-            localStorage.setItem("onboardComplete", "true");
-          }
-          navigate(verifyStatus ? "/steps" : "/details", { replace: true });
+          setUser(userData);
+          localStorage.setItem("onboardComplete", "true");
         }
-      
+        navigate(verifyStatus ? "/steps" : "/details", { replace: true });
+      }
 
-     
+
+
     } catch (err) {
       console.error("Error during OTP verification:", err);
       // alert("Something went wrong while verifying.");
@@ -241,6 +240,21 @@ const [data , setData] = useState()
       setIsLoadingRequest(false); // End loading
     }
   };
+
+  useEffect(() => {
+    if (loading || isSubscriptionDetailsLoading) return;
+    if (!sessionData || !subcriptionId) return;
+
+      window.gtag("event", "conversion", {
+        send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
+        value: Number(setSubscriptionDetails.planAmount || 1.0),
+        currency: (setSubscriptionDetails.currency || "USD").toUpperCase(),
+        transaction_id:
+          setSubscriptionDetails.subscriptionId ||
+          `null`, // unique id to prevent double counting
+      });
+
+  }, [setSubscriptionDetails])
 
   // If the page is still loading, show a loader
   if (loading || isSubscriptionDetailsLoading) {

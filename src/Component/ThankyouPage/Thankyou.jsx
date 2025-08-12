@@ -13,7 +13,10 @@ import Loader2 from "../Loader2/Loader2";
 function Thankyou({ onSubmit, isAgentCreated }) {
   const hasRunRef = useRef(false);
 
-  console.log("isAgentCreated", isAgentCreated);
+  const convFiredRef = useRef(false);
+
+
+  // console.log("isAgentCreated", isAgentCreated);
 
   const navigate = useNavigate();
   const { id: paramMode } = useParams();
@@ -333,6 +336,25 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     return `${upperCurrency} ${symbol}${Number(amount).toLocaleString()}`;
   };
 
+
+
+  useEffect(() => {
+    if (loading || !subscriptionInfo) return; // wait until subscription data is loaded
+    if (convFiredRef.current) return; // run only once
+    if (typeof window.gtag !== "function") return; // ensure gtag is available
+
+    window.gtag("event", "conversion", {
+      send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
+      value: Number(subscriptionInfo.planAmount || 1.0),
+      currency: (subscriptionInfo.currency || "USD").toUpperCase(),
+      transaction_id:
+        subscriptionInfo.subscriptionId ||
+        `${userId || "uid"}-${Date.now()}`, // unique id to prevent double counting
+    });
+
+    convFiredRef.current = true;
+  }, [loading, subscriptionInfo, subscriptionId, userId]);
+
   return (
     // <div className={styles.container}>
     //   <div className={styles.card}>
@@ -387,8 +409,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
               <div className={styles.Right50}>
                 {subscriptionInfo
                   ? `${currencySymbol}${formatPrice(
-                      subscriptionInfo?.metadata?.original_plan_amount
-                    )} / ${subscriptionInfo.interval}`
+                    subscriptionInfo?.metadata?.original_plan_amount
+                  )} / ${subscriptionInfo.interval}`
                   : "US $499 / month"}
               </div>
             </div>
@@ -423,12 +445,12 @@ function Thankyou({ onSubmit, isAgentCreated }) {
               <div className={styles.Right50}>
                 {subscriptionInfo
                   ? new Date(
-                      subscriptionInfo.nextRenewalDate
-                    ).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })
+                    subscriptionInfo.nextRenewalDate
+                  ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
                   : "06 July 2026"}
               </div>
             </div>
@@ -474,7 +496,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                 }}
                 className={styles.dashboardBtn}
                 // disabled={key === "create" ? true : false}
-                disabled={key === "create" ? !isAgentCreated : false} 
+                disabled={key === "create" ? !isAgentCreated : false}
               >
                 {key === "create"
                   ? isAgentCreated
