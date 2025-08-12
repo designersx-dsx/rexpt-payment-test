@@ -132,9 +132,7 @@
   font-weight: 600;
 }
 
-.fileInputLabel:hover {
-  background-color: #ddd;
-}
+
 
 .fileInput {
   display: none;
