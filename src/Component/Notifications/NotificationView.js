@@ -96,7 +96,7 @@ const NotificationView = () => {
             src='/svg/back-svg.svg'
             alt='back-svg'
             className={styles.backIcon}
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(-1)}
           />
           <h2 className={styles.headerTitle}>Notifications</h2>
         </div>

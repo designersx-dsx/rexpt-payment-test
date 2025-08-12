@@ -31,6 +31,7 @@ import PopUp from "../Popup/Popup";
 import Modal3 from "../Modal3/Modal3";
 import { clearSessionAfterEdit } from "../../utils/helperFunctions";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
+import { useNotificationStore } from "../../Store/notificationStore";
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -118,6 +119,10 @@ const AgentDashboard = () => {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
   const [agentCalApiKey, setAgentCalApiKey] = useState("");
+  const notifications = useNotificationStore((state) => state.notifications);
+
+  const unreadCount = notifications?.filter((n) => n?.status === 'unread').length;
+  // console.log('unreadCount', unreadCount)
 
   const isRefreshing = useContext(RefreshContext);
 
@@ -735,9 +740,10 @@ const AgentDashboard = () => {
               </div>
 
               <div className={styles.notifiMain}>
+              <div className={styles.notificationWrapper}>
                 <div
                   className={styles.notificationIcon}
-                  onClick={() => setShowModal(true)}
+                  onClick={() => {navigate('/notifications')}}
                 >
                   <svg
                     width="20"
@@ -768,6 +774,10 @@ const AgentDashboard = () => {
                       fill-opacity="0.9"
                     />
                   </svg>
+                    {unreadCount > 0 && (
+                                    <span className={styles.unreadBadge}>{unreadCount}</span>
+                        )}
+                </div>
                 </div>
                 <div className={styles.notificationIcon} onClick={handleLogout}>
                   <svg
