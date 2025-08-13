@@ -18,7 +18,6 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const hasRunRef = useRef(false);
 
   const convFiredRef = useRef(false);
-
   // console.log("isAgentCreated", isAgentCreated);
 
   const navigate = useNavigate();
@@ -347,25 +346,22 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
     return `${upperCurrency} ${symbol}${Number(amount).toLocaleString()}`;
   };
+  useEffect(() => {
+    if (loading || !subscriptionInfo) return; // wait until subscription data is loaded
+    if (convFiredRef.current) return; // run only once
+    if (typeof window.gtag !== "function") return; // ensure gtag is available
 
+    window.gtag("event", "conversion", {
+      send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
+      value: Number(subscriptionInfo.planAmount || 1.0),
+      currency: (subscriptionInfo.currency || "USD").toUpperCase(),
+      transaction_id:
+        subscriptionInfo.subscriptionId ||
+        `${userId || "uid"}-${Date.now()}`, // unique id to prevent double counting
+    });
 
-  // useEffect(() => {
-  //   if (loading || !subscriptionInfo) return; // wait until subscription data is loaded
-  //   if (convFiredRef.current) return; // run only once
-  //   if (typeof window.gtag !== "function") return; // ensure gtag is available
-
-  //   window.gtag("event", "conversion", {
-  //     send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
-  //     value: Number(subscriptionInfo.planAmount || 1.0),
-  //     currency: (subscriptionInfo.currency || "USD").toUpperCase(),
-  //     transaction_id:
-  //       subscriptionInfo.subscriptionId ||
-  //       `${userId || "uid"}-${Date.now()}`, // unique id to prevent double counting
-  //   });
-
-  //   convFiredRef.current = true;
-  // }, [loading, subscriptionInfo, subscriptionId, userId]);
-
+    convFiredRef.current = true;
+  }, [loading, subscriptionInfo, subscriptionId, userId]);
   return (
     // <div className={styles.container}>
     //   <div className={styles.card}>
