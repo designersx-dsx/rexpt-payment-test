@@ -1410,7 +1410,7 @@ const AgentDashboard = () => {
                     />
                   </svg>
                 </div>
-                <p className={styles.managementText}>Additional Info</p>
+                <p className={styles.managementText}>Knowledge Files</p>
               </div>
             </div>
             <hr className={styles.line} />
