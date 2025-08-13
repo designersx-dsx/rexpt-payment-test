@@ -115,7 +115,7 @@ const SignUp = () => {
           "showreferralfloating",
           response?.data?.user?.showreferralfloating
         );
-        console.log(response, "thussa")
+       
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");

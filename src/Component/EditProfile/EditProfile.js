@@ -719,7 +719,7 @@ const EditProfile = () => {
                   </div>
                 </div>
 
-                {/* <div className={styles.Part}>
+                <div className={styles.Part}>
                   <img src="svg/line-email.svg" />
                   <div className={styles.infoItem}>
                     <label>Email</label>
@@ -728,13 +728,14 @@ const EditProfile = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
+                      readOnly
                     />
                     {errors.email && (
                       <p className={styles.error}>{errors.email}</p>
                     )}
                     <hr className={styles.hrLine} />
                   </div>
-                </div> */}
+                </div>
 
                 {!emailVerified && formData.email !== initialData?.email && (
                   <>

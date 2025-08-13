@@ -62,19 +62,20 @@ export const initNotificationSocket = (userId,navigate) => {
       </div>
     );
 
-    if (message.type == "alert") {
-      toast.error(toastContent, {
-        ...commonOptions,
-        onClick: handleToastClick,
-        className: "max-w-sm p-4 bg-red-50 border border-red-200 shadow-lg rounded-lg",
-      });
-    } else {
-      toast.info(toastContent, {
-        ...commonOptions,
-        onClick: handleToastClick,
-        className: "max-w-sm p-4 bg-white shadow-lg rounded-lg",
-      });
-    }
+    // if (message.type == "alert") {
+    //   toast.error(toastContent, {
+    //     ...commonOptions,
+    //     onClick: handleToastClick,
+    //     className: "max-w-sm p-4 bg-red-50 border border-red-200 shadow-lg rounded-lg",
+    //   });
+    // } else {
+    //   toast.info(toastContent, {
+    //     ...commonOptions,
+    //     onClick: handleToastClick,
+    //     className: "max-w-sm p-4 bg-white shadow-lg rounded-lg",
+    //   });
+    // }
+
   });
 
   socketInstance.on("disconnect", () => {
