@@ -502,7 +502,7 @@ function Dashboard() {
   const fetchAndMergeCalApiKeys = async () => {
     if (!userId) return;
     try {
-      const res = await fetchDashboardDetails(userId , token);
+      const res = await fetchDashboardDetails(userId, token);
       // console.log(res, "res")
       setUserCalApiKey(res?.calApiKey);
       sessionStorage.setItem("userCalApiKey", res?.calApiKey);
@@ -1009,7 +1009,12 @@ function Dashboard() {
         }
       );
       if (res.status == 403) {
-        setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
+        if (agentDetails?.agentPlan == "free") {
+          setPopupMessage("Your Agent Plan has been exhausted. To continue, please upgrade your plan");
+        }
+        else {
+          setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
+        } 
         setPopupType("failed");
         setIsCallInProgress(false);
         setTimeout(() => {

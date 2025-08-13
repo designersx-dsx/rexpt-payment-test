@@ -11,7 +11,13 @@ import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
 
 function Thankyou({ onSubmit, isAgentCreated }) {
+
+  if(isAgentCreated ===true){
+    localStorage.setItem("agentCeated" , true)
+  }
   const hasRunRef = useRef(false);
+
+  const convFiredRef = useRef(false);
 
   // console.log("isAgentCreated", isAgentCreated);
 
@@ -39,7 +45,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
-  // console.log("subscriptionInfo", subscriptionInfo);
+  console.log("subscriptionInfo", subscriptionInfo);
   const [currencySymbol, setCurrencySymbol] = useState("");
 
   const currentLocation = "/update";
@@ -168,10 +174,11 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     try {
       const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
         method: "POST",
-        headers: { "Content-Type": "application/json"  ,
-          
-           Authorization: `Bearer ${token}`,
-          
+        headers: {
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${token}`,
+
         },
         body: JSON.stringify({ subscriptionId: subsid }),
       });
@@ -240,10 +247,11 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     try {
       const res = await fetch(`${API_BASE_URL}/subscription-details`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" , 
+        headers: {
+          "Content-Type": "application/json",
 
-            Authorization: `Bearer ${token}`,
-         },
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(
           agentId ? { agentId } : { userId } // Send only one key based on availability
         ),
@@ -340,6 +348,24 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     return `${upperCurrency} ${symbol}${Number(amount).toLocaleString()}`;
   };
 
+
+  // useEffect(() => {
+  //   if (loading || !subscriptionInfo) return; // wait until subscription data is loaded
+  //   if (convFiredRef.current) return; // run only once
+  //   if (typeof window.gtag !== "function") return; // ensure gtag is available
+
+  //   window.gtag("event", "conversion", {
+  //     send_to: "AW-17437749926/M6gmCJzi-v8aEKbl-_pA",
+  //     value: Number(subscriptionInfo.planAmount || 1.0),
+  //     currency: (subscriptionInfo.currency || "USD").toUpperCase(),
+  //     transaction_id:
+  //       subscriptionInfo.subscriptionId ||
+  //       `${userId || "uid"}-${Date.now()}`, // unique id to prevent double counting
+  //   });
+
+  //   convFiredRef.current = true;
+  // }, [loading, subscriptionInfo, subscriptionId, userId]);
+
   return (
     // <div className={styles.container}>
     //   <div className={styles.card}>
@@ -348,7 +374,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     //     {popupMessage && <p className={styles.popup}>{popupMessage}</p>}
     //   </div>
     // </div>
-    <div>
+    <>
+   {subscriptionInfo ?  <div>
       <div className={styles.container}>
         <div className={styles.Logo}>
           <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
@@ -394,8 +421,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
               <div className={styles.Right50}>
                 {subscriptionInfo
                   ? `${currencySymbol}${formatPrice(
-                      subscriptionInfo?.metadata?.original_plan_amount
-                    )} / ${subscriptionInfo.interval}`
+                    subscriptionInfo?.metadata?.original_plan_amount
+                  )} / ${subscriptionInfo.interval}`
                   : "US $499 / month"}
               </div>
             </div>
@@ -430,12 +457,12 @@ function Thankyou({ onSubmit, isAgentCreated }) {
               <div className={styles.Right50}>
                 {subscriptionInfo
                   ? new Date(
-                      subscriptionInfo.nextRenewalDate
-                    ).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })
+                    subscriptionInfo.nextRenewalDate
+                  ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
                   : "06 July 2026"}
               </div>
             </div>
@@ -470,7 +497,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                     navigate("/dashboard", {
                       state: { currentLocation },
                     });
-                  } else {
+                  }
+                   else {
                     localStorage.removeItem("selectedPlanData");
                     localStorage.removeItem("allPlans");
                     // navigate("/steps", {
@@ -481,7 +509,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                 }}
                 className={styles.dashboardBtn}
                 // disabled={key === "create" ? true : false}
-                disabled={key === "create" ? !isAgentCreated : false} 
+                disabled={key === "create" ? !isAgentCreated : false}
               >
                 {key === "create"
                   ? isAgentCreated
@@ -493,7 +521,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           </div>
         )}
       </div>
-    </div>
+    </div>: <Loader2/>} </>
   );
 }
 

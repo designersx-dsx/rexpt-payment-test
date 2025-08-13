@@ -186,7 +186,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -812,15 +812,16 @@ const Planss = () => {
                                     <div className={styles.stickyWrapper}>
                                         <AnimatedButton
                                             label={
-                                                userCurrency === "inr"
-                                                    ? "Coming Soon.." :
+                                                // userCurrency === "inr"
+                                                //     ? "Coming Soon.." :
                                                     isCurrentPlan
                                                         ? "Current Plan"
                                                         : priceForInterval
                                                             ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${formatPrice(priceForInterval.unit_amount / 100)}/${priceForInterval.interval}`
                                                             : "Unavailable"
                                             }
-                                            disabled={isCurrentPlan || userCurrency === "inr"}
+                                            // disabled={isCurrentPlan || userCurrency === "inr"}
+                                            disabled={isCurrentPlan } // For INDIA ENable
                                             position={{ position: "relative" }}
                                             size="13px"
                                             onClick={() => {
