@@ -379,7 +379,10 @@ const EditProfile = () => {
 
   const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
   const PaygSubscriptionId = subscriptionDetails.invoices
-    ?.filter(invoice => invoice.plan_name === "Extra Minutes" && invoice.status !== "canceled") // Filter by plan and status
+    ?.filter(invoice => 
+      // invoice.plan_name === "Extra Minutes" 
+      invoice.plan_name === "PAYG Extra" // LIVE ACCOUNT
+      && invoice.status !== "canceled") // Filter by plan and status
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Sort by latest created_at
     .map(invoice => invoice.subscription_id)[0]; // Get the subscription_id of the latest invoice
   // console.log("PaygSubscriptionId", PaygSubscriptionId)
@@ -497,7 +500,7 @@ const EditProfile = () => {
             setPaygEnabled(true)
           }
 
-          console.log('API response:', responseData); // You can handle the API response here
+          console.log('API response:', responseData); // You can handle the API response heree
         } else {
           console.error('Failed to send the request');
         }
