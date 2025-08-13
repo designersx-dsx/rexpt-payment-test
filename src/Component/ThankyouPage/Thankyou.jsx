@@ -11,6 +11,10 @@ import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
 
 function Thankyou({ onSubmit, isAgentCreated }) {
+
+  if(isAgentCreated ===true){
+    localStorage.setItem("agentCeated" , true)
+  }
   const hasRunRef = useRef(false);
 
   const convFiredRef = useRef(false);
@@ -370,7 +374,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     //     {popupMessage && <p className={styles.popup}>{popupMessage}</p>}
     //   </div>
     // </div>
-    <div>
+    <>
+   {subscriptionInfo ?  <div>
       <div className={styles.container}>
         <div className={styles.Logo}>
           <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
@@ -492,7 +497,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                     navigate("/dashboard", {
                       state: { currentLocation },
                     });
-                  } else {
+                  }
+                   else {
                     localStorage.removeItem("selectedPlanData");
                     localStorage.removeItem("allPlans");
                     // navigate("/steps", {
@@ -515,7 +521,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           </div>
         )}
       </div>
-    </div>
+    </div>: <Loader2/>} </>
   );
 }
 
