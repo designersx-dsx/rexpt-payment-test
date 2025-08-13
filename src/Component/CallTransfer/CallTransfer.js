@@ -547,7 +547,9 @@ function CallTransfer() {
         </div>
 
         {transfers.map((item, index) => (
-          <div key={index} className={styles.card}>
+          <div key={index} className={styles.card} style={{
+      marginBottom: index === transfers.length - 1 ? "5rem" : undefined
+    }}>
             <div className={styles.selectWrapper}>
               <label className={styles.label}>
                 Condition for Agent to follow

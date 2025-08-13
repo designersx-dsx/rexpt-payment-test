@@ -115,7 +115,7 @@ const SignUp = () => {
           "showreferralfloating",
           response?.data?.user?.showreferralfloating
         );
-        console.log(response, "thussa")
+       
         setPopupType("success");
         setShowPopup(true);
         setPopupMessage("One Time Password Verified successfully!");
@@ -140,7 +140,7 @@ const SignUp = () => {
         }
         if (response?.data?.paymentDone) {
           
-          navigate(verifiedUser ? "/steps" : "/details", { replace: true });
+          navigate(response?.data?.user?.verifyDetails ? "/steps" : "/details", { replace: true });
         }
         else {
           navigate(verifiedUser ? "/dashboard" : "/details", { replace: true });

@@ -107,7 +107,9 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                IN: "inr",
+
+                IN: "inr",   
+
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -122,7 +124,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     useEffect(() => {
         if (!userCurrency) return;
 
-        fetch(`${API_BASE}/products`)
+        fetch(`${API_BASE}/products`  , {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+        })
             .then((res) => res.json())
             .then((data) => {
                 const planColorMap = ["starter", "scaler", "growth", "corporate"];
@@ -495,15 +502,15 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         <div style={{ fontSize: "12px" }} className={styles.stickyWrapper}>
                                             <AnimatedButton
                                                 label={
-                                                    userCurrency === "inr"
-                                                        ? "Coming Soon.." :
+                                                    // userCurrency === "inr"
+                                                    //     ? "Coming Soon.." :
                                                         priceForInterval
                                                             ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
                                                                 formatPrice(priceForInterval.unit_amount / 100
                                                                 ))}/${priceForInterval.interval}`
                                                             : "Unavailable"
                                                 }
-                                                disabled={userCurrency === "inr"}
+                                                // disabled={userCurrency === "inr"}
                                                 position={{ position: "relative" }}
                                                 size="13px"
                                                 onClick={() => {

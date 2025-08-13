@@ -1,9 +1,9 @@
 
 import axios from 'axios';
-// Centralized API base URL
+// Centralized API base URL here
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'
 console.log(API_BASE_URL)
-const token = localStorage.getItem('token') || "";
+export const token = localStorage.getItem('token') || "";
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -69,10 +69,12 @@ export const createAgent = async (data) => {
   return res;
 };
 
-export const fetchDashboardDetails = async (userId) => {
+export const fetchDashboardDetails = async (userId , token) => {
+      let t = token
   const res = await api.get(`${API_BASE_URL}/agent/getUserAgentsDetails/${userId}`, {
+
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${t}`,
     },
   });
   return res.data;
@@ -205,7 +207,7 @@ export const validateEmail = async (email) => {
     console.error("Error validating email:", error);
     return { valid: false, reason: 'Error validating email' };
   }
-};
+}
 
 
 export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) => {
@@ -238,7 +240,7 @@ export const getAgentCallById = async (agentId,callId,start_timestamp) => {
     // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
     const res = await api.get(`callHistory/getSpecificCallData/call/${agentId}/${callId}?start_timestamp=${start_timestamp}`, {
       headers: {
-        Authorization: `Bearer $${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return res.data;
@@ -267,7 +269,7 @@ export async function getUserCallsByMonth(userId, month, year) {
   const res = await axios.get(`${API_BASE_URL}/callHistory/user/${userId}/calls-by-month`, {
     params: { month, year },
      headers: {
-        Authorization: `Bearer $${token}`,
+        Authorization: `Bearer ${token}`,
       },
   });
   return res.data;
@@ -299,7 +301,12 @@ export async function getAgentCallsByMonth(agentId, month, year) {
 export const fetchUserDetails = async (id) => {
   const userId = id
   try {
-    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}`)
+    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+    })
     return response
   } catch (error) {
     console.log(error)
@@ -318,9 +325,15 @@ export const toggleAgentActivation = async (agentId, deactivate = true) => {
   }
 };
 
-export const getUserDetails = async (userId) => {
+export const getUserDetails = async (userId , token) => {
+  let t = token
   try {
-    const response = await api.get(`/endusers/users/${userId}`);
+    const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
+headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${t}`,
+  },
+    });
     // console.log(response, "response")
     return response.data;
   } catch (error) {
@@ -519,24 +532,37 @@ export const saveAgentSchedule = async (scheduleData) => {
 };
 export const getAgentScheduleByUserId = async (userId) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}`);
+    const res = await axios.get(`${API_BASE_URL}/agent/agent-schedule/${userId}` , 
+      {
+          headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  }
+      }
+    );
     return res.data;
   } catch (error) {
     console.error("Error fetching agent schedule:", error.response?.data || error.message);
     throw new Error("Failed to fetch agent schedule");
   }
 }
-export const fetchAvailablePhoneNumberByCountry = async (country_code, locality, administrative_area, startsWith, endsWith) => {
+export const fetchAvailablePhoneNumberByCountry = async (token , country_code, locality, administrative_area, startsWith, endsWith) => {
+  let t = token
   try {
-    const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
-      params: {
-        country_code: country_code,
-        locality: locality,
-        administrative_area: administrative_area,
-        starts_with: startsWith,
-        ends_with: endsWith
-      }
-    });
+   const res = await axios.get(`${API_BASE_URL}/telnyx/available-numbers`, {
+  params: {
+    country_code,
+    locality,
+    administrative_area,
+    starts_with: startsWith,
+    ends_with: endsWith
+  },
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${t}`,
+  }
+});
+
     return res.data;
   } catch (error) {
    return error.response?.data 
@@ -545,7 +571,12 @@ export const fetchAvailablePhoneNumberByCountry = async (country_code, locality,
 }
 export const createNumberOrder = async (phoneNumbers,agent_id) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id})
+    const res = await axios.post(`${API_BASE_URL}/telnyx/create-number-order`, { phoneNumbers: phoneNumbers ,agent_id:agent_id} , {
+       headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+    })
     return res.data;
   } catch (error) {
     console.log(error)
@@ -589,6 +620,97 @@ export const sendAgentCallsByMonth = async (agentId, month, year) => {
     throw new Error("Failed to send agent calls by month");
   }
 };
+export const uploadAgentFiles = async (agentId, files) => {
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append('additional_file', file);
+  });
 
+  try {
+    const response = await api.post(`/agent/upload-agent-files/${agentId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    throw new Error("Error uploading files");
+  }
+};
+
+export async function getUserNotifications(userId) {
+  console.log(userId)
+  try {
+    const res = await axios.get(`${API_BASE_URL}/notifications/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error(" Error fetching notifications:", error.response?.data || error.message);
+    return error?.response?.data || { success: false, message: "Failed to fetch notifications" };
+  }
+}
+
+export const markNotificationAsSeen = async (id) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{},{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+  });
+    return response.data;
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+export const getAgentFiles = async (agentId) => {
+  try {
+    const response = await api.get(`/agent/get-agent-files/${agentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching agent files:", error);
+    throw new Error("Error fetching agent files");
+  }
+};
+
+
+export const deleteAgentFile = async (agentId, filename) => {
+  try {
+     const response = await api.delete(`/agent/delete-file/${agentId}/${filename}`, {
+       headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting agent file:", error.response?.data || error.message);
+    throw new Error("Error deleting agent file");
+  }
+};
+export const sendEmailToOwner = async (email,name,phone ) => {
+  try {
+     const response = await api.post(`/endusers/sendEmailToOwner`,{email:email,name:name,phone:phone}, {
+       headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting agent file:", error.response?.data || error.message);
+    throw new Error("Error deleting agent file");
+  }
+};
 
 export default api;
+
+
+// gaurav chutiya

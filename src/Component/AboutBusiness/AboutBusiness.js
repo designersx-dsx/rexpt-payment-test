@@ -457,6 +457,20 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     }
   }));
 
+  //check is this webview or not 
+  const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
+  const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+  const handleFocus = (e) => {
+    if (isAndroidApp() || isIOSApp()) {
+      setTimeout(() => {
+        // Method 1: Smooth scroll to element
+        e.target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }, 300);
+    }
+  };
   return (
     <>
       <div>
@@ -533,6 +547,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                         sessionStorage.setItem("placeDetailsExtract", JSON.stringify(updatedForm));
                       }
                     }}
+                    onFocus={handleFocus}
                   />
                   <label htmlFor="no-google-listing">
                     I do not have Google My Business Listing
@@ -580,6 +595,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                         }}
                         disabled={noBusinessWebsite}
                         onInput={handleInputChange}
+                        onFocus={handleFocus}
                       />
                       <div className={styles.verifyStatus}>
                         {urlVerificationInProgress ? (

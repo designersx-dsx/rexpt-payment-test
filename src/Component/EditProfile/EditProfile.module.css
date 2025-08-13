@@ -355,3 +355,69 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
+
+
+.toggleContainer1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Ensure vertical centering */
+    width: 90%;
+    max-width: 100%; /* Ensure it doesn't exceed the parent width */
+}
+
+.toggleTextAbove {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    flex: 1; /* Allow the text to take as much space as needed */
+    display: flex;
+    align-items: center; /* Ensure the text is vertically centered */
+}
+
+.toggleLabel1 {
+  cursor: pointer;
+    position: relative;
+    display: inline-block;
+    height: 24px; /* Ensure toggle height matches text height */
+    display: flex; /* This ensures vertical alignment within the label */
+    align-items: center; /* Center the toggle button vertically */
+}
+
+.toggleInput1 {
+    display: none; /* Hide the checkbox */
+}
+
+.toggleSlider1 {
+    width: 40px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: background-color 0.3s ease;
+}
+
+.toggleSlider1::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+}
+
+.toggleInput1:checked + .toggleSlider1 {
+    background-color: #5f33e1; /* Green background when active */
+}
+
+.toggleInput1:checked + .toggleSlider1::before {
+    transform: translateX(20px); /* Move the slider */
+}
+
+
+

@@ -6,16 +6,18 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import { API_BASE_URL } from "../../Store/apiStore";
+import { API_BASE_URL, token } from "../../Store/apiStore";
 import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
 
 function Thankyou({ onSubmit, isAgentCreated }) {
+
+  if(isAgentCreated ===true){
+    localStorage.setItem("agentCeated" , true)
+  }
   const hasRunRef = useRef(false);
 
   const convFiredRef = useRef(false);
-
-
   // console.log("isAgentCreated", isAgentCreated);
 
   const navigate = useNavigate();
@@ -42,7 +44,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
-  // console.log("subscriptionInfo", subscriptionInfo);
+  console.log("subscriptionInfo", subscriptionInfo);
   const [currencySymbol, setCurrencySymbol] = useState("");
 
   const currentLocation = "/update";
@@ -171,7 +173,12 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     try {
       const res = await fetch(`${API_BASE_URL}/cancel-subscription`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${token}`,
+
+        },
         body: JSON.stringify({ subscriptionId: subsid }),
       });
 
@@ -239,7 +246,11 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     try {
       const res = await fetch(`${API_BASE_URL}/subscription-details`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(
           agentId ? { agentId } : { userId } // Send only one key based on availability
         ),
@@ -335,9 +346,6 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
     return `${upperCurrency} ${symbol}${Number(amount).toLocaleString()}`;
   };
-
-
-
   useEffect(() => {
     if (loading || !subscriptionInfo) return; // wait until subscription data is loaded
     if (convFiredRef.current) return; // run only once
@@ -354,7 +362,6 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
     convFiredRef.current = true;
   }, [loading, subscriptionInfo, subscriptionId, userId]);
-
   return (
     // <div className={styles.container}>
     //   <div className={styles.card}>
@@ -363,7 +370,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     //     {popupMessage && <p className={styles.popup}>{popupMessage}</p>}
     //   </div>
     // </div>
-    <div>
+    <>
+   {subscriptionInfo ?  <div>
       <div className={styles.container}>
         <div className={styles.Logo}>
           <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
@@ -485,7 +493,8 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                     navigate("/dashboard", {
                       state: { currentLocation },
                     });
-                  } else {
+                  }
+                   else {
                     localStorage.removeItem("selectedPlanData");
                     localStorage.removeItem("allPlans");
                     // navigate("/steps", {
@@ -508,7 +517,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           </div>
         )}
       </div>
-    </div>
+    </div>: <Loader2/>} </>
   );
 }
 

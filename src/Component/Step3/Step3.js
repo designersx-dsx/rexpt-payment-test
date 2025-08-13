@@ -21,8 +21,10 @@ const avatars = {
   ],
 };
 
-const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange, setAvtarChecked ,loading}, ref) => {
+const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange, setAvtarChecked, loading }, ref) => {
   const sliderRef = useRef(null);
+  const inputRef = useRef(null);
+
   const [agentName, setAgentName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [agentNameError, setAgentNameError] = useState('');
@@ -30,55 +32,53 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
   const [availableAvatars, setAvailableAvatars] = useState(avatars['Male']);
   const EditingMode = localStorage.getItem("UpdationMode") === "ON";
   const [scale, setScale] = useState(1);
+  const [isEditingName, setIsEditingName] = useState(false);
 
- useEffect(() => {
-  const storedGender = sessionStorage.getItem("agentGender") || "Male";
-  const storedAvatarImg = sessionStorage.getItem("avatar");
-  const storedAgentName =
-    sessionStorage.getItem("agentName") ||
-    localStorage.getItem("VoiceAgentName") ||
-    "";
-  const localVoiceName = sessionStorage.getItem("VoiceAgentName") || "";
+  useEffect(() => {
+    const storedGender = sessionStorage.getItem("agentGender") || "Male";
+    const storedAvatarImg = sessionStorage.getItem("avatar");
+    const storedAgentName =
+      sessionStorage.getItem("agentName") ||
+      localStorage.getItem("VoiceAgentName") ||
+      "";
+    const localVoiceName = sessionStorage.getItem("VoiceAgentName") || "";
 
-  const genderAvatars = avatars[storedGender] || avatars["Male"];
-  setGender(storedGender);
-  setAvailableAvatars(genderAvatars);
+    const genderAvatars = avatars[storedGender] || avatars["Male"];
+    setGender(storedGender);
+    setAvailableAvatars(genderAvatars);
 
-  // Set agent name
-  if (storedAgentName) {
-    setAgentName(storedAgentName);
-  } else {
-    setAgentName(localVoiceName);
-    sessionStorage.setItem("agentName", localVoiceName);
-  }
-
-  // Avatar selection
-  if (storedAvatarImg) {
-    const avatarIndex = genderAvatars.findIndex(av => av.img === storedAvatarImg);
-    if (avatarIndex !== -1) {
-      const matchedAvatar = genderAvatars[avatarIndex];
-      setSelectedAvatar(matchedAvatar);
-      setTimeout(() => {
-        sliderRef.current?.slickGoTo(avatarIndex);
-      }, 0);
-      return;
+    // Set agent name
+    if (storedAgentName) {
+      setAgentName(storedAgentName);
+    } else {
+      setAgentName(localVoiceName);
+      sessionStorage.setItem("agentName", localVoiceName);
     }
-  }
 
-  // 👇 Preselect first avatar if none is stored
-  const defaultAvatar = genderAvatars[0];
-  if (defaultAvatar) {
-    setSelectedAvatar(defaultAvatar);
-    sessionStorage.setItem("avatar", defaultAvatar.img);
-    sessionStorage.setItem("avtarChecked", JSON.stringify(true));
-    setAvtarChecked?.(true);
-    setTimeout(() => {
-      sliderRef.current?.slickGoTo(0); // Go to first slide
-    }, 0);
-  }
-}, []);
+    // Avatar selection
+    if (storedAvatarImg) {
+      const avatarIndex = genderAvatars.findIndex(av => av.img === storedAvatarImg);
+      if (avatarIndex !== -1) {
+        const matchedAvatar = genderAvatars[avatarIndex];
+        setSelectedAvatar(matchedAvatar);
+        setTimeout(() => {
+          sliderRef.current?.slickGoTo(avatarIndex);
+        }, 0);
+        return;
+      }
+    }
 
-
+    const defaultAvatar = genderAvatars[0];
+    if (defaultAvatar) {
+      setSelectedAvatar(defaultAvatar);
+      sessionStorage.setItem("avatar", defaultAvatar.img);
+      sessionStorage.setItem("avtarChecked", JSON.stringify(true));
+      setAvtarChecked?.(true);
+      setTimeout(() => {
+        sliderRef.current?.slickGoTo(0);
+      }, 0);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,11 +90,12 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
   const handleAvatarChange = (avatar) => {
     setSelectedAvatar(avatar);
     sessionStorage.setItem('avatar', avatar.img);
-    sessionStorage.setItem("avtarChecked",JSON.stringify(true));
-    setAvtarChecked(true)
+    sessionStorage.setItem("avtarChecked", JSON.stringify(true));
+    setAvtarChecked?.(true);
   };
 
   const handleAgentNameChange = (e) => {
@@ -103,6 +104,16 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     sessionStorage.setItem('agentName', val);
     if (val.trim()) setAgentNameError('');
   };
+
+  const handleEditClick = () => {
+    setIsEditingName(true);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const handleFinishEditing = () => {
+    setIsEditingName(false);
+  };
+
   useImperativeHandle(ref, () => ({
     validate: () => {
       if (!agentName.trim()) {
@@ -110,7 +121,6 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
           type: "failed",
           message: "Please enter agent name!"
         });
-        // setAgentNameError("Please enter agent name!");
         return false;
       }
       if (!selectedAvatar) {
@@ -134,9 +144,22 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
     arrows: false,
   };
 
+  // check is this webview or not
+  const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
+  const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+  const handleFocus = (e) => {
+    if (isAndroidApp() || isIOSApp()) {
+      setTimeout(() => {
+        e.target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }, 300);
+    }
+  };
+
   return (
     <div className={`${styles.sliderContainer} ${loading ? styles.blocked : ""}`} id='avtarSlider' >
-      {/* <h2 className={styles.heading}>{EditingMode ? 'Edit: Name and Avtar' : 'Name and Avtar'}</h2> */}
       <Slider ref={sliderRef} {...settings}>
         {availableAvatars.map((avatar, index) => (
           <div key={index} className={styles.slide} id="slideradio">
@@ -148,6 +171,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 checked={selectedAvatar?.img === avatar.img}
                 onChange={() => handleAvatarChange(avatar)}
                 className={styles.radioButton}
+                onFocus={handleFocus}
               />
               <img
                 src={avatar.img}
@@ -155,25 +179,42 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 className={styles.avatarImage}
               />
             </label>
-
           </div>
         ))}
-
       </Slider>
+
       <div className={styles.labReq}>
         <div className={styles.agentInputBox} id='sliderstep'>
-          {/* <label className={styles.agentLabel}>Name Your Virtual Agent</label> */}
           <div className={styles.Dblock}>
             <div className={styles.inputWrapper}>
               <input
+                ref={inputRef}
                 type="text"
                 name="agentName"
                 onChange={handleAgentNameChange}
                 className={styles.agentInput}
                 placeholder="Ex- Smith, Nova"
                 value={agentName}
+                readOnly={!isEditingName}
+                aria-readonly={!isEditingName}
+                onFocus={handleFocus}
+                onBlur={handleFinishEditing}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur(); 
+                  }
+                }}
+                autoComplete="off"
+                inputMode="text"
               />
-              <button className={styles.editBtn} onClick={() => {}}>
+              <button
+                type="button"
+                className={styles.editBtn}
+                onClick={handleEditClick}
+                aria-label="Edit agent name"
+                title="Edit agent name"
+              >
                 <img src="/svg/edit-svg.svg" alt="edit" />
               </button>
             </div>
@@ -183,7 +224,6 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
           <p className={styles.agenterror}>{agentNameError}</p>
         )}
       </div>
-
       <div className={styles.customBtn}>
         <div className={styles.arrowLeft} onClick={() => sliderRef.current.slickPrev()}>
           <img src="svg/sliderleft.svg" alt="Previous" />

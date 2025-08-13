@@ -902,10 +902,10 @@ const BusinessServices = forwardRef(
     }, []);
     useEffect(() => {
       const savedShowInput = sessionStorage.getItem("showInput");
-      // if (savedShowInput !== null) {
-      setShowInput(savedShowInput);
-      // }
-    }, [showInput]);
+      if (savedShowInput !== null) {
+        setShowInput(JSON.parse(savedShowInput));
+      }
+    }, [])
     useEffect(() => {
       if (businessDetails?.businessType === "Other") {
         sessionStorage.setItem("showInput", JSON.stringify(true));
@@ -924,6 +924,20 @@ const BusinessServices = forwardRef(
         }, 100);
       }
     }, [customServices]);
+    //check is this webview or not 
+    const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
+    const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+    const handleFocus = (e) => {
+      if (isAndroidApp() || isIOSApp()) {
+        setTimeout(() => {
+          // Method 1: Smooth scroll to element
+          e.target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }, 300); 
+      }
+    };
     return (
       <div className={styles.container} id="servies">
         <div className={styles.searchBox}>
@@ -1013,6 +1027,8 @@ const BusinessServices = forwardRef(
                   placeholder="Enter Your Service Name"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
+                  onFocus={handleFocus}
+
                 />
                 <button
                   type="button"

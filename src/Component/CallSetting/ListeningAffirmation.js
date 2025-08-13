@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./CallSetting.module.css";
 import axios from "axios";
-import { API_BASE_URL } from "../../Store/apiStore";
+import { API_BASE_URL, token } from "../../Store/apiStore";
 
 export default function ListeningAffirmations() {
   const [enabled, setEnabled] = useState(true);
@@ -22,7 +22,10 @@ export default function ListeningAffirmations() {
       const fetchAgentDetails = async () => {
         try {
           const res = await axios.get(
-            `${API_BASE_URL}/agent/getAgent/${selectedAgentId}`
+            `${API_BASE_URL}/agent/getAgent/${selectedAgentId}` ,  { headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },}
           );
           const {
             enable_backchannel,

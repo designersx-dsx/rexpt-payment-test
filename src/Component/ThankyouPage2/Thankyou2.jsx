@@ -163,6 +163,7 @@ function Thankyou2() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+
             },
             body: JSON.stringify({
               subscriptionId: subcriptionId,
@@ -240,7 +241,6 @@ function Thankyou2() {
       setIsLoadingRequest(false); // End loading
     }
   };
-
   useEffect(() => {
     if (loading || isSubscriptionDetailsLoading) return;
     if (!sessionData || !subcriptionId) return;
@@ -260,7 +260,6 @@ function Thankyou2() {
   if (loading || isSubscriptionDetailsLoading) {
     return <Loader2 />; // Or any custom loading component you want to show
   }
-
   return (
     <>
       {subcriptionId ? (
