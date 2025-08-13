@@ -94,7 +94,9 @@ const EditProfile = () => {
 
   const [showDisableConfirmModal, setShowDisableConfirmModal] = useState(false);
   const [disableLoading, setDisableLoading] = useState(false);
-
+  const [clientVisible, setClientVisible] = useState(false);
+  const [copiedZapier, setCopiedZapier] = useState(false);
+  const [copiedClient, setCopiedClient] = useState(false);
 
 
   const openUploadModal = () => {
@@ -153,11 +155,15 @@ const EditProfile = () => {
     }
   }
   const [zapApikey, setZapApikey] = useState("")
+  const [clientId,setClientId]=useState("")
   const fetchUser = async () => {
     try {
       if (!isRefreshing) { setLoading(true); }
+
       const user = await getUserDetails(userId  , token);
+
       setZapApikey(user?.ZapApikey)
+      setClientId(user?.client_id)
       setcustomerId(user?.customerId)
       setuserId1(user?.userId)
       setReferralCode(user?.referralCode);
@@ -512,7 +518,7 @@ const EditProfile = () => {
 
     }
   }
-
+const maskKey = (key) => '•'.repeat(key?.length || 10);
   const handleEnablePaygConfirmed = async () => {
     setConfirmLoading(true);
 
@@ -980,9 +986,9 @@ const EditProfile = () => {
                 </div>
               </div>
               {/* Zapier Section */}
-              <div className={styles.infoSection} style={{ marginTop: '20px' }}>
+              {/* <div className={styles.infoSection} style={{ marginTop: '20px' }}>
                 <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
-                  Get your Zapier key
+                  Get your Zapier key & Client Key
                   <i
                     onClick={() => setZapierVisible(!zapierVisible)}
                     style={{ cursor: 'pointer', marginLeft: '20px' }}
@@ -1027,7 +1033,101 @@ const EditProfile = () => {
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
+
+           <div className={styles.infoSection} style={{ marginTop: '20px' }}>
+      <h2 className={styles.heading}>Keys & Credentials</h2><br/>
+
+      {/* Client Key Section */}
+      <div className={styles.keyContainer} style={{ marginBottom: '16px' }}>
+        <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
+          Client Id
+          <i
+            onClick={() => setClientVisible(!clientVisible)}
+            style={{ cursor: 'pointer', marginLeft: '12px' }}
+            title={clientVisible ? 'Hide Key' : 'Show Key'}
+            className={`fas ${clientVisible ? 'fa-eye-slash' : 'fa-eye'}`}
+          ></i>
+        </div>
+        <div
+          style={{
+            borderRadius: '5px',
+            fontFamily: 'monospace',
+            wordBreak: 'break-all',
+            padding: '8px',
+            background: '#f9f9f9',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          <span>{clientVisible ? clientId : maskKey(clientId)}</span>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(clientId);
+              setCopiedClient(true);
+              setTimeout(() => setCopiedClient(false), 2000);
+            }}
+            disabled={!clientVisible}
+            style={{
+              padding: '5px 10px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              background: clientVisible ? '#f5f5f5' : '#e0e0e0',
+              fontSize: '12px',
+              cursor: clientVisible ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {copiedClient ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+      </div>
+
+      {/* Zapier Key Section */}
+      <div className={styles.keyContainer}>
+        <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
+          Zap Key
+          <i
+            onClick={() => setZapierVisible(!zapierVisible)}
+            style={{ cursor: 'pointer', marginLeft: '12px' }}
+            title={zapierVisible ? 'Hide Key' : 'Show Key'}
+            className={`fas ${zapierVisible ? 'fa-eye-slash' : 'fa-eye'}`}
+          ></i>
+        </div>
+        <div
+          style={{
+            borderRadius: '5px',
+            fontFamily: 'monospace',
+            wordBreak: 'break-all',
+            padding: '8px',
+            background: '#f9f9f9',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          <span>{zapierVisible ? zapApikey : maskKey(zapApikey)}</span>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(zapApikey);
+              setCopiedZapier(true);
+              setTimeout(() => setCopiedZapier(false), 2000);
+            }}
+            disabled={!zapierVisible}
+            style={{
+              padding: '5px 10px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              background: zapierVisible ? '#f5f5f5' : '#e0e0e0',
+              fontSize: '12px',
+              cursor: zapierVisible ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {copiedZapier ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+      </div>
+    </div>
               <div className={styles.RefferalMain}>
               </div>
               <br></br>
