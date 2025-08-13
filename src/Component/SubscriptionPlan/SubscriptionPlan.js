@@ -108,7 +108,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
 
-                // IN: "inr",   
+                IN: "inr",   
 
                 US: "usd",
                 CA: "cad",
@@ -502,15 +502,15 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                                         <div style={{ fontSize: "12px" }} className={styles.stickyWrapper}>
                                             <AnimatedButton
                                                 label={
-                                                    userCurrency === "inr"
-                                                        ? "Coming Soon.." :
+                                                    // userCurrency === "inr"
+                                                    //     ? "Coming Soon.." :
                                                         priceForInterval
                                                             ? `Subscribe for ${getCurrencySymbol(priceForInterval.currency)}${(
                                                                 formatPrice(priceForInterval.unit_amount / 100
                                                                 ))}/${priceForInterval.interval}`
                                                             : "Unavailable"
                                                 }
-                                                disabled={userCurrency === "inr"}
+                                                // disabled={userCurrency === "inr"}
                                                 position={{ position: "relative" }}
                                                 size="13px"
                                                 onClick={() => {
