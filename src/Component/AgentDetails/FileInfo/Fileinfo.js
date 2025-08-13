@@ -15,7 +15,7 @@ import Loader from "../../Loader/Loader";
 import Loader2 from "../../Loader2/Loader2";
 
 const MAX_FILES = 5;
-
+const MAX_FILE_SIZE_MB = 50;
 const Fileinfo = () => {
   const location = useLocation();
   const { agent_id, knowledgeBaseId } = location.state || {};
@@ -24,13 +24,16 @@ const Fileinfo = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [loading, setLoading] = useState(true)
   const [submitLoading, submitSetLoading] = useState(false)
+  const [cancelButtonHeading, setCancelButtonHeading] = useState(false)
+  const [inlineError, setInlineError] = useState("");
+  const [isModalDisabled, setIsModalDisabled] = useState(false);
+
   const [popup, setPopup] = useState({
     show: false,
     type: "",
     message: "",
     onConfirm: null,
   });
-
   const closePopup = () => {
     setPopup({ show: false, type: "", message: "", onConfirm: null });
   };
@@ -48,26 +51,66 @@ const Fileinfo = () => {
         }
       );
       setKnowledgeBaseSources(response.data.knowledge_base_sources || []);
+
       setLoading(false)
     } catch (error) {
       console.error("Failed to fetch knowledge base details:", error);
       setLoading(false)
-      // setPopup({
-      //   show: true,
-      //   type: "failed",
-      //   message: "Failed to fetch knowledge base details.",
-      //   onConfirm: null,
-      // });
     }
+  };
+  const startPollingStatus = (kbId) => {
+
+    setLoading(true); // show loader while checking
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await axios.get(
+          `https://api.retellai.com/get-knowledge-base/${kbId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+            },
+          }
+        );
+        if (response.data?.status === "complete") {
+          clearInterval(intervalId); // stop polling
+          setLoading(false);
+          fetchKnowledgeBaseDetails()
+
+        }
+      } catch (error) {
+        console.error("Error while polling KB status:", error);
+      }
+    }, 10000); // 10 sec
   };
 
   useEffect(() => {
     fetchKnowledgeBaseDetails();
+    // startPollingStatus(knowledgeBaseId);
   }, [knowledgeBaseId]);
-
   const handleFileChange = (e) => {
+    setInlineError("");
     const newFiles = Array.from(e.target.files);
-    const combinedFiles = [...selectedFiles, ...newFiles];
+    let validFiles = [];
+    let oversizedFiles = [];
+
+    // Validate file size
+    newFiles.forEach((file) => {
+      if (file.size / (1024 * 1024) > MAX_FILE_SIZE_MB) {
+        oversizedFiles.push(file.name);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (oversizedFiles.length > 0) {
+      setInlineError(
+        `The following files exceed ${MAX_FILE_SIZE_MB}MB: ${oversizedFiles.join(
+          ", "
+        )}`
+      );
+    }
+
+    const combinedFiles = [...selectedFiles, ...validFiles];
 
     if (combinedFiles.length > MAX_FILES) {
       setPopup({
@@ -79,6 +122,7 @@ const Fileinfo = () => {
       return;
     }
 
+    // Remove duplicates
     const uniqueFiles = combinedFiles.filter(
       (file, index, self) =>
         index === self.findIndex((f) => f.name === file.name)
@@ -104,6 +148,9 @@ const Fileinfo = () => {
     }
 
     try {
+      setIsModalDisabled(true); // disable modal
+
+      setCancelButtonHeading(true)
       submitSetLoading(true)
       // Step 1: Upload files to the server
       const uploadResponse = await uploadAgentFiles(agent_id, selectedFiles);
@@ -203,10 +250,17 @@ const Fileinfo = () => {
           type: "success",
           message: "Files uploaded successfully!",
           onConfirm: () => {
-            fetchKnowledgeBaseDetails(); // Fetch updated details after successful upload
+            fetchKnowledgeBaseDetails();
             closePopup();
           },
         });
+        startPollingStatus(knowledgeBaseId);
+        setTimeout(() => {
+          setPopup({
+            show: false
+          });
+        }, 2000);
+
       } else {
         console.error("Upload failed with status:", retellResponse.status);
         setPopup({
@@ -219,6 +273,7 @@ const Fileinfo = () => {
       submitSetLoading(false)
     } catch (error) {
       submitSetLoading(false)
+      setCancelButtonHeading(false)
       console.error("Error during upload:", error);
       setPopup({
         show: true,
@@ -227,10 +282,13 @@ const Fileinfo = () => {
         onConfirm: null,
       });
     } finally {
+      setCancelButtonHeading(false)
+      setIsModalDisabled(false)
       submitSetLoading(false)
       localStorage.removeItem("newlyUploadedFiles");
     }
   };
+
 
   const performDelete = async (sourceId) => {
     const fileToDelete = knowledgeBaseSources.find(
@@ -259,7 +317,6 @@ const Fileinfo = () => {
         prevSources.filter((source) => source.source_id !== sourceId)
       );
       const localServerResponse = await deleteAgentFile(agent_id, filename);
-      console.log("Local server delete response:", localServerResponse);
       setPopup({
         show: true,
         type: "success",
@@ -290,55 +347,90 @@ const Fileinfo = () => {
 
   return (
     <div className={styles.container}>
-      <HeaderBar title="Additional File" />
+      <HeaderBar title="Knowledge Files" />
       <br />
       <div onClick={() => setShowModal(true)} className={styles.addButton}>
         <img src="/svg/Add-icon.svg" />
       </div>
       <div className={styles.fileListHeader}>
-        {loading ? <Loader2 /> : knowledgeBaseSources.length > 0 ? knowledgeBaseSources
-          .filter((source) => source.file_size)
-          .map((source) => (
-            <li key={source.source_id} className={styles.uploadedFileItem}>
-              <div className={styles.uploadedFileName}>
-                <span title={source.filename}>{source.filename}</span>
-              </div>
-              <div className={styles.fileActions}>
-                <a
-                  href={source.file_url}
-                  download
-                  className={styles.iconButton}
-                  title="Download"
-                >
-                  <img src='/svg/download-invoice.svg' alt='download-invoice' />
-                </a>
-                <button
-                  className={styles.iconButton}
-                  title="Delete"
-                  onClick={() => handleDeleteSource(source.source_id)}
-                >
-                  <img src='/svg/delete-invoice.svg' alt='download-invoice' />
-                </button>
-              </div>
-            </li>
-          )) : <p>No data</p>}
+        {loading ? (
+          <Loader2 />
+        ) : (
+          (() => {
+            const fileSources = knowledgeBaseSources.filter(
+              (source) => source.file_size
+            );
+
+            return fileSources.length > 0 ? (
+              fileSources.map((source) => (
+                <li key={source.source_id} className={styles.uploadedFileItem}>
+                  <div className={styles.uploadedFileName}>
+                    <span title={source.filename}>{source.filename}</span>
+                  </div>
+                  <div className={styles.fileActions}>
+                    <a
+                      href={source.file_url}
+                      download
+                      className={styles.iconButton}
+                      title="Download"
+                    >
+                      <img src="/svg/download-invoice.svg" alt="download-invoice" />
+                    </a>
+                    <button
+                      className={styles.iconButton}
+                      title="Delete"
+                      onClick={() => handleDeleteSource(source.source_id)}
+                    >
+                      <img src="/svg/delete-invoice.svg" alt="delete-invoice" />
+                    </button>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <p className={styles.noData}>No data</p>
+            );
+          })()
+        )}
       </div>
 
+
       {showModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
+        <div className={styles.modalOverlay} >
+          <div  className={`${styles.modalContent} ${
+        isModalDisabled ? styles.disabled : ""
+      }`}>
             <h2 className={styles.modalTitle}>Upload Files (Max 5)</h2>
-            <label htmlFor="file-upload" className={styles.fileInputLabel}>
-              Choose Files
-            </label>
+            <hr />
+
+            <div className={styles.uploadGuidelines}>
+              <p className={styles.capsul}> Supported Files</p>
+              <p >
+                .bmp, .csv, .doc, .docx, .eml, .epub, .heic, .html, .jpeg, .png, .md, .msg,
+                .odt, .org, .p7s, .pdf, .ppt, .pptx, .rst, .rtf, .tiff, .txt, .tsv, .xls,
+                .xlsx, .xml.
+                <br />
+
+              </p> </div>
+
+            <p className={styles.suportfile}> For <b>CSV, TSV, XLS, and XLSX</b> files specifically, there are additional limits of
+              <b> 1,000 rows</b> and <b>50 columns</b>.
+
+              <br /></p>
+
             <input
               id="file-upload"
               type="file"
               multiple
               onChange={handleFileChange}
               className={styles.fileInput}
-              accept="*/*"
+              accept=".bmp, .csv, .doc, .docx, .eml, .epub, .heic, .html, .jpeg, .png, .md, .msg,
+              .odt, .org, .p7s, .pdf, .ppt, .pptx, .rst, .rtf, .tiff, .txt, .tsv, .xls,
+              .xlsx, .xml"
             />
+            <p className={styles.maxlimit}>Maximum file size limit: <b>50MB</b>.</p>
+            {inlineError && (
+              <p className={styles.inlineError}>{inlineError}</p>
+            )}
             <ul className={styles.selectedFileList}>
               {selectedFiles.map((file, index) => (
                 <li key={index} className={styles.fileItem}>
@@ -359,6 +451,7 @@ const Fileinfo = () => {
                   setShowModal(false);
                   setSelectedFiles([]);
                 }}
+                disabled={cancelButtonHeading}
                 className={styles.cancelButton}
               >
                 Cancel
