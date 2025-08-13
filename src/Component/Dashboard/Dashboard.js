@@ -161,7 +161,7 @@ function Dashboard() {
     sessionStorage.getItem("userCalApiKey")
   );
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
-  console.log(agentDetailsForCal, "agentDetailsForCal")
+  // console.log(agentDetailsForCal, "agentDetailsForCal")
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
   const [activeSubs, setActiveSubs] = useState(false)
@@ -172,7 +172,7 @@ function Dashboard() {
   const notifications = useNotificationStore((state) => state.notifications);
 
   const unreadCount = notifications.filter((n) => n.status === 'unread').length;
-  console.log('unreadCount', unreadCount)
+  // console.log('unreadCount', unreadCount)
 
 
   // console.log('unreadCount',unreadCount,toggleFlag)
