@@ -29,6 +29,7 @@ import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 
 
+
 const EditProfile = () => {
   const fileInputRef = useRef(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -158,9 +159,9 @@ const EditProfile = () => {
   const fetchUser = async () => {
     try {
       if (!isRefreshing) { setLoading(true); }
-      const user = await getUserDetails(userId , token);
 
-      // console.log(user, "user@@@@")
+      const user = await getUserDetails(userId  , token);
+
       setZapApikey(user?.ZapApikey)
       setClientId(user?.client_id)
       setcustomerId(user?.customerId)
@@ -358,6 +359,7 @@ const EditProfile = () => {
         handleClosePopup();
       }, 2000);
       setIsEditing(false);
+   
     } catch (error) {
       console.error(error);
       setShowPopup(true);
