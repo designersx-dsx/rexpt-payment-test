@@ -3,7 +3,7 @@ import styles from "../Details/Details.module.css";
 import { useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import axios from "axios";
-import { API_BASE_URL } from "../../Store/apiStore";
+import { API_BASE_URL, sendEmailToOwner } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import Loader from "../Loader/Loader";
 import useUser from "../../Store/Context/UserContext";
@@ -120,6 +120,9 @@ const Details = () => {
           localStorage.setItem("onboardComplete", "true");
           navigate("/steps");
         }, 400);
+       const email= localStorage.getItem("userEmail")
+        sendEmailToOwner(email,name,phone)
+
       } else {
         setPopupType("failed");
         setPopupMessage("Update failed. Please try again.");
