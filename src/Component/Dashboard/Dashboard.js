@@ -1503,7 +1503,15 @@ function Dashboard() {
           packageValue,
           agentData?.agentCode
         );
-        const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
+        const mergedUrls = [];
+        if (businessDetails?.webUrl?.trim()) {
+          mergedUrls.push(businessDetails?.webUrl?.trim()); // add businessUrl
+        }
+
+        if (businessDetails?.googleUrl) {
+          mergedUrls.push(businessDetails?.googleUrl); // add googleListing
+        }
+        // const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
         const businessData = businessDetails.knowledge_base_texts;
         const knowledgeBaseText = {
@@ -1523,7 +1531,10 @@ function Dashboard() {
         // Step 1: Create Knowledge Base
         const formData = new FormData();
         formData.append("knowledge_base_name", knowledgeBaseName?.slice(0, 39));
-        formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+        if (mergedUrls.length > 0) {
+          formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+        }
+        // formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
         formData.append("enable_auto_refresh", "true");
         formData.append(
           "knowledge_base_texts",
