@@ -417,7 +417,12 @@ export const addGeneralTools = async (llmId, transfers) => {
 }
 export const getBusinessDetailsByBusinessId = async (businessId) => {
   try {
-    const res = await api.get(`/businessDetails/by-business-id/${businessId}`);
+    const res = await api.get(`/businessDetails/by-business-id/${businessId}`,{
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
     return res.data;
   } catch (error) {
     console.error("Error fetching business details by business ID:", error.response?.data || error.message);
