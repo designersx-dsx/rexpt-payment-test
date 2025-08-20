@@ -26,6 +26,7 @@ import Step1 from "../Step1/Step1";
 import getDynamicAgentName from "../../utils/getDynamicAgentName";
 import Thankyou from "../ThankyouPage/Thankyou";
 import getTimezoneFromState from "../../lib/timeZone";
+import Modal2 from "../Modal2/Modal2";
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -188,6 +189,10 @@ const Step = () => {
     const agentCode = sessionStorage.getItem("AgentCode")
     let freeTrail = location?.state?.freeTrial
     const [isContiue, seIsContinue] = useState(false)
+    const [showSiteMapUrls, setShowSiteMapUrls] = useState([])
+    const [showSiteMapModal, setShowSiteMapModal] = useState(false)
+    const [selectedUrls, setSelectedUrls] = useState([]);
+    const [addOnUrl, setAddOnUrl] = useState("")
     const packageMap = {
         "Free": 1,
         "Starter": 2,
@@ -333,7 +338,6 @@ const Step = () => {
         ["Scaler", "Growth", "Corporate"].includes(plan) ? "multi" : sessionStorage.getItem("agentLanguageCode");
 
     const callNextApiAndRedirect = async (agentId) => {
-        console.log("Calling updateFreeAgent API with:", { userId, agentId });
 
         try {
             const res = await fetch(
@@ -458,7 +462,7 @@ const Step = () => {
             businessType: { key: "BUSINESSTYPE", value: businessType || "" },
             commaSeparatedServices: { key: "SERVICES", value: servicesArray || "" },
             timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" },
-          
+
         });
         // const isValid = step8BRef.current.validate()
         //creation here
@@ -507,7 +511,7 @@ const Step = () => {
                                 "name": "name",
                                 "description": "Extract the user's name from the conversation\""
                             },
-                            
+
                         ]
                     }
 
@@ -752,14 +756,14 @@ const Step = () => {
                             "examples": [true, false]
                         },
                         {
-                            "type": "string", 
+                            "type": "string",
                             "name": "appointment_date",
                             "description": "Extract the exact appointment date mentioned by customer. Format: YYYY-MM-DD",
                             "examples": ["2025-01-15", "2025-02-20", "2025-03-10"]
                         },
                         {
                             "type": "string",
-                            "name": "appointment_time", 
+                            "name": "appointment_time",
                             "description": "Extract the exact appointment time mentioned by customer. Format: HH:MM AM/PM",
                             "examples": ["10:00 AM", "2:30 PM", "9:15 AM"]
                         },
@@ -880,14 +884,14 @@ const Step = () => {
                                 "examples": [true, false]
                             },
                             {
-                                "type": "string", 
+                                "type": "string",
                                 "name": "appointment_date",
                                 "description": "Extract the exact appointment date mentioned by customer. Format: YYYY-MM-DD",
                                 "examples": ["2025-01-15", "2025-02-20", "2025-03-10"]
                             },
                             {
                                 "type": "string",
-                                "name": "appointment_time", 
+                                "name": "appointment_time",
                                 "description": "Extract the exact appointment time mentioned by customer. Format: HH:MM AM/PM",
                                 "examples": ["10:00 AM", "2:30 PM", "9:15 AM"]
                             },
@@ -1255,6 +1259,70 @@ const Step = () => {
     const hanldeAgentCreation = async () => {
         handleContinue();
     }
+    //site map 
+    // Select all handler
+    const handleSelectAll = () => {
+        let updated;
+      
+        if (selectedUrls.length === showSiteMapUrls.length) {
+          // Deselect all
+          updated = [];
+        } else {
+          // Select all
+          updated = [...showSiteMapUrls];
+        }
+      
+        setSelectedUrls(updated);
+      
+        // Save with status
+        const updatedWithStatus = showSiteMapUrls.map((item) => ({
+          url: item,
+          checkedStatus: updated.includes(item),
+        }));
+      
+        sessionStorage.setItem("selectedSiteMapUrls", JSON.stringify(updatedWithStatus));
+      };
+      
+      const handleCheckboxChange = (url) => {
+        setSelectedUrls((prev) => {
+          let updated;
+      
+          if (prev.includes(url)) {
+            // Uncheck → remove url
+            updated = prev.filter((item) => item !== url);
+          } else {
+            // Check → add url
+            updated = [...prev, url];
+          }
+      
+          // Save in sessionStorage as array of objects
+          const updatedWithStatus = showSiteMapUrls.map((item) => ({
+            url: item,
+            checkedStatus: updated.includes(item),
+          }));
+      
+          sessionStorage.setItem(
+            "selectedSiteMapUrls",
+            JSON.stringify(updatedWithStatus)
+          );
+      
+          return updated;
+        });
+      };
+      
+      useEffect(() => {
+        const sessionSelected = JSON.parse(sessionStorage.getItem("selectedSiteMapUrls"));
+      
+        if (sessionSelected && sessionSelected.length > 0) {
+          // Filter only those with checkedStatus: true
+          const checkedUrls = sessionSelected
+            .filter((item) => item.checkedStatus)
+            .map((item) => item.url);
+      
+          setSelectedUrls(checkedUrls);
+        }
+      }, [showSiteMapUrls]);
+
     return (
 
         <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated} /> :
@@ -1363,6 +1431,12 @@ const Step = () => {
                                     setShowPopup(false);
                                 }, 2000);
                             }}
+                            onSiteMap={(data) => {
+                                setShowSiteMapModal(Boolean(data.status))
+                                setShowSiteMapUrls(data.data || [])
+                                setAddOnUrl(data.addOnUrl)
+                            }}
+                            selectedSiteMapUrls={selectedUrls}
                             loading={loading}
                             setLoading={setLoading}
                             onStepChange={(step) => {
@@ -1665,6 +1739,51 @@ const Step = () => {
                         message={popupMessage}
                     />
                 )}
+
+
+                {showSiteMapModal && <Modal2 isOpen={showSiteMapModal} onClose={() => setShowSiteMapModal(false)}>
+                    <div className={styles.sitemapModal}>
+
+                        {/* Select All */}
+                        <div className={styles.sitemapHeader}>
+                            <input
+                                type="checkbox"
+                                checked={selectedUrls.length === showSiteMapUrls.length}
+                                onChange={handleSelectAll}
+                            />
+                            <label>Select All</label>
+                        </div>
+
+                        {/* URL list */}
+                        <div className={styles.sitemapList}>
+                            {showSiteMapUrls.length > 0 ? (
+                                showSiteMapUrls.map((item, index) => (
+                                    <label className={styles.sitemapItem} key={index}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedUrls.includes(item)}
+                                            onChange={() => handleCheckboxChange(item)}
+                                        />
+                                        <span>{item}</span>
+                                    </label>
+                                ))
+                            ) : (
+                                <label className={styles.sitemapItem}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedUrls.includes(addOnUrl)}
+                                        onChange={() => handleCheckboxChange(addOnUrl)}
+                                    />
+                                    <span>{addOnUrl}</span>
+                                </label>
+                            )}
+                        </div>
+
+                    </div>
+                </Modal2>}
+
+
+
             </div>}</>
     );
 };
