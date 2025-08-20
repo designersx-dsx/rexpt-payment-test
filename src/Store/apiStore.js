@@ -731,6 +731,32 @@ export const sendEmailToOwner = async (email,name,phone ) => {
 };
 
 
+export const getDashboardTourStatus = async (userId) => {
+  try {
+    const res = await api.get(`/agent/status/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data; 
+  } catch (error) {
+    console.error("Error fetching tour status:", error.response?.data || error.message);
+    throw new Error("Failed to fetch tour status");
+  }
+};
+
+export const markDashboardTourSeen = async (userId) => {
+  try {
+    const res = await api.post(`/agent/seen/${userId}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data; 
+  } catch (error) {
+    console.error("Error marking tour as seen:", error.response?.data || error.message);
+    throw new Error("Failed to mark tour as seen");
+  }
+};
+
+
+
 export default api;
 
 
