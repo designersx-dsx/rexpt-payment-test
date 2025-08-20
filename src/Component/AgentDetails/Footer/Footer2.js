@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Footer/Footer2.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
-// import ModalChat from '../../ModalChat/ModalChat';
 import ModalHelp from "../../ModalHelp/ModalHelp";
 import HelpSupport from "../../HelpSupport/HelpSupport";
-import Plan from '../../Plan/Plan'
-import ChatBox from '../../ChatBox/ChatBox';
-import Modal from "../../Modal/Modal";
-const Footer2 = () => {
+// import Plan from '../../Plan/Plan'
+// import ChatBox from '../../ChatBox/ChatBox';
+// import Modal from "../../Modal/Modal";
 
+const Footer2 = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
@@ -17,7 +16,6 @@ const Footer2 = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Set active tab based on current path
     if (location.pathname.includes("/dashboard")) {
       setActiveTab("home");
     } else if (location.pathname.includes("/calendar")) {
@@ -31,13 +29,15 @@ const Footer2 = () => {
     setActiveTab(tab);
     navigate(path);
   };
+
   return (
     <div>
       <div className={styles.navbar}>
+        {/* Home */}
         <button
-          className={`${styles.tab} ${activeTab === "home" ? styles.active : ""
-            }`}
+          className={`${styles.tab} ${activeTab === "home" ? styles.active : ""}`}
           onClick={() => handleTabClick("home", "/dashboard")}
+          aria-current={activeTab === "home" ? "page" : undefined}
         >
           <span className={styles.icon}>
             <svg
@@ -46,10 +46,12 @@ const Footer2 = () => {
               viewBox="0 0 28 31"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              focusable="false"
             >
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M27.0129 12.0915L26.0129 22.735C26.0129 26.7616 22.7184 30.0551 18.6928 30.0551H8.32012C4.29455 30.0551 1 26.7616 1 22.735L0 12.0915C0 10.1557 0.819416 8.49008 2.35197 7.30913L9.82008 1.55335C12.0221 -0.144085 14.9899 -0.144085 17.1918 1.55335L24.66 7.30913C26.1925 8.49008 27.0129 10.1557 27.0129 12.0915ZM8.99055 23.6339C8.57935 23.6339 8.24662 23.3012 8.24662 22.89C8.24662 22.4788 8.57935 22.146 8.99055 22.146H18.0224C18.4336 22.146 18.7663 22.4788 18.7663 22.89C18.7663 23.3012 18.4336 23.6339 18.0224 23.6339H8.99055Z"
                 fill="#5F33E1"
               />
@@ -57,10 +59,12 @@ const Footer2 = () => {
           </span>
         </button>
 
+        {/* Calendar */}
         <button
-          className={`${styles.tab} ${activeTab === "calendar" ? styles.active : ""
-            }`}
+          id="tour-footer-calendar"
+          className={`${styles.tab} ${activeTab === "calendar" ? styles.active : ""}`}
           onClick={() => handleTabClick("calendar", "/calendar")}
+          aria-current={activeTab === "calendar" ? "page" : undefined}
         >
           <span className={styles.icon}>
             <svg
@@ -69,6 +73,8 @@ const Footer2 = () => {
               viewBox="0 0 26 31"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              focusable="false"
             >
               <path
                 d="M25.9997 8.82162V6.1039C26.001 5.20803 25.6546 4.34916 25.0361 3.71493C24.4164 3.08207 23.5771 2.72729 22.7017 2.72866H20.7421V1.09586C20.7421 0.490382 20.2629 0 19.6713 0C19.0796 0 18.6005 0.490382 18.6005 1.09586V2.72866H14.0708V1.09586C14.0708 0.490382 13.5916 0 12.9999 0C12.4083 0 11.9291 0.490382 11.9291 1.09586V2.72866H7.39944V1.09586C7.39944 0.490382 6.92025 0 6.32861 0C5.73696 0 5.25778 0.490382 5.25778 1.09586V2.72866H3.29815C2.42275 2.7273 1.58349 3.08207 0.963748 3.71493C0.345341 4.34916 -0.00133459 5.20803 3.86125e-06 6.1039V8.82162H25.9997Z"
@@ -82,42 +88,56 @@ const Footer2 = () => {
           </span>
         </button>
 
+        {/* Create */}
         <div className={styles.createWrapper} onClick={() => setOpen(true)}>
-          <button className={styles.createBtn} onClick={()=>navigate('/plan')}>
+          <button
+            id="tour-footer-create"
+            className={styles.createBtn}
+            onClick={() => navigate("/plan")}
+            aria-label="Create"
+          >
             <span className={styles.createIcon}>＋</span>
             <span className={styles.createText}>Create</span>
           </button>
         </div>
 
+        {/* Support / Info */}
         <button
-          className={`${styles.tab} ${activeTab === "info" ? styles.active : ""
-            }`}
-
+          id="tour-footer-support"
+          className={`${styles.tab} ${activeTab === "info" ? styles.active : ""}`}
+          aria-current={activeTab === "info" ? "page" : undefined}
+          onClick={() => setOpen2(true)}
         >
-          <span className={styles.icon} onClick={() => setOpen2(true)}>
-            <svg width="30" height="29" viewBox="0 0 30 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <span className={styles.icon}>
+            <svg
+              width="30"
+              height="29"
+              viewBox="0 0 30 29"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              focusable="false"
+            >
               <path d="M28.0681 28.1483C28.1243 28.2576 28.073 28.3399 28.0376 28.378C28.0021 28.4173 27.9239 28.4751 27.8115 28.4259L20.9437 25.4864C20.4403 25.2714 19.8917 25.2174 19.3565 25.3316C18.3192 25.5527 17.2464 25.6645 16.1664 25.6645C12.909 25.6645 9.84343 24.6646 7.46094 22.838L8.48972 22.397C8.82694 22.2533 9.19349 22.2164 9.55148 22.2926C10.6487 22.526 11.7825 22.6451 12.9236 22.6451C16.5854 22.6451 20.0311 21.445 22.625 19.2646C25.2422 17.0658 26.684 14.135 26.684 11.0136C26.684 10.0838 26.5545 9.17105 26.3065 8.28906C28.0671 10.1685 29.0495 12.5086 29.0495 14.9149C29.0495 17.4834 27.945 19.9696 25.9375 21.9168C25.505 22.3369 25.3999 22.9769 25.676 23.5112L28.0681 28.1483Z" fill="#5F33E1" />
               <path d="M9.69388 21.1666C10.7312 21.3877 11.804 21.4995 12.884 21.4995C19.9877 21.4995 25.768 16.6768 25.768 10.7497C25.768 4.82266 19.9886 0 12.884 0C5.78029 0 0 4.82266 0 10.7497C0 13.3183 1.10451 15.8045 3.11197 17.7517C3.5445 18.1718 3.64959 18.8118 3.37345 19.3461L0.982349 23.9832C0.926145 24.0926 0.977462 24.1749 1.01289 24.2129C1.04833 24.2522 1.12652 24.31 1.23893 24.2608L8.10678 21.3213C8.61018 21.1063 9.15873 21.0523 9.69388 21.1666ZM12.5297 2.41272C13.1809 2.41272 13.7112 2.94583 13.7112 3.60055C13.7112 4.25527 13.1809 4.78839 12.5297 4.78839C11.8785 4.78839 11.3482 4.25527 11.3482 3.60055C11.3482 2.94583 11.8785 2.41272 12.5297 2.41272ZM11.7123 16.4826V8.72155C11.7123 8.63188 11.6854 8.54589 11.6353 8.47219L11.1992 7.83344H13.2042C13.6844 7.83344 14.0754 8.22653 14.0754 8.70929V16.3757C14.0754 16.4469 14.0925 16.5169 14.1255 16.5808L14.5323 17.3584H12.5847C12.1045 17.3584 11.7136 16.9653 11.7136 16.4826L11.7123 16.4826Z" fill="#B5A0F3" />
               <ellipse cx="13" cy="11" rx="8" ry="9" fill="white" />
               <path d="M13 1C11.0222 1 9.08879 1.58649 7.4443 2.6853C5.79981 3.78412 4.51809 5.3459 3.76121 7.17316C3.00433 9.00043 2.8063 11.0111 3.19215 12.9509C3.578 14.8907 4.53041 16.6725 5.92894 18.0711C7.32746 19.4696 9.10929 20.422 11.0491 20.8078C12.9889 21.1937 14.9996 20.9957 16.8268 20.2388C18.6541 19.4819 20.2159 18.2002 21.3147 16.5557C22.4135 14.9112 23 12.9778 23 11C22.9969 8.34879 21.9423 5.80707 20.0676 3.93239C18.1929 2.0577 15.6512 1.00313 13 1ZM13 17.3636C12.8202 17.3636 12.6444 17.3103 12.4949 17.2104C12.3454 17.1105 12.2289 16.9686 12.1601 16.8024C12.0913 16.6363 12.0733 16.4535 12.1084 16.2772C12.1435 16.1008 12.23 15.9389 12.3572 15.8117C12.4843 15.6846 12.6463 15.598 12.8226 15.5629C12.999 15.5278 13.1818 15.5458 13.3479 15.6147C13.514 15.6835 13.656 15.8 13.7559 15.9495C13.8558 16.099 13.9091 16.2747 13.9091 16.4545C13.9091 16.6956 13.8133 16.9269 13.6428 17.0974C13.4723 17.2679 13.2411 17.3636 13 17.3636ZM15.1273 11.2218C14.767 11.4596 14.4686 11.7798 14.2567 12.1559C14.0449 12.532 13.9257 12.9532 13.9091 13.3845V13.7273C13.9091 13.9684 13.8133 14.1996 13.6428 14.3701C13.4723 14.5406 13.2411 14.6364 13 14.6364C12.7589 14.6364 12.5277 14.5406 12.3572 14.3701C12.1867 14.1996 12.0909 13.9684 12.0909 13.7273V13.3845C12.1053 12.665 12.2919 11.9594 12.6349 11.3267C12.978 10.6941 13.4676 10.1528 14.0627 9.74818C14.3519 9.54033 14.5737 9.25214 14.7005 8.91938C14.8273 8.58661 14.8537 8.22393 14.7762 7.87634C14.6987 7.52875 14.5209 7.21155 14.2648 6.96413C14.0087 6.71671 13.6855 6.54994 13.3355 6.48454C13.0728 6.43523 12.8024 6.44444 12.5437 6.51153C12.2849 6.57861 12.0442 6.70192 11.8385 6.87267C11.6329 7.04342 11.4674 7.25741 11.3539 7.4994C11.2404 7.74139 11.1816 8.00543 11.1818 8.27273C11.1818 8.51383 11.086 8.74506 10.9156 8.91555C10.7451 9.08604 10.5138 9.18182 10.2727 9.18182C10.0316 9.18182 9.80039 9.08604 9.62991 8.91555C9.45942 8.74506 9.36364 8.51383 9.36364 8.27273C9.36362 7.65001 9.52351 7.03772 9.828 6.49453C10.1325 5.95134 10.5714 5.49544 11.1026 5.17051C11.6338 4.84559 12.2396 4.66253 12.8618 4.63887C13.4841 4.61521 14.102 4.75175 14.6564 5.0354C15.2108 5.31905 15.683 5.74031 16.0278 6.25881C16.3727 6.77732 16.5786 7.3757 16.6259 7.99662C16.6731 8.61754 16.5602 9.24019 16.2978 9.80492C16.0353 10.3696 15.6323 10.8575 15.1273 11.2218Z" fill="#B5A0F3" />
             </svg>
-
           </span>
         </button>
       </div>
-      {/* Plan Modal Start */}
-      {/* <Modal isOpen={open} onClose={() => setOpen(false)}>
-        <Plan />
-      </Modal> */}
-      {/* Plan Modal End */}
 
-      {/* Help Modal End */}
+      {/* Help Modal */}
       <ModalHelp isOpen={open2} onClose={() => setOpen2(false)}>
         <div>
-         <HelpSupport/>
+          <HelpSupport />
         </div>
       </ModalHelp>
-      {/* help Modal End */}
+
+      {/* Plan Modal (currently unused)
+      <Modal isOpen={open} onClose={() => setOpen(false)}>
+        <Plan />
+      </Modal> */}
     </div>
   );
 };

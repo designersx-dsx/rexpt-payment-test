@@ -358,6 +358,7 @@
 .FilterIcon {
     position: relative;
     cursor: pointer;
+    overflow: visible;
 }
 
 .Lang {
@@ -413,14 +414,6 @@
 
 }
 
-.AssignNum {
-    /* background-color: #fff; */
-    /* padding: 10px 20px; */
-    /* border-radius: 20px; */
-    /* font-size: 16px; */
-    /* color: #000; */
-    /* font-weight: 400; */
-}
 
 .AssignNum img {
     width: 95%;
@@ -475,7 +468,13 @@
     overflow: auto;
 }
 
-
+/* .forceOpenDropdown {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+} */
+:global(.introjs-overlay) { z-index: 99990 !important; }
+:global(.introjs-tooltip) { z-index: 99992 !important; }
 
 .OptionsDropdown {
     position: absolute;
@@ -486,8 +485,16 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 0;
+    z-index: 99993 !important;
     width: 170px;
+     opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.tourTooltipOnMenu {
+  transform: translateX(8px) translateY(6px);
+  max-width: 280px;
 }
 
 .OptionItem {
@@ -1310,10 +1317,6 @@
     cursor: pointer;
 }
 
-.FilterIcon {
-    position: relative;
-    cursor: pointer;
-}
 
 .DropdownMenu {
     position: absolute;
