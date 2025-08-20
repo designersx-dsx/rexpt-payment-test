@@ -660,9 +660,9 @@ export async function getUserNotifications(userId) {
   }
 }
 
-export const markNotificationAsSeen = async (id) => {
+export const markNotificationAsSeen = async (id,type) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{},{
+    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{type},{
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -701,6 +701,21 @@ export const deleteAgentFile = async (agentId, filename) => {
     throw new Error("Error deleting agent file");
   }
 };
+
+export const listSiteMap=async(url)=>{
+  try {
+    const response = await api.post(`/map/list-sitemap`,{url}, {
+      headers: {
+       Authorization: `Bearer ${token}`,
+     },
+   });
+   return response.data;
+ } catch (error) {
+   console.error("Error deleting agent file:", error.response?.data || error.message);
+   throw new Error("Error deleting agent file");
+ }
+}
+
 export const sendEmailToOwner = async (email,name,phone ) => {
   try {
      const response = await api.post(`/endusers/sendEmailToOwner`,{email:email,name:name,phone:phone}, {
@@ -714,6 +729,7 @@ export const sendEmailToOwner = async (email,name,phone ) => {
     throw new Error("Error deleting agent file");
   }
 };
+
 
 export const getDashboardTourStatus = async (userId) => {
   try {
@@ -738,6 +754,9 @@ export const markDashboardTourSeen = async (userId) => {
     throw new Error("Failed to mark tour as seen");
   }
 };
+
+
+
 export default api;
 
 

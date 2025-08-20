@@ -221,7 +221,7 @@ const BusinessListing = forwardRef(
         const addressFields = extractAddressFields(
           placeDetails?.address_components || []
         );
-      
+
 
         // Update the state
         setCity(addressFields.city);
@@ -240,12 +240,12 @@ const BusinessListing = forwardRef(
           email: email,
           aboutBussiness: aboutBussiness,
           city: addressFields.city,
-          state: addressFields.state, 
+          state: addressFields.state,
           country: addressFields.country,
           postal_code: addressFields.postal_code,
           street_number: addressFields.street_number,
           country_code: addressFields.country_code,
-          state_code: addressFields.state_code, 
+          state_code: addressFields.state_code,
         };
 
         sessionStorage.setItem(
@@ -286,8 +286,7 @@ const BusinessListing = forwardRef(
         const readableDetails = Object?.entries(placeDetailsForKBT)
           .map(
             ([key, value]) =>
-              `${formatLabel(key)}: ${
-                Array.isArray(value) ? value.join(", ") : value || "N/A"
+              `${formatLabel(key)}: ${Array.isArray(value) ? value.join(", ") : value || "N/A"
               }`
           )
           .join("\n");
@@ -298,18 +297,26 @@ const BusinessListing = forwardRef(
             text: readableDetails,
           },
         ];
-
-        const rawUrl = aboutBusinessForm.businessUrl?.trim();
         const mergedUrls = [];
-        if (rawUrl) {
-          mergedUrls.push(rawUrl); // add businessUrl
-        }
+        const rawUrl = aboutBusinessForm.businessUrl?.trim();
+        const sessionSelectedSiteMapUrls = JSON.parse(sessionStorage.getItem("selectedSiteMapUrls"))
 
+        if (sessionSelectedSiteMapUrls.length > 0) {
+          // Push all selected (checkedStatus: true)
+          mergedUrls.push(
+            ...sessionSelectedSiteMapUrls
+              .filter((item) => item.checkedStatus)
+              .map((item) => item.url)
+          );
+        } else {
+          // If no sitemap, at least push rawUrl
+          if (rawUrl) mergedUrls.push(rawUrl);
+        }
         if (aboutBusinessForm?.googleListing) {
-          mergedUrls.push(aboutBusinessForm?.googleListing); // add googleListing
+          mergedUrls.push(aboutBusinessForm?.googleListing);
+
         }
         // const mergedUrls = rawUrl ? [rawUrl] : [];
-
         const formData = new FormData();
         const formData2 = new FormData();
         const formData3 = new FormData();
@@ -335,6 +342,7 @@ const BusinessListing = forwardRef(
         formData2.append("businessEmail", email);
         formData2.append("city", businessData?.city || city);
         formData2.append("state", businessData?.state || state);
+        formData2.append("scrapedUrls", JSON.stringify(sessionSelectedSiteMapUrls) || []);
         formData2.append("state_code", businessData?.state_code || state_code);
         formData2.append(
           "country_code",
@@ -563,7 +571,7 @@ const BusinessListing = forwardRef(
       );
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
-        
+
         if (place.formatted_address) {
           const addressComponents = place.address_components || [];
           setAddress(place.formatted_address);
@@ -597,7 +605,7 @@ const BusinessListing = forwardRef(
         country: getComponent("country"),
         postal_code: getComponent("postal_code"),
       };
-     
+
     };
     //initAddressAutocomplete
     useEffect(() => {
@@ -610,21 +618,22 @@ const BusinessListing = forwardRef(
           }
         }
       }, 300);
+
     }, []);
-   //check is this webview or not 
-   const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
-   const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
-   const handleFocus = (e) => {
-     if (isAndroidApp() || isIOSApp()) {
-       setTimeout(() => {
-         // Method 1: Smooth scroll to element
-         e.target.scrollIntoView({
-           behavior: 'smooth',
-           block: 'center',
-         });
-       }, 300); 
-     }
-   };
+    //check is this webview or not 
+    const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
+    const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+    const handleFocus = (e) => {
+      if (isAndroidApp() || isIOSApp()) {
+        setTimeout(() => {
+          // Method 1: Smooth scroll to element
+          e.target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }, 300);
+      }
+    };
     return (
       <div className={styles.container}>
         <form className={styles.formContainer} onSubmit={handleSubmit}>

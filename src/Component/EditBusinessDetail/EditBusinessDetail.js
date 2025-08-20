@@ -38,7 +38,6 @@ const EditBusinessDetail = () => {
   const navigate = useNavigate();
   const EditingMode1 = localStorage.getItem("UpdationMode");
   const { setHasFetched } = useDashboardStore();
-
   const agentCode = sessionStorage.getItem("agentCode") || "";
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessDetail",
@@ -125,6 +124,7 @@ const EditBusinessDetail = () => {
       const stepEditingMode = localStorage.getItem("UpdationModeStepWise");
       const EditingMode = localStorage.getItem("UpdationMode");
       const googleListing = sessionStorage.getItem("googleListing");
+      const sessionSelectedSiteMapUrls = JSON.parse(sessionStorage.getItem("scrapedUrls"))
       const agentCount = 0;
       if (!businessName || !address || !phoneNumber) {
         setShowPopup(true);
@@ -236,10 +236,16 @@ const EditBusinessDetail = () => {
 
       const rawUrl = aboutBusinessForm.businessUrl?.trim();
       const mergedUrls = [];
-      if (rawUrl) {
-        mergedUrls.push(rawUrl);  
+      if (sessionSelectedSiteMapUrls.length > 0) {
+        mergedUrls.push(
+          ...sessionSelectedSiteMapUrls
+            .filter((item) => item.checkedStatus)
+            .map((item) => item.url)
+        );
+      } else {
+        // If no sitemap, at least push rawUrl
+        if (rawUrl) mergedUrls.push(rawUrl);
       }
-
       if (googleListing) {
         mergedUrls.push(googleListing); 
       }
@@ -312,6 +318,7 @@ const EditBusinessDetail = () => {
       formData2.append("googleBusinessName", displayBusinessName || "");
       formData2.append("address1", businessData?.address);
       formData2.append("businessEmail", email);
+      formData2.append("scrapedUrls", JSON.stringify(sessionSelectedSiteMapUrls) || []);
       formData2.append(
         "businessName",
         placeDetails?.businessName || businessName
