@@ -660,9 +660,9 @@ export async function getUserNotifications(userId) {
   }
 }
 
-export const markNotificationAsSeen = async (id) => {
+export const markNotificationAsSeen = async (id,type) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{},{
+    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{type},{
       headers: {
         Authorization: `Bearer ${token}`,
       },
