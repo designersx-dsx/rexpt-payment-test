@@ -701,6 +701,21 @@ export const deleteAgentFile = async (agentId, filename) => {
     throw new Error("Error deleting agent file");
   }
 };
+
+export const listSiteMap=async(url)=>{
+  try {
+    const response = await api.post(`/map/list-sitemap`,{url}, {
+      headers: {
+       Authorization: `Bearer ${token}`,
+     },
+   });
+   return response.data;
+ } catch (error) {
+   console.error("Error deleting agent file:", error.response?.data || error.message);
+   throw new Error("Error deleting agent file");
+ }
+}
+
 export const sendEmailToOwner = async (email,name,phone ) => {
   try {
      const response = await api.post(`/endusers/sendEmailToOwner`,{email:email,name:name,phone:phone}, {
@@ -714,6 +729,7 @@ export const sendEmailToOwner = async (email,name,phone ) => {
     throw new Error("Error deleting agent file");
   }
 };
+
 
 export default api;
 

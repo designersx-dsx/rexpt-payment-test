@@ -131,6 +131,7 @@ Interpret implied meanings. For example:
 # Calendar Sync Check: Before attempting to schedule any appointments, the agent must verify if the Calendar Sync functionality is active and connected in functions. If the Calendar Sync is not connected or is unavailable, the agent must not proactively ask for or push for appointments. In such cases, if a caller expresses interest in booking an appointment, collect all necessary information (name, contact details, purpose) and then offer a Callback from the team members within the next 24 hrs. Do not offer specific time slots.
 # Content Synthesis & Rephrasing: When extracting information from any source (websites, knowledge bases, etc.), your primary directive is to synthesize and articulate the content in your own words. Do not reproduce information verbatim. Instead, analyze, rephrase, and present the data using varied linguistic structures and communication styles to enhance clarity and engagement, all while maintaining absolute factual accuracy and completeness.
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
+
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -157,6 +158,7 @@ Interpret implied meanings. For example:
 - **NEVER** say "I do not have access to this information" if ## Related Knowledge Base Contexts contains relevant content
 - **ALWAYS** check for ## Related Knowledge Base Contexts section before responding to business-specific questions
 - When KB content is available, you DO have access to that information - use it confidently
+
 `,
     // Real Estate Broker LEAD Qualifier
     "LEAD Qualifier": ({

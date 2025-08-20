@@ -4,13 +4,14 @@ import EditHeader from '../EditHeader/EditHeader';
 import SectionHeader from '../SectionHeader/SectionHeader';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { validateWebsite } from '../../Store/apiStore';
+import { listSiteMap, validateWebsite } from '../../Store/apiStore';
 import Loader from '../Loader/Loader';
 import decodeToken from '../../lib/decodeToken';
 import { useAgentCreator } from '../../hooks/useAgentCreator';
 import PopUp from '../Popup/Popup';
 import { set } from 'date-fns';
 import { useDashboardStore } from '../../Store/agentZustandStore';
+import Modal2 from '../Modal2/Modal2';
 
 const HTTPS_PREFIX = 'https://';
 const PREFIX_LEN = HTTPS_PREFIX?.length;
@@ -43,6 +44,10 @@ const EditPublic = () => {
   const tempPlaceRef = useRef(null);
   const [popupMessage, setPopupMessage] = useState("");
   const { setHasFetched } = useDashboardStore();
+  const [showSiteMapUrls, setShowSiteMapUrls] = useState([])
+  const [showSiteMapModal, setShowSiteMapModal] = useState(false)
+  const [selectedUrls, setSelectedUrls] = useState([]);
+  const [addOnUrl, setAddOnUrl] = useState("")
   // const setHasFetched=true;
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessType",
@@ -194,11 +199,28 @@ const EditPublic = () => {
     setUrlVerificationInProgress(true);
     const result = await validateWebsite(url);
     if (result.valid) {
+      const prevUrl = sessionStorage.getItem("businessUrl");
+      if (prevUrl === url) {
+        setUrlVerificationInProgress(false);
+        return;
+      }
+
       setIsVerified(true);
       setBusinessUrlError("");
       sessionStorage.setItem("businessUrl", url);
       localStorage.setItem("isVerified", true);
-      setNoGoogleListing(false)
+      // setNoGoogleListing(false)
+      const res = await listSiteMap(url);
+      const formattedUrls = res.urls.map((link) => ({
+        url: link,
+        checkedStatus: false,
+      }));
+      setShowSiteMapModal(true);
+      // update state
+      setShowSiteMapUrls(formattedUrls);
+      setAddOnUrl(url)
+      // update sessionStorage
+      sessionStorage.setItem("scrapedUrls", JSON.stringify(formattedUrls));
     } else {
       setIsVerified(false);
       setBusinessUrlError("Invalid URL");
@@ -375,6 +397,125 @@ const EditPublic = () => {
     navigate("/edit-business-detail");
   };
   const isFormChanged = JSON.stringify(originalForm) !== JSON.stringify(currentForm);
+  const handleViewSelectedUrl = (e) => {
+    e.preventDefault();
+    setShowSiteMapModal(true);
+
+    //  Agar fresh state hai to wahi dikhao
+    if (showSiteMapUrls?.length > 0) {
+      return;
+    }
+
+    // Agar kuch nahi mila to fallback sessionStorage se
+    const urls = JSON.parse(sessionStorage.getItem("scrapedUrls")) || [];
+    setShowSiteMapUrls(urls);
+  };
+  //site map 
+  // Select all handler
+  const handleSelectAll = () => {
+    if (showSiteMapUrls.length > 0) {
+      // Check if all URLs are already selected
+      const allSelected = showSiteMapUrls.every((u) => u.checkedStatus);
+
+      // Toggle checkedStatus for all
+      const updatedUrls = showSiteMapUrls.map((urlItem) => ({
+        ...urlItem,
+        checkedStatus: !allSelected,  //  toggle status
+      }));
+      setShowSiteMapUrls(updatedUrls);
+
+      // Update selectedUrls state
+      setSelectedUrls(!allSelected ? updatedUrls.map((u) => u.url) : []);
+
+      // Update sessionStorage
+      sessionStorage.setItem("scrapedUrls", JSON.stringify(updatedUrls));
+      sessionStorage.setItem(
+        "selectedUrls",
+        JSON.stringify(!allSelected ? updatedUrls.map((u) => u.url) : [])
+      );
+      setcurrentForm(prev => ({
+        ...prev,
+        siteMapUrls: updatedUrls,
+      }));
+    } else {
+      // ✅ fallback for single url
+      const isChecked = !selectedUrls.includes(addOnUrl);
+
+      // Update selectedUrls state
+      setSelectedUrls(isChecked ? [addOnUrl] : []);
+
+      // Update showSiteMapUrls state (for consistency)
+      setShowSiteMapUrls([{ url: addOnUrl, checkedStatus: isChecked }]);
+
+      // Update sessionStorage
+      sessionStorage.setItem(
+        "scrapedUrls",
+        JSON.stringify([{ url: addOnUrl, checkedStatus: isChecked }])
+      );
+      sessionStorage.setItem(
+        "selectedUrls",
+        JSON.stringify(isChecked ? [addOnUrl] : [])
+      );
+      setcurrentForm(prev => ({
+        ...prev,
+        siteMapUrls: addOnUrl,
+      }));
+    }
+  };
+
+  // Single checkbox handler
+  const handleCheckboxChange = (item) => {
+    let updated;
+
+    if (showSiteMapUrls.length > 0) {
+      // FIX 1: Toggle and also update selectedUrls state
+      updated = showSiteMapUrls.map((u) =>
+        u.url === item.url ? { ...u, checkedStatus: !u.checkedStatus } : u
+      );
+
+      setShowSiteMapUrls(updated);
+
+      // update selectedUrls as well
+      const selected = updated.filter((u) => u.checkedStatus).map((u) => u.url);
+      setSelectedUrls(selected);
+      setcurrentForm(prev => ({
+        ...prev,
+        siteMapUrls: updated,
+      }));
+
+    } else {
+      // single URL case
+      const isChecked = !selectedUrls.includes(item.url);
+
+      //  FIX 2: Keep consistency with checkedStatus + selectedUrls
+      updated = [{ url: item.url, checkedStatus: isChecked }];
+
+      setSelectedUrls(isChecked ? [item.url] : []);
+      setShowSiteMapUrls(updated);
+      setcurrentForm(prev => ({
+        ...prev,
+        siteMapUrls: updated,
+      }));
+    }
+    sessionStorage.setItem("scrapedUrls", JSON.stringify(updated));
+
+  };
+  const isSubmitEnabled = showSiteMapUrls.length > 0
+    ? showSiteMapUrls.some((u) => u.checkedStatus)
+    : selectedUrls.includes(addOnUrl)
+
+  useEffect(() => {
+    const sessionSelected = JSON.parse(sessionStorage.getItem("selectedSiteMapUrls"));
+
+    if (sessionSelected && sessionSelected.length > 0) {
+      // Filter only those with checkedStatus: true
+      const checkedUrls = sessionSelected
+        .filter((item) => item.checkedStatus)
+        .map((item) => item.url);
+
+      setSelectedUrls(checkedUrls);
+    }
+  }, [showSiteMapUrls]);
   return (
     <>
       <EditHeader title='Edit Agent ' agentName={agentnm} />
@@ -515,7 +656,7 @@ const EditPublic = () => {
                 }
                 if (selectionStart <= PREFIX_LEN) e.preventDefault();
               }}
-              disabled={noBusinessWebsite}
+              disabled={noBusinessWebsite || urlVerificationInProgress}
               onInput={handleInputChange}
             />
             {urlVerificationInProgress ? (
@@ -528,6 +669,7 @@ const EditPublic = () => {
               )
             ) : null}
           </div>
+          {(!noBusinessWebsite&&businessUrl)&&<button disabled={urlVerificationInProgress} className={styles.modalViewBtn} onClick={handleViewSelectedUrl}>View</button>}
           {businessUrlError && (
             <div style={{ color: 'red', marginTop: '4px' }}>{businessUrlError}</div>
           )}
@@ -577,6 +719,102 @@ const EditPublic = () => {
           // onConfirm={handleConfirmGMBChange}
           />
         )}
+        {showSiteMapModal && <Modal2 isOpen={showSiteMapModal} onClose={() => setShowSiteMapModal(false)}>
+          <div className={styles.sitemapModal}>
+            {/* Select All */}
+            <div className={styles.sitemapHeader}>
+              <input
+                type="checkbox"
+                checked={
+                  showSiteMapUrls.length > 0
+                    ? selectedUrls.length === showSiteMapUrls.length
+                    : selectedUrls.includes(addOnUrl)   // 👈 fallback for single url
+                }
+                onChange={handleSelectAll}
+              />
+              <label>Select All</label>
+            </div>
+
+            {/* URL list */}
+            {/* <div className={styles.sitemapList}>
+              {showSiteMapUrls.length > 0 ? (
+                showSiteMapUrls.map((item, index) => (
+                  <label className={styles.sitemapItem} key={index}>
+                    <input
+                      type="checkbox"
+                      checked={item.checkedStatus}   // 👈 use checkedStatus
+                      onChange={() => handleCheckboxChange(item)}
+                    />
+                    <span>{item.url}</span>  
+                  </label>
+                ))
+              ) : (
+                <label className={styles.sitemapItem}>
+                <input
+                  type="checkbox"
+                  checked={selectedUrls.includes(addOnUrl)}
+                  onChange={() =>
+                    handleCheckboxChange({
+                      url: addOnUrl,
+                      checkedStatus: selectedUrls.includes(addOnUrl),
+                    })
+                  }
+                />
+                <span>{addOnUrl||}</span>
+              </label>
+              )
+              }
+            </div> */}
+            <div className={styles.sitemapList}>
+              {showSiteMapUrls.length > 0 ? (
+                // Case 1: show all sitemap URLs
+                showSiteMapUrls.map((item, index) => (
+                  <label className={styles.sitemapItem} key={index}>
+                    <input
+                      type="checkbox"
+                      checked={item.checkedStatus}
+                      onChange={() => handleCheckboxChange(item)}
+                    />
+                    <span>{item.url}</span>
+                  </label>
+                ))
+              ) : addOnUrl ? (
+                // Case 2: fallback to addOnUrl
+                <label className={styles.sitemapItem}>
+                  <input
+                    type="checkbox"
+                    checked={selectedUrls.includes(addOnUrl)}
+                    onChange={() =>
+                      handleCheckboxChange({
+                        url: addOnUrl,
+                        checkedStatus: selectedUrls.includes(addOnUrl),
+                      })
+                    }
+                  />
+                  <span>{addOnUrl}</span>
+                </label>
+              ) : businessUrl ? (
+                // Case 3: fallback to businessUrl (checked by default)
+                <label className={styles.sitemapItem}>
+                  <input
+                    type="checkbox"
+                    checked={true} // ✅ checked by default
+                    onChange={() =>
+                      handleCheckboxChange({
+                        url: businessUrl,
+                        checkedStatus: true,
+                      })
+                    }
+                  />
+                  <span>{businessUrl}</span>
+                </label>
+              ) : null}
+            </div>
+
+
+
+          </div>
+        </Modal2>}
       </div>
     </>
   );
