@@ -35,7 +35,7 @@ const CalendarConnect = () => {
   const [popup, setPopup] = useState({ type: "", message: "" });
   const [apiSubmitting, setApiSubmitting] = useState(false);
   const [agentsDetails, setAgentsDetails] = useState([])
-  const [timezone,setTimeZone]=useState("")
+  const [timezone, setTimeZone] = useState("")
   //getTimeZone
   const fetchTimeZone = async () => {
     try {
@@ -51,6 +51,17 @@ const CalendarConnect = () => {
     const trimmedKey = apiKey.trim();
     setApiSubmitting(true);
     try {
+      const eventCreated = await createCalEvent(
+        trimmedKey,
+        `MEETING BY ${agentsDetails?.agentName}`,
+        `${agentsDetails?.agentName}_${agentsDetails?.agentCode}`,
+        15
+      );
+      // If event creation failed, stop here
+      if (!eventCreated) {
+        setApiSubmitting(false);
+        return;
+      }
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/agent/update-calapikey/${agentId}`,
         {
@@ -76,12 +87,9 @@ const CalendarConnect = () => {
 
       //  Only called if response is OK
       setHasFetched(false);
-      createCalEvent(
-        trimmedKey,
-        `MEETING BY ${agentsDetails?.agentName}`,
-        `${agentsDetails?.agentName}_${agentsDetails?.agentCode}`,
-        15
-      );
+      setEventName("");
+      setEventSlug("");
+      setEventLength("");
     } catch (error) {
       setPopup({
         type: "failed",
@@ -117,7 +125,6 @@ const CalendarConnect = () => {
 
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.message || "Failed to create event");
       }
 
       const data = await response.json();
@@ -321,13 +328,12 @@ const CalendarConnect = () => {
       });
 
       // setShowEventModal(false);
-      setEventName("");
-      setEventSlug("");
-      setEventLength("");
+
+      return true;
     } catch (err) {
       setPopup({
         type: "failed",
-        message: "Event already created with this agent"
+        message: "Unauthorized access"
       });
     } finally {
       setEventLoading(false);
