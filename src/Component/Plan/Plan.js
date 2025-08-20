@@ -186,7 +186,7 @@ const Planss = () => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
-                // IN: "inr",
+                IN: "inr",
                 US: "usd",
                 CA: "cad",
                 AU: "aud",
@@ -821,6 +821,7 @@ const Planss = () => {
                                                             : "Unavailable"
                                             }
                                             disabled={isCurrentPlan || userCurrency === "inr"}
+                                            // disabled={isCurrentPlan } // For INDIA ENable
                                             position={{ position: "relative" }}
                                             size="13px"
                                             onClick={() => {

@@ -435,6 +435,7 @@ export const useAgentCreator = ({
 
 
 
+
             normalize_for_speech: true,
           };
           const agent_id =

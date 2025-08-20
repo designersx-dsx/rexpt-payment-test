@@ -139,7 +139,7 @@ function App() {
   }, [userID]);
 
   useEffect(() => {
-    const count = notifications.filter((n) => n.status === "unread").length;
+    const count = notifications?.filter((n) => n?.status === "unread")?.length;
     setUnreadCount(count);
     // console.log("Notifications:", notifications);
     // console.log("Unread Count:", count);

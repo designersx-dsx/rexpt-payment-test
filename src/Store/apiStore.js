@@ -417,7 +417,12 @@ export const addGeneralTools = async (llmId, transfers) => {
 }
 export const getBusinessDetailsByBusinessId = async (businessId) => {
   try {
-    const res = await api.get(`/businessDetails/by-business-id/${businessId}`);
+    const res = await api.get(`/businessDetails/by-business-id/${businessId}`,{
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
     return res.data;
   } catch (error) {
     console.error("Error fetching business details by business ID:", error.response?.data || error.message);
@@ -655,9 +660,9 @@ export async function getUserNotifications(userId) {
   }
 }
 
-export const markNotificationAsSeen = async (id) => {
+export const markNotificationAsSeen = async (id,type) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{},{
+    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{type},{
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -696,6 +701,7 @@ export const deleteAgentFile = async (agentId, filename) => {
     throw new Error("Error deleting agent file");
   }
 };
+
 export const listSiteMap=async(url)=>{
   try {
     const response = await api.post(`/map/list-sitemap`,{url}, {
@@ -709,6 +715,21 @@ export const listSiteMap=async(url)=>{
    throw new Error("Error deleting agent file");
  }
 }
+
+export const sendEmailToOwner = async (email,name,phone ) => {
+  try {
+     const response = await api.post(`/endusers/sendEmailToOwner`,{email:email,name:name,phone:phone}, {
+       headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting agent file:", error.response?.data || error.message);
+    throw new Error("Error deleting agent file");
+  }
+};
+
 
 export default api;
 
