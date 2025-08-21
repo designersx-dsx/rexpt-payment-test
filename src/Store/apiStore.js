@@ -212,7 +212,11 @@ export const validateEmail = async (email) => {
 
 export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) => {
   try {
-    const res = await api.get(`/agent/getUserAgentMergedDataForAgentUpdate/${agentId}?businessId=${businessId}`);
+    const res = await api.get(`/agent/getUserAgentMergedDataForAgentUpdate/${agentId}?businessId=${businessId}`,{
+      headers: {
+        Authorization:`Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (error) {
     console.error("Error validating email:", error);
