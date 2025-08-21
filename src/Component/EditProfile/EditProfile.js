@@ -32,6 +32,7 @@ import ConfirmModal from "../ConfirmModal/ConfirmModal";
 
 const EditProfile = () => {
   const fileInputRef = useRef(null);
+  const sectionRef = useRef(null)
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -98,6 +99,9 @@ const EditProfile = () => {
   const [copiedZapier, setCopiedZapier] = useState(false);
   const [copiedClient, setCopiedClient] = useState(false);
 
+  
+
+
 
   const openUploadModal = () => {
     setIsUploadModalOpen(true);
@@ -155,12 +159,12 @@ const EditProfile = () => {
     }
   }
   const [zapApikey, setZapApikey] = useState("")
-  const [clientId,setClientId]=useState("")
+  const [clientId, setClientId] = useState("")
   const fetchUser = async () => {
     try {
       if (!isRefreshing) { setLoading(true); }
 
-      const user = await getUserDetails(userId  , token);
+      const user = await getUserDetails(userId, token);
 
       setZapApikey(user?.ZapApikey)
       setClientId(user?.client_id)
@@ -359,7 +363,7 @@ const EditProfile = () => {
         handleClosePopup();
       }, 2000);
       setIsEditing(false);
-   
+
     } catch (error) {
       console.error(error);
       setShowPopup(true);
@@ -384,14 +388,39 @@ const EditProfile = () => {
 
 
   const [paygEnabled, setPaygEnabled] = useState(localStorage.getItem("isPayg") || false);
+  // const PaygSubscriptionId = subscriptionDetails.invoices
+  //   ?.filter(invoice =>
+  //     invoice.plan_name === "Extra Minutes"
+  //     // invoice.plan_name === "PAYG Extra" // LIVE ACCOUNT
+  //     && invoice.status !== "canceled") // Filter by plan and status
+  //   .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Sort by latest created_at
+  //   .map(invoice => invoice.subscription_id)[0]; // Get the subscription_id of the latest invoice
+  // console.log("PaygSubscriptionId", subscriptionDetails.invoices)
+
   const PaygSubscriptionId = subscriptionDetails.invoices
-    ?.filter(invoice => 
-      // invoice.plan_name === "Extra Minutes" 
-      invoice.plan_name === "PAYG Extra" // LIVE ACCOUNT
-      && invoice.status !== "canceled") // Filter by plan and status
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Sort by latest created_at
-    .map(invoice => invoice.subscription_id)[0]; // Get the subscription_id of the latest invoice
-  // console.log("PaygSubscriptionId", PaygSubscriptionId)
+    ?.filter(invoice => {
+      if (invoice.plan_name !== "Extra Minutes" || invoice.status === "canceled") {
+        return false;
+      }
+
+      // Parse metadata safely
+      let metadata = {};
+      try {
+        metadata = typeof invoice.metadata === "string"
+          ? JSON.parse(invoice.metadata)
+          : invoice.metadata || {};
+      } catch (err) {
+        console.error("Error parsing metadata:", err);
+      }
+
+      // Skip if assign_number_plan is true
+      return metadata.assign_number_plan !== true;
+    })
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // latest first
+    .map(invoice => invoice.subscription_id)[0]; // get first sub id
+
+  // console.log("PaygSubscriptionId", PaygSubscriptionId);
+
 
 
   const handlePaygToggle = async () => {
@@ -468,7 +497,7 @@ const EditProfile = () => {
       const currentUrl = window.location.origin
       const requestData = {
         customerId: customerId,
-        priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38",
+        priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38", // EXTRA MINUTES
         promotionCode: "",
         userId: userId1,
         // agentId: agentID,
@@ -479,46 +508,46 @@ const EditProfile = () => {
 
       try {
         const t = localStorage.getItem("t")
-        if(t){
-             const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
-          method: 'POST',
-          headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-          body: JSON.stringify(requestData)
-        });
+        if (t) {
+          const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(requestData)
+          });
 
-        // console.log("response2222",response.json())
+          // console.log("response2222",response.json())
 
-        if (response.ok) {
-          const responseData = await response.json();
-          if (responseData.checkoutUrl) {
-            // localStorage.setItem("isPayg", true)
-            window.location.href = responseData.checkoutUrl;
+          if (response.ok) {
+            const responseData = await response.json();
+            if (responseData.checkoutUrl) {
+              // localStorage.setItem("isPayg", true)
+              window.location.href = responseData.checkoutUrl;
+            }
+            else if (responseData.subscription) {
+              setShowPopup(true)
+              console.log("resume Succesfully")
+              setPopupMessage("Payg resume Succesfully ");
+              setPopupType("success");
+              localStorage.setItem("isPayg", true)
+              setPaygEnabled(true)
+            }
+
+            console.log('API response:', responseData); // You can handle the API response heree
+          } else {
+            console.error('Failed to send the request');
           }
-          else if (responseData.subscription) {
-            setShowPopup(true)
-            console.log("resume Succesfully")
-            setPopupMessage("Payg resume Succesfully ");
-            setPopupType("success");
-            localStorage.setItem("isPayg", true)
-            setPaygEnabled(true)
-          }
+        }
 
-          console.log('API response:', responseData); // You can handle the API response heree
-        } else {
-          console.error('Failed to send the request');
-        }
-        }
-     
       } catch (error) {
         console.error('Error:', error);
       }
 
     }
   }
-const maskKey = (key) => '•'.repeat(key?.length || 10);
+  const maskKey = (key) => '•'.repeat(key?.length || 10);
   const handleEnablePaygConfirmed = async () => {
     setConfirmLoading(true);
 
@@ -526,7 +555,7 @@ const maskKey = (key) => '•'.repeat(key?.length || 10);
       const currentUrl = window.location.origin;
       const requestData = {
         customerId,
-        priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38",
+        priceId: "price_1Rng5W4T6s9Z2zBzhMctIN38", // EXTRA MINUTES
         promotionCode: "",
         userId: userId1,
         url: `${currentUrl}/edit-profile?isPayg=true`,
@@ -536,7 +565,7 @@ const maskKey = (key) => '•'.repeat(key?.length || 10);
 
       const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
         method: 'POST',
-       headers: {
+        headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
@@ -619,10 +648,13 @@ const maskKey = (key) => '•'.repeat(key?.length || 10);
   useEffect(() => {
     const hash = window.location.hash;
     if (hash === "#payg-toggle") {
-      const el = document.getElementById("payg-toggle");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      // const el = document.getElementById("payg-toggle");
+      // if (el) {
+      //   el.scrollIntoView({ behavior: "smooth", block: "start" });
+      // }
+      setTimeout(() => {
+        sectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 0);
     }
   }, []);
 
@@ -634,6 +666,10 @@ const maskKey = (key) => '•'.repeat(key?.length || 10);
   const handleCancel = () => {
     setIsEditing(false);
   };
+
+  
+
+
 
   return (
     <>
@@ -968,7 +1004,7 @@ const maskKey = (key) => '•'.repeat(key?.length || 10);
                   </div>}
                 </div>
               </div>
-              <div className={styles.infoSection} id="payg-toggle">
+              <div className={styles.infoSection} ref={sectionRef} id="payg-toggle">
                 <div className={styles.toggleContainer1}>
                   <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
                   <label className={styles.toggleLabel1}>
@@ -1035,99 +1071,99 @@ const maskKey = (key) => '•'.repeat(key?.length || 10);
                 </div>
               </div> */}
 
-           <div className={styles.infoSection} style={{ marginTop: '20px' }}>
-      <h2 className={styles.heading}>Keys & Credentials</h2><br/>
+              <div className={styles.infoSection} style={{ marginTop: '20px' }}>
+                <h2 className={styles.heading}>Keys & Credentials</h2><br />
 
-      {/* Client Key Section */}
-      <div className={styles.keyContainer} style={{ marginBottom: '16px' }}>
-        <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
-          Client Id
-          <i
-            onClick={() => setClientVisible(!clientVisible)}
-            style={{ cursor: 'pointer', marginLeft: '12px' }}
-            title={clientVisible ? 'Hide Key' : 'Show Key'}
-            className={`fas ${clientVisible ? 'fa-eye-slash' : 'fa-eye'}`}
-          ></i>
-        </div>
-        <div
-          style={{
-            borderRadius: '5px',
-            fontFamily: 'monospace',
-            wordBreak: 'break-all',
-            padding: '8px',
-            background: '#f9f9f9',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-          }}
-        >
-          <span>{clientVisible ? clientId : maskKey(clientId)}</span>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(clientId);
-              setCopiedClient(true);
-              setTimeout(() => setCopiedClient(false), 2000);
-            }}
-            disabled={!clientVisible}
-            style={{
-              padding: '5px 10px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              background: clientVisible ? '#f5f5f5' : '#e0e0e0',
-              fontSize: '12px',
-              cursor: clientVisible ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {copiedClient ? 'Copied!' : 'Copy'}
-          </button>
-        </div>
-      </div>
+                {/* Client Key Section */}
+                <div className={styles.keyContainer} style={{ marginBottom: '16px' }}>
+                  <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
+                    Client Id
+                    <i
+                      onClick={() => setClientVisible(!clientVisible)}
+                      style={{ cursor: 'pointer', marginLeft: '12px' }}
+                      title={clientVisible ? 'Hide Key' : 'Show Key'}
+                      className={`fas ${clientVisible ? 'fa-eye-slash' : 'fa-eye'}`}
+                    ></i>
+                  </div>
+                  <div
+                    style={{
+                      borderRadius: '5px',
+                      fontFamily: 'monospace',
+                      wordBreak: 'break-all',
+                      padding: '8px',
+                      background: '#f9f9f9',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                    }}
+                  >
+                    <span>{clientVisible ? clientId : maskKey(clientId)}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(clientId);
+                        setCopiedClient(true);
+                        setTimeout(() => setCopiedClient(false), 2000);
+                      }}
+                      disabled={!clientVisible}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid #ccc',
+                        background: clientVisible ? '#f5f5f5' : '#e0e0e0',
+                        fontSize: '12px',
+                        cursor: clientVisible ? 'pointer' : 'not-allowed',
+                      }}
+                    >
+                      {copiedClient ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                </div>
 
-      {/* Zapier Key Section */}
-      <div className={styles.keyContainer}>
-        <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
-          Zap Key
-          <i
-            onClick={() => setZapierVisible(!zapierVisible)}
-            style={{ cursor: 'pointer', marginLeft: '12px' }}
-            title={zapierVisible ? 'Hide Key' : 'Show Key'}
-            className={`fas ${zapierVisible ? 'fa-eye-slash' : 'fa-eye'}`}
-          ></i>
-        </div>
-        <div
-          style={{
-            borderRadius: '5px',
-            fontFamily: 'monospace',
-            wordBreak: 'break-all',
-            padding: '8px',
-            background: '#f9f9f9',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-          }}
-        >
-          <span>{zapierVisible ? zapApikey : maskKey(zapApikey)}</span>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(zapApikey);
-              setCopiedZapier(true);
-              setTimeout(() => setCopiedZapier(false), 2000);
-            }}
-            disabled={!zapierVisible}
-            style={{
-              padding: '5px 10px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              background: zapierVisible ? '#f5f5f5' : '#e0e0e0',
-              fontSize: '12px',
-              cursor: zapierVisible ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {copiedZapier ? 'Copied!' : 'Copy'}
-          </button>
-        </div>
-      </div>
-    </div>
+                {/* Zapier Key Section */}
+                <div className={styles.keyContainer}>
+                  <div className={styles.toggleTextAbove} style={{ marginBottom: '8px' }}>
+                    Zap Key
+                    <i
+                      onClick={() => setZapierVisible(!zapierVisible)}
+                      style={{ cursor: 'pointer', marginLeft: '12px' }}
+                      title={zapierVisible ? 'Hide Key' : 'Show Key'}
+                      className={`fas ${zapierVisible ? 'fa-eye-slash' : 'fa-eye'}`}
+                    ></i>
+                  </div>
+                  <div
+                    style={{
+                      borderRadius: '5px',
+                      fontFamily: 'monospace',
+                      wordBreak: 'break-all',
+                      padding: '8px',
+                      background: '#f9f9f9',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                    }}
+                  >
+                    <span>{zapierVisible ? zapApikey : maskKey(zapApikey)}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(zapApikey);
+                        setCopiedZapier(true);
+                        setTimeout(() => setCopiedZapier(false), 2000);
+                      }}
+                      disabled={!zapierVisible}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid #ccc',
+                        background: zapierVisible ? '#f5f5f5' : '#e0e0e0',
+                        fontSize: '12px',
+                        cursor: zapierVisible ? 'pointer' : 'not-allowed',
+                      }}
+                    >
+                      {copiedZapier ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                </div>
+              </div>
               <div className={styles.RefferalMain}>
               </div>
               <br></br>

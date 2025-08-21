@@ -55,25 +55,28 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    position: relative; /* Added for badge positioning */
+    position: relative;
+    /* Added for badge positioning */
 
 }
 
 .unreadBadge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #ff4d4f; /* Matches alertBorder from NotificationView */
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #fff; /* White border for contrast */
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff4d4f;
+    /* Matches alertBorder from NotificationView */
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    /* White border for contrast */
 }
 
 .profileSection img {
@@ -331,6 +334,7 @@
 .LangStyle.GrowthPlan {
     background-color: #F4DFE1;
 }
+
 .LangStyle.CorporatePlan {
     background-color: #ffeadf;
 }
@@ -1334,3 +1338,21 @@
 }
 
 /* ajay css end */
+
+/* Assign Number */
+.assignBtn {
+    display: flex;
+    /* gap: 80px; */
+    justify-content: space-between;
+}
+
+.modalButton1 {
+    padding: 10px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    background-color: #d5d5d5;
+    color: #24252C;
+}

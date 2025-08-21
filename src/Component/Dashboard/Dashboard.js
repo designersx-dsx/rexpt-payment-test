@@ -53,6 +53,30 @@ function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
 
+
+  const allAgentsData = JSON.parse(
+    sessionStorage.getItem("dashboard-session-storage")
+  );
+  const currentAgents = allAgentsData?.state?.agents
+
+  const [showDelayedPopup, setShowDelayedPopup] = useState(false);
+
+  useEffect(() => {
+    let timer;
+
+    // Only set delay if agents are undefined or empty
+    if (currentAgents === undefined || currentAgents?.length === 0) {
+      timer = setTimeout(() => {
+        setShowDelayedPopup(true);
+      }, 1000); // delay 1s
+    } else {
+      setShowDelayedPopup(false); // reset if agents exist
+    }
+
+    return () => clearTimeout(timer);
+  }, [currentAgents]);
+
+
   const isRefreshing = useContext(RefreshContext);
 
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -132,7 +156,10 @@ function Dashboard() {
   const [agentId, setagentId] = useState();
   const [subscriptionId, setsubscriptionId] = useState();
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
-  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  const closeAssignNumberModal = () => {
+    setIsAssignNumberModalOpen(false)
+    setisAssignApi(false)
+  }
   const dropdownRef = useRef(null);
   const location = useLocation();
 
@@ -173,6 +200,11 @@ function Dashboard() {
 
   const unreadCount = notifications.filter((n) => n.status === 'unread').length;
   // console.log('unreadCount', unreadCount)
+
+  // Assign Number
+  const [assignNumberPaid, setAssignNumberPaid] = useState(false);
+  const [isAssignApi, setisAssignApi] = useState(false);
+
 
 
   // console.log('unreadCount',unreadCount,toggleFlag)
@@ -240,7 +272,7 @@ function Dashboard() {
     }
 
     const planName = agent?.subscription?.plan_name || "Free";
-    if (planName.toLowerCase() === "free") {
+    if (planName.toLowerCase() === "free" && !assignNumberPaid) {
       openAssignNumberModal();
     } else {
       // setSelectedAgentForAssign(agent);
@@ -1014,7 +1046,7 @@ function Dashboard() {
         }
         else {
           setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
-        } 
+        }
         setPopupType("failed");
         setIsCallInProgress(false);
         setTimeout(() => {
@@ -1850,7 +1882,8 @@ function Dashboard() {
   const [isPaygActive, setisPaygActive] = useState()
 
   const [paygStatusLoading, setpaygStatusLoading] = useState(true)
-  console.log("paygStatusLoading", paygStatusLoading)
+  console.log("paygStatusLoading",paygStatusLoading)
+  // console.log("paygStatusLoading", paygStatusLoading)
 
   // console.log("isPaygActive", isPaygActive)
 
@@ -1893,6 +1926,7 @@ function Dashboard() {
       console.error("Error checking Payg status:", error);
       // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
       // setPopupType("failed");
+      
     }
     finally {
       setpaygStatusLoading(false)
@@ -1945,6 +1979,7 @@ function Dashboard() {
         // console.log("dasdd", responseData)
         setredirectButton(true)
         setPopupMessage(responseData?.error);
+        setpaygStatusLoading(false)
         setPopupType("failed"); // Pop-up for disabled
       } else {
         console.error('Failed to send the request to save the agent.');
@@ -1959,18 +1994,117 @@ function Dashboard() {
     }
   };
 
+  const handleAssignNumberBuy = async () => {
+    const agentAssignNumberdetailsData = agentDetails
+    setisAssignApi(true)
+    // console.log("agentAssignNumberdetailsData", agentAssignNumberdetailsData)
+    const currentUrl = window.location.origin
+    const requestData = {
+      customerId: customer_id,
+      // priceId: "price_1RximE4T6s9Z2zBzdfpTUy20", // EXTRA MINUTES 5 dollar
+      isAssignNumber: true,
+      promotionCode: "",
+      userId: userId,
+      url: `${currentUrl}/dashboard?AssignNumber=true`,
+      cancelUrl: `${currentUrl}/dashboard?AssignNumber=false`,
+    };
+    try {
+      const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData.checkoutUrl) {
+          window.location.href = responseData.checkoutUrl;
+        }
+
+        console.log('API response:', responseData); // You can handle the API response heree
+      } else {
+        console.error('Failed to send the request');
+      }
+
+    } catch (error) {
+      console.error('Error While doing payment for Assign Number:', error);
+    }
+  }
+
+
+  // Check Assign Number payment
+  useEffect(() => {
+    const checkAssignNumber = async () => {
+      try {
+        // setLoading(true);
+
+        const res = await axios.post(`${API_BASE_URL}/assign-number-check`, { customer_id });
+
+        if (res.data.success) {
+          setAssignNumberPaid(true);
+        } else {
+          setAssignNumberPaid(false);
+        }
+      } catch (error) {
+        console.error("Error checking assign number:", error);
+        setAssignNumberPaid(false);
+      }
+    };
+    checkAssignNumber()
+
+  }, [])
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAssignNumber = urlParams.get('AssignNumber');
+  useEffect(() => {
+    if (isAssignNumber === "false") {
+      setPopupType("failed");
+      setPopupMessage(`Payment Cancelled for Assign Number`);
+    }
+    else if (isAssignNumber === "true") {
+      setPopupType("success");
+      setPopupMessage(`Payment Success for Assign Number, Now you can Assign Numbers to Your Free Agent`);
+    }
+  }, [])
+
 
   return (
     <div>
-
-      {activeSubs ? <Popup
+      {/*  FIxed this later */}
+      {activeSubs ? (<Popup
         type="failed"
         message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
         onClose={() => {
           localStorage.setItem("paymentDone", true); // Set paymentDone to true
           navigate('/steps'); // Navigate to /steps page
         }}
-      /> : null}
+      />) : showDelayedPopup ? (
+        <>
+          <Popup
+            type="failed"
+            message="It looks like you were in the middle of creating your agent. We’re taking you back to the agent creation page so you can continue and finish setting it up."
+            onClose={() => {
+              navigate('/plan');
+            }}
+          />
+        </>
+
+      ) : null}
+
+
+      {/* {activeSubs ? <Popup
+        type="failed"
+        message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
+        onClose={() => {
+          localStorage.setItem("paymentDone", true); // Set paymentDone to true
+          navigate('/steps'); // Navigate to /steps page
+        }}
+      /> : null} */}
+
+
 
       <div className={styles.forSticky}>
         <header className={styles.header}>
@@ -2298,9 +2432,10 @@ function Dashboard() {
                           ? "Activate Agent"
                           : "Deactivate Agent"}
                       </div>
-                      {agent?.subscription &&
+                      
+                      {((agent?.subscription &&
                         agent?.subscription?.plan_name?.toLowerCase() !==
-                        "free" && (
+                        "free")|| assignNumberPaid) && (
                           <>
                             <div>
                               <div
@@ -2323,7 +2458,7 @@ function Dashboard() {
 
                               >
                                 {paygStatusLoading ? "Loading.." : (isPaygActive === true ? "Deactivate PayG" : "Active PayG")}
-
+                                
                               </div>
                             </div>
                           </>
@@ -2883,16 +3018,41 @@ function Dashboard() {
           >
             <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-              To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
-
+              To use the Assign Number feature on the free plan, you’ll need to pay a small additional charge.<br></br>
+              For the best experience and access to premium features, we recommend upgrading to a higher plan.
             </p>
-            <button
-              className={`${styles.modalButton} ${styles.submit}`}
-              onClick={closeAssignNumberModal}
-              style={{ width: "100%" }}
-            >
-              Got it!
-            </button>
+            <div className={`${styles.assignBtn}`}>
+              <button
+                className={`${styles.modalButton} ${styles.cancel}`}
+                onClick={closeAssignNumberModal}
+                // onClick={handleAssignNumberBuy}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className={`${styles.modalButton} ${styles.submit}`}
+                // onClick={closeAssignNumberModal}
+                onClick={handleAssignNumberBuy}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                {isAssignApi ? (
+                  <>
+                    Processing... <Loader size={18} />
+                  </>
+                ) : (
+                  "Proceed"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -3143,6 +3303,7 @@ function Dashboard() {
           }
           isConfirmedRef.current = false;
           setPopupMessage3("");
+          setpaygStatusLoading(false)
         }}
         onConfirm={() => {
           isConfirmedRef.current = true;
