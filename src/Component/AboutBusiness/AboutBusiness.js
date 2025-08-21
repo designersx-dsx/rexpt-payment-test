@@ -611,6 +611,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                     type="checkbox"
                     className={styles.customCheckbox}
                     checked={noBusinessWebsite}
+                    disabled={urlVerificationInProgress}
                     onChange={(e) => {
                       const checked = e.target.checked;
                       setNoBusinessWebsite(checked);
@@ -627,7 +628,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                       }
                     }}
                   />
-                  <label htmlFor="no-business-website">
+                  <label htmlFor="no-business-website" className={styles.iHaveNot} disabled={urlVerificationInProgress}>
                     I do not have a business website
                   </label>
                 </div>
