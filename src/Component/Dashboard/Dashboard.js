@@ -67,6 +67,7 @@ function Dashboard() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
+  console.log("agents", agents);
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -1941,11 +1942,6 @@ intro.onchange((el) => {
   };
 
   const handleUpgradePaygConfirmed = async () => {
-    // console.log("runnnnnnnn2222222------------")
-    // console.log("pendingUpgradeAgent",pendingUpgradeAgent)
-
-    // console.log("runnnnnnnn111111111111111111111111111------------")
-
     setUpgradeLoading(true);
     try {
       // console.log({ pendingUpgradeAgent })
@@ -1977,8 +1973,6 @@ intro.onchange((el) => {
       setUpgradeLoading(false);
     }
   };
-
-  const fetchPrevAgentDEtails = async (agent_id, businessId) => {};
   const locationPath = location.pathname;
 
   const getUserReferralCode = async () => {
