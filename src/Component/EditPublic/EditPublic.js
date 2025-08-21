@@ -675,10 +675,12 @@ const EditPublic = () => {
           )}
         </div>
 
-        <label className={styles.checkboxContainer}>
+        <label disabled={urlVerificationInProgress} className={styles.checkboxContainer}>
           <input
+          className={styles.noBusinessWebsite}
             type="checkbox"
             checked={noBusinessWebsite}
+            disabled={urlVerificationInProgress}
             onChange={(e) => {
               const checked = e.target.checked;
               setNoBusinessWebsite(checked);

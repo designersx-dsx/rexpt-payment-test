@@ -202,3 +202,8 @@ border-radius: 12px;
 
 
 .modalViewBtn:disabled{cursor: not-allowed;}
+
+.checkboxContainer:disabled{
+  cursor: not-allowed;
+}
+.noBusinessWebsite:disabled{ cursor: not-allowed;}

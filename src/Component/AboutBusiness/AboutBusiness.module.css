@@ -302,3 +302,5 @@ input:disabled {
   cursor: pointer;
 }
 .modalViewBtn:disabled{cursor: not-allowed;}
+.customCheckbox:disabled{cursor: not-allowed}
+.iHaveNot:disabled{cursor: pointer;}
