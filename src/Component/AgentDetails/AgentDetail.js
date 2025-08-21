@@ -1388,6 +1388,9 @@ const AgentDashboard = () => {
               <div
                 className={styles.managementItem}
                 onClick={() => {
+                    if (agentStatus === true) {
+                    handleInactiveAgentAlert();
+                  } else {
                   navigate("/add-file", {
                     state: {
                       agent_id: agentData?.agent?.agent_id,
@@ -1395,6 +1398,7 @@ const AgentDashboard = () => {
                     },
                   });
                 }}
+              }
               >
                 <div className={styles.SvgDesign}>
                   <svg
