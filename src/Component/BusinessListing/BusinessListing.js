@@ -301,7 +301,7 @@ const BusinessListing = forwardRef(
         const rawUrl = aboutBusinessForm.businessUrl?.trim();
         const sessionSelectedSiteMapUrls = JSON.parse(sessionStorage.getItem("selectedSiteMapUrls"))
 
-        if (sessionSelectedSiteMapUrls.length > 0) {
+        if (sessionSelectedSiteMapUrls?.length > 0) {
           // Push all selected (checkedStatus: true)
           mergedUrls.push(
             ...sessionSelectedSiteMapUrls
