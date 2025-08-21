@@ -382,7 +382,12 @@
     /* width: 100px; */
     height: 40px;
 }
-
+.tourClickShield {
+  position: fixed;
+  inset: 0;
+  background: transparent; 
+  z-index: 99995;          
+}
 
 
 
