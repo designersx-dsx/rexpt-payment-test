@@ -174,6 +174,21 @@ function Dashboard() {
   const [tourElevateDropdown, setTourElevateDropdown] = useState(false);
   const [tourDropdownPos, setTourDropdownPos] = useState(null);
   const [forceTourOpenAgentId, setForceTourOpenAgentId] = useState(null);
+  const [lockBgForTour, setLockBgForTour] = useState(false);
+
+  const closeTourMenu = () => {
+    setOpenDropdown(null);
+    setForceTourOpenAgentId(null);
+    setTourElevateDropdown(false);
+    setTourDropdownPos(null);
+    setLockBgForTour(false);
+
+    requestAnimationFrame(() => {
+      setOpenDropdown(null);
+      setForceTourOpenAgentId(null);
+      setTourElevateDropdown(false);
+    });
+  };
 
   useEffect(() => {
     if (!userId) return;
@@ -270,12 +285,12 @@ function Dashboard() {
           "Want your receptionist to book appointments? Connect your calendar here to enable seamless scheduling for your business.",
         position: "left",
       },
-      {
-        element: `#tour-menu-trigger-${targetAgentId}`,
-        intro: "To manage your agent, click the three dots (...) and a menu will appear with more options. Here's the text for 3 dots step",
-        position: "left",
-        disableInteraction: false,
-      },
+      // {
+      //   element: `#tour-menu-trigger-${targetAgentId}`,
+      //   intro: "To manage your agent, click the three dots (...) and a menu will appear with more options. Here's the text for 3 dots step",
+      //   position: "left",
+      //   disableInteraction: false,
+      // },
       {
         element: `#tour-menu-test-${targetAgentId}`,
         intro:
@@ -283,7 +298,7 @@ function Dashboard() {
         position: "left",
         scrollToElement: false,
         disableInteraction: false,
-         tooltipClass: styles.tourTooltipOnMenu,
+        tooltipClass: styles.tourTooltipOnMenu,
       },
       {
         element: `#tour-menu-integrate-${targetAgentId}`,
@@ -291,7 +306,7 @@ function Dashboard() {
           "Extend your agent's reach! You can integrate it directly into your website to handle live calls and inquiries.",
         position: "left",
         scrollToElement: false,
-         tooltipClass: styles.tourTooltipOnMenu,
+        tooltipClass: styles.tourTooltipOnMenu,
         disableInteraction: false,
       },
       {
@@ -320,19 +335,22 @@ function Dashboard() {
         position: "top",
       },
     ];
-   const setDropdownPosFromTrigger = () => {
-  const triggerEl = document.getElementById(`tour-menu-trigger-${targetAgentId}`);
-  const rect = triggerEl?.getBoundingClientRect();
-  if (!rect) return;
 
-  const GAP = 8;
-  const DROPDOWN_WIDTH = 170;
+    const setDropdownPosFromTrigger = () => {
+      const triggerEl = document.getElementById(
+        `tour-menu-trigger-${targetAgentId}`
+      );
+      const rect = triggerEl?.getBoundingClientRect();
+      if (!rect) return;
 
-  setTourDropdownPos({
-    top: rect.bottom + GAP,                          
-    left: rect.left - (DROPDOWN_WIDTH - rect.width),   
-  });
-};
+      const GAP = 8;
+      const DROPDOWN_WIDTH = 170;
+
+      setTourDropdownPos({
+        top: rect.bottom + GAP,
+        left: rect.left - (DROPDOWN_WIDTH - rect.width),
+      });
+    };
 
     const intro = introJs();
     introRef.current = intro;
@@ -349,38 +367,40 @@ function Dashboard() {
     });
 
     const isMenuId = (id = "") =>
-  id.startsWith("tour-menu-trigger-") ||
-  id.startsWith("tour-menu-test-") ||
-  id.startsWith("tour-menu-integrate-");
+      id.startsWith("tour-menu-trigger-") ||
+      id.startsWith("tour-menu-test-") ||
+      id.startsWith("tour-menu-integrate-");
 
-intro.onbeforechange((el) => {
-  const id = el?.id || "";
-  if (isMenuId(id)) setDropdownPosFromTrigger(); 
-});
-intro.onchange((el) => {
-  const id = el?.id || "";
-  if (isMenuId(id)) {
-    setOpenDropdown(targetAgentId);
-    setForceTourOpenAgentId(targetAgentId);
-    setTourElevateDropdown(true);
-    setDropdownPosFromTrigger();
+    intro.onbeforechange((el) => {
+      const id = el?.id || "";
+      if (isMenuId(id)) setDropdownPosFromTrigger();
+    });
+    intro.onchange((el) => {
+      const id = el?.id || "";
+      if (isMenuId(id)) {
+        setOpenDropdown(targetAgentId);
+        setForceTourOpenAgentId(targetAgentId);
+        setTourElevateDropdown(true);
+        setDropdownPosFromTrigger();
+        setLockBgForTour(true);
 
-    intro.setOption("disableInteraction", false);
-    intro.setOption("fixElementPosition", false);
-    intro.setOption("scrollToElement", false);
+        intro.setOption("disableInteraction", false);
+        intro.setOption("fixElementPosition", false);
+        intro.setOption("scrollToElement", false);
 
-    requestAnimationFrame(() => requestAnimationFrame(() => intro.refresh()));
-  } else {
-    intro.setOption("disableInteraction", true);
-    setOpenDropdown(null);
-    setForceTourOpenAgentId(null);
-    setTourElevateDropdown(false);
-    intro.setOption("fixElementPosition", true);
-    intro.setOption("scrollToElement", true);
-  }
-});
-
-
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => intro.refresh())
+        );
+      } else {
+        intro.setOption("disableInteraction", true);
+        setOpenDropdown(null);
+        setForceTourOpenAgentId(null);
+        setTourElevateDropdown(false);
+        intro.setOption("fixElementPosition", true);
+        intro.setOption("scrollToElement", true);
+        setLockBgForTour(false);
+      }
+    });
 
     intro.onafterchange(() => {
       requestAnimationFrame(() => intro.refresh());
@@ -403,19 +423,19 @@ intro.onchange((el) => {
     });
     const cleanup = () => {
       isTourActiveRef.current = false;
-      document.querySelectorAll(`.${styles.tourHighlight}`).forEach((el) => {
-        el.classList.remove(styles.tourHighlight);
-      });
-      setOpenDropdown(null);
-      tourMenuStepRef.current = false;
+      document
+        .querySelectorAll(`.${styles.tourHighlight}`)
+        .forEach((el) => el.classList.remove(styles.tourHighlight));
+      closeTourMenu();
       introRef.current = null;
       markSeenOnce();
     };
+
     intro.oncomplete(cleanup);
     intro.onexit(cleanup);
-    intro.onbeforeexit(cleanup);
-    intro.onbeforechange(() => {
+    intro.onbeforeexit(() => {
       tourShownAtLeastOneStepRef.current = true;
+      cleanup();
     });
 
     try {
@@ -427,6 +447,9 @@ intro.onchange((el) => {
       return false;
     }
   };
+  useEffect(() => {
+    if (!lockBgForTour) closeTourMenu();
+  }, [lockBgForTour]);
 
   useEffect(() => {
     if (hasFetched && localAgents.length && !tourRanRef.current) {
@@ -2103,7 +2126,7 @@ intro.onchange((el) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ agentId, customerId: customer_id }), 
+        body: JSON.stringify({ agentId, customerId: customer_id }),
       });
 
       const data = await response.json();
@@ -2205,6 +2228,14 @@ intro.onchange((el) => {
           }}
         />
       ) : null}
+
+      {lockBgForTour && (
+        <div
+          className={styles.tourClickShield}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        />
+      )}
 
       <div className={styles.forSticky}>
         <header className={styles.header}>
@@ -2450,7 +2481,7 @@ intro.onchange((el) => {
                       opacity: isTourOpen ? 1 : 0,
                       pointerEvents: isTourOpen ? "auto" : "none",
                       minWidth: 170,
-                       zIndex: 99999,
+                      zIndex: 99999,
                       ...(tourElevateDropdown && tourDropdownPos
                         ? {
                             position: "fixed",
@@ -2593,8 +2624,6 @@ intro.onchange((el) => {
                         </>
                       )}
                   </div>
-
-
                 </div>
               </div>
               <hr className={styles.agentLine} />
