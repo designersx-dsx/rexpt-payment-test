@@ -51,7 +51,6 @@ const Fileinfo = () => {
         }
       );
       setKnowledgeBaseSources(response.data.knowledge_base_sources || []);
-      console.log('asassasa',response.data.knowledge_base_sources)
       setLoading(false)
     } catch (error) {
       console.error("Failed to fetch knowledge base details:", error);
