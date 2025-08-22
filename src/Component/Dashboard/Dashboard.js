@@ -260,6 +260,9 @@ function Dashboard() {
       return false;
     const targetAgentId = localAgents?.[0]?.agent_id;
 
+    const baseTip = styles.customTourTooltip;
+    const menuTip = styles.tourTooltipOnMenu;
+
     const newSteps = [
       {
         element: "#tour-profile",
@@ -298,7 +301,7 @@ function Dashboard() {
         position: "left",
         scrollToElement: false,
         disableInteraction: false,
-        tooltipClass: styles.tourTooltipOnMenu,
+        tooltipClass: `${baseTip} ${menuTip}`,
       },
       {
         element: `#tour-menu-integrate-${targetAgentId}`,
@@ -306,7 +309,7 @@ function Dashboard() {
           "Extend your agent's reach! You can integrate it directly into your website to handle live calls and inquiries.",
         position: "left",
         scrollToElement: false,
-        tooltipClass: styles.tourTooltipOnMenu,
+        tooltipClass: `${baseTip} ${menuTip}`,
         disableInteraction: false,
       },
       {
@@ -357,8 +360,17 @@ function Dashboard() {
 
     intro.setOptions({
       steps: newSteps,
+      tooltipClass: styles.customTourTooltip,
       overlayOpacity: 0.35,
       showProgress: true,
+      showButtons: true,
+      showBullets: false,
+      nextLabel: "Next →",
+      prevLabel: "← Back",
+      skipLabel: "Skip",
+      doneLabel: "Finish",
+      showCloseButton: false,
+      buttonClass: styles.tourBtn,
       scrollToElement: true,
       exitOnOverlayClick: false,
       disableInteraction: true,
