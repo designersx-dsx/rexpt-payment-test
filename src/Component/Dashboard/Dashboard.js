@@ -179,6 +179,7 @@ function Dashboard() {
 
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [agentToCancel, setAgentToCancel] = useState(null);
+  console.log("agentToCancel",agentToCancel)
   const [showDashboardReferral, setShowDashboardReferral] = useState("");
   const [showreferralfloating, setShowreferralfloating] = useState(
     localStorage.getItem("showreferralfloating") || "true"
