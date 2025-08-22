@@ -9,9 +9,11 @@ import {
 import { API_BASE_URL, token } from "../../Store/apiStore";
 import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
+import LottieAnimation from "../../lib/LottieAnimation";
 
 function Thankyou({ onSubmit, isAgentCreated }) {
-
+  const [animationData, setAnimationData] = useState(null);
+ 
   if(isAgentCreated ===true){
     localStorage.setItem("agentCeated" , true)
   }
@@ -53,7 +55,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const [agentName, setAgentName] = useState("Agent");
   const [agentCode, setAgentCode] = useState("XXXXXX");
   const [businessName, setBusinessName] = useState("Your Business");
-
+  const [showAnimation,setShowAnimation]=useState(false)
   useEffect(() => {
     const storedDashboard = sessionStorage.getItem("dashboard-session-storage");
     const storedBusinessDetails = sessionStorage.getItem("businessDetails");
@@ -365,7 +367,12 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
   //   convFiredRef.current = true;
   // }, [loading, subscriptionInfo, subscriptionId, userId]);
-
+  useEffect(() => {
+    fetch("/animations/Bodomwgicz.json")  // public folder ka path
+      .then((res) => res.json())
+      .then((data) => setAnimationData(data))
+      .catch((err) => console.error("Error loading animation:", err));
+  }, []);
   return (
     // <div className={styles.container}>
     //   <div className={styles.card}>
@@ -494,9 +501,13 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                   if (key !== "create") {
                     localStorage.removeItem("selectedPlanData");
                     localStorage.removeItem("allPlans");
+                     
+                    setShowAnimation(true)
                     navigate("/dashboard", {
                       state: { currentLocation },
                     });
+
+
                   }
                    else {
                     localStorage.removeItem("selectedPlanData");
@@ -521,7 +532,12 @@ function Thankyou({ onSubmit, isAgentCreated }) {
           </div>
         )}
       </div>
-    </div>: <Loader2/>} </>
+    </div>: <Loader2/>}
+    
+    {showAnimation&&      <LottieAnimation animationData={animationData} width={300} height={300} />
+ }
+    
+     </>
   );
 }
 
