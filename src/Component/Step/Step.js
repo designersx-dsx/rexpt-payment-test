@@ -96,7 +96,7 @@ const Step = () => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
-    const [customLoader,setCustomeLoader]=useState(false)
+    const [customLoader, setCustomeLoader] = useState(false)
     const [isAgentCreated, setIsAgentCreated] = useState(false);
 
     const checkPaymentDone = localStorage.getItem("paymentDone")
@@ -397,6 +397,14 @@ const Step = () => {
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
+
+        let value1 = location?.state?.value
+        if (freeTrail) {
+            setCustomeLoader(true)
+        }
+        if (value1 === "chatke") {
+            setCustomeLoader(true)
+        }
         //getTimeZone
         let timeZone;
         try {
@@ -923,14 +931,14 @@ const Step = () => {
                             setIsAgentCreated(true)
 
                             setShowPopup(true);
-                            let value1 = location?.state?.value
+
                             if (freeTrail) {
                                 setCustomeLoader(true)
-                                setTimeout(() => navigate("/dashboard", { replace: true }), 6000);
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
                             }
                             else if (value1 === "chatke") {
                                 setCustomeLoader(true)
-                                setTimeout(() => navigate("/dashboard", { replace: true }), 6000);
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
 
                             }
                             if (checkPaymentDone === "true") {
@@ -975,11 +983,13 @@ const Step = () => {
                 setPopupMessage("LLM creation failed. Please try again.");
                 setShowPopup(true);
                 setLoading(false)
+               
             }
             setLoading(false)
+            // setCustomeLoader(false)
         }
     };
-    
+
     const handleValidationError = ({ type, message }) => {
         setPopupType(type);
         setPopupMessage(message);
@@ -1130,7 +1140,7 @@ const Step = () => {
 
             // callNextApiAndRedirect()
             handleContinue()
-            
+
         }
         else if (locationPath !== "/checkout" && priceId) {
             if (currentStep === 7) {
@@ -1265,95 +1275,95 @@ const Step = () => {
     // Select all handler
     const handleSelectAll = () => {
         let updated;
-      
+
         if (selectedUrls.length === showSiteMapUrls.length) {
-          // Deselect all
-          updated = [];
+            // Deselect all
+            updated = [];
         } else {
-          // Select all
-          updated = [...showSiteMapUrls];
+            // Select all
+            updated = [...showSiteMapUrls];
         }
-      
+
         setSelectedUrls(updated);
-      
+
         // Save with status
         const updatedWithStatus = showSiteMapUrls.map((item) => ({
-          url: item,
-          checkedStatus: updated.includes(item),
-        }));
-      
-        sessionStorage.setItem("selectedSiteMapUrls", JSON.stringify(updatedWithStatus));
-      };
-      
-      const handleCheckboxChange = (url) => {
-        setSelectedUrls((prev) => {
-          let updated;
-      
-          if (prev.includes(url)) {
-            // Uncheck → remove url
-            updated = prev.filter((item) => item !== url);
-          } else {
-            // Check → add url
-            updated = [...prev, url];
-          }
-      
-          // Save in sessionStorage as array of objects
-          const updatedWithStatus = showSiteMapUrls.map((item) => ({
             url: item,
             checkedStatus: updated.includes(item),
-          }));
-      
-          sessionStorage.setItem(
-            "selectedSiteMapUrls",
-            JSON.stringify(updatedWithStatus)
-          );
-      
-          return updated;
+        }));
+
+        sessionStorage.setItem("selectedSiteMapUrls", JSON.stringify(updatedWithStatus));
+    };
+
+    const handleCheckboxChange = (url) => {
+        setSelectedUrls((prev) => {
+            let updated;
+
+            if (prev.includes(url)) {
+                // Uncheck → remove url
+                updated = prev.filter((item) => item !== url);
+            } else {
+                // Check → add url
+                updated = [...prev, url];
+            }
+
+            // Save in sessionStorage as array of objects
+            const updatedWithStatus = showSiteMapUrls.map((item) => ({
+                url: item,
+                checkedStatus: updated.includes(item),
+            }));
+
+            sessionStorage.setItem(
+                "selectedSiteMapUrls",
+                JSON.stringify(updatedWithStatus)
+            );
+
+            return updated;
         });
-      };
-      
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         const sessionSelected = JSON.parse(sessionStorage.getItem("selectedSiteMapUrls"));
-      
+
         if (sessionSelected && sessionSelected.length > 0) {
-          // Filter only those with checkedStatus: true
-          const checkedUrls = sessionSelected
-            .filter((item) => item.checkedStatus)
-            .map((item) => item.url);
-      
-          setSelectedUrls(checkedUrls);
+            // Filter only those with checkedStatus: true
+            const checkedUrls = sessionSelected
+                .filter((item) => item.checkedStatus)
+                .map((item) => item.url);
+
+            setSelectedUrls(checkedUrls);
         }
-      }, [showSiteMapUrls]);
+    }, [showSiteMapUrls]);
 
-            const [animationData, setAnimationData] = useState(null);
-      
-          useEffect(() => {
-            // fetch("/animations/Bodomwgicz.json")  
-            fetch("/animations/custom_Loader.json")  
-              .then((res) => res.json())
-              .then((data) => setAnimationData(data))
-              .catch((err) => console.error("Error loading animation:", err));
-          }, []);
-      if(customLoader){
-          return (
-  <>
-          <div className={styles.container_animation}>
-            <br/>
-            <div className={styles.Logo_animation}>
-              <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
-            </div>
-          </div>
-          <div className={styles.animationContainer}>
-            <div className={styles.animationContent}>
-              <LottieAnimation animationData={animationData} width={300} height={300} />
-              
-              <p className={styles.loaderText}><b>Setting up your agent... </b><br /><br /> Please Wait</p>
-            </div>
+    const [animationData, setAnimationData] = useState(null);
 
-          </div>
-        </>
-)
-      }
+    useEffect(() => {
+        // fetch("/animations/Bodomwgicz.json")  
+        fetch("/animations/custom_Loader.json")
+            .then((res) => res.json())
+            .then((data) => setAnimationData(data))
+            .catch((err) => console.error("Error loading animation:", err));
+    }, []);
+    if (customLoader) {
+        return (
+            <>
+                <div className={styles.container_animation}>
+                    <br />
+                    <div className={styles.Logo_animation}>
+                        <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
+                    </div>
+                </div>
+                <div className={styles.animationContainer}>
+                    <div className={styles.animationContent}>
+                        <LottieAnimation animationData={animationData} width={300} height={300} />
+
+                        <p className={styles.loaderText}><b>Setting up your agent... </b><br /><br /> Please Wait</p>
+                    </div>
+
+                </div>
+            </>
+        )
+    }
     return (
 
         <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated} /> :
