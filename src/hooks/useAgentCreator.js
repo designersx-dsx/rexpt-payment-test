@@ -303,11 +303,10 @@ export const useAgentCreator = ({
           email: "",
         },
       };
-      if (isValid == "BusinessListing") {
+      if (isValid == "BusinessListing"||isValid =="EditBusinessDetail") {
         agentConfig.knowledge_base_ids = [storedKnowledgeBaseId];
       }
       //Create LLm
-      // console.log(llm_id)
       try {
         const llmResponse = await axios.patch(
           `https://api.retellai.com/update-retell-llm/${llm_id} `,
@@ -347,7 +346,6 @@ export const useAgentCreator = ({
               "Ok",
               "hmmm",
             ],
-            // heloo
             post_call_analysis_data: [
               {
                 type: "enum",
@@ -432,10 +430,6 @@ export const useAgentCreator = ({
               }
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-
-
-
-
             normalize_for_speech: true,
           };
           const agent_id =
