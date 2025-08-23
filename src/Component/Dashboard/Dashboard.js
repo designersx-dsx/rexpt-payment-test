@@ -2633,8 +2633,8 @@ function Dashboard() {
                               {paygStatusLoading
                                 ? "Loading.."
                                 : isPaygActive === true
-                                ? "Deactivate PayG"
-                                : "Active PayG"}
+                                ? "Deactivate Pay as you go"
+                                : "Active Pay as you go"}
                             </div>
                           </div>
                         </>
