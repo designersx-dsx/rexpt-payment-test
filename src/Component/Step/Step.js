@@ -96,7 +96,7 @@ const Step = () => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
-    const [customLoader,setCustomeLoader]=useState(true)
+    const [customLoader,setCustomeLoader]=useState(false)
     const [isAgentCreated, setIsAgentCreated] = useState(false);
 
     const checkPaymentDone = localStorage.getItem("paymentDone")
