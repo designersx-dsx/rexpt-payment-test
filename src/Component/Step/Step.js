@@ -96,7 +96,7 @@ const Step = () => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
-    const [customLoader,setCustomeLoader]=useState(false)
+    const [customLoader,setCustomeLoader]=useState(true)
     const [isAgentCreated, setIsAgentCreated] = useState(false);
 
     const checkPaymentDone = localStorage.getItem("paymentDone")
@@ -1338,6 +1338,7 @@ const Step = () => {
           return (
   <>
           <div className={styles.container_animation}>
+            <br/>
             <div className={styles.Logo_animation}>
               <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
             </div>
@@ -1345,6 +1346,7 @@ const Step = () => {
           <div className={styles.animationContainer}>
             <div className={styles.animationContent}>
               <LottieAnimation animationData={animationData} width={300} height={300} />
+              
               <p className={styles.loaderText}><b>Setting up your agent... </b><br /><br /> Please Wait</p>
             </div>
 
