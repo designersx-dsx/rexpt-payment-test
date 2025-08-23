@@ -47,7 +47,6 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
-  console.log("subscriptionInfo", subscriptionInfo);
   const [currencySymbol, setCurrencySymbol] = useState("");
 
   const currentLocation = "/update";
@@ -386,6 +385,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       {showAnimation ?
         <>
           <div className={styles.container}>
+            <br/> <br/>
             <div className={styles.Logo}>
               <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
             </div>

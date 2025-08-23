@@ -55,8 +55,11 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));;
   const EditingMode = localStorage.getItem("UpdationMode");
   const [placeInfoText, setPlaceInfoText] = useState("");
-  const  viewSiteModal=sessionStorage.getItem("viewSiteMap")
+  const viewSiteModal = sessionStorage.getItem("viewSiteMap")
+  const [shouldFocusBack, setShouldFocusBack] = useState(false);
   const setHasFetched = true;
+  const typingTimeoutRef = useRef(null);
+  const inputRefWebSiteUrl = useRef(null);
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
     setLoading,
@@ -113,8 +116,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
-        console.log({ result })
-
         const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
         // Extract important fields from result
         const businessData = {
@@ -183,23 +184,40 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
   const handleUrlVerification = async (url) => {
     setUrlVerificationInProgress(true);
-    const result = await validateWebsite(url);
-    if (result.valid) {
-      setIsVerified(true);
-      setBusinessUrlError("");
-      sessionStorage.setItem("businessUrl", url);
-      localStorage.setItem("isVerified", true);
-      // setNoGoogleListing(false)
-      const res = await listSiteMap(url)
-      sessionStorage.setItem("urls", JSON.stringify(res.urls));
-      onSiteMap({ status: true, data: res.urls, addOnUrl: url })
-      sessionStorage.setItem("viewSiteMap",true)
-    } else {
+    try {
+      const result = await validateWebsite(url);
+      if (result.valid) {
+        setIsVerified(true);
+        setBusinessUrlError("");
+        sessionStorage.setItem("businessUrl", url);
+        localStorage.setItem("isVerified", true);
+        // setNoGoogleListing(false)
+        const res = await listSiteMap(url)
+        sessionStorage.setItem("urls", JSON.stringify(res.urls));
+        onSiteMap({ status: true, data: res.urls, addOnUrl: url })
+        sessionStorage.setItem("viewSiteMap", true)
+        setUrlVerificationInProgress(false);
+        return true;
+      } else {
+        setIsVerified(false);
+        setBusinessUrlError("Invalid URL");
+        localStorage.setItem("isVerified", false);
+        setUrlVerificationInProgress(false);
+        if (url.trim()) {
+          setShouldFocusBack(true);
+        }
+        return false;
+
+      }
+    } catch (error) {
       setIsVerified(false);
-      setBusinessUrlError("Invalid URL");
+      setBusinessUrlError("Verification failed");
       localStorage.setItem("isVerified", false);
+      setUrlVerificationInProgress(false);
+      setShouldFocusBack(true);
+
+      return false;
     }
-    setUrlVerificationInProgress(false);
   };
 
   useEffect(() => {
@@ -209,7 +227,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     }
   }, []);
 
-  const handleBlur = () => {
+  const handleBlur = (e) => {
     if (businessUrl.trim()) {
       handleUrlVerification(businessUrl);
     }
@@ -221,9 +239,21 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     const final = HTTPS_PREFIX + v;
     setBusinessUrl(final);
     setNoBusinessWebsite(false)
+
     if (businessUrlError) {
       setBusinessUrlError("");
     }
+    // 🔑 Debounce verification
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      // ✅ check if URL ends with a valid extension before verifying
+      const validTldRegex = /\.[a-z]{2,}(\/.*)?/i;
+      if (validTldRegex.test(final)) {
+        handleUrlVerification(final);
+      }
+    }, 500);
   };
 
   useEffect(() => {
@@ -454,6 +484,17 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     const urls = JSON.parse(sessionStorage.getItem("urls")) || [];
     onSiteMap({ status: true, data: urls, addOnUrl: businessUrl });
   }
+  useEffect(() => {
+    if (businessUrl.length <= 8) {
+      setShouldFocusBack(false);
+      return;
+    }
+
+    if (shouldFocusBack) {
+      inputRefWebSiteUrl.current?.focus();
+      setShouldFocusBack(false);
+    }
+  }, [shouldFocusBack, businessUrl]);
   return (
     <>
       <div>
@@ -552,9 +593,11 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                         placeholder="https://your website url"
                         value={businessUrl
                         }
+                        autoComplete="off"
                         inputMode="url"
-                        autoComplete="url"
+                        ref={inputRefWebSiteUrl}
                         onBlur={handleBlur}
+
                         list="url-suggestions"
                         style={{ width: "100%" }}
                         onKeyDown={(e) => {
@@ -577,7 +620,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                           }
                           if (selectionStart <= PREFIX_LEN) e.preventDefault();
                         }}
-                        disabled={noBusinessWebsite||urlVerificationInProgress}
+                        disabled={noBusinessWebsite || urlVerificationInProgress}
                         onInput={handleInputChange}
                         onFocus={handleFocus}
                       />
@@ -585,7 +628,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                         {urlVerificationInProgress ? (
                           <Loader size={20} />
                         ) : (
-                          isVerified !== null && (
+                          isVerified !== null && businessUrl && !noBusinessWebsite && (
                             <span
                               className={
                                 isVerified
@@ -593,7 +636,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                                   : styles.invalidIcon
                               }
                             >
-                              {isVerified && !noBusinessWebsite ? "✔️" : "❌"}
+                              {isVerified === true ? "✔️" : "❌"}
                             </span>
                           )
                         )}
@@ -601,7 +644,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                     </div>
                   </div>
                   <div>
-                    {(businessUrl &&viewSiteModal&&!noBusinessWebsite)&& <button disabled={urlVerificationInProgress} className={styles.modalViewBtn} onClick={handleViewSelectedUrl}>View</button>}
+                    {(businessUrl.length > 8 && isVerified && viewSiteModal && !noBusinessWebsite) && <button disabled={urlVerificationInProgress} className={styles.modalViewBtn} onClick={handleViewSelectedUrl}>View</button>}
                   </div>
                 </div>
 
@@ -622,13 +665,15 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
                       if (checked) {
                         setBusinessUrl("");
-                        setIsVerified(true);
+                        setIsVerified(null);
                         setBusinessUrlError("");
                         sessionStorage.removeItem("businessUrl");
                       }
                     }}
                   />
-                  <label htmlFor="no-business-website" className={styles.iHaveNot} disabled={urlVerificationInProgress}>
+                  <label htmlFor="no-business-website" className={styles.iHaveNot}
+                    disabled={urlVerificationInProgress}
+                  >
                     I do not have a business website
                   </label>
                 </div>
