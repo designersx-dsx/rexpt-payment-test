@@ -141,3 +141,24 @@
     width: 200px;
   }
 }
+.animationContainer {
+  display: flex;
+  align-items: center;   /* vertically center */
+  justify-content: center; /* horizontally center */
+  height: 60vh;
+  width: 100%;    
+}
+.animationContent {
+  display: flex;
+  flex-direction: column; /* stack animation + text vertically */
+  align-items: center;    /* center horizontally */
+}
+
+.loaderText {
+  margin-top: 20px; /* gap between animation and text */
+  font-size: 25px;
+  font-weight: 500;
+  color: #333; /* adjust as per theme */
+  text-align: center;
+
+}

@@ -27,6 +27,7 @@ import getDynamicAgentName from "../../utils/getDynamicAgentName";
 import Thankyou from "../ThankyouPage/Thankyou";
 import getTimezoneFromState from "../../lib/timeZone";
 import Modal2 from "../Modal2/Modal2";
+import LottieAnimation from "../../lib/LottieAnimation";
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -95,7 +96,7 @@ const Step = () => {
         const saved = sessionStorage.getItem('completedSteps');
         return saved ? JSON.parse(saved) : [];
     });
-
+    const [customLoader,setCustomeLoader]=useState(false)
     const [isAgentCreated, setIsAgentCreated] = useState(false);
 
     const checkPaymentDone = localStorage.getItem("paymentDone")
@@ -924,10 +925,12 @@ const Step = () => {
                             setShowPopup(true);
                             let value1 = location?.state?.value
                             if (freeTrail) {
-                                setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                                setCustomeLoader(true)
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 6000);
                             }
                             else if (value1 === "chatke") {
-                                setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+                                setCustomeLoader(true)
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 6000);
 
                             }
                             if (checkPaymentDone === "true") {
@@ -976,6 +979,7 @@ const Step = () => {
             setLoading(false)
         }
     };
+    
     const handleValidationError = ({ type, message }) => {
         setPopupType(type);
         setPopupMessage(message);
@@ -1121,14 +1125,12 @@ const Step = () => {
         let freeTrail = location?.state?.value
         if (freeTrail === "chatke") {
             handleContinue()
-
-
         }
         else if (checkPaymentDone === "true") {
 
             // callNextApiAndRedirect()
             handleContinue()
-
+            
         }
         else if (locationPath !== "/checkout" && priceId) {
             if (currentStep === 7) {
@@ -1323,6 +1325,33 @@ const Step = () => {
         }
       }, [showSiteMapUrls]);
 
+            const [animationData, setAnimationData] = useState(null);
+      
+          useEffect(() => {
+            // fetch("/animations/Bodomwgicz.json")  
+            fetch("/animations/custom_Loader.json")  
+              .then((res) => res.json())
+              .then((data) => setAnimationData(data))
+              .catch((err) => console.error("Error loading animation:", err));
+          }, []);
+      if(customLoader){
+          return (
+  <>
+          <div className={styles.container_animation}>
+            <div className={styles.Logo_animation}>
+              <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
+            </div>
+          </div>
+          <div className={styles.animationContainer}>
+            <div className={styles.animationContent}>
+              <LottieAnimation animationData={animationData} width={300} height={300} />
+              <p className={styles.loaderText}><b>Setting up your agent... </b><br /><br /> Please Wait</p>
+            </div>
+
+          </div>
+        </>
+)
+      }
     return (
 
         <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated} /> :
