@@ -236,7 +236,7 @@ const EditBusinessDetail = () => {
 
       const rawUrl = aboutBusinessForm.businessUrl?.trim();
       const mergedUrls = [];
-      if (sessionSelectedSiteMapUrls.length > 0) {
+      if (sessionSelectedSiteMapUrls?.length > 0) {
         mergedUrls.push(
           ...sessionSelectedSiteMapUrls
             .filter((item) => item.checkedStatus)
