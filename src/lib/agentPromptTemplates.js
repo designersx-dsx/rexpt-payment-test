@@ -159,6 +159,7 @@ Interpret implied meanings. For example:
 - **ALWAYS** check for ## Related Knowledge Base Contexts section before responding to business-specific questions
 - When KB content is available, you DO have access to that information - use it confidently
 
+
 `,
     // Real Estate Broker LEAD Qualifier
     "LEAD Qualifier": ({
