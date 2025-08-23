@@ -513,3 +513,61 @@ width: 100%;
   font-size: 14px;
   cursor: pointer;
 }
+
+.notificationContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #ffffff;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-image: linear-gradient(90deg, #6524eb 100%, #eae7ff 50%);
+  color: white;
+  padding: 20px;
+  border-radius: 2rem 2rem 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.container_animation {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px 0px 0px 0px;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  
+  
+}
+
+.Logo_animation img {
+  width: 50%;
+  margin-bottom: 20px;
+  margin-left: 10px;
+}
+
+ .animationContainer {
+  display: flex;
+  align-items: center;   /* vertically center */
+  justify-content: center; /* horizontally center */
+  height: 60vh;
+  width: 100%;    
+}
+.animationContent {
+  display: flex;
+  flex-direction: column; /* stack animation + text vertically */
+  align-items: center;    /* center horizontally */
+}
+
+.loaderText {
+  margin-top: 20px; /* gap between animation and text */
+  font-size: 25px;
+  font-weight: 500;
+  color: #333; /* adjust as per theme */
+  text-align: center;
+
+}
