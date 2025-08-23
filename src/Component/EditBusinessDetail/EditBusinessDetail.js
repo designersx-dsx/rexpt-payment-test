@@ -239,8 +239,8 @@ const EditBusinessDetail = () => {
       if (sessionSelectedSiteMapUrls?.length > 0) {
         mergedUrls.push(
           ...sessionSelectedSiteMapUrls
-            .filter((item) => item.checkedStatus)
-            .map((item) => item.url)
+            ?.filter((item) => item.checkedStatus)
+            ?.map((item) => item.url)
         );
       } else {
         // If no sitemap, at least push rawUrl

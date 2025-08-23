@@ -201,7 +201,7 @@ function Dashboard() {
         const resp = await getDashboardTourStatus(userId);
         const d = resp?.data ?? resp;
 
-        console.log("tourStatus raw ->", d);
+        // console.log("tourStatus raw ->", d);
 
         let shouldShow;
         if (typeof d?.shouldShow === "boolean") {
@@ -708,6 +708,10 @@ function Dashboard() {
       sessionStorage.removeItem("AgentCode");
       sessionStorage.removeItem("priceId");
       sessionStorage.removeItem("price");
+      sessionStorage.removeItem("selectedSiteMapUrls");
+      sessionStorage.removeItem("urls");
+      
+  
     }
   }, []);
   const handleCardClick = (agent) => {
@@ -2046,7 +2050,7 @@ function Dashboard() {
         await navigator.share({
           url: referralLink,
         });
-        console.log("Share URL:", referralLink); // Debug
+        // console.log("Share URL:", referralLink); // Debug
       } catch (error) {
         console.error("Error sharing:", error);
         await navigator.clipboard.writeText(referralLink);
@@ -2102,7 +2106,7 @@ function Dashboard() {
   };
   const handleClosePopUp3 = async () => {
     setPopupMessage3("");
-    console.log(isConfirming, "isConfirming");
+    // console.log(isConfirming, "isConfirming");
     if (isConfirming) {
       handleConnectCal(agentDetailsForCal);
     }
