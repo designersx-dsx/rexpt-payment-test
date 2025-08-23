@@ -21,7 +21,6 @@ export const useAgentCreator = ({
   const token = localStorage.getItem("token") || "";
   const sessionBusinessiD = sessionStorage.getItem("bId");
   const state = sessionStorage.getItem("state")
-  console.log(state, "state")
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const isUpdating = localStorage.getItem("UpdationMode") == "ON";
@@ -80,8 +79,6 @@ export const useAgentCreator = ({
 
     const isValid = stepValidator();
     if (!isValid) return;
-    console.log("Creating agent...", isValid);
-
     const packageMap = {
       Free: 1,
       Starter: 2,
@@ -148,7 +145,6 @@ export const useAgentCreator = ({
     const allServices = [...customServices, ...businessServices];
 
     const commaSeparatedServices = allServices;
-    console.log(allServices);
     const commaSeparatedServicesForServices = (allServices?.join(", ").replace("Other", "") || "Your Business Services")
       .split(",")
       .filter(service => service.trim() !== "")
@@ -307,12 +303,10 @@ export const useAgentCreator = ({
           email: "",
         },
       };
-      console.log(agentConfig, "agentConfigagentConfig")
-      if (isValid == "BusinessListing") {
+      if (isValid == "BusinessListing"||isValid =="EditBusinessDetail") {
         agentConfig.knowledge_base_ids = [storedKnowledgeBaseId];
       }
       //Create LLm
-      // console.log(llm_id)
       try {
         const llmResponse = await axios.patch(
           `https://api.retellai.com/update-retell-llm/${llm_id} `,
@@ -352,7 +346,6 @@ export const useAgentCreator = ({
               "Ok",
               "hmmm",
             ],
-            // heloo
             post_call_analysis_data: [
               {
                 type: "enum",
@@ -437,10 +430,6 @@ export const useAgentCreator = ({
               }
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
-
-
-
-
             normalize_for_speech: true,
           };
           const agent_id =

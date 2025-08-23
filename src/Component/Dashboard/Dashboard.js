@@ -4,6 +4,8 @@ import Footer from "../AgentDetails/Footer/Footer";
 import Plan from "../Plan/Plan";
 import { useNavigate, useLocation, Await } from "react-router-dom";
 import dayjs from "dayjs";
+import introJs from "intro.js";
+import "intro.js/minified/introjs.min.css";
 
 import {
   deleteAgent,
@@ -18,6 +20,8 @@ import {
   updateAgentEventId,
   refundAndCancelSubscriptionAgnetApi,
   API_BASE_URL,
+  getDashboardTourStatus,
+  markDashboardTourSeen,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -48,7 +52,6 @@ import { useNotificationStore } from "../../Store/notificationStore";
 
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 
-
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
@@ -56,7 +59,6 @@ function Dashboard() {
   const isRefreshing = useContext(RefreshContext);
 
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
-
 
   const navigate = useNavigate();
   const { user } = useUser();
@@ -94,13 +96,12 @@ function Dashboard() {
   const [eventCreateStatus, setEventCreateStatus] = useState(null);
   const [eventCreateMessage, setEventCreateMessage] = useState("");
   const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-  //cal
+
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
 
   const [callId, setCallId] = useState(null);
-  //pop0up
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
   const [popupMessage2, setPopupMessage2] = useState("");
@@ -110,7 +111,6 @@ function Dashboard() {
   const [callLoading, setCallLoading] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState();
 
-  //cam-icon
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const isSmallFont =
     totalCalls?.toString().length > 1 || bookingCount?.toString().length > 1;
@@ -133,13 +133,13 @@ function Dashboard() {
   const [subscriptionId, setsubscriptionId] = useState();
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
-  const dropdownRef = useRef(null);
+  // const dropdownRef = useRef(null);
+  const dropdownRefs = useRef({});
   const location = useLocation();
 
   const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
   const [showUpgradeConfirmModal, setShowUpgradeConfirmModal] = useState(false);
   const [upgradeLoading, setUpgradeLoading] = useState(false);
-
 
   const [deactivateLoading, setDeactivateLoading] = useState(false);
 
@@ -161,27 +161,317 @@ function Dashboard() {
     sessionStorage.getItem("userCalApiKey")
   );
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
-  // console.log(agentDetailsForCal, "agentDetailsForCal")
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
-  const [activeSubs, setActiveSubs] = useState(false)
-
-  //getTimeZone
-  const [timeZone, setTimeZone] = useState("")
-  // const [unreadCount, setUnreadCount] = useState("")
+  const [activeSubs, setActiveSubs] = useState(false);
+  const [timeZone, setTimeZone] = useState("");
   const notifications = useNotificationStore((state) => state.notifications);
+  const unreadCount = notifications.filter((n) => n.status === "unread").length;
+  const [redirectButton, setredirectButton] = useState(false);
 
-  const unreadCount = notifications.filter((n) => n.status === 'unread').length;
-  // console.log('unreadCount', unreadCount)
+  const [showDashboardTour, setShowDashboardTour] = useState(false);
+  const [tourStatusLoaded, setTourStatusLoaded] = useState(false);
+  const [tourElevateDropdown, setTourElevateDropdown] = useState(false);
+  const [tourDropdownPos, setTourDropdownPos] = useState(null);
+  const [forceTourOpenAgentId, setForceTourOpenAgentId] = useState(null);
+  const [lockBgForTour, setLockBgForTour] = useState(false);
 
+  const closeTourMenu = () => {
+    setOpenDropdown(null);
+    setForceTourOpenAgentId(null);
+    setTourElevateDropdown(false);
+    setTourDropdownPos(null);
+    setLockBgForTour(false);
 
-  // console.log('unreadCount',unreadCount,toggleFlag)
-  // console.log('asasasasa',unreadCount)
+    requestAnimationFrame(() => {
+      setOpenDropdown(null);
+      setForceTourOpenAgentId(null);
+      setTourElevateDropdown(false);
+    });
+  };
 
-  const [redirectButton, setredirectButton] = useState(false)
-  // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
 
+    const isTruthy = (v) => v === 1 || v === "1" || v === true || v === "true";
 
+    (async () => {
+      try {
+        const resp = await getDashboardTourStatus(userId);
+        const d = resp?.data ?? resp;
+
+        // console.log("tourStatus raw ->", d);
+
+        let shouldShow;
+        if (typeof d?.shouldShow === "boolean") {
+          shouldShow = d.shouldShow;
+        } else {
+          const eligible = isTruthy(d?.dashboardTourEligible);
+          const seen = isTruthy(d?.dashboardTourSeen);
+          shouldShow = eligible && !seen;
+        }
+
+        if (!cancelled) setShowDashboardTour(!!shouldShow);
+      } catch (err) {
+        if (!cancelled) setShowDashboardTour(false);
+        console.error("Failed to get dashboard tour status:", err);
+      } finally {
+        if (!cancelled) setTourStatusLoaded(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  const introRef = useRef(null);
+  const tourStartLockRef = useRef(false);
+  const tourRanRef = useRef(false);
+  const tourSeenMarkedRef = useRef(false);
+  const tourShownAtLeastOneStepRef = useRef(false);
+  const tourMenuStepRef = useRef(false);
+  useEffect(() => {
+    if (!tourStatusLoaded) return;
+    if (!showDashboardTour) return;
+    if (!localAgents.length) return;
+    if (tourRanRef.current) return;
+    if (tourStartLockRef.current) return;
+
+    tourStartLockRef.current = true;
+    requestAnimationFrame(async () => {
+      const started = await startDashboardTour();
+      if (started) tourRanRef.current = true;
+      tourStartLockRef.current = false;
+    });
+  }, [tourStatusLoaded, showDashboardTour, localAgents.length]);
+
+  const isTourActiveRef = useRef(false);
+
+  useEffect(() => {
+    if (introRef.current && openDropdown) {
+      introRef.current.refresh();
+    }
+  }, [openDropdown]);
+
+  const startDashboardTour = async () => {
+    if (!showDashboardTour || !localAgents.length || introRef.current)
+      return false;
+    const targetAgentId = localAgents?.[0]?.agent_id;
+
+    const baseTip = styles.customTourTooltip;
+    const menuTip = styles.tourTooltipOnMenu;
+
+    const newSteps = [
+      {
+        element: "#tour-profile",
+        intro:
+          "Welcome! This is your profile. Click here to manage your account details, subscription, and billing information.",
+        position: "right",
+      },
+      {
+        element: "#tour-footer-create",
+        intro:
+          "This is where the magic happens! Click 'Create' to build and customize your AI Receptionist.",
+        position: "top",
+      },
+      {
+        element: "#tour-assign-number",
+        intro:
+          "To get your agent live, you need to assign it a dedicated phone number. This is how your customers will reach it.",
+        position: "bottom",
+      },
+      {
+        element: "#tour-cal-com",
+        intro:
+          "Want your receptionist to book appointments? Connect your calendar here to enable seamless scheduling for your business.",
+        position: "left",
+      },
+      // {
+      //   element: `#tour-menu-trigger-${targetAgentId}`,
+      //   intro: "To manage your agent, click the three dots (...) and a menu will appear with more options. Here's the text for 3 dots step",
+      //   position: "left",
+      //   disableInteraction: false,
+      // },
+      {
+        element: `#tour-menu-test-${targetAgentId}`,
+        intro:
+          "Before going live, use this to call your agent and test its voice, conversational style, and overall performance.",
+        position: "left",
+        scrollToElement: false,
+        disableInteraction: false,
+        tooltipClass: `${baseTip} ${menuTip}`,
+      },
+      {
+        element: `#tour-menu-integrate-${targetAgentId}`,
+        intro:
+          "Extend your agent's reach! You can integrate it directly into your website to handle live calls and inquiries.",
+        position: "left",
+        scrollToElement: false,
+        tooltipClass: `${baseTip} ${menuTip}`,
+        disableInteraction: false,
+      },
+      {
+        element: "#tour-total-calls",
+        intro:
+          "This is where you can see the total number of calls your agent has handled for you.",
+        position: "bottom",
+      },
+      {
+        element: "#tour-total-bookings",
+        intro:
+          "View all the appointments your agent has scheduled for your business right here.",
+        position: "bottom",
+      },
+
+      {
+        element: "#tour-footer-calendar",
+        intro:
+          "View and manage all the appointments scheduled by your Receptionist in one place.",
+        position: "top",
+      },
+      {
+        element: "#tour-footer-support",
+        intro:
+          "Need help? Our support team is here for you. Find answers to your questions or reach out to us directly.",
+        position: "top",
+      },
+    ];
+
+    const setDropdownPosFromTrigger = () => {
+      const triggerEl = document.getElementById(
+        `tour-menu-trigger-${targetAgentId}`
+      );
+      const rect = triggerEl?.getBoundingClientRect();
+      if (!rect) return;
+
+      const GAP = 8;
+      const DROPDOWN_WIDTH = 170;
+
+      setTourDropdownPos({
+        top: rect.bottom + GAP,
+        left: rect.left - (DROPDOWN_WIDTH - rect.width),
+      });
+    };
+
+    const intro = introJs();
+    introRef.current = intro;
+    // shivam code
+    intro.setOptions({
+      steps: newSteps,
+      tooltipClass: styles.customTourTooltip,
+      overlayOpacity: 0.35,
+      showProgress: true,
+      showButtons: true,
+      showBullets: false,
+      nextLabel: "Next →",
+      prevLabel: "← Back",
+      skipLabel: "Skip",
+      doneLabel: "Finish",
+      showCloseButton: false,
+      buttonClass: styles.tourBtn,
+      scrollToElement: true,
+      exitOnOverlayClick: false,
+      disableInteraction: true,
+      fixElementPosition: true,
+      highlightClass: styles.tourHighlight,
+    });
+
+    const isMenuId = (id = "") =>
+      id.startsWith("tour-menu-trigger-") ||
+      id.startsWith("tour-menu-test-") ||
+      id.startsWith("tour-menu-integrate-");
+
+    intro.onbeforechange((el) => {
+      const id = el?.id || "";
+      if (isMenuId(id)) setDropdownPosFromTrigger();
+    });
+    intro.onchange((el) => {
+      const id = el?.id || "";
+      if (isMenuId(id)) {
+        setOpenDropdown(targetAgentId);
+        setForceTourOpenAgentId(targetAgentId);
+        setTourElevateDropdown(true);
+        setDropdownPosFromTrigger();
+        setLockBgForTour(true);
+
+        intro.setOption("disableInteraction", false);
+        intro.setOption("fixElementPosition", false);
+        intro.setOption("scrollToElement", false);
+
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => intro.refresh())
+        );
+      } else {
+        intro.setOption("disableInteraction", true);
+        setOpenDropdown(null);
+        setForceTourOpenAgentId(null);
+        setTourElevateDropdown(false);
+        intro.setOption("fixElementPosition", true);
+        intro.setOption("scrollToElement", true);
+        setLockBgForTour(false);
+      }
+    });
+
+    intro.onafterchange(() => {
+      requestAnimationFrame(() => intro.refresh());
+    });
+
+    const markSeenOnce = async () => {
+      if (tourSeenMarkedRef.current) return;
+      if (!tourShownAtLeastOneStepRef.current) return;
+      try {
+        await markDashboardTourSeen(userId);
+        tourSeenMarkedRef.current = true;
+        tourRanRef.current = true;
+        setShowDashboardTour(false);
+      } catch (e) {
+        console.error("Failed to mark dashboard tour seen:", e);
+      }
+    };
+    intro.onstart(() => {
+      isTourActiveRef.current = true;
+    });
+    const cleanup = () => {
+      isTourActiveRef.current = false;
+      document
+        .querySelectorAll(`.${styles.tourHighlight}`)
+        .forEach((el) => el.classList.remove(styles.tourHighlight));
+      closeTourMenu();
+      introRef.current = null;
+      markSeenOnce();
+    };
+
+    intro.oncomplete(cleanup);
+    intro.onexit(cleanup);
+    intro.onbeforeexit(() => {
+      tourShownAtLeastOneStepRef.current = true;
+      cleanup();
+    });
+
+    try {
+      intro.start();
+      return true;
+    } catch (err) {
+      console.error("Tour failed to start:", err);
+      cleanup();
+      return false;
+    }
+  };
+  useEffect(() => {
+    if (!lockBgForTour) closeTourMenu();
+  }, [lockBgForTour]);
+
+  useEffect(() => {
+    if (hasFetched && localAgents.length && !tourRanRef.current) {
+      const id = requestAnimationFrame(async () => {
+        const started = await startDashboardTour();
+        if (started) tourRanRef.current = true;
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [hasFetched, localAgents.length]);
 
   const checkActiveSubscription = async () => {
     try {
@@ -190,7 +480,7 @@ function Dashboard() {
         { userId: userId },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -198,30 +488,24 @@ function Dashboard() {
 
       setActiveSubs(res?.data?.paymentDone);
     } catch (error) {
-      console.error("Subscription check failed:", error.response?.data || error.message);
+      console.error(
+        "Subscription check failed:",
+        error.response?.data || error.message
+      );
     }
   };
 
-
-
+  useEffect(() => {
+    setTimeout(() => {
+      checkActiveSubscription();
+    }, 2000);
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
-      checkActiveSubscription()
-    }, 2000)
-
-  }, [])
-
-
-  //   setActiveSubs(res?.data?.paymentDone)
-
-  // }
-  useEffect(() => {
-    setTimeout(() => {
-      checkActiveSubscription()
-    }, 2000)
-
-  }, [])
+      checkActiveSubscription();
+    }, 2000);
+  }, []);
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -243,11 +527,9 @@ function Dashboard() {
     if (planName.toLowerCase() === "free") {
       openAssignNumberModal();
     } else {
-      // setSelectedAgentForAssign(agent);
-      // setIsAssignModalOpen(true);
       navigate("/assign-number", {
         state: { agent: agent },
-      })
+      });
     }
   };
   useEffect(() => {
@@ -329,8 +611,7 @@ function Dashboard() {
       sessionStorage.removeItem("agentCode");
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
-    }
-    else {
+    } else {
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("displayBusinessName");
       localStorage.removeItem("agentName");
@@ -416,23 +697,23 @@ function Dashboard() {
       sessionStorage.removeItem("selectedPlan");
       sessionStorage.removeItem("updateBtn");
       localStorage.removeItem("allPlans");
-      sessionStorage.removeItem("checkPage")
+      sessionStorage.removeItem("checkPage");
       localStorage.removeItem("hasHandledThankYou");
-      localStorage.removeItem("checkPage2")
-      localStorage.removeItem("paymentDone")
-      localStorage.removeItem("subcriptionIdUrl")
+      localStorage.removeItem("checkPage2");
+      localStorage.removeItem("paymentDone");
+      localStorage.removeItem("subcriptionIdUrl");
       // localStorage.removeItem("isPayg")
       sessionStorage.removeItem("VoiceAgentName");
       sessionStorage.removeItem("selectedLangCode");
       sessionStorage.removeItem("AgentCode");
       sessionStorage.removeItem("priceId");
       sessionStorage.removeItem("price");
-
+      sessionStorage.removeItem("selectedSiteMapUrls");
+      sessionStorage.removeItem("urls");
+      
+  
     }
-
-    // sessionStorage.clear()
   }, []);
-  // Navigate on agent card clickk
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -489,9 +770,9 @@ function Dashboard() {
 
       {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        }
+        },
       }
     );
     if (!response.ok) throw new Error("Failed to fetch Cal API keys");
@@ -580,7 +861,7 @@ function Dashboard() {
   const fetchTimeZone = async (agent) => {
     try {
       const timeZone = await getTimezoneFromState(agent?.business?.state);
-      setTimeZone(timeZone)
+      setTimeZone(timeZone);
       // Proceed with using timeZone
     } catch (err) {
       console.error("Error fetching timezone:", err);
@@ -589,7 +870,7 @@ function Dashboard() {
   // Create Cal event
   const createCalEvent = async () => {
     const agent = agentDetailsForCal;
-    fetchTimeZone(agent)
+    fetchTimeZone(agent);
     await handleApiKeySubmit();
     try {
       setcalloading(true);
@@ -619,7 +900,6 @@ function Dashboard() {
       }
       try {
         await updateAgentEventId(agent.agent_id, eventTypeId);
-
       } catch (err) {
         console.error("Failed to update agent with event ID:", err);
       }
@@ -636,7 +916,8 @@ function Dashboard() {
             name: "check_availability_cal",
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
-            description: "Check the available appointment slots in the calendar and return times strictly in the user's timezone. Use this timezone to suggest and book appointments.",
+            description:
+              "Check the available appointment slots in the calendar and return times strictly in the user's timezone. Use this timezone to suggest and book appointments.",
             timezone: timeZone?.timezoneId,
           },
         ],
@@ -751,24 +1032,25 @@ function Dashboard() {
                 - Then ask: "Do you have any other queries?"
                 - If yes, transition to information_collection.
                 - If no, transition to end_call_state.
-            `
-            ,
+            `,
             tools: [
               {
                 type: "check_availability_cal",
                 name: "check_availability",
                 cal_api_key: userCalApiKey.trim(),
                 event_type_id: eventTypeId,
-                description: "Check if calendar is connected and fetch available time slots.",
-                timezone: timeZone?.timezoneId
-              }
+                description:
+                  "Check if calendar is connected and fetch available time slots.",
+                timezone: timeZone?.timezoneId,
+              },
             ],
             edges: [
               {
                 destination_state_name: "information_collection",
-                description: "User has further queries or provides new information after booking."
-              }
-            ]
+                description:
+                  "User has further queries or provides new information after booking.",
+              },
+            ],
           },
           {
             name: "end_call_state",
@@ -837,6 +1119,7 @@ function Dashboard() {
   const toggleDropdown = (e, id) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isTourActiveRef.current) return;
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
@@ -917,7 +1200,6 @@ function Dashboard() {
         throw new Error(`Delete failed: ${deleteError.message}`);
       }
 
-
       const updatedAgents = localAgents.filter(
         (agent) => agent.agent_id !== agentId
       );
@@ -949,8 +1231,6 @@ function Dashboard() {
           setTimeout(() => {
             fetchAndMergeCalApiKeys();
           }, 1000);
-
-
         }
       } catch (notifyError) {
         throw new Error(`Refund failed: ${notifyError.message}`);
@@ -1010,11 +1290,14 @@ function Dashboard() {
       );
       if (res.status == 403) {
         if (agentDetails?.agentPlan == "free") {
-          setPopupMessage("Your Agent Plan has been exhausted. To continue, please upgrade your plan");
+          setPopupMessage(
+            "Your Agent Plan has been exhausted. To continue, please upgrade your plan"
+          );
+        } else {
+          setPopupMessage(
+            "Your Agent Plan has been exhausted. To continue, please enable Pay As You Go."
+          );
         }
-        else {
-          setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
-        } 
         setPopupType("failed");
         setIsCallInProgress(false);
         setTimeout(() => {
@@ -1178,15 +1461,16 @@ function Dashboard() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (isTourActiveRef.current) return;
+
+      const openEl = dropdownRefs.current[openDropdown];
+      if (openEl && !openEl.contains(event.target)) {
         setOpenDropdown(null);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [openDropdown]);
 
   const handleInactiveAgentAlert = () => {
     setPopupType("failed");
@@ -1558,8 +1842,6 @@ function Dashboard() {
           throw new Error("Failed to create knowledge base during activation");
         }
 
-
-
         const createdKB = await createRes.json();
         const knowledgeBaseId = createdKB.knowledge_base_id;
         sessionStorage.setItem("knowledgeBaseId", knowledgeBaseId);
@@ -1682,7 +1964,6 @@ function Dashboard() {
   //       interval: agent?.subscription?.interval || null,
   //       customerId: agent?.subscription?.customer_id || null
 
-
   //     },
   //   });
   // };
@@ -1691,19 +1972,14 @@ function Dashboard() {
     setPendingUpgradeAgent(agent);
     if (agent?.agentPlan == "free") {
       setShowUpgradeConfirmModal(false);
-      //  setPendingUpgradeAgent(agent);  
-      handleUpgradePaygConfirmed()
-      return
+      //  setPendingUpgradeAgent(agent);
+      handleUpgradePaygConfirmed();
+      return;
     }
-    setShowUpgradeConfirmModal(true);      // Show modal
+    setShowUpgradeConfirmModal(true); // Show modal
   };
 
   const handleUpgradePaygConfirmed = async () => {
-    // console.log("runnnnnnnn2222222------------")
-    // console.log("pendingUpgradeAgent",pendingUpgradeAgent)
-
-    // console.log("runnnnnnnn111111111111111111111111111------------")
-
     setUpgradeLoading(true);
     try {
       // console.log({ pendingUpgradeAgent })
@@ -1724,8 +2000,8 @@ function Dashboard() {
           subscriptionID: agent?.subscriptionId,
           planName: agent?.agentPlan,
           interval: agent?.subscription?.interval || null,
-          customerId: agent?.subscription?.customer_id || null
-        }
+          customerId: agent?.subscription?.customer_id || null,
+        },
       });
 
       setShowUpgradeConfirmModal(false); // Close the modal
@@ -1735,9 +2011,6 @@ function Dashboard() {
       setUpgradeLoading(false);
     }
   };
-
-
-  const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
   const locationPath = location.pathname;
 
   const getUserReferralCode = async () => {
@@ -1777,7 +2050,7 @@ function Dashboard() {
         await navigator.share({
           url: referralLink,
         });
-        console.log("Share URL:", referralLink); // Debug
+        // console.log("Share URL:", referralLink); // Debug
       } catch (error) {
         console.error("Error sharing:", error);
         await navigator.clipboard.writeText(referralLink);
@@ -1833,14 +2106,13 @@ function Dashboard() {
   };
   const handleClosePopUp3 = async () => {
     setPopupMessage3("");
-    console.log(isConfirming, "isConfirming");
+    // console.log(isConfirming, "isConfirming");
     if (isConfirming) {
       handleConnectCal(agentDetailsForCal);
     }
   };
   const checkRecentPageLocation = location.state?.currentLocation;
   useEffect(() => {
-
     if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
   }, []);
 
@@ -1857,34 +2129,29 @@ function Dashboard() {
     return number;
   }
 
-  const customer_id = decodeTokenData?.customerId
-  const [isPaygActive, setisPaygActive] = useState()
+  const customer_id = decodeTokenData?.customerId;
+  const [isPaygActive, setisPaygActive] = useState();
 
-  const [paygStatusLoading, setpaygStatusLoading] = useState(true)
-  console.log("paygStatusLoading", paygStatusLoading)
-
-  // console.log("isPaygActive", isPaygActive)
+  const [paygStatusLoading, setpaygStatusLoading] = useState(true);
 
   const checkAgentPaygStatus = async (agentId) => {
     try {
-      // setLoading(true); // Start loading state
-
       const response = await fetch(`${API_BASE}/pay-as-you-go-status-check`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ agentId, customerId: customer_id }) // Pass the agentId to the API
+        body: JSON.stringify({ agentId, customerId: customer_id }),
       });
 
       const data = await response.json();
 
-      setpaygStatusLoading(true)
+      setpaygStatusLoading(true);
       if (data.success) {
         // If the agent has an active Payg subscription
         setisPaygActive(true);
-        setpaygStatusLoading(false)
+        setpaygStatusLoading(false);
         localStorage.setItem("isPayg", "true");
         // setactiveCount(data?.activeCount || null)
         // setPaygSubscriptionId(data?.subscriptionId)
@@ -1895,7 +2162,7 @@ function Dashboard() {
         // setactiveCount(data?.activeCount || null)
         // setPaygSubscriptionId(data?.subscriptionId)
         setisPaygActive(false);
-        setpaygStatusLoading(false)
+        setpaygStatusLoading(false);
         // localStorage.setItem("isPayg", "false");
         // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
         // setPopupType("failed");
@@ -1904,9 +2171,8 @@ function Dashboard() {
       console.error("Error checking Payg status:", error);
       // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
       // setPopupType("failed");
-    }
-    finally {
-      setpaygStatusLoading(false)
+    } finally {
+      setpaygStatusLoading(false);
     }
   };
 
@@ -1916,9 +2182,8 @@ function Dashboard() {
     }
   }, [agentId]);
 
-
   const handleTogglePayG = async () => {
-    setpaygStatusLoading(true)
+    setpaygStatusLoading(true);
     try {
       // console.log({ customer_id })
       const requestData = {
@@ -1928,9 +2193,9 @@ function Dashboard() {
       };
       // Call the API to save the agent's payg status
       const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestData),
@@ -1941,51 +2206,57 @@ function Dashboard() {
         const responseData = await response.json();
         // console.log('Agent saved successfully:', responseData);
         if (responseData.status === "active") {
-          setisPaygActive(true)
-          setpaygStatusLoading(false)
+          setisPaygActive(true);
+          setpaygStatusLoading(false);
           setPopupMessage("Agent's Pay-as-you-go feature activated.");
           setPopupType("success"); // Pop-up for activated
         } else {
-          setisPaygActive(false)
-          setpaygStatusLoading(false)
+          setisPaygActive(false);
+          setpaygStatusLoading(false);
           setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
           setPopupType("failed"); // Pop-up for disabled
         }
       } else if (response.ok === false) {
         const responseData = await response.json();
         // console.log("dasdd", responseData)
-        setredirectButton(true)
+        setredirectButton(true);
         setPopupMessage(responseData?.error);
         setPopupType("failed"); // Pop-up for disabled
       } else {
-        console.error('Failed to send the request to save the agent.');
-
+        console.error("Failed to send the request to save the agent.");
       }
-
     } catch (error) {
       console.error("Error during upgrade:", error);
-    }
-    finally {
+    } finally {
       // setredirectButton(false);
     }
   };
 
-
   return (
     <div>
+      {activeSubs ? (
+        <Popup
+          type="failed"
+          message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
+          onClose={() => {
+            localStorage.setItem("paymentDone", true);
+            navigate("/steps");
+          }}
+        />
+      ) : null}
 
-      {activeSubs ? <Popup
-        type="failed"
-        message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
-        onClose={() => {
-          localStorage.setItem("paymentDone", true); // Set paymentDone to true
-          navigate('/steps'); // Navigate to /steps page
-        }}
-      /> : null}
+      {lockBgForTour && (
+        <div
+          className={styles.tourClickShield}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        />
+      )}
 
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div
+            id="tour-profile"
             className={styles.profileSection}
             ref={profileRef}
             onClick={handleEditProfile}
@@ -2018,7 +2289,7 @@ function Dashboard() {
             <div className={styles.notificationWrapper}>
               <div
                 className={styles.notificationIcon}
-                onClick={() => navigate('/notifications')}
+                onClick={() => navigate("/notifications")}
               >
                 <svg
                   width="20"
@@ -2082,10 +2353,15 @@ function Dashboard() {
         {/* Ankush Code Start */}
 
         <section className={styles.agentCard}>
-          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
+          <div
+            id="tour-total-calls"
+            className={styles.agentInfo}
+            onClick={handleTotalCallClick}
+          >
             <h2
-              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
-                }`}
+              className={`${styles.agentHeading} ${
+                isSmallFont ? styles.smallFont : ""
+              }`}
             >
               {totalCalls || 0}
             </h2>
@@ -2094,10 +2370,16 @@ function Dashboard() {
 
           <hr />
 
-          <div className={styles.agentInfo2} onClick={handleCalender}>
+          <div
+            id="tour-total-bookings"
+            className={styles.agentInfo2}
+            onClick={handleCalender}
+          >
+            {" "}
             <h2
-              className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
-                }`}
+              className={`${styles.agentHeading} ${
+                isSmallFont ? styles.smallFont : ""
+              }`}
             >
               {bookingCount}
             </h2>
@@ -2121,9 +2403,7 @@ function Dashboard() {
               within next 2 weeks.
             </p>
 
-            <div className={styles.zz}>
-              {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
-            </div>
+            <div className={styles.zz}></div>
           </Modal>
         ) : null}
 
@@ -2139,6 +2419,9 @@ function Dashboard() {
               assignedNumbers = [];
             }
           }
+          const isTourOpen =
+            openDropdown === agent.agent_id ||
+            forceTourOpenAgentId === agent.agent_id;
           return (
             <div
               key={agent.agent_id}
@@ -2184,12 +2467,15 @@ function Dashboard() {
 
                 <div
                   className={styles.FilterIcon}
+                  id={`tour-menu-trigger-${agent.agent_id}`}
                   onClick={(e) => {
                     toggleDropdown(e, agent.agent_id);
                     setagentId(agent.agent_id);
-                    setPendingUpgradeAgent(agent)
+                    setPendingUpgradeAgent(agent);
                   }}
-                  ref={dropdownRef}
+                  ref={(el) => {
+                    dropdownRefs.current[agent.agent_id] = el;
+                  }}
                 >
                   <svg
                     width="30"
@@ -2203,149 +2489,157 @@ function Dashboard() {
                     <circle cx="15" cy="15" r="2" fill="#24252C" />
                     <circle cx="22" cy="15" r="2" fill="#24252C" />
                   </svg>
-
-                  {openDropdown === agent?.agent_id && (
-                    <div className={styles.OptionsDropdown}>
-                      <div
-                        className={styles.OptionItem}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          if (agent?.isDeactivated === 1) {
-                            handleInactiveAgentAlert();
-                          } else {
-                            handleOpenCallModal(agent);
+                  <div
+                    className={styles.OptionsDropdown}
+                    style={{
+                      display: isTourOpen ? "block" : "none",
+                      visibility: isTourOpen ? "visible" : "hidden",
+                      opacity: isTourOpen ? 1 : 0,
+                      pointerEvents: isTourOpen ? "auto" : "none",
+                      minWidth: 170,
+                      zIndex: 99999,
+                      ...(tourElevateDropdown && tourDropdownPos
+                        ? {
+                            position: "fixed",
+                            top: tourDropdownPos.top,
+                            left: tourDropdownPos.left,
                           }
-                        }}
-                      >
-                        Test Agent
-                      </div>
-                      <div
-                        className={styles.OptionItem}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          if (agent?.isDeactivated === 1) {
-                            handleInactiveAgentAlert();
-                          } else {
-                            navigate("/integrate-agent", {
-                              state: {
-                                agentDetails: agent,
-                                // refreshFuntion: handleRefresh,
-                                // alertPopUp: handleAlertPopUp,
-                              },
-                            });
-                          }
-                        }}
-                      >
-                        Integrate
-                      </div>
-
-                      {/* <div className={styles.OptionItem} onClick={() => ""}>
-                        Call Settings
-                      </div> */}
-                      <div
-                        className={styles.OptionItem}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          if (agent?.isDeactivated === 1) {
-                            handleInactiveAgentAlert();
-                          } else {
-                            handleEditAgent(agent);
-                          }
-                        }}
-                      >
-                        {/* <div className={styles.OptionItem} onClick={() => ""}> */}
-                        Edit Agent
-                      </div>
-                      <div
-                        className={styles.OptionItem}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          handleUpgradeClick(agent);
-                          setPendingUpgradeAgent(agent)
-                        }}
-                      >
-                        Upgrade
-                      </div>
-                      {(() => {
-                        const subscriptionStart = agent?.subscription?.current_period_start;
-                        const planName = agent?.agentPlan?.toLowerCase(); // normalize casing
-
-                        const isFreePlan = planName === "free";
-                        const subscriptionAgeInDays = subscriptionStart
-                          ? dayjs().diff(dayjs(subscriptionStart), "day")
-                          : Infinity;
-
-                        const isEligibleToDelete = isFreePlan || subscriptionAgeInDays <= 2;
-
-                        if (isEligibleToDelete) {
-                          return (
-                            <div key={agent.agent_id}>
-                              <div
-                                className={styles.OptionItem}
-                                onMouseDown={(e) => {
-                                  e.stopPropagation();
-                                  setAgentToDelete(agent);
-                                  setShowDeleteConfirm(true);
-                                }}
-                              >
-                                Delete Agent
-                              </div>
-                            </div>
-                          );
+                        : {}),
+                    }}
+                    id={`tour-menu-dropdown-${agent.agent_id}`}
+                  >
+                    <div
+                      className={styles.OptionItem}
+                      id={`tour-menu-test-${agent.agent_id}`}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        if (agent?.isDeactivated === 1) {
+                          handleInactiveAgentAlert();
+                        } else {
+                          handleOpenCallModal(agent);
                         }
-
-                        return null;
-                      })()}
-
-                      <div
-                        className={styles.OptionItem}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          setAgentToDeactivate(agent);
-                          setShowDeactivateConfirm(true);
-                        }}
-                      >
-                        {agent.isDeactivated === 1
-                          ? "Activate Agent"
-                          : "Deactivate Agent"}
-                      </div>
-                      {agent?.subscription &&
-                        agent?.subscription?.plan_name?.toLowerCase() !==
-                        "free" && (
-                          <>
-                            <div>
-                              <div
-                                className={styles.OptionItem}
-                                onMouseDown={(e) => {
-                                  e.stopPropagation();
-                                  setAgentToCancel(agent);
-                                  setShowCancelConfirm(true);
-                                }}
-                              >
-                                Cancel Subscription
-                              </div>
-                            </div>
-                            <div>
-                              <div
-                                onMouseDown={(e) => {
-                                  handleTogglePayG()
-                                }}
-                                className={styles.OptionItem}
-
-                              >
-                                {paygStatusLoading ? "Loading.." : (isPaygActive === true ? "Deactivate PayG" : "Active PayG")}
-
-                              </div>
-                            </div>
-                          </>
-                        )}
-
-
-
-
+                      }}
+                    >
+                      Test Agent
                     </div>
-                  )}
+                    <div
+                      id={`tour-menu-integrate-${agent.agent_id}`}
+                      className={styles.OptionItem}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        if (agent?.isDeactivated === 1) {
+                          handleInactiveAgentAlert();
+                        } else {
+                          navigate("/integrate-agent", {
+                            state: {
+                              agentDetails: agent,
+                            },
+                          });
+                        }
+                      }}
+                    >
+                      Integrate
+                    </div>
+                    <div
+                      className={styles.OptionItem}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        if (agent?.isDeactivated === 1) {
+                          handleInactiveAgentAlert();
+                        } else {
+                          handleEditAgent(agent);
+                        }
+                      }}
+                    >
+                      Edit Agent
+                    </div>
+                    <div
+                      className={styles.OptionItem}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        handleUpgradeClick(agent);
+                        setPendingUpgradeAgent(agent);
+                      }}
+                    >
+                      Upgrade
+                    </div>
+                    {(() => {
+                      const subscriptionStart =
+                        agent?.subscription?.current_period_start;
+                      const planName = agent?.agentPlan?.toLowerCase();
+                      const isFreePlan = planName === "free";
+                      const subscriptionAgeInDays = subscriptionStart
+                        ? dayjs().diff(dayjs(subscriptionStart), "day")
+                        : Infinity;
 
+                      const isEligibleToDelete =
+                        isFreePlan || subscriptionAgeInDays <= 2;
+
+                      if (isEligibleToDelete) {
+                        return (
+                          <div key={agent.agent_id}>
+                            <div
+                              className={styles.OptionItem}
+                              onMouseDown={(e) => {
+                                e.stopPropagation();
+                                setAgentToDelete(agent);
+                                setShowDeleteConfirm(true);
+                              }}
+                            >
+                              Delete Agent
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return null;
+                    })()}
+
+                    <div
+                      className={styles.OptionItem}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        setAgentToDeactivate(agent);
+                        setShowDeactivateConfirm(true);
+                      }}
+                    >
+                      {agent.isDeactivated === 1
+                        ? "Activate Agent"
+                        : "Deactivate Agent"}
+                    </div>
+                    {agent?.subscription &&
+                      agent?.subscription?.plan_name?.toLowerCase() !==
+                        "free" && (
+                        <>
+                          <div>
+                            <div
+                              className={styles.OptionItem}
+                              onMouseDown={(e) => {
+                                e.stopPropagation();
+                                setAgentToCancel(agent);
+                                setShowCancelConfirm(true);
+                              }}
+                            >
+                              Cancel Subscription
+                            </div>
+                          </div>
+                          <div>
+                            <div
+                              onMouseDown={(e) => {
+                                handleTogglePayG();
+                              }}
+                              className={styles.OptionItem}
+                            >
+                              {paygStatusLoading
+                                ? "Loading.."
+                                : isPaygActive === true
+                                ? "Deactivate Pay as you go"
+                                : "Active Pay as you go"}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                  </div>
                 </div>
               </div>
               <hr className={styles.agentLine} />
@@ -2356,14 +2650,15 @@ function Dashboard() {
                   <strong>
                     {formatBusinessName(
                       agent?.business?.businessName ||
-                      agent?.business?.knowledge_base_texts?.name ||
-                      agent?.business?.googleBusinessName
+                        agent?.business?.knowledge_base_texts?.name ||
+                        agent?.business?.googleBusinessName
                     )}
                   </strong>
                 </p>
                 <div className={styles.VIA}>
                   {agent.calApiKey ? (
                     <img
+                      id="tour-cal-com"
                       src="svg/cal-svg.svg"
                       alt="cal-svg"
                       style={{ cursor: "pointer" }}
@@ -2378,6 +2673,7 @@ function Dashboard() {
                     />
                   ) : (
                     <img
+                      id="tour-cal-com"
                       src="svg/call-cross.svg"
                       alt="No API Key"
                       style={{ cursor: "pointer" }}
@@ -2386,7 +2682,12 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== "" && userCalApiKey !== "undefined") {
+                          if (
+                            userCalApiKey &&
+                            userCalApiKey !== "null" &&
+                            userCalApiKey !== "" &&
+                            userCalApiKey !== "undefined"
+                          ) {
                             handleConnectCalApiAlready(agent);
                           } else {
                             handleConnectCal(agent);
@@ -2401,7 +2702,7 @@ function Dashboard() {
 
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
-                  <div className={styles.AssignNumText}>
+                  <div id="tour-assign-number" className={styles.AssignNumText}>
                     Phone Number
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
@@ -2411,6 +2712,7 @@ function Dashboard() {
                 ) : (
                   <div
                     className={styles.AssignNum}
+                    id="tour-assign-number"
                     onClick={(e) => handleAssignNumberClick(agent, e)}
                     style={{ cursor: "pointer" }}
                   >
@@ -2658,16 +2960,18 @@ function Dashboard() {
         {showDeleteConfirm &&
           agentToDelete &&
           (() => {
-            const totalMins = Number(agentToDelete?.subscription?.plan_mins) || 0;
+            const totalMins =
+              Number(agentToDelete?.subscription?.plan_mins) || 0;
             const minsLeft = agentToDelete?.mins_left || 0;
             const planMins = totalMins;
 
             const usedPercentage =
               planMins > 0 ? ((planMins - minsLeft) / planMins) * 100 : 100;
 
-
-            const currentPeriodStart = agentToDelete?.subscription?.current_period_start;
-            const currentPeriodEnd = agentToDelete?.subscription?.current_period_end;
+            const currentPeriodStart =
+              agentToDelete?.subscription?.current_period_start;
+            const currentPeriodEnd =
+              agentToDelete?.subscription?.current_period_end;
 
             const subscriptionAgeDays = currentPeriodStart
               ? dayjs().diff(dayjs(currentPeriodStart), "day")
@@ -2687,18 +2991,24 @@ function Dashboard() {
                 >
                   <h2>Are you sure?</h2>
                   <p>
-                    Do you want to delete agent <strong>{agentToDelete.agentName}</strong>?
+                    Do you want to delete agent{" "}
+                    <strong>{agentToDelete.agentName}</strong>?
                   </p>
 
                   {agentToDelete?.subscription && (
                     <p style={{ marginTop: "12px" }}>
                       {isRefundEligible ? (
                         <>
-                          Since this agent's subscription is within 2 days and less than 5% of minutes are used, a refund (minus 3% Stripe fee) will be issued to the original payment method within 5–7 business days.
+                          Since this agent's subscription is within 2 days and
+                          less than 5% of minutes are used, a refund (minus 3%
+                          Stripe fee) will be issued to the original payment
+                          method within 5–7 business days.
                         </>
                       ) : (
                         <>
-                          This subscription is either older than 2 days or more than 5% of the minutes are used. No refund will be provided per our policy.
+                          This subscription is either older than 2 days or more
+                          than 5% of the minutes are used. No refund will be
+                          provided per our policy.
                         </>
                       )}
                     </p>
@@ -2747,7 +3057,6 @@ function Dashboard() {
               </div>
             );
           })()}
-
 
         {showCancelConfirm &&
           agentToCancel &&
@@ -2894,8 +3203,8 @@ function Dashboard() {
           >
             <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-              To get an agent number, you need to upgrade your plan. Unlock access to premium features by choosing a higher plan.
-
+              To get an agent number, you need to upgrade your plan. Unlock
+              access to premium features by choosing a higher plan.
             </p>
             <button
               className={`${styles.modalButton} ${styles.submit}`}
@@ -2913,10 +3222,7 @@ function Dashboard() {
         <CaptureProfile onClose={closeCaptureModal} onCapture={handleCapture} />
       )} */}
       {showDeactivateConfirm && agentToDeactivate && (
-        <div
-          className={styles.modalBackdrop}
-
-        >
+        <div className={styles.modalBackdrop}>
           <div
             className={styles.modalContainer}
             onClick={(e) => e.stopPropagation()}
@@ -3104,16 +3410,16 @@ function Dashboard() {
           type={popupType}
           message={popupMessage}
           onClose={() => {
-            setPopupMessage("")
-            setredirectButton(false)
+            setPopupMessage("");
+            setredirectButton(false);
           }}
           onConfirm={handleLogoutConfirm}
           extraButton={
             redirectButton
               ? {
-                label: "Activate Payg",
-                onClick: () => navigate("/edit-profile#payg-toggle"),
-              }
+                  label: "Activate Payg",
+                  onClick: () => navigate("/edit-profile#payg-toggle"),
+                }
               : undefined
           }
         />
@@ -3121,7 +3427,6 @@ function Dashboard() {
 
       {popupMessage2 && (
         <Popup
-
           type={popupType2}
           message={popupMessage2}
           onClose={() => setPopupMessage2("")}
@@ -3142,9 +3447,6 @@ function Dashboard() {
         onConfirm={handleUpgradePaygConfirmed}
       />
 
-
-
-
       <Popup
         type={popupType3}
         message={popupMessage3}
@@ -3160,8 +3462,6 @@ function Dashboard() {
           handleCalConnectWithConfirm();
           setPopupMessage3("");
         }}
-
-
       />
     </div>
   );

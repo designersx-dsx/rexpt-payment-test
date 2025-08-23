@@ -358,6 +358,7 @@
 .FilterIcon {
     position: relative;
     cursor: pointer;
+    overflow: visible;
 }
 
 .Lang {
@@ -381,9 +382,143 @@
     /* width: 100px; */
     height: 40px;
 }
+.tourClickShield {
+  position: fixed;
+  inset: 0;
+  background: transparent; 
+  z-index: 99995;          
+}
 
+/* Pretty tooltip container */
+.customTourTooltip {
+  border: none;
+  border-radius: 14px;
+  padding: 1px 5px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  background: radial-gradient(120% 120% at 0% 0%, #ffffff 0%, #f7f9ff 100%);
+  max-width: 360px;
+}
 
+/* Tooltip text */
+.customTourTooltip :global(.introjs-tooltiptext) {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1f2937;
+  padding: 5px;
+      text-align: justify;
+}
 
+/* Hide any stray close buttons just in case */
+.customTourTooltip :global(.introjs-closeButton),
+.customTourTooltip :global(.introjs-closebutton),
+.customTourTooltip :global(.introjs-tooltip-header .introjs-skipbutton.introjs-closebutton) {
+  display: none !important;
+}
+
+/* Buttons row */
+.customTourTooltip :global(.introjs-tooltipbuttons) {
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+}
+
+/* Base button look (buttonClass is applied too) */
+.tourBtn,
+.customTourTooltip :global(.introjs-button) {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+/* Primary actions: Next / Finish */
+.customTourTooltip :global(.introjs-nextbutton),
+.customTourTooltip :global(.introjs-donebutton) {
+  background: #4f46e5;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(17, 24, 39, 0.22);
+}
+.customTourTooltip :global(.introjs-nextbutton:hover),
+.customTourTooltip :global(.introjs-donebutton:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(17, 24, 39, 0.28);
+}
+
+/* Secondary: Back */
+.customTourTooltip :global(.introjs-prevbutton) {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+}
+.customTourTooltip :global(.introjs-prevbutton:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Skip = subtle tertiary link-button */
+.customTourTooltip :global(.introjs-skipbutton) {
+  background: transparent;
+  color: #6b7280; /* gray-500 */
+  text-decoration: underline;
+  font-weight: 500;
+  border-radius: 10px;
+  font-size: large;
+  right: 11px;
+}
+.customTourTooltip :global(.introjs-skipbutton:hover) {
+  color: #374151; /* gray-700 */
+}
+
+/* Progress bar polish (when showProgress: true) */
+.customTourTooltip :global(.introjs-progress) {
+  background: #eef2ff; /* subtle indigo-50 */
+  height: 11px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.customTourTooltip :global(.introjs-progressbar) {
+  background: linear-gradient(90deg, #4f46e5, #06b6d4);
+}
+
+/* Arrow matches card */
+.customTourTooltip :global(.introjs-arrow) {
+  border: none; /* remove default border look */
+}
+.customTourTooltip :global(.introjs-arrow.top),
+.customTourTooltip :global(.introjs-arrow.top-right),
+.customTourTooltip :global(.introjs-arrow.top-middle),
+.customTourTooltip :global(.introjs-arrow.top-left) {
+  border-bottom-color: #ffffff !important;
+}
+.customTourTooltip :global(.introjs-arrow.bottom),
+.customTourTooltip :global(.introjs-arrow.bottom-right),
+.customTourTooltip :global(.introjs-arrow.bottom-middle),
+.customTourTooltip :global(.introjs-arrow.bottom-left) {
+  border-top-color: #ffffff !important;
+}
+
+:global(.introjs-overlay) {
+  background: rgba(15, 23, 42, 0.45) !important; /* slate-900 @ 45% */
+}
+
+.tourHighlight {
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.45),
+              0 0 0 5000px rgba(15, 23, 42, 0); /* keep your halo */
+  border-radius: 10px;
+  transition: box-shadow 0.2s ease;
+}
+
+/* Optional: special look when tooltip is attached to the menu */
+.tourTooltipOnMenu {
+  max-width: 280px;
+}
 
 .LangPara {
     display: flex;
@@ -413,14 +548,6 @@
 
 }
 
-.AssignNum {
-    /* background-color: #fff; */
-    /* padding: 10px 20px; */
-    /* border-radius: 20px; */
-    /* font-size: 16px; */
-    /* color: #000; */
-    /* font-weight: 400; */
-}
 
 .AssignNum img {
     width: 95%;
@@ -475,7 +602,13 @@
     overflow: auto;
 }
 
-
+/* .forceOpenDropdown {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+} */
+:global(.introjs-overlay) { z-index: 99990 !important; }
+:global(.introjs-tooltip) { z-index: 99992 !important; }
 
 .OptionsDropdown {
     position: absolute;
@@ -486,8 +619,16 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 0;
+    z-index: 99993 !important;
     width: 170px;
+     opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.tourTooltipOnMenu {
+  transform: translateX(8px) translateY(6px);
+  max-width: 280px;
 }
 
 .OptionItem {
@@ -1310,10 +1451,6 @@
     cursor: pointer;
 }
 
-.FilterIcon {
-    position: relative;
-    cursor: pointer;
-}
 
 .DropdownMenu {
     position: absolute;

@@ -970,7 +970,7 @@ const maskKey = (key) => '•'.repeat(key?.length || 10);
               </div>
               <div className={styles.infoSection} id="payg-toggle">
                 <div className={styles.toggleContainer1}>
-                  <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
+                  <div className={styles.toggleTextAbove}>Enable Pay as you go Feature</div>
                   <label className={styles.toggleLabel1}>
                     <input
                       type="checkbox"

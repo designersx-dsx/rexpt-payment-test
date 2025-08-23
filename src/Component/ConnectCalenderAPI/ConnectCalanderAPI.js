@@ -35,7 +35,7 @@ const CalendarConnect = () => {
   const [popup, setPopup] = useState({ type: "", message: "" });
   const [apiSubmitting, setApiSubmitting] = useState(false);
   const [agentsDetails, setAgentsDetails] = useState([])
-  const [timezone,setTimeZone]=useState("")
+  const [timezone, setTimeZone] = useState("")
   //getTimeZone
   const fetchTimeZone = async () => {
     try {

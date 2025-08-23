@@ -71,9 +71,12 @@ const EditAgentNew = () => {
         agent_id,
         businessId
       );
-      // console.log('response',response.data)
+     
       const agent = response?.data?.agent;
       const business = response?.data?.business;
+     
+      const scrapedUrls= business.scrapedUrls
+      sessionStorage.setItem("scrapedUrls",scrapedUrls);
       sessionStorage.setItem("UpdationModeStepWise", "ON");
       sessionStorage.setItem("agentName", agent.agentName);
       sessionStorage.setItem("agentGender", agent.agentGender);

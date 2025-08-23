@@ -20,12 +20,14 @@ const NotificationView = () => {
     setNotificationStatus(notifications.map((n) => ({ id: n.id, status: n.status || 'unread' })));
   }, [notifications]);
 
-  const toggleAccordion = async (id) => {
+  const toggleAccordion = async (id,type) => {
     if (expandedId !== id) {
       // Mark as seen when opening
       const notification = notificationStatus.find((n) => n.id === id);
+      console.log('notification',notification)
       if (notification.status === 'unread') {
-        const response = await markNotificationAsSeen(id);
+      
+        const response = await markNotificationAsSeen(id,type);
         // console.log('response', response);
         if (response.success) {
           setNotificationStatus((prev) =>
@@ -117,7 +119,7 @@ const NotificationView = () => {
               >
                 <div
                   className={styles.notificationHeader}
-                  onClick={() => toggleAccordion(notification.id)}
+                  onClick={() => toggleAccordion(notification.id,notification.type)}
                 >
                   <div className={styles.notificationInfo}>
                     <div className={styles.titleWrapper}>

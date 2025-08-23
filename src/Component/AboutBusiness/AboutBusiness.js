@@ -7,15 +7,16 @@ import styles from "../AboutBusiness/AboutBusiness.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
+import Modal2 from "../Modal2/Modal2";
 import {
   API_BASE_URL,
   listAgents,
+  listSiteMap,
   validateWebsite,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import useCheckAgentCreationLimit from "../../hooks/useCheckAgentCreationLimit";
-
 // Convert data URL → File (used when re-hydrating)
 const dataURLtoFile = (dataUrl, fileName = "file") => {
   const [header, base64] = dataUrl.split(",");
@@ -25,8 +26,7 @@ const dataURLtoFile = (dataUrl, fileName = "file") => {
   for (let i = 0; i < bytes.length; i++) buf[i] = bytes.charCodeAt(i);
   return new File([buf], fileName, { type: mime });
 };
-
-const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
+const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange, onSiteMap, selectedSiteMapUrls }, ref) => {
   const aboutBusinessForm1 = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
   const [noGoogleListing, setNoGoogleListing] = useState(aboutBusinessForm1?.noGoogleListing || false);
   const [noBusinessWebsite, setNoBusinessWebsite] = useState(aboutBusinessForm1?.noBusinessWebsite || false);
@@ -50,13 +50,16 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
   const decodeTokenData = decodeToken(token);
   const [userId, setUserId] = useState(decodeTokenData?.id || "");
   const [isVerified, setIsVerified] = useState(false);
-  const [urlVerificationInProgress, setUrlVerificationInProgress] =
-    useState(false);
+  const [urlVerificationInProgress, setUrlVerificationInProgress] = useState(false);
   const [displayBusinessName, setDisplayBusinessName] = useState("");
   const sessionBusinessiD = JSON.parse(sessionStorage.getItem("bId"));;
   const EditingMode = localStorage.getItem("UpdationMode");
   const [placeInfoText, setPlaceInfoText] = useState("");
+  const viewSiteModal = sessionStorage.getItem("viewSiteMap")
+  const [shouldFocusBack, setShouldFocusBack] = useState(false);
   const setHasFetched = true;
+  const typingTimeoutRef = useRef(null);
+  const inputRefWebSiteUrl = useRef(null);
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "AboutBusiness",
     setLoading,
@@ -68,7 +71,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
   });
   const { isLimitExceeded, CheckingUserLimit } =
     useCheckAgentCreationLimit(userId);
-
   const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
       document.getElementById("google-autocomplete"),
@@ -104,9 +106,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       handleBlur();
     }
   }, [EditingMode, noBusinessWebsite]);
-
-
-
   const fetchPlaceDetails = (placeId) => {
     setLoading(true);
     const service = new window.google.maps.places.PlacesService(
@@ -117,8 +116,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
         setPlaceDetails(result);
         generateGoogleListingUrl(result);
-        console.log({result})
-
         const form1 = JSON.parse(sessionStorage.getItem("placeDetailsExtract") || "{}");
         // Extract important fields from result
         const businessData = {
@@ -132,7 +129,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
           hours: result.opening_hours?.weekday_text || [],
           businessStatus: result.business_status || "",
           categories: result.types || [],
-          address_components:result.address_components||[]
+          address_components: result.address_components || []
         };
         const updatedForm = {
           ...form1,
@@ -187,19 +184,40 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
   const handleUrlVerification = async (url) => {
     setUrlVerificationInProgress(true);
-    const result = await validateWebsite(url);
-    if (result.valid) {
-      setIsVerified(true);
-      setBusinessUrlError("");
-      sessionStorage.setItem("businessUrl", url);
-      localStorage.setItem("isVerified", true);
-      setNoGoogleListing(false)
-    } else {
+    try {
+      const result = await validateWebsite(url);
+      if (result.valid) {
+        setIsVerified(true);
+        setBusinessUrlError("");
+        sessionStorage.setItem("businessUrl", url);
+        localStorage.setItem("isVerified", true);
+        // setNoGoogleListing(false)
+        const res = await listSiteMap(url)
+        sessionStorage.setItem("urls", JSON.stringify(res.urls));
+        onSiteMap({ status: true, data: res.urls, addOnUrl: url })
+        sessionStorage.setItem("viewSiteMap", true)
+        setUrlVerificationInProgress(false);
+        return true;
+      } else {
+        setIsVerified(false);
+        setBusinessUrlError("Invalid URL");
+        localStorage.setItem("isVerified", false);
+        setUrlVerificationInProgress(false);
+        if (url.trim()) {
+          setShouldFocusBack(true);
+        }
+        return false;
+
+      }
+    } catch (error) {
       setIsVerified(false);
-      setBusinessUrlError("Invalid URL");
+      setBusinessUrlError("Verification failed");
       localStorage.setItem("isVerified", false);
+      setUrlVerificationInProgress(false);
+      setShouldFocusBack(true);
+
+      return false;
     }
-    setUrlVerificationInProgress(false);
   };
 
   useEffect(() => {
@@ -209,7 +227,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     }
   }, []);
 
-  const handleBlur = () => {
+  const handleBlur = (e) => {
     if (businessUrl.trim()) {
       handleUrlVerification(businessUrl);
     }
@@ -221,9 +239,21 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     const final = HTTPS_PREFIX + v;
     setBusinessUrl(final);
     setNoBusinessWebsite(false)
+
     if (businessUrlError) {
       setBusinessUrlError("");
     }
+    // 🔑 Debounce verification
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      // ✅ check if URL ends with a valid extension before verifying
+      const validTldRegex = /\.[a-z]{2,}(\/.*)?/i;
+      if (validTldRegex.test(final)) {
+        handleUrlVerification(final);
+      }
+    }, 500);
   };
 
   useEffect(() => {
@@ -233,12 +263,14 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
   }, [token]);
 
   useEffect(() => {
+    const savedData = JSON.parse(
+      sessionStorage.getItem("aboutBusinessForm") || "{}"
+    );
+    if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
     if (localStorage.getItem("UpdationMode") == "ON") {
-      const savedData = JSON.parse(
-        sessionStorage.getItem("aboutBusinessForm") || "{}"
-      );
 
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
+
       if (savedData.aboutBusiness) setAboutBusiness(savedData.aboutBusiness);
       if (savedData.note) setNote(savedData.note);
       if (savedData.googleListing) {
@@ -309,27 +341,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     }
   };
   const handleContinue = (e) => {
-    // e.preventDefault();
-
-    // const isWebsiteValid = businessUrl && isVerified;
-    // const isGoogleListingValid = googleListing.trim();
-    // if (!isGoogleListingValid && !noGoogleListing) {
-    //   setPopupType("failed");
-    //   setPopupMessage(
-    //     "Please provide a Google Listing or check the box if you don't have one."
-    //   );
-    //   setShowPopup(true);
-    //   return;
-    // }
-    // if (!isWebsiteValid && !noBusinessWebsite) {
-    //   setPopupType("failed");
-    //   setPopupMessage(
-    //     "Please provide a valid website or check the box if you don't have one."
-    //   );
-    //   setShowPopup(true);
-    //   return;
-    // }
-
     sessionStorage.setItem(
       "aboutBusinessForm",
       JSON.stringify({
@@ -338,14 +349,12 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         aboutBusiness,
         note,
         noGoogleListing,
-        noBusinessWebsite
+        noBusinessWebsite,
 
       })
     );
     onStepChange?.(4);
-    // navigate("/your-business-Listing");
   };
-
   const handleSkip = (e) => {
     e.preventDefault();
     setPopupType("confirm");
@@ -354,12 +363,10 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     );
     setShowPopup(true);
   };
-
   const confirmSkip = () => {
     setShowPopup(false);
     navigate("/steps");
   };
-
   useEffect(() => {
     const savedGoogleListing = sessionStorage.getItem("googleListing");
     const savedDisplayBusinessName = sessionStorage.getItem(
@@ -368,6 +375,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
     if (savedGoogleListing) {
       setGoogleListing(savedGoogleListing);
+
     }
 
     if (savedDisplayBusinessName) {
@@ -394,8 +402,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       handleCreateAgent();
     }, 800);
   };
-
-
   useEffect(() => {
     if (!CheckingUserLimit && isLimitExceeded && !EditingMode) {
       setShowPopup(true);
@@ -405,7 +411,6 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       );
     }
   }, [CheckingUserLimit, isLimitExceeded]);
-
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.google?.maps?.places) {
@@ -450,8 +455,10 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         });
         hasError = true;
       }
+
       return !hasError;
     },
+
     save: async () => {
       handleContinue();
     }
@@ -471,6 +478,23 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       }, 300);
     }
   };
+
+  const handleViewSelectedUrl = (e) => {
+    e.preventDefault()
+    const urls = JSON.parse(sessionStorage.getItem("urls")) || [];
+    onSiteMap({ status: true, data: urls, addOnUrl: businessUrl });
+  }
+  useEffect(() => {
+    if (businessUrl.length <= 8) {
+      setShouldFocusBack(false);
+      return;
+    }
+
+    if (shouldFocusBack) {
+      inputRefWebSiteUrl.current?.focus();
+      setShouldFocusBack(false);
+    }
+  }, [shouldFocusBack, businessUrl]);
   return (
     <>
       <div>
@@ -567,10 +591,13 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                         id="https://your-website-url"
                         type="url"
                         placeholder="https://your website url"
-                        value={businessUrl}
+                        value={businessUrl
+                        }
+                        autoComplete="off"
                         inputMode="url"
-                        autoComplete="url"
+                        ref={inputRefWebSiteUrl}
                         onBlur={handleBlur}
+
                         list="url-suggestions"
                         style={{ width: "100%" }}
                         onKeyDown={(e) => {
@@ -593,7 +620,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                           }
                           if (selectionStart <= PREFIX_LEN) e.preventDefault();
                         }}
-                        disabled={noBusinessWebsite}
+                        disabled={noBusinessWebsite || urlVerificationInProgress}
                         onInput={handleInputChange}
                         onFocus={handleFocus}
                       />
@@ -601,7 +628,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                         {urlVerificationInProgress ? (
                           <Loader size={20} />
                         ) : (
-                          isVerified !== null && (
+                          isVerified !== null && businessUrl && !noBusinessWebsite && (
                             <span
                               className={
                                 isVerified
@@ -609,20 +636,25 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                                   : styles.invalidIcon
                               }
                             >
-                              {isVerified && !noBusinessWebsite ? "✔️" : "❌"}
+                              {isVerified === true ? "✔️" : "❌"}
                             </span>
                           )
                         )}
                       </div>
                     </div>
                   </div>
+                  <div>
+                    {(businessUrl.length > 8 && isVerified && viewSiteModal && !noBusinessWebsite) && <button disabled={urlVerificationInProgress} className={styles.modalViewBtn} onClick={handleViewSelectedUrl}>View</button>}
+                  </div>
                 </div>
+
                 <div className={styles.checkboxRow}>
                   <input
                     id="no-business-website"
                     type="checkbox"
                     className={styles.customCheckbox}
                     checked={noBusinessWebsite}
+                    disabled={urlVerificationInProgress}
                     onChange={(e) => {
                       const checked = e.target.checked;
                       setNoBusinessWebsite(checked);
@@ -633,16 +665,19 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
 
                       if (checked) {
                         setBusinessUrl("");
-                        setIsVerified(true);
+                        setIsVerified(null);
                         setBusinessUrlError("");
                         sessionStorage.removeItem("businessUrl");
                       }
                     }}
                   />
-                  <label htmlFor="no-business-website">
+                  <label htmlFor="no-business-website" className={styles.iHaveNot}
+                    disabled={urlVerificationInProgress}
+                  >
                     I do not have a business website
                   </label>
                 </div>
+
               </div>
 
             </div>
@@ -656,6 +691,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
             onConfirm={confirmSkip}
           />
         )}
+
       </div>
     </>
   );

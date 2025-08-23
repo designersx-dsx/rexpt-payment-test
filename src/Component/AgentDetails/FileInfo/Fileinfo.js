@@ -14,8 +14,8 @@ import PopUp from "../../Popup/Popup";
 import Loader from "../../Loader/Loader";
 import Loader2 from "../../Loader2/Loader2";
 
-const MAX_FILES = 5;
-const MAX_FILE_SIZE_MB = 50;
+const MAX_FILES = 1;
+const MAX_FILE_SIZE_MB = 10;
 const Fileinfo = () => {
   const location = useLocation();
   const { agent_id, knowledgeBaseId } = location.state || {};
@@ -51,7 +51,6 @@ const Fileinfo = () => {
         }
       );
       setKnowledgeBaseSources(response.data.knowledge_base_sources || []);
-      console.log('asassasa',response.data.knowledge_base_sources)
       setLoading(false)
     } catch (error) {
       console.error("Failed to fetch knowledge base details:", error);
@@ -399,7 +398,7 @@ const Fileinfo = () => {
           <div  className={`${styles.modalContent} ${
         isModalDisabled ? styles.disabled : ""
       }`}>
-            <h2 className={styles.modalTitle}>Upload Files (Max 5)</h2>
+            <h2 className={styles.modalTitle}>Upload Files (Max 1)</h2>
             <hr />
 
             <div className={styles.uploadGuidelines}>
@@ -427,7 +426,7 @@ const Fileinfo = () => {
               .odt, .org, .p7s, .pdf, .ppt, .pptx, .rst, .rtf, .tiff, .txt, .tsv, .xls,
               .xlsx, .xml"
             />
-            <p className={styles.maxlimit}>Maximum file size limit: <b>50MB</b>.</p>
+            <p className={styles.maxlimit}>Maximum file size limit: <b>10MB</b>.</p>
             {inlineError && (
               <p className={styles.inlineError}>{inlineError}</p>
             )}
