@@ -564,10 +564,18 @@ width: 100%;
 }
 
 .loaderText {
-  margin-top: 20px; /* gap between animation and text */
+  margin-top: 20px;
+  /* gap between animation and text */
   font-size: 25px;
   font-weight: 500;
-  color: #333; /* adjust as per theme */
+  color: #333;
+  /* adjust as per theme */
   text-align: center;
+  width: 100%;
+  background-image: linear-gradient(180deg, #8b51ff, #bd9cff);
+  border-radius: 16px;
+  line-height: 20px;
+  padding: 15px;
+  color: #fff;
 
 }

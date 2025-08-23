@@ -48,6 +48,51 @@ const EditPublic = () => {
   const [showSiteMapModal, setShowSiteMapModal] = useState(false)
   const [selectedUrls, setSelectedUrls] = useState([]);
   const [addOnUrl, setAddOnUrl] = useState("")
+    const [debouncedUrl, setDebouncedUrl] = useState(businessUrl);
+
+  // 🕒 Debounce logic - 2 sec delay
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedUrl(businessUrl);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [businessUrl]);
+
+  useEffect(() => {
+    if (debouncedUrl && debouncedUrl.length > HTTPS_PREFIX.length) {
+      handleUrlVerification(debouncedUrl);
+    }
+  }, [debouncedUrl]);
+
+  const handleInputChanges = (e) => {
+    let v = e.target.value;
+    v = v.replace(/https?:\/\//gi, "");
+    v = v.replace(/\s+/g, "").toLowerCase();
+    const final = HTTPS_PREFIX + v;
+
+    setBusinessUrl(final);
+    setNoBusinessWebsite(false);
+    if (businessUrlError) {
+      setBusinessUrlError("");
+    }
+  };
+
+      useEffect(() => {
+    // check kare sabhi checkedStatus true hai ya nahi
+    const allChecked = showSiteMapUrls.every(item => item.checkedStatus);
+
+    if (allChecked) {
+      // sab true hai to selectedUrls me sare urls daal do
+      setSelectedUrls(showSiteMapUrls.map(item => item.url));
+    } else {
+      // warna khali ya jo logic aap chaho
+      setSelectedUrls([]);
+    }
+  }, [showSiteMapUrls]);
+
   // const setHasFetched=true;
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessType",
@@ -200,16 +245,18 @@ const EditPublic = () => {
     const result = await validateWebsite(url);
     if (result.valid) {
       const prevUrl = sessionStorage.getItem("businessUrl");
-      if (prevUrl === url) {
-        setUrlVerificationInProgress(false);
-        return;
-      }
+      // if (prevUrl === url) {
+      //   setUrlVerificationInProgress(false);
+      //   return;
+      // }
 
       setIsVerified(true);
       setBusinessUrlError("");
       sessionStorage.setItem("businessUrl", url);
       localStorage.setItem("isVerified", true);
       // setNoGoogleListing(false)
+      const scrapedUrls = JSON.parse(sessionStorage.getItem("scrapedUrls") || "[]");
+      if(originalForm.businessUrl != businessUrl || scrapedUrls.length == 0){
       const res = await listSiteMap(url);
       const formattedUrls = res.urls.map((link) => ({
         url: link,
@@ -221,6 +268,10 @@ const EditPublic = () => {
       setAddOnUrl(url)
       // update sessionStorage
       sessionStorage.setItem("scrapedUrls", JSON.stringify(formattedUrls));
+      }else{
+           const urls = JSON.parse(sessionStorage.getItem("scrapedUrls")) || [];
+           setShowSiteMapUrls(urls);
+      }
     } else {
       setIsVerified(false);
       setBusinessUrlError("Invalid URL");
@@ -399,6 +450,7 @@ const EditPublic = () => {
   const isFormChanged = JSON.stringify(originalForm) !== JSON.stringify(currentForm);
   const handleViewSelectedUrl = (e) => {
     e.preventDefault();
+     if(!isVerified)return;
     setShowSiteMapModal(true);
 
     //  Agar fresh state hai to wahi dikhao
@@ -633,7 +685,7 @@ const EditPublic = () => {
               value={businessUrl}
               inputMode="url"
               autoComplete="url"
-              onBlur={handleBlur}
+              // onBlur={handleBlur}
               list="url-suggestions"
               style={{ width: "100%" }}
               onKeyDown={(e) => {
@@ -656,8 +708,9 @@ const EditPublic = () => {
                 }
                 if (selectionStart <= PREFIX_LEN) e.preventDefault();
               }}
-              disabled={noBusinessWebsite || urlVerificationInProgress}
-              onInput={handleInputChange}
+              // disabled={noBusinessWebsite || urlVerificationInProgress}
+              disabled={noBusinessWebsite }
+              onInput={handleInputChanges}
             />
             {urlVerificationInProgress ? (
               <Loader size={20} />
@@ -675,7 +728,9 @@ const EditPublic = () => {
           )}
         </div>
 
-        <label disabled={urlVerificationInProgress} className={styles.checkboxContainer}>
+        <label 
+        disabled={urlVerificationInProgress} 
+        className={styles.checkboxContainer}>
           <input
           className={styles.noBusinessWebsite}
             type="checkbox"
@@ -711,7 +766,7 @@ const EditPublic = () => {
           pointerEvents: isFormChanged ? "auto" : "none",
           opacity: isFormChanged ? 1 : 0.5, // Optional visual effect
         }}>
-          <AnimatedButton label="Save" disabled={!isFormChanged} />
+          <AnimatedButton label="Save" disabled={!isFormChanged || urlVerificationInProgress} />
         </div>
         {showPopup && (
           <PopUp
