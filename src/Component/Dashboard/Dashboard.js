@@ -1752,8 +1752,12 @@ function Dashboard() {
   // };
 
   const handleUpgradeClick = (agent) => {
+    console.log("agent", agent)
     setPendingUpgradeAgent(agent);
     if (agent?.agentPlan == "free") {
+      if (assignNumberPaid === true) {
+        // setShowUpgradeConfirmModal(true);
+      }
       setShowUpgradeConfirmModal(false);
       //  setPendingUpgradeAgent(agent);  
       handleUpgradePaygConfirmed()
@@ -2120,7 +2124,7 @@ function Dashboard() {
   return (
     <div>
       {/*  FIxed this later */}
-      {activeSubs ? (<Popup
+      {/* {activeSubs ? (<Popup
         type="failed"
         message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
         onClose={() => {
@@ -2138,17 +2142,17 @@ function Dashboard() {
           />
         </>
 
-      ) : null}
+      ) : null} */}
 
 
-      {/* {activeSubs ? <Popup
+      {activeSubs ? <Popup
         type="failed"
         message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
         onClose={() => {
           localStorage.setItem("paymentDone", true); // Set paymentDone to true
           navigate('/steps'); // Navigate to /steps page
         }}
-      /> : null} */}
+      /> : null}
 
 
 
@@ -2298,7 +2302,9 @@ function Dashboard() {
 
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
+          // console.log("agentagentagent",agent)
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
+          // console.log("randomPlan",randomPlan)
 
           let assignedNumbers = [];
           if (agent.voip_numbers) {
@@ -2595,8 +2601,8 @@ function Dashboard() {
                 )}
 
                 <div className={styles.minLeft}>
-                  <span className={styles.MinL}>Min Left</span>{" "}
-                  {agent?.callSummary?.remaining?.minutes}
+                  <span className={styles.MinL}>{agent.agentPlan === "Pay-As-You-Go" && agent.mins_left === 0 ? "Mins Usage" : 'Min Left'}</span>{" "}
+                  {agent.agentPlan === "Pay-As-You-Go" && agent.mins_left === 0 ? agent?.payg_mins : agent?.callSummary?.remaining?.minutes}
                 </div>
               </div>
             </div>
@@ -2942,6 +2948,7 @@ function Dashboard() {
               "day"
             );
 
+
             const isRefundEligible =
               usedPercentage < 5 && subscriptionAgeDays <= 2;
 
@@ -2956,7 +2963,7 @@ function Dashboard() {
                 >
                   <h2>Are you sure?</h2>
                   <p>
-                    {plan_name1 === "free" && assignNumberPaid ? (
+                    {(plan_name1 === "free" || plan_name1 === "Pay-As-You-Go") && assignNumberPaid ? (
                       <>
                         You’re on a <strong>Free Plan</strong> with an <strong>assigned number. </strong>
                         Cancelling this plan will remove your assigned number and you
@@ -3432,7 +3439,8 @@ function Dashboard() {
         show={showUpgradeConfirmModal}
         onClose={() => setShowUpgradeConfirmModal(false)}
         title="Upgrade Plan?"
-        message="You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."
+        message={pendingUpgradeAgent?.agentPlan === "Pay-As-You-Go" ? "Your current Pay-As-You-Go plan will be upgraded to a Paid plan, giving you more benefits and features." :
+          "You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."}
         type="info"
         confirmText={upgradeLoading ? "Redirecting..." : "Yes, Upgrade"}
         cancelText="Cancel"
