@@ -80,7 +80,7 @@ const BusinessServices = forwardRef(
         ],
       },
       {
-        type: "Saloon",
+        type: "Salon",
         subtype: "Hair Styling & Grooming",
         icon: "svg/Saloon-icon.svg",
         services: [

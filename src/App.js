@@ -82,21 +82,19 @@ import ForcePortraitOnly from "./utils/ForcePortraitOnly";
 import decodeToken from "./lib/decodeToken";
 import { initNotificationSocket } from "./utils/initNotificationSocket";
 import { getUserNotifications } from "./Store/apiStore";
-import { io } from "socket.io-client"; 
+import { io } from "socket.io-client";
 import { useNotificationStore } from "./Store/notificationStore";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import NotificationView from "./Component/Notifications/NotificationView";
-
-
 // import Test from "./utils/Test";
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const token = localStorage.getItem("token");
   const lastRoute = localStorage.getItem("lastVisitedRoute");
   const decoded = decodeToken(token);
-  const userID=decoded?.id
+  const userID = decoded?.id
   const SOCKET_URL = process.env.REACT_APP_API_BASE_URL?.split('/api')[0]
   const notifications = useNotificationStore((state) => state.notifications);
   const addNotification = useNotificationStore((state) => state.addNotification);
@@ -104,14 +102,14 @@ function App() {
   const toggleFlag = useNotificationStore((state) => state.toggleFlag);
   const [unreadCount, setUnreadCount] = useState(0); // State for unreadCount
   // const [refreshNotification,setRefreshNoitification]=useState(false)
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
     script.async = true;
     script.defer = true;
     document.body.appendChild(script);
-  
+
     return () => {
       document.body.removeChild(script);
     };
@@ -145,7 +143,7 @@ function App() {
     // console.log("Unread Count:", count);
   }, [notifications]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!userID) return;
 
 
@@ -164,16 +162,16 @@ function App() {
       // console.log("📩 New Notification:", msg);
       //  window.alert(`${msg.title || "Notification"}: ${msg.message}`);
       // alert(`${msg.title || "Notification"}: ${msg.message}`)
-    //   toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
-    //   position: "top-right",
-    //   autoClose: 3000,
-    //   hideProgressBar: false,
-    //   closeOnClick: true,
-    //   pauseOnHover: true,
-    //   draggable: true,
-    //   progress: undefined,
-    //   theme: "light",
-    // });
+      //   toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
+      //   position: "top-right",
+      //   autoClose: 3000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "light",
+      // });
       // toast.info(`${msg.title || "Notification"}: ${msg.message}`, {
       //   position: "top-right",
       //   autoClose: 3000,
@@ -190,12 +188,10 @@ function App() {
       socket.disconnect();
     };
   }, [userID]);
-  // console.log('notifications',notifications)
-
 
   return (
     <>
-     {/* <ForcePortraitOnly /> */}
+      {/* <ForcePortraitOnly /> */}
       <div className="DesktopPlusMobile">
         <div className="ForDesktop">
           <img src="svg/Rexpt-Logo.svg" />
@@ -211,224 +207,224 @@ function App() {
 
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
-              <div className="App" key={refreshKey}>
-                {/* <RoutePersistence /> */}
-                <Routes>
-                  <Route
-                    path="/signup"
-                    element={token ? <SecureRoute><Navigate to={"/dashboard"} /></SecureRoute> : <SignUp />}
-                  />
-                  <Route
-                    path="/"
-                    element={token ? <SecureRoute> <Navigate to={lastRoute || "/dashboard"} /></SecureRoute> : <Start />}
-                  />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <SecureRoute>
-                        <Dashboard />
-                      </SecureRoute>
-                    }
-                  />
-                  <Route
-                    path="/calinfo"
-                    element={
-                      
-                        <CalInfo />
-                      
-                    }   >
+            <div className="App" key={refreshKey}>
+              {/* <RoutePersistence /> */}
+              <Routes>
+                <Route
+                  path="/signup"
+                  element={token ? <SecureRoute><Navigate to={"/dashboard"} /></SecureRoute> : <SignUp />}
+                />
+                <Route
+                  path="/"
+                  element={token ? <SecureRoute> <Navigate to={lastRoute || "/dashboard"} /></SecureRoute> : <Start />}
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <SecureRoute>
+                      <Dashboard />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/calinfo"
+                  element={
 
-                  </Route>
-                  <Route path="/" element={<Start />} />
-                  <Route path="/signup" element={<SignUp />} />
-                  <Route path="/edit-agent" element={<EditAgentNew />} />
-                  <Route path="/edit-business-type" element={<EditBusinessType />} />
-                  <Route path="/edit-services-offered" element={<EditServicesOffered />} />
+                    <CalInfo />
 
-                  <Route path="/edit-public-listing" element={<EditPublic />} />
+                  }   >
 
-                  <Route path="/edit-public" element={<EditPublic />} />
-                  <Route path="/edit-business-detail" element={<EditBusinessDetail />} />
-                  <Route path="/edit-language" element={<EditLanguage />} />
-                  <Route path="/edit-gender" element={<EditGender />} />
-                  <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
-                  <Route path="/plans" element={<SecureRoute><SubscriptionPlan /></SecureRoute>} />
-                  <Route path="/plan" element={<SecureRoute><Planss /></SecureRoute>} />
-                  <Route path="/assign-number" element={<SecureRoute><AssignNumber /></SecureRoute>} />
-                  <Route
-                    path="/details"
-                    element={
-                      <SecureRoute>
-                        <Details />
-                      </SecureRoute>
-                    }
-                  />
-                  <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
-                  <Route
-                    path="/about-business"
-                    element={
-                      <SecureRoute>
-                        <AboutBusiness />
-                      </SecureRoute>
-                    }
-                  />
-                  <Route
-                    path="/about-business-next"
-                    element={
-                      <SecureRoute>
-                        <BusinessServicesNEXT />
-                      </SecureRoute>
-                    }
-                  />
-                  <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
-                  <Route path="/call-setting" element={<SecureRoute><CallSetting /></SecureRoute>} />
-                  <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
-                  <Route
-                    path="/business-locations"
-                    element={
-                      <SecureRoute>
-                        <BusinessLocation />
-                      </SecureRoute>
-                    }
-                  />
+                </Route>
+                <Route path="/" element={<Start />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/edit-agent" element={<EditAgentNew />} />
+                <Route path="/edit-business-type" element={<EditBusinessType />} />
+                <Route path="/edit-services-offered" element={<EditServicesOffered />} />
 
+                <Route path="/edit-public-listing" element={<EditPublic />} />
 
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <SecureRoute>
-                        <Dashboard unreadCount={unreadCount}/>
-                      </SecureRoute>
-                    }
-                  />
+                <Route path="/edit-public" element={<EditPublic />} />
+                <Route path="/edit-business-detail" element={<EditBusinessDetail />} />
+                <Route path="/edit-language" element={<EditLanguage />} />
+                <Route path="/edit-gender" element={<EditGender />} />
+                <Route path="/edit-name-avtar" element={<EditNameAvtar />} />
+                <Route path="/plans" element={<SecureRoute><SubscriptionPlan /></SecureRoute>} />
+                <Route path="/plan" element={<SecureRoute><Planss /></SecureRoute>} />
+                <Route path="/assign-number" element={<SecureRoute><AssignNumber /></SecureRoute>} />
+                <Route
+                  path="/details"
+                  element={
+                    <SecureRoute>
+                      <Details />
+                    </SecureRoute>
+                  }
+                />
+                <Route path="/steps" element={<SecureRoute><Step /></SecureRoute>} />
+                <Route
+                  path="/about-business"
+                  element={
+                    <SecureRoute>
+                      <AboutBusiness />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/about-business-next"
+                  element={
+                    <SecureRoute>
+                      <BusinessServicesNEXT />
+                    </SecureRoute>
+                  }
+                />
+                <Route path="/business-details" element={<SecureRoute><BusinessDetails /></SecureRoute>} />
+                <Route path="/call-setting" element={<SecureRoute><CallSetting /></SecureRoute>} />
+                <Route path="/agent-detail" element={<SecureRoute><AgentDetail /></SecureRoute>} />
+                <Route
+                  path="/business-locations"
+                  element={
+                    <SecureRoute>
+                      <BusinessLocation />
+                    </SecureRoute>
+                  }
+                />
 
 
-                  <Route
-                    path="/business-services"
-                    element={
-                      <SecureRoute>
-                        <BusinessServices />
-                      </SecureRoute>
-                    }
-                  />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <SecureRoute>
+                      <Dashboard unreadCount={unreadCount} />
+                    </SecureRoute>
+                  }
+                />
 
 
-                  {/* <Route path="/home" element={<Home />} /> */}
-                  <Route
-                    path="/ai-assistant"
-                    element={
-                      <SecureRoute>
-                        <AiAssistant />
-                      </SecureRoute>
-                    }
-                  />
-                  <Route
-                    path="/rex-agent"
-                    element={
-                      <SecureRoute>
-                        <RexAgent />
-                      </SecureRoute>
-                    }
-                  />
-                  {/* <Route path="/plans" element={<Plans />} /> */}
-                  <Route path="/checkout" element={<SecureRoute><SubscriptionFlow /></SecureRoute>} />
-                  <Route
-                    path="/calendar"
-                    element={
-                      <SecureRoute>
-                        <Calendar />
-                      </SecureRoute>
-                    }
-                  />
-                  <Route path="/totalcall-list" element={<SecureRoute><TotalsCallsList /></SecureRoute>} />
-                  <Route path="/call-transfer" element={<SecureRoute><CallTransfer /></SecureRoute>} />
-                  <Route path="/call-details/:callId" element={<SecureRoute><CallDetails /></SecureRoute>} />
-                  <Route
-                    path="/business-services"
-                    element={
-                      <SecureRoute>
-                        <BusinessServices />
-                      </SecureRoute>
-                    }
-                  />
-
-                  <Route
-                    path="/ai-assistant"
-                    element={
-                      <SecureRoute>
-                        <AiAssistant />
-                      </SecureRoute>
-                    }
-                  />
-                  <Route
-                    path="/rex-agent"
-                    element={
-                      <SecureRoute>
-                        <RexAgent />
-                      </SecureRoute>
-                    }
-                  />
-                  {/* <Route path="/plans" element={<Plans />} /> */}
-                  <Route path="/checkout" element={<SubscriptionFlow />} />
-                  <Route
-                    path="/calendar"
-                    element={
-                      <SecureRoute>
-                        <Calendar />
-                      </SecureRoute>
-                    }
-                  />
-                  <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
-                  <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
-                  <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
-                  <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
-                  <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
-                  <Route path="/test-other" element={<Test />} />
+                <Route
+                  path="/business-services"
+                  element={
+                    <SecureRoute>
+                      <BusinessServices />
+                    </SecureRoute>
+                  }
+                />
 
 
+                {/* <Route path="/home" element={<Home />} /> */}
+                <Route
+                  path="/ai-assistant"
+                  element={
+                    <SecureRoute>
+                      <AiAssistant />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/rex-agent"
+                  element={
+                    <SecureRoute>
+                      <RexAgent />
+                    </SecureRoute>
+                  }
+                />
+                {/* <Route path="/plans" element={<Plans />} /> */}
+                <Route path="/checkout" element={<SecureRoute><SubscriptionFlow /></SecureRoute>} />
+                <Route
+                  path="/calendar"
+                  element={
+                    <SecureRoute>
+                      <Calendar />
+                    </SecureRoute>
+                  }
+                />
+                <Route path="/totalcall-list" element={<SecureRoute><TotalsCallsList /></SecureRoute>} />
+                <Route path="/call-transfer" element={<SecureRoute><CallTransfer /></SecureRoute>} />
+                <Route path="/call-details/:callId" element={<SecureRoute><CallDetails /></SecureRoute>} />
+                <Route
+                  path="/business-services"
+                  element={
+                    <SecureRoute>
+                      <BusinessServices />
+                    </SecureRoute>
+                  }
+                />
 
-
-                  <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
-                  <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
-                  <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
-                  <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
-
-                  <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
-                  <Route path="/documentation" element={<SecureRoute><Documentation /></SecureRoute>} />
-                  <Route path="/raise-tickets" element={<SecureRoute><RaiseTickets /></SecureRoute>} />
-                  <Route path="/create-ticket" element={<SecureRoute><CreateTicket /></SecureRoute>} />
-
-                  <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
-                  <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
-
-                  <Route path='/add-file' element={<SecureRoute><Fileinfo/></SecureRoute>}/>
-
-                  <Route path="/notifications" element={<SecureRoute><NotificationView/></SecureRoute>} />
-
-
-
-                  <Route path="/test-other" element={<Test />} />
-                  <Route path="/thankyou/:id" element={<Thankyou />} />
-                  <Route path="/cancel-payment" element={<CancelPage />} />
-                  <Route path="/*" element={<RedirectHandler />} />
-
-
-                  <Route path="/thankyou2" element={<Thankyou2 />} />
+                <Route
+                  path="/ai-assistant"
+                  element={
+                    <SecureRoute>
+                      <AiAssistant />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/rex-agent"
+                  element={
+                    <SecureRoute>
+                      <RexAgent />
+                    </SecureRoute>
+                  }
+                />
+                {/* <Route path="/plans" element={<Plans />} /> */}
+                <Route path="/checkout" element={<SubscriptionFlow />} />
+                <Route
+                  path="/calendar"
+                  element={
+                    <SecureRoute>
+                      <Calendar />
+                    </SecureRoute>
+                  }
+                />
+                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
+                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
+                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
+                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
+                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
+                <Route path="/test-other" element={<Test />} />
 
 
 
 
-                  <Route path="/number" element={< Number />} />
+                <Route path="/edit-profile" element={<SecureRoute><EditProfile /></SecureRoute>} />
+                <Route path="/your-business-Listing" element={<SecureRoute><BusinessListing /></SecureRoute>} />
+                <Route path="/widget-guide" element={<SecureRoute><WidgetGuidePage /></SecureRoute>} />
+                <Route path="/connect-calender" element={<SecureRoute><ConnectCalenderAPI /></SecureRoute>} />
 
-                  <Route path="/delete-account" element={<Delete />} />
-                </Routes>
-              </div>
+                <Route path="/agent-setup" element={<SecureRoute><AgentSetupHelp /></SecureRoute>} />
+                <Route path="/documentation" element={<SecureRoute><Documentation /></SecureRoute>} />
+                <Route path="/raise-tickets" element={<SecureRoute><RaiseTickets /></SecureRoute>} />
+                <Route path="/create-ticket" element={<SecureRoute><CreateTicket /></SecureRoute>} />
+
+                <Route path="/integrate-agent" element={<SecureRoute><IntegrateAgent /></SecureRoute>} />
+                <Route path="/call-recording" element={<SecureRoute><CallRecording /></SecureRoute>} />
+
+                <Route path='/add-file' element={<SecureRoute><Fileinfo /></SecureRoute>} />
+
+                <Route path="/notifications" element={<SecureRoute><NotificationView /></SecureRoute>} />
+
+
+
+                <Route path="/test-other" element={<Test />} />
+                <Route path="/thankyou/:id" element={<Thankyou />} />
+                <Route path="/cancel-payment" element={<CancelPage />} />
+                <Route path="/*" element={<RedirectHandler />} />
+
+
+                <Route path="/thankyou2" element={<Thankyou2 />} />
+
+
+
+
+                <Route path="/number" element={< Number />} />
+
+                <Route path="/delete-account" element={<Delete />} />
+              </Routes>
+            </div>
             {/* </BrowserRouter> */}
           </PreventPullToRefresh>
 
         </div>
       </div>
- <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }
