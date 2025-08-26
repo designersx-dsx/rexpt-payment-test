@@ -40,7 +40,7 @@ export default function useTrafficSource() {
       console.log(domain,"domain")
       if (domain) {
         sourceData = {
-          source: domain,
+          source: ref,
           medium: "referral",
           campaign: "none",
           method: "referrer",
