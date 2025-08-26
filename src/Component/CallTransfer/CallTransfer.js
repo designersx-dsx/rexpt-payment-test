@@ -316,16 +316,17 @@ function CallTransfer() {
   useEffect(() => {
     const fetchCountryCode = async () => {
       try {
-        const res = await axios.get("https://ipwho.is/");
+        // const res = await axios.get("https://ipwho.is/");
+        const res = await axios.get("https://ipinfo.io/json");
         const data = res?.data;
-        if (data && data.country_code && data.phone_code) {
+        if (data && data.country ) {
           setTransfers((prev) =>
             prev.map((t, i) =>
               i === 0
                 ? {
                     ...t,
                     dialCode: data.phone_code.replace("+", ""),
-                    countryCode: data.country_code.toLowerCase(),
+                    countryCode: data.country.toLowerCase(),
                   }
                 : t
             )

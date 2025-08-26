@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "recharts";
 import Select from "react-select";
 import Loader2 from "../Loader2/Loader2";
+import axios from "axios";
 
 const stripePromise = loadStripe(
   "pk_live_51RYjjKSCQQfKS3WDzVLb6c2Xk6Gdt2NaJ7pF5eWRDk345NQY1TNBOgxy5CUYCWAsWsqU1pJx8Bi56Ue7U5vg2Noe00HMCU3IXV"
@@ -334,11 +335,11 @@ function CheckoutForm({
   useEffect(() => {
     const getLocationCurrency = async () => {
       try {
-        const response = await fetch("https://ipwho.is/");
-        const data = await response.json();
-
-        if (data.success && data.country_code) {
-          const currency = mapCountryToCurrency(data.country_code);
+        // const response = await fetch("https://ipwho.is/");
+        const response = await axios.get('https://ipinfo.io/json');
+        const data = await  response?.data;
+        if (data.country) {
+          const currency = mapCountryToCurrency(data.country);
           setUserCurrency(currency);
         } else {
           throw new Error("Invalid IP data");

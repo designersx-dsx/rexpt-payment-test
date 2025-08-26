@@ -66,7 +66,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       icon: "svg/Interior-Designer-icon.svg",
     },
     {
-      type: "Saloon",
+      type: "Salon",
       subtype: "Hair Styling & Grooming",
       icon: "svg/Saloon-icon.svg",
     },

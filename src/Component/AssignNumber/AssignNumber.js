@@ -13,7 +13,7 @@ const AssignNumber = () => {
     const location = useLocation();
     const stateInputRef = useRef(null);
     const cityInputRef = useRef(null);
-    const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =useDashboardStore();
+    const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } = useDashboardStore();
     const [stateNameFull, setStateNameFull] = useState('');
     const [open, setOpen] = useState(false);
     const [selectedLangCode, setSelectedLangCode] = useState('us');
@@ -58,9 +58,10 @@ const AssignNumber = () => {
     useEffect(() => {
         const fetchCountryCode = async () => {
             try {
-                const res = await axios.get('https://ipwho.is/');
+                // const res = await axios.get('https://ipwho.is/');
+                const res = await axios.get('https://ipinfo.io/json');
                 const data = res?.data;
-                if (data && data.country_code) {
+                if (data && data.country) {
                     //   setIpData(data);
 
                     //   setCountryCode(data.country_code.toLowerCase());
@@ -114,21 +115,21 @@ const AssignNumber = () => {
         setShowPopup(false)
         try {
             // First attempt: Country + State + City
-            const res = await fetchAvailablePhoneNumberByCountry( token, countryCode, cityName, stateCode);
+            const res = await fetchAvailablePhoneNumberByCountry(token, countryCode, cityName, stateCode);
             if (requestVersion.current !== currentVersion) return;
             if (res?.success && res?.data?.length > 0) {
                 setAvailableNumbers(res.data);
 
             } else {
                 // Fallback: Country + State (without city)
-                const fallbackRes = await fetchAvailablePhoneNumberByCountry(token  , countryCode, "", stateCode);
+                const fallbackRes = await fetchAvailablePhoneNumberByCountry(token, countryCode, "", stateCode);
 
                 if (fallbackRes?.success && fallbackRes?.data?.length > 0) {
                     setTimeout(() => {
                         setCityName("")
                     }, 3000);
                     setAvailableNumbers(fallbackRes.data);
-                   
+
                 }
 
                 else {
@@ -169,12 +170,12 @@ const AssignNumber = () => {
         const endsWith = getRandomDigit();
         try {
             // First: Try with city + state + country
-            const res = await fetchAvailablePhoneNumberByCountry(token  , countryCode, cityName, stateCode, startsWith, endsWith);
+            const res = await fetchAvailablePhoneNumberByCountry(token, countryCode, cityName, stateCode, startsWith, endsWith);
             if (res?.success) {
                 setAvailableNumbers(res.data);
             } else {
                 // Fallback: Try with state + country only  
-                const fallbackRes = await fetchAvailablePhoneNumberByCountry(token , countryCode, cityName, stateCode);
+                const fallbackRes = await fetchAvailablePhoneNumberByCountry(token, countryCode, cityName, stateCode);
                 if (fallbackRes?.success && fallbackRes?.data?.length > 0) {
                     setAvailableNumbers(fallbackRes.data);
                 } else {
@@ -224,10 +225,10 @@ const AssignNumber = () => {
         const selectedLangCountryCodes = languages.map((lang) => lang.countryCode);
         const isCountryValid = selectedLangCountryCodes.includes(countryCode);
         if (!isCountryValid) {
-          setCountryCode("US");
-          setStateCode("");
-          setCityName("");
-          setStateNameFull("")
+            setCountryCode("US");
+            setStateCode("");
+            setCityName("");
+            setStateNameFull("")
         }
         popupShownRef.current = false;
     }, [stateCode])
@@ -372,7 +373,7 @@ const AssignNumber = () => {
                         <div className={styles.infoRow}>
                             <img src="/svg/green-check.svg" alt="check" />
                             <span>
-                                <strong>Business:</strong>{location.state?.agent?.business?.businessName||location.state?.business?.businessName}
+                                <strong>Business:</strong>{location.state?.agent?.business?.businessName || location.state?.business?.businessName}
                             </span>
                         </div>
                         <div className={styles.disclaimerBox}>

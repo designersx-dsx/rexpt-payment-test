@@ -307,7 +307,6 @@ const SignUp = () => {
       inputRefs.current[0].focus();
     }
   }, [otpSent]);
-
   return (
     <>
       {ready && (
