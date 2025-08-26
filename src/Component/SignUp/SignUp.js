@@ -10,7 +10,6 @@ import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 import useUser from "../../Store/Context/UserContext";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
-import useTrafficSource from "../../lib/sourceGet";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -308,8 +307,6 @@ const SignUp = () => {
       inputRefs.current[0].focus();
     }
   }, [otpSent]);
-  const traffic = useTrafficSource();
-  console.log(JSON.stringify(traffic, null, 2));
   return (
     <>
       {ready && (

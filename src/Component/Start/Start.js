@@ -112,8 +112,6 @@ function Start() {
 
     return () => window.removeEventListener("resize", setVH);
   }, []);
-  const traffic = useTrafficSource();
-  console.log(JSON.stringify(traffic, null, 2));
   return (
     <div>
       <div className={styles.signUpContainer}>
