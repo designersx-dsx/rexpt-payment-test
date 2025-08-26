@@ -22,7 +22,7 @@ export const LoginWithEmailOTP = async (email) => {
   return res;
 };
 
-export const verifyEmailOTP = async (email, otp) => {
+export const verifyEmailOTP = async (email, otp,customer_id) => {
   const customerRes = await fetch(`${API_BASE_URL}/customer`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
