@@ -244,7 +244,7 @@ export const getAgentCallById = async (agentId,callId,start_timestamp) => {
     // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
     const res = await api.get(`callHistory/getSpecificCallData/call/${agentId}/${callId}?start_timestamp=${start_timestamp}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
     return res.data;
@@ -259,7 +259,7 @@ export const getAgentCalls = async (agentId) => {
     // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
     const res = await api.get(`/callHistory/agentCalLHistory/${agentId}/last3months`, {
       headers: {
-        Authorization: `Bearer $${token}`,
+        Authorization: `Bearer $${localStorage.getItem('token')}`,
       },
     });
     return res.data;
@@ -269,11 +269,12 @@ export const getAgentCalls = async (agentId) => {
   }
 };
 export async function getUserCallsByMonth(userId, month, year) {
+  
     try {
   const res = await axios.get(`${API_BASE_URL}/callHistory/user/${userId}/calls-by-month`, {
     params: { month, year },
      headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
   });
   return res.data;
@@ -308,7 +309,7 @@ export const fetchUserDetails = async (id) => {
     const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
        headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
   },
     })
     return response
