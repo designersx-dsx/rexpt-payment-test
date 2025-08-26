@@ -4,7 +4,7 @@ import styles from "./Step.module.css";
 import Step2 from "../Step2/Step2";
 import Step3 from "../Step3/Step3";
 import Step4 from "../Step4/Step4";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { IDLE_FETCHER, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import PopUp from "../Popup/Popup";
@@ -111,6 +111,7 @@ const Step = () => {
     });
     const location = useLocation()
     const locationPath = location?.state?.locationPath;
+    const isTiered = location?.state?.plan
     let value = location?.state?.value
     const step1Ref = useRef(null)
     const step3Ref = useRef(null);
@@ -1111,7 +1112,26 @@ const Step = () => {
     useEffect(() => {
         sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
     }, [completedSteps]);
+    
+const tierCheckout = async () => {
+  try {
+    const res = await axios.post(`${API_BASE_URL}/tier/checkout`, {
+      customerId: decodeTokenData?.customerId
+,
+      presetUnits: location?.state?.value,
+      minUnits: 0,
+      maxUnits: 200,
+      successUrl: window.location.origin + "/thankyou", // origin + path
+      cancelUrl: window.location.origin + "/cancel"
+    });
 
+    if (res?.data?.url) {
+      window.location.href = res.data.url; // redirect user
+    }
+  } catch (error) {
+    console.error("Checkout error:", error);
+  }
+};
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.value
@@ -1134,6 +1154,10 @@ const Step = () => {
                 navigate("/checkout")
             }
 
+        }
+        else if(isTiered ==="tierPlan"){
+            tierCheckout()
+                                  
         }
         else if (locationPath !== "/checkout" && !priceId) {
 

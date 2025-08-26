@@ -1173,7 +1173,14 @@ const tierCheckout = async () => {
     </div>
                      
                         <AnimatedButton label='Subscribe' position={{ position: "relative" }}
-                            onClick={tierCheckout}
+                            onClick={()=>{
+                                navigate('/steps' , {
+                                    state: {
+                                        plan : "tierPlan" ,
+                                        value : value
+                                    }
+                                })
+                            }}
                         />
 
                     </div>
