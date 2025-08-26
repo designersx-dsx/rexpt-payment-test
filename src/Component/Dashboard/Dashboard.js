@@ -89,6 +89,7 @@ function Dashboard() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
+  console.log("agentDetails",agentDetails)
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -154,6 +155,7 @@ function Dashboard() {
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
 
   const [agentId, setagentId] = useState();
+  console.log("agentId",agentId)
   const [subscriptionId, setsubscriptionId] = useState();
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => {
@@ -221,6 +223,8 @@ function Dashboard() {
 
   const [redirectButton, setredirectButton] = useState(false)
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+
+  const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
 
 
 
@@ -975,7 +979,7 @@ function Dashboard() {
   };
 
   const handleCancelSubscription = async (agent) => {
-    // console.log("agent", agent)
+    console.log("agentttttt", agent)
     const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
 
@@ -984,7 +988,8 @@ function Dashboard() {
 
       try {
         let res = null
-        if (assignNumberPaid === true && agent.agentPlan === "free") {
+        if (assignNumberPaid === true && (agent.agentPlan === "free" || agent.agentPlan === "Pay-As-You-Go")) {
+          console.log("Cancel Schedule")
           res = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
             method: "POST",
             headers: {
@@ -997,6 +1002,8 @@ function Dashboard() {
             customerId: customer_id,
             agentId: agent_id,
             status: "inactive",
+            isFree: (agent.agentPlan === "free") || (agent.agentPlan === "Pay-As-You-Go" ? true : false)
+
           };
           const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
             method: 'POST',
@@ -1007,10 +1014,12 @@ function Dashboard() {
             body: JSON.stringify(requestData),
           });
           if (response.ok) { console.log('Agent Payg Cancelled Succesfully') }
+
           else {
             console.log('Failed to send the request to save the agent.')
           }
           console.log("assign cancel")
+          await checkAssignNumber()
         }
         else {
           res = await refundAndCancelSubscriptionAgnetApi(
@@ -1752,7 +1761,7 @@ function Dashboard() {
   // };
 
   const handleUpgradeClick = (agent) => {
-    console.log("agent", agent)
+    // console.log("agent", agent)
     setPendingUpgradeAgent(agent);
     if (agent?.agentPlan == "free") {
       if (assignNumberPaid === true) {
@@ -2117,6 +2126,18 @@ function Dashboard() {
     else if (isAssignNumber === "true") {
       setPopupType("success");
       setPopupMessage(`Payment Success for Assign Number, Now you can Assign Numbers to Your Free Agent`);
+      setTimeout(() => {
+        navigate("/assign-number", {
+        state: { agent: agentDetails?.agent_id },
+      })
+      }, 2000);
+
+      if (assignNumberNavigate === true) {
+        navigate("/assign-number", {
+          state: { agent: agentDetails?.agent_id },
+        })
+      }
+      
     }
   }, [])
 
@@ -2322,7 +2343,7 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-                  {agent?.subscription?.plan_name === "Extra Minutes"
+                  {agent?.subscription?.plan_name === "Add-on Services"
                     // {agent?.subscription?.plan_name === "PAYG Extra" // Live Acccount
                     ? "Pay-As-You-Go"
                     : agent?.subscription?.plan_name || "Free"}
@@ -2490,7 +2511,8 @@ function Dashboard() {
 
                       {((agent?.subscription &&
                         agent?.subscription?.plan_name?.toLowerCase() !==
-                        "free") || assignNumberPaid) && (
+                        "free") || assignNumberPaid && agent?.isDeactivated === 0
+                      ) && (
                           <>
                             <div>
                               <div
@@ -2508,6 +2530,7 @@ function Dashboard() {
                               <div
                                 onMouseDown={(e) => {
                                   // handleTogglePayG()
+                                  console.log("agent",agent)
                                   setshowPaygConfirm(true)
                                   setagentToPaygActivate(agent)
                                 }}
@@ -3219,65 +3242,108 @@ function Dashboard() {
         <CaptureProfile onClose={closeCaptureModal} onCapture={handleCapture} />
       )} */}
       {showDeactivateConfirm && agentToDeactivate && (
-        <div
-          className={styles.modalBackdrop}
-
-        >
+        <div className={styles.modalBackdrop}>
           <div
             className={styles.modalContainer}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>
-              {agentToDeactivate?.isDeactivated === 1
-                ? "Activate Agent"
-                : "Deactivate Agent"}
-            </h2>
-            <p>
-              {agentToDeactivate?.isDeactivated === 1
-                ? "Are you sure you want to activate this agent?"
-                : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."}
-              <strong>
-                {agentToDeactivate?.isDeactivated === 1
-                  ? "Activate"
-                  : "Deactivate"}
-              </strong>{" "}
-              <strong>{formatName(agentToDeactivate?.agentName)}</strong>?
-            </p>
+            {agentToDeactivate.agentPlan === "free" &&
+              agentToDeactivate.mins_left === 0 &&
+              agentToDeactivate.isDeactivated === 1 ? (
+              // 👉 Special Upgrade Popup
+              <>
+                <h2>Upgrade Required</h2>
+                <p>
+                  You’ve used up all your free minutes. To continue using{" "}
+                  <strong>{formatName(agentToDeactivate?.agentName)}</strong>, please
+                  upgrade your plan.
+                </p>
 
-            <div className={styles.modalButtons}>
-              <button
-                className={`${styles.modalButton} ${styles.cancel}`}
-                onClick={() => setShowDeactivateConfirm(false)}
-                disabled={deactivateLoading ? true : false}
-              >
-                {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
-              </button>
-              <button
-                className={`${styles.modalButton} ${styles.submit}`}
-                onClick={handleDeactivateAgent}
-              >
-                {deactivateLoading ? (
-                  <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
+                <div className={styles.modalButtons}>
+                  <button
+                    className={`${styles.modalButton} ${styles.cancel}`}
+                    onClick={() => setShowDeactivateConfirm(false)}
+                    disabled={deactivateLoading}
                   >
-                    Updating <Loader size={18} />
-                  </span>
-                ) : (
-                  <>
+                    Cancel
+                  </button>
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={()=>handleUpgradeClick(agentToDeactivate)} // 👉 You'll need to implement this
+                  >
+                    {deactivateLoading ? (
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Redirecting <Loader size={18} />
+                      </span>
+                    ) : (
+                      "Upgrade"
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : (
+              // 👉 Existing Activate/Deactivate Popup
+              <>
+                <h2>
+                  {agentToDeactivate?.isDeactivated === 1
+                    ? "Activate Agent"
+                    : "Deactivate Agent"}
+                </h2>
+                <p>
+                  {agentToDeactivate?.isDeactivated === 1
+                    ? "Are you sure you want to activate this agent?"
+                    : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."}
+                  <strong>
                     {agentToDeactivate?.isDeactivated === 1
-                      ? "Yes"
-                      : "Yes, Pause"}
-                  </>
-                )}
-              </button>
-            </div>
+                      ? "Activate"
+                      : "Deactivate"}
+                  </strong>{" "}
+                  <strong>{formatName(agentToDeactivate?.agentName)}</strong>?
+                </p>
+
+                <div className={styles.modalButtons}>
+                  <button
+                    className={`${styles.modalButton} ${styles.cancel}`}
+                    onClick={() => setShowDeactivateConfirm(false)}
+                    disabled={deactivateLoading}
+                  >
+                    {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
+                  </button>
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={handleDeactivateAgent}
+                  >
+                    {deactivateLoading ? (
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Updating <Loader size={18} />
+                      </span>
+                    ) : (
+                      <>
+                        {agentToDeactivate?.isDeactivated === 1
+                          ? "Yes"
+                          : "Yes, Pause"}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
+
 
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
@@ -3412,6 +3478,7 @@ function Dashboard() {
           onClose={() => {
             setPopupMessage("")
             setredirectButton(false)
+            setassignNumberNavigate(true)
           }}
           onConfirm={handleLogoutConfirm}
           extraButton={
