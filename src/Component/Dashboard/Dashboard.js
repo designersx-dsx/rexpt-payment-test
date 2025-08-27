@@ -89,7 +89,6 @@ function Dashboard() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
-  console.log("agentDetails",agentDetails)
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -155,7 +154,6 @@ function Dashboard() {
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
 
   const [agentId, setagentId] = useState();
-  console.log("agentId",agentId)
   const [subscriptionId, setsubscriptionId] = useState();
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   const closeAssignNumberModal = () => {
@@ -205,11 +203,21 @@ function Dashboard() {
 
   // Assign Number
   const [assignNumberPaid, setAssignNumberPaid] = useState(false);
+  // console.log("assignNumberPaid",assignNumberPaid)
   const [isAssignApi, setisAssignApi] = useState(false);
 
   // Payg Popup
   const [showPaygConfirm, setshowPaygConfirm] = useState(false);
   const [agentToPaygActivate, setagentToPaygActivate] = useState(null);
+
+      const [redirectButton, setredirectButton] = useState(false)
+
+  const [checkPaygStatus, setcheckPaygStatus] = useState()
+
+  const [paygEnabledPopup, setpaygEnabledPopup] = useState(false)
+
+  // console.log("paygEnabledPopup", paygEnabledPopup)
+  
 
 
   // Payg Set
@@ -221,7 +229,6 @@ function Dashboard() {
   // console.log('unreadCount',unreadCount,toggleFlag)
   // console.log('asasasasa',unreadCount)
 
-  const [redirectButton, setredirectButton] = useState(false)
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 
   const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
@@ -979,7 +986,7 @@ function Dashboard() {
   };
 
   const handleCancelSubscription = async (agent) => {
-    console.log("agentttttt", agent)
+    // console.log("agentttttt", agent)
     const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
 
@@ -1996,7 +2003,7 @@ function Dashboard() {
 
   const handleTogglePayG = async () => {
     setpaygStatusLoading(true)
-    console.log("agentToPaygActivate.agentPlan", agentToPaygActivate.agentPlan)
+    // console.log("agentToPaygActivate.agentPlan", agentToPaygActivate.agentPlan)
     try {
       // console.log({ customer_id })
       const requestData = {
@@ -2128,8 +2135,8 @@ function Dashboard() {
       setPopupMessage(`Payment Success for Assign Number, Now you can Assign Numbers to Your Free Agent`);
       setTimeout(() => {
         navigate("/assign-number", {
-        state: { agent: agentDetails?.agent_id },
-      })
+          state: { agent: agentDetails?.agent_id },
+        })
       }, 2000);
 
       if (assignNumberNavigate === true) {
@@ -2137,9 +2144,44 @@ function Dashboard() {
           state: { agent: agentDetails?.agent_id },
         })
       }
-      
+
     }
   }, [])
+
+  useEffect(() => {
+    const checkUserPayg = async () => {
+      try {
+        // setLoading(true);
+
+        const res = await axios.post(`${API_BASE_URL}/check-payg-enable`, { customer_id });
+
+        if (res?.data?.success) {
+          setcheckPaygStatus(res?.data?.paygStatus);
+        } else {
+          setcheckPaygStatus(false);
+        }
+      } catch (error) {
+        console.error("Error checking payg status:", error);
+        setcheckPaygStatus(false);
+      }
+
+    }
+    checkUserPayg()
+  }, [checkPaygStatus,paygEnabledPopup])
+
+  // Payg Error
+  useEffect(() => {
+    // console.log("checkPaygStatus",checkPaygStatus)
+    if (paygEnabledPopup === true && (checkPaygStatus === null || checkPaygStatus === 0)) {
+    setredirectButton(true)
+    setPopupMessage("Pay-As-You-Go is not enabled for your Account.");
+    setpaygStatusLoading(false)
+    setPopupType("failed"); // Pop-up for disabled
+  }
+  }, [checkPaygStatus,paygEnabledPopup])
+  
+  
+
 
 
   return (
@@ -2530,9 +2572,10 @@ function Dashboard() {
                               <div
                                 onMouseDown={(e) => {
                                   // handleTogglePayG()
-                                  console.log("agent",agent)
+                                  // console.log("agent", agent)
                                   setshowPaygConfirm(true)
                                   setagentToPaygActivate(agent)
+                                  setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false )
                                 }}
 
                                 className={styles.OptionItem}
@@ -3067,7 +3110,7 @@ function Dashboard() {
 
         {/* PAYG MODAL */}
         {showPaygConfirm &&
-          agentToPaygActivate &&
+          agentToPaygActivate && checkPaygStatus === 1 &&
           (() => {
             const totalMins = agentToPaygActivate?.subscription?.totalMinutes || 0;
             const minsLeft = agentToPaygActivate?.mins_left || 0;
@@ -3086,7 +3129,12 @@ function Dashboard() {
             const isRefundEligible =
               usedPercentage < 5 && subscriptionAgeDays <= 2;
 
+
+
             return (
+              // <> {checkPaygStatus === null || checkPaygStatus === 0 ? <>
+
+              // </> :
               <div
                 className={styles.modalBackdrop}
                 onClick={() => setshowPaygConfirm(false)}
@@ -3152,6 +3200,7 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
+              // }</>
             );
           })()}
 
@@ -3269,7 +3318,7 @@ function Dashboard() {
                   </button>
                   <button
                     className={`${styles.modalButton} ${styles.submit}`}
-                    onClick={()=>handleUpgradeClick(agentToDeactivate)} // 👉 You'll need to implement this
+                    onClick={() => handleUpgradeClick(agentToDeactivate)} // 👉 You'll need to implement this
                   >
                     {deactivateLoading ? (
                       <span
@@ -3479,6 +3528,8 @@ function Dashboard() {
             setPopupMessage("")
             setredirectButton(false)
             setassignNumberNavigate(true)
+            setcheckPaygStatus(false)
+            setpaygEnabledPopup(false)
           }}
           onConfirm={handleLogoutConfirm}
           extraButton={

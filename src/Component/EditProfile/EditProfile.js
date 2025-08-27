@@ -99,7 +99,7 @@ const EditProfile = () => {
   const [copiedZapier, setCopiedZapier] = useState(false);
   const [copiedClient, setCopiedClient] = useState(false);
 
-  
+
 
 
 
@@ -643,6 +643,7 @@ const EditProfile = () => {
     }
   };
 
+  const [glow, setGlow] = useState(false);
 
 
   useEffect(() => {
@@ -652,8 +653,9 @@ const EditProfile = () => {
       // if (el) {
       //   el.scrollIntoView({ behavior: "smooth", block: "start" });
       // }
+      setGlow(true)
       setTimeout(() => {
-        sectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        sectionRef?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 0);
     }
   }, []);
@@ -667,7 +669,7 @@ const EditProfile = () => {
     setIsEditing(false);
   };
 
-  
+
 
 
 
@@ -1004,7 +1006,8 @@ const EditProfile = () => {
                   </div>}
                 </div>
               </div>
-              <div className={styles.infoSection} ref={sectionRef} id="payg-toggle">
+              <div className={`${styles.infoSection} ${glow ? styles.glowOnce : ""}`}
+                ref={sectionRef} id="payg-toggle">
                 <div className={styles.toggleContainer1}>
                   <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
                   <label className={styles.toggleLabel1}>
