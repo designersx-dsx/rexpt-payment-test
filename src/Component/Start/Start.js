@@ -94,8 +94,8 @@ function Start() {
           searchParams.delete("businessType");
           updated = true;
         }
-        if(isUser==="true"){
-            sessionStorage.setItem("isUser", isUser);
+        if(isUser==="free"){
+            sessionStorage.setItem("isUser", "true");
               searchParams.delete("isUser");
         }
 
