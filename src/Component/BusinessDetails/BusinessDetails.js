@@ -196,6 +196,11 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       subtype: "Your Journey Begins Here",
       icon: "svg/Marketing Agency.svg",
     },
+        {
+      type: "Digital Marketing Agency",
+      subtype: "Grow Your Brand Online",
+      icon: "svg/Digital-marketing-Agency.svg",
+    },
     {
       type: "Car Repair & Garage",
       subtype: "Quality Repairs, Every Time",
@@ -379,13 +384,13 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
     } else {
       setBusinessTypeError("");
     }
-    const sizeError = validateBusinessSize(businessSize);
-    if (sizeError) {
-      setBusinessSizeError(sizeError);
-      hasError = true;
-    } else {
-      setBusinessSizeError("");
-    }
+    // const sizeError = validateBusinessSize(businessSize);
+    // if (sizeError) {
+    //   setBusinessSizeError(sizeError);
+    //   hasError = true;
+    // } else {
+    //   setBusinessSizeError("");
+    // }
     const serviceError = validateServices(customBuisness);
     if (serviceError) {
       setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
@@ -404,6 +409,9 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         businessName: businessName.trim(),
         businessSize,
       };
+  if (businessSize) {
+  businessData.businessSize = businessSize;
+}
       // navigate("/about-business-next");
     } else {
       businessData = {
@@ -412,7 +420,9 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
         businessName: businessName.trim(),
         businessSize,
       };
-
+  if (businessSize) {
+  businessData.businessSize = businessSize;
+}
       // navigate("/business-services");
     }
     sessionStorage.setItem("businessDetails", JSON.stringify(businessData));
@@ -484,16 +494,16 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       // if (CheckingUserLimit) return 
 
       // Validate business size
-      if (!businessSize) {
-        setBusinessSizeError("Please select a business size.");
-        onValidationError?.({
-          type: "failed",
-          message: "Please select a business size.",
-        });
-        return false;
-      } else {
-        setBusinessSizeError("");
-      }
+      // if (!businessSize) {
+      //   setBusinessSizeError("Please select a business size.");
+      //   onValidationError?.({
+      //     type: "failed",
+      //     message: "Please select a business size.",
+      //   });
+      //   return false;
+      // } else {
+      //   setBusinessSizeError("");
+      // }
       // Validate custom business if "Other" is selected
       const serviceError = validateServices(customBuisness);
       if (serviceError) {
@@ -610,7 +620,7 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       )}
       {/* business size –- now a dropdown */}
       <div className={styles.inputGroup}>
-        <label>Business Size (Number of Emp.)<span className={styles.requiredField}> *</span></label>
+        <label>Business Size (Number of Emp.)</label>
         <select
           value={businessSize}
           onChange={handleBusinessSizeChange}
