@@ -58,6 +58,7 @@ const businessTypes = [
     { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
     { name: "Web Design Agency", code: "web_des_age" },
     { name: "Marketing Agency", code: "mkt_age" },
+    { name: "Digital Marketing Agency", code: "dgi_mkt_ag" },
     { name: "Car & Bus Services", code: "car_bus_ser" },
     { name: "Taxi, Cab & Limo Booking", code: "tax_cab_limo" },
     { name: "Movers & Packers", code: "mov_pac" },
