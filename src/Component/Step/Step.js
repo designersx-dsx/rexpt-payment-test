@@ -1137,14 +1137,12 @@ const Step = () => {
 
 
     let isUser = sessionStorage.getItem("isUser")
-    console.log({isUser})
+    // console.log({isUser})
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.value
 
-        // if(){
-
-        // }
+    
         if (freeTrail === "chatke" || isUser==='true') {
             handleContinue()
             // sessionStorage.removeItem(isUser)
