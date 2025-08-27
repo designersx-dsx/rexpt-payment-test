@@ -189,7 +189,7 @@ const SignUp = () => {
         setOtpSent(true);
         setOtp(["", "", "", "", "", ""]);
         inputRefs.current[0]?.blur();
-        const endTime = Date.now() + 600 * 1000;
+        const endTime = Date.now() + 300 * 1000;
         setResendEndTime(endTime);
         setIsResendDisabled(true);
       } else {
