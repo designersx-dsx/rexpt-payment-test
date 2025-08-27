@@ -266,36 +266,35 @@ function Dashboard() {
     const newSteps = [
       {
         element: "#tour-profile",
+        title: "Guide Tour", 
         intro:
           "Welcome! This is your profile. Click here to manage your account details, subscription, and billing information.",
         position: "right",
       },
       {
         element: "#tour-footer-create",
+         title: "Guide Tour",
         intro:
           "This is where the magic happens! Click 'Create' to build and customize your AI Receptionist.",
         position: "top",
       },
       {
         element: "#tour-assign-number",
+         title: "Guide Tour",
         intro:
           "To get your agent live, you need to assign it a dedicated phone number. This is how your customers will reach it.",
         position: "bottom",
       },
       {
         element: "#tour-cal-com",
+         title: "Guide Tour",
         intro:
           "Want your receptionist to book appointments? Connect your calendar here to enable seamless scheduling for your business.",
         position: "left",
       },
-      // {
-      //   element: `#tour-menu-trigger-${targetAgentId}`,
-      //   intro: "To manage your agent, click the three dots (...) and a menu will appear with more options. Here's the text for 3 dots step",
-      //   position: "left",
-      //   disableInteraction: false,
-      // },
       {
         element: `#tour-menu-test-${targetAgentId}`,
+         title: "Guide Tour",
         intro:
           "Before going live, use this to call your agent and test its voice, conversational style, and overall performance.",
         position: "left",
@@ -305,6 +304,7 @@ function Dashboard() {
       },
       {
         element: `#tour-menu-integrate-${targetAgentId}`,
+         title: "Guide Tour",
         intro:
           "Extend your agent's reach! You can integrate it directly into your website to handle live calls and inquiries.",
         position: "left",
@@ -314,12 +314,14 @@ function Dashboard() {
       },
       {
         element: "#tour-total-calls",
+         title: "Guide Tour",
         intro:
           "This is where you can see the total number of calls your agent has handled for you.",
         position: "bottom",
       },
       {
         element: "#tour-total-bookings",
+         title: "Guide Tour",
         intro:
           "View all the appointments your agent has scheduled for your business right here.",
         position: "bottom",
@@ -327,12 +329,14 @@ function Dashboard() {
 
       {
         element: "#tour-footer-calendar",
+         title: "Guide Tour",
         intro:
           "View and manage all the appointments scheduled by your Receptionist in one place.",
         position: "top",
       },
       {
         element: "#tour-footer-support",
+         title: "Guide Tour",
         intro:
           "Need help? Our support team is here for you. Find answers to your questions or reach out to us directly.",
         position: "top",
@@ -367,7 +371,7 @@ function Dashboard() {
       showBullets: false,
       nextLabel: "Next →",
       prevLabel: "← Back",
-      skipLabel: "Skip",
+      skipLabel: "Skip Tour",
       doneLabel: "Finish",
       showCloseButton: false,
       buttonClass: styles.tourBtn,

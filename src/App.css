@@ -318,3 +318,27 @@
 .introjs-tooltipReferenceLayer {
   z-index: 2147483646 !important;
 }
+
+.introjs-tooltip {
+    
+    border-radius: 20px !important;
+    padding: 10px !important;
+}
+.introjs-tooltip-header {
+    
+    width: 100% !important;
+    justify-content: space-between !important;
+    display: flex !important;
+    align-items: center !important;
+    padding-left: 5px !important;
+    margin-bottom: 8px !important;
+}
+
+.introjs-tooltip-title {
+    font-size: 18px;
+    width: unset !important;    
+    text-transform: uppercase !important;
+}
+.introjs-skipbutton {
+     width: unset !important;    
+}
