@@ -651,6 +651,11 @@
     font-weight: 600;
 }
 
+
+.AgentTwoIcon{
+    display: flex;
+    gap: 10px;
+}
 @media screen and (min-width: 601px) {
     .main .LangStyle:last-child {
         margin-bottom: 0rem;
