@@ -1,4 +1,4 @@
-import React, { useState,useRef } from 'react'
+import React, { useState,useRef,useEffect } from 'react'
 import EditHeader from '../EditHeader/EditHeader';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import styles from '../EditServicesOffered/EditServicesOffered.module.css'
@@ -501,6 +501,34 @@ const EditServicesOffered = () => {
     setHasFetched,
     });
 
+const [initialServices, setInitialServices] = useState([]);
+const [isChanged, setIsChanged] = useState(false);
+    useEffect(() => {
+  try {
+    if (services) {
+      setInitialServices(services || []);
+    } else {
+      setInitialServices([]); // no previous data
+    }
+  } catch (err) {
+    console.error("Failed to parse businesServices:", err);
+    setInitialServices([]);
+  }
+}, [services]);
+
+useEffect(() => {
+  if (!initialServices) return;
+
+  // Sort both arrays for comparison (ignores order difference)
+  const initial = [...initialServices].sort();
+  const current = [...selectedService].sort();
+
+  const sameLength = initial.length === current.length;
+  const isSame = sameLength && initial.every((val, idx) => val === current[idx]);
+
+  setIsChanged(!isSame);
+}, [selectedService, initialServices]);
+
     const businessType = fetchBusinessType.businessType || "";
     // Find business object by type
     const filteredBusinessType = businessServices?.find(
@@ -687,8 +715,19 @@ const EditServicesOffered = () => {
                         </div>
                     </div>
                     }
-                    <div className={styles.stickyWrapper} onClick={handleContinue}> 
-                        <AnimatedButton label="Save" isLoading={Loading}  position={{ position: "relative" }}/>
+                    <div className={styles.stickyWrapper} 
+                    // onClick={handleContinue}
+                     style={{
+                        position: "sticky",
+                        bottom: 0,
+                        backgroundColor: "white",
+                        padding: "8px",
+                        opacity: isChanged ? 1 : 0.5,
+                        cursor: isChanged ? "pointer" : "not-allowed"
+                    }}
+                    onClick={isChanged ? handleContinue : undefined}>
+                
+                        <AnimatedButton label="Save" isLoading={Loading}  position={{ position: "relative" }}  disabled={!isChanged}  />
                     </div>
                 </div>
         {showPopup && (

@@ -5,23 +5,10 @@ import React, {
   useImperativeHandle,
 } from "react";
 import styles from "./Step4.module.css";
-const Step4 = forwardRef(
-  (
-    {
-      onNext,
-      onBack,
-      onValidationError,
-      loading,
-      setLoading,
-      detectRoleTypeChange,
-
-
-    },
-
-    ref
-  ) => {
+const Step4 = ({onValidationChange,originalRole}) => {
     const [agentNote, setAgentNote] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
+    const[loading,setLoading]=useState(false)
 
     useEffect(() => {
       const storedAgentRole = sessionStorage.getItem("agentRole");
@@ -45,23 +32,23 @@ const Step4 = forwardRef(
     }, [agentNote]);
 
     // Pass validation and note back to parent
-    useImperativeHandle(ref, () => ({
-      validate: () => {
-        if (!selectedRole?.trim()) {
-          onValidationError?.({
-            type: "failed",
-            message: "Please select a Receptionist Type!",
-          });
-          return false;
-        }
+    // useImperativeHandle(ref, () => ({
+    //   validate: () => {
+    //     if (!selectedRole?.trim()) {
+    //       onValidationError?.({
+    //         type: "failed",
+    //         message: "Please select a Receptionist Type!",
+    //       });
+    //       return false;
+    //     }
 
-        return {
-          isValid: true,
-          agentNote: agentNote.trim(),
-        };
+    //     return {
+    //       isValid: true,
+    //       agentNote: agentNote.trim(),
+    //     };
 
-      },
-    }));
+    //   },
+    // }));
     const roles = [
       {
         title: "General Receptionist",
@@ -98,6 +85,8 @@ const Step4 = forwardRef(
                     onChange={() => {
                       setSelectedRole(role.title);
                     //   detectRoleTypeChange(role?.title);
+                     const isDirty = role.title != originalRole 
+                      onValidationChange?.({ isDirty });
                     }}
                     className={styles.radio}
                   />
@@ -123,6 +112,6 @@ const Step4 = forwardRef(
 
     );
   }
-);
+
 
 export default Step4;
