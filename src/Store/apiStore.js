@@ -214,7 +214,7 @@ export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) 
   try {
     const res = await api.get(`/agent/getUserAgentMergedDataForAgentUpdate/${agentId}?businessId=${businessId}`,{
       headers: {
-        Authorization:`Bearer ${token}`,
+        Authorization:`Bearer ${localStorage.getItem('token')}`,
       },
     });
     return res.data;
@@ -427,7 +427,7 @@ export const getBusinessDetailsByBusinessId = async (businessId) => {
     const res = await api.get(`/businessDetails/by-business-id/${businessId}`,{
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       }
     });
     return res.data;
@@ -657,7 +657,7 @@ export async function getUserNotifications(userId) {
   try {
     const res = await axios.get(`${API_BASE_URL}/notifications/user/${userId}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
     return res.data;
@@ -671,7 +671,7 @@ export const markNotificationAsSeen = async (id,type) => {
   try {
     const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{type},{
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
   });
     return response.data;

@@ -23,6 +23,8 @@ function EditGender() {
       const userId = decodeTokenData?.id;
       const agentnm=sessionStorage.getItem("agentName");
       const { setHasFetched } =    useDashboardStore(); 
+      const originalGender = React.useRef(sessionStorage.getItem("prevAgentGender"));
+      const originalVoice = React.useRef(sessionStorage.getItem("agentVoice"));
 
       const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "EditGender",
@@ -36,24 +38,21 @@ function EditGender() {
 const [stepValidation, setStepValidation] = useState({
   genderChanged: false,
   voiceSelected: false,
+  isDirty: false,   // ✅ new flag
+
 });
+// console.log(stepValidation)
 
   
-const handleValidationChange = (validation) => {
-  setStepValidation(validation);
+// const handleValidationChange = (validation) => {
+//   setStepValidation(validation);
+// };
+   const handleValidationChange = (validation) => {
+  setStepValidation((prev) => ({
+    ...prev,
+    ...validation,
+  }));
 };
-    // const handleClick=()=>{
-    //     const storedGender = localStorage.getItem("agentGender");
-    //    const  prevAgentGender=sessionStorage.getItem('prevAgentGender')
-    //    if(storedGender.toLocaleLowerCase()!=prevAgentGender.toLocaleLowerCase()){
-    //   setPopupType("confirm");
-    //   setPopupMessage("Agent Gender Changed Would you like to Update Agent Avtar?" );
-    //   setShowPopup(true);
-    //    }
-    //   else{
-    //   handleCreateAgent();
-    //   }
-    // }
   const handleClick = () => {
   const storedGender = sessionStorage.getItem("agentGender");
   const prevAgentGender = sessionStorage.getItem('prevAgentGender');
@@ -89,12 +88,20 @@ const handleValidationChange = (validation) => {
 
                 <div className={styles.container}>
 
-               <SelectGender  onValidationChange={handleValidationChange}/>
+               <SelectGender  onValidationChange={handleValidationChange}    originalGender={originalGender.current}
+            originalVoice={originalVoice.current}/>
 
                 </div>
 
-                 <div className={styles.stickyWrapper} onClick={handleClick} >
-                  <AnimatedButton label="Save" isLoading={Loading}/>
+                 <div className={styles.stickyWrapper}  onClick={stepValidation.isDirty ? handleClick : undefined}  disabled={!stepValidation.isDirty}    style={{
+                        position: "sticky",
+                        bottom: 0,
+                        backgroundColor: "white",
+                        padding: "8px",
+                        opacity: stepValidation.isDirty ? 1 : 0.5,
+                        cursor: stepValidation.isDirty ? "pointer" : "not-allowed"
+                    }}>
+                  <AnimatedButton label="Save" isLoading={Loading}  disabled={!stepValidation.isDirty}/>
                   </div>
             </div>
         {showPopup && (
@@ -104,7 +111,7 @@ const handleValidationChange = (validation) => {
             message={popupMessage}
             onConfirm={ ()=>{sessionStorage.removeItem('avatar'); // 🗑 Remove old avatar
                         setTimeout(() => {
-                          navigate('/edit-name-avtar'); // 🔥 Navigate back to avatar screen
+                          navigate('/edit-name-avtar',{ state: { isChanged: true } }); // 🔥 Navigate back to avatar screen
                         }, 500);}}
             />
         )}

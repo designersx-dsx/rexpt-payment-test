@@ -16,6 +16,8 @@ function EditLanguage() {
     const [popupType, setPopupType] = useState(null);
     const [popupMessage, setPopupMessage] = useState("");
     const [Loading, setLoading] = useState(null);
+    const [isFormChanged, setIsFormChanged] = useState(false);
+
     const navigate=useNavigate();
     const { setHasFetched } =    useDashboardStore();   
 
@@ -23,6 +25,10 @@ function EditLanguage() {
     const decodeTokenData = decodeToken(token);
     const userId = decodeTokenData?.id;
     const agentnm=sessionStorage.getItem("agentName");
+
+     // 🔹 Save initial selected lang only once (at mount)
+  const [initialLang] = useState(sessionStorage.getItem("agentLanguage"));
+  const [initialLangCode] = useState(sessionStorage.getItem("agentLanguageCode"));
 
       const { handleCreateAgent } = useAgentCreator({
       stepValidator: () => "EditLanguage",
@@ -34,9 +40,14 @@ function EditLanguage() {
       setHasFetched,
     });
 
-  const handleClick=()=>{
-    handleCreateAgent();
-  }
+  // const handleClick=()=>{
+  //   handleCreateAgent();
+  // }
+     const handleClick=()=>{
+      if(isFormChanged){
+        handleCreateAgent();
+      }
+    }
 
   return (
     <div>
@@ -53,11 +64,20 @@ function EditLanguage() {
 
             <div className={styles.container}>
 
-          <SelectLauguage />
+          <SelectLauguage    
+            onStepChange={({ lang, code }) => {
+            // compare with INITIAL only
+            if (lang !== initialLang || code !== initialLangCode) {
+              setIsFormChanged(true);
+            } else {
+              setIsFormChanged(false);
+            }
+          }}
+            />
 </div>
 
     <div className={styles.stickyWrapper} onClick={handleClick}>
-      <AnimatedButton label="Save" isLoading={Loading} />
+      <AnimatedButton label="Save" isLoading={Loading}      disabled={!isFormChanged} />
     </div>
     {showPopup && (
             <PopUp

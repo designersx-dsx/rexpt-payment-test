@@ -5,7 +5,7 @@ import SectionHeader from "../SectionHeader/SectionHeader";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import { useAgentCreator } from "../../hooks/useAgentCreator";
 import decodeToken from "../../lib/decodeToken";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import PopUp from "../Popup/Popup";
 import axios from "axios";
 import getKnowledgeBaseName from "../../utils/getKnowledgeBaseName";
@@ -39,6 +39,10 @@ const EditBusinessDetail = () => {
   const EditingMode1 = localStorage.getItem("UpdationMode");
   const { setHasFetched } = useDashboardStore();
   const agentCode = sessionStorage.getItem("agentCode") || "";
+  const [originalData, setOriginalData] = useState({});
+  const [isDirty, setIsDirty] = useState(false);
+  const location = useLocation();
+  const { isChanged } = location.state || {};
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessDetail",
     setLoading,
@@ -48,6 +52,13 @@ const EditBusinessDetail = () => {
     navigate,
     setHasFetched,
   });
+
+  useEffect(()=>{
+    if(isChanged){
+      setIsDirty(isChanged)
+    }
+  },[isChanged])
+
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
@@ -58,6 +69,19 @@ const EditBusinessDetail = () => {
       setAddress(details?.address || "");
       setEmail(details?.email || "");
       setAboutBusiness(details?.aboutBusiness || details?.aboutBussiness || "");
+
+     setOriginalData({
+        businessName: details?.businessName || "",
+        phoneNumber: details.internationalPhone || details?.phone || "",
+        address: details?.address || "",
+        email: details?.email || "",
+        aboutBussiness: details?.aboutBusiness || details?.aboutBussiness || "",
+        street_number: details?.street_number || "",
+        city: details?.city || "",
+        state: details?.state || "",
+        postal_code: details?.postal_code || "",
+        country: details?.country || "",
+      });
     }
     if (EditingMode1 != "ON") {
       const details = JSON.parse(storedDetails);
@@ -90,6 +114,16 @@ const EditBusinessDetail = () => {
       default:
         break;
     }
+    
+      const isChanged =
+    (field === "businessName" && value !== originalData.businessName) ||
+    (field === "phone" && value !== originalData.phoneNumber) ||
+    (field === "internationalPhone" && value !== originalData.phoneNumber) ||
+    (field === "address" && value !== originalData.address) ||
+    (field === "email" && value !== originalData.email) ||
+    (field === "aboutBussiness" && value !== originalData.aboutBussiness);
+
+  setIsDirty(isChanged);
   };
   const formatLabel = (str) =>
     str
@@ -133,7 +167,7 @@ const EditBusinessDetail = () => {
         setPopupMessage("Please fill all required fields.");
         return;
       }
-      console.log("businessName", phoneNumber, address);
+      // console.log("businessName", phoneNumber, address);
       const updatedPlaceDetails = {
         ...placeDetails,
         businessName: businessName || placeDetails?.businessName,
@@ -275,7 +309,7 @@ const EditBusinessDetail = () => {
               },
             }
           );
-          console.log("prev Knowledgbase deleted");
+          // console.log("prev Knowledgbase deleted");
         } catch (error) {
           console.log("error while removing prev Knowledgbase ", error);
         }
@@ -414,7 +448,21 @@ const EditBusinessDetail = () => {
       if (place.formatted_address) {
         const addressComponents = place.address_components || [];
         setAddress(place.formatted_address);
-        extractAndStoreAddressComponents(place);
+        const extracted=extractAndStoreAddressComponents(place);
+      
+        const changed =
+      businessName !== originalData.businessName ||
+      phoneNumber !== originalData.phoneNumber ||
+      email !== originalData.email ||
+      aboutBussiness !== originalData.aboutBussiness ||
+      place.formatted_address !== originalData.address ||
+      extracted.street_number !== originalData.street_number ||
+      extracted.city !== originalData.city ||
+      extracted.state !== originalData.state ||
+      extracted.postal_code !== originalData.postal_code ||
+      extracted.country !== originalData.country;
+
+    setIsDirty(changed);
       }
     });
   };
@@ -465,6 +513,7 @@ const EditBusinessDetail = () => {
       "placeDetailsExtract",
       JSON.stringify(updatedDetails)
     );
+    return addressDetails;
   };
   //initAddressAutocomplete
   useEffect(() => {
@@ -478,6 +527,10 @@ const EditBusinessDetail = () => {
       }
     }, 300);
   }, []);
+
+
+  
+  // console.log(isDirty,originalData)
   return (
     <>
       <EditHeader title="Edit Agent " agentName={agentnm} />
@@ -583,7 +636,7 @@ const EditBusinessDetail = () => {
         </div>
 
         <div className={styles.stickyWrapper} onClick={handleSubmit}>
-          <AnimatedButton label="Save" isLoading={loading} />
+          <AnimatedButton label="Save" isLoading={loading} disabled={!isDirty}/>
         </div>
         {showPopup && (
           <PopUp
