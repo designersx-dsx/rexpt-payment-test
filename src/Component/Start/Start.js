@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import AnimatedButton from "../AnimatedButton/AnimatedButton";
 import axios from "axios";
 import { token } from "../../Store/apiStore";
+import useTrafficSource from "../../lib/sourceGet";
 
 function Start() {
   const navigate = useNavigate();
@@ -111,7 +112,6 @@ function Start() {
 
     return () => window.removeEventListener("resize", setVH);
   }, []);
-
   return (
     <div>
       <div className={styles.signUpContainer}>

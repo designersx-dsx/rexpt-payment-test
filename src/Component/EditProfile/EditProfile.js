@@ -1009,7 +1009,7 @@ const EditProfile = () => {
               <div className={`${styles.infoSection} ${glow ? styles.glowOnce : ""}`}
                 ref={sectionRef} id="payg-toggle">
                 <div className={styles.toggleContainer1}>
-                  <div className={styles.toggleTextAbove}>Enable Payg Feature</div>
+                  <div className={styles.toggleTextAbove}>Enable Pay as you go Feature</div>
                   <label className={styles.toggleLabel1}>
                     <input
                       type="checkbox"

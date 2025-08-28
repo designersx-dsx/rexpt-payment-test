@@ -22,7 +22,7 @@ export const LoginWithEmailOTP = async (email) => {
   return res;
 };
 
-export const verifyEmailOTP = async (email, otp) => {
+export const verifyEmailOTP = async (email, otp,customer_id) => {
   const customerRes = await fetch(`${API_BASE_URL}/customer`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -212,7 +212,11 @@ export const validateEmail = async (email) => {
 
 export const getUserAgentMergedDataForAgentUpdate = async (agentId, businessId) => {
   try {
-    const res = await api.get(`/agent/getUserAgentMergedDataForAgentUpdate/${agentId}?businessId=${businessId}`);
+    const res = await api.get(`/agent/getUserAgentMergedDataForAgentUpdate/${agentId}?businessId=${businessId}`,{
+      headers: {
+        Authorization:`Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (error) {
     console.error("Error validating email:", error);
@@ -240,7 +244,7 @@ export const getAgentCallById = async (agentId,callId,start_timestamp) => {
     // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
     const res = await api.get(`callHistory/getSpecificCallData/call/${agentId}/${callId}?start_timestamp=${start_timestamp}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
     return res.data;
@@ -255,7 +259,7 @@ export const getAgentCalls = async (agentId) => {
     // const res = await api.get(`/agent/user/${userId}/agent/calls`, {
     const res = await api.get(`/callHistory/agentCalLHistory/${agentId}/last3months`, {
       headers: {
-        Authorization: `Bearer $${token}`,
+        Authorization: `Bearer $${localStorage.getItem('token')}`,
       },
     });
     return res.data;
@@ -265,11 +269,12 @@ export const getAgentCalls = async (agentId) => {
   }
 };
 export async function getUserCallsByMonth(userId, month, year) {
+  
     try {
   const res = await axios.get(`${API_BASE_URL}/callHistory/user/${userId}/calls-by-month`, {
     params: { month, year },
      headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
   });
   return res.data;
@@ -304,7 +309,7 @@ export const fetchUserDetails = async (id) => {
     const response = await axios.get(`${API_BASE_URL}/endusers/users/${userId}` , {
        headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
   },
     })
     return response
@@ -417,7 +422,12 @@ export const addGeneralTools = async (llmId, transfers) => {
 }
 export const getBusinessDetailsByBusinessId = async (businessId) => {
   try {
-    const res = await api.get(`/businessDetails/by-business-id/${businessId}`);
+    const res = await api.get(`/businessDetails/by-business-id/${businessId}`,{
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
     return res.data;
   } catch (error) {
     console.error("Error fetching business details by business ID:", error.response?.data || error.message);
@@ -655,9 +665,9 @@ export async function getUserNotifications(userId) {
   }
 }
 
-export const markNotificationAsSeen = async (id) => {
+export const markNotificationAsSeen = async (id,type) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{},{
+    const response = await axios.put(`${API_BASE_URL}/notifications/${id}/read`,{type},{
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -696,6 +706,21 @@ export const deleteAgentFile = async (agentId, filename) => {
     throw new Error("Error deleting agent file");
   }
 };
+
+export const listSiteMap=async(url)=>{
+  try {
+    const response = await api.post(`/map/list-sitemap`,{url}, {
+      headers: {
+       Authorization: `Bearer ${token}`,
+     },
+   });
+   return response.data;
+ } catch (error) {
+   console.error("Error deleting agent file:", error.response?.data || error.message);
+   throw new Error("Error deleting agent file");
+ }
+}
+
 export const sendEmailToOwner = async (email,name,phone ) => {
   try {
      const response = await api.post(`/endusers/sendEmailToOwner`,{email:email,name:name,phone:phone}, {
@@ -711,6 +736,7 @@ export const sendEmailToOwner = async (email,name,phone ) => {
 };
 
 
+
 export const customPlanCheck = async (userId)=>{
 try {
   let res = axios.get(`${API_BASE_URL}/tier/${userId}`)
@@ -720,6 +746,33 @@ try {
   return error
 }
 }
+
+export const getDashboardTourStatus = async (userId) => {
+  try {
+    const res = await api.get(`/agent/status/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data; 
+  } catch (error) {
+    console.error("Error fetching tour status:", error.response?.data || error.message);
+    throw new Error("Failed to fetch tour status");
+  }
+};
+
+export const markDashboardTourSeen = async (userId) => {
+  try {
+    const res = await api.post(`/agent/seen/${userId}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data; 
+  } catch (error) {
+    console.error("Error marking tour as seen:", error.response?.data || error.message);
+    throw new Error("Failed to mark tour as seen");
+  }
+};
+
+
+
 
 export default api;
 

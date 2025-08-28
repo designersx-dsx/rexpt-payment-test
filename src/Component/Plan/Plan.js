@@ -12,7 +12,9 @@ import { customPlanCheck, listAgents } from '../../Store/apiStore';
 import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import decodeToken from "../../lib/decodeToken";
 import PopUp from '../Popup/Popup';
+
 import axios from 'axios'
+
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Planss = () => {
@@ -138,7 +140,7 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
     const mapCountryToCurrency = (countryCode) => {
 
         const countryCurrencyMap = {
-            IN: 'inr',
+            // IN: 'inr',
             US: 'usd',
             CA: 'cad',
             AU: 'aud',
@@ -195,11 +197,12 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
     useEffect(() => {
         const getLocationCurrency = async () => {
             try {
-                const response = await fetch("https://ipwho.is/");
-                const data = await response.json();
+                // const response = await fetch("https://ipwho.is/");
+                const response = await axios.get('https://ipinfo.io/json');
+                const data = await response?.data                ;
 
-                if (data.success && data.country_code) {
-                    const currency = mapCountryToCurrency(data.country_code);
+                if ( data.country) {
+                    const currency = mapCountryToCurrency(data.country);
                     setUserCurrency(currency);
                 } else {
                     throw new Error("Invalid IP data");

@@ -4,6 +4,8 @@ import Footer from "../AgentDetails/Footer/Footer";
 import Plan from "../Plan/Plan";
 import { useNavigate, useLocation, Await } from "react-router-dom";
 import dayjs from "dayjs";
+import introJs from "intro.js";
+import "intro.js/minified/introjs.min.css";
 
 import {
   deleteAgent,
@@ -18,6 +20,8 @@ import {
   updateAgentEventId,
   refundAndCancelSubscriptionAgnetApi,
   API_BASE_URL,
+  getDashboardTourStatus,
+  markDashboardTourSeen,
 } from "../../Store/apiStore";
 import decodeToken from "../../lib/decodeToken";
 import { useDashboardStore } from "../../Store/agentZustandStore";
@@ -47,7 +51,6 @@ import getTimezoneFromState from "../../lib/timeZone";
 import { useNotificationStore } from "../../Store/notificationStore";
 
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
-
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -80,7 +83,6 @@ function Dashboard() {
   const isRefreshing = useContext(RefreshContext);
 
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
-
 
   const navigate = useNavigate();
   const { user } = useUser();
@@ -118,13 +120,12 @@ function Dashboard() {
   const [eventCreateStatus, setEventCreateStatus] = useState(null);
   const [eventCreateMessage, setEventCreateMessage] = useState("");
   const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-  //cal
+
   const isValidCalApiKey = (key) => key.startsWith("cal_live_");
   const [showCalKeyInfo, setShowCalKeyInfo] = useState(false);
   const [bookingCount, setBookingCount] = useState(0);
 
   const [callId, setCallId] = useState(null);
-  //pop0up
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
   const [popupMessage2, setPopupMessage2] = useState("");
@@ -134,7 +135,6 @@ function Dashboard() {
   const [callLoading, setCallLoading] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState();
 
-  //cam-icon
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const isSmallFont =
     totalCalls?.toString().length > 1 || bookingCount?.toString().length > 1;
@@ -156,17 +156,22 @@ function Dashboard() {
   const [agentId, setagentId] = useState();
   const [subscriptionId, setsubscriptionId] = useState();
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
+// <<<<<<< dev_Shorya1
   const closeAssignNumberModal = () => {
     setIsAssignNumberModalOpen(false)
     setisAssignApi(false)
   }
-  const dropdownRef = useRef(null);
+//   const dropdownRef = useRef(null);
+// =======
+  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  // const dropdownRef = useRef(null);
+  const dropdownRefs = useRef({});
+// >>>>>>> live_copy
   const location = useLocation();
 
   const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
   const [showUpgradeConfirmModal, setShowUpgradeConfirmModal] = useState(false);
   const [upgradeLoading, setUpgradeLoading] = useState(false);
-
 
   const [deactivateLoading, setDeactivateLoading] = useState(false);
 
@@ -188,18 +193,195 @@ function Dashboard() {
     sessionStorage.getItem("userCalApiKey")
   );
   const [agentDetailsForCal, setAgentDetailsForCal] = useState([]);
-  // console.log(agentDetailsForCal, "agentDetailsForCal")
   const [isConfirming, setIsConfirming] = useState(false);
   const isConfirmedRef = useRef(false);
-  const [activeSubs, setActiveSubs] = useState(false)
-
-  //getTimeZone
-  const [timeZone, setTimeZone] = useState("")
-  // const [unreadCount, setUnreadCount] = useState("")
+  const [activeSubs, setActiveSubs] = useState(false);
+  const [timeZone, setTimeZone] = useState("");
   const notifications = useNotificationStore((state) => state.notifications);
+  const unreadCount = notifications.filter((n) => n.status === "unread").length;
+  const [redirectButton, setredirectButton] = useState(false);
 
-  const unreadCount = notifications.filter((n) => n.status === 'unread').length;
-  // console.log('unreadCount', unreadCount)
+  const [showDashboardTour, setShowDashboardTour] = useState(false);
+  const [tourStatusLoaded, setTourStatusLoaded] = useState(false);
+  const [tourElevateDropdown, setTourElevateDropdown] = useState(false);
+  const [tourDropdownPos, setTourDropdownPos] = useState(null);
+  const [forceTourOpenAgentId, setForceTourOpenAgentId] = useState(null);
+  const [lockBgForTour, setLockBgForTour] = useState(false);
+
+  const closeTourMenu = () => {
+    setOpenDropdown(null);
+    setForceTourOpenAgentId(null);
+    setTourElevateDropdown(false);
+    setTourDropdownPos(null);
+    setLockBgForTour(false);
+
+    requestAnimationFrame(() => {
+      setOpenDropdown(null);
+      setForceTourOpenAgentId(null);
+      setTourElevateDropdown(false);
+    });
+  };
+
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+
+    const isTruthy = (v) => v === 1 || v === "1" || v === true || v === "true";
+
+    (async () => {
+      try {
+        const resp = await getDashboardTourStatus(userId);
+        const d = resp?.data ?? resp;
+
+        // console.log("tourStatus raw ->", d);
+
+        let shouldShow;
+        if (typeof d?.shouldShow === "boolean") {
+          shouldShow = d.shouldShow;
+        } else {
+          const eligible = isTruthy(d?.dashboardTourEligible);
+          const seen = isTruthy(d?.dashboardTourSeen);
+          shouldShow = eligible && !seen;
+        }
+
+        if (!cancelled) setShowDashboardTour(!!shouldShow);
+      } catch (err) {
+        if (!cancelled) setShowDashboardTour(false);
+        console.error("Failed to get dashboard tour status:", err);
+      } finally {
+        if (!cancelled) setTourStatusLoaded(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  const introRef = useRef(null);
+  const tourStartLockRef = useRef(false);
+  const tourRanRef = useRef(false);
+  const tourSeenMarkedRef = useRef(false);
+  const tourShownAtLeastOneStepRef = useRef(false);
+  const tourMenuStepRef = useRef(false);
+  useEffect(() => {
+    if (!tourStatusLoaded) return;
+    if (!showDashboardTour) return;
+    if (!localAgents.length) return;
+    if (tourRanRef.current) return;
+    if (tourStartLockRef.current) return;
+
+    tourStartLockRef.current = true;
+    requestAnimationFrame(async () => {
+      const started = await startDashboardTour();
+      if (started) tourRanRef.current = true;
+      tourStartLockRef.current = false;
+    });
+  }, [tourStatusLoaded, showDashboardTour, localAgents.length]);
+
+  const isTourActiveRef = useRef(false);
+
+  useEffect(() => {
+    if (introRef.current && openDropdown) {
+      introRef.current.refresh();
+    }
+  }, [openDropdown]);
+
+  const startDashboardTour = async () => {
+    if (!showDashboardTour || !localAgents.length || introRef.current)
+      return false;
+    const targetAgentId = localAgents?.[0]?.agent_id;
+
+    const baseTip = styles.customTourTooltip;
+    const menuTip = styles.tourTooltipOnMenu;
+
+    const newSteps = [
+      {
+        element: "#tour-profile",
+        title: "Guide Tour", 
+        intro:
+          "Welcome! This is your profile. Click here to manage your account details, subscription, and billing information.",
+        position: "right",
+      },
+      {
+        element: "#tour-footer-create",
+         title: "Guide Tour",
+        intro:
+          "This is where the magic happens! Click 'Create' to build and customize your AI Receptionist.",
+        position: "top",
+      },
+      {
+        element: "#tour-assign-number",
+         title: "Guide Tour",
+        intro:
+          "To get your agent live, you need to assign it a dedicated phone number. This is how your customers will reach it.",
+        position: "bottom",
+      },
+      {
+        element: "#tour-cal-com",
+         title: "Guide Tour",
+        intro:
+          "Want your receptionist to book appointments? Connect your calendar here to enable seamless scheduling for your business.",
+        position: "left",
+      },
+      {
+        element: `#tour-menu-test-${targetAgentId}`,
+         title: "Guide Tour",
+        intro:
+          "Before going live, use this to call your agent and test its voice, conversational style, and overall performance.",
+        position: "left",
+        scrollToElement: false,
+        disableInteraction: false,
+        tooltipClass: `${baseTip} ${menuTip}`,
+      },
+      {
+        element: `#tour-menu-integrate-${targetAgentId}`,
+         title: "Guide Tour",
+        intro:
+          "Extend your agent's reach! You can integrate it directly into your website to handle live calls and inquiries.",
+        position: "left",
+        scrollToElement: false,
+        tooltipClass: `${baseTip} ${menuTip}`,
+        disableInteraction: false,
+      },
+      {
+        element: "#tour-total-calls",
+         title: "Guide Tour",
+        intro:
+          "This is where you can see the total number of calls your agent has handled for you.",
+        position: "bottom",
+      },
+      {
+        element: "#tour-total-bookings",
+         title: "Guide Tour",
+        intro:
+          "View all the appointments your agent has scheduled for your business right here.",
+        position: "bottom",
+      },
+
+      {
+        element: "#tour-footer-calendar",
+         title: "Guide Tour",
+        intro:
+          "View and manage all the appointments scheduled by your Receptionist in one place.",
+        position: "top",
+      },
+      {
+        element: "#tour-footer-support",
+         title: "Guide Tour",
+        intro:
+          "Need help? Our support team is here for you. Find answers to your questions or reach out to us directly.",
+        position: "top",
+      },
+    ];
+
+    const setDropdownPosFromTrigger = () => {
+      const triggerEl = document.getElementById(
+        `tour-menu-trigger-${targetAgentId}`
+      );
+      const rect = triggerEl?.getBoundingClientRect();
+      if (!rect) return;
+
 
   // Assign Number
   const [assignNumberPaid, setAssignNumberPaid] = useState(false);
@@ -225,15 +407,139 @@ function Dashboard() {
 
 
 
+      const GAP = 8;
+      const DROPDOWN_WIDTH = 170;
 
-  // console.log('unreadCount',unreadCount,toggleFlag)
-  // console.log('asasasasa',unreadCount)
+
+      setTourDropdownPos({
+        top: rect.bottom + GAP,
+        left: rect.left - (DROPDOWN_WIDTH - rect.width),
+      });
+    };
+
+    const intro = introJs();
+    introRef.current = intro;
+    // shivam code
+    intro.setOptions({
+      steps: newSteps,
+      tooltipClass: styles.customTourTooltip,
+      overlayOpacity: 0.35,
+      showProgress: true,
+      showButtons: true,
+      showBullets: false,
+      nextLabel: "Next →",
+      prevLabel: "← Back",
+      skipLabel: "Skip Tour",
+      doneLabel: "Finish",
+      showCloseButton: false,
+      buttonClass: styles.tourBtn,
+      scrollToElement: true,
+      exitOnOverlayClick: false,
+      disableInteraction: true,
+      fixElementPosition: true,
+      highlightClass: styles.tourHighlight,
+    });
+
 
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 
   const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
 
+    const isMenuId = (id = "") =>
+      id.startsWith("tour-menu-trigger-") ||
+      id.startsWith("tour-menu-test-") ||
+      id.startsWith("tour-menu-integrate-");
 
+    intro.onbeforechange((el) => {
+      const id = el?.id || "";
+      if (isMenuId(id)) setDropdownPosFromTrigger();
+    });
+    intro.onchange((el) => {
+      const id = el?.id || "";
+      if (isMenuId(id)) {
+        setOpenDropdown(targetAgentId);
+        setForceTourOpenAgentId(targetAgentId);
+        setTourElevateDropdown(true);
+        setDropdownPosFromTrigger();
+        setLockBgForTour(true);
+
+        intro.setOption("disableInteraction", false);
+        intro.setOption("fixElementPosition", false);
+        intro.setOption("scrollToElement", false);
+
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => intro.refresh())
+        );
+      } else {
+        intro.setOption("disableInteraction", true);
+        setOpenDropdown(null);
+        setForceTourOpenAgentId(null);
+        setTourElevateDropdown(false);
+        intro.setOption("fixElementPosition", true);
+        intro.setOption("scrollToElement", true);
+        setLockBgForTour(false);
+      }
+    });
+
+
+    intro.onafterchange(() => {
+      requestAnimationFrame(() => intro.refresh());
+    });
+
+    const markSeenOnce = async () => {
+      if (tourSeenMarkedRef.current) return;
+      if (!tourShownAtLeastOneStepRef.current) return;
+      try {
+        await markDashboardTourSeen(userId);
+        tourSeenMarkedRef.current = true;
+        tourRanRef.current = true;
+        setShowDashboardTour(false);
+      } catch (e) {
+        console.error("Failed to mark dashboard tour seen:", e);
+      }
+    };
+    intro.onstart(() => {
+      isTourActiveRef.current = true;
+    });
+    const cleanup = () => {
+      isTourActiveRef.current = false;
+      document
+        .querySelectorAll(`.${styles.tourHighlight}`)
+        .forEach((el) => el.classList.remove(styles.tourHighlight));
+      closeTourMenu();
+      introRef.current = null;
+      markSeenOnce();
+    };
+
+    intro.oncomplete(cleanup);
+    intro.onexit(cleanup);
+    intro.onbeforeexit(() => {
+      tourShownAtLeastOneStepRef.current = true;
+      cleanup();
+    });
+
+    try {
+      intro.start();
+      return true;
+    } catch (err) {
+      console.error("Tour failed to start:", err);
+      cleanup();
+      return false;
+    }
+  };
+  useEffect(() => {
+    if (!lockBgForTour) closeTourMenu();
+  }, [lockBgForTour]);
+
+  useEffect(() => {
+    if (hasFetched && localAgents.length && !tourRanRef.current) {
+      const id = requestAnimationFrame(async () => {
+        const started = await startDashboardTour();
+        if (started) tourRanRef.current = true;
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [hasFetched, localAgents.length]);
 
   const checkActiveSubscription = async () => {
     try {
@@ -242,7 +548,7 @@ function Dashboard() {
         { userId: userId },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -250,30 +556,24 @@ function Dashboard() {
 
       setActiveSubs(res?.data?.paymentDone);
     } catch (error) {
-      console.error("Subscription check failed:", error.response?.data || error.message);
+      console.error(
+        "Subscription check failed:",
+        error.response?.data || error.message
+      );
     }
   };
 
-
-
+  useEffect(() => {
+    setTimeout(() => {
+      checkActiveSubscription();
+    }, 2000);
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
-      checkActiveSubscription()
-    }, 2000)
-
-  }, [])
-
-
-  //   setActiveSubs(res?.data?.paymentDone)
-
-  // }
-  useEffect(() => {
-    setTimeout(() => {
-      checkActiveSubscription()
-    }, 2000)
-
-  }, [])
+      checkActiveSubscription();
+    }, 2000);
+  }, []);
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.pathname);
 
@@ -295,11 +595,9 @@ function Dashboard() {
     if (planName.toLowerCase() === "free" && !assignNumberPaid) {
       openAssignNumberModal();
     } else {
-      // setSelectedAgentForAssign(agent);
-      // setIsAssignModalOpen(true);
       navigate("/assign-number", {
         state: { agent: agent },
-      })
+      });
     }
   };
   useEffect(() => {
@@ -381,8 +679,7 @@ function Dashboard() {
       sessionStorage.removeItem("agentCode");
       sessionStorage.removeItem("businessUrl");
       sessionStorage.removeItem("selectedServices");
-    }
-    else {
+    } else {
       localStorage.removeItem("UpdationMode");
       localStorage.removeItem("displayBusinessName");
       localStorage.removeItem("agentName");
@@ -468,23 +765,23 @@ function Dashboard() {
       sessionStorage.removeItem("selectedPlan");
       sessionStorage.removeItem("updateBtn");
       localStorage.removeItem("allPlans");
-      sessionStorage.removeItem("checkPage")
+      sessionStorage.removeItem("checkPage");
       localStorage.removeItem("hasHandledThankYou");
-      localStorage.removeItem("checkPage2")
-      localStorage.removeItem("paymentDone")
-      localStorage.removeItem("subcriptionIdUrl")
+      localStorage.removeItem("checkPage2");
+      localStorage.removeItem("paymentDone");
+      localStorage.removeItem("subcriptionIdUrl");
       // localStorage.removeItem("isPayg")
       sessionStorage.removeItem("VoiceAgentName");
       sessionStorage.removeItem("selectedLangCode");
       sessionStorage.removeItem("AgentCode");
       sessionStorage.removeItem("priceId");
       sessionStorage.removeItem("price");
+      sessionStorage.removeItem("selectedSiteMapUrls");
+      sessionStorage.removeItem("urls");
+
 
     }
-
-    // sessionStorage.clear()
   }, []);
-  // Navigate on agent card clickk
   const handleCardClick = (agent) => {
     setHasFetched(false);
     localStorage.setItem("selectedAgentAvatar", agent?.avatar);
@@ -541,9 +838,9 @@ function Dashboard() {
 
       {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        }
+        },
       }
     );
     if (!response.ok) throw new Error("Failed to fetch Cal API keys");
@@ -632,7 +929,7 @@ function Dashboard() {
   const fetchTimeZone = async (agent) => {
     try {
       const timeZone = await getTimezoneFromState(agent?.business?.state);
-      setTimeZone(timeZone)
+      setTimeZone(timeZone);
       // Proceed with using timeZone
     } catch (err) {
       console.error("Error fetching timezone:", err);
@@ -641,7 +938,7 @@ function Dashboard() {
   // Create Cal event
   const createCalEvent = async () => {
     const agent = agentDetailsForCal;
-    fetchTimeZone(agent)
+    fetchTimeZone(agent);
     await handleApiKeySubmit();
     try {
       setcalloading(true);
@@ -671,7 +968,6 @@ function Dashboard() {
       }
       try {
         await updateAgentEventId(agent.agent_id, eventTypeId);
-
       } catch (err) {
         console.error("Failed to update agent with event ID:", err);
       }
@@ -688,7 +984,8 @@ function Dashboard() {
             name: "check_availability_cal",
             cal_api_key: userCalApiKey.trim(),
             event_type_id: eventTypeId,
-            description: "Check the available appointment slots in the calendar and return times strictly in the user's timezone. Use this timezone to suggest and book appointments.",
+            description:
+              "Check the available appointment slots in the calendar and return times strictly in the user's timezone. Use this timezone to suggest and book appointments.",
             timezone: timeZone?.timezoneId,
           },
         ],
@@ -803,24 +1100,25 @@ function Dashboard() {
                 - Then ask: "Do you have any other queries?"
                 - If yes, transition to information_collection.
                 - If no, transition to end_call_state.
-            `
-            ,
+            `,
             tools: [
               {
                 type: "check_availability_cal",
                 name: "check_availability",
                 cal_api_key: userCalApiKey.trim(),
                 event_type_id: eventTypeId,
-                description: "Check if calendar is connected and fetch available time slots.",
-                timezone: timeZone?.timezoneId
-              }
+                description:
+                  "Check if calendar is connected and fetch available time slots.",
+                timezone: timeZone?.timezoneId,
+              },
             ],
             edges: [
               {
                 destination_state_name: "information_collection",
-                description: "User has further queries or provides new information after booking."
-              }
-            ]
+                description:
+                  "User has further queries or provides new information after booking.",
+              },
+            ],
           },
           {
             name: "end_call_state",
@@ -889,6 +1187,7 @@ function Dashboard() {
   const toggleDropdown = (e, id) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isTourActiveRef.current) return;
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
@@ -969,7 +1268,6 @@ function Dashboard() {
         throw new Error(`Delete failed: ${deleteError.message}`);
       }
 
-
       const updatedAgents = localAgents.filter(
         (agent) => agent.agent_id !== agentId
       );
@@ -1039,8 +1337,6 @@ function Dashboard() {
           setTimeout(() => {
             fetchAndMergeCalApiKeys();
           }, 1000);
-
-
         }
       } catch (notifyError) {
         throw new Error(`Refund failed: ${notifyError.message}`);
@@ -1101,11 +1397,19 @@ function Dashboard() {
       );
       if (res.status == 403) {
         if (agentDetails?.agentPlan == "free") {
-          setPopupMessage("Your Agent Plan has been exhausted. To continue, please upgrade your plan");
+          setPopupMessage(
+            "Your Agent Plan has been exhausted. To continue, please upgrade your plan"
+          );
+        } else {
+          setPopupMessage(
+            "Your Agent Plan has been exhausted. To continue, please enable Pay As You Go."
+          );
         }
+
         else {
           setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
         }
+
         setPopupType("failed");
         setIsCallInProgress(false);
         setTimeout(() => {
@@ -1269,15 +1573,16 @@ function Dashboard() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (isTourActiveRef.current) return;
+
+      const openEl = dropdownRefs.current[openDropdown];
+      if (openEl && !openEl.contains(event.target)) {
         setOpenDropdown(null);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [openDropdown]);
 
   const handleInactiveAgentAlert = () => {
     setPopupType("failed");
@@ -1594,7 +1899,15 @@ function Dashboard() {
           packageValue,
           agentData?.agentCode
         );
-        const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
+        const mergedUrls = [];
+        if (businessDetails?.webUrl?.trim()) {
+          mergedUrls.push(businessDetails?.webUrl?.trim()); // add businessUrl
+        }
+
+        if (businessDetails?.googleUrl) {
+          mergedUrls.push(businessDetails?.googleUrl); // add googleListing
+        }
+        // const mergedUrls = [businessDetails?.webUrl?.trim()].filter(Boolean);
         // const businessData = JSON.parse(businessDetails.knowledge_base_texts);
         const businessData = businessDetails.knowledge_base_texts;
         const knowledgeBaseText = {
@@ -1614,7 +1927,10 @@ function Dashboard() {
         // Step 1: Create Knowledge Base
         const formData = new FormData();
         formData.append("knowledge_base_name", knowledgeBaseName?.slice(0, 39));
-        formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+        if (mergedUrls.length > 0) {
+          formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
+        }
+        // formData.append("knowledge_base_urls", JSON.stringify(mergedUrls));
         formData.append("enable_auto_refresh", "true");
         formData.append(
           "knowledge_base_texts",
@@ -1637,8 +1953,6 @@ function Dashboard() {
           console.error("Knowledge base creation failed:", errData);
           throw new Error("Failed to create knowledge base during activation");
         }
-
-
 
         const createdKB = await createRes.json();
         const knowledgeBaseId = createdKB.knowledge_base_id;
@@ -1762,7 +2076,6 @@ function Dashboard() {
   //       interval: agent?.subscription?.interval || null,
   //       customerId: agent?.subscription?.customer_id || null
 
-
   //     },
   //   });
   // };
@@ -1775,19 +2088,14 @@ function Dashboard() {
         // setShowUpgradeConfirmModal(true);
       }
       setShowUpgradeConfirmModal(false);
-      //  setPendingUpgradeAgent(agent);  
-      handleUpgradePaygConfirmed()
-      return
+      //  setPendingUpgradeAgent(agent);
+      handleUpgradePaygConfirmed();
+      return;
     }
-    setShowUpgradeConfirmModal(true);      // Show modal
+    setShowUpgradeConfirmModal(true); // Show modal
   };
 
   const handleUpgradePaygConfirmed = async () => {
-    // console.log("runnnnnnnn2222222------------")
-    // console.log("pendingUpgradeAgent",pendingUpgradeAgent)
-
-    // console.log("runnnnnnnn111111111111111111111111111------------")
-
     setUpgradeLoading(true);
     try {
       // console.log({ pendingUpgradeAgent })
@@ -1808,8 +2116,8 @@ function Dashboard() {
           subscriptionID: agent?.subscriptionId,
           planName: agent?.agentPlan,
           interval: agent?.subscription?.interval || null,
-          customerId: agent?.subscription?.customer_id || null
-        }
+          customerId: agent?.subscription?.customer_id || null,
+        },
       });
 
       setShowUpgradeConfirmModal(false); // Close the modal
@@ -1819,9 +2127,6 @@ function Dashboard() {
       setUpgradeLoading(false);
     }
   };
-
-
-  const fetchPrevAgentDEtails = async (agent_id, businessId) => { };
   const locationPath = location.pathname;
 
   const getUserReferralCode = async () => {
@@ -1861,7 +2166,7 @@ function Dashboard() {
         await navigator.share({
           url: referralLink,
         });
-        console.log("Share URL:", referralLink); // Debug
+        // console.log("Share URL:", referralLink); // Debug
       } catch (error) {
         console.error("Error sharing:", error);
         await navigator.clipboard.writeText(referralLink);
@@ -1917,14 +2222,13 @@ function Dashboard() {
   };
   const handleClosePopUp3 = async () => {
     setPopupMessage3("");
-    console.log(isConfirming, "isConfirming");
+    // console.log(isConfirming, "isConfirming");
     if (isConfirming) {
       handleConnectCal(agentDetailsForCal);
     }
   };
   const checkRecentPageLocation = location.state?.currentLocation;
   useEffect(() => {
-
     if (checkRecentPageLocation === "/checkout") fetchAndMergeCalApiKeys();
   }, []);
 
@@ -1944,30 +2248,30 @@ function Dashboard() {
   const customer_id = decodeTokenData?.customerId
 
   const [paygStatusLoading, setpaygStatusLoading] = useState(true)
-  // console.log("paygStatusLoading", paygStatusLoading)
 
-  // console.log("isPaygActive", isPaygActive)
+  const [isPaygActive, setisPaygActive] = useState();
+
+
+  const [paygStatusLoading, setpaygStatusLoading] = useState(true);
 
   const checkAgentPaygStatus = async (agentId) => {
     try {
-      // setLoading(true); // Start loading state
-
       const response = await fetch(`${API_BASE}/pay-as-you-go-status-check`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ agentId, customerId: customer_id }) // Pass the agentId to the API
+        body: JSON.stringify({ agentId, customerId: customer_id }),
       });
 
       const data = await response.json();
 
-      setpaygStatusLoading(true)
+      setpaygStatusLoading(true);
       if (data.success) {
         // If the agent has an active Payg subscription
         setisPaygActive(true);
-        setpaygStatusLoading(false)
+        setpaygStatusLoading(false);
         localStorage.setItem("isPayg", "true");
         // setactiveCount(data?.activeCount || null)
         // setPaygSubscriptionId(data?.subscriptionId)
@@ -1978,7 +2282,7 @@ function Dashboard() {
         // setactiveCount(data?.activeCount || null)
         // setPaygSubscriptionId(data?.subscriptionId)
         setisPaygActive(false);
-        setpaygStatusLoading(false)
+        setpaygStatusLoading(false);
         // localStorage.setItem("isPayg", "false");
         // setPopupMessage(data.message || "No active PaygSubscription found for this agent.");
         // setPopupType("failed");
@@ -1988,9 +2292,11 @@ function Dashboard() {
       // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
       // setPopupType("failed");
 
+
     }
     finally {
       setpaygStatusLoading(false)
+
     }
   };
 
@@ -2000,10 +2306,10 @@ function Dashboard() {
     }
   }, [agentId]);
 
-
   const handleTogglePayG = async () => {
+
     setpaygStatusLoading(true)
-    // console.log("agentToPaygActivate.agentPlan", agentToPaygActivate.agentPlan)
+ 
     try {
       // console.log({ customer_id })
       const requestData = {
@@ -2014,9 +2320,9 @@ function Dashboard() {
       };
       // Call the API to save the agent's payg status
       const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestData),
@@ -2027,14 +2333,14 @@ function Dashboard() {
         const responseData = await response.json();
         // console.log('Agent saved successfully:', responseData);
         if (responseData.status === "active") {
-          setisPaygActive(true)
-          setpaygStatusLoading(false)
+          setisPaygActive(true);
+          setpaygStatusLoading(false);
           setPopupMessage("Agent's Pay-as-you-go feature activated.");
           setPopupType("success"); // Pop-up for activated
           setHasFetched(false);
         } else {
-          setisPaygActive(false)
-          setpaygStatusLoading(false)
+          setisPaygActive(false);
+          setpaygStatusLoading(false);
           setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
           setPopupType("failed"); // Pop-up for disabled
           setHasFetched(false);
@@ -2042,19 +2348,16 @@ function Dashboard() {
       } else if (response.ok === false) {
         const responseData = await response.json();
         // console.log("dasdd", responseData)
-        setredirectButton(true)
+        setredirectButton(true);
         setPopupMessage(responseData?.error);
         setpaygStatusLoading(false)
         setPopupType("failed"); // Pop-up for disabled
       } else {
-        console.error('Failed to send the request to save the agent.');
-
+        console.error("Failed to send the request to save the agent.");
       }
-
     } catch (error) {
       console.error("Error during upgrade:", error);
-    }
-    finally {
+    } finally {
       // setredirectButton(false);
     }
   };
@@ -2208,20 +2511,34 @@ function Dashboard() {
       ) : null} */}
 
 
-      {activeSubs ? <Popup
-        type="failed"
-        message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
-        onClose={() => {
-          localStorage.setItem("paymentDone", true); // Set paymentDone to true
-          navigate('/steps'); // Navigate to /steps page
-        }}
-      /> : null}
+  return (
+    <div>
+      {activeSubs ? (
+        <Popup
+          type="failed"
+          message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
+          onClose={() => {
+            localStorage.setItem("paymentDone", true);
+            navigate("/steps");
+          }}
+        />
+      ) : null}
+
+
+      {lockBgForTour && (
+        <div
+          className={styles.tourClickShield}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        />
+      )}
 
 
 
       <div className={styles.forSticky}>
         <header className={styles.header}>
           <div
+            id="tour-profile"
             className={styles.profileSection}
             ref={profileRef}
             onClick={handleEditProfile}
@@ -2254,7 +2571,7 @@ function Dashboard() {
             <div className={styles.notificationWrapper}>
               <div
                 className={styles.notificationIcon}
-                onClick={() => navigate('/notifications')}
+                onClick={() => navigate("/notifications")}
               >
                 <svg
                   width="20"
@@ -2318,7 +2635,11 @@ function Dashboard() {
         {/* Ankush Code Start */}
 
         <section className={styles.agentCard}>
-          <div className={styles.agentInfo} onClick={handleTotalCallClick}>
+          <div
+            id="tour-total-calls"
+            className={styles.agentInfo}
+            onClick={handleTotalCallClick}
+          >
             <h2
               className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
                 }`}
@@ -2330,7 +2651,12 @@ function Dashboard() {
 
           <hr />
 
-          <div className={styles.agentInfo2} onClick={handleCalender}>
+          <div
+            id="tour-total-bookings"
+            className={styles.agentInfo2}
+            onClick={handleCalender}
+          >
+            {" "}
             <h2
               className={`${styles.agentHeading} ${isSmallFont ? styles.smallFont : ""
                 }`}
@@ -2357,9 +2683,7 @@ function Dashboard() {
               within next 2 weeks.
             </p>
 
-            <div className={styles.zz}>
-              {/* <button className={styles.closeBTN} onClick={handleNaviagte}>Continue with Free</button> */}
-            </div>
+            <div className={styles.zz}></div>
           </Modal>
         ) : null}
 
@@ -2377,6 +2701,9 @@ function Dashboard() {
               assignedNumbers = [];
             }
           }
+          const isTourOpen =
+            openDropdown === agent.agent_id ||
+            forceTourOpenAgentId === agent.agent_id;
           return (
             <div
               key={agent.agent_id}
@@ -2422,33 +2749,73 @@ function Dashboard() {
                     </p>
                   </div>
                 </div>
-
-                <div
-                  className={styles.FilterIcon}
-                  onClick={(e) => {
-                    toggleDropdown(e, agent.agent_id);
-                    setagentId(agent.agent_id);
-                    setPendingUpgradeAgent(agent)
-                  }}
-                  ref={dropdownRef}
-                >
-                  <svg
-                    width="30"
-                    height="30"
-                    viewBox="0 0 30 30"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                <div className={styles.AgentTwoIcon}>
+                  <div className={styles.TestAgentIcon} onMouseDown={(e) => {
+                          e.stopPropagation();
+                          if (agent?.isDeactivated === 1) {
+                            handleInactiveAgentAlert();
+                          } else {
+                            handleOpenCallModal(agent);
+                          }
+                        }}>
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="30" height="30" rx="5" fill="white" />
+                      <path d="M7.5016 8.50027L8.50014 6.50061L10.5015 5.49981L12.5 8.00049L12 10.0005L14.5 13.5005L18 13.0005L19.5 14.5005L19.5 16.0005L18.5 17.5005L16 18.0005L14.5 17.5005L12.998 15.9997L10.4999 14.0006L9.0005 11.9999L7.5016 8.50027Z" fill="#1AA850" />
+                      <rect x="5" y="20" width="22" height="9" fill="white" />
+                      <path d="M12.229 20.875H10.049V27H8.70402V20.875H6.52402V19.77H12.229V20.875ZM15.0839 23.845C15.0839 23.685 15.0606 23.535 15.0139 23.395C14.9706 23.2517 14.9039 23.1267 14.8139 23.02C14.7239 22.9133 14.6089 22.83 14.4689 22.77C14.3323 22.7067 14.1723 22.675 13.9889 22.675C13.6323 22.675 13.3506 22.7767 13.1439 22.98C12.9406 23.1833 12.8106 23.4717 12.7539 23.845H15.0839ZM12.7289 24.59C12.7489 24.8533 12.7956 25.0817 12.8689 25.275C12.9423 25.465 13.0389 25.6233 13.1589 25.75C13.2789 25.8733 13.4206 25.9667 13.5839 26.03C13.7506 26.09 13.9339 26.12 14.1339 26.12C14.3339 26.12 14.5056 26.0967 14.6489 26.05C14.7956 26.0033 14.9223 25.9517 15.0289 25.895C15.1389 25.8383 15.2339 25.7867 15.3139 25.74C15.3973 25.6933 15.4773 25.67 15.5539 25.67C15.6573 25.67 15.7339 25.7083 15.7839 25.785L16.1389 26.235C16.0023 26.395 15.8489 26.53 15.6789 26.64C15.5089 26.7467 15.3306 26.8333 15.1439 26.9C14.9606 26.9633 14.7723 27.0083 14.5789 27.035C14.3889 27.0617 14.2039 27.075 14.0239 27.075C13.6673 27.075 13.3356 27.0167 13.0289 26.9C12.7223 26.78 12.4556 26.605 12.2289 26.375C12.0023 26.1417 11.8239 25.855 11.6939 25.515C11.5639 25.1717 11.4989 24.775 11.4989 24.325C11.4989 23.975 11.5556 23.6467 11.6689 23.34C11.7823 23.03 11.9439 22.7617 12.1539 22.535C12.3673 22.305 12.6256 22.1233 12.9289 21.99C13.2356 21.8567 13.5806 21.79 13.9639 21.79C14.2873 21.79 14.5856 21.8417 14.8589 21.945C15.1323 22.0483 15.3673 22.2 15.5639 22.4C15.7606 22.5967 15.9139 22.84 16.0239 23.13C16.1373 23.4167 16.1939 23.745 16.1939 24.115C16.1939 24.3017 16.1739 24.4283 16.1339 24.495C16.0939 24.5583 16.0173 24.59 15.9039 24.59H12.7289ZM20.2507 22.87C20.2174 22.9233 20.1824 22.9617 20.1457 22.985C20.1091 23.005 20.0624 23.015 20.0057 23.015C19.9457 23.015 19.8807 22.9983 19.8107 22.965C19.7441 22.9317 19.6657 22.895 19.5757 22.855C19.4857 22.8117 19.3824 22.7733 19.2657 22.74C19.1524 22.7067 19.0174 22.69 18.8607 22.69C18.6174 22.69 18.4257 22.7417 18.2857 22.845C18.1491 22.9483 18.0807 23.0833 18.0807 23.25C18.0807 23.36 18.1157 23.4533 18.1857 23.53C18.2591 23.6033 18.3541 23.6683 18.4707 23.725C18.5907 23.7817 18.7257 23.8333 18.8757 23.88C19.0257 23.9233 19.1774 23.9717 19.3307 24.025C19.4874 24.0783 19.6407 24.14 19.7907 24.21C19.9407 24.2767 20.0741 24.3633 20.1907 24.47C20.3107 24.5733 20.4057 24.6983 20.4757 24.845C20.5491 24.9917 20.5857 25.1683 20.5857 25.375C20.5857 25.6217 20.5407 25.85 20.4507 26.06C20.3641 26.2667 20.2341 26.4467 20.0607 26.6C19.8874 26.75 19.6724 26.8683 19.4157 26.955C19.1624 27.0383 18.8691 27.08 18.5357 27.08C18.3591 27.08 18.1857 27.0633 18.0157 27.03C17.8491 27 17.6874 26.9567 17.5307 26.9C17.3774 26.8433 17.2341 26.7767 17.1007 26.7C16.9707 26.6233 16.8557 26.54 16.7557 26.45L17.0407 25.98C17.0774 25.9233 17.1207 25.88 17.1707 25.85C17.2207 25.82 17.2841 25.805 17.3607 25.805C17.4374 25.805 17.5091 25.8267 17.5757 25.87C17.6457 25.9133 17.7257 25.96 17.8157 26.01C17.9057 26.06 18.0107 26.1067 18.1307 26.15C18.2541 26.1933 18.4091 26.215 18.5957 26.215C18.7424 26.215 18.8674 26.1983 18.9707 26.165C19.0774 26.1283 19.1641 26.0817 19.2307 26.025C19.3007 25.9683 19.3507 25.9033 19.3807 25.83C19.4141 25.7533 19.4307 25.675 19.4307 25.595C19.4307 25.475 19.3941 25.3767 19.3207 25.3C19.2507 25.2233 19.1557 25.1567 19.0357 25.1C18.9191 25.0433 18.7841 24.9933 18.6307 24.95C18.4807 24.9033 18.3257 24.8533 18.1657 24.8C18.0091 24.7467 17.8541 24.685 17.7007 24.615C17.5507 24.5417 17.4157 24.45 17.2957 24.34C17.1791 24.23 17.0841 24.095 17.0107 23.935C16.9407 23.775 16.9057 23.5817 16.9057 23.355C16.9057 23.145 16.9474 22.945 17.0307 22.755C17.1141 22.565 17.2357 22.4 17.3957 22.26C17.5591 22.1167 17.7607 22.0033 18.0007 21.92C18.2441 21.8333 18.5241 21.79 18.8407 21.79C19.1941 21.79 19.5157 21.8483 19.8057 21.965C20.0957 22.0817 20.3374 22.235 20.5307 22.425L20.2507 22.87ZM23.2253 27.08C22.7786 27.08 22.4353 26.955 22.1953 26.705C21.9586 26.4517 21.8403 26.1033 21.8403 25.66V22.795H21.3153C21.2486 22.795 21.1919 22.7733 21.1453 22.73C21.0986 22.6867 21.0753 22.6217 21.0753 22.535V22.045L21.9003 21.91L22.1603 20.51C22.1769 20.4433 22.2086 20.3917 22.2553 20.355C22.3019 20.3183 22.3619 20.3 22.4353 20.3H23.0753V21.915H24.4453V22.795H23.0753V25.575C23.0753 25.735 23.1136 25.86 23.1903 25.95C23.2703 26.04 23.3786 26.085 23.5153 26.085C23.5919 26.085 23.6553 26.0767 23.7053 26.06C23.7586 26.04 23.8036 26.02 23.8403 26C23.8803 25.98 23.9153 25.9617 23.9453 25.945C23.9753 25.925 24.0053 25.915 24.0353 25.915C24.0719 25.915 24.1019 25.925 24.1253 25.945C24.1486 25.9617 24.1736 25.9883 24.2003 26.025L24.5703 26.625C24.3903 26.775 24.1836 26.8883 23.9503 26.965C23.7169 27.0417 23.4753 27.08 23.2253 27.08Z" fill="#6524EB" />
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M18.5728 12.9247C17.8719 12.2238 16.735 12.2238 16.0331 12.9247L16.0314 12.9273C15.6671 13.2907 15.0767 13.2907 14.7132 12.9273C14.0874 12.3015 13.2759 11.49 12.6509 10.865C12.2866 10.5007 12.2866 9.91024 12.6509 9.54595L12.6527 9.54423C13.3536 8.84327 13.3536 7.70638 12.6527 7.00455C12.3358 6.68774 11.9785 6.33035 11.6452 5.99713C11.2404 5.59227 10.6914 5.36523 10.119 5.36523C9.54668 5.36523 8.99765 5.59227 8.59278 5.99713C8.3597 6.23021 8.11627 6.47365 7.88578 6.70413C6.99749 7.59242 6.75059 8.93736 7.26682 10.082L7.26856 10.0864C8.84572 13.4064 12.0518 16.616 15.4936 18.2588L15.4962 18.2605C16.64 18.7888 17.9893 18.5497 18.8801 17.6623C19.1141 17.4499 19.3523 17.2125 19.5802 16.9846C19.9851 16.5797 20.2121 16.0307 20.2121 15.4584C20.2121 14.886 19.9851 14.337 19.5802 13.9321C19.247 13.5989 18.8897 13.2424 18.5728 12.9247ZM17.9625 13.535L18.9699 14.5425C19.2125 14.7859 19.3489 15.1148 19.3489 15.4584C19.3489 15.802 19.2125 16.1308 18.9699 16.3743L18.2741 17.0476C17.6397 17.6821 16.6771 17.8539 15.8631 17.4784C12.5948 15.9176 9.54926 12.8729 8.05238 9.72379C7.6855 8.90715 7.86247 7.94807 8.4961 7.31531L9.2031 6.60745C9.44654 6.36488 9.77544 6.22849 10.119 6.22849C10.4626 6.22849 10.7915 6.36488 11.0349 6.60745L12.0423 7.61486C12.4066 7.97915 12.4066 8.56961 12.0423 8.93391L12.0398 8.93565C11.3388 9.63661 11.3388 10.7735 12.0398 11.4753C12.6656 12.1003 13.477 12.9118 14.102 13.5376C14.8039 14.2386 15.9408 14.2386 16.6417 13.5376L16.6435 13.535C17.0077 13.1707 17.5982 13.1707 17.9625 13.535Z" fill="#1AA850" />
+                      <path d="M16.7265 10.3376C16.7265 9.62287 16.1464 9.04276 15.4316 9.04276C15.1934 9.04276 15 8.84939 15 8.61114C15 8.37288 15.1934 8.17951 15.4316 8.17951C16.6229 8.17951 17.5898 9.14635 17.5898 10.3376C17.5898 10.5759 17.3964 10.7693 17.1581 10.7693C16.9199 10.7693 16.7265 10.5759 16.7265 10.3376Z" fill="#6524EB" />
+                      <path d="M19.3163 10.3376C19.3163 8.19332 17.5759 6.45301 15.4316 6.45301C15.1934 6.45301 15 6.25964 15 6.02138C15 5.78312 15.1934 5.58976 15.4316 5.58976C18.0525 5.58976 20.1795 7.71681 20.1795 10.3376C20.1795 10.5759 19.9861 10.7693 19.7479 10.7693C19.5096 10.7693 19.3163 10.5759 19.3163 10.3376Z" fill="#6524EB" />
+                      <path d="M21.906 10.3376C21.906 6.76464 19.0046 3.86325 15.4316 3.86325C15.1934 3.86325 15 3.66988 15 3.43163C15 3.19337 15.1934 3 15.4316 3C19.4811 3 22.7693 6.28813 22.7693 10.3376C22.7693 10.5759 22.5759 10.7693 22.3376 10.7693C22.0994 10.7693 21.906 10.5759 21.906 10.3376Z" fill="#6524EB" />
+                    </svg>
+                  </div>
+                  <div
+                    className={styles.FilterIcon}
+                    id={`tour-menu-trigger-${agent.agent_id}`}
+                    onClick={(e) => {
+                      toggleDropdown(e, agent.agent_id);
+                      setagentId(agent.agent_id);
+                      setPendingUpgradeAgent(agent);
+                    }}
+                    ref={(el) => {
+                      dropdownRefs.current[agent.agent_id] = el;
+                    }}
                   >
-                    <rect width="30" height="30" rx="5" fill="white" />
-                    <circle cx="8" cy="15" r="2" fill="#24252C" />
-                    <circle cx="15" cy="15" r="2" fill="#24252C" />
-                    <circle cx="22" cy="15" r="2" fill="#24252C" />
-                  </svg>
 
-                  {openDropdown === agent?.agent_id && (
-                    <div className={styles.OptionsDropdown}>
+                    <svg
+                      width="30"
+                      height="30"
+                      viewBox="0 0 30 30"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <rect width="30" height="30" rx="5" fill="white" />
+                      <circle cx="8" cy="15" r="2" fill="#24252C" />
+                      <circle cx="15" cy="15" r="2" fill="#24252C" />
+                      <circle cx="22" cy="15" r="2" fill="#24252C" />
+                    </svg>
+                    <div
+                      className={styles.OptionsDropdown}
+                      style={{
+                        display: isTourOpen ? "block" : "none",
+                        visibility: isTourOpen ? "visible" : "hidden",
+                        opacity: isTourOpen ? 1 : 0,
+                        pointerEvents: isTourOpen ? "auto" : "none",
+                        minWidth: 170,
+                        zIndex: 99999,
+                        ...(tourElevateDropdown && tourDropdownPos
+                          ? {
+                            position: "fixed",
+                            top: tourDropdownPos.top,
+                            left: tourDropdownPos.left,
+                          }
+                          : {}),
+                      }}
+                      id={`tour-menu-dropdown-${agent.agent_id}`}
+                    >
                       <div
                         className={styles.OptionItem}
+                        id={`tour-menu-test-${agent.agent_id}`}
                         onMouseDown={(e) => {
                           e.stopPropagation();
                           if (agent?.isDeactivated === 1) {
@@ -2461,6 +2828,7 @@ function Dashboard() {
                         Test Agent
                       </div>
                       <div
+                        id={`tour-menu-integrate-${agent.agent_id}`}
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
                           e.stopPropagation();
@@ -2470,8 +2838,6 @@ function Dashboard() {
                             navigate("/integrate-agent", {
                               state: {
                                 agentDetails: agent,
-                                // refreshFuntion: handleRefresh,
-                                // alertPopUp: handleAlertPopUp,
                               },
                             });
                           }
@@ -2479,10 +2845,6 @@ function Dashboard() {
                       >
                         Integrate
                       </div>
-
-                      {/* <div className={styles.OptionItem} onClick={() => ""}>
-                        Call Settings
-                      </div> */}
                       <div
                         className={styles.OptionItem}
                         onMouseDown={(e) => {
@@ -2494,7 +2856,6 @@ function Dashboard() {
                           }
                         }}
                       >
-                        {/* <div className={styles.OptionItem} onClick={() => ""}> */}
                         Edit Agent
                       </div>
                       <div
@@ -2502,21 +2863,22 @@ function Dashboard() {
                         onMouseDown={(e) => {
                           e.stopPropagation();
                           handleUpgradeClick(agent);
-                          setPendingUpgradeAgent(agent)
+                          setPendingUpgradeAgent(agent);
                         }}
                       >
                         Upgrade
                       </div>
                       {(() => {
-                        const subscriptionStart = agent?.subscription?.current_period_start;
-                        const planName = agent?.agentPlan?.toLowerCase(); // normalize casing
-
+                        const subscriptionStart =
+                          agent?.subscription?.current_period_start;
+                        const planName = agent?.agentPlan?.toLowerCase();
                         const isFreePlan = planName === "free";
                         const subscriptionAgeInDays = subscriptionStart
                           ? dayjs().diff(dayjs(subscriptionStart), "day")
                           : Infinity;
 
-                        const isEligibleToDelete = isFreePlan || subscriptionAgeInDays <= 2;
+                        const isEligibleToDelete =
+                          isFreePlan || subscriptionAgeInDays <= 2;
 
                         if (isEligibleToDelete) {
                           return (
@@ -2571,29 +2933,29 @@ function Dashboard() {
                             <div>
                               <div
                                 onMouseDown={(e) => {
+
                                   // handleTogglePayG()
                                   // console.log("agent", agent)
                                   setshowPaygConfirm(true)
                                   setagentToPaygActivate(agent)
                                   setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false )
+
+>
                                 }}
 
                                 className={styles.OptionItem}
-
                               >
-                                {paygStatusLoading ? "Loading.." : (isPaygActive === true ? "Deactivate PayG" : "Active PayG")}
-
+                                {paygStatusLoading
+                                  ? "Loading.."
+                                  : isPaygActive === true
+                                    ? "Deactivate Pay as you go"
+                                    : "Active Pay as you go"}
                               </div>
                             </div>
                           </>
                         )}
-
-
-
-
                     </div>
-                  )}
-
+                  </div>
                 </div>
               </div>
               <hr className={styles.agentLine} />
@@ -2612,6 +2974,7 @@ function Dashboard() {
                 <div className={styles.VIA}>
                   {agent.calApiKey ? (
                     <img
+                      id="tour-cal-com"
                       src="svg/cal-svg.svg"
                       alt="cal-svg"
                       style={{ cursor: "pointer" }}
@@ -2626,6 +2989,7 @@ function Dashboard() {
                     />
                   ) : (
                     <img
+                      id="tour-cal-com"
                       src="svg/call-cross.svg"
                       alt="No API Key"
                       style={{ cursor: "pointer" }}
@@ -2634,7 +2998,12 @@ function Dashboard() {
                         if (agent?.isDeactivated === 1) {
                           handleInactiveAgentAlert();
                         } else {
-                          if (userCalApiKey && userCalApiKey !== "null" && userCalApiKey !== "" && userCalApiKey !== "undefined") {
+                          if (
+                            userCalApiKey &&
+                            userCalApiKey !== "null" &&
+                            userCalApiKey !== "" &&
+                            userCalApiKey !== "undefined"
+                          ) {
                             handleConnectCalApiAlready(agent);
                           } else {
                             handleConnectCal(agent);
@@ -2649,7 +3018,7 @@ function Dashboard() {
 
               <div className={styles.LangButton}>
                 {assignedNumbers.length > 0 ? (
-                  <div className={styles.AssignNumText}>
+                  <div id="tour-assign-number" className={styles.AssignNumText}>
                     Phone Number
                     <p className={styles.NumberCaller}>
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
@@ -2659,6 +3028,7 @@ function Dashboard() {
                 ) : (
                   <div
                     className={styles.AssignNum}
+                    id="tour-assign-number"
                     onClick={(e) => handleAssignNumberClick(agent, e)}
                     style={{ cursor: "pointer" }}
                   >
@@ -2906,16 +3276,18 @@ function Dashboard() {
         {showDeleteConfirm &&
           agentToDelete &&
           (() => {
-            const totalMins = Number(agentToDelete?.subscription?.plan_mins) || 0;
+            const totalMins =
+              Number(agentToDelete?.subscription?.plan_mins) || 0;
             const minsLeft = agentToDelete?.mins_left || 0;
             const planMins = totalMins;
 
             const usedPercentage =
               planMins > 0 ? ((planMins - minsLeft) / planMins) * 100 : 100;
 
-
-            const currentPeriodStart = agentToDelete?.subscription?.current_period_start;
-            const currentPeriodEnd = agentToDelete?.subscription?.current_period_end;
+            const currentPeriodStart =
+              agentToDelete?.subscription?.current_period_start;
+            const currentPeriodEnd =
+              agentToDelete?.subscription?.current_period_end;
 
             const subscriptionAgeDays = currentPeriodStart
               ? dayjs().diff(dayjs(currentPeriodStart), "day")
@@ -2935,18 +3307,24 @@ function Dashboard() {
                 >
                   <h2>Are you sure?</h2>
                   <p>
-                    Do you want to delete agent <strong>{agentToDelete.agentName}</strong>?
+                    Do you want to delete agent{" "}
+                    <strong>{agentToDelete.agentName}</strong>?
                   </p>
 
                   {agentToDelete?.subscription && (
                     <p style={{ marginTop: "12px" }}>
                       {isRefundEligible ? (
                         <>
-                          Since this agent's subscription is within 2 days and less than 5% of minutes are used, a refund (minus 3% Stripe fee) will be issued to the original payment method within 5–7 business days.
+                          Since this agent's subscription is within 2 days and
+                          less than 5% of minutes are used, a refund (minus 3%
+                          Stripe fee) will be issued to the original payment
+                          method within 5–7 business days.
                         </>
                       ) : (
                         <>
-                          This subscription is either older than 2 days or more than 5% of the minutes are used. No refund will be provided per our policy.
+                          This subscription is either older than 2 days or more
+                          than 5% of the minutes are used. No refund will be
+                          provided per our policy.
                         </>
                       )}
                     </p>
@@ -2995,7 +3373,6 @@ function Dashboard() {
               </div>
             );
           })()}
-
 
         {showCancelConfirm &&
           agentToCancel &&
@@ -3247,8 +3624,10 @@ function Dashboard() {
           >
             <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
+
               To use the Assign Number feature on the free plan, you’ll need to pay a small additional charge.<br></br>
               For the best experience and access to premium features, we recommend upgrading to a higher plan.
+
             </p>
             <div className={`${styles.assignBtn}`}>
               <button
@@ -3525,11 +3904,16 @@ function Dashboard() {
           type={popupType}
           message={popupMessage}
           onClose={() => {
+
             setPopupMessage("")
             setredirectButton(false)
             setassignNumberNavigate(true)
             setcheckPaygStatus(false)
             setpaygEnabledPopup(false)
+
+            setPopupMessage("");
+            setredirectButton(false);
+
           }}
           onConfirm={handleLogoutConfirm}
           extraButton={
@@ -3545,7 +3929,6 @@ function Dashboard() {
 
       {popupMessage2 && (
         <Popup
-
           type={popupType2}
           message={popupMessage2}
           onClose={() => setPopupMessage2("")}
@@ -3567,9 +3950,6 @@ function Dashboard() {
         onConfirm={handleUpgradePaygConfirmed}
       />
 
-
-
-
       <Popup
         type={popupType3}
         message={popupMessage3}
@@ -3586,8 +3966,6 @@ function Dashboard() {
           handleCalConnectWithConfirm();
           setPopupMessage3("");
         }}
-
-
       />
     </div>
   );

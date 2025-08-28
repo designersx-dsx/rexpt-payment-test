@@ -929,11 +929,9 @@ const AgentDashboard = () => {
                         agentData?.knowledgeBase?.knowledge_base_sources?.filter(
                           (src) => src?.url && !src.url.includes("google.com")
                         );
-                      if (filteredUrls && filteredUrls?.length > 0) {
-                        // return filteredUrls.map((src, index) => (
-                        //   <div key={index}>{src.url}</div>
-                        // ));
-                        const url = filteredUrls[filteredUrls.length - 1]?.url;
+                      if (agentData?.business?.webUrl) {
+                        // const url = filteredUrls[filteredUrls.length - 1]?.url;
+                        const url=agentData?.business?.webUrl
                         return (
                           <a
                             href={url}
@@ -1388,6 +1386,9 @@ const AgentDashboard = () => {
               <div
                 className={styles.managementItem}
                 onClick={() => {
+                    if (agentStatus === true) {
+                    handleInactiveAgentAlert();
+                  } else {
                   navigate("/add-file", {
                     state: {
                       agent_id: agentData?.agent?.agent_id,
@@ -1395,6 +1396,7 @@ const AgentDashboard = () => {
                     },
                   });
                 }}
+              }
               >
                 <div className={styles.SvgDesign}>
                   <svg

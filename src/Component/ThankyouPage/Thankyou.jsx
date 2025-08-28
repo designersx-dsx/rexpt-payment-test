@@ -9,11 +9,13 @@ import {
 import { API_BASE_URL, token } from "../../Store/apiStore";
 import { useRef } from "react";
 import Loader2 from "../Loader2/Loader2";
+import LottieAnimation from "../../lib/LottieAnimation";
 
 function Thankyou({ onSubmit, isAgentCreated }) {
+  const [animationData, setAnimationData] = useState(null);
 
-  if(isAgentCreated ===true){
-    localStorage.setItem("agentCeated" , true)
+  if (isAgentCreated === true) {
+    localStorage.setItem("agentCeated", true)
   }
   const hasRunRef = useRef(false);
 
@@ -45,7 +47,6 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
-  console.log("subscriptionInfo", subscriptionInfo);
   const [currencySymbol, setCurrencySymbol] = useState("");
 
   const currentLocation = "/update";
@@ -53,7 +54,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const [agentName, setAgentName] = useState("Agent");
   const [agentCode, setAgentCode] = useState("XXXXXX");
   const [businessName, setBusinessName] = useState("Your Business");
-
+  const [showAnimation, setShowAnimation] = useState(false)
   useEffect(() => {
     const storedDashboard = sessionStorage.getItem("dashboard-session-storage");
     const storedBusinessDetails = sessionStorage.getItem("businessDetails");
@@ -240,7 +241,7 @@ function Thankyou({ onSubmit, isAgentCreated }) {
       setPopupMessage("Error completing subscription.");
     }
   };
-
+  // hello
   const fetchSubscriptionInfo = async () => {
     if (!agentId && !userId) return; // Ensure at least one ID exists
 
@@ -365,7 +366,12 @@ function Thankyou({ onSubmit, isAgentCreated }) {
 
   //   convFiredRef.current = true;
   // }, [loading, subscriptionInfo, subscriptionId, userId]);
-
+  useEffect(() => {
+    fetch("/animations/Lottie_Loader.json")  // public folder ka path
+      .then((res) => res.json())
+      .then((data) => setAnimationData(data))
+      .catch((err) => console.error("Error loading animation:", err));
+  }, []);
   return (
     // <div className={styles.container}>
     //   <div className={styles.card}>
@@ -375,153 +381,182 @@ function Thankyou({ onSubmit, isAgentCreated }) {
     //   </div>
     // </div>
     <>
-   {subscriptionInfo ?  <div>
-      <div className={styles.container}>
-        <div className={styles.Logo}>
-          <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
-        </div>
 
-        <div className={styles.ThankyouMsg}>
-          <div className={styles.title}>Thanks!</div>
-          <div className={styles.subtitle}>for your Purchase</div>
-          <p className={styles.description}>
-            Your payment was successful. We’ve sent you a confirmation email
-            with all the details you need.
-          </p>
-        </div>
+      {showAnimation ?
+        <>
+          <div className={styles.container}>
+            <br/> <br/>
+            <div className={styles.Logo}>
+              <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
+            </div>
+          </div>
+          <div className={styles.animationContainer}>
+            <div className={styles.animationContent}>
+              <LottieAnimation animationData={animationData} width={300} height={300} />
+              <p className={styles.loaderText}><b>Setting up your agent... </b><br /><br /> Please Wait</p>
+            </div>
 
-        {loading ? (
-          <Loader2 />
-        ) : (
-          <div className={styles.infoBox}>
-            <p>Below is some Quick Info for your Reference:</p>
-            <div className={styles.row}>
-              <span>Business Name:</span>{" "}
-              <div className={styles.Right50}>
-                {businessName || "ACME Construction Services"}
-              </div>
+          </div>
+        </>
+
+        :
+        subscriptionInfo ? <div>
+          <div className={styles.container}>
+            <div className={styles.Logo}>
+              <img src="/svg/Rexpt-Logo.svg" alt="Rexpt-Logo" />
             </div>
-            <div className={styles.row}>
-              <span>Agent Name & ID:</span>
-              <div className={styles.Right50}>
-                {agentName && agentCode
-                  ? `${agentName} (${agentCode})`
-                  : "Oliver (HS23D4)"}
-              </div>
+
+            <div className={styles.ThankyouMsg}>
+              <div className={styles.title}>Thanks!</div>
+              <div className={styles.subtitle}>for your Purchase</div>
+              <p className={styles.description}>
+                Your payment was successful. We’ve sent you a confirmation email
+                with all the details you need.
+              </p>
             </div>
-            <div className={styles.row}>
-              <span>Plan Activated:</span>
-              <div className={styles.Right50}>
-                {subscriptionInfo?.planName || "Growth"} -{" "}
-                {subscriptionInfo?.planMins || "1500"} minutes
-              </div>
-            </div>
-            <div className={styles.row}>
-              <span>Frequency & Price:</span>
-              <div className={styles.Right50}>
-                {subscriptionInfo
-                  ? `${currencySymbol}${formatPrice(
-                    subscriptionInfo?.metadata?.original_plan_amount
-                  )} / ${subscriptionInfo.interval}`
-                  : "US $499 / month"}
-              </div>
-            </div>
-            {/* <div className={styles.row}>
+
+            {loading ? (
+              <Loader2 />
+            ) : (
+              <div className={styles.infoBox}>
+                <p>Below is some Quick Info for your Reference:</p>
+                <div className={styles.row}>
+                  <span>Business Name:</span>{" "}
+                  <div className={styles.Right50}>
+                    {businessName || "ACME Construction Services"}
+                  </div>
+                </div>
+                <div className={styles.row}>
+                  <span>Agent Name & ID:</span>
+                  <div className={styles.Right50}>
+                    {agentName && agentCode
+                      ? `${agentName} (${agentCode})`
+                      : "Oliver (HS23D4)"}
+                  </div>
+                </div>
+                <div className={styles.row}>
+                  <span>Plan Activated:</span>
+                  <div className={styles.Right50}>
+                    {subscriptionInfo?.planName || "Growth"} -{" "}
+                    {subscriptionInfo?.planMins || "1500"} minutes
+                  </div>
+                </div>
+                <div className={styles.row}>
+                  <span>Frequency & Price:</span>
+                  <div className={styles.Right50}>
+                    {subscriptionInfo
+                      ? `${currencySymbol}${formatPrice(
+                        subscriptionInfo?.metadata?.original_plan_amount
+                      )} / ${subscriptionInfo.interval}`
+                      : "US $499 / month"}
+                  </div>
+                </div>
+                {/* <div className={styles.row}>
             <span>Discount Applied:</span>
             <div className={styles.Right50}>N/A</div>
           </div> */}
-            <div className={styles.row}>
-              <span>Billed Today:</span>
-              <div className={styles.Right50}>
-                {subscriptionInfo ? (
-                  <>
-                    {`${currencySymbol}${formatPrice(
-                      subscriptionInfo.planAmount
-                    )} on `}
-                    {new Date(
-                      subscriptionInfo.currentPeriodStart
-                    ).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </>
-                ) : (
-                  "$5,688.60 on July 12, 2025"
-                )}
-              </div>
-            </div>
+                <div className={styles.row}>
+                  <span>Billed Today:</span>
+                  <div className={styles.Right50}>
+                    {subscriptionInfo ? (
+                      <>
+                        {`${currencySymbol}${formatPrice(
+                          subscriptionInfo.planAmount
+                        )} on `}
+                        {new Date(
+                          subscriptionInfo.currentPeriodStart
+                        ).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </>
+                    ) : (
+                      "$5,688.60 on July 12, 2025"
+                    )}
+                  </div>
+                </div>
 
-            <div className={styles.row}>
-              <span>Next Billing Date:</span>
-              <div className={styles.Right50}>
-                {subscriptionInfo
-                  ? new Date(
-                    subscriptionInfo.nextRenewalDate
-                  ).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
-                  : "06 July 2026"}
-              </div>
-            </div>
-            {invoiceLink && (
-              <div className={styles.row}>
-                <span>Invoice Link:</span>
-                <div className={styles.Right50}>
-                  <a
-                    href={invoiceLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.downloadButton}
-                    style={{
-                      color: "purple",
-                      textDecoration: "none",
-                      cursor: "pointer",
+                <div className={styles.row}>
+                  <span>Next Billing Date:</span>
+                  <div className={styles.Right50}>
+                    {subscriptionInfo
+                      ? new Date(
+                        subscriptionInfo.nextRenewalDate
+                      ).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                      : "06 July 2026"}
+                  </div>
+                </div>
+                {invoiceLink && (
+                  <div className={styles.row}>
+                    <span>Invoice Link:</span>
+                    <div className={styles.Right50}>
+                      <a
+                        href={invoiceLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.downloadButton}
+                        style={{
+                          color: "purple",
+                          textDecoration: "none",
+                          cursor: "pointer",
+                        }}
+                        download
+                      >
+                        Download
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                <div className={styles.ButtonTakeME}>
+                  <button
+                    onClick={() => {
+
+                      if (key !== "create") {
+                        localStorage.removeItem("selectedPlanData");
+                        localStorage.removeItem("allPlans");
+                        navigate("/dashboard", {
+                          state: { currentLocation },
+                        });
+                      }
+                      else {
+                        setShowAnimation(true)
+                        localStorage.removeItem("selectedPlanData");
+                        localStorage.removeItem("allPlans");
+                        // navigate("/steps", {
+                        //   state: { locationPath: "/checkout" },
+                        // });
+                        setTimeout(() => {
+                          navigate("/dashboard", { replace: true });
+                        }, 6000);
+
+
+                      }
                     }}
-                    download
+                    className={styles.dashboardBtn}
+                    // disabled={key === "create" ? true : false}
+                    disabled={key === "create" ? !isAgentCreated : false}
                   >
-                    Download
-                  </a>
+                    {key === "create"
+                      ? isAgentCreated
+                        ? "Take me to Dashboard"
+                        : "Loading..."
+                      : "Take me to Dashboard"}{" "}
+                  </button>
                 </div>
               </div>
             )}
-
-            <div className={styles.ButtonTakeME}>
-              <button
-                onClick={() => {
-                  if (key !== "create") {
-                    localStorage.removeItem("selectedPlanData");
-                    localStorage.removeItem("allPlans");
-                    navigate("/dashboard", {
-                      state: { currentLocation },
-                    });
-                  }
-                   else {
-                    localStorage.removeItem("selectedPlanData");
-                    localStorage.removeItem("allPlans");
-                    // navigate("/steps", {
-                    //   state: { locationPath: "/checkout" },
-                    // });
-                    navigate("/dashboard", { replace: true });
-                  }
-                }}
-                className={styles.dashboardBtn}
-                // disabled={key === "create" ? true : false}
-                disabled={key === "create" ? !isAgentCreated : false}
-              >
-                {key === "create"
-                  ? isAgentCreated
-                    ? "Take me to Dashboard"
-                    : "Loading..."
-                  : "Take me to Dashboard"}{" "}
-              </button>
-            </div>
           </div>
-        )}
-      </div>
-    </div>: <Loader2/>} </>
+        </div> : <Loader2 />}
+
+
+
+    </>
   );
 }
 

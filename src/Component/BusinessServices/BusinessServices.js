@@ -80,7 +80,7 @@ const BusinessServices = forwardRef(
         ],
       },
       {
-        type: "Saloon",
+        type: "Salon",
         subtype: "Hair Styling & Grooming",
         icon: "svg/Saloon-icon.svg",
         services: [
@@ -154,6 +154,25 @@ const BusinessServices = forwardRef(
           "Branding Strategy",
           "Other",
         ],
+      },
+      {
+        type: "Digital Marketing Agency",
+        subtype: "Business Promotion Strategies",
+        icon: "svg/Digital-marketing-Agency.svg",
+          services: [
+        "Search Engine Optimization (SEO)",
+        "Pay-Per-Click (PPC) Advertising",
+        "Social Media Marketing",
+        "Content Marketing",
+        "Email Marketing",
+        "Influencer Marketing",
+        "Video Marketing",
+        "Conversion Rate Optimization (CRO)",
+        "Web Design & Development",
+        "Branding & Strategy",
+        "Analytics & Reporting",
+        "Other",
+      ],
       },
       {
         type: "Personal Trainer",

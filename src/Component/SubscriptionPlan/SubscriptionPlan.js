@@ -11,7 +11,9 @@ import Loader from "../Loader/Loader";
 import Loader2 from '../Loader2/Loader2';
 import { customPlanCheck, listAgents } from '../../Store/apiStore';
 import decodeToken from '../../lib/decodeToken';
+
 import axios from 'axios'
+
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const SubscriptionPlan = ({ agentID, locationPath }) => {
@@ -106,11 +108,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     useEffect(() => {
         const getLocationCurrency = async () => {
             try {
-                const response = await fetch("https://ipwho.is/");
-                const data = await response.json();
+                // const response = await fetch("https://ipwho.is/");
+                const response = await axios.get('https://ipinfo.io/json');
+                const data = await response?.data;
 
-                if (data.success && data.country_code) {
-                    const currency = mapCountryToCurrency(data.country_code);
+                if ( data.country) {
+                    const currency = mapCountryToCurrency(data.country);
                     setUserCurrency(currency);
                 } else {
                     throw new Error("Invalid IP data");

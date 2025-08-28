@@ -295,3 +295,50 @@
    -webkit-tap-highlight-color: rgba(194, 194, 194, 0.247);
 
  }
+
+.introjs-bullets { display: none !important; }
+
+/* hamara numeric indicator */
+.custom-step-numbers{
+  display:flex; justify-content:center; gap:8px;
+  margin:8px 0 10px;
+}
+.custom-step-numbers .csn-step{
+  width:26px; height:26px; border-radius:999px;
+  border:1px solid rgba(0,0,0,.2);
+  display:grid; place-items:center; font-size:13px;
+  background:#fff;
+}
+.custom-step-numbers .csn-step.active{
+  background:#6C5CE7; color:#fff; border-color:#6C5CE7;
+}
+.introjs-overlay,
+.introjs-helperLayer,
+.introjs-tooltip,
+.introjs-tooltipReferenceLayer {
+  z-index: 2147483646 !important;
+}
+
+.introjs-tooltip {
+    
+    border-radius: 20px !important;
+    padding: 10px !important;
+}
+.introjs-tooltip-header {
+    
+    width: 100% !important;
+    justify-content: space-between !important;
+    display: flex !important;
+    align-items: center !important;
+    padding-left: 5px !important;
+    margin-bottom: 8px !important;
+}
+
+.introjs-tooltip-title {
+    font-size: 18px;
+    width: unset !important;    
+    text-transform: uppercase !important;
+}
+.introjs-skipbutton {
+     width: unset !important;    
+}

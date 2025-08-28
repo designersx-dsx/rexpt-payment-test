@@ -292,3 +292,15 @@ input:disabled {
   background-color: #f0f0f0;
   cursor: not-allowed;
 }
+
+.modalViewBtn {
+  background: #6524eb;
+  color: white;
+  padding: 2px 14px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+.modalViewBtn:disabled{cursor: not-allowed;}
+.customCheckbox:disabled{cursor: not-allowed}
+.iHaveNot:disabled{cursor: pointer;}

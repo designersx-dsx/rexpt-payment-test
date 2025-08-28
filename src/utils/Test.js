@@ -134,7 +134,9 @@
 // }
 
 // export default Test;
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import LottieAnimation from '../lib/LottieAnimation';
+import styles from './../Component/Notifications/NotificationView.module.css';
 
 function Test() {
   // User ka email input se
@@ -192,35 +194,76 @@ function Test() {
   const openDefaultEmail = () => {
     window.location.href = 'mailto:'; // Default email app kholega (compose screen)
   };
+      const [animationData, setAnimationData] = useState(null);
+
+    useEffect(() => {
+      // fetch("/animations/Bodomwgicz.json")  
+      fetch("/animations/custom_Loader.json")  
+        .then((res) => res.json())
+        .then((data) => setAnimationData(data))
+        .catch((err) => console.error("Error loading animation:", err));
+    }, []);
 
   return (
-    <div>
-      <h3>Enter Your Email</h3>
-      <input
-        type="email"
-        value={userEmail}
-        onChange={(e) => setUserEmail(e.target.value)}
-        placeholder="Enter your email"
-      />
-      <div style={{ marginTop: '20px' }}>
-        {isGmail && isAndroid ? (
-          // Gmail button for Android + @gmail.com
-          <button onClick={openGmail}>Open Gmail</button>
-        ) :  isIOS ? (
-          // Apple Mail button for iOS + @gmail.com
-          <button onClick={openAppleMail}>Open Apple Mail</button>
-        ) : (
-          // Fallback options for other cases
-          <div>
-            <button onClick={openGmail}>Open Gmail (Web)</button>
-            <button onClick={openDefaultEmail}>Open Default Email App</button>
-            <a href="https://outlook.live.com/mail/0/inbox" target="_blank">
-              <button>Open Outlook</button>
-            </a>
+    <>
+       <div className={styles.notificationContainer}>
+          <header className={styles.header}>
+            <div className={styles.headerContent}>
+              <img
+                src='/svg/back-svg.svg'
+                alt='back-svg'
+                className={styles.backIcon}
+                // onClick={() => navigate(-1)}
+              />
+              <h2 className={styles.headerTitle}>Notifications</h2>
+            </div>
+          </header>
           </div>
-        )}
-      </div>
-    </div>
+    <div style={{
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  // backgroundColor: 'rgba(0,0,0,0.5)',
+  zIndex: 9999
+}}>
+ 
+  
+       <LottieAnimation animationData={animationData} width={300} height={300} />
+
+</div>
+</>
+    // <div>
+    //   <h3>Enter Your Email</h3>
+    //   <input
+    //     type="email"
+    //     value={userEmail}
+    //     onChange={(e) => setUserEmail(e.target.value)}
+    //     placeholder="Enter your email"
+    //   />
+    //   <div style={{ marginTop: '20px' }}>
+    //     {isGmail && isAndroid ? (
+    //       // Gmail button for Android + @gmail.com
+    //       <button onClick={openGmail}>Open Gmail</button>
+    //     ) :  isIOS ? (
+    //       // Apple Mail button for iOS + @gmail.com
+    //       <button onClick={openAppleMail}>Open Apple Mail</button>
+    //     ) : (
+    //       // Fallback options for other cases
+    //       <div>
+    //         <button onClick={openGmail}>Open Gmail (Web)</button>
+    //         <button onClick={openDefaultEmail}>Open Default Email App</button>
+    //         <a href="https://outlook.live.com/mail/0/inbox" target="_blank">
+    //           <button>Open Outlook</button>
+    //         </a>
+    //       </div>
+    //     )}
+    //   </div>
+    // </div>
   );
 }
 

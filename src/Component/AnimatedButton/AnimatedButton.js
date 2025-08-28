@@ -55,6 +55,7 @@ const AnimatedButton = ({
   size  , 
   label = 'Save',
   position = {},
+  bottom ={},
   onClick = () => {},
   disabled = false
 }) => {
@@ -75,7 +76,10 @@ const AnimatedButton = ({
   };
 
   return (
-    <div className={styles.btnFix} style={position}>
+    <div className={styles.btnFix}  style={{
+    ...position,
+    bottom: bottom ? bottom : '10px' 
+  }}>
       <div
         className={styles.btnTheme}
         onMouseEnter={handleZoomAnimation}

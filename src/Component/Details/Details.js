@@ -86,13 +86,13 @@ const Details = () => {
     setPhoneSubmitted(true);
 
     const nError = validateName(name);
-    const pError = validatePhone(phone)
+    const pError = validatePhone(phone);
 
     setNameError(nError);
     setPhoneError(pError);
 
-    if (nError ) return;
-    if (pError ) return;
+    if (nError) return;
+    if (pError) return;
     setLoading(true);
 
     try {
@@ -106,7 +106,7 @@ const Details = () => {
           referredByName: referredByName || "",
           referredOn: localDateTime,
           userType: 0,
-          verifyDetails:true
+          verifyDetails: true,
         }
       );
       if (response.status === 200) {
@@ -120,9 +120,8 @@ const Details = () => {
           localStorage.setItem("onboardComplete", "true");
           navigate("/steps");
         }, 400);
-       const email= localStorage.getItem("userEmail")
-        sendEmailToOwner(email,name,phone)
-
+        const email = localStorage.getItem("userEmail");
+        sendEmailToOwner(email, name, phone);
       } else {
         setPopupType("failed");
         setPopupMessage("Update failed. Please try again.");
@@ -175,9 +174,9 @@ const Details = () => {
       try {
         const response = await axios.get("https://ipapi.co/json/");
         const userCountry = response.data.country_code?.toLowerCase();
-        console.log(userCountry,"userCountry")
+        console.log(userCountry, "userCountry");
         if (userCountry) {
-          setCountry("us"||userCountry);
+          setCountry("us" || userCountry);
         }
       } catch (error) {
         console.error("Could not fetch country by IP:", error);
@@ -189,9 +188,9 @@ const Details = () => {
 
   const validatePhone = (value) => {
     if (!value || value.trim() === "") return ""; // optional
-  
+
     if (value.length < 10) return "Phone number must be at least 10 digits.";
-  
+
     try {
       const phoneNumber = parsePhoneNumberFromString("+" + value);
       if (!phoneNumber) return "Invalid phone number format.";
@@ -201,8 +200,7 @@ const Details = () => {
       return "Invalid phone number.";
     }
   };
-  
-  
+
   return (
     <>
       <div className={styles.signUpContainer}>
@@ -222,8 +220,9 @@ const Details = () => {
           </div>
           <div className={styles.logimg2}>
             <div
-              className={`${styles.logimg} ${styles.animateStep} ${step >= 1 ? styles.animateStep1 : ""
-                }`}
+              className={`${styles.logimg} ${styles.animateStep} ${
+                step >= 1 ? styles.animateStep1 : ""
+              }`}
             >
               <img
                 className={styles.logo}
@@ -234,8 +233,9 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.Maincontent} ${styles.animateStep} ${step >= 2 ? styles.animateStep2 : ""
-              }`}
+            className={`${styles.Maincontent} ${styles.animateStep} ${
+              step >= 2 ? styles.animateStep2 : ""
+            }`}
           >
             <div className={styles.welcomeTitle}>
               <h1>Personal Details</h1>
@@ -243,19 +243,20 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.container} ${styles.animateStep} ${step >= 3 ? styles.animateStep3 : ""
-              }`}
+            className={`${styles.container} ${styles.animateStep} ${
+              step >= 3 ? styles.animateStep3 : ""
+            }`}
           >
             <div className={styles.labReq}>
               <div className={styles.Dblock}>
                 <label className={styles.label}>Name</label>
                 <input
                   type="text"
-
-                  className={`${styles.input} ${nameError ? styles.inputError : ""
-                    }`}
+                  className={`${styles.input} ${
+                    nameError ? styles.inputError : ""
+                  }`}
                   placeholder="Your name"
-                  maxLength={150} 
+                  maxLength={150}
                   value={name}
                   onChange={handleNameChange}
                 />
@@ -279,8 +280,9 @@ const Details = () => {
                     }
                   }}
                   onClickFlag={handleFlagClick}
-                  inputClass={`${styles.input} ${phoneError ? styles.inputError : ""
-                    }`}
+                  inputClass={`${styles.input} ${
+                    phoneError ? styles.inputError : ""
+                  }`}
                 />
               </div>
               {phoneError && <p className={styles.inlineError}>{phoneError}</p>}
@@ -288,20 +290,18 @@ const Details = () => {
           </div>
 
           <div
-            className={`${styles.Btn} ${styles.animateStep} ${step >= 4 ? styles.animateStep4 : ""
-              }`}
+            className={`${styles.Btn} ${styles.animateStep} ${
+              step >= 4 ? styles.animateStep4 : ""
+            }`}
             onClick={handleLoginClick}
           >
             <div type="submit">
               <div className={styles.btnTheme}>
-
-
                 <AnimatedButton
                   isLoading={loading}
                   label="Continue"
-
+                  bottom="50px"
                 />
-
               </div>
             </div>
           </div>
