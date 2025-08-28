@@ -389,7 +389,9 @@ export const updateLlm = async (llmId, payload) => {
 };
 export const fetchLlmDetails = async (llm_id) => {
   const data = { llmId: llm_id }
+  
   try {
+    const token =localStorage.getItem('token')
     const response = await axios.post(`${API_BASE_URL}/agent/getLlmDetails`, data,
       {
         headers: {

@@ -176,7 +176,7 @@ const EditPublic = () => {
         const businessData = {
           businessName: result.name || "",
           address: result.formatted_address || "",
-          phone: result.formatted_phone_number || "",
+          phone: result.international_phone_number || result.formatted_phone_number || "",
           internationalPhone: result.international_phone_number || "",
           website: result.website || "",
           rating: result.rating || "",
