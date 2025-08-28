@@ -411,10 +411,6 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     </span>
                 </label>
                     : null}
-
-                    
-            </div>
-
 {!hasCustomPlan ? 
 
  <label className={styles.freeTrialBtn} onClick={handleClickCustom}>
@@ -442,6 +438,10 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     </span>
                 </label>
 : null}
+                    
+            </div>
+
+
 
               
 

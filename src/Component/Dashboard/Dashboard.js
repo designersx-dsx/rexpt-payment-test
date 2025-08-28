@@ -142,19 +142,24 @@ function Dashboard() {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const profileRef = useRef(null);
-
+  const [isAssignApi, setisAssignApi] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
-
+ const [checkPaygStatus, setcheckPaygStatus] = useState()
+  const [paygEnabledPopup, setpaygEnabledPopup] = useState(false)
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [showPaygConfirm, setshowPaygConfirm] = useState(false);
   const [close, setClose] = useState(false);
+   const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
   const [modelOpen, setModelOpen] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
+  const [agentToPaygActivate, setagentToPaygActivate] = useState(null);
 
   const [agentId, setagentId] = useState();
   const [subscriptionId, setsubscriptionId] = useState();
+   const [assignNumberPaid, setAssignNumberPaid] = useState(false);
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
 // <<<<<<< dev_Shorya1
   const closeAssignNumberModal = () => {
@@ -163,7 +168,7 @@ function Dashboard() {
   }
 //   const dropdownRef = useRef(null);
 // =======
-  const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
+  // const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   // const dropdownRef = useRef(null);
   const dropdownRefs = useRef({});
 // >>>>>>> live_copy
@@ -384,26 +389,7 @@ function Dashboard() {
 
 
   // Assign Number
-  const [assignNumberPaid, setAssignNumberPaid] = useState(false);
-  // console.log("assignNumberPaid",assignNumberPaid)
-  const [isAssignApi, setisAssignApi] = useState(false);
 
-  // Payg Popup
-  const [showPaygConfirm, setshowPaygConfirm] = useState(false);
-  const [agentToPaygActivate, setagentToPaygActivate] = useState(null);
-
-      const [redirectButton, setredirectButton] = useState(false)
-
-  const [checkPaygStatus, setcheckPaygStatus] = useState()
-
-  const [paygEnabledPopup, setpaygEnabledPopup] = useState(false)
-
-  // console.log("paygEnabledPopup", paygEnabledPopup)
-  
-
-
-  // Payg Set
-  const [isPaygActive, setisPaygActive] = useState()
 
 
 
@@ -443,7 +429,7 @@ function Dashboard() {
 
   // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 
-  const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
+
 
     const isMenuId = (id = "") =>
       id.startsWith("tour-menu-trigger-") ||
@@ -1359,75 +1345,14 @@ function Dashboard() {
   // Start call
   let micStream = "";
   const isStartingRef = useRef(false);
-  const handleStartCall = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Store the stream globally or in state if needed
-      micStream = stream;
-    } catch (err) {
-      console.error("Microphone access denied or error:", err);
-      // alert("Please allow microphone access to proceed with the call.");
-      setPopupMessage("Microphone access is required to test.");
-      setPopupType("failed");
-      return;
-    }
-
-    if (
-      isStartingRef.current ||
-      isCallInProgress ||
-      !retellWebClient ||
-      !agentDetails
-    ) {
-      console.error("RetellWebClient or agent details not ready.");
-      return;
-    }
-    isStartingRef.current = true;
-    setCallLoading(false);
-    setIsCallInProgress(true);
-
-    try {
-      setCallLoading(true);
-      const res = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ agent_id: agentDetails.agent_id }),
-        }
-      );
-      if (res.status == 403) {
-        if (agentDetails?.agentPlan == "free") {
-          setPopupMessage(
-            "Your Agent Plan has been exhausted. To continue, please upgrade your plan"
-          );
-        } else {
-          setPopupMessage(
-            "Your Agent Plan has been exhausted. To continue, please enable Pay As You Go."
-          );
-        }
-
-        else {
-          setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
-        }
-
-        setPopupType("failed");
-        setIsCallInProgress(false);
-        setTimeout(() => {
-          setPopupMessage("");
-        }, 5000);
-        return;
-      }
-      const data = await res.json();
-      await retellWebClient.startCall({ accessToken: data.access_token });
-      setCallId(data?.call_id);
-    } catch (err) {
-      console.error("Error starting call:", err);
-    } finally {
-      setCallLoading(false);
-      isStartingRef.current = false;
-    }
+   const handleStartCall = async () => {
   };
-  // End call
+  
+  
+  
+  
+  
+  
   const isEndingRef = useRef(false);
   const handleEndCall = async () => {
     if (isEndingRef.current) return;
@@ -2252,7 +2177,7 @@ function Dashboard() {
   const [isPaygActive, setisPaygActive] = useState();
 
 
-  const [paygStatusLoading, setpaygStatusLoading] = useState(true);
+  // const [paygStatusLoading, setpaygStatusLoading] = useState(true);
 
   const checkAgentPaygStatus = async (agentId) => {
     try {
@@ -2487,28 +2412,7 @@ function Dashboard() {
 
 
 
-  return (
-    <div>
-      {/*  FIxed this later */}
-      {/* {activeSubs ? (<Popup
-        type="failed"
-        message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
-        onClose={() => {
-          localStorage.setItem("paymentDone", true); // Set paymentDone to true
-          navigate('/steps'); // Navigate to /steps page
-        }}
-      />) : showDelayedPopup ? (
-        <>
-          <Popup
-            type="failed"
-            message="It looks like you were in the middle of creating your agent. We’re taking you back to the agent creation page so you can continue and finish setting it up."
-            onClose={() => {
-              navigate('/plan');
-            }}
-          />
-        </>
-
-      ) : null} */}
+ 
 
 
   return (
@@ -2932,7 +2836,8 @@ function Dashboard() {
                             </div>
                             <div>
                               <div
-                                onMouseDown={(e) => {
+                                onMouseDown={(e) =>
+                                   {
 
                                   // handleTogglePayG()
                                   // console.log("agent", agent)
@@ -2940,7 +2845,7 @@ function Dashboard() {
                                   setagentToPaygActivate(agent)
                                   setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false )
 
->
+
                                 }}
 
                                 className={styles.OptionItem}
@@ -3971,4 +3876,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default Dashboard
