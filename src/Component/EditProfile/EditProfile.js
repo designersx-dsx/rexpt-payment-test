@@ -27,10 +27,14 @@ import "react-phone-input-2/lib/style.css";
 import axios from "axios";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import { useDashboardStore } from "../../Store/agentZustandStore";
 
 
 
 const EditProfile = () => {
+
+  const { setHasFetched } =
+    useDashboardStore();
   const fileInputRef = useRef(null);
   const sectionRef = useRef(null)
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -633,6 +637,7 @@ const EditProfile = () => {
         setShowPopup(true);
         setPopupMessage("Your PAYG subscription has been deactivated. All active PAYG agents are now disabled.");
         setPopupType("failed");
+        setHasFetched(false)
       } else {
         console.error("Failed to cancel PAYG subscription.");
       }

@@ -145,33 +145,34 @@ function Dashboard() {
   const [isAssignApi, setisAssignApi] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
- const [checkPaygStatus, setcheckPaygStatus] = useState()
+  const [checkPaygStatus, setcheckPaygStatus] = useState()
   const [paygEnabledPopup, setpaygEnabledPopup] = useState(false)
   const [isAssignNumberModalOpen, setIsAssignNumberModalOpen] = useState(false);
   const [show, setShow] = useState(false);
   const [showPaygConfirm, setshowPaygConfirm] = useState(false);
   const [close, setClose] = useState(false);
-   const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
+  const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
   const [modelOpen, setModelOpen] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [agentToDeactivate, setAgentToDeactivate] = useState(null);
   const [agentToPaygActivate, setagentToPaygActivate] = useState(null);
+  // console.log("agentToPaygActivate", agentToPaygActivate)
 
   const [agentId, setagentId] = useState();
   const [subscriptionId, setsubscriptionId] = useState();
-   const [assignNumberPaid, setAssignNumberPaid] = useState(false);
+  const [assignNumberPaid, setAssignNumberPaid] = useState(false);
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
-// <<<<<<< dev_Shorya1
+  // <<<<<<< dev_Shorya1
   const closeAssignNumberModal = () => {
     setIsAssignNumberModalOpen(false)
     setisAssignApi(false)
   }
-//   const dropdownRef = useRef(null);
-// =======
+  //   const dropdownRef = useRef(null);
+  // =======
   // const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   // const dropdownRef = useRef(null);
   const dropdownRefs = useRef({});
-// >>>>>>> live_copy
+  // >>>>>>> live_copy
   const location = useLocation();
 
   const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
@@ -303,35 +304,35 @@ function Dashboard() {
     const newSteps = [
       {
         element: "#tour-profile",
-        title: "Guide Tour", 
+        title: "Guide Tour",
         intro:
           "Welcome! This is your profile. Click here to manage your account details, subscription, and billing information.",
         position: "right",
       },
       {
         element: "#tour-footer-create",
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "This is where the magic happens! Click 'Create' to build and customize your AI Receptionist.",
         position: "top",
       },
       {
         element: "#tour-assign-number",
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "To get your agent live, you need to assign it a dedicated phone number. This is how your customers will reach it.",
         position: "bottom",
       },
       {
         element: "#tour-cal-com",
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "Want your receptionist to book appointments? Connect your calendar here to enable seamless scheduling for your business.",
         position: "left",
       },
       {
         element: `#tour-menu-test-${targetAgentId}`,
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "Before going live, use this to call your agent and test its voice, conversational style, and overall performance.",
         position: "left",
@@ -341,7 +342,7 @@ function Dashboard() {
       },
       {
         element: `#tour-menu-integrate-${targetAgentId}`,
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "Extend your agent's reach! You can integrate it directly into your website to handle live calls and inquiries.",
         position: "left",
@@ -351,14 +352,14 @@ function Dashboard() {
       },
       {
         element: "#tour-total-calls",
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "This is where you can see the total number of calls your agent has handled for you.",
         position: "bottom",
       },
       {
         element: "#tour-total-bookings",
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "View all the appointments your agent has scheduled for your business right here.",
         position: "bottom",
@@ -366,14 +367,14 @@ function Dashboard() {
 
       {
         element: "#tour-footer-calendar",
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "View and manage all the appointments scheduled by your Receptionist in one place.",
         position: "top",
       },
       {
         element: "#tour-footer-support",
-         title: "Guide Tour",
+        title: "Guide Tour",
         intro:
           "Need help? Our support team is here for you. Find answers to your questions or reach out to us directly.",
         position: "top",
@@ -388,7 +389,7 @@ function Dashboard() {
       if (!rect) return;
 
 
-  // Assign Number
+      // Assign Number
 
 
 
@@ -427,7 +428,7 @@ function Dashboard() {
     });
 
 
-  // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+    // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
 
 
 
@@ -1345,14 +1346,14 @@ function Dashboard() {
   // Start call
   let micStream = "";
   const isStartingRef = useRef(false);
-   const handleStartCall = async () => {
+  const handleStartCall = async () => {
   };
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   const isEndingRef = useRef(false);
   const handleEndCall = async () => {
     if (isEndingRef.current) return;
@@ -2234,7 +2235,7 @@ function Dashboard() {
   const handleTogglePayG = async () => {
 
     setpaygStatusLoading(true)
- 
+
     try {
       // console.log({ customer_id })
       const requestData = {
@@ -2395,24 +2396,24 @@ function Dashboard() {
 
     }
     checkUserPayg()
-  }, [checkPaygStatus,paygEnabledPopup])
+  }, [checkPaygStatus, paygEnabledPopup])
 
   // Payg Error
   useEffect(() => {
     // console.log("checkPaygStatus",checkPaygStatus)
     if (paygEnabledPopup === true && (checkPaygStatus === null || checkPaygStatus === 0)) {
-    setredirectButton(true)
-    setPopupMessage("Pay-As-You-Go is not enabled for your Account.");
-    setpaygStatusLoading(false)
-    setPopupType("failed"); // Pop-up for disabled
-  }
-  }, [checkPaygStatus,paygEnabledPopup])
-  
-  
+      setredirectButton(true)
+      setPopupMessage("Pay-As-You-Go is not enabled for your Account.");
+      setpaygStatusLoading(false)
+      setPopupType("failed"); // Pop-up for disabled
+    }
+  }, [checkPaygStatus, paygEnabledPopup])
 
 
 
- 
+
+
+
 
 
   return (
@@ -2655,13 +2656,13 @@ function Dashboard() {
                 </div>
                 <div className={styles.AgentTwoIcon}>
                   <div className={styles.TestAgentIcon} onMouseDown={(e) => {
-                          e.stopPropagation();
-                          if (agent?.isDeactivated === 1) {
-                            handleInactiveAgentAlert();
-                          } else {
-                            handleOpenCallModal(agent);
-                          }
-                        }}>
+                    e.stopPropagation();
+                    if (agent?.isDeactivated === 1) {
+                      handleInactiveAgentAlert();
+                    } else {
+                      handleOpenCallModal(agent);
+                    }
+                  }}>
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <rect width="30" height="30" rx="5" fill="white" />
                       <path d="M7.5016 8.50027L8.50014 6.50061L10.5015 5.49981L12.5 8.00049L12 10.0005L14.5 13.5005L18 13.0005L19.5 14.5005L19.5 16.0005L18.5 17.5005L16 18.0005L14.5 17.5005L12.998 15.9997L10.4999 14.0006L9.0005 11.9999L7.5016 8.50027Z" fill="#1AA850" />
@@ -2836,14 +2837,13 @@ function Dashboard() {
                             </div>
                             <div>
                               <div
-                                onMouseDown={(e) =>
-                                   {
+                                onMouseDown={(e) => {
 
                                   // handleTogglePayG()
                                   // console.log("agent", agent)
                                   setshowPaygConfirm(true)
                                   setagentToPaygActivate(agent)
-                                  setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false )
+                                  setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false)
 
 
                                 }}
@@ -3408,6 +3408,8 @@ function Dashboard() {
               "day"
             );
 
+            const checkPaygActivate = agentToPaygActivate?.is_payg || 0
+
             const isRefundEligible =
               usedPercentage < 5 && subscriptionAgeDays <= 2;
 
@@ -3427,21 +3429,33 @@ function Dashboard() {
                 >
                   <h2>Are you sure?</h2>
                   <p>
-                    {plan_name1 === "free" && assignNumberPaid ? (
-                      <>
-                        🎉 Your Assigned Number has been successfully activated!
-                        You can now convert your free plan into a full Pay-As-You-Go plan by activating it.
-                        The fixed assigned-number fee will be charged at the end of each month, and your PAYG usage will also be billed at the end of your PAYG billing cycle based on what you’ve used.
-                        For more features, flexibility, and opportunities, we recommend upgrading your plan.
-                      </>
-                    ) : (
-                      <>
-                        🚀 Activate PAYG for your agent to stay connected without limits.
-                        After your included plan minutes are used, calls will seamlessly continue under PAYG — so there’s no interruption for your agents.
-                        PAYG usage will be billed at the end of its billing cycle.
-                        This is the best way to ensure smooth operations and uninterrupted agent calls.
-                      </>
-                    )
+                    {
+                      plan_name1 === "free" && assignNumberPaid ? (
+                        <>
+                          🎉 Your Assigned Number has been successfully activated!
+                          You can now convert your free plan into a full Pay-As-You-Go plan by activating it.
+                          The fixed assigned-number fee will be charged at the end of each month, and your PAYG usage will also be billed at the end of your PAYG billing cycle based on what you’ve used.
+                          For more features, flexibility, and opportunities, we recommend upgrading your plan.
+                        </>
+                      ) : checkPaygActivate === 1 && plan_name1 === "Pay-As-You-Go" ? (
+                        <>
+    Are you sure you want to deactivate Pay-As-You-Go for this agent?  
+    Once disabled, calls will stop after the included minutes are used, and your PAYG plan will automatically be converted into a <strong>free plan</strong>.
+  </>
+                      ) : checkPaygActivate === 1 ? (
+                        <>
+    Are you sure you want to deactivate Pay-As-You-Go for this agent?  
+    Your current plan will remain the same, but PAYG will be disabled for this agent.  
+    Once disabled, calls will no longer continue after the included minutes are used.
+  </>
+                      )  : (
+                        <>
+                          🚀 Activate PAYG for your agent to stay connected without limits.
+                          After your included plan minutes are used, calls will seamlessly continue under PAYG — so there’s no interruption for your agents.
+                          PAYG usage will be billed at the end of its billing cycle.
+                          This is the best way to ensure smooth operations and uninterrupted agent calls.
+                        </>
+                      )
                     }
                   </p>
 
