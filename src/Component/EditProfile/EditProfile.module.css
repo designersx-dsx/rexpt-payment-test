@@ -421,3 +421,52 @@
 
 
 
+.glowOnce::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    0 0 10px rgba(95, 51, 225, 0.9),   /* bright purple core */
+    0 0 20px rgba(140, 90, 255, 0.7),  /* lighter tint */
+    0 0 35px rgba(180, 130, 255, 0.5), /* softer halo */
+    0 0 50px rgba(220, 180, 255, 0.35);/* very faint outer glow */
+  animation: glowPulseOut 2s ease-out 2 forwards;
+  filter: blur(2px) saturate(120%);
+}
+
+.glowOnce {
+  animation: borderTint 2s ease-out 2 forwards;
+}
+
+@keyframes glowPulseOut {
+  0% {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.0);
+  }
+  60% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes borderTint {
+  0%   { border-color: rgba(95, 51, 225, 0.95); }
+  50%  { border-color: rgba(140, 90, 255, 0.75); }
+  100% { border-color: rgba(95, 51, 225, 0.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glowOnce,
+  .glowOnce::after {
+    animation: none;
+  }
+}

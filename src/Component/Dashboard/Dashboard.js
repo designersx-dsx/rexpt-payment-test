@@ -56,6 +56,30 @@ function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
     useDashboardStore();
 
+
+  const allAgentsData = JSON.parse(
+    sessionStorage.getItem("dashboard-session-storage")
+  );
+  const currentAgents = allAgentsData?.state?.agents
+
+  const [showDelayedPopup, setShowDelayedPopup] = useState(false);
+
+  useEffect(() => {
+    let timer;
+
+    // Only set delay if agents are undefined or empty
+    if (currentAgents === undefined || currentAgents?.length === 0) {
+      timer = setTimeout(() => {
+        setShowDelayedPopup(true);
+      }, 1000); // delay 1s
+    } else {
+      setShowDelayedPopup(false); // reset if agents exist
+    }
+
+    return () => clearTimeout(timer);
+  }, [currentAgents]);
+
+
   const isRefreshing = useContext(RefreshContext);
 
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -132,9 +156,17 @@ function Dashboard() {
   const [agentId, setagentId] = useState();
   const [subscriptionId, setsubscriptionId] = useState();
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
+// <<<<<<< dev_Shorya1
+  const closeAssignNumberModal = () => {
+    setIsAssignNumberModalOpen(false)
+    setisAssignApi(false)
+  }
+//   const dropdownRef = useRef(null);
+// =======
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   // const dropdownRef = useRef(null);
   const dropdownRefs = useRef({});
+// >>>>>>> live_copy
   const location = useLocation();
 
   const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
@@ -350,8 +382,34 @@ function Dashboard() {
       const rect = triggerEl?.getBoundingClientRect();
       if (!rect) return;
 
+
+  // Assign Number
+  const [assignNumberPaid, setAssignNumberPaid] = useState(false);
+  // console.log("assignNumberPaid",assignNumberPaid)
+  const [isAssignApi, setisAssignApi] = useState(false);
+
+  // Payg Popup
+  const [showPaygConfirm, setshowPaygConfirm] = useState(false);
+  const [agentToPaygActivate, setagentToPaygActivate] = useState(null);
+
+      const [redirectButton, setredirectButton] = useState(false)
+
+  const [checkPaygStatus, setcheckPaygStatus] = useState()
+
+  const [paygEnabledPopup, setpaygEnabledPopup] = useState(false)
+
+  // console.log("paygEnabledPopup", paygEnabledPopup)
+  
+
+
+  // Payg Set
+  const [isPaygActive, setisPaygActive] = useState()
+
+
+
       const GAP = 8;
       const DROPDOWN_WIDTH = 170;
+
 
       setTourDropdownPos({
         top: rect.bottom + GAP,
@@ -381,6 +439,11 @@ function Dashboard() {
       fixElementPosition: true,
       highlightClass: styles.tourHighlight,
     });
+
+
+  // const timeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone;
+
+  const [assignNumberNavigate, setassignNumberNavigate] = useState(false)
 
     const isMenuId = (id = "") =>
       id.startsWith("tour-menu-trigger-") ||
@@ -417,6 +480,7 @@ function Dashboard() {
         setLockBgForTour(false);
       }
     });
+
 
     intro.onafterchange(() => {
       requestAnimationFrame(() => intro.refresh());
@@ -528,7 +592,7 @@ function Dashboard() {
     }
 
     const planName = agent?.subscription?.plan_name || "Free";
-    if (planName.toLowerCase() === "free") {
+    if (planName.toLowerCase() === "free" && !assignNumberPaid) {
       openAssignNumberModal();
     } else {
       navigate("/assign-number", {
@@ -1220,6 +1284,7 @@ function Dashboard() {
   };
 
   const handleCancelSubscription = async (agent) => {
+    // console.log("agentttttt", agent)
     const agent_id = agent?.agent_id;
     const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
 
@@ -1227,10 +1292,47 @@ function Dashboard() {
       setdeleteloading(true);
 
       try {
-        let res = await refundAndCancelSubscriptionAgnetApi(
-          agent_id,
-          mins_left
-        );
+        let res = null
+        if (assignNumberPaid === true && (agent.agentPlan === "free" || agent.agentPlan === "Pay-As-You-Go")) {
+          console.log("Cancel Schedule")
+          res = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ subscriptionId: agent.subscriptionId }),
+          });
+          const requestData = {
+            customerId: customer_id,
+            agentId: agent_id,
+            status: "inactive",
+            isFree: (agent.agentPlan === "free") || (agent.agentPlan === "Pay-As-You-Go" ? true : false)
+
+          };
+          const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(requestData),
+          });
+          if (response.ok) { console.log('Agent Payg Cancelled Succesfully') }
+
+          else {
+            console.log('Failed to send the request to save the agent.')
+          }
+          console.log("assign cancel")
+          await checkAssignNumber()
+        }
+        else {
+          res = await refundAndCancelSubscriptionAgnetApi(
+            agent_id,
+            mins_left
+          );
+          console.log("cancel for all")
+        }
         if (res) {
           setTimeout(() => {
             fetchAndMergeCalApiKeys();
@@ -1245,6 +1347,7 @@ function Dashboard() {
       setPopupMessage("Subscription Cancelled successfully!");
       setPopupType("success");
       fetchAndMergeCalApiKeys();
+      checkAssignNumber()
     } catch (error) {
       setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
       setPopupType("failed");
@@ -1302,6 +1405,11 @@ function Dashboard() {
             "Your Agent Plan has been exhausted. To continue, please enable Pay As You Go."
           );
         }
+
+        else {
+          setPopupMessage("Your Agent Plan has been exhausted. To continue, please enable Pay As You Go.");
+        }
+
         setPopupType("failed");
         setIsCallInProgress(false);
         setTimeout(() => {
@@ -1973,8 +2081,12 @@ function Dashboard() {
   // };
 
   const handleUpgradeClick = (agent) => {
+    // console.log("agent", agent)
     setPendingUpgradeAgent(agent);
     if (agent?.agentPlan == "free") {
+      if (assignNumberPaid === true) {
+        // setShowUpgradeConfirmModal(true);
+      }
       setShowUpgradeConfirmModal(false);
       //  setPendingUpgradeAgent(agent);
       handleUpgradePaygConfirmed();
@@ -2133,8 +2245,12 @@ function Dashboard() {
     return number;
   }
 
-  const customer_id = decodeTokenData?.customerId;
+  const customer_id = decodeTokenData?.customerId
+
+  const [paygStatusLoading, setpaygStatusLoading] = useState(true)
+
   const [isPaygActive, setisPaygActive] = useState();
+
 
   const [paygStatusLoading, setpaygStatusLoading] = useState(true);
 
@@ -2175,8 +2291,12 @@ function Dashboard() {
       console.error("Error checking Payg status:", error);
       // setPopupMessage("Failed to check agent's Pay-as-you-go status.");
       // setPopupType("failed");
-    } finally {
-      setpaygStatusLoading(false);
+
+
+    }
+    finally {
+      setpaygStatusLoading(false)
+
     }
   };
 
@@ -2187,13 +2307,16 @@ function Dashboard() {
   }, [agentId]);
 
   const handleTogglePayG = async () => {
-    setpaygStatusLoading(true);
+
+    setpaygStatusLoading(true)
+ 
     try {
       // console.log({ customer_id })
       const requestData = {
         customerId: customer_id,
         agentId: agentId,
         status: isPaygActive ? "inactive" : "active",
+        isFree: (agentToPaygActivate.agentPlan === "free") || (agentToPaygActivate.agentPlan === "Pay-As-You-Go" ? true : false)
       };
       // Call the API to save the agent's payg status
       const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
@@ -2214,17 +2337,20 @@ function Dashboard() {
           setpaygStatusLoading(false);
           setPopupMessage("Agent's Pay-as-you-go feature activated.");
           setPopupType("success"); // Pop-up for activated
+          setHasFetched(false);
         } else {
           setisPaygActive(false);
           setpaygStatusLoading(false);
           setPopupMessage("Agent's Pay-as-you-go feature has been disabled.");
           setPopupType("failed"); // Pop-up for disabled
+          setHasFetched(false);
         }
       } else if (response.ok === false) {
         const responseData = await response.json();
         // console.log("dasdd", responseData)
         setredirectButton(true);
         setPopupMessage(responseData?.error);
+        setpaygStatusLoading(false)
         setPopupType("failed"); // Pop-up for disabled
       } else {
         console.error("Failed to send the request to save the agent.");
@@ -2235,6 +2361,155 @@ function Dashboard() {
       // setredirectButton(false);
     }
   };
+
+  const handleAssignNumberBuy = async () => {
+    const agentAssignNumberdetailsData = agentDetails
+    setisAssignApi(true)
+    // console.log("agentAssignNumberdetailsData", agentAssignNumberdetailsData)
+    const currentUrl = window.location.origin
+    const requestData = {
+      customerId: customer_id,
+      // priceId: "price_1RximE4T6s9Z2zBzdfpTUy20", // EXTRA MINUTES 5 dollar
+      isAssignNumber: true,
+      promotionCode: "",
+      userId: userId,
+      url: `${currentUrl}/dashboard?AssignNumber=true`,
+      cancelUrl: `${currentUrl}/dashboard?AssignNumber=false`,
+      agentId: agentDetails?.agent_id ? agentDetails?.agent_id : null
+    };
+    try {
+      const response = await fetch(`${API_BASE}/payg-subscription-handle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData.checkoutUrl) {
+          window.location.href = responseData.checkoutUrl;
+        }
+
+        console.log('API response:', responseData); // You can handle the API response heree
+      } else {
+        console.error('Failed to send the request');
+      }
+
+    } catch (error) {
+      console.error('Error While doing payment for Assign Number:', error);
+    }
+  }
+
+
+  const checkAssignNumber = async () => {
+    try {
+      // setLoading(true);
+
+      const res = await axios.post(`${API_BASE_URL}/assign-number-check`, { customer_id });
+
+      if (res.data.success) {
+        setAssignNumberPaid(true);
+      } else {
+        setAssignNumberPaid(false);
+      }
+    } catch (error) {
+      console.error("Error checking assign number:", error);
+      setAssignNumberPaid(false);
+    }
+  };
+
+  // Check Assign Number payment
+  useEffect(() => {
+    checkAssignNumber()
+  }, [])
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAssignNumber = urlParams.get('AssignNumber');
+  useEffect(() => {
+    if (isAssignNumber === "false") {
+      setPopupType("failed");
+      setPopupMessage(`Payment Cancelled for Assign Number`);
+    }
+    else if (isAssignNumber === "true") {
+      setPopupType("success");
+      setPopupMessage(`Payment Success for Assign Number, Now you can Assign Numbers to Your Free Agent`);
+      setTimeout(() => {
+        navigate("/assign-number", {
+          state: { agent: agentDetails?.agent_id },
+        })
+      }, 2000);
+
+      if (assignNumberNavigate === true) {
+        navigate("/assign-number", {
+          state: { agent: agentDetails?.agent_id },
+        })
+      }
+
+    }
+  }, [])
+
+  useEffect(() => {
+    const checkUserPayg = async () => {
+      try {
+        // setLoading(true);
+
+        const res = await axios.post(`${API_BASE_URL}/check-payg-enable`, { customer_id });
+
+        if (res?.data?.success) {
+          setcheckPaygStatus(res?.data?.paygStatus);
+        } else {
+          setcheckPaygStatus(false);
+        }
+      } catch (error) {
+        console.error("Error checking payg status:", error);
+        setcheckPaygStatus(false);
+      }
+
+    }
+    checkUserPayg()
+  }, [checkPaygStatus,paygEnabledPopup])
+
+  // Payg Error
+  useEffect(() => {
+    // console.log("checkPaygStatus",checkPaygStatus)
+    if (paygEnabledPopup === true && (checkPaygStatus === null || checkPaygStatus === 0)) {
+    setredirectButton(true)
+    setPopupMessage("Pay-As-You-Go is not enabled for your Account.");
+    setpaygStatusLoading(false)
+    setPopupType("failed"); // Pop-up for disabled
+  }
+  }, [checkPaygStatus,paygEnabledPopup])
+  
+  
+
+
+
+  return (
+    <div>
+      {/*  FIxed this later */}
+      {/* {activeSubs ? (<Popup
+        type="failed"
+        message="It looks like you were in the middle of the agent creation process. We are now taking you back to the agent creation steps so you can complete it based on the payment you have already made."
+        onClose={() => {
+          localStorage.setItem("paymentDone", true); // Set paymentDone to true
+          navigate('/steps'); // Navigate to /steps page
+        }}
+      />) : showDelayedPopup ? (
+        <>
+          <Popup
+            type="failed"
+            message="It looks like you were in the middle of creating your agent. We’re taking you back to the agent creation page so you can continue and finish setting it up."
+            onClose={() => {
+              navigate('/plan');
+            }}
+          />
+        </>
+
+      ) : null} */}
+
 
   return (
     <div>
@@ -2249,6 +2524,7 @@ function Dashboard() {
         />
       ) : null}
 
+
       {lockBgForTour && (
         <div
           className={styles.tourClickShield}
@@ -2256,6 +2532,8 @@ function Dashboard() {
           onClick={(e) => e.stopPropagation()}
         />
       )}
+
+
 
       <div className={styles.forSticky}>
         <header className={styles.header}>
@@ -2411,7 +2689,9 @@ function Dashboard() {
 
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
+          // console.log("agentagentagent",agent)
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
+          // console.log("randomPlan",randomPlan)
 
           let assignedNumbers = [];
           if (agent.voip_numbers) {
@@ -2432,7 +2712,10 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-                  {agent?.subscription?.plan_name || "Free"}
+                  {agent?.subscription?.plan_name === "Add-on Services"
+                    // {agent?.subscription?.plan_name === "PAYG Extra" // Live Acccount
+                    ? "Pay-As-You-Go"
+                    : agent?.subscription?.plan_name || "Free"}
                   {" Plan"}
                 </h3>
               </div>
@@ -2629,9 +2912,11 @@ function Dashboard() {
                           ? "Activate Agent"
                           : "Deactivate Agent"}
                       </div>
-                      {agent?.subscription &&
+
+                      {((agent?.subscription &&
                         agent?.subscription?.plan_name?.toLowerCase() !==
-                        "free" && (
+                        "free") || assignNumberPaid && agent?.isDeactivated === 0
+                      ) && (
                           <>
                             <div>
                               <div
@@ -2648,8 +2933,16 @@ function Dashboard() {
                             <div>
                               <div
                                 onMouseDown={(e) => {
-                                  handleTogglePayG();
+
+                                  // handleTogglePayG()
+                                  // console.log("agent", agent)
+                                  setshowPaygConfirm(true)
+                                  setagentToPaygActivate(agent)
+                                  setpaygEnabledPopup(checkPaygStatus === null || checkPaygStatus === 0 ? true : false )
+
+>
                                 }}
+
                                 className={styles.OptionItem}
                               >
                                 {paygStatusLoading
@@ -2744,8 +3037,8 @@ function Dashboard() {
                 )}
 
                 <div className={styles.minLeft}>
-                  <span className={styles.MinL}>Min Left</span>{" "}
-                  {agent?.callSummary?.remaining?.minutes}
+                  <span className={styles.MinL}>{agent.agentPlan === "Pay-As-You-Go" && agent.mins_left === 0 ? "Mins Usage" : 'Min Left'}</span>{" "}
+                  {agent.agentPlan === "Pay-As-You-Go" && agent.mins_left === 0 ? agent?.payg_mins : agent?.callSummary?.remaining?.minutes}
                 </div>
               </div>
             </div>
@@ -3086,6 +3379,7 @@ function Dashboard() {
           (() => {
             const totalMins = agentToCancel?.subscription?.totalMinutes || 0;
             const minsLeft = agentToCancel?.mins_left || 0;
+            const plan_name1 = agentToCancel?.agentPlan || ""
             const plan_mins = totalMins;
             const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
             const current_period_start =
@@ -3096,6 +3390,7 @@ function Dashboard() {
               dayjs(current_period_start),
               "day"
             );
+
 
             const isRefundEligible =
               usedPercentage < 5 && subscriptionAgeDays <= 2;
@@ -3111,7 +3406,14 @@ function Dashboard() {
                 >
                   <h2>Are you sure?</h2>
                   <p>
-                    {isRefundEligible ? (
+                    {(plan_name1 === "free" || plan_name1 === "Pay-As-You-Go") && assignNumberPaid ? (
+                      <>
+                        You’re on a <strong>Free Plan</strong> with an <strong>assigned number. </strong>
+                        Cancelling this plan will remove your assigned number and you
+                        won’t be able to use it again or otherwise you have to buy again.
+                        <br />
+                      </>
+                    ) : isRefundEligible ? (
                       <>
                         Since you're canceling within 2 days of purchasing and
                         have used less than 5% of your minutes, you're eligible
@@ -3183,6 +3485,102 @@ function Dashboard() {
             );
           })()}
 
+        {/* PAYG MODAL */}
+        {showPaygConfirm &&
+          agentToPaygActivate && checkPaygStatus === 1 &&
+          (() => {
+            const totalMins = agentToPaygActivate?.subscription?.totalMinutes || 0;
+            const minsLeft = agentToPaygActivate?.mins_left || 0;
+            const plan_name1 = agentToPaygActivate?.agentPlan || ""
+            const plan_mins = totalMins;
+            const usedPercentage = ((plan_mins - minsLeft) / plan_mins) * 100;
+            const current_period_start =
+              agentToCancel?.subscription?.current_period_start;
+            const current_period_end =
+              agentToCancel?.subscription?.current_period_end;
+            const subscriptionAgeDays = dayjs().diff(
+              dayjs(current_period_start),
+              "day"
+            );
+
+            const isRefundEligible =
+              usedPercentage < 5 && subscriptionAgeDays <= 2;
+
+
+
+            return (
+              // <> {checkPaygStatus === null || checkPaygStatus === 0 ? <>
+
+              // </> :
+              <div
+                className={styles.modalBackdrop}
+                onClick={() => setshowPaygConfirm(false)}
+              >
+                <div
+                  className={styles.modalContainer}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h2>Are you sure?</h2>
+                  <p>
+                    {plan_name1 === "free" && assignNumberPaid ? (
+                      <>
+                        🎉 Your Assigned Number has been successfully activated!
+                        You can now convert your free plan into a full Pay-As-You-Go plan by activating it.
+                        The fixed assigned-number fee will be charged at the end of each month, and your PAYG usage will also be billed at the end of your PAYG billing cycle based on what you’ve used.
+                        For more features, flexibility, and opportunities, we recommend upgrading your plan.
+                      </>
+                    ) : (
+                      <>
+                        🚀 Activate PAYG for your agent to stay connected without limits.
+                        After your included plan minutes are used, calls will seamlessly continue under PAYG — so there’s no interruption for your agents.
+                        PAYG usage will be billed at the end of its billing cycle.
+                        This is the best way to ensure smooth operations and uninterrupted agent calls.
+                      </>
+                    )
+                    }
+                  </p>
+
+                  <p style={{ marginTop: "16px" }}>
+                    Are you sure you want to Continue?
+                  </p>
+
+                  <div className={styles.modalButtons}>
+                    <button
+                      className={`${styles.modalButton} ${styles.cancel}`}
+                      onClick={() => setshowPaygConfirm(false)}
+                    >
+                      No
+                    </button>
+                    {deleteloading ? (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Cancelling <Loader size={18} />
+                      </button>
+                    ) : (
+                      <button
+                        className={`${styles.modalButton} ${styles.submit}`}
+                        onClick={async () => {
+                          handleTogglePayG()
+                          setshowPaygConfirm(false);
+                          setagentToPaygActivate(null);
+                        }}
+                      >
+                        Yes
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              // }</>
+            );
+          })()}
+
         {/* Call Test Modal */}
         {openCallModal && (
           <Modal3
@@ -3226,16 +3624,43 @@ function Dashboard() {
           >
             <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
-              To get an agent number, you need to upgrade your plan. Unlock
-              access to premium features by choosing a higher plan.
+
+              To use the Assign Number feature on the free plan, you’ll need to pay a small additional charge.<br></br>
+              For the best experience and access to premium features, we recommend upgrading to a higher plan.
+
             </p>
-            <button
-              className={`${styles.modalButton} ${styles.submit}`}
-              onClick={closeAssignNumberModal}
-              style={{ width: "100%" }}
-            >
-              Got it!
-            </button>
+            <div className={`${styles.assignBtn}`}>
+              <button
+                className={`${styles.modalButton} ${styles.cancel}`}
+                onClick={closeAssignNumberModal}
+                // onClick={handleAssignNumberBuy}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className={`${styles.modalButton} ${styles.submit}`}
+                // onClick={closeAssignNumberModal}
+                onClick={handleAssignNumberBuy}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                {isAssignApi ? (
+                  <>
+                    Processing... <Loader size={18} />
+                  </>
+                ) : (
+                  "Proceed"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -3250,57 +3675,103 @@ function Dashboard() {
             className={styles.modalContainer}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>
-              {agentToDeactivate?.isDeactivated === 1
-                ? "Activate Agent"
-                : "Deactivate Agent"}
-            </h2>
-            <p>
-              {agentToDeactivate?.isDeactivated === 1
-                ? "Are you sure you want to activate this agent?"
-                : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."}
-              <strong>
-                {agentToDeactivate?.isDeactivated === 1
-                  ? "Activate"
-                  : "Deactivate"}
-              </strong>{" "}
-              <strong>{formatName(agentToDeactivate?.agentName)}</strong>?
-            </p>
+            {agentToDeactivate.agentPlan === "free" &&
+              agentToDeactivate.mins_left === 0 &&
+              agentToDeactivate.isDeactivated === 1 ? (
+              // 👉 Special Upgrade Popup
+              <>
+                <h2>Upgrade Required</h2>
+                <p>
+                  You’ve used up all your free minutes. To continue using{" "}
+                  <strong>{formatName(agentToDeactivate?.agentName)}</strong>, please
+                  upgrade your plan.
+                </p>
 
-            <div className={styles.modalButtons}>
-              <button
-                className={`${styles.modalButton} ${styles.cancel}`}
-                onClick={() => setShowDeactivateConfirm(false)}
-                disabled={deactivateLoading ? true : false}
-              >
-                {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
-              </button>
-              <button
-                className={`${styles.modalButton} ${styles.submit}`}
-                onClick={handleDeactivateAgent}
-              >
-                {deactivateLoading ? (
-                  <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
+                <div className={styles.modalButtons}>
+                  <button
+                    className={`${styles.modalButton} ${styles.cancel}`}
+                    onClick={() => setShowDeactivateConfirm(false)}
+                    disabled={deactivateLoading}
                   >
-                    Updating <Loader size={18} />
-                  </span>
-                ) : (
-                  <>
+                    Cancel
+                  </button>
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={() => handleUpgradeClick(agentToDeactivate)} // 👉 You'll need to implement this
+                  >
+                    {deactivateLoading ? (
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Redirecting <Loader size={18} />
+                      </span>
+                    ) : (
+                      "Upgrade"
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : (
+              // 👉 Existing Activate/Deactivate Popup
+              <>
+                <h2>
+                  {agentToDeactivate?.isDeactivated === 1
+                    ? "Activate Agent"
+                    : "Deactivate Agent"}
+                </h2>
+                <p>
+                  {agentToDeactivate?.isDeactivated === 1
+                    ? "Are you sure you want to activate this agent?"
+                    : "If you pause your voice agent service, your monthly minutes will stop immediately. Don't worry—when you reactivate, your billing cycle will resume from that day, so you’ll still get all your paid time."}
+                  <strong>
                     {agentToDeactivate?.isDeactivated === 1
-                      ? "Yes"
-                      : "Yes, Pause"}
-                  </>
-                )}
-              </button>
-            </div>
+                      ? "Activate"
+                      : "Deactivate"}
+                  </strong>{" "}
+                  <strong>{formatName(agentToDeactivate?.agentName)}</strong>?
+                </p>
+
+                <div className={styles.modalButtons}>
+                  <button
+                    className={`${styles.modalButton} ${styles.cancel}`}
+                    onClick={() => setShowDeactivateConfirm(false)}
+                    disabled={deactivateLoading}
+                  >
+                    {agentToDeactivate?.isDeactivated === 1 ? "No" : "Keep Active"}
+                  </button>
+                  <button
+                    className={`${styles.modalButton} ${styles.submit}`}
+                    onClick={handleDeactivateAgent}
+                  >
+                    {deactivateLoading ? (
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        Updating <Loader size={18} />
+                      </span>
+                    ) : (
+                      <>
+                        {agentToDeactivate?.isDeactivated === 1
+                          ? "Yes"
+                          : "Yes, Pause"}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
+
 
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
@@ -3433,8 +3904,16 @@ function Dashboard() {
           type={popupType}
           message={popupMessage}
           onClose={() => {
+
+            setPopupMessage("")
+            setredirectButton(false)
+            setassignNumberNavigate(true)
+            setcheckPaygStatus(false)
+            setpaygEnabledPopup(false)
+
             setPopupMessage("");
             setredirectButton(false);
+
           }}
           onConfirm={handleLogoutConfirm}
           extraButton={
@@ -3461,7 +3940,8 @@ function Dashboard() {
         show={showUpgradeConfirmModal}
         onClose={() => setShowUpgradeConfirmModal(false)}
         title="Upgrade Plan?"
-        message="You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."
+        message={pendingUpgradeAgent?.agentPlan === "Pay-As-You-Go" ? "Your current Pay-As-You-Go plan will be upgraded to a Paid plan, giving you more benefits and features." :
+          "You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."}
         type="info"
         confirmText={upgradeLoading ? "Redirecting..." : "Yes, Upgrade"}
         cancelText="Cancel"
@@ -3479,6 +3959,7 @@ function Dashboard() {
           }
           isConfirmedRef.current = false;
           setPopupMessage3("");
+          setpaygStatusLoading(false)
         }}
         onConfirm={() => {
           isConfirmedRef.current = true;
