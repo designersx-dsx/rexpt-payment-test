@@ -3439,16 +3439,16 @@ function Dashboard() {
                         </>
                       ) : checkPaygActivate === 1 && plan_name1 === "Pay-As-You-Go" ? (
                         <>
-    Are you sure you want to deactivate Pay-As-You-Go for this agent?  
-    Once disabled, calls will stop after the included minutes are used, and your PAYG plan will automatically be converted into a <strong>free plan</strong>.
-  </>
+                          Are you sure you want to deactivate Pay-As-You-Go for this agent?
+                          Once disabled, calls will stop after the included minutes are used, and your PAYG plan will automatically be converted into a <strong>free plan</strong>.
+                        </>
                       ) : checkPaygActivate === 1 ? (
                         <>
-    Are you sure you want to deactivate Pay-As-You-Go for this agent?  
-    Your current plan will remain the same, but PAYG will be disabled for this agent.  
-    Once disabled, calls will no longer continue after the included minutes are used.
-  </>
-                      )  : (
+                          Are you sure you want to deactivate Pay-As-You-Go for this agent?
+                          Your current plan will remain the same, but PAYG will be disabled for this agent.
+                          Once disabled, calls will no longer continue after the included minutes are used.
+                        </>
+                      ) : (
                         <>
                           🚀 Activate PAYG for your agent to stay connected without limits.
                           After your included plan minutes are used, calls will seamlessly continue under PAYG — so there’s no interruption for your agents.
