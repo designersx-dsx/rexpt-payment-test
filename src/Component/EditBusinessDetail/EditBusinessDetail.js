@@ -62,6 +62,7 @@ const EditBusinessDetail = () => {
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
+      console.log('storedDetails',storedDetails)
       const details = JSON.parse(storedDetails);
       setBusinessName(details?.businessName || "");
       setPhoneNumber(details.internationalPhone || details?.phone || "");
@@ -558,7 +559,7 @@ const EditBusinessDetail = () => {
           <input
             type="text"
             className={styles.input}
-            placeholder="88XX 77X X55"
+            placeholder="+1 88XX 77X X55"
             value={phoneNumber}
             maxLength={15}
             minLength={8}

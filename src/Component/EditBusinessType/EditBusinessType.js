@@ -69,7 +69,7 @@ const EditBusinessType = () => {
       icon: "svg/Interior-Designer-icon.svg",
     },
     {
-      type: "Saloon",
+      type: "Salon",
       subtype: "Hair Styling & Grooming",
       icon: "svg/Saloon-icon.svg",
     },
@@ -175,15 +175,72 @@ const EditBusinessType = () => {
       icon: "svg/Bakery.svg",
     },
     {
-      type: "Dry Cleaner",
+      type: "Dry Cleaners",
       subtype: "Garment Cleaning & Care",
       icon: "svg/Dry Cleaner.svg",
     },
     {
-      type: "Cleaning Janitorial Service",
+      type: "Cleaning and Janitorial Services",
       subtype: "Professional Cleaning Solutions",
       icon: "svg/Cleaning Janitorial Service.svg",
     },
+    {
+      type: "Tour Guides",
+      subtype: "Local Experience Experts",
+      icon: "svg/Tour-Guides.svg",
+    },
+    {
+      type: "Deli Shop",
+      subtype: "Fresh Meats & Gourmet Foods",
+      icon: "svg/Deli shop.svg"
+    },
+    {
+      type: "Marketing Agency",
+      subtype: "Your Journey Begins Here",
+      icon: "svg/Marketing Agency.svg",
+    },
+        {
+      type: "Digital Marketing Agency",
+      subtype: "Grow Your Brand Online",
+      icon: "svg/Digital-marketing-Agency.svg",
+    },
+    {
+      type: "Car Repair & Garage",
+      subtype: "Quality Repairs, Every Time",
+      icon: "svg/Car Repair & Garage.svg",
+    },
+    {
+      type: "Boat Repair",
+      subtype: "Marine Care & Repair Experts",
+      icon: "svg/Boat Repair & Maintenance.svg"
+
+    },
+    {
+      type: "Car & Bus Services",
+      subtype: "Quality Repairs, Every Time",
+      icon: "svg/Car & Bus Services.svg",
+
+    },
+    {
+      type: "Taxi, Cab & Limo Booking",
+      subtype: "Reliable Rides, Anytime, Anywhere",
+      icon: "svg/Taxi.svg",
+
+    },
+    {
+      type: "Movers and Packers",
+      subtype: "Safe & Hassle-Free Relocation Services",
+      icon: "svg/Movers and Packers.svg",
+
+    },
+    {
+      type: "Trucking Company",
+      subtype: "Efficient Freight & Logistics Solutions",
+      icon: "svg/Trucking Company.svg",
+
+    }
+,
+
     {
       type: "Other",
       subtype: "More Ideas, More Impact",
@@ -315,13 +372,13 @@ const EditBusinessType = () => {
     } else {
       setBusinessTypeError("");
     }
-    const sizeError = validateBusinessSize(businessSize);
-    if (sizeError) {
-      setBusinessSizeError(sizeError);
-      hasError = true;
-    } else {
-      setBusinessSizeError("");
-    }
+    // const sizeError = validateBusinessSize(businessSize);
+    // if (sizeError) {
+    //   setBusinessSizeError(sizeError);
+    //   hasError = true;
+    // } else {
+    //   setBusinessSizeError("");
+    // }
     const serviceError = validateServices(customBuisness);
     if (serviceError) {
       setErrors((prev) => ({ ...prev, customBuisness: serviceError }));
@@ -466,7 +523,7 @@ const EditBusinessType = () => {
             </div>
           )}
           <div className={styles.inputGroup}>
-            <label>Business Size (Number of Emp.)<span className={styles.requiredField}> *</span></label>
+            <label>Business Size (Number of Emp.)</label>
             <select className={styles.selectInput}
               value={businessSize}
               onChange={handleBusinessSizeChange}

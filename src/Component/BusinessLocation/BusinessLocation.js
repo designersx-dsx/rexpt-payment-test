@@ -68,11 +68,12 @@ const BusinessLocation = () => {
   useEffect(() => {
     const fetchCountryCode = async () => {
       try {
-        const res = await axios.get('https://ipwho.is/');
+        // const res = await axios.get('https://ipwho.is/');
+        const res = await axios.get('https://ipinfo.io/json');
         const data = res?.data;
-        if (data && data.country_code) {
+        if (data && data.country) {
           setIpData(data);
-          setCountryCode(data.country_code.toLowerCase());
+          setCountryCode(data.country.toLowerCase());
         }
       } catch (err) {
         console.error('Failed to fetch IP location:', err);

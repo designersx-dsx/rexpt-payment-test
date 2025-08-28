@@ -195,10 +195,10 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 className={styles.agentInput}
                 placeholder="Ex- Smith, Nova"
                 value={agentName}
-                readOnly={!isEditingName}
-                aria-readonly={!isEditingName}
+                // readOnly={!isEditingName}
+                // aria-readonly={!isEditingName}
                 onFocus={handleFocus}
-                onBlur={handleFinishEditing}
+                // onBlur={handleFinishEditing}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -208,7 +208,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 autoComplete="off"
                 inputMode="text"
               />
-              <button
+              {/* <button
                 type="button"
                 className={styles.editBtn}
                 onClick={handleEditClick}
@@ -216,7 +216,7 @@ const Step3 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFail
                 title="Edit agent name"
               >
                 <img src="/svg/edit-svg.svg" alt="edit" />
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

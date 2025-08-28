@@ -43,7 +43,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
   const [showPopup, setShowPopup] = useState(false);
   // const [loading, setLoading] = useState(false);
   const [agentCount, setAgentCount] = useState(0);
-  const HTTPS_PREFIX = "https://";
+  const HTTPS_PREFIX = "https://www.";
   const PREFIX_LEN = HTTPS_PREFIX.length;
   const navigate = useNavigate();
   const token = localStorage.getItem("token") || "";
@@ -121,7 +121,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         const businessData = {
           businessName: result.name || "",
           address: result.formatted_address || "",
-          phone: result.formatted_phone_number || "",
+          phone:result.international_phone_number || result.formatted_phone_number || "",
           internationalPhone: result.international_phone_number || "",
           website: result.website || "",
           rating: result.rating || "",
@@ -183,6 +183,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
   };
 
   const handleUrlVerification = async (url) => {
+    
     setUrlVerificationInProgress(true);
     try {
       const result = await validateWebsite(url);
@@ -232,30 +233,62 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
       handleUrlVerification(businessUrl);
     }
   };
-  const handleInputChange = (e) => {
-    let v = e.target.value;
-    v = v.replace(/https?:\/\//gi, "");
-    v = v.replace(/\s+/g, "").toLowerCase();
-    const final = HTTPS_PREFIX + v;
-    setBusinessUrl(final);
-    setNoBusinessWebsite(false)
+  // const handleInputChange = (e) => {
+  //   let v = e.target.value;
+  //   v = v.replace(/https?:\/\//gi, "");
+  //   v = v.replace(/\s+/g, "").toLowerCase();
+  //   const final = HTTPS_PREFIX + v;
+  //   setBusinessUrl(final);
+  //   setNoBusinessWebsite(false)
 
-    if (businessUrlError) {
-      setBusinessUrlError("");
-    }
-    // 🔑 Debounce verification
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    typingTimeoutRef.current = setTimeout(() => {
-      // ✅ check if URL ends with a valid extension before verifying
-      const validTldRegex = /\.[a-z]{2,}(\/.*)?/i;
-      if (validTldRegex.test(final)) {
-        handleUrlVerification(final);
-      }
-    }, 500);
-  };
+  //   if (businessUrlError) {
+  //     setBusinessUrlError("");
+  //   }
+  //   // 🔑 Debounce verification
+  //   if (typingTimeoutRef.current) {
+  //     clearTimeout(typingTimeoutRef.current);
+  //   }
+  //   typingTimeoutRef.current = setTimeout(() => {
+  //     // ✅ check if URL ends with a valid extension before verifying
+  //     const validTldRegex = /\.[a-z]{2,}(\/.*)?/i;
+  //     if (validTldRegex.test(final)) {
+  //       handleUrlVerification(final);
+  //     }
+  //   }, 500);
+  // };
+const handleInputChange = (e) => {
+  let v = e.target.value.trim();
 
+  // Remove any existing protocol or www
+ v = v.replace(/https?:\/\/(www\.)?/i, "");
+v = v.replace(/\s+/g, "").toLowerCase();
+
+  // Add default https://www.
+  const final = "https://www." + v;
+
+  setBusinessUrl(final);
+  setNoBusinessWebsite(false);
+
+  if (businessUrlError) {
+    setBusinessUrlError("");
+  }
+
+  // 🔑 Debounce verification
+  if (typingTimeoutRef.current) {
+    clearTimeout(typingTimeoutRef.current);
+  }
+  typingTimeoutRef.current = setTimeout(() => {
+    // ✅ check if URL ends with a valid extension before verifying
+    // const validTldRegex = /\.[a-z]{2,}(\/.*)?/i;
+    // if (validTldRegex.test(final)) {
+    //   handleUrlVerification(final);
+    // }
+      const domainRegex = /^[\w-]+(\.[\w-]{2,})+$/i;
+    if (domainRegex.test(v)) {
+      handleUrlVerification(final);
+    }
+  }, 500);
+};
   useEffect(() => {
     if (token) {
       setUserId(decodeTokenData.id || "");
@@ -596,7 +629,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                         autoComplete="off"
                         inputMode="url"
                         ref={inputRefWebSiteUrl}
-                        onBlur={handleBlur}
+                        // onBlur={handleBlur}
 
                         list="url-suggestions"
                         style={{ width: "100%" }}
@@ -672,7 +705,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
                     }}
                   />
                   <label htmlFor="no-business-website" className={styles.iHaveNot}
-                    disabled={urlVerificationInProgress}
+                    // disabled={urlVerificationInProgress}
                   >
                     I do not have a business website
                   </label>

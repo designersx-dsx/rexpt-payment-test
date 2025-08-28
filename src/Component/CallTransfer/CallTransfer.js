@@ -295,7 +295,7 @@ function CallTransfer() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
-
+  const [prevDynanamicVar,setPrevDynamicVar]=useState({})
 
 
   const prepareTransfersWithDialCode = (transfers) => {
@@ -316,16 +316,17 @@ function CallTransfer() {
   useEffect(() => {
     const fetchCountryCode = async () => {
       try {
-        const res = await axios.get("https://ipwho.is/");
+        // const res = await axios.get("https://ipwho.is/");
+        const res = await axios.get("https://ipinfo.io/json");
         const data = res?.data;
-        if (data && data.country_code && data.phone_code) {
+        if (data && data.country ) {
           setTransfers((prev) =>
             prev.map((t, i) =>
               i === 0
                 ? {
                     ...t,
-                    dialCode: data.phone_code.replace("+", ""),
-                    countryCode: data.country_code.toLowerCase(),
+                    dialCode: data?.phone_code?.replace("+", ""),
+                    countryCode: data?.country?.toLowerCase(),
                   }
                 : t
             )
@@ -345,13 +346,40 @@ function CallTransfer() {
     ]);
   };
 
+  // const handleRemove = (index) => {
+  //   const updated = [...transfers];
+  //   updated.splice(index, 1);
+  //   setTransfers(updated);
+  // };
   const handleRemove = (index) => {
-    const updated = [...transfers];
-    updated.splice(index, 1);
-    setTransfers(updated);
-  };
+  // remove from transfers
+  const updatedTransfers = [...transfers];
+  const [removed] = updatedTransfers.splice(index, 1);
+  setTransfers(updatedTransfers);
+
+  // remove from prevDynamicVar
+  if (removed) {
+    setPrevDynamicVar((prev) => {
+      const updatedVars = { ...prev };
+
+      const conditionKeyMap = {
+        sales: "sales_number",
+        billing: "billing_number",
+        support: "support_number",
+      };
+
+      const keyToRemove = conditionKeyMap[removed.condition?.toLowerCase()];
+      if (keyToRemove && updatedVars[keyToRemove]) {
+        delete updatedVars[keyToRemove];
+      }
+
+      return updatedVars;
+    });
+  }
+};
 
   const handleChange = (index, field, value) => {
+    console.log(index, field, value)
     const updated = [...transfers];
     updated[index][field] = value;
 
@@ -359,7 +387,7 @@ function CallTransfer() {
       const countryCode = dialToCountry[value] || "us";
       updated[index]["countryCode"] = countryCode;
     }
-
+    console.log('updated',updated)
     setTransfers(updated);
   };
   const handleSubmit = async () => {
@@ -386,7 +414,7 @@ function CallTransfer() {
         const condition = transfer.condition?.trim();
         const phone = transfer.phone?.trim();
         const dialCode = transfer.dialCode?.trim();
-
+        // console.log(dialCode,phone)
         if (!condition) {
           setShowPopup(true);
           setPopupType("failed");
@@ -404,10 +432,9 @@ function CallTransfer() {
         }
         const fullNumber = `+${transfer.dialCode}${transfer.phone}`;
         const phoneNumber = parsePhoneNumberFromString(fullNumber);
-
+        // console.log(fullNumber,phoneNumber)
         if (
           !phoneNumber ||
-          !phoneNumber.isValid() ||
           phoneNumber.country?.toLowerCase() !== transfer.countryCode
         ) {
           setShowPopup(true);
@@ -478,7 +505,10 @@ function CallTransfer() {
       // Final payload
       const payload = {
         general_tools: [transferTool],
-        default_dynamic_variables: dynamicVars,
+        default_dynamic_variables: {
+            ...prevDynanamicVar,  // pehle purane values
+            ...dynamicVars,     // phir naye values overwrite karein agar same key ho
+          },
       };
 
       // Call your API to update the LLM config
@@ -505,15 +535,31 @@ function CallTransfer() {
   };
   useEffect(() => {
     const agentData = JSON.parse(sessionStorage.getItem("agentDetails"));
-    const agentGeneralTools = JSON.parse(
+    let agentGeneralTools = JSON.parse(
       sessionStorage.getItem("agentGeneralTools")
     );
-    console.log(agentGeneralTools, "agentGeneralTools");
     setLlmId(agentData?.agent?.llmId || "");
-    fetchLlmDetails(agentData?.agent?.llmId).then((res) => {});
+    fetchLlmDetails(agentData?.agent?.llmId).then((res) => {
+  const vars = res?.data?.data?.default_dynamic_variables || {};
+  setPrevDynamicVar(vars);
+    });
+
+    let tools = agentGeneralTools;
+
+if (typeof agentGeneralTools === "string") {
+  try {
+    agentGeneralTools = JSON.parse(tools);
+  } catch (e) {
+    console.error("Invalid JSON for agentGeneralTools", e);
+    agentGeneralTools = [];
+  }
+}
+// console.log("agentGeneralTools raw:", agentGeneralTools, Array.isArray(agentGeneralTools));
+
     if (Array.isArray(agentGeneralTools)) {
       // Set transfers only if tools exist
       if (Array.isArray(agentGeneralTools) && agentGeneralTools.length > 0) {
+        console.log('agentGeneralTools1',agentGeneralTools,prevDynanamicVar)
         // Optional: filter only those tools that have required fields
         const filteredTransfers = agentGeneralTools
           .filter((tool) => tool.condition && tool.phone && tool.dialCode)
@@ -523,11 +569,14 @@ function CallTransfer() {
             dialCode: tool.dialCode,
             countryCode: tool.countryCode || "",
           }));
+        // console.log('agentGeneralTools2',agentGeneralTools)
 
         setTransfers(filteredTransfers);
       }
     }
   }, []);
+  // console.log('transfers',transfers)
+      console.log('default_dynamic_variables',prevDynanamicVar)
 
   return (
     <>

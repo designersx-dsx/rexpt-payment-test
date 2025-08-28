@@ -76,7 +76,9 @@ const EditAgentNew = () => {
       const business = response?.data?.business;
      
       const scrapedUrls= business.scrapedUrls
-      sessionStorage.setItem("scrapedUrls",JSON.parse(scrapedUrls));
+
+      sessionStorage.setItem("scrapedUrls",scrapedUrls);
+
       sessionStorage.setItem("UpdationModeStepWise", "ON");
       sessionStorage.setItem("agentName", agent.agentName);
       sessionStorage.setItem("agentGender", agent.agentGender);
@@ -204,6 +206,11 @@ const EditAgentNew = () => {
         JSON.stringify(raw_knowledge_base_texts)
       );
       sessionStorage.setItem("agentNote", agent?.additionalNote);
+
+      const agentGeneralTools = agent.generalTools;
+      sessionStorage.setItem(
+        "agentGeneralTools", JSON.stringify(agentGeneralTools || [])
+      );
     } catch (error) {
       console.log("An Error Occured while fetching Agent Data for ", error);
     } finally { setLoading(false) }
