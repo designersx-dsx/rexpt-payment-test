@@ -9,7 +9,7 @@ import HeaderBar from "../HeaderBar/HeaderBar";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader";
 import Loader2 from '../Loader2/Loader2';
-import { listAgents } from '../../Store/apiStore';
+import { customPlanCheck, listAgents } from '../../Store/apiStore';
 import decodeToken from '../../lib/decodeToken';
 import axios from 'axios'
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -33,6 +33,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const decodeTokenData = decodeToken(token);
     const userIdFromToken = decodeTokenData?.id || "";
     const [userId, setUserId] = useState(userIdFromToken)
+    const [hasCustomPlan  , setHasCustomPlan] = useState()
  const [value, setValue] = useState(0);
     const [agentCount, setAgentCount] = useState()
 
@@ -68,6 +69,15 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
             },
         ],
     };
+
+        const checkCustom =async()=>{
+           let res = await customPlanCheck(decodeTokenData?.id)
+    // console.log(res?.data?.hasCustomPlan)
+    setHasCustomPlan(res?.data?.hasCustomPlan)
+    } 
+    useEffect(()=>{
+      checkCustom()  
+    },[])
 
     const toggleExpand = (index) => {
         setExpandedPlans((prev) => ({
@@ -402,6 +412,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     
             </div>
 
+{!hasCustomPlan ? 
 
  <label className={styles.freeTrialBtn} onClick={handleClickCustom}>
                     Custom Plan
@@ -427,6 +438,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                         )}
                     </span>
                 </label>
+: null}
+
               
 
 

@@ -8,7 +8,7 @@ import HeaderBar from "../HeaderBar/HeaderBar";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader";
 import Loader2 from '../Loader2/Loader2';
-import { listAgents } from '../../Store/apiStore';
+import { customPlanCheck, listAgents } from '../../Store/apiStore';
 import FreeTrialModal from '../FreeTrialModal/FreeTrialModal';
 import decodeToken from "../../lib/decodeToken";
 import PopUp from '../Popup/Popup';
@@ -44,7 +44,7 @@ const Planss = () => {
     const [renderHTML, setRenderHTML] = useState(false); // NEW
 
     const [currencyLoaded, setCurrencyLoaded] = useState(false);
-
+const [hasCustomPlan  , setHasCustomPlan] = useState()
     const [activeCount, setactiveCount] = useState(null)
     const [PaygSubscriptionId, setPaygSubscriptionId] = useState(null)
      const [value, setValue] = useState(0);
@@ -55,6 +55,7 @@ const Planss = () => {
 
     let subscriptionID = location?.state?.subscriptionID
     let locationPath = location?.state?.locationPath
+    console.log({locationPath})
     let agentPlan = location?.state?.planName
     let interval = location?.state?.interval
 
@@ -597,6 +598,15 @@ const Planss = () => {
 
 
     // tier custom plan 
+    
+    const checkCustom =async()=>{
+           let res = await customPlanCheck(decodeTokenData?.id)
+    // console.log(res?.data?.hasCustomPlan)
+    setHasCustomPlan(res?.data?.hasCustomPlan)
+    } 
+    useEffect(()=>{
+      checkCustom()  
+    },[])
 
 const tierCheckout = async () => {
   try {
@@ -606,8 +616,9 @@ const tierCheckout = async () => {
       presetUnits: value,
       minUnits: 0,
       maxUnits: 200,
-      successUrl: window.location.origin + "/thankyou", // origin + path
-      cancelUrl: window.location.origin + "/cancel"
+      successUrl: window.location.origin + `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`, // origin + path
+      cancelUrl: window.location.origin + "/cancel" , 
+      userId : decodeTokenData?.id
     });
 
     if (res?.data?.url) {
@@ -641,6 +652,10 @@ const tierCheckout = async () => {
         );
     if (error) return <p className={styles.statusError}>{error}</p>;
 
+
+
+
+
     return (
         <div className={styles.subscriptionMain}>
             <div className={styles.firstdiv}>
@@ -670,8 +685,8 @@ const tierCheckout = async () => {
                         )}
                     </span>
                 </label> : null}
-
-                <label className={styles.freeTrialBtn} onChange={handleClick2}>
+{!hasCustomPlan  ?
+ <label className={styles.freeTrialBtn} onChange={handleClick2}>
                     Custom Plan
                     <input
                         type="checkbox"
@@ -679,6 +694,8 @@ const tierCheckout = async () => {
                         onChange={() => setFreeTrialz(!freeTrailz)}
                     />
                     </label>
+: null}
+               
 
                 {/* Show Payg toggle button */}
                 {/* {(subscriptionID || isPayg === "true") && (
@@ -1174,12 +1191,19 @@ const tierCheckout = async () => {
                      
                         <AnimatedButton label='Subscribe' position={{ position: "relative" }}
                             onClick={()=>{
-                                navigate('/steps' , {
+                                if(locationPath ==="/dashboard"){
+ 
+                                       tierCheckout()
+                                }
+                                else{
+                                    navigate('/steps' , {
                                     state: {
                                         plan : "tierPlan" ,
                                         value : value
                                     }
                                 })
+                                }
+                               
                             }}
                         />
 

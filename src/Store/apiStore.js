@@ -710,7 +710,17 @@ export const sendEmailToOwner = async (email,name,phone ) => {
   }
 };
 
+
+export const customPlanCheck = async (userId)=>{
+try {
+  let res = axios.get(`${API_BASE_URL}/tier/${userId}`)
+  return res
+} catch (error) {
+  console.log(error , "Error")
+  return error
+}
+}
+
 export default api;
 
 
-// gaurav chutiya

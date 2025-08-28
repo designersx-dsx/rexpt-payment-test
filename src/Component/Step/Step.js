@@ -1121,8 +1121,9 @@ const tierCheckout = async () => {
       presetUnits: location?.state?.value,
       minUnits: 0,
       maxUnits: 200,
-      successUrl: window.location.origin + "/thankyou", // origin + path
-      cancelUrl: window.location.origin + "/cancel"
+      successUrl: window.location.origin + `/steps?mode=create&userId=${decodeTokenData?.id}`, // origin + path
+      cancelUrl: window.location.origin + "/cancel" , 
+      userId : decodeTokenData?.id
     });
 
     if (res?.data?.url) {
