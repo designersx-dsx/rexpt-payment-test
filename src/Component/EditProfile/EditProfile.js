@@ -1131,6 +1131,14 @@ const maskKey = (key) => '•'.repeat(key?.length || 10);
               <div className={styles.RefferalMain}>
               </div>
               <br></br>
+                {/* <div className={styles.RefferalMain}>
+                 <Refferal
+                  referralCode={referralCode}
+                  setShowDashboardReferral={setShowDashboardReferral}
+                  showDashboardReferral={showDashboardReferral}
+                  userId={userId}
+                /> 
+              </div> */}
               <div className={styles.mySubscription}>
                 <MySubscription agents={subscriptionDetails?.agents || []} />
               </div>

@@ -8,7 +8,7 @@ import styles from "./Step2.module.css";
 // import { getRetellVoices } from "../../Store/apiStore";
 import { getRetellVoices } from "../../../Store/apiStore";
 import PopUp from "../../Popup/Popup";
-const Step2 = ({ onValidationChange }) => {
+const Step2 = ({ onValidationChange ,originalGender, originalVoice }) => {
   const [selectedGender, setSelectedGender] = useState("");
     const [prevAgentGender,setprevAgentGender]=useState("")
   const [selectedVoice, setSelectedVoice] = useState("");
@@ -33,10 +33,14 @@ const handleGenderChange = (gender) => {
     setIsVoiceDirty(false);
     setIsGenderChanging(true);
 
+    const dirty = gender.toLowerCase() != originalGender?.toLowerCase();
+  // console.log(originalGender,gender,dirty)
+
     // 🪝 Tell parent gender changed & no voice selected
     onValidationChange?.({
       genderChanged: true,
       voiceSelected: false, // 🔥 Force false here
+      isDirty: dirty, 
     });
   }
 };
@@ -312,9 +316,14 @@ const handleGenderChange = (gender) => {
                   setSelectedVoice(voice);
                   playAudio(idx); // play when selected
                   setIsVoiceDirty(true);
+
+                  const dirty = voice.voice_id != originalVoice;
+                    // console.log(originalVoice,voice.voice_id,dirty)
+
                   onValidationChange?.({
                   genderChanged: false, // gender already selected
                   voiceSelected: true,  // voice just selected
+                  isDirty: dirty, 
                 });                  
                 }}
                 className={styles.radioInput}

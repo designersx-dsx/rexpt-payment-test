@@ -6,7 +6,7 @@ import React, {
     useImperativeHandle,
 } from "react";
 import styles from "./Step1.module.css";
-const Step1 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange }, ref) => {
+const Step1 = forwardRef(({ onNext, onBack, onValidationError, onSuccess, onFailed, setLoading, onStepChange  }, ref) => {
     const [selectedLang, setSelectedLang] = useState();
     const [selectedLangCode, setSelectedLangCode] = useState("");
     const languages = [
@@ -318,6 +318,10 @@ useEffect(() => {
                                     onChange={() => {
                                         setSelectedLangCode(lang.locale);
                                         setSelectedLang(lang.name);
+                                        onStepChange?.({
+                                        lang: lang.name,
+                                        code: lang.locale
+                                        });
                                     }}
                                     className={styles.radioInput}
                                 />

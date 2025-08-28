@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 
 import EditHeader from '../EditHeader/EditHeader'
 import SectionHeader from '../SectionHeader/SectionHeader'
@@ -7,7 +7,7 @@ import styles from "./EditNameAvtar.module.css"
 import AnimatedButton from '../AnimatedButton/AnimatedButton'
 import { useAgentCreator } from '../../hooks/useAgentCreator'
 import decodeToken from '../../lib/decodeToken'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import PopUp from '../Popup/Popup'
 import { useDashboardStore } from '../../Store/agentZustandStore'
 
@@ -23,7 +23,29 @@ function EditNameAvtar() {
         const decodeTokenData = decodeToken(token);
         const userId = decodeTokenData?.id;
         const agentnm=sessionStorage.getItem("agentName");
-    
+
+          const originalAvatarRef = React.useRef(sessionStorage.getItem("avatar"));
+          const originalNameRef = React.useRef(sessionStorage.getItem("agentName"));
+          const originalRoleRef = React.useRef(sessionStorage.getItem("agentRole"));
+          const location = useLocation();
+            const { isChanged } = location.state || {};
+
+              useEffect(()=>{
+                if(isChanged){
+                  setStepValidation({ isDirty:true })
+                }
+              },[isChanged])
+
+          const [stepValidation, setStepValidation] = useState({
+            isDirty: false,
+          });
+
+            const handleValidationChange = (validation) => {
+    setStepValidation({ isDirty: validation.isDirty });
+  };
+  // console.log(stepValidation)
+
+          
         const { handleCreateAgent } = useAgentCreator({
         stepValidator: () => "EditNameAvtar",
         setLoading,
@@ -61,11 +83,24 @@ function EditNameAvtar() {
 
 
                 <div className={styles.container}>
-                <SelectNameAvatar/>
+                <SelectNameAvatar  
+                onValidationChange={handleValidationChange}
+                originalAvatar={originalAvatarRef.current}
+                originalName={originalNameRef.current}
+                originalRole={originalRoleRef.current}/>
 
 
-                 <div className={styles.stickyWrapper} onClick={handleClick}>
-                        <AnimatedButton label="Save" isLoading={Loading} />
+                 <div className={styles.stickyWrapper} onClick={handleClick} 
+                 disabled={!stepValidation.isDirty}    style={{
+                        position: "sticky",
+                        bottom: 0,
+                        backgroundColor: "white",
+                        padding: "8px",
+                        opacity: stepValidation.isDirty ? 1 : 0.5,
+                        cursor: stepValidation.isDirty ? "pointer" : "not-allowed"
+                    }}
+                 >
+                        <AnimatedButton label="Save" isLoading={Loading}  disabled={!stepValidation.isDirty}/>
                     </div>
 
 

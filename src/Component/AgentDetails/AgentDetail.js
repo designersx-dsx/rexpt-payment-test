@@ -601,6 +601,7 @@ const AgentDashboard = () => {
   };
   const handleCallTransfer = () => {
     if (agentData) {
+      console.log(agentData)
       sessionStorage.setItem("agentDetails", JSON.stringify(agentData));
       const agentGeneralTools = agentData.generalTools;
       sessionStorage.setItem(

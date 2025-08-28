@@ -49,6 +49,8 @@ const EditPublic = () => {
   const [selectedUrls, setSelectedUrls] = useState([]);
   const [addOnUrl, setAddOnUrl] = useState("")
     const [debouncedUrl, setDebouncedUrl] = useState(businessUrl);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+
 
   // 🕒 Debounce logic - 2 sec delay
   useEffect(() => {
@@ -62,12 +64,17 @@ const EditPublic = () => {
   }, [businessUrl]);
 
   useEffect(() => {
+
+      if (isInitialLoad) {
+      return; // skip verification on first render
+    }
     if (debouncedUrl && debouncedUrl.length > HTTPS_PREFIX.length) {
       handleUrlVerification(debouncedUrl);
     }
   }, [debouncedUrl]);
 
   const handleInputChanges = (e) => {
+    setIsInitialLoad(false);
     let v = e.target.value;
     v = v.replace(/https?:\/\//gi, "");
     v = v.replace(/\s+/g, "").toLowerCase();
@@ -122,6 +129,10 @@ const EditPublic = () => {
         setGoogleListing(businessUrl);
         setDisplayBusinessName(businessName);
         sessionStorage.setItem("googleListing", businessUrl);
+              setcurrentForm(prev => ({
+          ...prev,
+          googleListing: businessUrl
+        }));
         sessionStorage.setItem("displayBusinessName", businessName);
         fetchPlaceDetails(place.place_id);
       }
@@ -176,7 +187,7 @@ const EditPublic = () => {
         const businessData = {
           businessName: result.name || "",
           address: result.formatted_address || "",
-          phone: result.formatted_phone_number || "",
+          phone: result.international_phone_number || result.formatted_phone_number || "",
           internationalPhone: result.international_phone_number || "",
           website: result.website || "",
           rating: result.rating || "",
@@ -322,16 +333,16 @@ const EditPublic = () => {
       setOriginalForm({
         googleListing: savedData.googleListing || "",
         businessUrl: savedData.businessUrl || "",
-        isWebsiteUrl: savedData.isWebsiteUrl,
-        isGoogleListing: savedData.isGoogleListing,
-
+        isWebsiteUrl: savedData.businessUrl ? 1:0,
+        isGoogleListing: savedData.googleListing?1:0,
+        siteMapUrls: JSON.parse(sessionStorage.getItem("scrapedUrls") || "[]")
       });
       setcurrentForm({
         googleListing: savedData.googleListing || "",
         businessUrl: savedData.businessUrl || "",
-        isWebsiteUrl: savedData.isWebsiteUrl,
-        isGoogleListing: savedData.isGoogleListing,
-
+        isWebsiteUrl: savedData.businessUrl ? 1:0,
+        isGoogleListing: savedData.googleListing?1:0,
+        siteMapUrls: JSON.parse(sessionStorage.getItem("scrapedUrls") || "[]")
       });
 
       if (savedData.businessUrl) setBusinessUrl(savedData.businessUrl);
@@ -445,9 +456,33 @@ const EditPublic = () => {
 
       })
     );
-    navigate("/edit-business-detail");
+navigate("/edit-business-detail", { state: { isChanged: true } });
   };
-  const isFormChanged = JSON.stringify(originalForm) !== JSON.stringify(currentForm);
+  // const isFormChanged = JSON.stringify(originalForm) !== JSON.stringify(originalForm);
+  const isFormChanged = () => {
+  if (!originalForm || !currentForm) return false;
+
+  if (originalForm.businessUrl !== currentForm.businessUrl) return true;
+  if (originalForm.googleListing !== currentForm.googleListing) return true;
+  if (originalForm.displayBusinessName !== currentForm.displayBusinessName) return true;
+  if (originalForm.isWebsiteUrl !== currentForm.isWebsiteUrl) return true;
+  if (originalForm.isGoogleListing !== currentForm.isGoogleListing) return true;
+
+  // Compare sitemap URLs
+  const origUrls = originalForm.siteMapUrls || [];
+  const currUrls = currentForm.siteMapUrls || [];
+  if (origUrls.length !== currUrls.length) return true;
+
+  for (let i = 0; i < origUrls.length; i++) {
+    if (
+      origUrls[i].url !== currUrls[i].url ||
+      origUrls[i].checkedStatus !== currUrls[i].checkedStatus
+    ) return true;
+  }
+
+  return false; // nothing changed
+};
+  // console.log(originalForm,currentForm,isFormChanged)
   const handleViewSelectedUrl = (e) => {
     e.preventDefault();
      if(!isVerified)return;
@@ -626,7 +661,7 @@ const EditPublic = () => {
               setNoGoogleListing(checked);
               setcurrentForm(prev => ({
                 ...prev,
-                isGoogleListing: checked ? 1 : 0,
+                isGoogleListing: checked ? 0 :1,
               }))
 
               const form = JSON.parse(sessionStorage.getItem("aboutBusinessForm") || "{}");
@@ -763,10 +798,13 @@ const EditPublic = () => {
         </label>
 
         <div className={styles.stickyWrapper} onClick={handleContinue} style={{
-          pointerEvents: isFormChanged ? "auto" : "none",
-          opacity: isFormChanged ? 1 : 0.5, // Optional visual effect
+          pointerEvents: isFormChanged() ? "auto" : "none",
+          opacity: isFormChanged() ? 1 : 0.5, // Optional visual effect
         }}>
-          <AnimatedButton label="Save" disabled={!isFormChanged || urlVerificationInProgress} />
+          <AnimatedButton label="Save" 
+          // disabled={!isFormChanged || urlVerificationInProgress} 
+          disabled={!isFormChanged() || urlVerificationInProgress} 
+          />
         </div>
         {showPopup && (
           <PopUp
