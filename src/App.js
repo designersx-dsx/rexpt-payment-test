@@ -188,7 +188,10 @@ function App() {
       socket.disconnect();
     };
   }, [userID]);
-
+  useEffect(() => {
+    const ref = document.referrer;
+    console.log('Referrer URL:', ref);   
+  }, []);
   return (
     <>
       {/* <ForcePortraitOnly /> */}
