@@ -39,6 +39,8 @@ const EditBusinessType = () => {
   const { setHasFetched } = useDashboardStore();
   const userId = decodeTokenData?.id;
   const selectedRef = useRef(null); 
+   const [isChanged, setIsChanged] = useState(false);
+  const [initialDetails, setInitialDetails] = useState(null);
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessType",
     setLoading,
@@ -266,6 +268,8 @@ const EditBusinessType = () => {
       // console.log(stored)
       if (stored && stored !== "undefined" && stored !== "null") {
         const businessDetails = JSON.parse(stored);
+        setInitialDetails(businessDetails);  // 👈 first time original save
+
         // console.log(businessDetails)
         if (businessDetails) {
           setBusinessType(businessDetails?.businessType || "");
@@ -426,7 +430,24 @@ const EditBusinessType = () => {
     }
 
   };
+  useEffect(() => {
+  try {
+    if (initialDetails) {
+  
+      // console.log(initialDetails,businessType)
+      const isTypeChanged = initialDetails?.businessType !== businessType;
+      const isCustomChanged = (initialDetails?.customBuisness || "") !== customBuisness;
 
+      setIsChanged(isTypeChanged, isCustomChanged);
+    } else {
+      // Agar koi stored details hi nahi h toh by default changed maana
+      setIsChanged(true);
+    }
+  } catch (err) {
+    console.error("Failed to parse businessDetails from sessionStorage:", err);
+    setIsChanged(true);
+  }
+}, [businessType, customBuisness,initialDetails]);
   // console.log('setBusinessType',businessType,customBuisness)
   return (
     <>
@@ -508,7 +529,7 @@ const EditBusinessType = () => {
               </div>
             </div>
           )}
-          <div className={styles.inputGroup}>
+          {/* <div className={styles.inputGroup}>
             <label>Business Size (Number of Emp.)</label>
             <select className={styles.selectInput}
               value={businessSize}
@@ -541,9 +562,20 @@ const EditBusinessType = () => {
             </select>
 
 
-          </div>
-          <div className={styles.stickyWrapper} onClick={handlesave}>
-            <AnimatedButton label="Save" isLoading={Loading} position={{ position: 'relative' }} />
+          </div> */}
+          <div className={styles.stickyWrapper} 
+          // onClick={handlesave}
+             style={{
+            position: "sticky",
+            bottom: 0,
+            backgroundColor: "white",
+            padding: "8px",
+            opacity: isChanged ? 1 : 0.5,
+            cursor: isChanged ? "pointer" : "not-allowed"
+          }}
+          onClick={isChanged ? handlesave : undefined}
+           >
+            <AnimatedButton label="Save" isLoading={Loading} position={{ position: 'relative' }} disabled={!isChanged}/>
           </div>
         </div>
         {showPopup && (

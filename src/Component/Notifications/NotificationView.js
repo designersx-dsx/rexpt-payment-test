@@ -92,7 +92,7 @@ const NotificationView = () => {
 // console.log(notifications)
   return (
     <div className={styles.notificationContainer}>
-      <header className={styles.header}>
+      {/* <header className={styles.header}>
         <div className={styles.headerContent}>
           <img
             src='/svg/back-svg.svg'
@@ -102,7 +102,7 @@ const NotificationView = () => {
           />
           <h2 className={styles.headerTitle}>Notifications</h2>
         </div>
-      </header>
+      </header> */}
 
       <div className={styles.notificationList}>
         {notifications.length === 0 ? (
