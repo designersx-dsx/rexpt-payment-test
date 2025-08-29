@@ -28,6 +28,7 @@ import Thankyou from "../ThankyouPage/Thankyou";
 import getTimezoneFromState from "../../lib/timeZone";
 import Modal2 from "../Modal2/Modal2";
 import LottieAnimation from "../../lib/LottieAnimation";
+import getBusinessSpecificFields from "../../lib/post_Call_analysis"
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -392,9 +393,6 @@ const Step = () => {
     const callRecording = statesRequiringCallRecording.includes(currentState)
         ? true
         : false;
-
-
-
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
@@ -476,6 +474,8 @@ const Step = () => {
         });
         // const isValid = step8BRef.current.validate()
         //creation here
+        const businessSpecificFields = getBusinessSpecificFields(businessType);
+      console.log(businessSpecificFields)
         if (localStorage.getItem("UpdationMode") != "ON") {
             setLoading(true)
             const agentConfig = {
@@ -783,10 +783,12 @@ const Step = () => {
                             "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
                             "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
                         },
+                        ...getBusinessSpecificFields(businessType)
                     ],
                     end_call_after_silence_ms: 30000,
                     normalize_for_speech: true,
                     webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+                    // webhook_url: `https://ad0db4634032.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
                 };
                 // Create Agent Creation
                 try {
@@ -839,7 +841,7 @@ const Step = () => {
                                 name: "lead_type",
                                 description: "Feedback given by the customer about the call.",
                                 choices: getLeadTypeChoices(),
-                            },
+                            },              
                             {
                                 type: "string",
                                 name: "name",
@@ -910,7 +912,8 @@ const Step = () => {
                                 "name": "appointment_timezone",
                                 "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
                                 "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
-                            }
+                            },
+                            ...getBusinessSpecificFields(businessType)
                         ],
                         promptVariablesList: JSON.stringify(promptVariablesList),
                         CallRecording: callRecording

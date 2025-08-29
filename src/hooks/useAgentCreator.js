@@ -4,6 +4,7 @@ import { API_BASE_URL, listAgents, updateAgent } from "../Store/apiStore";
 import decodeToken from "../lib/decodeToken";
 import { getAgentPrompt, useAgentPrompt } from "./useAgentPrompt";
 import getTimezoneFromState from "../lib/timeZone";
+import getBusinessSpecificFields from "../lib/post_Call_analysis";
 // import { createAgent, updateAgent } from '../api'; // adjust path
 
 const getFromStorage = (key, fallback = "") =>
@@ -495,9 +496,12 @@ export const useAgentCreator = ({
                 "name": "appointment_timezone",
                 "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
                 "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
-              }
+              },
+              ...getBusinessSpecificFields(businessType)
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+            // webhook_url: `https://ad0db4634032.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+          
             normalize_for_speech: true,
           };
           const agent_id =
