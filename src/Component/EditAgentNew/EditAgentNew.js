@@ -19,11 +19,11 @@ const EditAgentNew = () => {
   useEffect(() => {
     setAgentName(agentnm)
   }, [agentnm])
-  const steps = [
+  const defaultSteps  = [
     {
       number: 1,
       title: 'Business Type',
-      desc: 'Edit: Business List, Business Size.',
+      desc: 'Edit: Business List',
       active: true,
       link: '/edit-business-type'
     },
@@ -64,6 +64,8 @@ const EditAgentNew = () => {
       link: '/edit-name-avtar'
     },
   ];
+  const [steps, setSteps] = useState(defaultSteps);
+
 
   const fetchPrevAgentDEtails = async (agent_id, businessId) => {
     try {
@@ -211,6 +213,34 @@ const EditAgentNew = () => {
       sessionStorage.setItem(
         "agentGeneralTools", JSON.stringify(agentGeneralTools || [])
       );
+        console.log(JSON.parse(business?.knowledge_base_texts).phone)
+          const dynamicDesc = {
+      1: business?.businessType ? `${business.businessType}` : null,
+      2: business?.buisnessService ? `${safeParse(business.buisnessService, []).join(", ")}` : null,
+      3: (business?.googleBusinessName || business?.googleBusinessName) 
+          ? `${business.googleBusinessName || "N/A"},  ${business.webUrl || "N/A"}`
+          : null,
+      // 4: business?.businessName ? `${business.businessName},${(safeParse(business?.knowledge_base_texts).phone) || ""},${safeParse(business?.knowledge_base_texts).address || ""},${business.buisnessEmail || ""}` : null,
+     4: business?.businessName 
+   ? [
+       business.businessName,
+       safeParse(business?.knowledge_base_texts)?.phone,
+       safeParse(business?.knowledge_base_texts)?.address,
+       business?.businessEmail
+     ].filter(Boolean).join(",\n")
+   : null,
+      5: agent?.agentLanguage ? `${agent.agentLanguage}` : null,
+      6: agent?.agentGender ? `${agent.agentGender.charAt(0).toUpperCase() + agent.agentGender.slice(1).toLowerCase()}  ,   ${agent.agentVoice.split('-')[1] || ""}` : null,
+      7: agent?.agentName ? `${agent.agentName}, ${agent.agentRole || ""}` : null,
+    };
+
+    // update steps (agar data mila toh overwrite, warna fallback desc hi rahegi)
+    setSteps(prev =>
+      prev.map(step => ({
+        ...step,
+        desc: dynamicDesc[step.number] || step.desc
+      }))
+    );
     } catch (error) {
       console.log("An Error Occured while fetching Agent Data for ", error);
     } finally { setLoading(false) }
@@ -239,7 +269,7 @@ const EditAgentNew = () => {
                     <span className={styles.stepNumber}>{step.number}</span>
                     <div className={styles.content}>
                       <h4>{step.title}</h4>
-                      <p>{step.desc}</p>
+                      <p style={{ whiteSpace: "pre-line" }}>{step.desc}</p>
                     </div>
                     <div className={styles.icon}>
                       <img src="/svg/edit-svg2.svg" alt="Edit" />
