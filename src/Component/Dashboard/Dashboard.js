@@ -578,14 +578,17 @@ function Dashboard() {
       return;
     }
 
-    const planName = agent?.subscription?.plan_name || "Free";
-    if (planName.toLowerCase() === "free" && !assignNumberPaid) {
-      openAssignNumberModal();
-    } else {
-      navigate("/assign-number", {
-        state: { agent: agent },
-      });
-    }
+    // const planName = agent?.subscription?.plan_name || "Free";
+    // if (planName.toLowerCase() === "free" && !assignNumberPaid) {
+    //   openAssignNumberModal();
+    // } else {
+    //   navigate("/assign-number", {
+    //     state: { agent: agent },
+    //   });
+    // }
+    navigate("/assign-number", {
+      state: { agent: agent },
+    });
   };
   useEffect(() => {
     if (localStorage.getItem("UpdationMode") == "ON") {
@@ -2609,6 +2612,8 @@ function Dashboard() {
           const isTourOpen =
             openDropdown === agent.agent_id ||
             forceTourOpenAgentId === agent.agent_id;
+
+          console.log("agent", agent)
           return (
             <div
               key={agent.agent_id}
@@ -2617,11 +2622,18 @@ function Dashboard() {
             >
               <div className={styles?.PlanPriceMain}>
                 <h3 className={styles?.PlanPrice}>
-                  {agent?.subscription?.plan_name === "Add-on Services"
+                  {/* {agent?.subscription?.plan_name === "Add-on Services"
                     // {agent?.subscription?.plan_name === "PAYG Extra" // Live Acccount
                     ? "Pay-As-You-Go"
                     : agent?.subscription?.plan_name || "Free"}
-                  {" Plan"}
+                  {" Plan"} */}
+                  {(
+                    agent?.subscription?.plan_name
+                      ? agent?.subscription?.plan_name === "Add-on Services"
+                        ? "Pay-As-You-Go"
+                        : agent?.subscription?.plan_name
+                      : agent?.agentPlan || "Free"
+                  ) + " Plan"}
                 </h3>
               </div>
               <div className={styles.Lang}>
@@ -2818,7 +2830,7 @@ function Dashboard() {
                           : "Deactivate Agent"}
                       </div>
 
-                      {((agent?.subscription &&
+                      {/* {((agent?.subscription &&
                         agent?.subscription?.plan_name?.toLowerCase() !==
                         "free") || assignNumberPaid && agent?.isDeactivated === 0
                       ) && (
@@ -2858,7 +2870,48 @@ function Dashboard() {
                               </div>
                             </div>
                           </>
-                        )}
+                        )} */}
+                      {agent?.isDeactivated === 0 && (
+                        <>
+                          {/* Case 1: Non-free plan */}
+                          {agent?.subscription &&
+                            agent?.subscription?.plan_name?.toLowerCase() !== "free" && (
+                              <div>
+                                <div
+                                  className={styles.OptionItem}
+                                  onMouseDown={(e) => {
+                                    e.stopPropagation();
+                                    setAgentToCancel(agent);
+                                    setShowCancelConfirm(true);
+                                  }}
+                                >
+                                  Cancel Subscription
+                                </div>
+                              </div>
+                            )}
+
+                          {/* Case 2: PAYG toggle (show always for paid, and as "Activate" for free) */}
+                          <div>
+                            <div
+                              onMouseDown={(e) => {
+                                setshowPaygConfirm(true);
+                                setagentToPaygActivate(agent);
+                                setpaygEnabledPopup(
+                                  checkPaygStatus === null || checkPaygStatus === 0 ? true : false
+                                );
+                              }}
+                              className={styles.OptionItem}
+                            >
+                              {paygStatusLoading
+                                ? "Loading.."
+                                : isPaygActive
+                                  ? "Deactivate Pay as you go"
+                                  : "Activate Pay as you go"}
+                            </div>
+                          </div>
+                        </>
+                      )}
+
                     </div>
                   </div>
                 </div>
