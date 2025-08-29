@@ -13,7 +13,7 @@ import { set } from 'date-fns';
 import { useDashboardStore } from '../../Store/agentZustandStore';
 import Modal2 from '../Modal2/Modal2';
 
-const HTTPS_PREFIX = 'https://';
+const HTTPS_PREFIX = 'https://www.';
 const PREFIX_LEN = HTTPS_PREFIX?.length;
 
 const EditPublic = () => {
@@ -69,22 +69,29 @@ const EditPublic = () => {
       return; // skip verification on first render
     }
     if (debouncedUrl && debouncedUrl.length > HTTPS_PREFIX.length) {
-      handleUrlVerification(debouncedUrl);
+    const domainRegex = /^[\w-]+(\.[\w-]{2,})+$/i;
+    
+          handleUrlVerification(debouncedUrl);
+
     }
   }, [debouncedUrl]);
 
   const handleInputChanges = (e) => {
     setIsInitialLoad(false);
     let v = e.target.value;
-    v = v.replace(/https?:\/\//gi, "");
-    v = v.replace(/\s+/g, "").toLowerCase();
-    const final = HTTPS_PREFIX + v;
+   v = v.replace(/https?:\/\/(www\.)?/i, "");
+  v = v.replace(/\s+/g, "").toLowerCase();
+
+  // Add default https://www.
+  const final = "https://www." + v;
+
 
     setBusinessUrl(final);
     setNoBusinessWebsite(false);
     if (businessUrlError) {
       setBusinessUrlError("");
     }
+    
   };
 
       useEffect(() => {

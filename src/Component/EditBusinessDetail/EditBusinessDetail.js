@@ -62,7 +62,7 @@ const EditBusinessDetail = () => {
   useEffect(() => {
     const storedDetails = sessionStorage.getItem("placeDetailsExtract");
     if (storedDetails) {
-      console.log('storedDetails',storedDetails)
+      // console.log('storedDetails',storedDetails)
       const details = JSON.parse(storedDetails);
       setBusinessName(details?.businessName || "");
       setPhoneNumber(details.internationalPhone || details?.phone || "");
