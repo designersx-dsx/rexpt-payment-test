@@ -64,7 +64,13 @@ const businessTypes = [
     { name: "Movers & Packers", code: "mov_pac" },
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
-    { name: "Boat Repair & Maintenance", code: "boa_rep" }
+    { name: "Boat Repair & Maintenance", code: "boa_rep" },
+    // { name: "Spa & Wellness Center", code: "spa_wel" },
+    // { name: "Print Shop" , code: "pri_sho" },
+    // { name: "School" , code : "scho" },
+    // {name: "College" , code : "coll" },
+    // {name: "Training Center" , code : "tra_ce" },
+    // { name: "Educational Institute", code: "edu_ins" },
 ];
 const Step = () => {
 

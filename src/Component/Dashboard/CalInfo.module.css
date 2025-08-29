@@ -56,6 +56,12 @@
   margin-bottom: 24px;
 }
 
+.image1{
+      height: 500px;
+      margin: 16px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
 .separator {
   border-bottom: 1px solid #eee;
   margin: 32px 0;
