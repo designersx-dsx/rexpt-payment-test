@@ -159,20 +159,20 @@ const BusinessServices = forwardRef(
         type: "Digital Marketing Agency",
         subtype: "Business Promotion Strategies",
         icon: "svg/Digital-marketing-Agency.svg",
-          services: [
-        "Search Engine Optimization (SEO)",
-        "Pay-Per-Click (PPC) Advertising",
-        "Social Media Marketing",
-        "Content Marketing",
-        "Email Marketing",
-        "Influencer Marketing",
-        "Video Marketing",
-        "Conversion Rate Optimization (CRO)",
-        "Web Design & Development",
-        "Branding & Strategy",
-        "Analytics & Reporting",
-        "Other",
-      ],
+        services: [
+          "Search Engine Optimization (SEO)",
+          "Pay-Per-Click (PPC) Advertising",
+          "Social Media Marketing",
+          "Content Marketing",
+          "Email Marketing",
+          "Influencer Marketing",
+          "Video Marketing",
+          "Conversion Rate Optimization (CRO)",
+          "Web Design & Development",
+          "Branding & Strategy",
+          "Analytics & Reporting",
+          "Other",
+        ],
       },
       {
         type: "Personal Trainer",
@@ -537,8 +537,8 @@ const BusinessServices = forwardRef(
           "Bakery Items",
           "Specialty Beverages",
           "Custom Deli Platters",
-          "Other"
-        ]
+          "Other",
+        ],
       },
       {
         type: "Dry Cleaners",
@@ -558,8 +558,8 @@ const BusinessServices = forwardRef(
           "Pickup & Delivery Service",
           "Express / Same-Day Cleaning",
           "Eco-Friendly Cleaning",
-          "Other"
-        ]
+          "Other",
+        ],
       },
       {
         type: "Car Repair & Garage",
@@ -584,8 +584,8 @@ const BusinessServices = forwardRef(
           "24/7 Emergency Roadside Assistance",
           "Pre-Purchase Car Inspection",
           "Insurance Claim Assistance",
-          "Other"
-        ]
+          "Other",
+        ],
       },
       {
         type: "Boat Repair",
@@ -605,15 +605,14 @@ const BusinessServices = forwardRef(
           "Trailer Repair & Maintenance",
           "Custom Modifications",
           "On-Site Repair Services",
-          "Other"
-        ]
-      }
-      ,
+          "Other",
+        ],
+      },
       {
         type: "Car & Bus Services",
         subtype: "Quality Repairs, Every Time",
         icon: "svg/Car Repair & Garage.svg",
-        "services": [
+        services: [
           "Engine Diagnostics & Repairs",
           "Brake Inspection & Replacement",
           "Oil Change & Filter Replacement",
@@ -629,15 +628,14 @@ const BusinessServices = forwardRef(
           "Bus Fleet Maintenance",
           "Roadside Assistance & Towing",
           "Preventive Maintenance Plans",
-          "Other"
-        ]
-      }
-      ,
+          "Other",
+        ],
+      },
       {
         type: "Taxi, Cab & Limo Booking",
         subtype: "Reliable Rides, Anytime, Anywhere",
         icon: "svg/Taxi.svg",
-        "services": [
+        services: [
           "Local Taxi Booking",
           "Outstation Cab Services",
           "Airport Pickup & Drop",
@@ -648,14 +646,14 @@ const BusinessServices = forwardRef(
           "24/7 Cab Availability",
           "One-Way & Round Trips",
           "Shared Ride Services",
-          "Other"
-        ]
+          "Other",
+        ],
       },
       {
         type: "Movers and Packers",
         subtype: "Safe & Hassle-Free Relocation Services",
         icon: "svg/Movers and Packers.svg",
-        "services": [
+        services: [
           "Home Shifting",
           "Office Relocation",
           "Local & Domestic Moving",
@@ -666,14 +664,14 @@ const BusinessServices = forwardRef(
           "Storage & Warehousing",
           "International Relocation",
           "Fragile Item Handling",
-          "Other"
-        ]
+          "Other",
+        ],
       },
       {
         type: "Trucking Company",
         subtype: "Efficient Freight & Logistics Solutions",
         icon: "svg/Trucking Company.svg",
-        "services": [
+        services: [
           "Long-Haul Trucking",
           "Local & Regional Deliveries",
           "Refrigerated Trucking",
@@ -681,9 +679,110 @@ const BusinessServices = forwardRef(
           "Heavy Equipment Transportation",
           "Interstate Cargo Transport",
           "Logistics & Freight Management",
-          "24/7 Shipment Tracking"
-        ]
-      }
+          "24/7 Shipment Tracking",
+          "Other",
+        ],
+      },
+    //   {
+    //     type: "Spa & Wellness Center",
+    //     subtype: "Relaxation & Health Services",
+    //     icon: "svg/Hair Stylist.svg",
+    //     services: [
+    //       "Swedish Massage",
+    //       "Deep Tissue Massage",
+    //       "Hot Stone Massage",
+    //       "Aromatherapy Massage",
+    //       "Couples Massage",
+    //       "Classic/Custom Facial",
+    //       "Deep-Cleansing (Acne) Facial",
+    //       "Body Scrub / Exfoliation",
+    //       "Detox or Hydrating Body Wrap",
+    //       "Waxing (Face/Body)",
+    //       "Other",
+    //     ],
+    //   },
+    //    {
+    //   type: "Print Shop",
+    //   subtype: "Your Printing Solutions Partner",
+    //   icon: "svg/Hair Stylist.svg",
+    //   services: [
+    //     "Business Cards",
+    //     "Flyers & Brochures",
+    //     "Posters & Banners",
+    //     "Custom T-Shirts",
+    //     "Photo Printing",
+    //     "Booklets & Catalogs",
+    //     "Invitations & Greeting Cards",
+    //     "Stickers & Labels",
+    //     "Large Format Printing",
+    //     "Other",
+    //   ],
+    // },
+    //  {
+    //   type: " School",
+    //   subtype: "Education for a Brighter Future",
+    //   icon: "svg/Hair Stylist.svg",
+    //   services: [
+    //     "Primary Education",
+    //     "Secondary Education",
+    //     "STEM Programs",
+    //     "Arts & Humanities",
+    //     "Sports & Extracurriculars",
+    //     "Special Education",
+    //     "Language Courses",
+    //     "Online Learning",
+    //     "After-School Programs",
+    //     "Other",
+    //   ],
+    // },
+    //  {
+    //   type: "College",
+    //   subtype: "Higher Learning Institution",
+    //   icon: "svg/Hair Stylist.svg",
+    //   services: [
+    //     "Undergraduate Programs",
+    //     "Graduate Programs",
+    //     "Professional Degrees",
+    //     "Online Courses",
+    //     "Research Opportunities",
+    //     "Internships & Co-ops",
+    //     "Study Abroad Programs",
+    //     "Student Support Services",
+    //     "Extracurricular Activities",
+    //     "Other",
+    //   ],
+    // },
+    //  {
+    //   type: "Training Center",
+    //   subtype: "Skill Development Hub",
+    //   icon: "svg/Hair Stylist.svg",
+    //   services: [
+    //     "Technical Skills Training",
+    //     "Soft Skills Development",
+    //     "Certification Programs",
+    //     "Workshops & Seminars",
+    //     "Online Learning Modules",
+    //     "Corporate Training Solutions",
+    //     "Career Counseling",
+    //     "Internship Placement",
+    //     "Other",
+    //   ],
+    // },
+    //  {
+    //   type: "Educational Institute",
+    //   subtype: "Knowledge Empowerment Center",
+    //   icon: "svg/Hair Stylist.svg",
+    //   services: [
+    //     "Academic Programs",
+    //     "Vocational Training",
+    //     "Research & Development",
+    //     "Community Education",
+    //     "Online Learning Platforms",
+    //     "Student Support Services",
+    //     "Extracurricular Activities",
+    //     "Other",
+    //   ],
+    // }
     ];
     const [searchTerm, setSearchTerm] = useState("");
     // const selectedBusiness = businessServices?.find(
@@ -750,8 +849,9 @@ const BusinessServices = forwardRef(
       try {
         setLoading(true);
         const API_URL = checkIfBusinessIdExist
-          ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${decodeToken(localStorage.getItem("token")).id
-          }?businessId=${sessionStorage.getItem("bId")}`
+          ? `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${
+              decodeToken(localStorage.getItem("token")).id
+            }?businessId=${sessionStorage.getItem("bId")}`
           : `${API_BASE_URL}/businessDetails/create`;
         const response = await axios({
           method: checkIfBusinessIdExist ? "PATCH" : "POST",
@@ -924,7 +1024,7 @@ const BusinessServices = forwardRef(
       if (savedShowInput !== null) {
         setShowInput(JSON.parse(savedShowInput));
       }
-    }, [])
+    }, []);
     useEffect(() => {
       if (businessDetails?.businessType === "Other") {
         sessionStorage.setItem("showInput", JSON.stringify(true));
@@ -943,18 +1043,20 @@ const BusinessServices = forwardRef(
         }, 100);
       }
     }, [customServices]);
-    //check is this webview or not 
-    const isAndroidApp = () => /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
-    const isIOSApp = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
+    //check is this webview or not
+    const isAndroidApp = () =>
+      /Android/i.test(navigator.userAgent) && window.ReactNativeWebView;
+    const isIOSApp = () =>
+      /iPhone|iPad|iPod/i.test(navigator.userAgent) && window.webkit;
     const handleFocus = (e) => {
       if (isAndroidApp() || isIOSApp()) {
         setTimeout(() => {
           // Method 1: Smooth scroll to element
           e.target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
+            behavior: "smooth",
+            block: "center",
           });
-        }, 300); 
+        }, 300);
       }
     };
     return (
@@ -1047,7 +1149,6 @@ const BusinessServices = forwardRef(
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onFocus={handleFocus}
-
                 />
                 <button
                   type="button"
