@@ -3,7 +3,7 @@ const getDynamicAgentName = (
   userId,
   packageValue,
   agentCode,
-  agentCount = 0 
+  agentCount = 0
 ) => {
   const sanitize = (str) =>
     String(str || "")
@@ -47,12 +47,12 @@ const getDynamicAgentName = (
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" },
-    // { name: "Spa & Wellness Center", code: "spa_wel" },
-    // { name: "Print Shop" , code: "pri_sho" },
-    // { name: "School" , code : "scho" },
-    // {name: "College" , code : "coll" },
-    // {name: "Training Center" , code : "tra_ce" },
-    // { name: "Educational Institute", code: "edu_ins" },
+    { name: "Spa & Wellness Center", code: "spa_wel" },
+    { name: "Print Shop", code: "pri_sho" },
+    { name: "School", code: "scho" },
+    { name: "Colleges & Universities", code: "coll" },
+    { name: "Training Center", code: "tra_ce" },
+    { name: "Educational Institute", code: "edu_ins" },
   ];
 
   // Match business type
