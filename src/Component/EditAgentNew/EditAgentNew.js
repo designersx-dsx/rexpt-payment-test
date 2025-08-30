@@ -213,27 +213,30 @@ const EditAgentNew = () => {
       sessionStorage.setItem(
         "agentGeneralTools", JSON.stringify(agentGeneralTools || [])
       );
-        console.log(JSON.parse(business?.knowledge_base_texts).phone)
-          const dynamicDesc = {
-      1: business?.businessType ? `${business.businessType}` : null,
-      2: business?.buisnessService ? `${safeParse(business.buisnessService, []).join(", ")}` : null,
-      3: (business?.googleBusinessName || business?.googleBusinessName) 
-          ? `${business.googleBusinessName || "N/A"},  ${business.webUrl || "N/A"}`
-          : null,
-      // 4: business?.businessName ? `${business.businessName},${(safeParse(business?.knowledge_base_texts).phone) || ""},${safeParse(business?.knowledge_base_texts).address || ""},${business.buisnessEmail || ""}` : null,
-     4: business?.businessName 
-   ? [
-       business.businessName,
-       safeParse(business?.knowledge_base_texts)?.phone,
-       safeParse(business?.knowledge_base_texts)?.address,
-       business?.businessEmail
-     ].filter(Boolean).join(",\n")
-   : null,
-      5: agent?.agentLanguage ? `${agent.agentLanguage}` : null,
-      6: agent?.agentGender ? `${agent.agentGender.charAt(0).toUpperCase() + agent.agentGender.slice(1).toLowerCase()}  ,   ${agent.agentVoice.split('-')[1] || ""}` : null,
-      7: agent?.agentName ? `${agent.agentName}, ${agent.agentRole || ""}` : null,
-    };
+      
+const kb = safeParse(business?.knowledge_base_texts, {});
 
+const dynamicDesc = {
+  1: business?.businessType || null,
+  2: business?.buisnessService
+    ? safeParse(business.buisnessService, []).join(", ")
+    : null,
+  3: business?.googleBusinessName
+    ? `${business.googleBusinessName}, ${business.webUrl || "N/A"}`
+    : null,
+  4: business?.businessName
+    ? [business.businessName, kb?.phone, kb?.address, business?.businessEmail]
+        .filter(Boolean)
+        .join(",\n")
+    : null,
+  5: agent?.agentLanguage || null,
+  6: agent?.agentGender
+    ? `${agent.agentGender.charAt(0).toUpperCase() + agent.agentGender.slice(1).toLowerCase()} , ${agent.agentVoice.split("-")[1] || ""}`
+    : null,
+  7: agent?.agentName
+    ? `${agent.agentName}, ${agent.agentRole || ""}`
+    : null,
+};
     // update steps (agar data mila toh overwrite, warna fallback desc hi rahegi)
     setSteps(prev =>
       prev.map(step => ({
