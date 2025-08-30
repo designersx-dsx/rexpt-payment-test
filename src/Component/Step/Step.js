@@ -66,12 +66,12 @@ const businessTypes = [
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" },
-    // { name: "Spa & Wellness Center", code: "spa_wel" },
-    // { name: "Print Shop" , code: "pri_sho" },
-    // { name: "School" , code : "scho" },
-    // {name: "College" , code : "coll" },
-    // {name: "Training Center" , code : "tra_ce" },
-    // { name: "Educational Institute", code: "edu_ins" },
+    { name: "Spa & Wellness Center", code: "spa_wel" },
+    { name: "Print Shop" , code: "pri_sho" },
+    { name: "School" , code : "scho" },
+    {name: "Colleges & Universities" , code : "coll_uni" },
+    {name: "Training Center" , code : "tra_ce" },
+    { name: "Educational Institute", code: "edu_ins" },
 ];
 const Step = () => {
 
@@ -478,10 +478,9 @@ const Step = () => {
             timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" },
 
         });
+      
         // const isValid = step8BRef.current.validate()
         //creation here
-        const businessSpecificFields = getBusinessSpecificFields(businessType);
-      console.log(businessSpecificFields)
         if (localStorage.getItem("UpdationMode") != "ON") {
             setLoading(true)
             const agentConfig = {

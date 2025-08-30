@@ -1,11 +1,11 @@
 import { countAgentsbyUserId } from "../Store/apiStore";
 
- const getKnowledgeBaseName = async (
+const getKnowledgeBaseName = async (
   business,
   userId,
   packageValue,
   agentCode
-//   fetchAgentCount // this should call your backend API and return just the count
+  //   fetchAgentCount // this should call your backend API and return just the count
 ) => {
   const sanitize = (str) =>
     String(str || "")
@@ -48,39 +48,39 @@ import { countAgentsbyUserId } from "../Store/apiStore";
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
     { name: "Boat Repair & Maintenance", code: "boa_rep" },
-    // { name: "Spa & Wellness Center", code: "spa_wel" },
-    // { name: "Print Shop" , code: "pri_sho" },
-    // { name: "School" , code : "scho" },
-    // {name: "College" , code : "coll" },
-    // {name: "Training Center" , code : "tra_ce" },
-    // { name: "Educational Institute", code: "edu_ins" },
+    { name: "Spa & Wellness Center", code: "spa_wel" },
+    { name: "Print Shop", code: "pri_sho" },
+    { name: "School", code: "scho" },
+    { name: "Colleges & Universities", code: "coll" },
+    { name: "Training Center", code: "tra_ce" },
+    { name: "Educational Institute", code: "edu_ins" },
     { name: "Other", code: "Other" }
   ];
-  let agentCount=0;
+  let agentCount = 0;
   try {
     // 1. Fetch agent count from server
-     agentCount = await countAgentsbyUserId(userId);
+    agentCount = await countAgentsbyUserId(userId);
 
-    } catch (error) {
+  } catch (error) {
     console.error("Error generating knowledgeBaseName:", error);
     return null;
-     }
+  }
 
-    // 2. Match business type
-    const matchedBusiness = businessTypes.find(
-      (item) => item?.name === business?.businessType
-    );
+  // 2. Match business type
+  const matchedBusiness = businessTypes.find(
+    (item) => item?.name === business?.businessType
+  );
 
-    const businessCode = matchedBusiness
-      ? matchedBusiness.code
-      : sanitize(business?.customBuisness || "oth");
+  const businessCode = matchedBusiness
+    ? matchedBusiness.code
+    : sanitize(business?.customBuisness || "oth");
 
-    // 3. Prepare name parts
-    const shortBusinessName = sanitize(business?.businessName).slice(0, 10);
-    const cleanPackage = sanitize(packageValue);
+  // 3. Prepare name parts
+  const shortBusinessName = sanitize(business?.businessName).slice(0, 10);
+  const cleanPackage = sanitize(packageValue);
 
 
-      return `${businessCode}_${userId}_${agentCode}_#${(agentCount+1)}`;
+  return `${businessCode}_${userId}_${agentCode}_#${(agentCount + 1)}`;
 
 };
 
