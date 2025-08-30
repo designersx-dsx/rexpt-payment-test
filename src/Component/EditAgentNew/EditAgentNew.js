@@ -225,7 +225,7 @@ const dynamicDesc = {
     ? `${business.googleBusinessName}, ${business.webUrl || "N/A"}`
     : null,
   4: business?.businessName
-    ? [business.businessName, kb?.phone, kb?.address, business?.businessEmail]
+    ? [business.businessName, kb?.phone, kb?.address, kb?.email]
         .filter(Boolean)
         .join(",\n")
     : null,
