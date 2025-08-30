@@ -46,10 +46,6 @@ const CalInfo = () => {
       <div className={styles.step}>
         <h4 className={styles.stepTitle}>6. Find Your API Key (It's simpler than it sounds!):</h4>
         <p> In the settings menu, click on <b>"API Keys"</b>.</p>
-        {/* <p>(b) Click the <b>"Add"</b> button to create a new key.</p> */}
-        {/* <p>(c) Give your API key a name <b>(e.g., "Rexptin Connection")</b>.</p> */}
-        {/* <p>(d) Important: Check the box next to "Never expires" and then click <b>"Save."</b></p> */}
-
         <img className={styles.image} src="/images/sixth.png" alt="cal step 6" />
       </div>
 
@@ -72,22 +68,22 @@ const CalInfo = () => {
       </div>
 
       <div className={styles.step}>
-        <h4 className={styles.stepTitle}>10. Paste into Rexpt Dashboard:</h4>
+        <h4 className={styles.stepTitle}>10. Go to Rexpt Dashboard:</h4>
         <p>Go to your Rexpt dashboard.</p>
-        <p>Find the place to paste your API key and do so.</p>
-        <p>Click <b>"Submit."</b></p>
-
-        <img className={styles.image} src="/images/ten.png" alt="cal step 10" />
+        <p>And click on Cal.com.</p>
+        <img className={styles.image1} src="/images/cal.com1.png" alt="cal step 10" />
       </div>
 
       <div className={styles.step}>
-        <h4 className={styles.stepTitle}>11. Create Your First Event:</h4>
-        <p>Enter a name for your event.</p>
-        <p>Add a brief description of the event.</p>
-        <p>Set how long the event will last (in minutes).</p>
-        <p>Click <b>"Add Event."</b></p>
+        <h4 className={styles.stepTitle}>11. Paste Cal API here:</h4>
+        <p> 
+          Then Click on I already have Cal.com account.
+        </p>
+        <p> 
+          And paste the API key you copied from Cal.com into the field provided.
+        </p>
 
-        <img className={styles.image} src="/images/eleven.png" alt="cal step 11" />
+        <img className={styles.image1} src="/images/cal.com.png" alt="cal step 11" />
       </div>
 
       <div className={styles.step}>

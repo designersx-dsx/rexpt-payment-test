@@ -3,7 +3,7 @@ const getDynamicAgentName = (
   userId,
   packageValue,
   agentCode,
-  agentCount = 0 // pass count from outside
+  agentCount = 0 
 ) => {
   const sanitize = (str) =>
     String(str || "")
@@ -40,13 +40,19 @@ const getDynamicAgentName = (
     { name: "Cleaning/Janitorial Service", code: "clea_jan_ser" },
     { name: "Web Design Agency", code: "web_des_age" },
     { name: "Marketing Agency", code: "mkt_age" },
-      { name: "Digital Marketing Agency", code: "dgi_mkt_ag" },
+    { name: "Digital Marketing Agency", code: "dgi_mkt_ag" },
     { name: "Car & Bus Services", code: "car_bus_ser" },
     { name: "Taxi, Cab & Limo Booking", code: "tax_cab_limo" },
     { name: "Movers & Packers", code: "mov_pac" },
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
-    { name: "Boat Repair & Maintenance", code: "boa_rep" }
+    { name: "Boat Repair & Maintenance", code: "boa_rep" },
+    // { name: "Spa & Wellness Center", code: "spa_wel" },
+    // { name: "Print Shop" , code: "pri_sho" },
+    // { name: "School" , code : "scho" },
+    // {name: "College" , code : "coll" },
+    // {name: "Training Center" , code : "tra_ce" },
+    // { name: "Educational Institute", code: "edu_ins" },
   ];
 
   // Match business type
