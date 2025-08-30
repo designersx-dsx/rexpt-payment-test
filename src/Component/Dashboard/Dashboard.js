@@ -192,7 +192,7 @@ function Dashboard() {
       setTourElevateDropdown(false);
     });
   };
-
+sessionStorage.removeItem("isUser")
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
