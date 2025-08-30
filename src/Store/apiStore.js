@@ -548,7 +548,7 @@ export const getAgentScheduleByUserId = async (userId) => {
       {
           headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${localStorage.getItem('token') }`,
   }
       }
     );
