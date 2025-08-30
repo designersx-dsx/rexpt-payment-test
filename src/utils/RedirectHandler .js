@@ -65,7 +65,7 @@ const RedirectHandler = () => {
 
           if (res?.data?.valid) {
             console.log("Valid slug referral:", slug);
-            sessionStorage.setItem("referredByName", slug);
+           sessionStorage.setItem("referredByName", res?.data?.referalName);
             sessionStorage.setItem("referredBy", res?.data?.referralCode);
             // window.location.href = `https://app.rexpt.in/${slug}`;
             window.location.href = `https://app.rexpt.in/${slug}`;
