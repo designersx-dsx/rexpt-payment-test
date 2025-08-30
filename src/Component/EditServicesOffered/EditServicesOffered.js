@@ -1,4 +1,4 @@
-import React, { useState,useRef } from 'react'
+import React, { useState,useRef,useEffect } from 'react'
 import EditHeader from '../EditHeader/EditHeader';
 import AnimatedButton from '../AnimatedButton/AnimatedButton';
 import styles from '../EditServicesOffered/EditServicesOffered.module.css'
@@ -644,9 +644,110 @@ const EditServicesOffered = () => {
           "Heavy Equipment Transportation",
           "Interstate Cargo Transport",
           "Logistics & Freight Management",
-          "24/7 Shipment Tracking"
+          "24/7 Shipment Tracking",
+          "Other"
         ]
-      }
+      },
+      {
+        type: "Spa & Wellness Center",
+        subtype: "Relaxation & Health Services",
+        icon: "svg/Hair Stylist.svg",
+        services: [
+          "Swedish Massage",
+          "Deep Tissue Massage",
+          "Hot Stone Massage",
+          "Aromatherapy Massage",
+          "Couples Massage",
+          "Classic/Custom Facial",
+          "Deep-Cleansing (Acne) Facial",
+          "Body Scrub / Exfoliation",
+          "Detox or Hydrating Body Wrap",
+          "Waxing (Face/Body)",
+          "Other",
+        ],
+      },
+       {
+      type: "Print Shop",
+      subtype: "Your Printing Solutions Partner",
+      icon: "svg/Hair Stylist.svg",
+      services: [
+        "Business Cards",
+        "Flyers & Brochures",
+        "Posters & Banners",
+        "Custom T-Shirts",
+        "Photo Printing",
+        "Booklets & Catalogs",
+        "Invitations & Greeting Cards",
+        "Stickers & Labels",
+        "Large Format Printing",
+        "Other",
+      ],
+    },
+     {
+      type: " School",
+      subtype: "Education for a Brighter Future",
+      icon: "svg/Hair Stylist.svg",
+      services: [
+        "Primary Education",
+        "Secondary Education",
+        "STEM Programs",
+        "Arts & Humanities",
+        "Sports & Extracurriculars",
+        "Special Education",
+        "Language Courses",
+        "Online Learning",
+        "After-School Programs",
+        "Other",
+      ],
+    },
+     {
+      type: "Colleges & Universities",
+      subtype: "Higher Learning Institution",
+      icon: "svg/Hair Stylist.svg",
+      services: [
+        "Undergraduate Programs",
+        "Graduate Programs",
+        "Professional Degrees",
+        "Online Courses",
+        "Research Opportunities",
+        "Internships & Co-ops",
+        "Study Abroad Programs",
+        "Student Support Services",
+        "Extracurricular Activities",
+        "Other",
+      ],
+    },
+     {
+      type: "Training Center",
+      subtype: "Skill Development Hub",
+      icon: "svg/Hair Stylist.svg",
+      services: [
+        "Technical Skills Training",
+        "Soft Skills Development",
+        "Certification Programs",
+        "Workshops & Seminars",
+        "Online Learning Modules",
+        "Corporate Training Solutions",
+        "Career Counseling",
+        "Internship Placement",
+        "Other",
+      ],
+    },
+     {
+      type: "Educational Institute",
+      subtype: "Knowledge Empowerment Center",
+      icon: "svg/Hair Stylist.svg",
+      services: [
+        "Academic Programs",
+        "Vocational Training",
+        "Research & Development",
+        "Community Education",
+        "Online Learning Platforms",
+        "Student Support Services",
+        "Extracurricular Activities",
+        "Other",
+      ],
+    }
     ];
     // Parse sessionStorage safely
     const fetchBusinessType = JSON.parse(sessionStorage.getItem("businessDetails") || "{}");
@@ -673,6 +774,34 @@ const EditServicesOffered = () => {
     navigate,
     setHasFetched,
     });
+
+const [initialServices, setInitialServices] = useState([]);
+const [isChanged, setIsChanged] = useState(false);
+    useEffect(() => {
+  try {
+    if (services) {
+      setInitialServices(services || []);
+    } else {
+      setInitialServices([]); // no previous data
+    }
+  } catch (err) {
+    console.error("Failed to parse businesServices:", err);
+    setInitialServices([]);
+  }
+}, [services]);
+
+useEffect(() => {
+  if (!initialServices) return;
+
+  // Sort both arrays for comparison (ignores order difference)
+  const initial = [...initialServices].sort();
+  const current = [...selectedService].sort();
+
+  const sameLength = initial.length === current.length;
+  const isSame = sameLength && initial.every((val, idx) => val === current[idx]);
+
+  setIsChanged(!isSame);
+}, [selectedService, initialServices]);
 
     const businessType = fetchBusinessType.businessType || "";
     // Find business object by type
@@ -860,8 +989,19 @@ const EditServicesOffered = () => {
                         </div>
                     </div>
                     }
-                    <div className={styles.stickyWrapper} onClick={handleContinue}> 
-                        <AnimatedButton label="Save" isLoading={Loading}  position={{ position: "relative" }}/>
+                    <div className={styles.stickyWrapper} 
+                    // onClick={handleContinue}
+                     style={{
+                        position: "sticky",
+                        bottom: 0,
+                        backgroundColor: "white",
+                        padding: "8px",
+                        opacity: isChanged ? 1 : 0.5,
+                        cursor: isChanged ? "pointer" : "not-allowed"
+                    }}
+                    onClick={isChanged ? handleContinue : undefined}>
+                
+                        <AnimatedButton label="Save" isLoading={Loading}  position={{ position: "relative" }}  disabled={!isChanged}  />
                     </div>
                 </div>
         {showPopup && (

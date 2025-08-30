@@ -51,6 +51,7 @@ import getTimezoneFromState from "../../lib/timeZone";
 import { useNotificationStore } from "../../Store/notificationStore";
 
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import NotificationView from "../Notifications/NotificationView";
 
 function Dashboard() {
   const { agents, totalCalls, hasFetched, setDashboardData, setHasFetched } =
@@ -175,6 +176,8 @@ function Dashboard() {
   const [tourDropdownPos, setTourDropdownPos] = useState(null);
   const [forceTourOpenAgentId, setForceTourOpenAgentId] = useState(null);
   const [lockBgForTour, setLockBgForTour] = useState(false);
+  const [notificatioView,setNotificationsView]=useState(false)
+
 
   const closeTourMenu = () => {
     setOpenDropdown(null);
@@ -2291,10 +2294,11 @@ sessionStorage.removeItem("isUser")
           </div>
           <div className={styles.notifiMain}>
             <div className={styles.notificationWrapper}>
+              {!notificatioView ?
               <div
                 className={styles.notificationIcon}
-                onClick={() => navigate("/notifications")}
-              >
+                onClick={() => setNotificationsView((prev)=>!prev)} //  navigate("/notifications")
+              > 
                 <svg
                   width="20"
                   height="22"
@@ -2328,6 +2332,17 @@ sessionStorage.removeItem("isUser")
                   <span className={styles.unreadBadge}>{unreadCount}</span>
                 )}
               </div>
+              :
+               <div
+                className={styles.notificationIcon}
+                onClick={() => setNotificationsView((prev)=>!prev)} //  navigate("/notifications")
+              > 
+                <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="25" fill="#F9F9F9"/>
+                <path d="M30.4346 18.4346C30.747 18.1222 31.253 18.1222 31.5654 18.4346C31.8778 18.747 31.8778 19.253 31.5654 19.5654L26.2725 24.8584C26.235 24.8959 26.2139 24.947 26.2139 25C26.2139 25.053 26.235 25.1041 26.2725 25.1416L31.5654 30.4346C31.8778 30.747 31.8778 31.253 31.5654 31.5654C31.253 31.8778 30.747 31.8778 30.4346 31.5654L25.1416 26.2725C25.1041 26.235 25.053 26.2139 25 26.2139C24.947 26.2139 24.8959 26.235 24.8584 26.2725L19.5654 31.5654C19.253 31.8778 18.747 31.8778 18.4346 31.5654C18.1222 31.253 18.1222 30.747 18.4346 30.4346L23.7275 25.1416C23.765 25.1041 23.7861 25.053 23.7861 25C23.7861 24.947 23.765 24.8959 23.7275 24.8584L18.4346 19.5654C18.1222 19.253 18.1222 18.747 18.4346 18.4346C18.747 18.1222 19.253 18.1222 19.5654 18.4346L24.8584 23.7275C24.8959 23.765 24.947 23.7861 25 23.7861C25.053 23.7861 25.1041 23.765 25.1416 23.7275L30.4346 18.4346Z" fill="#222222" stroke="white" stroke-width="0.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            }
             </div>
             <div className={styles.notificationIcon} onClick={handleLogout}>
               <svg
@@ -2355,7 +2370,7 @@ sessionStorage.removeItem("isUser")
         </header>
 
         {/* Ankush Code Start */}
-
+      {!notificatioView &&
         <section className={styles.agentCard}>
           <div
             id="tour-total-calls"
@@ -2388,10 +2403,11 @@ sessionStorage.removeItem("isUser")
             <img src="svg/calender-booking.svg" alt="calender-booking" />
           </div>
         </section>
-
+      }
         {/* Ankush code end */}
       </div>
-
+      {!notificatioView ? 
+     (
       <div className={styles.main}>
         {show ? (
           <Modal isOpen={show} onClose={handleCLose}>
@@ -3218,6 +3234,11 @@ sessionStorage.removeItem("isUser")
           </Modal2>
         )}
       </div>
+      )
+      :
+       <NotificationView/>
+      }
+   
       {isAssignNumberModalOpen && (
         <div className={styles.modalBackdrop} onClick={closeAssignNumberModal}>
           <div

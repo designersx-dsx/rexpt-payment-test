@@ -58,7 +58,7 @@ function Start() {
       }
 
       let updated = false;
-      if (referral) {
+      if (referral && !isFromReferrerLink) {
         try {
           const res = await axios.get(
             `${process.env.REACT_APP_API_BASE_URL}/endusers/check-code/${referral}` , 

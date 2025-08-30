@@ -4,6 +4,7 @@ import { API_BASE_URL, listAgents, updateAgent } from "../Store/apiStore";
 import decodeToken from "../lib/decodeToken";
 import { getAgentPrompt, useAgentPrompt } from "./useAgentPrompt";
 import getTimezoneFromState from "../lib/timeZone";
+import getBusinessSpecificFields from "../lib/post_Call_analysis";
 // import { createAgent, updateAgent } from '../api'; // adjust path
 
 const getFromStorage = (key, fallback = "") =>
@@ -27,6 +28,7 @@ export const useAgentCreator = ({
   // const sessionBusinessiD=JSON.parse(sessionStorage.getItem("businessId"))
   // const businessId = sessionBusinessiD|| sessionBusinessiD?.businessId ;
   const [agentCount, setAgentCount] = useState(0);
+  const [transfers,setTransfers] = useState([]);
 
   const fetchAgentCountFromUser = async () => {
     try {
@@ -186,6 +188,72 @@ export const useAgentCreator = ({
       timeZone: "{{TIMEZONE}}",
     });
 
+       let agentGeneralTools =[]
+       try {
+          agentGeneralTools= JSON.parse(
+          sessionStorage.getItem("agentGeneralTools")
+        );
+       } catch (error) {
+        agentGeneralTools=[]
+        console.log('Json error while parsing agent tools')
+       }
+      
+    
+        let tools = agentGeneralTools;
+        let filteredTransfers=[];
+    if (typeof agentGeneralTools === "string") {
+      try {
+        agentGeneralTools = JSON.parse(tools);
+      } catch (e) {
+        console.error("Invalid JSON for agentGeneralTools", e);
+        agentGeneralTools = [];
+      }
+    }
+    
+        if (Array.isArray(agentGeneralTools)) {
+          // Set transfers only if tools exist
+          if (Array.isArray(agentGeneralTools) && agentGeneralTools.length > 0) {
+            // Optional: filter only those tools that have required fields
+             filteredTransfers = agentGeneralTools
+              .filter((tool) => tool.condition && tool.phone && tool.dialCode)
+              .map((tool) => ({
+                condition: tool.condition,
+                phone: tool.phone,
+                dialCode: tool.dialCode,
+                countryCode: tool.countryCode || "",
+              }));
+          }
+        }
+      
+      // Generate dynamic variables from formattedTransfers
+      const salesEntry = filteredTransfers.find(
+        (t) => t?.condition?.toLowerCase() === "sales"
+      );
+      const billingEntry = filteredTransfers.find(
+        (t) => t?.condition?.toLowerCase() === "billing"
+      );
+      const supportEntry = filteredTransfers.find(
+        (t) => t?.condition?.toLowerCase() === "support"
+      );
+
+      const dynamicVars = {
+        sales_number: salesEntry
+          ? `+${salesEntry.dialCode}${salesEntry.phone}`
+          : "",
+        billing_number: billingEntry
+          ? `+${billingEntry.dialCode}${billingEntry.phone}`
+          : "",
+        support_number: supportEntry
+          ? `+${supportEntry.dialCode}${supportEntry.phone}`
+          : "",
+      };
+
+      // Remove any empty numbers
+      Object.keys(dynamicVars).forEach((key) => {
+        if (!dynamicVars[key]) delete dynamicVars[key];
+      });
+
+    // console.log('transfers',filteredTransfers,dynamicVars)
     const filledPrompt = getAgentPrompt({
       industryKey: business?.businessType,
       roleTitle: role_title,
@@ -301,6 +369,7 @@ export const useAgentCreator = ({
           business_Phone: businessPhone,
           business_email: business.email,
           email: "",
+          ...dynamicVars
         },
       };
       if (isValid == "BusinessListing"||isValid =="EditBusinessDetail") {
@@ -427,9 +496,12 @@ export const useAgentCreator = ({
                 "name": "appointment_timezone",
                 "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
                 "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
-              }
+              },
+              ...getBusinessSpecificFields(businessType)
             ],
             webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+            // webhook_url: `https://9e44c5a2d81c.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
+          
             normalize_for_speech: true,
           };
           const agent_id =

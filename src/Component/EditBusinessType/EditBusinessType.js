@@ -38,6 +38,9 @@ const EditBusinessType = () => {
   const navigate = useNavigate();
   const { setHasFetched } = useDashboardStore();
   const userId = decodeTokenData?.id;
+  const selectedRef = useRef(null); 
+   const [isChanged, setIsChanged] = useState(false);
+  const [initialDetails, setInitialDetails] = useState(null);
   const { handleCreateAgent } = useAgentCreator({
     stepValidator: () => "EditBusinessType",
     setLoading,
@@ -47,6 +50,15 @@ const EditBusinessType = () => {
     navigate,
     setHasFetched,
   });
+
+  useEffect(() => {
+  if (selectedRef.current) {
+    selectedRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+}, [businessType]);
 
   const businessTypes = [
     {
@@ -233,7 +245,36 @@ const EditBusinessType = () => {
       type: "Trucking Company",
       subtype: "Efficient Freight & Logistics Solutions",
       icon: "svg/Trucking Company.svg",
-
+    },
+    {
+      type: "Spa & Wellness Center",
+      subtype: "Relaxation & Health Services",
+      icon: "svg/Hair Stylist.svg",
+    },
+     {
+      type: "Print Shop",
+      subtype: "Your Printing Solutions Partner",
+      icon: "svg/Hair Stylist.svg",
+    },
+     {
+      type: " School",
+      subtype: "Education for a Brighter Future",
+      icon: "svg/Hair Stylist.svg",
+    },
+     {
+      type: "Colleges & Universities",
+      subtype: "Higher Learning Institution",
+      icon: "svg/Hair Stylist.svg",
+    },
+     {
+      type: "Training Center",
+      subtype: "Skill Development Hub",
+      icon: "svg/Hair Stylist.svg",
+    },
+     {
+      type: "Educational Institute",
+      subtype: "Knowledge Empowerment Center",
+      icon: "svg/Hair Stylist.svg",
     }
 ,
 
@@ -256,6 +297,8 @@ const EditBusinessType = () => {
       // console.log(stored)
       if (stored && stored !== "undefined" && stored !== "null") {
         const businessDetails = JSON.parse(stored);
+        setInitialDetails(businessDetails);  // 👈 first time original save
+
         // console.log(businessDetails)
         if (businessDetails) {
           setBusinessType(businessDetails?.businessType || "");
@@ -416,7 +459,24 @@ const EditBusinessType = () => {
     }
 
   };
+  useEffect(() => {
+  try {
+    if (initialDetails) {
+  
+      // console.log(initialDetails,businessType)
+      const isTypeChanged = initialDetails?.businessType !== businessType;
+      const isCustomChanged = (initialDetails?.customBuisness || "") !== customBuisness;
 
+      setIsChanged(isTypeChanged, isCustomChanged);
+    } else {
+      // Agar koi stored details hi nahi h toh by default changed maana
+      setIsChanged(true);
+    }
+  } catch (err) {
+    console.error("Failed to parse businessDetails from sessionStorage:", err);
+    setIsChanged(true);
+  }
+}, [businessType, customBuisness,initialDetails]);
   // console.log('setBusinessType',businessType,customBuisness)
   return (
     <>
@@ -450,7 +510,7 @@ const EditBusinessType = () => {
                 [...filteredBusinessTypes]
                   .sort((a, b) => a.type.localeCompare(b.type))
                   .map((item, index) => (
-                    <label className={styles.option} key={index}>
+                    <label className={styles.option} key={index}  ref={businessType === item.type ? selectedRef : null}> 
                       <div className={styles.forflex}>
                         <div className={styles.icon}>
                           <img src={item.icon} alt={`${item.type} icon`} className={styles.iconImg} />
@@ -468,6 +528,7 @@ const EditBusinessType = () => {
                           value={item.type}
                           checked={businessType === item.type}
                           onChange={handleBusinessTypeChange}
+                          
                         />
                       </div>
                     </label>
@@ -497,7 +558,7 @@ const EditBusinessType = () => {
               </div>
             </div>
           )}
-          <div className={styles.inputGroup}>
+          {/* <div className={styles.inputGroup}>
             <label>Business Size (Number of Emp.)</label>
             <select className={styles.selectInput}
               value={businessSize}
@@ -530,9 +591,20 @@ const EditBusinessType = () => {
             </select>
 
 
-          </div>
-          <div className={styles.stickyWrapper} onClick={handlesave}>
-            <AnimatedButton label="Save" isLoading={Loading} position={{ position: 'relative' }} />
+          </div> */}
+          <div className={styles.stickyWrapper} 
+          // onClick={handlesave}
+             style={{
+            position: "sticky",
+            bottom: 0,
+            backgroundColor: "white",
+            padding: "8px",
+            opacity: isChanged ? 1 : 0.5,
+            cursor: isChanged ? "pointer" : "not-allowed"
+          }}
+          onClick={isChanged ? handlesave : undefined}
+           >
+            <AnimatedButton label="Save" isLoading={Loading} position={{ position: 'relative' }} disabled={!isChanged}/>
           </div>
         </div>
         {showPopup && (

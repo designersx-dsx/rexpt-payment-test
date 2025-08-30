@@ -116,12 +116,12 @@ function App() {
     if (userID) {
       getUserNotifications(userID)
         .then((resp) => {
-          // console.log("user notifications ", resp);
+          console.log("user notifications ", resp);
           loadNotifications(resp?.notifications || []);
         })
         .catch((err) => console.log("error while fetching user Notifications", err));
     }
-  }, [userID]);
+  }, [userID,token]);
 
   useEffect(() => {
     const count = notifications?.filter((n) => n?.status === "unread")?.length;
@@ -175,7 +175,10 @@ function App() {
       socket.disconnect();
     };
   }, [userID]);
-
+  useEffect(() => {
+    const ref = document.referrer;
+    console.log('Referrer URL:', ref);   
+  }, []);
   return (
     <>
       {/* <ForcePortraitOnly /> */}
