@@ -7,6 +7,8 @@ import { getAgentScheduleByUserId, saveAgentSchedule } from "../../Store/apiStor
 import PopUp from "../Popup/Popup";
 import Loader from "../Loader/Loader";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
+
+// Generate time slots
 function generateTimeSlots(start = "09:00", end = "18:30", interval = 30) {
   const slots = [];
   let [startHour, startMin] = start.split(":").map(Number);
@@ -20,9 +22,9 @@ function generateTimeSlots(start = "09:00", end = "18:30", interval = 30) {
 
   while (current < endTime) {
     const slotStart = new Date(current);
-    const slotEnd = new Date(current.getTime() + interval * 60000); // Add interval to get end of slot
+    const slotEnd = new Date(current.getTime() + interval * 60000);
 
-    // ❌ Exclude slots starting from 1:00 PM to before 2:00 PM
+    // Exclude lunch break 1:00 PM to 2:00 PM
     const isInLunchBreak = slotStart.getHours() === 13;
 
     if (!isInLunchBreak && slotEnd <= endTime) {
@@ -40,47 +42,9 @@ function generateTimeSlots(start = "09:00", end = "18:30", interval = 30) {
   return slots;
 }
 const timeSlots = generateTimeSlots();
-// function getNext7Days(startDate = new Date(), skipFromDate = null) {
-//   const days = [];
-//   const options = { weekday: "short" };
 
-//   let i = 0;
-//   while (days.length < 7) {
-//     const date = new Date(startDate);
-//     date.setDate(startDate.getDate() + i);
-
-//     let shouldSkip = false;
-
-//     // Skip 2 days after the scheduled date
-//     if (skipFromDate) {
-//       const skip1 = new Date(skipFromDate);
-//       const skip2 = new Date(skipFromDate);
-//       const skip3 = new Date(skipFromDate);
-
-//       skip1.setDate(skip1.getDate() + 1);
-//       skip2.setDate(skip2.getDate() + 2);
-//       skip3.setDate(skip3.getDate() + 3); // start from here
-
-//       // If date is before skip3, skip it
-//       if (date < skip3) {
-//         shouldSkip = true;
-//       }
-//     }
-
-//     if (!shouldSkip) {
-//       days.push({
-//         date,
-//         label: date.toLocaleDateString(undefined, { day: "2-digit" }),
-//         day: date.toLocaleDateString(undefined, options),
-//       });
-//     }
-
-//     i++;
-//   }
-
-//   return days;
-// }
-function getNext7Days(startDate = new Date(), skipFromDate = null) {
+// Get next 7 days, skip first N days and Sundays
+function getNext7Days(startDate = new Date(), skipDays = 2) {
   const days = [];
   const options = { weekday: "short" };
 
@@ -91,22 +55,7 @@ function getNext7Days(startDate = new Date(), skipFromDate = null) {
 
     const isSunday = date.getDay() === 0;
 
-    let shouldSkip = isSunday;
-
-    // Skip 2 days after the scheduled date
-    if (skipFromDate) {
-      const skip1 = new Date(skipFromDate);
-      const skip2 = new Date(skipFromDate);
-      const skip3 = new Date(skipFromDate);
-
-      skip1.setDate(skip1.getDate() + 1);
-      skip2.setDate(skip2.getDate() + 2);
-      skip3.setDate(skipFromDate.getDate() + 3); // Only allow from here
-
-      if (date < skip3) {
-        shouldSkip = true;
-      }
-    }
+    let shouldSkip = i < skipDays || isSunday;
 
     if (!shouldSkip) {
       days.push({
@@ -122,8 +71,6 @@ function getNext7Days(startDate = new Date(), skipFromDate = null) {
   return days;
 }
 
-
-
 export default function AppointmentScheduler() {
   const [selectedAgent, setSelectedAgent] = useState("");
   const [businessName, setBusinessName] = useState("");
@@ -136,12 +83,12 @@ export default function AppointmentScheduler() {
   const userIdFromToken = decodeTokenData?.id || "";
   const [userId, setUserId] = useState(userIdFromToken);
   const [agentsList, setAgentsList] = useState([]);
-  const [customAgentName, setCustomAgentName] = useState("");
   const [popup, setPopup] = useState({ type: "", message: "" });
   const [loading, setLoading] = useState(false);
   const [existingSchedule, setExistingSchedule] = useState(null);
   const [formDisabled, setFormDisabled] = useState(false);
   const isRefreshing = useContext(RefreshContext);
+
   const fetchData = async () => {
     try {
       const res = await getAgentScheduleByUserId(userIdFromToken);
@@ -154,15 +101,14 @@ export default function AppointmentScheduler() {
       }
 
       const baseDate = new Date();
-      const skipFrom = schedule ? new Date(schedule.scheduledDate) : null;
-      const upcomingDays = getNext7Days(baseDate, skipFrom);
-
+      const upcomingDays = getNext7Days(baseDate, 2); // skip 2 days
       setDays(upcomingDays);
       setSelectedDate(upcomingDays[0].date);
     } catch (error) {
       console.error("Error fetching agent schedule:", error.message);
     }
   };
+
   useEffect(() => {
     fetchData();
     const storedSession = sessionStorage.getItem("dashboard-session-storage");
@@ -176,25 +122,23 @@ export default function AppointmentScheduler() {
       }
     }
   }, []);
+
   useEffect(() => {
     if (isRefreshing) {
       fetchData();
     }
-  }, [])
-
+  }, [isRefreshing]);
 
   useEffect(() => {
     if (selectedAgent && selectedAgent !== "New Agent") {
       const selectedAgentObj = agentsList.find(
         (a) => a.agentName === selectedAgent
       );
-
       if (selectedAgentObj?.business) {
         setBusinessName(selectedAgentObj.business.businessName || "");
         setBusinessCategory(selectedAgentObj.business.businessType || "");
       }
     } else {
-      // Clear if "New Agent"
       setBusinessName("");
       setBusinessCategory("");
     }
@@ -231,22 +175,14 @@ export default function AppointmentScheduler() {
     setLoading(true);
     try {
       await saveAgentSchedule(payload);
-
       setPopup({ type: "success", message: "Slot booked successfully!" });
-      setTimeout(() => {
-        setPopup({ type: "", message: "" });
-      }, 2500);
-      // Reset form
+      setTimeout(() => setPopup({ type: "", message: "" }), 2500);
       setSelectedAgent("");
       setBusinessName("");
       setBusinessCategory("");
       setSelectedDate(days[0].date);
       setSelectedTime(null);
-      setCustomAgentName("");
-      setTimeout(() => {
-        fetchData()
-      }, 3000);
-
+      setTimeout(() => fetchData(), 3000);
     } catch (err) {
       console.error("API error:", err.message);
       setPopup({
@@ -263,7 +199,9 @@ export default function AppointmentScheduler() {
       <EditHeader title="Agent Setup" />
       {formDisabled && (
         <p className={styles.warning}>
-          <strong style={{ color: "#5a20d8" }}>Disclaimer:</strong> You have already booked a slot. You cannot schedule another until this one is completed. To know your ticket status, kindly <a href="mailto:support@rxpt.us" target="_blank" rel="noopener noreferrer" style={{ color: "purple", fontWeight: 600 }}>Contact Support</a>.
+          <strong style={{ color: "#5a20d8" }}>Disclaimer:</strong> You have
+          already booked a slot. You cannot schedule another until this one is
+          completed. Contact <a href="mailto:support@rxpt.us">Support</a>.
         </p>
       )}
 
@@ -272,32 +210,29 @@ export default function AppointmentScheduler() {
           <h3>📅 Scheduled Slot</h3>
           <p>
             <strong>Date & Time:</strong>{" "}
-            {new Date(existingSchedule.scheduledDate).toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            })},{" "}
-            {existingSchedule.scheduledTime}
+            {new Date(existingSchedule.scheduledDate).toLocaleDateString(
+              "en-IN",
+              { day: "2-digit", month: "long", year: "numeric" }
+            )}
+            , {existingSchedule.scheduledTime}
           </p>
         </div>
       )}
 
-      <div className={`${styles.container} ${formDisabled ? styles.disabledContainer : ""}`} >
+      <div className={`${styles.container} ${formDisabled ? styles.disabledContainer : ""}`}>
         <label className={styles.label}>Select Agent</label>
-        <div className={styles.selectedValue}>
-          <select
-            className={styles.agentSelect1}
-            value={selectedAgent}
-            onChange={(e) => setSelectedAgent(e.target.value)}
-          >
-            <option value="">Select Agent</option>
-            {agentsList.map((agent, idx) => (
-              <option key={idx} value={agent.agentName}>
-                {agent.agentName}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          className={styles.agentSelect1}
+          value={selectedAgent}
+          onChange={(e) => setSelectedAgent(e.target.value)}
+        >
+          <option value="">Select Agent</option>
+          {agentsList.map((agent, idx) => (
+            <option key={idx} value={agent.agentName}>
+              {agent.agentName}
+            </option>
+          ))}
+        </select>
 
         <label className={styles.label}>Business Name</label>
         <input
@@ -321,17 +256,18 @@ export default function AppointmentScheduler() {
           <div className={styles.sectionHeader}>
             <span>Suitable Slot for Call</span>
             <span className={styles.dateHeading}>
-              JULY, {new Date().getFullYear()}
+              {/* {new Date().toLocaleString("default", { month: "long" }).toUpperCase()}, {new Date().getFullYear()}
+               */}
+                 {days.length > 0 &&
+    days[0].date.toLocaleString("default", { month: "short" }).toUpperCase()}
+  ,{days.length > 0 && days[0].date.getFullYear()}
             </span>
           </div>
           <div className={styles.dayList}>
             {days.map((dayObj, index) => (
               <div
                 key={index}
-                className={`${styles.dayItem} ${selectedDate?.toDateString() === dayObj.date.toDateString()
-                  ? styles.selectedDay
-                  : ""
-                  }`}
+                className={`${styles.dayItem} ${selectedDate?.toDateString() === dayObj.date.toDateString() ? styles.selectedDay : ""}`}
                 onClick={() => setSelectedDate(dayObj.date)}
               >
                 <div className={styles.DateNumber}>{dayObj.label}</div>
@@ -348,8 +284,7 @@ export default function AppointmentScheduler() {
               <button
                 key={slot}
                 onClick={() => setSelectedTime(slot)}
-                className={`${styles.timeButton} ${selectedTime === slot ? styles.selectedTime : ""
-                  }`}
+                className={`${styles.timeButton} ${selectedTime === slot ? styles.selectedTime : ""}`}
               >
                 {slot}
               </button>
@@ -357,17 +292,12 @@ export default function AppointmentScheduler() {
           </div>
         </div>
 
-        <div style={{ width: "150px", height: "48px", position: "relative" }}>
-
-
-          <AnimatedButton
-            label="Submit"
-            onClick={handleSubmit}
-            disabled={loading || formDisabled}
-            isLoading={loading}
-          />
-
-        </div>
+        <AnimatedButton
+          label="Submit"
+          onClick={handleSubmit}
+          disabled={loading || formDisabled}
+          isLoading={loading}
+        />
 
         {popup.message && (
           <PopUp
@@ -377,17 +307,6 @@ export default function AppointmentScheduler() {
           />
         )}
       </div>
-      {/* {existingSchedule && (
-        <div className={styles.scheduleInfo}>
-          <h3>Already Scheduled</h3>
-          <p><strong>Agent:</strong> {existingSchedule.agentName}</p>
-          <p><strong>Business:</strong> {existingSchedule.businessName}</p>
-          <p><strong>Category:</strong> {existingSchedule.businessType}</p>
-          <p><strong>Date:</strong> {existingSchedule.scheduledDate}</p>
-          <p><strong>Time:</strong> {existingSchedule.scheduledTime}</p>
-        </div>
-      )} */}
-
     </div>
   );
 }
