@@ -51,6 +51,19 @@ const EditPublic = () => {
     const [debouncedUrl, setDebouncedUrl] = useState(businessUrl);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+        const companyKeywords = [
+  "about", "our-story", "our-company", "who-we-are", 
+  "contact", "products", "services", "solutions", "what-we-do", "offerings",
+  "blog", "news", "resources", "insights", "faq", "help",
+  "pricing", "plans", "privacy", "terms-and-conditions", "terms-of-use",
+  "case-studies", "projects", "portfolio", "testimonials", "reviews"
+];
+
+const filterCompanyPages = (urls) => {
+  return urls.filter(url =>
+    companyKeywords.some(keyword => url.toLowerCase().includes(keyword))
+  );
+};
 
   // 🕒 Debounce logic - 2 sec delay
   useEffect(() => {
@@ -276,11 +289,22 @@ const EditPublic = () => {
       const scrapedUrls = JSON.parse(sessionStorage.getItem("scrapedUrls") || "[]");
       if(originalForm.businessUrl != businessUrl || scrapedUrls.length == 0){
       const res = await listSiteMap(url);
-      const formattedUrls = res.urls.map((link) => ({
+     
+       const filteredUrls = filterCompanyPages(res.urls);
+        if (!filteredUrls.includes(url)) {
+        filteredUrls.unshift(url); // add at start
+      }
+        // console.log("Filtered Company Pages:", filteredUrls);
+      const formattedUrls = filteredUrls?.map((link) => ({
         url: link,
-        checkedStatus: false,
+        checkedStatus: true,
       }));
-      setShowSiteMapModal(true);
+       setcurrentForm(prev => ({
+        ...prev,
+        siteMapUrls: formattedUrls,
+      }));
+     
+      // setShowSiteMapModal(true);
       // update state
       setShowSiteMapUrls(formattedUrls);
       setAddOnUrl(url)
@@ -493,7 +517,8 @@ navigate("/edit-business-detail", { state: { isChanged: true } });
   const handleViewSelectedUrl = (e) => {
     e.preventDefault();
      if(!isVerified)return;
-    setShowSiteMapModal(true);
+    // setShowSiteMapModal(true);
+    handleSelectAll()
 
     //  Agar fresh state hai to wahi dikhao
     if (showSiteMapUrls?.length > 0) {
@@ -764,7 +789,7 @@ navigate("/edit-business-detail", { state: { isChanged: true } });
               )
             ) : null}
           </div>
-          {(!noBusinessWebsite&&businessUrl)&&<button disabled={urlVerificationInProgress} className={styles.modalViewBtn} onClick={handleViewSelectedUrl}>View</button>}
+          {/* {(!noBusinessWebsite&&businessUrl)&&<button disabled={urlVerificationInProgress} className={styles.modalViewBtn} onClick={handleViewSelectedUrl}>View</button>} */}
           {businessUrlError && (
             <div style={{ color: 'red', marginTop: '4px' }}>{businessUrlError}</div>
           )}
