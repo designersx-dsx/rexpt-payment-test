@@ -1281,17 +1281,20 @@ const Step = () => {
         handleContinue();
     }
     //site map 
+    useEffect(()=>{
+        handleSelectAll();
+    },[showSiteMapModal,showSiteMapUrls])
     // Select all handler
     const handleSelectAll = () => {
         let updated;
 
-        if (selectedUrls.length === showSiteMapUrls.length) {
-            // Deselect all
-            updated = [];
-        } else {
+        // if (selectedUrls.length === showSiteMapUrls.length) {
+        //     // Deselect all
+        //     updated = [];
+        // } else {
             // Select all
             updated = [...showSiteMapUrls];
-        }
+        // }
 
         setSelectedUrls(updated);
 
@@ -1790,11 +1793,10 @@ const Step = () => {
                     />
                 )}
 
-
+                {/* setShowSiteMapModal 
                 {showSiteMapModal && <Modal2 isOpen={showSiteMapModal} onClose={() => setShowSiteMapModal(false)}>
                     <div className={styles.sitemapModal}>
 
-                        {/* Select All */}
                         <div className={styles.sitemapHeader}>
                             <input
                                 type="checkbox"
@@ -1804,7 +1806,6 @@ const Step = () => {
                             <label>Select All</label>
                         </div>
 
-                        {/* URL list */}
                         <div className={styles.sitemapList}>
                             {showSiteMapUrls.length > 0 ? (
                                 showSiteMapUrls.map((item, index) => (
@@ -1831,6 +1832,7 @@ const Step = () => {
 
                     </div>
                 </Modal2>}
+                */}
 
 
 

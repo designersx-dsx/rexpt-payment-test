@@ -221,8 +221,8 @@ const dynamicDesc = {
   2: business?.buisnessService
     ? safeParse(business.buisnessService, []).join(", ")
     : null,
-  3: business?.googleBusinessName
-    ? `${business.googleBusinessName}, ${business.webUrl || "N/A"}`
+  3: business?.googleBusinessName ||business.webUrl
+    ? `${business.googleBusinessName || "N/A"}, ${business.webUrl || "N/A"}`
     : null,
   4: business?.businessName
     ? [business.businessName, kb?.phone, kb?.address, kb?.email]
