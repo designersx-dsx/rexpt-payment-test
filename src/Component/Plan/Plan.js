@@ -688,7 +688,7 @@ const tierCheckout = async () => {
                         )}
                     </span>
                 </label> : null}
-{!hasCustomPlan  ?
+{/* {!hasCustomPlan  ?
  <label className={styles.freeTrialBtn} onChange={handleClick2}>
                     Custom Plan
                     <input
@@ -697,7 +697,8 @@ const tierCheckout = async () => {
                         onChange={() => setFreeTrialz(!freeTrailz)}
                     />
                     </label>
-: null}
+: null} */}
+
                
 
                 {/* Show Payg toggle button */}

@@ -3351,7 +3351,7 @@ function Dashboard() {
 
 
             const isRefundEligible =
-              usedPercentage < 5 && subscriptionAgeDays <= 2;
+              usedPercentage < 5 && subscriptionAgeDays <= 5;
 
             return (
               <div
@@ -3373,7 +3373,7 @@ function Dashboard() {
                       </>
                     ) : isRefundEligible ? (
                       <>
-                        Since you're canceling within 2 days of purchasing and
+                        Since you're canceling within 5 days of purchasing and
                         have used less than 5% of your minutes, you're eligible
                         for a refund! We'll process a refund of your
                         subscription amount, minus a 3% payment gateway fee,
@@ -3382,7 +3382,7 @@ function Dashboard() {
                       </>
                     ) : (
                       <>
-                        It's been more than 2 days since your subscription
+                        It's been more than 5 days since your subscription
                         started, or you've used a significant portion of your
                         minutes. Due to our cancellation & refund policy, you're
                         not eligible for a refund. Your subscription will be
