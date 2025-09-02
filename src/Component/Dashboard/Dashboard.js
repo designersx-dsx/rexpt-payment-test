@@ -581,12 +581,22 @@ function Dashboard() {
       handleInactiveAgentAlert();
       return;
     }
-    else if (isValid && assignNumberPaid === false) {
+    else if (isValid.paymentVerified === true) {
+      navigate("/assign-number", {
+        state: { agent: agent },
+      });
+    }
+    else if (isValid.success === true && assignNumberPaid === false) {
       // alert("Your Assign Number for 1 mpnth is expired now charge again");
       // return
       openAssignNumberModal();
       return
     }
+    else if (isValid.isAssignFreeDone === 1 && isValid.success === false) {
+      openAssignNumberModal();
+      return
+    }
+    
 
     // const planName = agent?.subscription?.plan_name || "Free";
     // if (planName.toLowerCase() === "free" && !assignNumberPaid) {
@@ -2392,24 +2402,24 @@ function Dashboard() {
   }, [])
 
   const checkUserPayg = async () => {
-      try {
-        // setLoading(true);
+    try {
+      // setLoading(true);
 
-        const res = await axios.post(`${API_BASE_URL}/check-payg-enable`, { customer_id });
+      const res = await axios.post(`${API_BASE_URL}/check-payg-enable`, { customer_id });
 
-        if (res?.data?.success) {
-          setcheckPaygStatus(res?.data?.paygStatus);
-        } else {
-          setcheckPaygStatus(false);
-        }
-      } catch (error) {
-        console.error("Error checking payg status:", error);
+      if (res?.data?.success) {
+        setcheckPaygStatus(res?.data?.paygStatus);
+      } else {
         setcheckPaygStatus(false);
       }
-
+    } catch (error) {
+      console.error("Error checking payg status:", error);
+      setcheckPaygStatus(false);
     }
+
+  }
   useEffect(() => {
-    
+
     checkUserPayg()
   }, [checkPaygStatus, paygEnabledPopup])
 
@@ -2430,7 +2440,7 @@ function Dashboard() {
     try {
       const res = await axios.post(`${API_BASE_URL}/check-assign-number-month`, { agentId });
 
-      return res.data.success === true;
+      return res.data;
     } catch (error) {
       console.error("Error checking assign number:", error);
       return false;

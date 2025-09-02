@@ -198,7 +198,11 @@ const AssignNumber = () => {
         try {
             setLoading(true)
             const response = await createNumberOrder(selectedNumber, agent_id)
-            await updateAgent(agent_id, { voip_numbers: [selectedNumber] });
+            await updateAgent(agent_id, { 
+                voip_numbers: [selectedNumber], 
+                voip_numbers_created: new Date(),
+                assignNumFree:1
+             });
             setShowPopup(true)
             setPopupType("success")
             setPopupMessage("Number assigned successfully")
