@@ -161,6 +161,7 @@ function Dashboard() {
   const [agentId, setagentId] = useState();
   const [subscriptionId, setsubscriptionId] = useState();
   const [assignNumberPaid, setAssignNumberPaid] = useState(false);
+  // console.log("assignNumberPaid", assignNumberPaid)
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
   // <<<<<<< dev_Shorya1
   const closeAssignNumberModal = () => {
@@ -206,6 +207,7 @@ function Dashboard() {
   const notifications = useNotificationStore((state) => state.notifications);
   const unreadCount = notifications.filter((n) => n.status === "unread").length;
   const [redirectButton, setredirectButton] = useState(false);
+
 
   const [showDashboardTour, setShowDashboardTour] = useState(false);
   const [tourStatusLoaded, setTourStatusLoaded] = useState(false);
@@ -570,12 +572,20 @@ function Dashboard() {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
-  const handleAssignNumberClick = (agent, e) => {
+  const handleAssignNumberClick = async (agent, e) => {
     setAgentDetails(agent);
     e.stopPropagation();
+    const isValid = await handleAssignNumberValidtyCheck(agent.agent_id);
+    console.log("isValid", isValid)
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
       return;
+    }
+    else if (isValid && assignNumberPaid === false) {
+      // alert("Your Assign Number for 1 mpnth is expired now charge again");
+      // return
+      openAssignNumberModal();
+      return
     }
 
     // const planName = agent?.subscription?.plan_name || "Free";
@@ -1338,6 +1348,7 @@ function Dashboard() {
       setPopupType("success");
       fetchAndMergeCalApiKeys();
       checkAssignNumber()
+      checkAgentPaygStatus(agentId)
     } catch (error) {
       setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
       setPopupType("failed");
@@ -2380,8 +2391,7 @@ function Dashboard() {
     }
   }, [])
 
-  useEffect(() => {
-    const checkUserPayg = async () => {
+  const checkUserPayg = async () => {
       try {
         // setLoading(true);
 
@@ -2398,6 +2408,8 @@ function Dashboard() {
       }
 
     }
+  useEffect(() => {
+    
     checkUserPayg()
   }, [checkPaygStatus, paygEnabledPopup])
 
@@ -2412,6 +2424,18 @@ function Dashboard() {
     }
   }, [checkPaygStatus, paygEnabledPopup])
 
+
+
+  const handleAssignNumberValidtyCheck = async (agentId) => {
+    try {
+      const res = await axios.post(`${API_BASE_URL}/check-assign-number-month`, { agentId });
+
+      return res.data.success === true;
+    } catch (error) {
+      console.error("Error checking assign number:", error);
+      return false;
+    }
+  };
 
 
 
@@ -2613,7 +2637,6 @@ function Dashboard() {
             openDropdown === agent.agent_id ||
             forceTourOpenAgentId === agent.agent_id;
 
-          console.log("agent", agent)
           return (
             <div
               key={agent.agent_id}
@@ -2874,8 +2897,17 @@ function Dashboard() {
                       {agent?.isDeactivated === 0 && (
                         <>
                           {/* Case 1: Non-free plan */}
-                          {agent?.subscription &&
-                            agent?.subscription?.plan_name?.toLowerCase() !== "free" && (
+                          {agent && (() => {
+                            const plan = agent?.agentPlan;
+
+                            // ❌ hide if free + not paid
+                            if ((plan === "free" || plan === "Pay-As-You-Go") && !assignNumberPaid) {
+                              return false;
+                            }
+
+                            // ✅ show in all other cases
+                            return true;
+                          })() && (
                               <div>
                                 <div
                                   className={styles.OptionItem}
@@ -3597,8 +3629,9 @@ function Dashboard() {
             <h2>Upgrade Required!</h2>
             <p style={{ fontSize: "1.1rem", color: "#444", margin: "16px 0" }}>
 
-              To use the Assign Number feature on the free plan, you’ll need to pay a small additional charge.<br></br>
-              For the best experience and access to premium features, we recommend upgrading to a higher plan.
+              {/* To use the Assign Number feature on the free plan, you’ll need to pay a small additional charge.<br></br>
+              For the best experience and access to premium features, we recommend upgrading to a higher plan. */}
+              Your free one-month Assign Number has expired. You now need to pay to continue using the Assign Number feature.
 
             </p>
             <div className={`${styles.assignBtn}`}>
