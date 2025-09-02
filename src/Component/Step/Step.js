@@ -28,7 +28,7 @@ import Thankyou from "../ThankyouPage/Thankyou";
 import getTimezoneFromState from "../../lib/timeZone";
 import Modal2 from "../Modal2/Modal2";
 import LottieAnimation from "../../lib/LottieAnimation";
-import getBusinessSpecificFields from "../../lib/post_Call_analysis"
+import {appointmentBooking, getBusinessSpecificFields} from "../../lib/post_Call_analysis"
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -764,30 +764,8 @@ const Step = () => {
                                 "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
 
                         },
-                        {
-                            "type": "boolean",
-                            "name": "appointment_booked",
-                            "description": "Determine if appointment was successfully booked during the call",
-                            "examples": [true, false]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_date",
-                            "description": "Extract the exact appointment date mentioned by customer. Format: YYYY-MM-DD",
-                            "examples": ["2025-01-15", "2025-02-20", "2025-03-10"]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_time",
-                            "description": "Extract the exact appointment time mentioned by customer. Format: HH:MM AM/PM",
-                            "examples": ["10:00 AM", "2:30 PM", "9:15 AM"]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_timezone",
-                            "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
-                            "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
-                        },
+                      
+                        ...appointmentBooking(businessType),
                         ...getBusinessSpecificFields(businessType)
                     ],
                     end_call_after_silence_ms: 30000,
