@@ -139,53 +139,44 @@ function App() {
   }, [userID,token]);
 
 useEffect(() => {
-  window.addEventListener("beforeinstallprompt", () => {
-    console.log("🔥 beforeinstallprompt TRIGGERED");
-  });
+  const handleBeforeInstallPrompt = (e) => {
+    const alreadyShown = localStorage.getItem("installPromptShown");
+    if (alreadyShown) return;  // only block if already shown
 
-  window.addEventListener("appinstalled", () => {
-    console.log("🎉 App was installed");
-  });
+    e.preventDefault();
+    console.log("📱 beforeinstallprompt fired");
+    setDeferredPrompt(e);
+    setShowPopup(true);  // show your popup
+  };
+
+  window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+  return () => {
+    window.removeEventListener(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt
+    );
+  };
 }, []);
 
-   useEffect(() => {
-    const alreadyShown = localStorage.getItem("installPromptShown");
+const handleInstall = async () => {
+  if (!deferredPrompt) return;
 
-    const handleBeforeInstallPrompt = (e) => {
-      if (alreadyShown) return; // don't show again
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
 
-      e.preventDefault();
-      console.log("📱 beforeinstallprompt fired");
-      setDeferredPrompt(e);
-      setShowPopup(true);
-    };
+  if (outcome === "accepted") {
+    console.log("✅ User accepted install");
+  } else {
+    console.log("❌ User dismissed install");
+  }
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  // mark as shown no matter what
+  localStorage.setItem("installPromptShown", "true"); 
+  setDeferredPrompt(null);
+  setShowPopup(false);
+};
 
-    return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
-    };
-  }, []);
-
-  const handleInstall = async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === "accepted") {
-      console.log("✅ User accepted install");
-    } else {
-      console.log("❌ User dismissed install");
-    }
-
-    localStorage.setItem("installPromptShown", "true"); // save flag
-    setDeferredPrompt(null);
-    setShowPopup(false);
-  };
 
   const handleClose = () => {
     localStorage.setItem("installPromptShown", "true"); // save flag

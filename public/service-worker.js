@@ -1,6 +1,5 @@
 const CACHE_NAME = "my-app-cache-v1";
-const urlsToCache = ["/", "/index.html"];
-/* eslint-disable no-restricted-globals */
+const urlsToCache = ["/", "/favicon.ico", "/logo192.png", "/logo512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
