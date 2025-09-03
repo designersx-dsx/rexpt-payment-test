@@ -596,7 +596,7 @@ function Dashboard() {
       openAssignNumberModal();
       return
     }
-    
+
 
     // const planName = agent?.subscription?.plan_name || "Free";
     // if (planName.toLowerCase() === "free" && !assignNumberPaid) {
@@ -2904,6 +2904,8 @@ function Dashboard() {
                             </div>
                           </>
                         )} */}
+
+
                       {agent?.isDeactivated === 0 && (
                         <>
                           {/* Case 1: Non-free plan */}
@@ -2929,28 +2931,30 @@ function Dashboard() {
                                 >
                                   Cancel Subscription
                                 </div>
+                                {/* Case 2: PAYG toggle (show always for paid, and as "Activate" for free) */}
+                                <div>
+                                  <div
+                                    onMouseDown={(e) => {
+                                      setshowPaygConfirm(true);
+                                      setagentToPaygActivate(agent);
+                                      setpaygEnabledPopup(
+                                        checkPaygStatus === null || checkPaygStatus === 0 ? true : false
+                                      );
+                                    }}
+                                    className={styles.OptionItem}
+                                  >
+                                    {paygStatusLoading
+                                      ? "Loading.."
+                                      : isPaygActive
+                                        ? "Deactivate Pay as you go"
+                                        : "Activate Pay as you go"}
+                                  </div>
+                                </div>
                               </div>
+
                             )}
 
-                          {/* Case 2: PAYG toggle (show always for paid, and as "Activate" for free) */}
-                          <div>
-                            <div
-                              onMouseDown={(e) => {
-                                setshowPaygConfirm(true);
-                                setagentToPaygActivate(agent);
-                                setpaygEnabledPopup(
-                                  checkPaygStatus === null || checkPaygStatus === 0 ? true : false
-                                );
-                              }}
-                              className={styles.OptionItem}
-                            >
-                              {paygStatusLoading
-                                ? "Loading.."
-                                : isPaygActive
-                                  ? "Deactivate Pay as you go"
-                                  : "Activate Pay as you go"}
-                            </div>
-                          </div>
+
                         </>
                       )}
 
