@@ -2435,12 +2435,10 @@ function Dashboard() {
   }, [checkPaygStatus, paygEnabledPopup])
 
 
-  const [checkAssignNumberDaysRemain, setcheckAssignNumberDaysRemain] = useState()
-  console.log("checkAssignNumberDaysRemain", checkAssignNumberDaysRemain)
+
   const handleAssignNumberValidtyCheck = async (agentId) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/check-assign-number-month`, { agentId });
-      setcheckAssignNumberDaysRemain(res.data)
       return res.data;
     } catch (error) {
       console.error("Error checking assign number:", error);
@@ -2627,7 +2625,7 @@ function Dashboard() {
 
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-          console.log("agentagentagent", agent)
+          // console.log("agentagentagent", agent)
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
           // console.log("randomPlan",randomPlan)
 

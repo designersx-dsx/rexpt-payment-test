@@ -201,7 +201,8 @@ const AssignNumber = () => {
             await updateAgent(agent_id, { 
                 voip_numbers: [selectedNumber], 
                 voip_numbers_created: new Date(),
-                assignNumFree:1
+                assignNumFree:1,
+                isNumActivated:1
              });
             setShowPopup(true)
             setPopupType("success")
