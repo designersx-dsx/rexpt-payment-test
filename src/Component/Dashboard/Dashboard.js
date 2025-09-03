@@ -2435,22 +2435,18 @@ function Dashboard() {
   }, [checkPaygStatus, paygEnabledPopup])
 
 
-
+  const [checkAssignNumberDaysRemain, setcheckAssignNumberDaysRemain] = useState()
+  console.log("checkAssignNumberDaysRemain", checkAssignNumberDaysRemain)
   const handleAssignNumberValidtyCheck = async (agentId) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/check-assign-number-month`, { agentId });
-
+      setcheckAssignNumberDaysRemain(res.data)
       return res.data;
     } catch (error) {
       console.error("Error checking assign number:", error);
       return false;
     }
   };
-
-
-
-
-
 
 
   return (
@@ -2631,7 +2627,7 @@ function Dashboard() {
 
         {localAgents?.map((agent) => {
           const planStyles = ["MiniPlan", "ProPlan", "Maxplan"];
-          // console.log("agentagentagent",agent)
+          console.log("agentagentagent", agent)
           const randomPlan = `${agent?.subscription?.plan_name}Plan`;
           // console.log("randomPlan",randomPlan)
 
@@ -3028,6 +3024,27 @@ function Dashboard() {
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
                       {assignedNumbers.map(formatE164USNumber).join(", ")}
                     </p>
+                    {agent?.agentPlan === "free" && agent?.voip_numbers_created ? (() => {
+                      const created = new Date(agent.voip_numbers_created);
+                      const today = new Date();
+
+                      // normalize to date-only
+                      const createdDateOnly = new Date(created.getFullYear(), created.getMonth(), created.getDate());
+                      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+                      // expiry = created + 15 days
+                      const expiry = new Date(createdDateOnly);
+                      expiry.setDate(expiry.getDate() + 15);
+
+                      const msPerDay = 1000 * 60 * 60 * 24;
+                      const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
+
+                      if (daysRemaining > 0) {
+                        return <span className={styles.daysRemain}>{daysRemaining} days remaining</span>;
+                      }
+                      return null; // show nothing if expired
+                    })() : ""}
+
                   </div>
                 ) : (
                   <div
