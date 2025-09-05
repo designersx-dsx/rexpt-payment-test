@@ -265,6 +265,7 @@ function Dashboard() {
       cancelled = true;
     };
   }, [userId]);
+  
 
   const introRef = useRef(null);
   const tourStartLockRef = useRef(false);
@@ -1721,7 +1722,7 @@ function Dashboard() {
   //                 method: "PATCH",
   //                 headers: {
   //                   "Content-Type": "application/json",
-  //                   Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+  //                   Authorization: `Be arer ${process.env.REACT_APP_API_RETELL_API}`,
   //                 },
   //                 body: JSON.stringify(llmPayload),
   //               }
@@ -2009,6 +2010,35 @@ function Dashboard() {
       setDeactivateLoading(false);
     }
   };
+
+
+const handlePaymentAssignNumber = async(agentId)=>{
+  try {
+      let res = await axios.post(`${API_BASE_URL}/pay-as-you-go-checkout` , {
+    agentId : agentId, 
+    customerId : "cus_SyjFq2bKVWyr3M" , 
+    userId : "RX86KS1756787104" , 
+    url : "http://localhost:3000/dashboard" , 
+    cancelUrl: "http://localhost/phpmyadmin/index.php?route=/sql&db=rexpt&table=agentdetails&pos=0" , 
+    isAssignNumber : true
+  })
+    if (res?.data?.checkoutUrl) {
+      console.log("Redirecting to:", res.data.checkoutUrl);
+      window.location.href = res.data.checkoutUrl; // 👈 redirect karega
+    } else {
+      console.error("Checkout URL not found in response:", res.data);
+    }
+  } catch (error) {
+    console.log({error});
+    
+    
+  }
+
+
+  
+}
+
+
   // const handleUpgradeClick = (agent) => {
   //   // console.log("agent", agent)
   //   setagentId(agent?.agent_id);
@@ -3039,7 +3069,16 @@ function Dashboard() {
                       const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
 
                       if (daysRemaining > 0) {
-                        return <span className={styles.daysRemain}>{daysRemaining} days remaining</span>;
+                        return <span className={styles.daysRemain}>{daysRemaining} days remaining   <button
+  onClick={(e) => {
+    e.stopPropagation(); // parent div ka onClick prevent karega
+    handlePaymentAssignNumber(agent.agent_id);
+  }}
+>
+  SUBSCRIBE
+</button></span>;
+
+
                       }
                       return null; // show nothing if expired
                     })() : ""}
