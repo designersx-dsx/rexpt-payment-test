@@ -46,6 +46,7 @@
 }
 
 .notificationIcon {
+
   background-color: #fff;
   height: 50px;
   width: 50px;
@@ -54,14 +55,18 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  position: relative; /* Added for badge positioning */
+  position: relative;
+  /* Added for badge positioning */
+
+
 }
 
 .unreadBadge {
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: #ff4d4f; /* Matches alertBorder from NotificationView */
+  background-color: #ff4d4f;
+  /* Matches alertBorder from NotificationView */
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -71,7 +76,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fff; /* White border for contrast */
+  border: 2px solid #fff;
+  /* White border for contrast */
 }
 
 .profileSection img {
@@ -319,6 +325,7 @@
 .LangStyle.GrowthPlan {
   background-color: #f4dfe1;
 }
+
 .LangStyle.CorporatePlan {
   background-color: #ffeadf;
 }
@@ -366,6 +373,7 @@
   /* width: 100px; */
   height: 40px;
 }
+
 .tourClickShield {
   position: fixed;
   inset: 0;
@@ -395,8 +403,7 @@
 /* Hide any stray close buttons just in case */
 .customTourTooltip :global(.introjs-closeButton),
 .customTourTooltip :global(.introjs-closebutton),
-.customTourTooltip
-  :global(.introjs-tooltip-header .introjs-skipbutton.introjs-closebutton) {
+.customTourTooltip :global(.introjs-tooltip-header .introjs-skipbutton.introjs-closebutton) {
   display: none !important;
 }
 
@@ -428,6 +435,7 @@
   color: #fff;
   box-shadow: 0 6px 14px rgba(17, 24, 39, 0.22);
 }
+
 .customTourTooltip :global(.introjs-nextbutton:hover),
 .customTourTooltip :global(.introjs-donebutton:hover) {
   transform: translateY(-1px);
@@ -441,6 +449,7 @@
   border: 1px solid #e5e7eb;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
 }
+
 .customTourTooltip :global(.introjs-prevbutton:hover) {
   transform: translateY(-1px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
@@ -449,41 +458,49 @@
 /* Skip = subtle tertiary link-button */
 .customTourTooltip :global(.introjs-skipbutton) {
   background: transparent;
-  color: #4f46e5; /* gray-500 */
+  color: #4f46e5;
+  /* gray-500 */
   font-weight: 600;
   border-radius: 10px;
   font-size: large;
   right: 11px;
   font-size: 14px;
-  text-decoration: underline; 
- 
+  text-decoration: underline;
+
 }
+
 .customTourTooltip :global(.introjs-skipbutton:hover) {
-  color: #374151; /* gray-700 */
+  color: #374151;
+  /* gray-700 */
 }
 
 /* Progress bar polish (when showProgress: true) */
 .customTourTooltip :global(.introjs-progress) {
-  background: #eef2ff; /* subtle indigo-50 */
+  background: #eef2ff;
+  /* subtle indigo-50 */
   height: 11px;
   border-radius: 999px;
   overflow: hidden;
   margin-bottom: 10px;
 }
+
 .customTourTooltip :global(.introjs-progressbar) {
   background: linear-gradient(90deg, #4f46e5, #e2d7ff);
 }
 
 /* Arrow matches card */
 .customTourTooltip :global(.introjs-arrow) {
-  border: none; /* remove default border look */
+  border: none;
+  /* remove default border look */
 }
+
 .customTourTooltip :global(.introjs-arrow.top),
 .customTourTooltip :global(.introjs-arrow.top-right),
 .customTourTooltip :global(.introjs-arrow.top-middle),
 .customTourTooltip :global(.introjs-arrow.top-left) {
   border-bottom-color: #ffffff !important;
 }
+
 .customTourTooltip :global(.introjs-arrow.bottom),
 .customTourTooltip :global(.introjs-arrow.bottom-right),
 .customTourTooltip :global(.introjs-arrow.bottom-middle),
@@ -492,12 +509,14 @@
 }
 
 :global(.introjs-overlay) {
-  background: rgba(15, 23, 42, 0.45) !important; /* slate-900 @ 45% */
+  background: rgba(15, 23, 42, 0.45) !important;
+  /* slate-900 @ 45% */
 }
 
 .tourHighlight {
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.45),
-    0 0 0 5000px rgba(15, 23, 42, 0); /* keep your halo */
+    0 0 0 5000px rgba(15, 23, 42, 0);
+  /* keep your halo */
   border-radius: 10px;
   transition: box-shadow 0.2s ease;
 }
@@ -593,6 +612,7 @@
 :global(.introjs-overlay) {
   z-index: 99990 !important;
 }
+
 :global(.introjs-tooltip) {
   z-index: 99992 !important;
 }
@@ -613,6 +633,7 @@
   pointer-events: none;
   transition: opacity 0.2s ease;
 }
+
 .tourTooltipOnMenu {
   transform: translateX(8px) translateY(6px);
   max-width: 280px;
@@ -639,11 +660,15 @@
 }
 
 
-.AgentTwoIcon{
-    display: flex;
-    gap: 10px;
+.AgentTwoIcon {
+  display: flex;
+  gap: 10px;
 }
+
+
+
 @media screen and (min-width: 601px) {
+
   .main .LangStyle:last-child {
     margin-bottom: 0rem;
   }
@@ -1303,12 +1328,10 @@
   left: -75%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(120deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%);
   transform: skewX(-25deg);
   z-index: 2;
   pointer-events: none;
@@ -1436,3 +1459,54 @@
 }
 
 /* ajay css end */
+
+
+/* Assign Number */
+.assignBtn {
+  display: flex;
+  /* gap: 80px; */
+  justify-content: space-between;
+}
+
+.modalButton1 {
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+  background-color: #d5d5d5;
+  color: #24252C;
+}
+
+.subscribeDiv {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.daysRemainActive {
+  font-size: 12px;
+  color: #1aa850;
+}
+
+.daysRemainInactive {
+  font-size: 12px;
+  color: red;
+}
+
+.subCribeBtn {
+  border: none;
+  margin-right: 10px;
+  background-color: #5f33e1;
+  color: #ffff;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.exclamMark {
+  /* margin-top: 5px; */
+}
