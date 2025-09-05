@@ -2096,7 +2096,7 @@ function Dashboard() {
     setUpgradeLoading(true);
     try {
       // console.log({ pendingUpgradeAgent })
-      if (!pendingUpgradeAgent) return;
+      if (!pendingUpgradeAgent && !currentPlan1 === "free") return;
       const agent = pendingUpgradeAgent;
 
       // Set required session/local storage
@@ -3086,8 +3086,9 @@ function Dashboard() {
                                 ) : (
                                   <div onClick={(e) => {
                                     e.stopPropagation();
-                                  
-
+                                  setShowUpgradeConfirmModal(true)
+                                  setAgentDetails(agent)
+                                    
                                   }}>
                                     {/* Inactive{" "} */}
                                     <svg width="24" height="24" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
