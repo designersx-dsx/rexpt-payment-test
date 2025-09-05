@@ -845,7 +845,7 @@ const AgentDashboard = () => {
           setHasFetched(false)
           setRefresh(prev => !prev)
           // setShowPopup(true);
-          
+
           setPopupMessage("Assign Number Subscription Resume successfully");
           setPopupType("success");
           // localStorage.setItem("isPayg", JSON.stringify(true)); // store as string
@@ -1198,17 +1198,17 @@ const AgentDashboard = () => {
                   />
                 </svg>
               </div> */}
-              {(agentData?.subscription === null || agentData?.subscription === undefined)  ? ""
-
-                : <div className={styles.deleteSection} style={{ cursor: "pointer", marginLeft: "15px" }}>
-                  <div
-                    className={styles.deleteButton}
-                    onClick={handleAssignPopUp}
-                  >
+              {agentData?.agent?.agentPlan === "free" && agentData?.subscription != null && (
+                <div
+                  className={styles.deleteSection}
+                  style={{ cursor: "pointer", marginLeft: "15px" }}
+                >
+                  <div className={styles.deleteButton} onClick={handleAssignPopUp}>
                     <img src="/svg/delete-icon.svg" alt="delete" />
-
                   </div>
-                </div>}
+                </div>
+              )}
+
             </div>
             : ""}
 
