@@ -169,9 +169,9 @@ const Planss = () => {
             try {
                 // const response = await fetch("https://ipwho.is/");
                 const response = await axios.get('https://ipinfo.io/json');
-                const data = await response?.data                ;
+                const data = await response?.data;
 
-                if ( data.country) {
+                if (data.country) {
                     const currency = mapCountryToCurrency(data.country);
                     setUserCurrency(currency);
                 } else {
@@ -204,12 +204,13 @@ const Planss = () => {
         if (!userCurrency || !currencyLoaded) return;
         setLoading(true);
 
-        fetch(`${API_BASE}/products` , {
+        fetch(`${API_BASE}/products`, {
 
-              headers: {
+            headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
-              }}
+            }
+        }
         )
             .then((res) => res.json())
             .then((data) => {
@@ -386,7 +387,7 @@ const Planss = () => {
                         method: 'POST',
                         headers: {
                             'Cotnent-Type': 'application/json',
-                              Authorization: `Bearer ${token}`,
+                            Authorization: `Bearer ${token}`,
                         },
                         body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
                     });
@@ -414,7 +415,7 @@ const Planss = () => {
 
 
 
-                
+
                 status: status,
             };
 
@@ -464,7 +465,7 @@ const Planss = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify(requestData)
                 });
@@ -530,7 +531,7 @@ const Planss = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                     Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ agentId, customerId: cusotmerId }) // Pass the agentId to the API
             });
@@ -576,6 +577,46 @@ const Planss = () => {
             </p>
         );
     if (error) return <p className={styles.statusError}>{error}</p>;
+
+    const handleBuyPlan = (data) => {
+        // console.log({ data });
+
+        const plansFromApple = {
+            starter_month: "com.rexpt.starter.monthly",
+            starter_year: "com.rexpt.starter.yearly",
+            scaler_month: "com.rexpt.scaler.monthly",
+            scaler_year: "com.rexpt.scaler.yearly",
+            growth_month: "com.rexpt.growth.monthly",
+            growth_year: "com.rexpt.growth.yearly",
+            corporate_month: "com.rexpt.corporate.monthly",
+            corporate_year: "com.rexpt.corporate.yearly"
+        };
+
+        // Normalize name + interval into a key (lowercased to match dictionary)
+        const key = `${data.planName.toLowerCase()}_${data.interval.toLowerCase()}`;
+
+        // Lookup product ID from Apple mapping
+        const appleProductId = plansFromApple[key];
+
+        if (!appleProductId) {
+            console.warn("⚠️ No matching Apple product found for:", key);
+            return;
+        }
+
+        // console.log("appleProductId",appleProductId)
+
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    type: "BUY",
+                    productId: appleProductId, 
+                })
+            );
+        } else {
+            console.warn("ReactNativeWebView not available — running in browser?");
+        }
+    };
+
 
     return (
         <div className={styles.subscriptionMain}>
@@ -838,7 +879,11 @@ const Planss = () => {
                                                 if (priceForInterval) {
                                                     // console.log("plan", plan)
                                                     sessionStorage.setItem("selectedPlan", plan?.name)
-
+                                                    handleBuyPlan({
+                                                        priceId: priceForInterval.id,
+                                                        planName: plan.name ?? plan.title, 
+                                                        interval, 
+                                                    });
                                                     if (agentID) {
                                                         navigate(`/checkout`, { state: { priceId: priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
                                                     }
