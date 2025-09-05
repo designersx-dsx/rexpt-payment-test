@@ -264,7 +264,7 @@ const handleInstall = async () => {
         </div>
         <div className="ForMobile">
 
-     {showPopup && (
+     {/* {showPopup && (
         <div
           style={{
             position: "fixed",
@@ -322,7 +322,7 @@ const handleInstall = async () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
    
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
