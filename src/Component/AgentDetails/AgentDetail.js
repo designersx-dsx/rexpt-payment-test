@@ -32,6 +32,8 @@ import Modal3 from "../Modal3/Modal3";
 import { clearSessionAfterEdit } from "../../utils/helperFunctions";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { useNotificationStore } from "../../Store/notificationStore";
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
+
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -40,6 +42,8 @@ const AgentDashboard = () => {
     sessionStorage.getItem("userCalApiKey")
   );
   const agentBuisnesId = sessionStorage.getItem("SelectAgentBusinessId");
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+
   const [agentDetails, setAgentDetail] = useState({
     agentId:
       location?.state?.agentId || sessionStorage.getItem("SelectAgentId"),
@@ -76,6 +80,7 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
+  console.log("agentData", agentData)
   const [isModalOpen, setModalOpen] = useState();
   const [openCard, setOpenCard] = useState(null);
   const { setHasFetched } = useDashboardStore();
@@ -119,10 +124,12 @@ const AgentDashboard = () => {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
   const [agentCalApiKey, setAgentCalApiKey] = useState("");
+  const [disableLoading, setDisableLoading] = useState(false)
   const notifications = useNotificationStore((state) => state.notifications);
-
+  const [assignPopUp, setAssignPopUp] = useState(false)
   const unreadCount = notifications?.filter((n) => n?.status === 'unread').length;
   // console.log('unreadCount', unreadCount)
+
 
   const isRefreshing = useContext(RefreshContext);
 
@@ -375,7 +382,7 @@ const AgentDashboard = () => {
   };
   useEffect(() => {
     getAgentDetailsAndBookings();
-  }, []);
+  }, [refresh]);
   const handleAssignNumberUpdated = () => {
     getAgentDetailsAndBookings();
   };
@@ -716,6 +723,228 @@ const AgentDashboard = () => {
       getAgentDetailsAndBookings();
     }
   }, [isRefreshing]);
+  const handleAssignPopUp = () => {
+    // console.log("agentData", agentData)
+    setAssignPopUp(true)
+  }
+
+
+
+  const mClose = () => {
+    setAssignPopUp(false)
+  }
+
+  // const handleSamanPtra = async () => {
+
+  //   const handleCancelSubscription = async () => {
+  //     const agent_id = agentData?.agent.agent_id;
+  //     // const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
+
+  //     try {
+  //       setDisableLoading(true)
+  //       // setdeleteloading(true);
+
+  //       try {
+  //         let res = null
+  //         // assignNumberPaid === true &&
+  //         if ((agentData?.agent?.agentPlan === "free" || agentData?.agent?.agentPlan === "Pay-As-You-Go")) {
+  //           console.log("Cancel Schedule")
+  //           res = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+  //             method: "POST",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //             body: JSON.stringify({ subscriptionId: agentData?.subscription?.subscription_id }),
+  //           });
+  //           const requestData = {
+  //             customerId: agentData.subscription?.subscription_id,
+  //             agentId: agent_id,
+  //             status: "inactive",
+  //             isFree: (agentData?.agent?.agentPlan === "free") || (agentData?.agent?.agentPlan === "Pay-As-You-Go" ? true : false)
+
+  //           };
+  //           const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+  //             method: 'POST',
+  //             headers: {
+  //               'Content-Type': 'application/json',
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //             body: JSON.stringify(requestData),
+  //           });
+  //           if (response.ok) { console.log('Agent Payg Cancelled Succesfully') }
+
+  //           else {
+  //             console.log('Failed to send the request to save the agent.')
+  //           }
+  //           console.log("assign cancel")
+  //           // await checkAssignNumber()
+  //         }
+
+  //         if (res) {
+  //           setTimeout(() => {
+  //             // fetchAndMergeCalApiKeys();
+  //           }, 1000);
+  //         }
+  //       } catch (notifyError) {
+  //         throw new Error(`Refund failed: ${notifyError.message}`);
+  //       }
+
+  //       // const updatedAgents = localAgents.filter((a) => a.agent_id !== agent_id);
+  //       // setLocalAgents(updatedAgents);
+  //       // setPopupMessage("Subscription Cancelled successfully!");
+  //       // setPopupType("success");
+  //       // fetchAndMergeCalApiKeys();
+  //       // checkAssignNumber()
+  //       // checkAgentPaygStatus(agentId)
+  //       setDisableLoading(false)
+  //     } catch (error) {
+  //       // setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
+  //       // setPopupType("failed");
+  //       setDisableLoading(false)
+  //     } finally {
+  //       // setdeleteloading(false);
+  //     }
+  //   };
+  // }
+
+
+  // helpers you already have in scope:
+  // API_BASE, token, agentData, setDisableLoading
+
+  const handleSamanPtra = async () => {
+    const agentPlan = agentData?.agent?.agentPlan;
+    const subscriptionId = agentData?.subscription?.subscription_id;
+    const agentId = agentData?.agent?.agent_id;
+    const subscriptionStatus = agentData?.subscription?.status // canceled   , cancel_scheduled
+    console.log("subscriptionStatus", subscriptionStatus)
+    // Only proceed for "free" or "Pay-As-You-Go"
+    const isFreeOrPayg = ["free", "Pay-As-You-Go"].includes(agentPlan);
+
+    if (subscriptionStatus === "canceled" || subscriptionStatus === "cancel_scheduled") {
+      setDisableLoading(true)
+      try {
+        const res = await fetch(`${API_BASE}/assign-number-resume`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ subscriptionId }), // assumes subscriptionId is in scope
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          console.log(`assign-number-resume failed (${res.status}): ${text}`);
+        }
+
+        const data = await res.json(); // ← parse body
+
+        if (data?.subscription) {
+          console.log("Assign Number Subscription Resume successfully");
+          setHasFetched(false)
+          setRefresh(prev => !prev)
+          // setShowPopup(true);
+          
+          setPopupMessage("Assign Number Subscription Resume successfully");
+          setPopupType("success");
+          // localStorage.setItem("isPayg", JSON.stringify(true)); // store as string
+          // setPaygEnabled(true);
+        } else {
+          // backend returned ok but missing expected field
+          console.warn("assign-number-resume: no subscription in response", data);
+          // setShowPopup(true);
+          setPopupMessage("Resume completed, but response was unexpected.");
+          setPopupType("success");
+          setDisableLoading(false);
+        }
+      } catch (err) {
+        console.error("Resume failed:", err);
+        // setShowPopup(true);
+        setPopupMessage("Failed to resume asign number. Please try again.");
+        setPopupType("failed");
+        setDisableLoading(false);
+      }
+      finally {
+        setDisableLoading(false);
+        setAssignPopUp(false);
+        // setHasFetched()
+      }
+      return
+    }
+
+
+
+
+    if (!isFreeOrPayg) {
+      console.log("No cancel needed: plan is neither free nor Pay-As-You-Go");
+      return;
+    }
+
+    setDisableLoading(true);
+    try {
+      // 1) Cancel any queued subscription changes (server-side)
+      const cancelRes = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ subscriptionId }),
+      });
+
+      if (!cancelRes.ok) {
+        const text = await cancelRes.text().catch(() => "");
+        throw new Error(`cancel-subscription-schedule failed (${cancelRes.status}): ${text}`);
+      }
+      console.log("Cancelled subscription schedule");
+      setHasFetched(false)
+      setRefresh(prev => !prev)
+
+      // 2) Update agent PayG state
+      const requestData = {
+        customerId: agentData?.subscription?.customer_id,
+        agentId,
+        status: "inactive",
+        isFree: agentPlan === "free" || agentPlan === "Pay-As-You-Go",
+      };
+
+      const updateRes = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!updateRes.ok) {
+        console.log('Failed to send the request to save the agent.')
+      }
+
+      // console.log("✅ Agent Pay-As-You-Go status updated successfully");
+
+      setPopupMessage("Subscription Cancelled successfully!");
+      setPopupType("success");
+      setAssignPopUp(false)
+
+
+    } catch (err) {
+      console.error("❌ handleSamanPtra failed:", err);
+      setPopupMessage(`Failed to Cancel Subscription: ${err.message}`);
+      setPopupType("failed");
+    } finally {
+      setDisableLoading(false);
+      setAssignPopUp(false)
+      setHasFetched(false)
+    }
+
+  };
+
+
+
+
+
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -740,44 +969,44 @@ const AgentDashboard = () => {
               </div>
 
               <div className={styles.notifiMain}>
-              <div className={styles.notificationWrapper}>
-                <div
-                  className={styles.notificationIcon}
-                  onClick={() => {navigate('/notifications')}}
-                >
-                  <svg
-                    width="20"
-                    height="22"
-                    viewBox="0 0 20 22"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                <div className={styles.notificationWrapper}>
+                  <div
+                    className={styles.notificationIcon}
+                    onClick={() => { navigate('/notifications') }}
                   >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M10 4.68945C10.4142 4.68945 10.75 5.02524 10.75 5.43945V8.76945C10.75 9.18367 10.4142 9.51945 10 9.51945C9.58579 9.51945 9.25 9.18367 9.25 8.76945V5.43945C9.25 5.02524 9.58579 4.68945 10 4.68945Z"
-                      fill="#0A0A0A"
-                      fill-opacity="0.9"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M2.61001 7.66C2.61001 3.56579 5.9258 0.25 10.02 0.25C14.0946 0.25 17.4289 3.58574 17.44 7.65795L17.44 7.65898V9.76C17.44 10.0064 17.4942 10.3614 17.5969 10.7349C17.6997 11.1089 17.8345 11.441 17.9621 11.6525L17.9628 11.6535L19.2334 13.7746L19.2336 13.7749C20.2082 15.4038 19.4348 17.519 17.6272 18.1215L17.6269 18.1216L17.6267 18.1217C12.693 19.7628 7.35696 19.7628 2.42329 18.1217L2.42306 18.1216L2.42284 18.1215C1.50673 17.8161 0.827321 17.1773 0.523982 16.3562C0.220761 15.5354 0.320841 14.6072 0.815592 13.7763L0.816106 13.7754L2.08724 11.6535L2.08787 11.6525C2.21604 11.4401 2.35075 11.1098 2.45325 10.7381C2.55563 10.3669 2.61001 10.0118 2.61001 9.76V7.66ZM10.02 1.75C6.75423 1.75 4.11001 4.39421 4.11001 7.66V9.76C4.11001 10.1882 4.02439 10.6831 3.89927 11.1369C3.7744 11.5897 3.59436 12.0589 3.37286 12.4263C3.37262 12.4267 3.37239 12.4271 3.37215 12.4275L2.10443 14.5437C2.10428 14.544 2.10413 14.5442 2.10398 14.5445C1.81916 15.0233 1.79933 15.4798 1.93104 15.8363C2.0627 16.1927 2.37329 16.5239 2.89718 16.6985C7.52323 18.2372 12.5268 18.2372 17.1528 16.6985C18.0452 16.401 18.4317 15.3562 17.9464 14.5451L16.6778 12.4275C16.6777 12.4272 16.6775 12.427 16.6774 12.4267C16.4552 12.0583 16.2752 11.5858 16.1506 11.1326C16.0258 10.6786 15.94 10.1836 15.94 9.76V7.66107C15.9306 4.41373 13.2651 1.75 10.02 1.75Z"
-                      fill="#0A0A0A"
-                      fill-opacity="0.9"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M7.41992 17.8203C7.41992 18.5204 7.71292 19.1727 8.18025 19.64L8.18027 19.64C8.64755 20.1073 9.2998 20.4003 9.99988 20.4003C11.4157 20.4003 12.5799 19.2361 12.5799 17.8203H14.0799C14.0799 20.0645 12.2441 21.9003 9.99988 21.9003C8.87997 21.9003 7.85223 21.4333 7.11959 20.7006M7.11957 20.7006C6.38691 19.968 5.91992 18.9402 5.91992 17.8203H7.41992"
-                      fill="#0A0A0A"
-                      fill-opacity="0.9"
-                    />
-                  </svg>
+                    <svg
+                      width="20"
+                      height="22"
+                      viewBox="0 0 20 22"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M10 4.68945C10.4142 4.68945 10.75 5.02524 10.75 5.43945V8.76945C10.75 9.18367 10.4142 9.51945 10 9.51945C9.58579 9.51945 9.25 9.18367 9.25 8.76945V5.43945C9.25 5.02524 9.58579 4.68945 10 4.68945Z"
+                        fill="#0A0A0A"
+                        fill-opacity="0.9"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M2.61001 7.66C2.61001 3.56579 5.9258 0.25 10.02 0.25C14.0946 0.25 17.4289 3.58574 17.44 7.65795L17.44 7.65898V9.76C17.44 10.0064 17.4942 10.3614 17.5969 10.7349C17.6997 11.1089 17.8345 11.441 17.9621 11.6525L17.9628 11.6535L19.2334 13.7746L19.2336 13.7749C20.2082 15.4038 19.4348 17.519 17.6272 18.1215L17.6269 18.1216L17.6267 18.1217C12.693 19.7628 7.35696 19.7628 2.42329 18.1217L2.42306 18.1216L2.42284 18.1215C1.50673 17.8161 0.827321 17.1773 0.523982 16.3562C0.220761 15.5354 0.320841 14.6072 0.815592 13.7763L0.816106 13.7754L2.08724 11.6535L2.08787 11.6525C2.21604 11.4401 2.35075 11.1098 2.45325 10.7381C2.55563 10.3669 2.61001 10.0118 2.61001 9.76V7.66ZM10.02 1.75C6.75423 1.75 4.11001 4.39421 4.11001 7.66V9.76C4.11001 10.1882 4.02439 10.6831 3.89927 11.1369C3.7744 11.5897 3.59436 12.0589 3.37286 12.4263C3.37262 12.4267 3.37239 12.4271 3.37215 12.4275L2.10443 14.5437C2.10428 14.544 2.10413 14.5442 2.10398 14.5445C1.81916 15.0233 1.79933 15.4798 1.93104 15.8363C2.0627 16.1927 2.37329 16.5239 2.89718 16.6985C7.52323 18.2372 12.5268 18.2372 17.1528 16.6985C18.0452 16.401 18.4317 15.3562 17.9464 14.5451L16.6778 12.4275C16.6777 12.4272 16.6775 12.427 16.6774 12.4267C16.4552 12.0583 16.2752 11.5858 16.1506 11.1326C16.0258 10.6786 15.94 10.1836 15.94 9.76V7.66107C15.9306 4.41373 13.2651 1.75 10.02 1.75Z"
+                        fill="#0A0A0A"
+                        fill-opacity="0.9"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M7.41992 17.8203C7.41992 18.5204 7.71292 19.1727 8.18025 19.64L8.18027 19.64C8.64755 20.1073 9.2998 20.4003 9.99988 20.4003C11.4157 20.4003 12.5799 19.2361 12.5799 17.8203H14.0799C14.0799 20.0645 12.2441 21.9003 9.99988 21.9003C8.87997 21.9003 7.85223 21.4333 7.11959 20.7006M7.11957 20.7006C6.38691 19.968 5.91992 18.9402 5.91992 17.8203H7.41992"
+                        fill="#0A0A0A"
+                        fill-opacity="0.9"
+                      />
+                    </svg>
                     {unreadCount > 0 && (
-                                    <span className={styles.unreadBadge}>{unreadCount}</span>
-                        )}
-                </div>
+                      <span className={styles.unreadBadge}>{unreadCount}</span>
+                    )}
+                  </div>
                 </div>
                 <div className={styles.notificationIcon} onClick={handleLogout}>
                   <svg
@@ -846,14 +1075,16 @@ const AgentDashboard = () => {
 
                     <div className={styles.agentDetailsFlex}>
                       {assignedNumbers?.length > 0 ? (
-                        <div className={styles.AssignNumText}>
-                          Phone Number
-                          <p>
-                            {assignedNumbers
-                              ?.map(formatE164USNumber)
-                              .join(", ")}
-                          </p>
-                        </div>
+                        <>
+                          <div className={styles.AssignNumText}>
+                            Phone Number
+                            <p>
+                              {assignedNumbers
+                                ?.map(formatE164USNumber)
+                                .join(", ")}
+                            </p>
+                          </div>
+                        </>
                       ) : (
                         <div
                           className={styles.AssignNum}
@@ -880,11 +1111,145 @@ const AgentDashboard = () => {
                         <strong>{agentData?.agent?.agentCode || "NA"}</strong>
                       </p>
                     </div>
+
                   </div>
                 </div>
               </div>
             </section>
           </div>
+          {assignedNumbers?.length > 0 ?
+            <div className={`${styles.infoSection}`}>
+              <div className={styles.toggleContainer1}>
+                {assignedNumbers?.length > 0 ? (
+                  <>
+                    <div className={styles.AssignNumText}>
+                      Phone Number
+                      <p>
+                        {assignedNumbers
+                          ?.map(formatE164USNumber)
+                          .join(", ")}
+                      </p>
+                      {agentData.agent?.agentPlan === "free" && !agentData.agent?.subscriptionId && agentData.agent?.voip_numbers_created ? (() => {
+                        const created = new Date(agentData.agent.voip_numbers_created);
+                        const today = new Date();
+
+                        // normalize to date-only
+                        const createdDateOnly = new Date(created.getFullYear(), created.getMonth(), created.getDate());
+                        const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+                        // expiry = created + 15 days
+                        const expiry = new Date(createdDateOnly);
+                        expiry.setDate(expiry.getDate() + 14);
+
+                        const msPerDay = 1000 * 60 * 60 * 24;
+                        const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
+
+                        if (daysRemaining > 0) {
+                          return <span className={styles.daysRemain}>{daysRemaining} days remaining</span>;
+                        }
+                        return null; // show nothing if expired
+                      })() : ""}
+                    </div>
+                    {/* <div>Free Assign Number</div> */}
+                  </>
+                ) : (
+                  <div
+                    className={styles.AssignNum}
+                    onClick={(e) => {
+                      if (agentStatus === true) {
+                        handleInactiveAgentAlert();
+                      } else {
+                        // setIsAssignModalOpen(true)
+                        // setIsAssignNumberModalOpen(true);
+                        handleAssignNumberClick(
+                          agentData?.agent,
+                          e,
+                          agentData?.business
+                        );
+                      }
+                    }}
+                  >
+                    <img src="/svg/assign-number.svg" />
+                  </div>
+                )}
+              </div>
+
+              {/* <div className={styles.SvgDesign} onClick={handleAssignPopUp}>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M20.0001 3.90244L16.0977 0L13.3936 2.70407L17.296 6.60651L20.0001 3.90244Z"
+                    fill="#6524EB"
+                  />
+                  <path
+                    d="M4 16L8.2927 15.6098L15.6797 8.22279L11.7772 4.32031L4.39024 11.7073L4 16Z"
+                    fill="#6524EB"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M13 20H0V18H13V20Z"
+                    fill="#6524EB"
+                  />
+                </svg>
+              </div> */}
+              {(agentData?.subscription === null || agentData?.subscription === undefined)  ? ""
+
+                : <div className={styles.deleteSection} style={{ cursor: "pointer", marginLeft: "15px" }}>
+                  <div
+                    className={styles.deleteButton}
+                    onClick={handleAssignPopUp}
+                  >
+                    <img src="/svg/delete-icon.svg" alt="delete" />
+
+                  </div>
+                </div>}
+            </div>
+            : ""}
+
+
+
+
+
+
+          {/* assign no pop ups */}
+
+          <ConfirmModal show={assignPopUp} onClose={() => setAssignPopUp(false)}
+            title={
+              agentData?.subscription?.status === "canceled" || agentData?.subscription?.status === "cancel_scheduled"
+                ? "Confirm Resume"
+                : "Confirm Deletion"
+            }
+            message={
+              agentData?.subscription?.status === "canceled" || agentData?.subscription?.status === "cancel_scheduled"
+                ? `You are about to resume this assigned number. Once resumed, it will be reactivated and linked services will start working again. 
+
+Do you want to proceed with resuming this assigned number?`
+                : `You are about to delete this assigned number. Once deleted, it will no longer be available for use, and any features or services linked to it may stop working. This action is permanent and cannot be undone.
+
+Do you want to proceed with deleting this assigned number?`
+            }
+            type="warning"
+            confirmText={
+              disableLoading
+                ? agentData?.subscription?.status === "canceled" || agentData?.subscription?.status === "cancel_scheduled"
+                  ? "Resuming..."
+                  : "Deleting..."
+                : agentData?.subscription?.status === "canceled" || agentData?.subscription?.status === "cancel_scheduled"
+                  ? "Yes, Resume"
+                  : "Yes, Delete"
+            }
+            cancelText="Cancel"
+            showCancel={true}
+            isLoading={disableLoading}
+            onConfirm={handleSamanPtra}
+          />
+          {/*  */}
 
           <div className={styles.container}>
             <div className={styles.businessInfo}>
@@ -931,7 +1296,7 @@ const AgentDashboard = () => {
                         );
                       if (agentData?.business?.webUrl) {
                         // const url = filteredUrls[filteredUrls.length - 1]?.url;
-                        const url=agentData?.business?.webUrl
+                        const url = agentData?.business?.webUrl
                         return (
                           <a
                             href={url}
@@ -1386,17 +1751,18 @@ const AgentDashboard = () => {
               <div
                 className={styles.managementItem}
                 onClick={() => {
-                    if (agentStatus === true) {
+                  if (agentStatus === true) {
                     handleInactiveAgentAlert();
                   } else {
-                  navigate("/add-file", {
-                    state: {
-                      agent_id: agentData?.agent?.agent_id,
-                      knowledgeBaseId: agentData?.agent?.knowledgeBaseId,
-                    },
-                  });
-                }}
-              }
+                    navigate("/add-file", {
+                      state: {
+                        agent_id: agentData?.agent?.agent_id,
+                        knowledgeBaseId: agentData?.agent?.knowledgeBaseId,
+                      },
+                    });
+                  }
+                }
+                }
               >
                 <div className={styles.SvgDesign}>
                   <svg

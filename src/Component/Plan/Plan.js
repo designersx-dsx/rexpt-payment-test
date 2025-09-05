@@ -28,13 +28,13 @@ const Planss = () => {
     const [userCurrency, setUserCurrency] = useState("usd");
     const [agentCount, setAgentCount] = useState()
     const [expanded, setExpanded] = useState(false);
-    
+
     const [expandedz, setExpandedz] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [freeTrial, setFreeTrial] = useState(false);
     const token = localStorage.getItem("token") || "";
     const decodeTokenData = decodeToken(token);
-    console.log({decodeTokenData})
+    console.log({ decodeTokenData })
     const userIdFromToken = decodeTokenData?.id || "";
     const [userId, setUserId] = useState(userIdFromToken)
     const navigate = useNavigate();
@@ -46,10 +46,10 @@ const Planss = () => {
     const [renderHTML, setRenderHTML] = useState(false); // NEW
 
     const [currencyLoaded, setCurrencyLoaded] = useState(false);
-const [hasCustomPlan  , setHasCustomPlan] = useState()
+    const [hasCustomPlan, setHasCustomPlan] = useState()
     const [activeCount, setactiveCount] = useState(null)
     const [PaygSubscriptionId, setPaygSubscriptionId] = useState(null)
-     const [value, setValue] = useState(0);
+    const [value, setValue] = useState(0);
     // console.log("activeCount", activeCount)
     // console.log("PaygSubscriptionId", PaygSubscriptionId)
 
@@ -57,7 +57,7 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
 
     let subscriptionID = location?.state?.subscriptionID
     let locationPath = location?.state?.locationPath
-    console.log({locationPath})
+    console.log({ locationPath })
     let agentPlan = location?.state?.planName
     let interval = location?.state?.interval
 
@@ -91,8 +91,8 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
     ];
 
 
-    const [freeTrailz , setFreeTrialz] = useState(false)
-    const [modalOpenz,setIsModalOpenz]= useState(false)
+    const [freeTrailz, setFreeTrialz] = useState(false)
+    const [modalOpenz, setIsModalOpenz] = useState(false)
     const handleClick2 = () => {
         setFreeTrialz(!freeTrailz);
         setIsModalOpenz(true);
@@ -109,11 +109,11 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
         'User Management',
     ];
     const visibleFeatures = expanded ? features : features.slice(0, 5);
-     const visibleFeatures2 = expandedz ? features2 : features2.slice(0, 5);
+    const visibleFeatures2 = expandedz ? features2 : features2.slice(0, 5);
     const handleToggle = () => {
         setExpanded((prev) => !prev);
     };
-        const handleToggle2 = () => {
+    const handleToggle2 = () => {
         setExpandedz((prev) => !prev);
     };
     const settings = {
@@ -199,9 +199,9 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
             try {
                 // const response = await fetch("https://ipwho.is/");
                 const response = await axios.get('https://ipinfo.io/json');
-                const data = await response?.data                ;
+                const data = await response?.data;
 
-                if ( data.country) {
+                if (data.country) {
                     const currency = mapCountryToCurrency(data.country);
                     setUserCurrency(currency);
                 } else {
@@ -234,12 +234,13 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
         if (!userCurrency || !currencyLoaded) return;
         setLoading(true);
 
-        fetch(`${API_BASE}/products` , {
+        fetch(`${API_BASE}/products`, {
 
-              headers: {
+            headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
-              }}
+            }
+        }
         )
             .then((res) => res.json())
             .then((data) => {
@@ -416,7 +417,7 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
                         method: 'POST',
                         headers: {
                             'Cotnent-Type': 'application/json',
-                              Authorization: `Bearer ${token}`,
+                            Authorization: `Bearer ${token}`,
                         },
                         body: JSON.stringify({ subscriptionId: PaygSubscriptionId }),
                     });
@@ -444,7 +445,7 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
 
 
 
-                
+
                 status: status,
             };
 
@@ -494,7 +495,7 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify(requestData)
                 });
@@ -560,7 +561,7 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                     Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ agentId, customerId: cusotmerId }) // Pass the agentId to the API
             });
@@ -601,36 +602,36 @@ const [hasCustomPlan  , setHasCustomPlan] = useState()
 
 
     // tier custom plan 
-    
-    const checkCustom =async()=>{
-           let res = await customPlanCheck(decodeTokenData?.id)
-    // console.log(res?.data?.hasCustomPlan)
-    setHasCustomPlan(res?.data?.hasCustomPlan)
-    } 
-    useEffect(()=>{
-      checkCustom()  
-    },[])
 
-const tierCheckout = async () => {
-  try {
-    const res = await axios.post(`${API_BASE}/tier/checkout`, {
-      customerId: decodeTokenData?.customerId
-,
-      presetUnits: value,
-      minUnits: 0,
-      maxUnits: 200,
-      successUrl: window.location.origin + `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`, // origin + path
-      cancelUrl: window.location.origin + "/cancel" , 
-      userId : decodeTokenData?.id
-    });
-
-    if (res?.data?.url) {
-      window.location.href = res.data.url; // redirect user
+    const checkCustom = async () => {
+        let res = await customPlanCheck(decodeTokenData?.id)
+        // console.log(res?.data?.hasCustomPlan)
+        setHasCustomPlan(res?.data?.hasCustomPlan)
     }
-  } catch (error) {
-    console.error("Checkout error:", error);
-  }
-};
+    useEffect(() => {
+        checkCustom()
+    }, [])
+
+    const tierCheckout = async () => {
+        try {
+            const res = await axios.post(`${API_BASE}/tier/checkout`, {
+                customerId: decodeTokenData?.customerId
+                ,
+                presetUnits: value,
+                minUnits: 0,
+                maxUnits: 200,
+                successUrl: window.location.origin + `/thankyou/update?agentId=${agentID}&userId=${decodeTokenData?.id}`, // origin + path
+                cancelUrl: window.location.origin + "/cancel",
+                userId: decodeTokenData?.id
+            });
+
+            if (res?.data?.url) {
+                window.location.href = res.data.url; // redirect user
+            }
+        } catch (error) {
+            console.error("Checkout error:", error);
+        }
+    };
 
 
     // 
@@ -656,6 +657,18 @@ const tierCheckout = async () => {
     if (error) return <p className={styles.statusError}>{error}</p>;
 
 
+    const handleBuyPlan = (productId) => {
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    type: "BUY",
+                    productId: productId,
+                })
+            );
+        } else {
+            console.warn("ReactNativeWebView not available — running in browser?");
+        }
+    };
 
 
 
@@ -688,7 +701,7 @@ const tierCheckout = async () => {
                         )}
                     </span>
                 </label> : null}
-{/* {!hasCustomPlan  ?
+                {/* {!hasCustomPlan  ?
  <label className={styles.freeTrialBtn} onChange={handleClick2}>
                     Custom Plan
                     <input
@@ -699,7 +712,7 @@ const tierCheckout = async () => {
                     </label>
 : null} */}
 
-               
+
 
                 {/* Show Payg toggle button */}
                 {/* {(subscriptionID || isPayg === "true") && (
@@ -932,7 +945,7 @@ const tierCheckout = async () => {
                                                 if (priceForInterval) {
                                                     // console.log("plan", plan)
                                                     sessionStorage.setItem("selectedPlan", plan?.name)
-
+                                                    handleBuyPlan(priceForInterval.id)
                                                     if (agentID) {
                                                         navigate(`/checkout`, { state: { priceId: priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
                                                     }
@@ -1016,7 +1029,7 @@ const tierCheckout = async () => {
                         <p>No Cost to Try Our Agents</p>
                         <text>Explore our agents and viability for your business at <b className={styles.boldText}>“NO COST”.</b></text>
                     </div>
-                      <div className={styles.featureList}>
+                    <div className={styles.featureList}>
                         <div className={styles.listdata}>
                             {visibleFeatures.map((text, index) => {
                                 const isNegative = text.toLowerCase().includes('no');
@@ -1152,15 +1165,15 @@ const tierCheckout = async () => {
 
 
 
-            
-             <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
+
+            <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
                         <h1>FREE TRIAL</h1>
                         <p>No Cost to Try Our Agents</p>
                         <text>Explore our agents and viability for your business at <b className={styles.boldText}>“NO COST”.</b></text>
                     </div>
-                      <div className={styles.featureList}>
+                    <div className={styles.featureList}>
                         <div className={styles.listdata}>
                             {visibleFeatures2.map((text, index) => {
                                 const isNegative = text.toLowerCase().includes('no');
@@ -1180,39 +1193,39 @@ const tierCheckout = async () => {
                             ~ {expandedz ? 'Hide Features' : 'See All Features'}
                         </p>
                         <div style={{ padding: "20px" }}>
-      <label>
-        Value: <strong>{value}</strong>
-      </label>
-      <br />
-      <input
-        type="range"
-        min="0"
-        max="200"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </div>
-                     
+                            <label>
+                                Value: <strong>{value}</strong>
+                            </label>
+                            <br />
+                            <input
+                                type="range"
+                                min="0"
+                                max="200"
+                                value={value}
+                                onChange={(e) => setValue(e.target.value)}
+                            />
+                        </div>
+
                         <AnimatedButton label='Subscribe' position={{ position: "relative" }}
-                            onClick={()=>{
-                                if(locationPath ==="/dashboard"){
- 
-                                       tierCheckout()
+                            onClick={() => {
+                                if (locationPath === "/dashboard") {
+
+                                    tierCheckout()
                                 }
-                                else{
-                                    navigate('/steps' , {
-                                    state: {
-                                        plan : "tierPlan" ,
-                                        value : value
-                                    }
-                                })
+                                else {
+                                    navigate('/steps', {
+                                        state: {
+                                            plan: "tierPlan",
+                                            value: value
+                                        }
+                                    })
                                 }
-                               
+
                             }}
                         />
 
                     </div>
-                
+
 
                 </div>
 

@@ -12,6 +12,7 @@
   z-index: 1000;
 }
 
+
 /* Modal container */
 .modalContainer {
   background-color: #fff;
@@ -789,6 +790,9 @@
   justify-content: center;
   align-items: center;
 }
+.SvgDesign:hover{
+  cursor: pointer;
+}
 
 .buttons {
   display: flex;
@@ -1061,4 +1065,23 @@
 
 .hello:hover {
   background-color: #4c1d9a;
+}
+
+.toggleContainer1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Ensure vertical centering */
+    width: 90%;
+    max-width: 100%; /* Ensure it doesn't exceed the parent width */
+}
+
+.infoSection {
+  padding: 20px;
+  margin: 20px 10px;
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 4px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+  /* z-index: 0; */
+  position: relative;
+  display: flex;
 }
