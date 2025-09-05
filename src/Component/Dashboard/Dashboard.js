@@ -3099,14 +3099,14 @@ function Dashboard() {
                             <div className={styles.subscribeDiv}>
                               {daysRemaining > -30 && (
                                 <>
-                                  <button className={styles.subCribeBtn}
+                                  {/* <button className={styles.subCribeBtn}
                                     onClick={(e) => {
                                       e.stopPropagation(); // parent div click prevent
                                       handlePaymentAssignNumber(agent.agent_id);
                                     }}
                                   >
                                     SUBSCRIBE
-                                  </button>
+                                  </button> */}
                                   <ConfirmModal
                                     show={showInActive}
                                     onClose={() => setShowInActive(false)}
@@ -3133,7 +3133,7 @@ function Dashboard() {
                                 ) : (
                                   <div onClick={(e) => {
                                     e.stopPropagation();
-                                    handleInactivePopUp()
+                                  
 
                                   }}>
                                     {/* Inactive{" "} */}
