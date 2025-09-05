@@ -428,13 +428,13 @@ const EditProfile = () => {
 
 
   const handlePaygToggle = async () => {
-    // if (subscriptionDetails.invoices.length === 0) {
-    //   setRedirectButton(true)
-    //   setShowPopup(true);
-    //   setPopupType("failed");
-    //   setPopupMessage("To enable Pay As You Go, please ensure you have an active subscription.");
-    //   return
-    // }
+    if (subscriptionDetails.invoices.length === 0) {
+      setRedirectButton(true)
+      setShowPopup(true);
+      setPopupType("failed");
+      setPopupMessage("To enable Pay As You Go, please ensure you have an active subscription.");
+      return
+    }
 
 
     const isCurrentlyEnabled = paygEnabled;

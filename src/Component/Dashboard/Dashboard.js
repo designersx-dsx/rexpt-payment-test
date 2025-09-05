@@ -92,6 +92,7 @@ function Dashboard() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [openCallModal, setOpenCallModal] = useState(false);
   const [agentDetails, setAgentDetails] = useState(null);
+  // console.log("agentDetails",agentDetails)
   const [openWidgetModal, setOpenWidgetModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -176,6 +177,7 @@ function Dashboard() {
   const dropdownRefs = useRef({});
   // >>>>>>> live_copy
   const location = useLocation();
+
 
   const [pendingUpgradeAgent, setPendingUpgradeAgent] = useState(null);
   const [showUpgradeConfirmModal, setShowUpgradeConfirmModal] = useState(false);
@@ -580,7 +582,7 @@ function Dashboard() {
     setAgentDetails(agent);
     e.stopPropagation();
     const isValid = await handleAssignNumberValidtyCheck(agent.agent_id);
-    console.log("isValid", isValid)
+    // console.log("isValid", isValid)
     if (agent?.isDeactivated === 1) {
       handleInactiveAgentAlert();
       return;
@@ -593,11 +595,13 @@ function Dashboard() {
     else if (isValid.success === true && assignNumberPaid === false) {
       // alert("Your Assign Number for 1 mpnth is expired now charge again");
       // return
-      openAssignNumberModal();
+      // openAssignNumberModal();
+      setShowUpgradeConfirmModal(true)
       return
     }
     else if (isValid.isAssignFreeDone === 1 && isValid.success === false) {
-      openAssignNumberModal();
+      // openAssignNumberModal();
+      setShowUpgradeConfirmModal(true)
       return
     }
 
@@ -605,6 +609,7 @@ function Dashboard() {
     // const planName = agent?.subscription?.plan_name || "Free";
     // if (planName.toLowerCase() === "free" && !assignNumberPaid) {
     //   openAssignNumberModal();
+    //   // setShowUpgradeConfirmModal(true)
     // } else {
     //   navigate("/assign-number", {
     //     state: { agent: agent },
@@ -2487,6 +2492,7 @@ function Dashboard() {
       return false;
     }
   };
+  const currentPlan1 = pendingUpgradeAgent?.agentPlan ?? agentDetails?.agentPlan; // fallback
 
 
   return (
@@ -2912,7 +2918,7 @@ function Dashboard() {
                           : "Deactivate Agent"}
                       </div>
 
-                      {/* {((agent?.subscription &&
+                      {((agent?.subscription &&
                         agent?.subscription?.plan_name?.toLowerCase() !==
                         "free") || assignNumberPaid && agent?.isDeactivated === 0
                       ) && (
@@ -2952,63 +2958,10 @@ function Dashboard() {
                               </div>
                             </div>
                           </>
-                        )} */}
-
-
-                      {agent?.isDeactivated === 0 && (
-                        <>
-                          {/* Case 1: Non-free plan */}
-                          {agent && (() => {
-                            const plan = agent?.agentPlan;
-
-                            // ❌ hide if free + not paid
-                            if ((plan === "free" || plan === "Pay-As-You-Go") && assignNumberPaid) {
-                              return false;
-                            }
-
-                            // ✅ show in all other cases
-                            return true;
-                          })() && (
-                              <div>
-                                <div
-                                  className={styles.OptionItem}
-                                  onMouseDown={(e) => {
-                                    e.stopPropagation();
-                                    setAgentToCancel(agent);
-                                    setShowCancelConfirm(true);
-                                  }}
-                                >
-                                  Cancel Subscription
-                                </div>
-                                {/* Case 2: PAYG toggle (show always for paid, and as "Activate" for free) */}
-
-                              </div>
-
-                            )}
-                          <div>
-                            <div
-                              onMouseDown={(e) => {
-                                setshowPaygConfirm(true);
-                                setagentToPaygActivate(agent);
-                                setpaygEnabledPopup(
-                                  checkPaygStatus === null || checkPaygStatus === 0 ? true : false
-                                );
-                              }}
-                              className={styles.OptionItem}
-                            >
-                              {paygStatusLoading
-                                ? "Loading.."
-                                : isPaygActive
-                                  ? "Deactivate Pay as you go"
-                                  : "Activate Pay as you go"}
-                            </div>
-                          </div>
-
-
-                        </>
-                      )}
+                        )}
 
                     </div>
+                    
                   </div>
                 </div>
               </div>
@@ -4100,9 +4053,13 @@ function Dashboard() {
         show={showUpgradeConfirmModal}
         onClose={() => setShowUpgradeConfirmModal(false)}
         title="Upgrade Plan?"
-        message={pendingUpgradeAgent?.agentPlan === "Pay-As-You-Go" ? "Your current Pay-As-You-Go plan will be upgraded to a Paid plan, giving you more benefits and features." :
-          "You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."}
-        type="info"
+        message={
+  currentPlan1 === "Pay-As-You-Go"
+    ? "Your current Pay-As-You-Go plan will be upgraded to a Paid plan, giving you more benefits and features."
+    : currentPlan1 === "free"
+    ? "You're about to upgrade this Free plan to a Paid plan. Once upgraded, you'll unlock premium features and additional benefits."
+    : "You're about to upgrade this agent's plan. Your remaining minutes will be added on top of the new plan’s minutes."
+}type="info"
         confirmText={upgradeLoading ? "Redirecting..." : "Yes, Upgrade"}
         cancelText="Cancel"
         showCancel={true}

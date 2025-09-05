@@ -80,7 +80,7 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
-  console.log("agentData", agentData)
+  // console.log("agentData", agentData)
   const [isModalOpen, setModalOpen] = useState();
   const [openCard, setOpenCard] = useState(null);
   const { setHasFetched } = useDashboardStore();
@@ -844,7 +844,7 @@ const AgentDashboard = () => {
           console.log("Assign Number Subscription Resume successfully");
           setHasFetched(false)
           setRefresh(prev => !prev)
-          
+
           // setShowPopup(true);
 
           setPopupMessage("Assign Number Subscription Resume successfully");
@@ -1075,7 +1075,7 @@ const AgentDashboard = () => {
                     <hr className={styles.agentLine}></hr>
 
                     <div className={styles.agentDetailsFlex}>
-                      {/* {assignedNumbers?.length > 0 ? (
+                     {assignedNumbers?.length > 0 ? (
                         <>
                           <div className={styles.AssignNumText}>
                             Phone Number
@@ -1105,35 +1105,35 @@ const AgentDashboard = () => {
                         >
                           <img src="/svg/assign-number.svg" />
                         </div>
+                      )} 
+                      {/* {!(agentData?.agent?.agentPlan === "free" && !agentData?.agent?.subscriptionId) && (
+                        <>
+                          {assignedNumbers?.length > 0 ? (
+                            <div className={styles.AssignNumText}>
+                              Phone Number
+                              <p>
+                                {assignedNumbers?.map(formatE164USNumber).join(", ")}
+                              </p>
+                            </div>
+                          ) : (
+                            <div
+                              className={styles.AssignNum}
+                              onClick={(e) => {
+                                if (agentStatus === true) {
+                                  handleInactiveAgentAlert();
+                                } else {
+                                  handleAssignNumberClick(agentData?.agent, e, agentData?.business);
+                                }
+                              }}
+                            >
+                              <img src="/svg/assign-number.svg" alt="assign" />
+                            </div>
+                          )}
+                        </>
                       )} */}
-                      {!(agentData?.agent?.agentPlan === "free" && !agentData?.agent?.subscriptionId) && (
-  <>
-    {assignedNumbers?.length > 0 ? (
-      <div className={styles.AssignNumText}>
-        Phone Number
-        <p>
-          {assignedNumbers?.map(formatE164USNumber).join(", ")}
-        </p>
-      </div>
-    ) : (
-      <div
-        className={styles.AssignNum}
-        onClick={(e) => {
-          if (agentStatus === true) {
-            handleInactiveAgentAlert();
-          } else {
-            handleAssignNumberClick(agentData?.agent, e, agentData?.business);
-          }
-        }}
-      >
-        <img src="/svg/assign-number.svg" alt="assign" />
-      </div>
-    )}
-  </>
-)}
- 
 
-                      <p className={styles.agentDetails} style={{textAlign:"left"}}>
+
+                      <p className={styles.agentDetails} >
                         Agent Code{" "}
                         <strong>{agentData?.agent?.agentCode || "NA"}</strong>
                       </p>
@@ -1144,105 +1144,6 @@ const AgentDashboard = () => {
               </div>
             </section>
           </div>
-          {assignedNumbers?.length > 0 ?
-            <div className={`${styles.infoSection}`}>
-              <div className={styles.toggleContainer1}>
-                {assignedNumbers?.length > 0 ? (
-                  <>
-                    <div className={styles.AssignNumText}>
-                      Phone Number
-                      <p>
-                        {assignedNumbers
-                          ?.map(formatE164USNumber)
-                          .join(", ")}
-                      </p>
-                      {agentData.agent?.agentPlan === "free" && !agentData.agent?.subscriptionId && agentData.agent?.voip_numbers_created ? (() => {
-                        const created = new Date(agentData.agent.voip_numbers_created);
-                        const today = new Date();
-
-                        // normalize to date-only
-                        const createdDateOnly = new Date(created.getFullYear(), created.getMonth(), created.getDate());
-                        const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-                        // expiry = created + 15 days
-                        const expiry = new Date(createdDateOnly);
-                        expiry.setDate(expiry.getDate() + 14);
-
-                        const msPerDay = 1000 * 60 * 60 * 24;
-                        const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
-
-                        if (daysRemaining > 0) {
-                          return <span className={styles.daysRemain}>{daysRemaining} days remaining</span>;
-                        }
-                        return null; // show nothing if expired
-                      })() : ""}
-                    </div>
-                    {/* <div>Free Assign Number</div> */}
-                  </>
-                ) : (
-                  <div
-                    className={styles.AssignNum}
-                    onClick={(e) => {
-                      if (agentStatus === true) {
-                        handleInactiveAgentAlert();
-                      } else {
-                        // setIsAssignModalOpen(true)
-                        // setIsAssignNumberModalOpen(true);
-                        handleAssignNumberClick(
-                          agentData?.agent,
-                          e,
-                          agentData?.business
-                        );
-                      }
-                    }}
-                  >
-                    <img src="/svg/assign-number.svg" />
-                  </div>
-                )}
-              </div>
-
-              {/* <div className={styles.SvgDesign} onClick={handleAssignPopUp}>
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M20.0001 3.90244L16.0977 0L13.3936 2.70407L17.296 6.60651L20.0001 3.90244Z"
-                    fill="#6524EB"
-                  />
-                  <path
-                    d="M4 16L8.2927 15.6098L15.6797 8.22279L11.7772 4.32031L4.39024 11.7073L4 16Z"
-                    fill="#6524EB"
-                  />
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M13 20H0V18H13V20Z"
-                    fill="#6524EB"
-                  />
-                </svg>
-              </div> */}
-              {agentData?.agent?.agentPlan === "free" && agentData?.subscription != null && (
-                <div
-                  className={styles.deleteSection}
-                  style={{ cursor: "pointer", marginLeft: "15px" }}
-                >
-                  <div className={styles.deleteButton} onClick={handleAssignPopUp}>
-                    <img src="/svg/delete-icon.svg" alt="delete" />
-                  </div>
-                </div>
-              )}
-
-            </div>
-            : ""}
-
-
-
-
-
 
           {/* assign no pop ups */}
 
