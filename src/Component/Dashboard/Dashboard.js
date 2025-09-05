@@ -2946,7 +2946,7 @@ const [showInActive , setShowInActive] = useState(false)
                             const plan = agent?.agentPlan;
 
                             // ❌ hide if free + not paid
-                            if ((plan === "free" || plan === "Pay-As-You-Go") && !assignNumberPaid) {
+                            if ((plan === "free" || plan === "Pay-As-You-Go") && assignNumberPaid) {
                               return false;
                             }
 
