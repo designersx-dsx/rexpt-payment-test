@@ -351,7 +351,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 })
             );
         } else {
-            console.warn("ReactNativeWebView not available — running in browser?");
+            console.warn("ReactNativeWebView not available — running in browser");
         }
     };
 

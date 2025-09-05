@@ -613,7 +613,7 @@ const Planss = () => {
                 })
             );
         } else {
-            console.warn("ReactNativeWebView not available — running in browser?");
+            console.warn("ReactNativeWebView not available — running in browser");
         }
     };
 
