@@ -207,7 +207,7 @@ function Dashboard() {
   const notifications = useNotificationStore((state) => state.notifications);
   const unreadCount = notifications.filter((n) => n.status === "unread").length;
   const [redirectButton, setredirectButton] = useState(false);
-
+const [disableLoading , setDisableLoading] = useState(false)
 
   const [showDashboardTour, setShowDashboardTour] = useState(false);
   const [tourStatusLoaded, setTourStatusLoaded] = useState(false);
@@ -265,7 +265,7 @@ function Dashboard() {
       cancelled = true;
     };
   }, [userId]);
-  
+
 
   const introRef = useRef(null);
   const tourStartLockRef = useRef(false);
@@ -887,6 +887,10 @@ function Dashboard() {
       console.error("Error fetching dashboard data or Cal API keys:", error);
     }
   };
+const [showInActive , setShowInActive] = useState(false)
+  const handleInactivePopUp =()=>{
+    setShowInActive(true)
+  }
   useEffect(() => {
     if (!hasFetched || !agents.length) {
       fetchAndMergeCalApiKeys();
@@ -2012,31 +2016,36 @@ function Dashboard() {
   };
 
 
-const handlePaymentAssignNumber = async(agentId)=>{
-  try {
-      let res = await axios.post(`${API_BASE_URL}/pay-as-you-go-checkout` , {
-    agentId : agentId, 
-    customerId : "cus_SyjFq2bKVWyr3M" , 
-    userId : "RX86KS1756787104" , 
-    url : "http://localhost:3000/dashboard" , 
-    cancelUrl: "http://localhost/phpmyadmin/index.php?route=/sql&db=rexpt&table=agentdetails&pos=0" , 
-    isAssignNumber : true
-  })
-    if (res?.data?.checkoutUrl) {
-      console.log("Redirecting to:", res.data.checkoutUrl);
-      window.location.href = res.data.checkoutUrl; // 👈 redirect karega
-    } else {
-      console.error("Checkout URL not found in response:", res.data);
+  const handlePaymentAssignNumber = async (agentId) => {
+    try {
+      setDisableLoading(true)
+      const baseUrl = window.location.origin;
+      let res = await axios.post(`${API_BASE_URL}/pay-as-you-go-checkout`, {
+        agentId: agentId,
+        customerId: "cus_SyjFq2bKVWyr3M",
+        userId: "RX86KS1756787104",
+        url:`${baseUrl}/dashboard`,
+        cancelUrl: `${baseUrl}/cancel`,
+        isAssignNumber: true
+      })
+      if (res?.data?.checkoutUrl) {
+        console.log("Redirecting to:", res.data.checkoutUrl);
+        window.location.href = res.data.checkoutUrl; // 👈 redirect karega
+      } else {
+        console.error("Checkout URL not found in response:", res.data);
+      }
+    } catch (error) {
+      console.log({ error });
+
+
     }
-  } catch (error) {
-    console.log({error});
-    
-    
+    finally{
+      setDisableLoading(false)
+    }
+
+
+
   }
-
-
-  
-}
 
 
   // const handleUpgradeClick = (agent) => {
@@ -2956,28 +2965,28 @@ const handlePaymentAssignNumber = async(agentId)=>{
                                   Cancel Subscription
                                 </div>
                                 {/* Case 2: PAYG toggle (show always for paid, and as "Activate" for free) */}
-                                
+
                               </div>
 
                             )}
-                            <div>
-                                  <div
-                                    onMouseDown={(e) => {
-                                      setshowPaygConfirm(true);
-                                      setagentToPaygActivate(agent);
-                                      setpaygEnabledPopup(
-                                        checkPaygStatus === null || checkPaygStatus === 0 ? true : false
-                                      );
-                                    }}
-                                    className={styles.OptionItem}
-                                  >
-                                    {paygStatusLoading
-                                      ? "Loading.."
-                                      : isPaygActive
-                                        ? "Deactivate Pay as you go"
-                                        : "Activate Pay as you go"}
-                                  </div>
-                                </div>
+                          <div>
+                            <div
+                              onMouseDown={(e) => {
+                                setshowPaygConfirm(true);
+                                setagentToPaygActivate(agent);
+                                setpaygEnabledPopup(
+                                  checkPaygStatus === null || checkPaygStatus === 0 ? true : false
+                                );
+                              }}
+                              className={styles.OptionItem}
+                            >
+                              {paygStatusLoading
+                                ? "Loading.."
+                                : isPaygActive
+                                  ? "Deactivate Pay as you go"
+                                  : "Activate Pay as you go"}
+                            </div>
+                          </div>
 
 
                         </>
@@ -3053,28 +3062,88 @@ const handlePaymentAssignNumber = async(agentId)=>{
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
                       {assignedNumbers.map(formatE164USNumber).join(", ")}
                     </p>
-                    {agent?.agentPlan === "free" && !agent?.subscriptionId && agent?.voip_numbers_created ? (() => {
-                      const created = new Date(agent.voip_numbers_created);
-                      const today = new Date();
+                    {agent?.agentPlan === "free" && !agent?.subscriptionId && agent?.voip_numbers_created ? (
+                      (() => {
+                        const created = new Date(agent.voip_numbers_created);
+                        const today = new Date();
 
-                      // normalize to date-only
-                      const createdDateOnly = new Date(created.getFullYear(), created.getMonth(), created.getDate());
-                      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                        // normalize to date-only
+                        const createdDateOnly = new Date(created.getFullYear(), created.getMonth(), created.getDate());
+                        const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-                      // expiry = created + 15 days
-                      const expiry = new Date(createdDateOnly);
-                      expiry.setDate(expiry.getDate() + 15);
+                        // expiry = created + 15 days
+                        const expiry = new Date(createdDateOnly);
+                        expiry.setDate(expiry.getDate() + 15);
 
-                      const msPerDay = 1000 * 60 * 60 * 24;
-                      const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
+                        const msPerDay = 1000 * 60 * 60 * 24;
+                        const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
 
-                      if (daysRemaining > 0) {
-                        return <span className={styles.daysRemain}>{daysRemaining} days remaining   </span>;
+                        return (
+                          <>
+                            <div className={styles.subscribeDiv}>
+                              {daysRemaining > -30 && (
+                                <>
+                                <button className={styles.subCribeBtn}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // parent div click prevent
+                                    handlePaymentAssignNumber(agent.agent_id);
+                                  }}
+                                >
+                                  SUBSCRIBE
+                                </button>
+                                   <ConfirmModal
+ show={showInActive}
+        onClose={() =>setShowInActive(false)}
+        title="Free Trial Expired"
+        message="Your free trial for the assigned number has ended. To continue using this feature and keep your number active, you’ll need to subscribe to one of our available plans. Without a subscription, the assigned number will remain inactive, and related services may not work as expected."
+        type="warning"
+           confirmText={disableLoading ? "Loading..." : "Subscribe"}
+        cancelText="Cancel"
+        showCancel={true}
+        isLoading={disableLoading}
+        onConfirm={()=>handlePaymentAssignNumber(agent.agent_id)}
+
+/>
+                                </>
+                              )}
+                              {/* Days Remaining dikhao jab > 0 */}
+                              <span
+                                className={
+                                  daysRemaining > 0 ? styles.daysRemainActive : styles.daysRemainInactive
+                                }
+                              >
+                                {daysRemaining > 0 ? (
+                                  `${daysRemaining} days remaining`
+                                ) : (
+                                  <div onClick={(e)=>{
+                                    e.stopPropagation();
+                                    handleInactivePopUp()
+
+                                    }}>
+                                    {/* Inactive{" "} */}
+                                    <svg width="24" height="24" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <g clip-path="url(#clip0_656_992)">
+                                        <path className={styles.exclamMark} d="M25 0C11.1667 0 0 11.1667 0 25C0 38.8333 11.1667 50 25 50C38.8333 50 50 38.8333 50 25C50 11.1667 38.8333 0 25 0ZM24.7778 6C27 5.88889 28.8333 7.61111 28.9444 9.77778C28.9444 9.88889 28.9444 10.0556 28.9444 10.1667L28 29.2222C27.9444 30.8889 26.5 32.2222 24.7778 32.1111C23.2222 32.0556 21.9444 30.7778 21.8889 29.2222L20.9444 10.1667C20.8889 8 22.6111 6.11111 24.7778 6ZM27.9444 42.7778C27.1667 43.5556 26.1111 44 25 44C23.8889 44 22.8333 43.5556 22.0556 42.7778C21.2778 42 20.8333 40.9444 20.8333 39.8333C20.8333 38.7222 21.2778 37.6667 22.0556 36.8889C22.8333 36.1111 23.8889 35.6667 25 35.6667C26.1111 35.6667 27.1667 36.1111 27.9444 36.8889C28.7222 37.6667 29.1667 38.7222 29.1667 39.8333C29.1667 40.9444 28.7222 42 27.9444 42.7778Z" fill="#EB0000" />
+                                      </g>
+                                      <defs>
+                                        <clipPath id="clip0_656_992">
+                                          <rect width="50" height="50" fill="white" />
+                                        </clipPath>
+                                      </defs>
+                                    </svg>
+                                  </div>
+                                )}
+                              </span>
 
 
-                      }
-                      return null; // show nothing if expired
-                    })() : ""}
+                              {/* Subscribe button dikhao jab daysRemaining > -30 */}
+                            </div>
+
+
+                          </>
+                        );
+                      })()
+                    ) : null}
 
                   </div>
                 ) : (
@@ -3840,6 +3909,9 @@ const handlePaymentAssignNumber = async(agentId)=>{
       )}
 
 
+
+
+
       {isUploadModalOpen && (
         <UploadProfile onClose={closeUploadModal} onUpload={handleUpload} />
       )}
@@ -4016,6 +4088,13 @@ const handlePaymentAssignNumber = async(agentId)=>{
         isLoading={upgradeLoading}
         onConfirm={handleUpgradePaygConfirmed}
       />
+
+
+
+
+
+
+
 
       <Popup
         type={popupType3}
