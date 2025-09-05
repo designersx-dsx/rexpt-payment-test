@@ -207,7 +207,7 @@ function Dashboard() {
   const notifications = useNotificationStore((state) => state.notifications);
   const unreadCount = notifications.filter((n) => n.status === "unread").length;
   const [redirectButton, setredirectButton] = useState(false);
-const [disableLoading , setDisableLoading] = useState(false)
+  const [disableLoading, setDisableLoading] = useState(false)
 
   const [showDashboardTour, setShowDashboardTour] = useState(false);
   const [tourStatusLoaded, setTourStatusLoaded] = useState(false);
@@ -887,8 +887,8 @@ const [disableLoading , setDisableLoading] = useState(false)
       console.error("Error fetching dashboard data or Cal API keys:", error);
     }
   };
-const [showInActive , setShowInActive] = useState(false)
-  const handleInactivePopUp =()=>{
+  const [showInActive, setShowInActive] = useState(false)
+  const handleInactivePopUp = () => {
     setShowInActive(true)
   }
   useEffect(() => {
@@ -2024,7 +2024,7 @@ const [showInActive , setShowInActive] = useState(false)
         agentId: agentId,
         customerId: decodeTokenData?.customerId,
         userId: decodeTokenData?.id,
-        url:`${baseUrl}/dashboard?AssignNumber=true`,
+        url: `${baseUrl}/dashboard?AssignNumber=true`,
         cancelUrl: `${baseUrl}/dashboard?AssignNumber=false`,
         isAssignNumber: true
       })
@@ -2039,7 +2039,7 @@ const [showInActive , setShowInActive] = useState(false)
 
 
     }
-    finally{
+    finally {
       setDisableLoading(false)
     }
 
@@ -3083,27 +3083,27 @@ const [showInActive , setShowInActive] = useState(false)
                             <div className={styles.subscribeDiv}>
                               {daysRemaining > -30 && (
                                 <>
-                                <button className={styles.subCribeBtn}
-                                  onClick={(e) => {
-                                    e.stopPropagation(); // parent div click prevent
-                                    handlePaymentAssignNumber(agent.agent_id);
-                                  }}
-                                >
-                                  SUBSCRIBE
-                                </button>
-                                   <ConfirmModal
- show={showInActive}
-        onClose={() =>setShowInActive(false)}
-        title="Free Trial Expired"
-        message="Your free trial for the assigned number has ended. To continue using this feature and keep your number active, you’ll need to subscribe to one of our available plans. Without a subscription, the assigned number will remain inactive, and related services may not work as expected."
-        type="warning"
-           confirmText={disableLoading ? "Loading..." : "Subscribe"}
-        cancelText="Cancel"
-        showCancel={true}
-        isLoading={disableLoading}
-        onConfirm={()=>handlePaymentAssignNumber(agent.agent_id)}
+                                  <button className={styles.subCribeBtn}
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // parent div click prevent
+                                      handlePaymentAssignNumber(agent.agent_id);
+                                    }}
+                                  >
+                                    SUBSCRIBE
+                                  </button>
+                                  <ConfirmModal
+                                    show={showInActive}
+                                    onClose={() => setShowInActive(false)}
+                                    title="Free Trial Expired"
+                                    message="Your free trial for the assigned number has ended. To continue using this feature and keep your number active, you’ll need to subscribe to one of our available plans. Without a subscription, the assigned number will remain inactive, and related services may not work as expected."
+                                    type="warning"
+                                    confirmText={disableLoading ? "Loading..." : "Subscribe"}
+                                    cancelText="Cancel"
+                                    showCancel={true}
+                                    isLoading={disableLoading}
+                                    onConfirm={() => handlePaymentAssignNumber(agent.agent_id)}
 
-/>
+                                  />
                                 </>
                               )}
                               {/* Days Remaining dikhao jab > 0 */}
@@ -3115,11 +3115,11 @@ const [showInActive , setShowInActive] = useState(false)
                                 {daysRemaining > 0 ? (
                                   `${daysRemaining} days remaining`
                                 ) : (
-                                  <div onClick={(e)=>{
+                                  <div onClick={(e) => {
                                     e.stopPropagation();
                                     handleInactivePopUp()
 
-                                    }}>
+                                  }}>
                                     {/* Inactive{" "} */}
                                     <svg width="24" height="24" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                                       <g clip-path="url(#clip0_656_992)">
