@@ -100,7 +100,7 @@ const SignUp = () => {
     setIsVerifyingOtp(true);
 
     try {
-      const response = await verifyEmailOTP(email, fullOtp, customerId);
+      const response = await verifyEmailOTP(email.toLowerCase(), fullOtp, customerId);
 
       if (response?.status === 200) {
         localStorage.setItem("token", response?.data.token);

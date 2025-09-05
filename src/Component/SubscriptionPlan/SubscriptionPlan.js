@@ -9,9 +9,10 @@ import HeaderBar from "../HeaderBar/HeaderBar";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader";
 import Loader2 from '../Loader2/Loader2';
-import { listAgents } from '../../Store/apiStore';
+import { customPlanCheck, listAgents } from '../../Store/apiStore';
 import decodeToken from '../../lib/decodeToken';
-import axios from 'axios';
+
+import axios from 'axios'
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
@@ -21,11 +22,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const [expandedPlans, setExpandedPlans] = useState({});
     const [expanded, setExpanded] = useState(false);
 
-
+ const [expandedCustom, setExpandedCustom] = useState(false);
     const [toggleStates, setToggleStates] = useState({}); // { planId: true/false }
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [freeTrial, setFreeTrial] = useState(false);
+    const [customPlan , setCustomPlan]  = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState("");
     const [userCurrency, setUserCurrency] = useState("usd");
@@ -33,7 +35,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const decodeTokenData = decodeToken(token);
     const userIdFromToken = decodeTokenData?.id || "";
     const [userId, setUserId] = useState(userIdFromToken)
-
+    const [hasCustomPlan  , setHasCustomPlan] = useState()
+ const [value, setValue] = useState(0);
     const [agentCount, setAgentCount] = useState()
 
 
@@ -42,6 +45,12 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     const handleClick = () => {
         setFreeTrial(!freeTrial);
         setIsModalOpen(true);
+    };
+    const [modalOpenCustom  , setIsModalOpenCustom] = useState(false)
+
+        const handleClickCustom = () => {
+        setCustomPlan(!customPlan);
+        setIsModalOpenCustom(true);
     };
     const settings = {
         infinite: false,
@@ -62,6 +71,15 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
             },
         ],
     };
+
+        const checkCustom =async()=>{
+           let res = await customPlanCheck(decodeTokenData?.id)
+    // console.log(res?.data?.hasCustomPlan)
+    setHasCustomPlan(res?.data?.hasCustomPlan)
+    } 
+    useEffect(()=>{
+      checkCustom()  
+    },[])
 
     const toggleExpand = (index) => {
         setExpandedPlans((prev) => ({
@@ -109,6 +127,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
+
 
                 IN: "inr",
 
@@ -312,6 +331,54 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         setExpanded((prev) => !prev);
     };
 
+        const featuresCustom = [
+        '20 minutes FREE Usage on Us',
+        'No VOIP Number',
+        'Agent Characterization',
+        'Starter Package Feature',
+        'No Call Recording',
+        'Priority Email Support',
+        'Analytics Dashboard',
+        'Custom Greeting Message',
+        'User Management',
+    ];
+    const visibleFeaturesCustom = expandedCustom ? featuresCustom : featuresCustom.slice(0, 5);
+
+    const handleToggleCustom = () => {
+        setExpandedCustom((prev) => !prev);
+    };
+ 
+    const tierCheckout = async () => {
+
+
+      try {
+        let url 
+           const queryParams = new URLSearchParams();
+             const origin = window.location.origin;
+      queryParams.append("mode", "create");
+      if (userId) queryParams.append("userId", userId);
+
+  
+      url = `${origin}/steps?${queryParams.toString()}`;
+        const res = await axios.post(`${API_BASE}/tier/checkout`, {
+          customerId: decodeTokenData?.customerId
+    ,
+          presetUnits: value,
+          minUnits: 0,
+          maxUnits: 200,
+          successUrl: url, // origin + path
+          cancelUrl: window.location.origin + "/cancel" , 
+          userId : userId
+        });
+    
+        if (res?.data?.url) {
+          window.location.href = res.data.url; // redirect user
+        }
+      } catch (error) {
+        console.error("Checkout error:", error);
+      }
+    };
+
     const formatPrice = (price) => {
         return new Intl.NumberFormat('en-IN').format(price);
     };
@@ -384,7 +451,42 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                     </span>
                 </label>
                     : null}
+{/* {!hasCustomPlan ? 
+
+ <label className={styles.freeTrialBtn} onClick={handleClickCustom}>
+                    Custom Plan
+                    <inputcustomPlan
+                        type="checkbox"
+                        checked={customPlan}
+                        onChange={() => setCustomPlan(!customPlan)}
+                    />
+                    <span className={`${styles.checkCircle} ${customPlan ? styles.checked : ""}`}>
+                        {customPlan && (
+                            <svg
+                                className={styles.checkIcon}
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="16"
+                                height="16"
+                            >
+                                <path
+                                    fill="white"
+                                    d="M20.3 5.7a1 1 0 0 0-1.4 0L9 15.6l-3.9-3.9a1 1 0 0 0-1.4 1.4l4.6 4.6a1 1 0 0 0 1.4 0l10.6-10.6a1 1 0 0 0 0-1.4z"
+                                />
+                            </svg>
+                        )}
+                    </span>
+                </label>
+: null} */}
+                    
             </div>
+
+
+
+              
+
+
+            
             <div>
                 <div className={styles.sectionPart}>
                     <h2>Subscriptions Plans </h2>
@@ -668,6 +770,62 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 </div>
 
             </FreeTrialModal>
+
+{/* Modal for custom plan  */}
+
+    <FreeTrialModal
+                isOpen={modalOpenCustom}
+                onClose={() => {
+                    setIsModalOpenCustom(false);
+                    setCustomPlan(false);
+                }}>
+                <div className={styles.freeTrialMain}>
+                    <div className={styles.Topsection}>
+                        <h1>FREE TRIAL</h1>
+                        <p>No Cost to Try Our Agents</p>
+                        <text>Explore our agents and viability for your business at <b className={styles.boldText}>“NO COST”.</b></text>
+                    </div>
+                     <input
+        type="range"
+        min="0"
+        max="200"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <label>
+        Value: <strong>{value}</strong>
+      </label>
+      <br />
+                    <div className={styles.featureList}>
+                        <div className={styles.listdata}>
+                            {visibleFeaturesCustom.map((text, index) => {
+                                const isNegative = text.toLowerCase().includes('no');
+                                return (
+                                    <div className={styles.liData} key={index}>
+                                        <img
+                                            src={isNegative ? '/svg/cross-svg.svg' : '/svg/tick-svg.svg'}
+                                            alt={isNegative ? 'cross icon' : 'tick icon'}
+                                        />
+                                        <p>{text}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <p className={styles.toggleText} onClick={handleToggleCustom}>
+                            ~ {expandedCustom ? 'Hide Features' : 'See All Features'}
+                        </p>
+
+                        <AnimatedButton onClick={tierCheckout} label='Subscribe' position={{ position: "relative" }} />
+
+
+                    </div>
+
+                </div>
+
+            </FreeTrialModal>
+
+            {/*  */}
 
             <div className={styles.ForSticky}>
                 <div className={styles.footerButtons}>
