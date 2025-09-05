@@ -32,6 +32,7 @@ import Modal3 from "../Modal3/Modal3";
 import { clearSessionAfterEdit } from "../../utils/helperFunctions";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { useNotificationStore } from "../../Store/notificationStore";
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -120,8 +121,9 @@ const AgentDashboard = () => {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
   const [agentCalApiKey, setAgentCalApiKey] = useState("");
+  const [ disableLoading , setDisableLoading ]  =useState(false)
   const notifications = useNotificationStore((state) => state.notifications);
-
+const [assignPopUp , setAssignPopUp] = useState(false)
   const unreadCount = notifications?.filter((n) => n?.status === 'unread').length;
   // console.log('unreadCount', unreadCount)
 
@@ -717,6 +719,21 @@ const AgentDashboard = () => {
       getAgentDetailsAndBookings();
     }
   }, [isRefreshing]);
+  const handleAssignPopUp = ()=>{
+
+   setAssignPopUp(true)
+
+  }
+
+
+
+  const mClose = ()=>{
+    setAssignPopUp(false)
+  }
+
+  const handleSamanPtra = ()=>{
+    setDisableLoading(true)
+  }
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -946,7 +963,7 @@ const AgentDashboard = () => {
               )}
             </div>
 
-            <div className={styles.SvgDesign}>
+            <div className={styles.SvgDesign} onClick={handleAssignPopUp}>
               <svg
                 width="20"
                 height="20"
@@ -971,6 +988,27 @@ const AgentDashboard = () => {
               </svg>
             </div>
           </div>
+
+
+
+
+
+
+
+          {/* assign no pop ups */}
+
+<ConfirmModal show={assignPopUp} onClose={()=>setAssignPopUp(false)} title="Confirm Deletion"
+  message="You are about to delete this assigned number. Once deleted, it will no longer be available for use, and any features or services linked to it may stop working. This action is permanent and cannot be undone.
+
+Do you want to proceed with deleting this assigned number?"
+  type="warning"
+       confirmText={disableLoading ? "Disabling..." : "Yes, Disable"}
+        cancelText="Cancel"
+        showCancel={true}
+        isLoading={disableLoading}
+        onConfirm={handleSamanPtra}
+/>
+          {/*  */}
 
           <div className={styles.container}>
             <div className={styles.businessInfo}>

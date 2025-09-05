@@ -163,7 +163,7 @@ function Dashboard() {
   const [assignNumberPaid, setAssignNumberPaid] = useState(false);
   // console.log("assignNumberPaid", assignNumberPaid)
   const openAssignNumberModal = () => setIsAssignNumberModalOpen(true);
-  // <<<<<<< dev_Shorya1
+  //dev_Shorya1
   const closeAssignNumberModal = () => {
     setIsAssignNumberModalOpen(false)
     setisAssignApi(false)
@@ -3069,14 +3069,7 @@ const handlePaymentAssignNumber = async(agentId)=>{
                       const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
 
                       if (daysRemaining > 0) {
-                        return <span className={styles.daysRemain}>{daysRemaining} days remaining   <button
-  onClick={(e) => {
-    e.stopPropagation(); // parent div ka onClick prevent karega
-    handlePaymentAssignNumber(agent.agent_id);
-  }}
->
-  SUBSCRIBE
-</button></span>;
+                        return <span className={styles.daysRemain}>{daysRemaining} days remaining   </span>;
 
 
                       }
