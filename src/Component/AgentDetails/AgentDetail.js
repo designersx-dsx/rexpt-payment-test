@@ -33,6 +33,7 @@ import { clearSessionAfterEdit } from "../../utils/helperFunctions";
 import { RefreshContext } from "../PreventPullToRefresh/PreventPullToRefresh";
 import { useNotificationStore } from "../../Store/notificationStore";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
+
 const AgentDashboard = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -41,6 +42,8 @@ const AgentDashboard = () => {
     sessionStorage.getItem("userCalApiKey")
   );
   const agentBuisnesId = sessionStorage.getItem("SelectAgentBusinessId");
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+
   const [agentDetails, setAgentDetail] = useState({
     agentId:
       location?.state?.agentId || sessionStorage.getItem("SelectAgentId"),
@@ -77,7 +80,7 @@ const AgentDashboard = () => {
     getAgentById,
   } = useAgentStore();
   const agentStatus = agentData?.agent?.isDeactivated;
-  // console.log("agentData", agentData)
+  console.log("agentData", agentData)
   const [isModalOpen, setModalOpen] = useState();
   const [openCard, setOpenCard] = useState(null);
   const { setHasFetched } = useDashboardStore();
@@ -121,11 +124,12 @@ const AgentDashboard = () => {
   const closeAssignNumberModal = () => setIsAssignNumberModalOpen(false);
   const [selectedAgentForAssign, setSelectedAgentForAssign] = useState(null);
   const [agentCalApiKey, setAgentCalApiKey] = useState("");
-  const [ disableLoading , setDisableLoading ]  =useState(false)
+  const [disableLoading, setDisableLoading] = useState(false)
   const notifications = useNotificationStore((state) => state.notifications);
-const [assignPopUp , setAssignPopUp] = useState(false)
+  const [assignPopUp, setAssignPopUp] = useState(false)
   const unreadCount = notifications?.filter((n) => n?.status === 'unread').length;
   // console.log('unreadCount', unreadCount)
+
 
   const isRefreshing = useContext(RefreshContext);
 
@@ -719,21 +723,221 @@ const [assignPopUp , setAssignPopUp] = useState(false)
       getAgentDetailsAndBookings();
     }
   }, [isRefreshing]);
-  const handleAssignPopUp = ()=>{
-
-   setAssignPopUp(true)
-
+  const handleAssignPopUp = () => {
+    // console.log("agentData", agentData)
+    setAssignPopUp(true)
   }
 
 
 
-  const mClose = ()=>{
+  const mClose = () => {
     setAssignPopUp(false)
   }
 
-  const handleSamanPtra = ()=>{
-    setDisableLoading(true)
-  }
+  // const handleSamanPtra = async () => {
+
+  //   const handleCancelSubscription = async () => {
+  //     const agent_id = agentData?.agent.agent_id;
+  //     // const mins_left = agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0;
+
+  //     try {
+  //       setDisableLoading(true)
+  //       // setdeleteloading(true);
+
+  //       try {
+  //         let res = null
+  //         // assignNumberPaid === true &&
+  //         if ((agentData?.agent?.agentPlan === "free" || agentData?.agent?.agentPlan === "Pay-As-You-Go")) {
+  //           console.log("Cancel Schedule")
+  //           res = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+  //             method: "POST",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //             body: JSON.stringify({ subscriptionId: agentData?.subscription?.subscription_id }),
+  //           });
+  //           const requestData = {
+  //             customerId: agentData.subscription?.subscription_id,
+  //             agentId: agent_id,
+  //             status: "inactive",
+  //             isFree: (agentData?.agent?.agentPlan === "free") || (agentData?.agent?.agentPlan === "Pay-As-You-Go" ? true : false)
+
+  //           };
+  //           const response = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+  //             method: 'POST',
+  //             headers: {
+  //               'Content-Type': 'application/json',
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //             body: JSON.stringify(requestData),
+  //           });
+  //           if (response.ok) { console.log('Agent Payg Cancelled Succesfully') }
+
+  //           else {
+  //             console.log('Failed to send the request to save the agent.')
+  //           }
+  //           console.log("assign cancel")
+  //           // await checkAssignNumber()
+  //         }
+
+  //         if (res) {
+  //           setTimeout(() => {
+  //             // fetchAndMergeCalApiKeys();
+  //           }, 1000);
+  //         }
+  //       } catch (notifyError) {
+  //         throw new Error(`Refund failed: ${notifyError.message}`);
+  //       }
+
+  //       // const updatedAgents = localAgents.filter((a) => a.agent_id !== agent_id);
+  //       // setLocalAgents(updatedAgents);
+  //       // setPopupMessage("Subscription Cancelled successfully!");
+  //       // setPopupType("success");
+  //       // fetchAndMergeCalApiKeys();
+  //       // checkAssignNumber()
+  //       // checkAgentPaygStatus(agentId)
+  //       setDisableLoading(false)
+  //     } catch (error) {
+  //       // setPopupMessage(`Failed to Cancel Subscription: ${error.message}`);
+  //       // setPopupType("failed");
+  //       setDisableLoading(false)
+  //     } finally {
+  //       // setdeleteloading(false);
+  //     }
+  //   };
+  // }
+
+
+  // helpers you already have in scope:
+  // API_BASE, token, agentData, setDisableLoading
+
+  const handleSamanPtra = async () => {
+    const agentPlan = agentData?.agent?.agentPlan;
+    const subscriptionId = agentData?.subscription?.subscription_id;
+    const agentId = agentData?.agent?.agent_id;
+    const subscriptionStatus = agentData?.subscription?.status // canceled   , cancel_scheduled
+    console.log("subscriptionStatus", subscriptionStatus)
+    // Only proceed for "free" or "Pay-As-You-Go"
+    const isFreeOrPayg = ["free", "Pay-As-You-Go"].includes(agentPlan);
+
+    if (subscriptionStatus === "canceled" || subscriptionStatus === "cancel_scheduled") {
+      setDisableLoading(true)
+      try {
+        const res = await fetch(`${API_BASE}/assign-number-resume`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ subscriptionId }), // assumes subscriptionId is in scope
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          console.log(`assign-number-resume failed (${res.status}): ${text}`);
+        }
+
+        const data = await res.json(); // ← parse body
+
+        if (data?.subscription) {
+          console.log("Assign Number Subscription Resume successfully");
+          // setShowPopup(true);
+          setPopupMessage("Assign Number Subscription Resume successfully");
+          setPopupType("success");
+          // localStorage.setItem("isPayg", JSON.stringify(true)); // store as string
+          // setPaygEnabled(true);
+        } else {
+          // backend returned ok but missing expected field
+          console.warn("assign-number-resume: no subscription in response", data);
+          // setShowPopup(true);
+          setPopupMessage("Resume completed, but response was unexpected.");
+          setPopupType("success");
+          setDisableLoading(false);
+        }
+      } catch (err) {
+        console.error("Resume failed:", err);
+        // setShowPopup(true);
+        setPopupMessage("Failed to resume asign number. Please try again.");
+        setPopupType("failed");
+        setDisableLoading(false);
+      }
+      finally {
+        setDisableLoading(false);
+        setAssignPopUp(false);
+      }
+      return
+    }
+
+
+
+
+    if (!isFreeOrPayg) {
+      console.log("No cancel needed: plan is neither free nor Pay-As-You-Go");
+      return;
+    }
+
+    setDisableLoading(true);
+    try {
+      // 1) Cancel any queued subscription changes (server-side)
+      const cancelRes = await fetch(`${API_BASE}/cancel-subscription-schedule`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ subscriptionId }),
+      });
+
+      if (!cancelRes.ok) {
+        const text = await cancelRes.text().catch(() => "");
+        throw new Error(`cancel-subscription-schedule failed (${cancelRes.status}): ${text}`);
+      }
+      console.log("Cancelled subscription schedule");
+
+      // 2) Update agent PayG state
+      const requestData = {
+        customerId: agentData?.subscription?.customer_id,
+        agentId,
+        status: "inactive",
+        isFree: agentPlan === "free" || agentPlan === "Pay-As-You-Go",
+      };
+
+      const updateRes = await fetch(`${API_BASE}/pay-as-you-go-saveAgent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!updateRes.ok) {
+        console.log('Failed to send the request to save the agent.')
+      }
+
+      // console.log("✅ Agent Pay-As-You-Go status updated successfully");
+
+      setPopupMessage("Subscription Cancelled successfully!");
+      setPopupType("success");
+      setAssignPopUp(false)
+      setHasFetched()
+
+    } catch (err) {
+      console.error("❌ handleSamanPtra failed:", err);
+      setPopupMessage(`Failed to Cancel Subscription: ${err.message}`);
+      setPopupType("failed");
+    } finally {
+      setDisableLoading(false);
+      setAssignPopUp(false)
+    }
+
+  };
+
+
+
+
+
   return (
     <div>
       {loading && !agentData?.agent?.agent_id != agentDetails?.agentId ? (
@@ -906,89 +1110,98 @@ const [assignPopUp , setAssignPopUp] = useState(false)
               </div>
             </section>
           </div>
+          {assignedNumbers?.length > 0 ?
+            <div className={`${styles.infoSection}`}>
+              <div className={styles.toggleContainer1}>
+                {assignedNumbers?.length > 0 ? (
+                  <>
+                    <div className={styles.AssignNumText}>
+                      Phone Number
+                      <p>
+                        {assignedNumbers
+                          ?.map(formatE164USNumber)
+                          .join(", ")}
+                      </p>
+                      {agentData.agent?.agentPlan === "free" && !agentData.agent?.subscriptionId && agentData.agent?.voip_numbers_created ? (() => {
+                        const created = new Date(agentData.agent.voip_numbers_created);
+                        const today = new Date();
 
-          <div className={`${styles.infoSection}`}>
-            <div className={styles.toggleContainer1}>
-              {assignedNumbers?.length > 0 ? (
-                <>
-                  <div className={styles.AssignNumText}>
-                    Phone Number
-                    <p>
-                      {assignedNumbers
-                        ?.map(formatE164USNumber)
-                        .join(", ")}
-                    </p>
-                    {agentData.agent?.agentPlan === "free" && !agentData.agent?.subscriptionId && agentData.agent?.voip_numbers_created ? (() => {
-                    const created = new Date(agentData.agent.voip_numbers_created);
-                    const today = new Date();
+                        // normalize to date-only
+                        const createdDateOnly = new Date(created.getFullYear(), created.getMonth(), created.getDate());
+                        const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-                    // normalize to date-only
-                    const createdDateOnly = new Date(created.getFullYear(), created.getMonth(), created.getDate());
-                    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                        // expiry = created + 15 days
+                        const expiry = new Date(createdDateOnly);
+                        expiry.setDate(expiry.getDate() + 15);
 
-                    // expiry = created + 15 days
-                    const expiry = new Date(createdDateOnly);
-                    expiry.setDate(expiry.getDate() + 15);
+                        const msPerDay = 1000 * 60 * 60 * 24;
+                        const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
 
-                    const msPerDay = 1000 * 60 * 60 * 24;
-                    const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
-
-                    if (daysRemaining > 0) {
-                      return <span className={styles.daysRemain}>{daysRemaining} days remaining</span>;
-                    }
-                    return null; // show nothing if expired
-                  })() : ""}
-                  </div>
-                  <div>Free Assign Number</div>
+                        if (daysRemaining > 0) {
+                          return <span className={styles.daysRemain}>{daysRemaining} days remaining</span>;
+                        }
+                        return null; // show nothing if expired
+                      })() : ""}
+                    </div>
+                    <div>Free Assign Number</div>
                   </>
-              ) : (
-                <div
-                  className={styles.AssignNum}
-                  onClick={(e) => {
-                    if (agentStatus === true) {
-                      handleInactiveAgentAlert();
-                    } else {
-                      // setIsAssignModalOpen(true)
-                      // setIsAssignNumberModalOpen(true);
-                      handleAssignNumberClick(
-                        agentData?.agent,
-                        e,
-                        agentData?.business
-                      );
-                    }
-                  }}
+                ) : (
+                  <div
+                    className={styles.AssignNum}
+                    onClick={(e) => {
+                      if (agentStatus === true) {
+                        handleInactiveAgentAlert();
+                      } else {
+                        // setIsAssignModalOpen(true)
+                        // setIsAssignNumberModalOpen(true);
+                        handleAssignNumberClick(
+                          agentData?.agent,
+                          e,
+                          agentData?.business
+                        );
+                      }
+                    }}
+                  >
+                    <img src="/svg/assign-number.svg" />
+                  </div>
+                )}
+              </div>
+
+              {/* <div className={styles.SvgDesign} onClick={handleAssignPopUp}>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <img src="/svg/assign-number.svg" />
+                  <path
+                    d="M20.0001 3.90244L16.0977 0L13.3936 2.70407L17.296 6.60651L20.0001 3.90244Z"
+                    fill="#6524EB"
+                  />
+                  <path
+                    d="M4 16L8.2927 15.6098L15.6797 8.22279L11.7772 4.32031L4.39024 11.7073L4 16Z"
+                    fill="#6524EB"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M13 20H0V18H13V20Z"
+                    fill="#6524EB"
+                  />
+                </svg>
+              </div> */}
+              <div className={styles.deleteSection} style={{cursor:"pointer",marginLeft:"15px"}}>
+                <div
+                  className={styles.deleteButton}
+                  onClick={handleAssignPopUp}
+                >
+                  <img src="/svg/delete-icon.svg" alt="delete" />
+
                 </div>
-              )}
+              </div>
             </div>
-
-            <div className={styles.SvgDesign} onClick={handleAssignPopUp}>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M20.0001 3.90244L16.0977 0L13.3936 2.70407L17.296 6.60651L20.0001 3.90244Z"
-                  fill="#6524EB"
-                />
-                <path
-                  d="M4 16L8.2927 15.6098L15.6797 8.22279L11.7772 4.32031L4.39024 11.7073L4 16Z"
-                  fill="#6524EB"
-                />
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M13 20H0V18H13V20Z"
-                  fill="#6524EB"
-                />
-              </svg>
-            </div>
-          </div>
-
+            : ""}
 
 
 
@@ -997,17 +1210,36 @@ const [assignPopUp , setAssignPopUp] = useState(false)
 
           {/* assign no pop ups */}
 
-<ConfirmModal show={assignPopUp} onClose={()=>setAssignPopUp(false)} title="Confirm Deletion"
-  message="You are about to delete this assigned number. Once deleted, it will no longer be available for use, and any features or services linked to it may stop working. This action is permanent and cannot be undone.
+          <ConfirmModal show={assignPopUp} onClose={() => setAssignPopUp(false)}
+            title={
+              agentData?.subscription?.status === "canceled" || agentData?.subscription?.status === "cancel_scheduled"
+                ? "Confirm Resume"
+                : "Confirm Deletion"
+            }
+            message={
+              agentData?.subscription?.status === "canceled" || agentData?.subscription?.status === "cancel_scheduled"
+                ? `You are about to resume this assigned number. Once resumed, it will be reactivated and linked services will start working again. 
 
-Do you want to proceed with deleting this assigned number?"
-  type="warning"
-       confirmText={disableLoading ? "Disabling..." : "Yes, Disable"}
-        cancelText="Cancel"
-        showCancel={true}
-        isLoading={disableLoading}
-        onConfirm={handleSamanPtra}
-/>
+Do you want to proceed with resuming this assigned number?`
+                : `You are about to delete this assigned number. Once deleted, it will no longer be available for use, and any features or services linked to it may stop working. This action is permanent and cannot be undone.
+
+Do you want to proceed with deleting this assigned number?`
+            }
+            type="warning"
+            confirmText={
+              disableLoading
+                ? agentData?.subscription?.status === "canceled" || agentData?.subscription?.status === "cancel_scheduled"
+                  ? "Resuming..."
+                  : "Deleting..."
+                : agentData?.subscription?.status === "canceled" || agentData?.subscription?.status === "cancel_scheduled"
+                  ? "Yes, Resume"
+                  : "Yes, Delete"
+            }
+            cancelText="Cancel"
+            showCancel={true}
+            isLoading={disableLoading}
+            onConfirm={handleSamanPtra}
+          />
           {/*  */}
 
           <div className={styles.container}>
