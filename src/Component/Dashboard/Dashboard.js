@@ -2023,8 +2023,8 @@ const [showInActive , setShowInActive] = useState(false)
       let res = await axios.post(`${API_BASE_URL}/pay-as-you-go-checkout`, {
         agentId: agentId,
         customerId: decodeTokenData?.customerId,
-        userId: "RX86KS1756787104",
-        url:`${baseUrl}/assign-number`,
+        userId: decodeTokenData?.id,
+        url:`${baseUrl}/dashboard?AssignNumber=true`,
         cancelUrl: `${baseUrl}/dashboard?AssignNumber=false`,
         isAssignNumber: true
       })
