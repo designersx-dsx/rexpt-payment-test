@@ -4,7 +4,7 @@ import styles from "./Step.module.css";
 import Step2 from "../Step2/Step2";
 import Step3 from "../Step3/Step3";
 import Step4 from "../Step4/Step4";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { IDLE_FETCHER, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import PopUp from "../Popup/Popup";
@@ -28,7 +28,7 @@ import Thankyou from "../ThankyouPage/Thankyou";
 import getTimezoneFromState from "../../lib/timeZone";
 import Modal2 from "../Modal2/Modal2";
 import LottieAnimation from "../../lib/LottieAnimation";
-import getBusinessSpecificFields from "../../lib/post_Call_analysis"
+import {appointmentBooking, getBusinessSpecificFields} from "../../lib/post_Call_analysis"
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -121,6 +121,7 @@ const Step = () => {
     });
     const location = useLocation()
     const locationPath = location?.state?.locationPath;
+    const isTiered = location?.state?.plan
     let value = location?.state?.value
     const step1Ref = useRef(null)
     const step3Ref = useRef(null);
@@ -764,30 +765,8 @@ const Step = () => {
                                 "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
 
                         },
-                        {
-                            "type": "boolean",
-                            "name": "appointment_booked",
-                            "description": "Determine if appointment was successfully booked during the call",
-                            "examples": [true, false]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_date",
-                            "description": "Extract the exact appointment date mentioned by customer. Format: YYYY-MM-DD",
-                            "examples": ["2025-01-15", "2025-02-20", "2025-03-10"]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_time",
-                            "description": "Extract the exact appointment time mentioned by customer. Format: HH:MM AM/PM",
-                            "examples": ["10:00 AM", "2:30 PM", "9:15 AM"]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_timezone",
-                            "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
-                            "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
-                        },
+                      
+                        ...appointmentBooking(businessType),
                         ...getBusinessSpecificFields(businessType)
                     ],
                     end_call_after_silence_ms: 30000,
@@ -1143,10 +1122,33 @@ const Step = () => {
     useEffect(() => {
         sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
     }, [completedSteps]);
+    
+const tierCheckout = async () => {
+  try {
+    const res = await axios.post(`${API_BASE_URL}/tier/checkout`, {
+      customerId: decodeTokenData?.customerId
+,
+      presetUnits: location?.state?.value,
+      minUnits: 0,
+      maxUnits: 200,
+      successUrl: window.location.origin + `/steps?mode=create&userId=${decodeTokenData?.id}`, // origin + path
+      cancelUrl: window.location.origin + "/cancel" , 
+      userId : decodeTokenData?.id
+    });
+
+
+    if (res?.data?.url) {
+      window.location.href = res.data.url; // redirect user
+    }
+  } catch (error) {
+    console.error("Checkout error:", error);
+  }
+};
 
 
     let isUser = sessionStorage.getItem("isUser")
     // console.log({isUser})
+
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.value
@@ -1171,6 +1173,10 @@ const Step = () => {
                 navigate("/checkout")
             }
 
+        }
+        else if(isTiered ==="tierPlan"){
+            tierCheckout()
+                                  
         }
         else if (locationPath !== "/checkout" && !priceId) {
 
@@ -1293,17 +1299,20 @@ const Step = () => {
         handleContinue();
     }
     //site map 
+    useEffect(()=>{
+        handleSelectAll();
+    },[showSiteMapModal,showSiteMapUrls])
     // Select all handler
     const handleSelectAll = () => {
         let updated;
 
-        if (selectedUrls.length === showSiteMapUrls.length) {
-            // Deselect all
-            updated = [];
-        } else {
+        // if (selectedUrls.length === showSiteMapUrls.length) {
+        //     // Deselect all
+        //     updated = [];
+        // } else {
             // Select all
             updated = [...showSiteMapUrls];
-        }
+        // }
 
         setSelectedUrls(updated);
 
@@ -1802,11 +1811,10 @@ const Step = () => {
                     />
                 )}
 
-
+                {/* setShowSiteMapModal 
                 {showSiteMapModal && <Modal2 isOpen={showSiteMapModal} onClose={() => setShowSiteMapModal(false)}>
                     <div className={styles.sitemapModal}>
 
-                        {/* Select All */}
                         <div className={styles.sitemapHeader}>
                             <input
                                 type="checkbox"
@@ -1816,7 +1824,6 @@ const Step = () => {
                             <label>Select All</label>
                         </div>
 
-                        {/* URL list */}
                         <div className={styles.sitemapList}>
                             {showSiteMapUrls.length > 0 ? (
                                 showSiteMapUrls.map((item, index) => (
@@ -1843,6 +1850,7 @@ const Step = () => {
 
                     </div>
                 </Modal2>}
+                */}
 
 
 

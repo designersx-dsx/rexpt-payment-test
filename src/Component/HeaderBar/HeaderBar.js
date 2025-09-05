@@ -6,7 +6,7 @@ const HeaderBar = ({ title, subtitle, dropdownOptions = [], onDropdownChange,sel
   const handleBack = () => {
     const currentPath = window.location.pathname;
 
-    if (currentPath.endsWith("/plan") || currentPath === "/plan") {
+    if (currentPath.endsWith("/plan") || currentPath === "/plan" || currentPath=="/assign-number") {
       navigate("/dashboard");
     }else if (currentPath.endsWith("/plans") || currentPath === "/plans") {
       navigate("/steps");} 
