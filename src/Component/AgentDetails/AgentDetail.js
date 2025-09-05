@@ -382,7 +382,7 @@ const AgentDashboard = () => {
   };
   useEffect(() => {
     getAgentDetailsAndBookings();
-  }, []);
+  }, [refresh]);
   const handleAssignNumberUpdated = () => {
     getAgentDetailsAndBookings();
   };
@@ -842,7 +842,10 @@ const AgentDashboard = () => {
 
         if (data?.subscription) {
           console.log("Assign Number Subscription Resume successfully");
+          setHasFetched(false)
+          setRefresh(prev => !prev)
           // setShowPopup(true);
+          
           setPopupMessage("Assign Number Subscription Resume successfully");
           setPopupType("success");
           // localStorage.setItem("isPayg", JSON.stringify(true)); // store as string
@@ -865,6 +868,7 @@ const AgentDashboard = () => {
       finally {
         setDisableLoading(false);
         setAssignPopUp(false);
+        // setHasFetched()
       }
       return
     }
@@ -894,6 +898,8 @@ const AgentDashboard = () => {
         throw new Error(`cancel-subscription-schedule failed (${cancelRes.status}): ${text}`);
       }
       console.log("Cancelled subscription schedule");
+      setHasFetched(false)
+      setRefresh(prev => !prev)
 
       // 2) Update agent PayG state
       const requestData = {
@@ -921,7 +927,7 @@ const AgentDashboard = () => {
       setPopupMessage("Subscription Cancelled successfully!");
       setPopupType("success");
       setAssignPopUp(false)
-      setHasFetched()
+
 
     } catch (err) {
       console.error("❌ handleSamanPtra failed:", err);
@@ -930,6 +936,7 @@ const AgentDashboard = () => {
     } finally {
       setDisableLoading(false);
       setAssignPopUp(false)
+      setHasFetched(false)
     }
 
   };
@@ -1132,7 +1139,7 @@ const AgentDashboard = () => {
 
                         // expiry = created + 15 days
                         const expiry = new Date(createdDateOnly);
-                        expiry.setDate(expiry.getDate() + 15);
+                        expiry.setDate(expiry.getDate() + 14);
 
                         const msPerDay = 1000 * 60 * 60 * 24;
                         const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
@@ -1143,7 +1150,7 @@ const AgentDashboard = () => {
                         return null; // show nothing if expired
                       })() : ""}
                     </div>
-                    <div>Free Assign Number</div>
+                    {/* <div>Free Assign Number</div> */}
                   </>
                 ) : (
                   <div
@@ -1191,15 +1198,17 @@ const AgentDashboard = () => {
                   />
                 </svg>
               </div> */}
-              <div className={styles.deleteSection} style={{cursor:"pointer",marginLeft:"15px"}}>
-                <div
-                  className={styles.deleteButton}
-                  onClick={handleAssignPopUp}
-                >
-                  <img src="/svg/delete-icon.svg" alt="delete" />
+              {(agentData?.subscription === null || agentData?.subscription === undefined)  ? ""
 
-                </div>
-              </div>
+                : <div className={styles.deleteSection} style={{ cursor: "pointer", marginLeft: "15px" }}>
+                  <div
+                    className={styles.deleteButton}
+                    onClick={handleAssignPopUp}
+                  >
+                    <img src="/svg/delete-icon.svg" alt="delete" />
+
+                  </div>
+                </div>}
             </div>
             : ""}
 

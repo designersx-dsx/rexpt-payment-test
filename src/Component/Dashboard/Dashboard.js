@@ -2022,10 +2022,10 @@ const [showInActive , setShowInActive] = useState(false)
       const baseUrl = window.location.origin;
       let res = await axios.post(`${API_BASE_URL}/pay-as-you-go-checkout`, {
         agentId: agentId,
-        customerId: "cus_SyjFq2bKVWyr3M",
+        customerId: decodeTokenData?.customerId,
         userId: "RX86KS1756787104",
-        url:`${baseUrl}/dashboard`,
-        cancelUrl: `${baseUrl}/cancel`,
+        url:`${baseUrl}/assign-number`,
+        cancelUrl: `${baseUrl}/dashboard?AssignNumber=false`,
         isAssignNumber: true
       })
       if (res?.data?.checkoutUrl) {
@@ -3073,7 +3073,7 @@ const [showInActive , setShowInActive] = useState(false)
 
                         // expiry = created + 15 days
                         const expiry = new Date(createdDateOnly);
-                        expiry.setDate(expiry.getDate() + 15);
+                        expiry.setDate(expiry.getDate() + 14);
 
                         const msPerDay = 1000 * 60 * 60 * 24;
                         const daysRemaining = Math.ceil((expiry - todayDateOnly) / msPerDay);
