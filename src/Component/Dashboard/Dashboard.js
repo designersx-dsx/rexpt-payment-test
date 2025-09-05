@@ -1384,13 +1384,70 @@ function Dashboard() {
   let micStream = "";
   const isStartingRef = useRef(false);
   const handleStartCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Store the stream globally or in state if needed
+      micStream = stream;
+    } catch (err) {
+      console.error("Microphone access denied or error:", err);
+      // alert("Please allow microphone access to proceed with the call.");
+      setPopupMessage("Microphone access is required to test.");
+      setPopupType("failed");
+      return;
+    }
+
+    if (
+      isStartingRef.current ||
+      isCallInProgress ||
+      !retellWebClient ||
+      !agentDetails
+    ) {
+      console.error("RetellWebClient or agent details not ready.");
+      return;
+    }
+    isStartingRef.current = true;
+    setCallLoading(false);
+    setIsCallInProgress(true);
+
+    try {
+      setCallLoading(true);
+      const res = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/agent/create-web-call`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agent_id: agentDetails.agent_id }),
+        }
+      );
+      if (res.status == 403) {
+        if (agentDetails?.agentPlan == "free") {
+          setPopupMessage(
+            "Your Agent Plan has been exhausted. To continue, please upgrade your plan"
+          );
+        } else {
+          setPopupMessage(
+            "Your Agent Plan has been exhausted. To continue, please enable Pay As You Go."
+          );
+        }
+        setPopupType("failed");
+        setIsCallInProgress(false);
+        setTimeout(() => {
+          setPopupMessage("");
+        }, 5000);
+        return;
+      }
+      const data = await res.json();
+      await retellWebClient.startCall({ accessToken: data.access_token });
+      setCallId(data?.call_id);
+    } catch (err) {
+      console.error("Error starting call:", err);
+    } finally {
+      setCallLoading(false);
+      isStartingRef.current = false;
+    }
   };
 
-
-
-
-
-
+// End call
   const isEndingRef = useRef(false);
   const handleEndCall = async () => {
     if (isEndingRef.current) return;
