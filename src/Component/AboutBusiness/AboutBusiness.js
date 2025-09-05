@@ -69,8 +69,43 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
     navigate,
     setHasFetched,
   });
+ 
   const { isLimitExceeded, CheckingUserLimit } =
     useCheckAgentCreationLimit(userId);
+
+    const [selectedUrls, setSelectedUrls] = useState([]);
+    const companyKeywords = [
+  "about", "our-story", "our-company", "who-we-are", 
+  "contact", "products", "services", "solutions", "what-we-do", "offerings",
+  "blog", "news", "resources", "insights", "faq", "help",
+  "pricing", "plans", "privacy", "terms-and-conditions", "terms-of-use",
+  "case-studies", "projects", "portfolio", "testimonials", "reviews"
+];
+
+const filterCompanyPages = (urls) => {
+  return urls.filter(url =>
+    companyKeywords.some(keyword => url.toLowerCase().includes(keyword))
+  );
+};
+
+    // const handleSelectAll = (showSiteMapUrls) => {
+    //     let updated;
+
+    //         // Select all
+    //         updated = [...showSiteMapUrls];
+        
+
+    //     setSelectedUrls(updated);
+
+    //     // Save with status
+    //     const updatedWithStatus = showSiteMapUrls.map((item) => ({
+    //         url: item,
+    //         checkedStatus: updated.includes(item),
+    //     }));
+
+    //     sessionStorage.setItem("selectedSiteMapUrls", JSON.stringify(updatedWithStatus));
+    // };
+
   const initAutocomplete = () => {
     const autocomplete = new window.google.maps.places.Autocomplete(
       document.getElementById("google-autocomplete"),
@@ -121,7 +156,7 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         const businessData = {
           businessName: result.name || "",
           address: result.formatted_address || "",
-          phone: result.formatted_phone_number || "",
+          phone:result.international_phone_number || result.formatted_phone_number || "",
           internationalPhone: result.international_phone_number || "",
           website: result.website || "",
           rating: result.rating || "",
@@ -194,10 +229,18 @@ const AboutBusiness = forwardRef(({ onNext, onBack, onValidationError, onSuccess
         localStorage.setItem("isVerified", true);
         // setNoGoogleListing(false)
         const res = await listSiteMap(url)
-        sessionStorage.setItem("urls", JSON.stringify(res.urls));
-        onSiteMap({ status: true, data: res.urls, addOnUrl: url })
+        // console.log('res',res);
+        const filteredUrls = filterCompanyPages(res.urls);
+        if (!filteredUrls.includes(url)) {
+          filteredUrls.unshift(url); // add at start
+        }
+        // console.log("Filtered Company Pages:", filteredUrls);
+
+        sessionStorage.setItem("urls", JSON.stringify(filteredUrls));
+        // handleSelectAll(filteredUrls)
+        onSiteMap({ status: true, data: filteredUrls, addOnUrl: url })
         sessionStorage.setItem("viewSiteMap", true)
-        setUrlVerificationInProgress(false);
+        setUrlVerificationInProgress(false);  
         return true;
       } else {
         setIsVerified(false);
@@ -676,9 +719,9 @@ v = v.replace(/\s+/g, "").toLowerCase();
                       </div>
                     </div>
                   </div>
-                  <div>
+                  {/* <div>
                     {(businessUrl.length > 8 && isVerified && viewSiteModal && !noBusinessWebsite) && <button disabled={urlVerificationInProgress} className={styles.modalViewBtn} onClick={handleViewSelectedUrl}>View</button>}
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className={styles.checkboxRow}>

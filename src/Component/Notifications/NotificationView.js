@@ -24,7 +24,7 @@ const NotificationView = () => {
     if (expandedId !== id) {
       // Mark as seen when opening
       const notification = notificationStatus.find((n) => n.id === id);
-      console.log('notification',notification)
+      // console.log('notification',notification)
       if (notification.status === 'unread') {
       
         const response = await markNotificationAsSeen(id,type);
@@ -89,10 +89,10 @@ const NotificationView = () => {
       hour12: true
     });
   };
-
+// console.log(notifications)
   return (
     <div className={styles.notificationContainer}>
-      <header className={styles.header}>
+      {/* <header className={styles.header}>
         <div className={styles.headerContent}>
           <img
             src='/svg/back-svg.svg'
@@ -102,7 +102,7 @@ const NotificationView = () => {
           />
           <h2 className={styles.headerTitle}>Notifications</h2>
         </div>
-      </header>
+      </header> */}
 
       <div className={styles.notificationList}>
         {notifications.length === 0 ? (

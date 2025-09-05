@@ -112,7 +112,7 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
                 const response = await axios.get('https://ipinfo.io/json');
                 const data = await response?.data;
 
-                if ( data.country) {
+                if (data.country) {
                     const currency = mapCountryToCurrency(data.country);
                     setUserCurrency(currency);
                 } else {
@@ -128,7 +128,8 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
         const mapCountryToCurrency = (countryCode) => {
             const countryCurrencyMap = {
 
-                // IN: "inr",   
+
+                IN: "inr",
 
                 US: "usd",
                 CA: "cad",
@@ -144,11 +145,11 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
     useEffect(() => {
         if (!userCurrency) return;
 
-        fetch(`${API_BASE}/products`  , {
-              headers: {
+        fetch(`${API_BASE}/products`, {
+            headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
-              },
+            },
         })
             .then((res) => res.json())
             .then((data) => {
@@ -380,6 +381,45 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('en-IN').format(price);
+    };
+
+    const handleBuyPlan = (data) => {
+        // console.log({ data });
+
+        const plansFromApple = {
+            starter_month: "com.rexpt.starter.monthly",
+            starter_year: "com.rexpt.starter.yearly",
+            scaler_month: "com.rexpt.scaler.monthly",
+            scaler_year: "com.rexpt.scaler.yearly",
+            growth_month: "com.rexpt.growth.monthly",
+            growth_year: "com.rexpt.growth.yearly",
+            corporate_month: "com.rexpt.corporate.monthly",
+            corporate_year: "com.rexpt.corporate.yearly"
+        };
+
+        // Normalize name + interval into a key (lowercased to match dictionary)
+        const key = `${data.planName.toLowerCase()}_${data.interval.toLowerCase()}`;
+
+        // Lookup product ID from Apple mapping
+        const appleProductId = plansFromApple[key];
+
+        if (!appleProductId) {
+            console.warn("⚠️ No matching Apple product found for:", key);
+            return;
+        }
+
+        // console.log("appleProductId",appleProductId)
+
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    type: "BUY",
+                    productId: appleProductId,
+                })
+            );
+        } else {
+            console.warn("ReactNativeWebView not available — running in browser");
+        }
     };
 
     return (
@@ -654,6 +694,11 @@ const SubscriptionPlan = ({ agentID, locationPath }) => {
 
                                                         // ✅ Save to localStorage
                                                         localStorage.setItem("selectedPlanData", JSON.stringify(selectedPlanData));
+                                                        handleBuyPlan({
+                                                            priceId: priceForInterval.id,
+                                                            planName: plan.name ?? plan.title,
+                                                            interval,
+                                                        });
 
                                                         navigate("/checkout", {
                                                             state: {

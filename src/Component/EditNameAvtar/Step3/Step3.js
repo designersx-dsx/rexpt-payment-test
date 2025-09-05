@@ -22,7 +22,7 @@ const avatars = {
   ],
 };
 
-const Step3 = () => {
+const Step3 = ({onValidationChange,originalRole,originalName,originalAvatar}) => {
   const sliderRef = useRef(null);
   const [agentName, setAgentName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -80,6 +80,9 @@ const Step3 = () => {
     setSelectedAvatar(avatar);
     sessionStorage.setItem('avatar', avatar.img);
     setAvtarChecked(true)
+
+     const isDirty = avatar?.img !== originalAvatar 
+    onValidationChange?.({ isDirty });
   };
 
   const handleAgentNameChange = (e) => {
@@ -87,6 +90,8 @@ const Step3 = () => {
     setAgentName(val);
     sessionStorage.setItem('agentName', val);
     if (val.trim()) setAgentNameError('');
+    const isDirty = val !== originalName 
+    onValidationChange?.({ isDirty });
   };
 
   const settings = {
@@ -153,7 +158,11 @@ const Step3 = () => {
       </div>
     </div>
     {selectedAvatar &&
-     <Step4/>
+     <Step4 
+                      onValidationChange={onValidationChange}
+                      originalRole={originalRole}
+
+     />
      }
      </>
   );

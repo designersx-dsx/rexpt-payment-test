@@ -28,6 +28,7 @@ import Thankyou from "../ThankyouPage/Thankyou";
 import getTimezoneFromState from "../../lib/timeZone";
 import Modal2 from "../Modal2/Modal2";
 import LottieAnimation from "../../lib/LottieAnimation";
+import {appointmentBooking, getBusinessSpecificFields} from "../../lib/post_Call_analysis"
 const businessTypes = [
     { name: "Restaurant", code: "rest" },
     { name: "Bakery", code: "bake" },
@@ -64,7 +65,13 @@ const businessTypes = [
     { name: "Movers & Packers", code: "mov_pac" },
     { name: "Trucking Company", code: "truc_com" },
     { name: "Car Repair & Garage", code: "car_rep" },
-    { name: "Boat Repair & Maintenance", code: "boa_rep" }
+    { name: "Boat Repair & Maintenance", code: "boa_rep" },
+    { name: "Spa & Wellness Center", code: "spa_wel" },
+    { name: "Print Shop" , code: "pri_sho" },
+    { name: "School" , code : "scho" },
+    {name: "Colleges & Universities" , code : "coll_uni" },
+    {name: "Training Center" , code : "tra_ce" },
+    { name: "Educational Institute", code: "edu_ins" },
 ];
 const Step = () => {
 
@@ -393,9 +400,6 @@ const Step = () => {
     const callRecording = statesRequiringCallRecording.includes(currentState)
         ? true
         : false;
-
-
-
     const handleContinue = async () => {
         // if (step8ARef.current) {
         setIsContinueClicked(true);
@@ -475,6 +479,7 @@ const Step = () => {
             timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" },
 
         });
+      
         // const isValid = step8BRef.current.validate()
         //creation here
         if (localStorage.getItem("UpdationMode") != "ON") {
@@ -760,34 +765,14 @@ const Step = () => {
                                 "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
 
                         },
-                        {
-                            "type": "boolean",
-                            "name": "appointment_booked",
-                            "description": "Determine if appointment was successfully booked during the call",
-                            "examples": [true, false]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_date",
-                            "description": "Extract the exact appointment date mentioned by customer. Format: YYYY-MM-DD",
-                            "examples": ["2025-01-15", "2025-02-20", "2025-03-10"]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_time",
-                            "description": "Extract the exact appointment time mentioned by customer. Format: HH:MM AM/PM",
-                            "examples": ["10:00 AM", "2:30 PM", "9:15 AM"]
-                        },
-                        {
-                            "type": "string",
-                            "name": "appointment_timezone",
-                            "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
-                            "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
-                        },
+                      
+                        ...appointmentBooking(businessType),
+                        ...getBusinessSpecificFields(businessType)
                     ],
                     end_call_after_silence_ms: 30000,
                     normalize_for_speech: true,
                     webhook_url: `${API_BASE_URL}/agent/updateAgentCall_And_Mins_WebHook`,
+                    // webhook_url: `https://ad0db4634032.ngrok-free.app/api/agent/updateAgentCall_And_Mins_WebHook`,
                 };
                 // Create Agent Creation
                 try {
@@ -840,7 +825,7 @@ const Step = () => {
                                 name: "lead_type",
                                 description: "Feedback given by the customer about the call.",
                                 choices: getLeadTypeChoices(),
-                            },
+                            },              
                             {
                                 type: "string",
                                 name: "name",
@@ -911,7 +896,8 @@ const Step = () => {
                                 "name": "appointment_timezone",
                                 "description": "Extract timezone if mentioned, otherwise use default. Format: America/Los_Angeles style",
                                 "examples": ["America/Los_Angeles", "America/New_York", "UTC"]
-                            }
+                            },
+                            ...getBusinessSpecificFields(businessType)
                         ],
                         promptVariablesList: JSON.stringify(promptVariablesList),
                         CallRecording: callRecording
@@ -1298,17 +1284,20 @@ const tierCheckout = async () => {
         handleContinue();
     }
     //site map 
+    useEffect(()=>{
+        handleSelectAll();
+    },[showSiteMapModal,showSiteMapUrls])
     // Select all handler
     const handleSelectAll = () => {
         let updated;
 
-        if (selectedUrls.length === showSiteMapUrls.length) {
-            // Deselect all
-            updated = [];
-        } else {
+        // if (selectedUrls.length === showSiteMapUrls.length) {
+        //     // Deselect all
+        //     updated = [];
+        // } else {
             // Select all
             updated = [...showSiteMapUrls];
-        }
+        // }
 
         setSelectedUrls(updated);
 
@@ -1807,11 +1796,10 @@ const tierCheckout = async () => {
                     />
                 )}
 
-
+                {/* setShowSiteMapModal 
                 {showSiteMapModal && <Modal2 isOpen={showSiteMapModal} onClose={() => setShowSiteMapModal(false)}>
                     <div className={styles.sitemapModal}>
 
-                        {/* Select All */}
                         <div className={styles.sitemapHeader}>
                             <input
                                 type="checkbox"
@@ -1821,7 +1809,6 @@ const tierCheckout = async () => {
                             <label>Select All</label>
                         </div>
 
-                        {/* URL list */}
                         <div className={styles.sitemapList}>
                             {showSiteMapUrls.length > 0 ? (
                                 showSiteMapUrls.map((item, index) => (
@@ -1848,6 +1835,7 @@ const tierCheckout = async () => {
 
                     </div>
                 </Modal2>}
+                */}
 
 
 

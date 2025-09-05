@@ -234,8 +234,38 @@ const BusinessDetails = forwardRef(({ onNext, onBack, onValidationError, onStepC
       type: "Trucking Company",
       subtype: "Efficient Freight & Logistics Solutions",
       icon: "svg/Trucking Company.svg",
-
+    },
+    {
+      type: "Spa & Wellness Center",
+      subtype: "Relaxation & Health Services",
+      icon: "svg/Hair Stylist.svg",
+    },
+    {
+      type: "Print Shop",
+      subtype: "Your Printing Solutions Partner",
+      icon: "svg/Hair Stylist.svg",
+    },
+    {
+      type: "School",
+      subtype: "Education for a Brighter Future",
+      icon: "svg/Hair Stylist.svg",
+    },
+    {
+      type: "Colleges & Universities",
+      subtype: "Higher Learning Institution",
+      icon: "svg/Hair Stylist.svg",
+    },
+    {
+      type: "Training Center",
+      subtype: "Skill Development Hub",
+      icon: "svg/Hair Stylist.svg",
+    },
+    {
+      type: "Educational Institute",
+      subtype: "Knowledge Empowerment Center",
+      icon: "svg/Hair Stylist.svg",
     }
+
 ,
 
     {
