@@ -929,6 +929,11 @@ const Step = () => {
                                 setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
 
                             }
+                             else if (isUser === "true") {
+                                setCustomeLoader(true)
+                                setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
+
+                            }
                             if (checkPaymentDone === "true") {
                                 setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
                             }
@@ -1131,6 +1136,7 @@ const tierCheckout = async () => {
       userId : decodeTokenData?.id
     });
 
+
     if (res?.data?.url) {
       window.location.href = res.data.url; // redirect user
     }
@@ -1138,12 +1144,21 @@ const tierCheckout = async () => {
     console.error("Checkout error:", error);
   }
 };
+
+
+    let isUser = sessionStorage.getItem("isUser")
+    // console.log({isUser})
+
     const handleSubmit = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.value
-        if (freeTrail === "chatke") {
+
+    
+        if (freeTrail === "chatke" || isUser==='true') {
             handleContinue()
+            // sessionStorage.removeItem(isUser)
         }
+
         else if (checkPaymentDone === "true") {
 
             // callNextApiAndRedirect()
