@@ -140,7 +140,7 @@ const Planss = () => {
     const mapCountryToCurrency = (countryCode) => {
 
         const countryCurrencyMap = {
-            IN: 'inr',
+            // IN: 'inr',
             US: 'usd',
             CA: 'cad',
             AU: 'aud',
@@ -657,42 +657,11 @@ const Planss = () => {
     if (error) return <p className={styles.statusError}>{error}</p>;
 
 
-
     const handleBuyPlan = (productId) => {
-
-    const handleBuyPlan = (data) => {
-        // console.log({ data });
-
-        const plansFromApple = {
-            starter_month: "com.rexpt.starter.monthly",
-            starter_year: "com.rexpt.starter.yearly",
-            scaler_month: "com.rexpt.scaler.monthly",
-            scaler_year: "com.rexpt.scaler.yearly",
-            growth_month: "com.rexpt.growth.monthly",
-            growth_year: "com.rexpt.growth.yearly",
-            corporate_month: "com.rexpt.corporate.monthly",
-            corporate_year: "com.rexpt.corporate.yearly"
-        };
-
-        // Normalize name + interval into a key (lowercased to match dictionary)
-        const key = `${data.planName.toLowerCase()}_${data.interval.toLowerCase()}`;
-
-        // Lookup product ID from Apple mapping
-        const appleProductId = plansFromApple[key];
-
-        if (!appleProductId) {
-            console.warn("⚠️ No matching Apple product found for:", key);
-            return;
-        }
-
-        // console.log("appleProductId",appleProductId)
-
-
         if (window.ReactNativeWebView) {
             window.ReactNativeWebView.postMessage(
                 JSON.stringify({
                     type: "BUY",
-
                     productId: productId,
                 })
             );
@@ -700,7 +669,6 @@ const Planss = () => {
             console.warn("ReactNativeWebView not available — running in browser?");
         }
     };
-
 
 
 
@@ -977,13 +945,7 @@ const Planss = () => {
                                                 if (priceForInterval) {
                                                     // console.log("plan", plan)
                                                     sessionStorage.setItem("selectedPlan", plan?.name)
-
-                                                    handleBuyPlan({
-                                                        priceId: priceForInterval.id,
-                                                        planName: plan.name ?? plan.title, 
-                                                        interval, 
-                                                    });
-
+                                                    handleBuyPlan(priceForInterval.id)
                                                     if (agentID) {
                                                         navigate(`/checkout`, { state: { priceId: priceForInterval.id, agentId: agentID, subscriptionId: subscriptionID, locationPath1: "/update", price: (priceForInterval.unit_amount / 100).toFixed(2) } }, sessionStorage.setItem("priceId", priceForInterval.id), sessionStorage.setItem("price", (priceForInterval.unit_amount / 100).toFixed(2)), sessionStorage.setItem("agentId", agentID), sessionStorage.setItem("subscriptionID", subscriptionID))
                                                     }
