@@ -2926,7 +2926,11 @@ function Dashboard() {
                                   Cancel Subscription
                                 </div>
                                 {/* Case 2: PAYG toggle (show always for paid, and as "Activate" for free) */}
-                                <div>
+                                
+                              </div>
+
+                            )}
+                            <div>
                                   <div
                                     onMouseDown={(e) => {
                                       setshowPaygConfirm(true);
@@ -2944,9 +2948,6 @@ function Dashboard() {
                                         : "Activate Pay as you go"}
                                   </div>
                                 </div>
-                              </div>
-
-                            )}
 
 
                         </>
@@ -3022,7 +3023,7 @@ function Dashboard() {
                       {assignedNumbers.length > 1 ? "s" : ""}{" "}
                       {assignedNumbers.map(formatE164USNumber).join(", ")}
                     </p>
-                    {agent?.agentPlan === "free" && agent?.voip_numbers_created ? (() => {
+                    {agent?.agentPlan === "free" && !agent?.subscriptionId && agent?.voip_numbers_created ? (() => {
                       const created = new Date(agent.voip_numbers_created);
                       const today = new Date();
 
