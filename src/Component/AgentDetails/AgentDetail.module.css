@@ -12,6 +12,7 @@
   z-index: 1000;
 }
 
+
 /* Modal container */
 .modalContainer {
   background-color: #fff;
@@ -788,6 +789,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.SvgDesign:hover{
+  cursor: pointer;
 }
 
 .buttons {
