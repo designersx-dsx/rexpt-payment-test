@@ -403,8 +403,8 @@ const EditProfile = () => {
 
   const PaygSubscriptionId = subscriptionDetails.invoices
     ?.filter(invoice => {
-      if (invoice.plan_name !== "Extra Minutes" || invoice.status === "canceled") {
-      // if (invoice.plan_name !== "PAYG Extra" || invoice.status === "canceled") {
+      // if (invoice.plan_name !== "Extra Minutes" || invoice.status === "canceled") {
+      if (invoice.plan_name !== "PAYG Extra" || invoice.status === "canceled") {
         return false;
       }
 
