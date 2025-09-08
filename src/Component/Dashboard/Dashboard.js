@@ -317,13 +317,13 @@ function Dashboard() {
           "Welcome! This is your profile. Click here to manage your account details, subscription, and billing information.",
         position: "right",
       },
-      {
-        element: "#tour-footer-create",
-        title: "Guide Tour",
-        intro:
-          "This is where the magic happens! Click 'Create' to build and customize your AI Receptionist.",
-        position: "top",
-      },
+      // {
+      //   element: "#tour-footer-create",
+      //   title: "Guide Tour",
+      //   intro:
+      //     "This is where the magic happens! Click 'Create' to build and customize your AI Receptionist.",
+      //   position: "top",
+      // },
       {
         element: "#tour-assign-number",
         title: "Guide Tour",
