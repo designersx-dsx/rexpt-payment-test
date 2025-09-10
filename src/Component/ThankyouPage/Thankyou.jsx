@@ -49,6 +49,9 @@ function Thankyou({ onSubmit, isAgentCreated }) {
   const agentId = getQueryParam("agentId");
   const userId = getQueryParam("userId");
   const subsid = getQueryParam("subscriptionId"); // 👈 Old subscription to cancel
+  const agentName1 = getQueryParam("agentName"); // 👈 Old subscription to cancel
+  const agentCode1 = getQueryParam("agentCode"); // 👈 Old subscription to cancel
+  const businessName1 = getQueryParam("businessName"); // 👈 Old subscription to cancel
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [currencySymbol, setCurrencySymbol] = useState("");
 
@@ -520,15 +523,19 @@ function Thankyou({ onSubmit, isAgentCreated }) {
                 <div className={styles.row}>
                   <span>Business Name:</span>{" "}
                   <div className={styles.Right50}>
-                    {businessName || "ACME Construction Services"}
+                    {isAdmin ? businessName1 : (businessName || "ACME Construction Services")}
                   </div>
                 </div>
                 <div className={styles.row}>
                   <span>Agent Name & ID:</span>
                   <div className={styles.Right50}>
-                    {agentName && agentCode
-                      ? `${agentName} (${agentCode})`
-                      : "Oliver (HS23D4)"}
+                    {isAdmin
+                      ? agentName1 && agentCode1
+                        ? `${agentName1} (${agentCode1})`
+                        : "Oliver (HS23D4)"
+                      : agentName && agentCode
+                        ? `${agentName} (${agentCode})`
+                        : "Oliver (HS23D4)"}
                   </div>
                 </div>
                 <div className={styles.row}>
