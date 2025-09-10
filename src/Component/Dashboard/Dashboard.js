@@ -2975,10 +2975,13 @@ function Dashboard() {
                           : "Deactivate Agent"}
                       </div>
 
-                      {((agent?.subscription &&
-                        agent?.subscription?.plan_name?.toLowerCase() !==
-                        "free") || assignNumberPaid && agent?.isDeactivated === 0
-                      ) && (
+                      {(
+  agent?.subscription?.subscription_status !== 9 && (
+    (agent?.subscription &&
+      agent?.subscription?.plan_name?.toLowerCase() !== "free") ||
+    (assignNumberPaid && agent?.isDeactivated === 0)
+  )
+) && (
                           <>
                             <div>
                               <div
