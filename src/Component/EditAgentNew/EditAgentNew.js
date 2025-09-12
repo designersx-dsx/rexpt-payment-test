@@ -79,7 +79,7 @@ const EditAgentNew = () => {
      
       const scrapedUrls= business.scrapedUrls
 
-      sessionStorage.setItem("scrapedUrls",JSON.parse(scrapedUrls));
+      sessionStorage.setItem("scrapedUrls", scrapedUrls );
 
       sessionStorage.setItem("UpdationModeStepWise", "ON");
       sessionStorage.setItem("agentName", agent.agentName);
