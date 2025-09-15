@@ -74,11 +74,6 @@ const EditAgentNew = () => {
         businessId
       );
 
-
-      sessionStorage.setItem("scrapedUrls", scrapedUrls );
-
-
-
       const agent = response?.data?.agent;
       const business = response?.data?.business;
       const scrapedUrls = business.scrapedUrls
