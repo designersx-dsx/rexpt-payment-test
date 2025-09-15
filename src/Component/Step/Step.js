@@ -1155,6 +1155,7 @@ const Step = () => {
     useEffect(() => {
         fetchAgentCountFromUser()
     }, [])
+
     useEffect(() => {
         const savedStep = sessionStorage.getItem("currentStep");
         if (savedStep !== null) {
@@ -1163,6 +1164,7 @@ const Step = () => {
             sliderRef.current?.slickGoTo(parsedStep);
         }
     }, []);
+
     useEffect(() => {
         sessionStorage.setItem("currentStep", currentStep.toString());
     }, [currentStep])
@@ -1173,12 +1175,13 @@ const Step = () => {
 
 
     if (res?.data?.url) {
-      window.location.href = res.data.url; // redirect user
+      window.location.href = res.data.url; 
     }
-  } catch (error) {
-    console.error("Checkout error:", error);
-  }
-};
+//    catch (error) {
+//     console.error("Checkout error:", error);
+//   }
+
+
 
 
     let isUser = sessionStorage.getItem("isUser")
@@ -1500,6 +1503,7 @@ const Step = () => {
             </>
         )
     }
+    
     return (
 
         <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated} /> :
