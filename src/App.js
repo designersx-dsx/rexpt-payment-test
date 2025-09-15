@@ -40,10 +40,7 @@ import EditBusinessDetail from "./Component/EditBusinessDetail/EditBusinessDetai
 import EditLanguage from "./Component/EditLanguage/EditLanguage"
 import EditGender from "./Component/EditGender/EditGender"
 import EditNameAvtar from "./Component/EditNameAvtar/EditNameAvtar"
-
 //... Edit Screen End ....//
-
-
 import { useEffect, useState } from "react";
 import RoutePersistence from "./Component/RoutePersistence/RoutePersistence";
 import WidgetGuidePage from "./Component/WidgetGuidePage/WidgetGuidePage";
@@ -52,10 +49,8 @@ import Test from "./utils/Test";
 import CallSetting from "./Component/CallSetting/CallSetting";
 import ConnectCalenderAPI from "./Component/ConnectCalenderAPI/ConnectCalanderAPI";
 import AssignNumber from "./Component/AssignNumber/AssignNumber";
-
 import Thankyou from "./Component/ThankyouPage/Thankyou";
 import CancelPage from "./Component/CancelPage/CancelPage";
-
 import IntegrateAgent from "./Component/Integrate-agent/Integrate-agent"
 import AgentSetupHelp from "./Component/AgentSetupHelp/AgentSetupHelp"
 import Plan from "./Component/Plans/Plans";
@@ -63,22 +58,14 @@ import Planss from "./Component/Plan/Plan";
 import Documentation from "./Component/Documentation/Documentation";
 import RedirectHandler from "./utils/RedirectHandler ";
 import PreventPullToRefresh from "./Component/PreventPullToRefresh/PreventPullToRefresh";
-
 import Thankyou2 from "./Component/ThankyouPage2/Thankyou2";
-
 import Number from "./Component/assign/Number";
 import CallRecording from "./Component/CallRecording/CallRecording";
 import RaiseTickets from "./Component/Tickets/RaiseTickets";
 import CreateTicketModal from "./Component/Tickets/CreateTicketModal";
 import CreateTicket from "./Component/Tickets/CreateTicket";
-
-
 import Fileinfo from "./Component/AgentDetails/FileInfo/Fileinfo";
-
 import ForcePortraitOnly from "./utils/ForcePortraitOnly";
-
-
-
 import decodeToken from "./lib/decodeToken";
 import { initNotificationSocket } from "./utils/initNotificationSocket";
 import { getUserNotifications } from "./Store/apiStore";
@@ -264,65 +251,7 @@ const handleInstall = async () => {
         </div>
         <div className="ForMobile">
 
-     {showPopup && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              background: "white",
-              padding: "20px",
-              borderRadius: "10px",
-              textAlign: "center",
-              width: "300px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-            }}
-          >
-            <h3>Add Rexpt to Home Screen</h3>
-            <p>Install this app for a faster and better experience.</p>
-            <div style={{ marginTop: "15px", display: "flex", gap: "10px", justifyContent: "center" }}>
-              <button
-                onClick={handleInstall}
-                style={{
-                  padding: "10px 16px",
-                  background: "#6524EB",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Install
-              </button>
-              <button
-                onClick={handleClose}
-                style={{
-                  padding: "10px 16px",
-                  background: "#e0e0e0",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Later
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+   
    
           <PreventPullToRefresh setRefreshKey={setRefreshKey}>
             {/* <BrowserRouter> */}
@@ -547,5 +476,4 @@ const handleInstall = async () => {
     </>
   );
 }
-
 export default App; 
