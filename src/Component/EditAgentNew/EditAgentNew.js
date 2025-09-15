@@ -75,6 +75,9 @@ const EditAgentNew = () => {
       );
 
 
+      sessionStorage.setItem("scrapedUrls", scrapedUrls );
+
+
 
       const agent = response?.data?.agent;
       const business = response?.data?.business;
