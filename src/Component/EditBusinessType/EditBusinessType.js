@@ -110,7 +110,7 @@ const EditBusinessType = () => {
 
       if (stored && stored !== "undefined" && stored !== "null") {
         const businessDetails = JSON.parse(stored);
-        console.log(businessDetails, "businessDetailsbusinessDetails")
+        
         setInitialDetails(businessDetails);
         if (businessDetails) {
           setBusinessType(businessDetails?.businessType || "");
@@ -279,7 +279,6 @@ const EditBusinessType = () => {
   useEffect(() => {
     try {
       if (initialDetails) {
-        console.log(initialDetails, "initialDetails")
         const isTypeChanged = initialDetails?.businessType !== businessType;
         const isSubTypeChanged = initialDetails?.subType !== subType;
 
