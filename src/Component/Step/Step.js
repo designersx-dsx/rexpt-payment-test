@@ -479,7 +479,6 @@ const Step = () => {
             timeZone: { key: "TIMEZONE", value: timeZone?.timezoneId || "" },
 
         });
-      
         // const isValid = step8BRef.current.validate()
         //creation here
         if (localStorage.getItem("UpdationMode") != "ON") {
@@ -765,7 +764,7 @@ const Step = () => {
                                 "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible.",
 
                         },
-                      
+                 
                         ...appointmentBooking(businessType),
                         ...getBusinessSpecificFields(businessType)
                     ],
