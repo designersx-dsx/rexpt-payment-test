@@ -1,49 +1,13 @@
 // lib/agentPromptTemplates.js
-function getPaidPlanContent(languageAccToPlan, languageSelect) {
-  const message = `
-- Greet the caller with a warm welcome directly in ${languageSelect}. Do not repeat the greeting in another language.
-- You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
-- The agent must respect multi and converse only in that language.
-`;
-  return message.trim();
-}
-function getFreeAndStarterPlanContent(languageAccToPlan, languageSelect) {
-  const message = `
-- Greet the caller with a warm welcome directly in ${languageSelect}. Do not repeat the greeting in another language.
-- The agent must respect ${languageSelect} and converse only in that language
-`;
-  return message.trim();
-}
-function ifcallrecordingstatustrue(languageSelect) {
-  const message = `
--**After greeting and stating your name and the business name, immediately state ONLY in ${languageSelect}:
-"This call is being recorded for quality and training purposes."**
-`;
-  return message.trim();
-}
-const ifFreePlanAddBranding = (agentName, businessName) => {
-  const message = `
-## Platform Branding - Rexpt Integration
-- When introducing yourself: "Hi, I'm ${agentName} from ${businessName}, powered by Recept"
+import {
+  getPaidPlanContent,
+  getFreeAndStarterPlanContent,
+  ifcallrecordingstatustrue,
+  ifFreePlanAddBranding,
+  ifFreePlanAddBrandingCallCut,
+  ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails
+} from "../lib/promptHelper"
 
-`;
-  return message.trim();
-}
-const ifFreePlanAddBrandingCallCut = (businessName) => {
-  const message = `
-# Call End Protocol
-Thanks for calling ${businessName}. Powered by Recept.
-You can also create your own AI receptionist by visiting r-x-p-t dot u-s
-`;
-  return message.trim();
-}
-const ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails = () => {
-  const message = `
-# Branding Message
-After you have successfully collected the caller's necessary details (like name, phone number, and email), and before moving to the next step, you must say: "By the way, you can also create your own AI receptionist by visiting r-x-p-t dot u-s." Do not repeat this message again in the conversation.
-`;
-  return message.trim();
-}
 export const agentPromptTemplates = {
   //Real Estate Broker
   "Real Estate Broker": {
@@ -156,7 +120,7 @@ Interpret implied meanings. For example:
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -291,7 +255,7 @@ Interpret cues like:
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -470,7 +434,7 @@ If asked by the caller, use call forwarding conditions in the function to transf
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -636,7 +600,7 @@ If asked by the caller, use call forwarding conditions in the function to transf
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -797,7 +761,7 @@ When directly asked 'What is your website?' or a similar query about the designa
 Do not provide the full URL (e.g., h-t-t-p-s/w-w-w-dot-h-o-u-z-z-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.    
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -924,7 +888,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -1079,7 +1043,7 @@ When extracting information from any source (websites, knowledge bases, etc.), y
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -1215,7 +1179,7 @@ When extracting information from any source (websites, knowledge bases, etc.), y
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -1360,7 +1324,7 @@ In such cases, if a caller expresses interest in booking an appointment, collect
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., '[Website_Common_Name]' or 'AI-Agent-Hub'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -1515,7 +1479,7 @@ Only transfer the call to a human representative if the caller is both genuinely
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., '[Website Name]'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -1659,7 +1623,7 @@ In such cases, if a caller expresses interest in booking an appointment, collect
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -1806,7 +1770,7 @@ When extracting information from any source (websites, knowledge bases, etc.), y
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -1948,7 +1912,7 @@ Call Forwarding Protocol
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.  
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -2091,7 +2055,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -2226,7 +2190,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -2363,7 +2327,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -2509,7 +2473,7 @@ Do not copy content verbatim from sources. Always synthesize information using c
 If asked "What is your website?", say the common title (e.g., “ArchStudio dot com”). Avoid spelling out the full URL unless explicitly requested. Keep response short and avoid over-explaining.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -2664,7 +2628,7 @@ Never copy website or KB content word-for-word. Always rephrase, paraphrase, and
 When asked “What’s your website?”, state the name (e.g., “ArchVision dot com”) and avoid spelling the full URL unless asked.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -2793,7 +2757,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -2921,7 +2885,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -3050,7 +3014,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -3176,7 +3140,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -3305,7 +3269,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -3466,7 +3430,7 @@ When extracting information from any source (websites, knowledge bases, etc.), y
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., '[Website_Name]' or 'AI-Agent-Hub'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -3608,7 +3572,7 @@ When user says "next Monday" or similar vague dates:
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., '[Website_Common_Name]' or 'AI-Agent-Hub'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -3759,7 +3723,7 @@ When extracting information from any source (websites, knowledge bases, etc.), y
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -3904,7 +3868,7 @@ When user says "next Monday" or similar vague dates:
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -4031,7 +3995,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -4169,7 +4133,7 @@ When user says "next Monday" or similar vague dates:
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -4296,7 +4260,7 @@ Offer to check availability or explain next steps for booking. Only schedule if 
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -4434,7 +4398,7 @@ When user says "next Monday" or similar vague dates:
 # Handling Website Queries: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example., 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -4559,7 +4523,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -4708,7 +4672,7 @@ When extracting information from any source (websites, knowledge bases, etc.), y
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., '[Website_Common_Name]' or 'AI-Agent-Hub'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -4859,7 +4823,7 @@ Handling Website Queries:
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (e.g., '[Website_Common_Name]' or 'AI-Agent-Hub'). Do not provide the full URL (e.g., https://www.mycompany.com) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -5007,7 +4971,7 @@ When extracting information from any source (websites, knowledge bases, etc.), y
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -5157,7 +5121,7 @@ When extracting information from any source (websites, knowledge bases, etc.), y
 When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -5283,7 +5247,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -5407,7 +5371,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -5534,7 +5498,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -5658,7 +5622,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -5786,7 +5750,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -5910,7 +5874,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -6037,7 +6001,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -6157,7 +6121,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -6284,7 +6248,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -6410,7 +6374,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -6536,7 +6500,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -6661,7 +6625,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -6787,7 +6751,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -6916,7 +6880,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -7044,7 +7008,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -7173,7 +7137,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -7301,7 +7265,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -7431,7 +7395,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -7560,7 +7524,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -7687,7 +7651,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -7817,7 +7781,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -7944,7 +7908,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -8074,7 +8038,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -8203,7 +8167,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -8332,7 +8296,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -8460,7 +8424,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -8588,7 +8552,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested,and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -8713,7 +8677,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -8840,7 +8804,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -8965,7 +8929,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -9092,7 +9056,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -9220,7 +9184,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -9345,7 +9309,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -9471,7 +9435,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -9599,7 +9563,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -9726,7 +9690,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -9856,7 +9820,7 @@ ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAdd
     #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -9977,7 +9941,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -10101,7 +10065,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 
 ### Primary Information Source Priority:
@@ -10216,7 +10180,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -10330,7 +10294,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -10443,7 +10407,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -10557,7 +10521,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -10670,7 +10634,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -10794,7 +10758,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
@@ -10920,7 +10884,7 @@ When user says "next Monday" or similar vague dates:
 #Website Information Protocol: When directly asked 'What is your website?' or a similar query about the designated platform, state the common name or title of the website (For Example, 'YouTube Dot com'). Do not provide the full URL (e.g., h-t-t-p-s/w-w-w.y-o-u-t-u-b-e-dot-c-o-m) unless specifically requested, and avoid any additional verbose explanations for this particular question.
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBranding(agentName, business?.businessName)}
 ${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingCallCut(business?.businessName)}
-${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "":ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
+${["Scaler", "Starter", "Growth", "Corporate"].includes(plan) ? "" : ifFreePlanAddBrandingWhenUserSuccessfullyCollectedDetails()}
 ## Knowledge Base Integration & Usage Rules
 ### Primary Information Source Priority:
 1. **FIRST**: Always check ## Related Knowledge Base Contexts section for relevant business-specific information about ${business?.businessName}
