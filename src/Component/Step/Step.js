@@ -976,7 +976,7 @@ const Step = () => {
                                 setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
 
                             }
-                             else if (isUser === "true") {
+                            else if (isUser === "true") {
                                 setCustomeLoader(true)
                                 setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
 
@@ -1172,22 +1172,13 @@ const Step = () => {
         sessionStorage.setItem("completedSteps", JSON.stringify(completedSteps));
     }, [completedSteps]);
 
-
-
-    if (res?.data?.url) {
-      window.location.href = res.data.url; 
-    }
-//    catch (error) {
-//     console.error("Checkout error:", error);
-//   }
-
-
-
-
+    // if (res?.data?.url) {
+    //   window.location.href = res.data.url; 
+    // }
+    //    catch (error) {
+    //     console.error("Checkout error:", error);
+    //   }
     let isUser = sessionStorage.getItem("isUser")
-    // console.log({isUser})
-
-
     const tierCheckout = async () => {
         try {
             const res = await axios.post(`${API_BASE_URL}/tier/checkout`, {
@@ -1213,8 +1204,8 @@ const Step = () => {
         let priceId = sessionStorage.getItem("priceId")
         let freeTrail = location?.state?.value
 
-    
-        if (freeTrail === "chatke" || isUser==='true') {
+
+        if (freeTrail === "chatke" || isUser === 'true') {
             handleContinue()
             // sessionStorage.removeItem(isUser)
         }
@@ -1503,7 +1494,7 @@ const Step = () => {
             </>
         )
     }
-    
+
     return (
 
         <>{shouldShowThankYou ? <Thankyou onSubmit={hanldeAgentCreation} isAgentCreated={isAgentCreated} /> :
