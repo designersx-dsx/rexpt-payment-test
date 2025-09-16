@@ -1237,7 +1237,7 @@ const Planss = () => {
 
 
 
-            <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
+            {/* <FreeTrialModal isOpen={modalOpenz} onClose={() => setIsModalOpenz(false)}>
                 <div className={styles.freeTrialMain}>
                     <div className={styles.Topsection}>
                         <h1>FREE TRIAL</h1>
@@ -1300,7 +1300,7 @@ const Planss = () => {
 
                 </div>
 
-            </FreeTrialModal>
+            </FreeTrialModal> */}
 
         </div>
     );

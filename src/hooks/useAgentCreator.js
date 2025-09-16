@@ -299,7 +299,6 @@ export const useAgentCreator = ({
       );
       return combinedChoices;
     };
-
     //updation here
     if (isValid && localStorage.getItem("UpdationMode") == "ON") {
       setLoading(true);
@@ -323,7 +322,7 @@ export const useAgentCreator = ({
           .map((item) => item?.service?.trim())
           .filter(Boolean)
           .map((service) => ({ service }));
-
+   
         try {
           const response = await axios.patch(
             `${API_BASE_URL}/businessDetails/updateBusinessDetailsByUserIDandBuisnessID/${userId}?businessId=${sessionBusinessiD}`,
@@ -337,6 +336,7 @@ export const useAgentCreator = ({
               buisnessService: buisenessServices?.selectedService,
               customBuisness: businessDetails?.customBuisness || "",
               customServices: cleanedCustomServices,
+              subType:businessDetails?.subType
             }
           );
 

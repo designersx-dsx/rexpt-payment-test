@@ -234,7 +234,7 @@ function Dashboard() {
       setTourElevateDropdown(false);
     });
   };
-
+sessionStorage.removeItem("isUser")
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
@@ -3054,6 +3054,7 @@ function Dashboard() {
                         )}
                       </strong>
                     </p>
+
                     <div className={styles.VIA}>
                       {agent.calApiKey ? (
                         <img
@@ -3098,6 +3099,7 @@ function Dashboard() {
                       )}
                     </div>
                   </div>
+
 
                   <div className={styles.LangButton}>
                     {assignedNumbers.length > 0 ? (
